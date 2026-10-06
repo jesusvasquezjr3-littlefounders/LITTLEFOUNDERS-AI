@@ -1,0 +1,778 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-purchase-decisions-part-2",
+  "lesson_id": "fe-production-purchase-decisions-07",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.purchase-decisions.07"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Distinguish a warranty, a return policy and a separately purchased protection plan.",
+  "title": {
+    "en-US": "Protection Terms",
+    "es-MX": "¿Qué promesa de protección es?",
+    "pt-BR": "Que promessa de proteção é esta?"
+  },
+  "new_concepts": [
+    "finance.prod.purchase-decisions.07"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Protection Terms\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"¿Qué promesa de protección es?\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Que promessa de proteção é esta?\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.purchase-decisions.07",
+      "observable_action": "Distinguish a warranty, a return policy and a separately purchased protection plan.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.purchase-decisions.02"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Return terms, defect warranties and paid protection plans can cover different events; read the stated promise instead of grouping them.",
+    "misconception": "A warranty is the same as a change-of-mind return policy, or paying for protection means every event is covered.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.purchase-decisions.07",
+        "context_id": "purchase-decisions-07-example-01",
+        "supports_from": [],
+        "reasoning": "A warranty addresses stated defects; a return policy governs returns; a paid plan adds specified cover. Check each document’s limits."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.purchase-decisions.07",
+        "context_id": "purchase-decisions-07-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The reported fault matches the stated warranty event."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.purchase-decisions.07",
+        "context_id": "purchase-decisions-07-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "A return request needs the applicable return conditions."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.purchase-decisions.07",
+        "context_id": "purchase-decisions-07-practice-01",
+        "supports_from": [],
+        "reasoning": "The separate plan adds only its stated coverage."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.purchase-decisions.07",
+        "context_id": "purchase-decisions-07-practice-02",
+        "supports_from": [],
+        "reasoning": "Extra cost does not prove meaningful extra protection."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.purchase-decisions.07",
+        "context_id": "purchase-decisions-07-practice-03",
+        "supports_from": [],
+        "reasoning": "The return conditions determine this fictional policy’s requirements."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.purchase-decisions.07",
+        "context_id": "purchase-decisions-07-transfer-01",
+        "supports_from": [],
+        "reasoning": "The accident matches the paid plan’s stated event category."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.purchase-decisions.07",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Return terms, defect warranties and paid protection plans can cover different events; read the stated promise instead of grouping them."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Devolución, garantía por defectos y protección pagada pueden cubrir eventos distintos; lee promesa indicada sin agruparlas."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Devolução, garantia por defeitos e proteção paga podem cobrir eventos distintos; leia promessa dada sem agrupá-las."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Match the event to the promise",
+          "line": "A warranty addresses stated defects; a return policy governs returns; a paid plan adds specified cover. Check each document’s limits."
+        },
+        "es-MX": {
+          "prompt": "Relaciona evento con promesa",
+          "line": "Una garantía atiende defectos indicados; las reglas de devolución fijan cuándo devolver; plan pagado añade cobertura concreta. Revisa límites de cada documento."
+        },
+        "pt-BR": {
+          "prompt": "Ligue evento à promessa",
+          "line": "Uma garantia trata defeitos dados; regra para devolver regula devoluções; plano pago acrescenta cobertura concreta. Confira limites de cada documento."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Which promise covers this stated defect?",
+          "scene": "Fictional warranty covers manufacturing faults; the item has a confirmed manufacturing fault.",
+          "options": [
+            {
+              "label": "The stated warranty"
+            },
+            {
+              "label": "Only a gift receipt"
+            },
+            {
+              "label": "Every unrelated insurance policy"
+            }
+          ],
+          "help": [
+            "Match the problem to the actual covered condition."
+          ],
+          "feedback": {
+            "met": "The reported fault matches the stated warranty event.",
+            "not_yet": "Match the problem to the actual covered condition."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué promesa cubre este defecto?",
+          "scene": "Garantía ficticia cubre fallas de fábrica; artículo tiene falla de fábrica confirmada.",
+          "options": [
+            {
+              "label": "La garantía indicada"
+            },
+            {
+              "label": "Solo recibo de regalo"
+            },
+            {
+              "label": "Todo seguro ajeno"
+            }
+          ],
+          "help": [
+            "Relaciona problema con condición realmente cubierta."
+          ],
+          "feedback": {
+            "met": "La falla reportada coincide con evento de garantía indicado.",
+            "not_yet": "Relaciona problema con condición realmente cubierta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que promessa cobre este defeito?",
+          "scene": "Garantia fictícia cobre falhas de fábrica; item tem falha de fábrica confirmada.",
+          "options": [
+            {
+              "label": "A garantia dada"
+            },
+            {
+              "label": "Só recibo de presente"
+            },
+            {
+              "label": "Todo seguro alheio"
+            }
+          ],
+          "help": [
+            "Ligue problema à condição de fato coberta."
+          ],
+          "feedback": {
+            "met": "A falha relatada coincide com evento da garantia dada.",
+            "not_yet": "Ligue problema à condição de fato coberta."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Which terms address changed preferences?",
+          "scene": "The item works, but the buyer no longer wants it.",
+          "options": [
+            {
+              "label": "The seller’s stated return policy"
+            },
+            {
+              "label": "Assume any warranty requires acceptance"
+            },
+            {
+              "label": "Assume every product is returnable forever"
+            }
+          ],
+          "help": [
+            "Do not substitute defect coverage for return terms."
+          ],
+          "feedback": {
+            "met": "A return request needs the applicable return conditions.",
+            "not_yet": "Do not substitute defect coverage for return terms."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué condiciones atienden cambiar de opinión?",
+          "scene": "Artículo funciona, pero comprador ya no lo quiere.",
+          "options": [
+            {
+              "label": "Reglas del vendedor para devolver"
+            },
+            {
+              "label": "Suponer garantía exige aceptarlo"
+            },
+            {
+              "label": "Suponer que todo se devuelve siempre"
+            }
+          ],
+          "help": [
+            "No sustituyas términos de devolución por cobertura de defectos."
+          ],
+          "feedback": {
+            "met": "Solicitud de devolución necesita reglas del caso.",
+            "not_yet": "No sustituyas términos de devolución por cobertura de defectos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que termos tratam mudança de ideia?",
+          "scene": "Item funciona, mas comprador não o quer mais.",
+          "options": [
+            {
+              "label": "Regra para devolver dada pelo vendedor"
+            },
+            {
+              "label": "Supor garantia exige aceitar"
+            },
+            {
+              "label": "Supor devolução eterna para tudo"
+            }
+          ],
+          "help": [
+            "Não troque regras para devolver por cobertura de defeitos."
+          ],
+          "feedback": {
+            "met": "Pedido de devolução precisa das regras do caso.",
+            "not_yet": "Não troque regras para devolver por cobertura de defeitos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.07",
+      "copy": {
+        "en-US": {
+          "prompt": "What distinguishes this protection plan?",
+          "scene": "A separate paid contract covers specified accidental damage.",
+          "options": [
+            {
+              "label": "Unlimited cover for every event"
+            },
+            {
+              "label": "Additional purchased coverage"
+            },
+            {
+              "label": "Automatically the basic warranty"
+            }
+          ],
+          "help": [
+            "Read its cost, included events and exclusions."
+          ],
+          "feedback": {
+            "met": "The separate plan adds only its stated coverage.",
+            "not_yet": "Read its cost, included events and exclusions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué distingue este plan de protección?",
+          "scene": "Contrato pagado separado cubre daño accidental concreto.",
+          "options": [
+            {
+              "label": "Cobertura ilimitada de todo evento"
+            },
+            {
+              "label": "Cobertura extra comprada"
+            },
+            {
+              "label": "Automáticamente garantía básica"
+            }
+          ],
+          "help": [
+            "Lee costo, eventos incluidos y casos no cubiertos."
+          ],
+          "feedback": {
+            "met": "Plan separado añade solo cobertura indicada.",
+            "not_yet": "Lee costo, eventos incluidos y casos no cubiertos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que distingue este plano de proteção?",
+          "scene": "Contrato pago separado cobre dano acidental concreto.",
+          "options": [
+            {
+              "label": "Cobertura ilimitada de todo evento"
+            },
+            {
+              "label": "Cobertura extra comprada"
+            },
+            {
+              "label": "Automaticamente garantia básica"
+            }
+          ],
+          "help": [
+            "Leia custo, eventos incluídos e exclusões."
+          ],
+          "feedback": {
+            "met": "Plano separado acrescenta só cobertura dada.",
+            "not_yet": "Leia custo, eventos incluídos e exclusões."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Does this establish better value?",
+          "scene": "Its events duplicate existing protection; price and exclusions are unexamined.",
+          "options": [
+            {
+              "label": "Yes, duplicate cover doubles refunds"
+            },
+            {
+              "label": "Yes, paid always means better"
+            },
+            {
+              "label": "No, compare incremental coverage and cost"
+            }
+          ],
+          "help": [
+            "Check what the paid plan actually adds."
+          ],
+          "feedback": {
+            "met": "Extra cost does not prove meaningful extra protection.",
+            "not_yet": "Check what the paid plan actually adds."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Plan pagado siempre da más valor?",
+          "scene": "Eventos cubiertos duplican protección existente; precio y casos no cubiertos no se compararon.",
+          "options": [
+            {
+              "label": "Sí, duplicar duplica reembolsos"
+            },
+            {
+              "label": "Sí, pagar siempre mejora"
+            },
+            {
+              "label": "No, comparar cobertura extra y costo"
+            }
+          ],
+          "help": [
+            "Revisa qué añade realmente el plan pagado."
+          ],
+          "feedback": {
+            "met": "Costo extra no prueba protección extra útil.",
+            "not_yet": "Revisa qué añade realmente el plan pagado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Plano pago sempre dá mais valor?",
+          "scene": "Eventos cobertos repetem proteção existente; preço e exclusões não foram comparados.",
+          "options": [
+            {
+              "label": "Sim, duplicar duplica reembolsos"
+            },
+            {
+              "label": "Sim, pagar sempre melhora"
+            },
+            {
+              "label": "Não, comparar cobertura extra e custo"
+            }
+          ],
+          "help": [
+            "Confira o que o plano pago acrescenta de fato."
+          ],
+          "feedback": {
+            "met": "Custo extra não prova proteção extra útil.",
+            "not_yet": "Confira o que o plano pago acrescenta de fato."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.07",
+      "copy": {
+        "en-US": {
+          "prompt": "What needs checking?",
+          "scene": "Fictional return terms require a receipt and an intact item; the buyer has not checked either.",
+          "options": [
+            {
+              "label": "Only warranty coverage"
+            },
+            {
+              "label": "The stated return conditions"
+            },
+            {
+              "label": "Only the price paid"
+            }
+          ],
+          "help": [
+            "Check the relevant documents and local consumer rules."
+          ],
+          "feedback": {
+            "met": "The return conditions determine this fictional policy’s requirements.",
+            "not_yet": "Check the relevant documents and local consumer rules."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué revisar antes de reclamar?",
+          "scene": "Devolución ficticia exige recibo y artículo intacto; comprador no revisó ninguno.",
+          "options": [
+            {
+              "label": "Solo cobertura de garantía"
+            },
+            {
+              "label": "Reglas dadas de devolución"
+            },
+            {
+              "label": "Solo el precio pagado"
+            }
+          ],
+          "help": [
+            "Revisa documentos pertinentes y reglas locales de consumo."
+          ],
+          "feedback": {
+            "met": "Condiciones determinan requisitos de esta regla ficticia.",
+            "not_yet": "Revisa documentos pertinentes y reglas locales de consumo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que conferir antes de pedir?",
+          "scene": "Devolução fictícia exige recibo e item intacto; comprador não conferiu nenhum.",
+          "options": [
+            {
+              "label": "Só cobertura da garantia"
+            },
+            {
+              "label": "Regras dadas de devolução"
+            },
+            {
+              "label": "Só o preço pago"
+            }
+          ],
+          "help": [
+            "Confira documentos relevantes e regras locais de consumo."
+          ],
+          "feedback": {
+            "met": "Regras definem requisitos desta política fictícia.",
+            "not_yet": "Confira documentos relevantes e regras locais de consumo."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.purchase-decisions.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Which terms address accidents?",
+          "scene": "Fictional warranty covers defects only; separate paid plan covers accidental drops. The item was dropped.",
+          "options": [
+            {
+              "label": "Defect warranty automatically"
+            },
+            {
+              "label": "Any return policy automatically"
+            },
+            {
+              "label": "The paid plan’s accident terms"
+            }
+          ],
+          "help": [
+            "Check that plan’s conditions rather than assume universal coverage."
+          ],
+          "feedback": {
+            "met": "The accident matches the paid plan’s stated event category.",
+            "not_yet": "Check that plan’s conditions rather than assume universal coverage."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué términos atienden este accidente?",
+          "scene": "Garantía ficticia solo defectos; plan pagado aparte cubre caídas accidentales. Artículo se cayó.",
+          "options": [
+            {
+              "label": "Garantía de defectos sin revisar"
+            },
+            {
+              "label": "Cualquier devolución sin revisar"
+            },
+            {
+              "label": "Reglas de accidente del plan"
+            }
+          ],
+          "help": [
+            "Revisa condiciones del plan sin suponer cobertura universal."
+          ],
+          "feedback": {
+            "met": "Accidente coincide con categoría indicada del plan pagado.",
+            "not_yet": "Revisa condiciones del plan sin suponer cobertura universal."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que termos tratam este acidente?",
+          "scene": "Garantia fictícia só defeitos; plano pago à parte cobre quedas acidentais. Item caiu.",
+          "options": [
+            {
+              "label": "Garantia de defeitos sem conferir"
+            },
+            {
+              "label": "Qualquer devolução sem conferir"
+            },
+            {
+              "label": "Regras de acidente do plano"
+            }
+          ],
+          "help": [
+            "Confira regras do plano sem supor cobertura universal."
+          ],
+          "feedback": {
+            "met": "Acidente coincide com categoria dada do plano pago.",
+            "not_yet": "Confira regras do plano sem supor cobertura universal."
+          }
+        }
+      }
+    }
+  ]
+}

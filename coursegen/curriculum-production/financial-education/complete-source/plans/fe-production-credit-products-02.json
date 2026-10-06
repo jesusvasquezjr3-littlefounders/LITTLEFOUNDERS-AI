@@ -1,0 +1,779 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-credit-products-part-1",
+  "lesson_id": "fe-production-credit-products-02",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.credit-products.02"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Distinguish the statement closing date from the payment due date.",
+  "title": {
+    "en-US": "Card Dates",
+    "es-MX": "Corte y vencimiento son distintos",
+    "pt-BR": "Fechamento e vencimento são distintos"
+  },
+  "new_concepts": [
+    "finance.prod.credit-products.02"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Card Dates\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Corte y vencimiento son distintos\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Fechamento e vencimento são distintos\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.credit-products.02",
+      "observable_action": "Distinguish the statement closing date from the payment due date.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.credit-products.01",
+      "cash.dates"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Closing ends the stated billing cycle; the due date sets its payment deadline. Confusing them can disrupt your payment plan.",
+    "misconception": "The closing date is the payment deadline or purchases after closing disappear.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.credit-products.02",
+        "context_id": "credit-products-02-example-01",
+        "supports_from": [],
+        "reasoning": "Closing marks the statement period’s end. The due date tells when its payment must arrive under the stated terms."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.credit-products.02",
+        "context_id": "credit-products-02-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The closing date ends this stated billing cycle."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.credit-products.02",
+        "context_id": "credit-products-02-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The arrival deadline controls this payment’s timing."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.credit-products.02",
+        "context_id": "credit-products-02-practice-01",
+        "supports_from": [],
+        "reasoning": "The supplied posting rule assigns it to the next cycle."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.credit-products.02",
+        "context_id": "credit-products-02-practice-02",
+        "supports_from": [],
+        "reasoning": "Starting a new cycle does not pay the prior balance."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.credit-products.02",
+        "context_id": "credit-products-02-practice-03",
+        "supports_from": [],
+        "reasoning": "Closing alone does not establish the actual payment deadline."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.credit-products.02",
+        "context_id": "credit-products-02-transfer-01",
+        "supports_from": [],
+        "reasoning": "The supplied due date sets the required payment arrival."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.credit-products.02",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Closing ends the stated billing cycle; the due date sets its payment deadline. Confusing them can disrupt your payment plan."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Corte cierra periodo indicado; vencimiento fija fecha de pago. Confundirlos puede desordenar tu plan."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Fechamento encerra período dado; vencimento fixa data de pagamento. Confundi-los pode atrapalhar seu plano."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Separate the two dates",
+          "line": "Closing marks the statement period’s end. The due date tells when its payment must arrive under the stated terms."
+        },
+        "es-MX": {
+          "prompt": "Separa las dos fechas",
+          "line": "Corte marca fin del periodo del estado. Vencimiento indica cuándo debe llegar pago bajo términos indicados."
+        },
+        "pt-BR": {
+          "prompt": "Separe as duas datas",
+          "line": "Fechamento marca fim do período do extrato. Vencimento indica quando pagamento deve chegar sob termos dados."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Which date ends the cycle?",
+          "scene": "Fictional statement closes September 3; payment is due September 25.",
+          "options": [
+            {
+              "label": "Both dates always identical"
+            },
+            {
+              "label": "September 3"
+            },
+            {
+              "label": "September 25"
+            }
+          ],
+          "help": [
+            "Distinguish cycle end from the later payment deadline."
+          ],
+          "feedback": {
+            "met": "The closing date ends this stated billing cycle.",
+            "not_yet": "Distinguish cycle end from the later payment deadline."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué fecha termina periodo?",
+          "scene": "Estado ficticio corta 3 de septiembre; pago vence 25 de septiembre.",
+          "options": [
+            {
+              "label": "Ambas fechas siempre iguales"
+            },
+            {
+              "label": "3 de septiembre"
+            },
+            {
+              "label": "25 de septiembre"
+            }
+          ],
+          "help": [
+            "Distingue cierre del periodo de límite posterior de pago."
+          ],
+          "feedback": {
+            "met": "Fecha de corte termina este periodo indicado.",
+            "not_yet": "Distingue cierre del periodo de límite posterior de pago."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que data encerra período?",
+          "scene": "Extrato fictício fecha 3 de setembro; pagamento vence 25 de setembro.",
+          "options": [
+            {
+              "label": "Ambas datas sempre iguais"
+            },
+            {
+              "label": "3 de setembro"
+            },
+            {
+              "label": "25 de setembro"
+            }
+          ],
+          "help": [
+            "Separe fim do período de prazo posterior de pagamento."
+          ],
+          "feedback": {
+            "met": "Data de fechamento encerra este período dado.",
+            "not_yet": "Separe fim do período de prazo posterior de pagamento."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Which deadline belongs in the payment plan?",
+          "scene": "Fictional statement closes April 4; payment must arrive by April 22.",
+          "options": [
+            {
+              "label": "April 22"
+            },
+            {
+              "label": "April 4 automatically"
+            },
+            {
+              "label": "Any future closing date"
+            }
+          ],
+          "help": [
+            "Use the actual payment due date."
+          ],
+          "feedback": {
+            "met": "The arrival deadline controls this payment’s timing.",
+            "not_yet": "Use the actual payment due date."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué límite entra en plan de pago?",
+          "scene": "Estado ficticio corta 4 de abril; pago debe llegar hasta 22 de abril.",
+          "options": [
+            {
+              "label": "22 de abril"
+            },
+            {
+              "label": "4 de abril automáticamente"
+            },
+            {
+              "label": "Cualquier corte futuro"
+            }
+          ],
+          "help": [
+            "Usa fecha real de vencimiento."
+          ],
+          "feedback": {
+            "met": "Límite de llegada controla fecha de este pago.",
+            "not_yet": "Usa fecha real de vencimiento."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que prazo entra no plano de pagamento?",
+          "scene": "Extrato fictício fecha 4 de abril; pagamento deve chegar até 22 de abril.",
+          "options": [
+            {
+              "label": "22 de abril"
+            },
+            {
+              "label": "4 de abril automaticamente"
+            },
+            {
+              "label": "Qualquer fechamento futuro"
+            }
+          ],
+          "help": [
+            "Use data real de vencimento."
+          ],
+          "feedback": {
+            "met": "Prazo de chegada controla data deste pagamento.",
+            "not_yet": "Use data real de vencimento."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Where does this posted purchase belong?",
+          "scene": "Fictional rule: entries posted after March 5 closing enter the next cycle; purchase posts March 6.",
+          "options": [
+            {
+              "label": "Previous cycle automatically"
+            },
+            {
+              "label": "Next cycle"
+            },
+            {
+              "label": "Erased from debt"
+            }
+          ],
+          "help": [
+            "Follow the stated rule and posted date."
+          ],
+          "feedback": {
+            "met": "The supplied posting rule assigns it to the next cycle.",
+            "not_yet": "Follow the stated rule and posted date."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Dónde entra compra registrada?",
+          "scene": "Regla ficticia: registros tras corte del 5 de marzo entran al siguiente periodo; compra se registra 6 de marzo.",
+          "options": [
+            {
+              "label": "Periodo anterior automáticamente"
+            },
+            {
+              "label": "Siguiente periodo"
+            },
+            {
+              "label": "Deuda borrada"
+            }
+          ],
+          "help": [
+            "Sigue regla indicada y fecha de registro."
+          ],
+          "feedback": {
+            "met": "Regla dada asigna compra al siguiente periodo.",
+            "not_yet": "Sigue regla indicada y fecha de registro."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Onde entra compra lançada?",
+          "scene": "Regra fictícia: lançamentos após fechamento de 5 de março entram no próximo período; compra lançada 6 de março.",
+          "options": [
+            {
+              "label": "Período anterior automaticamente"
+            },
+            {
+              "label": "Próximo período"
+            },
+            {
+              "label": "Dívida apagada"
+            }
+          ],
+          "help": [
+            "Siga regra dada e data de lançamento."
+          ],
+          "feedback": {
+            "met": "Regra dada atribui compra ao próximo período.",
+            "not_yet": "Siga regra dada e data de lançamento."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Does a new cycle erase the previous bill?",
+          "scene": "A new cycle opens while the previous statement’s payment remains unpaid.",
+          "options": [
+            {
+              "label": "Yes"
+            },
+            {
+              "label": "No"
+            },
+            {
+              "label": "Only if another purchase occurs"
+            }
+          ],
+          "help": [
+            "Track the unpaid statement and new activity separately."
+          ],
+          "feedback": {
+            "met": "Starting a new cycle does not pay the prior balance.",
+            "not_yet": "Track the unpaid statement and new activity separately."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Nuevo periodo borra cuenta anterior?",
+          "scene": "Abre nuevo periodo mientras pago del estado anterior sigue pendiente.",
+          "options": [
+            {
+              "label": "Sí"
+            },
+            {
+              "label": "No"
+            },
+            {
+              "label": "Solo si ocurre otra compra"
+            }
+          ],
+          "help": [
+            "Sigue estado pendiente y actividad nueva por separado."
+          ],
+          "feedback": {
+            "met": "Iniciar periodo nuevo no paga saldo previo.",
+            "not_yet": "Sigue estado pendiente y actividad nueva por separado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Novo período apaga conta anterior?",
+          "scene": "Abre novo período enquanto pagamento do extrato anterior segue pendente.",
+          "options": [
+            {
+              "label": "Sim"
+            },
+            {
+              "label": "Não"
+            },
+            {
+              "label": "Só se ocorrer outra compra"
+            }
+          ],
+          "help": [
+            "Acompanhe extrato pendente e atividade nova em separado."
+          ],
+          "feedback": {
+            "met": "Iniciar período novo não paga saldo anterior.",
+            "not_yet": "Acompanhe extrato pendente e atividade nova em separado."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What’s missing before payment?",
+          "scene": "A summary displays closing date but omits the payment due date.",
+          "options": [
+            {
+              "label": "The due date and arrival terms"
+            },
+            {
+              "label": "Nothing, all cycles use one deadline"
+            },
+            {
+              "label": "Only the cycle title"
+            }
+          ],
+          "help": [
+            "Read the due date and payment arrival conditions."
+          ],
+          "feedback": {
+            "met": "Closing alone does not establish the actual payment deadline.",
+            "not_yet": "Read the due date and payment arrival conditions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué falta antes de programar pago?",
+          "scene": "Resumen muestra corte pero omite vencimiento del pago.",
+          "options": [
+            {
+              "label": "Vencimiento y términos de llegada"
+            },
+            {
+              "label": "Nada, todos usan mismo límite"
+            },
+            {
+              "label": "Solo título del periodo"
+            }
+          ],
+          "help": [
+            "Lee vencimiento y condiciones de llegada del pago."
+          ],
+          "feedback": {
+            "met": "Corte solo no establece límite real de pago.",
+            "not_yet": "Lee vencimiento y condiciones de llegada del pago."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que falta antes de agendar pagamento?",
+          "scene": "Resumo mostra fechamento mas omite vencimento do pagamento.",
+          "options": [
+            {
+              "label": "Vencimento e termos de chegada"
+            },
+            {
+              "label": "Nada, todos usam mesmo prazo"
+            },
+            {
+              "label": "Só título do período"
+            }
+          ],
+          "help": [
+            "Leia vencimento e condições de chegada do pagamento."
+          ],
+          "feedback": {
+            "met": "Fechamento só não define prazo real de pagamento.",
+            "not_yet": "Leia vencimento e condições de chegada do pagamento."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.credit-products.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Which date guides payment arrival?",
+          "scene": "Fictional statement closes November 1; its payment must arrive by November 19.",
+          "options": [
+            {
+              "label": "November 1"
+            },
+            {
+              "label": "The next closing date"
+            },
+            {
+              "label": "November 19"
+            }
+          ],
+          "help": [
+            "Keep closing and payment dates in separate roles."
+          ],
+          "feedback": {
+            "met": "The supplied due date sets the required payment arrival.",
+            "not_yet": "Keep closing and payment dates in separate roles."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué fecha guía llegada del pago?",
+          "scene": "Estado ficticio corta 1 de noviembre; pago debe llegar hasta 19 de noviembre.",
+          "options": [
+            {
+              "label": "1 de noviembre"
+            },
+            {
+              "label": "Siguiente fecha de corte"
+            },
+            {
+              "label": "19 de noviembre"
+            }
+          ],
+          "help": [
+            "Mantén corte y vencimiento con funciones separadas."
+          ],
+          "feedback": {
+            "met": "Vencimiento dado fija llegada requerida del pago.",
+            "not_yet": "Mantén corte y vencimiento con funciones separadas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que data guia chegada do pagamento?",
+          "scene": "Extrato fictício fecha 1 de novembro; pagamento deve chegar até 19 de novembro.",
+          "options": [
+            {
+              "label": "1 de novembro"
+            },
+            {
+              "label": "Próxima data de fechamento"
+            },
+            {
+              "label": "19 de novembro"
+            }
+          ],
+          "help": [
+            "Mantenha fechamento e vencimento com funções separadas."
+          ],
+          "feedback": {
+            "met": "Vencimento dado fixa chegada exigida do pagamento.",
+            "not_yet": "Mantenha fechamento e vencimento com funções separadas."
+          }
+        }
+      }
+    }
+  ]
+}

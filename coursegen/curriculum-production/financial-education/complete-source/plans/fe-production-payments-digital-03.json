@@ -1,0 +1,779 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-payments-digital-part-1",
+  "lesson_id": "fe-production-payments-digital-03",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.payments-digital.03"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Separate a payment request or screenshot from confirmed receipt of funds.",
+  "title": {
+    "en-US": "Confirmed receipt",
+    "es-MX": "Una captura no es dinero recibido",
+    "pt-BR": "Uma captura não é dinheiro recebido"
+  },
+  "new_concepts": [
+    "finance.prod.payments-digital.03"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"A screenshot is not receipt\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Una captura no es dinero recibido\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Uma captura não é dinheiro recebido\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.payments-digital.03",
+      "observable_action": "Separate a payment request or screenshot from confirmed receipt of funds.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "cash.received",
+      "prod.payments-digital.02"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Confirm the money in your own verified account record before treating it as received.",
+    "misconception": "Treating a payment request, sender screenshot or pending notice as proof that spendable funds have arrived.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.payments-digital.03",
+        "context_id": "fe-production-payments-digital-03-example-01",
+        "supports_from": [],
+        "reasoning": "A sender’s screenshot can show an instruction or pending payment. Check your own verified record to confirm actual receipt."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.payments-digital.03",
+        "context_id": "fe-production-payments-digital-03-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The sender’s image does not establish receipt in your account."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.payments-digital.03",
+        "context_id": "fe-production-payments-digital-03-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The stated action sends your funds rather than receiving funds."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.payments-digital.03",
+        "context_id": "fe-production-payments-digital-03-practice-01",
+        "supports_from": [],
+        "reasoning": "Matching details do not override the stated unavailable status."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.payments-digital.03",
+        "context_id": "fe-production-payments-digital-03-practice-02",
+        "supports_from": [],
+        "reasoning": "An alleged overpayment is not proof that extra funds arrived."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.payments-digital.03",
+        "context_id": "fe-production-payments-digital-03-practice-03",
+        "supports_from": [],
+        "reasoning": "Use your established access route to verify the account record."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.payments-digital.03",
+        "context_id": "fe-production-payments-digital-03-transfer-01",
+        "supports_from": [],
+        "reasoning": "An image outside your account does not prove funds arrived."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.payments-digital.03",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Confirm the money in your own verified account record before treating it as received."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Confirma el dinero en tu registro verificado antes de contarlo como recibido."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Confira na sua conta se o dinheiro chegou antes de contar com ele."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Confirm from your side",
+          "line": "A sender’s screenshot can show an instruction or pending payment. Check your own verified record to confirm actual receipt."
+        },
+        "es-MX": {
+          "prompt": "Confirma desde tu lado",
+          "line": "Una captura ajena puede mostrar una instrucción o pago pendiente. Revisa tu registro verificado para confirmar la recepción real."
+        },
+        "pt-BR": {
+          "prompt": "Confirme do seu lado",
+          "line": "Uma imagem enviada pode mostrar um pedido ou um valor pendente. Confira na sua conta se o dinheiro chegou."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Which status is supported?",
+          "scene": "A customer sends a payment screenshot; your verified account shows no matching receipt.",
+          "options": [
+            {
+              "label": "A completed refund already owed"
+            },
+            {
+              "label": "Money definitely available now"
+            },
+            {
+              "label": "Receipt not yet confirmed"
+            }
+          ],
+          "help": [
+            "Verify actual receipt independently."
+          ],
+          "feedback": {
+            "met": "The sender’s image does not establish receipt in your account.",
+            "not_yet": "Verify actual receipt independently."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué estado respaldan los datos?",
+          "scene": "Un cliente envía captura de pago; tu cuenta verificada no muestra entrada coincidente.",
+          "options": [
+            {
+              "label": "Un reembolso realizado ya debido"
+            },
+            {
+              "label": "Dinero definitivamente disponible ahora"
+            },
+            {
+              "label": "Recepción aún no confirmada"
+            }
+          ],
+          "help": [
+            "Verifica la recepción real de forma independiente."
+          ],
+          "feedback": {
+            "met": "La imagen ajena no demuestra recepción en tu cuenta.",
+            "not_yet": "Verifica la recepción real de forma independiente."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que os dados mostram?",
+          "scene": "Um cliente envia uma imagem de pagamento; sua conta não mostra a entrada.",
+          "options": [
+            {
+              "label": "Dinheiro extra já devido ao cliente"
+            },
+            {
+              "label": "Dinheiro já livre para gastar"
+            },
+            {
+              "label": "Dinheiro ainda não confirmado"
+            }
+          ],
+          "help": [
+            "Confira se chegou usando sua própria conta."
+          ],
+          "feedback": {
+            "met": "A imagem enviada não prova que o dinheiro chegou.",
+            "not_yet": "Confira se chegou usando sua própria conta."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Does approval mean receiving?",
+          "scene": "Approval would send your money.",
+          "options": [
+            {
+              "label": "Yes, every payment notification is income"
+            },
+            {
+              "label": "Yes, the sender says it is a refund"
+            },
+            {
+              "label": "No, it authorizes an outgoing payment"
+            }
+          ],
+          "help": [
+            "Read the requested action and direction."
+          ],
+          "feedback": {
+            "met": "The stated action sends your funds rather than receiving funds.",
+            "not_yet": "Read the requested action and direction."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Aprobar equivale a recibir dinero?",
+          "scene": "Un mensaje pide aprobar una solicitud que enviaría tu dinero.",
+          "options": [
+            {
+              "label": "Sí, toda notificación de pago es ingreso"
+            },
+            {
+              "label": "Sí, quien envía dice que es reembolso"
+            },
+            {
+              "label": "No, autoriza un pago saliente"
+            }
+          ],
+          "help": [
+            "Lee acción solicitada y dirección."
+          ],
+          "feedback": {
+            "met": "La acción indicada envía tus fondos en vez de recibirlos.",
+            "not_yet": "Lee acción solicitada y dirección."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Aprovar equivale a receber dinheiro?",
+          "scene": "Uma mensagem pede aprovar um pedido que enviaria seu dinheiro.",
+          "options": [
+            {
+              "label": "Sim, todo aviso de pagamento é renda"
+            },
+            {
+              "label": "Sim, quem envia diz que é reembolso"
+            },
+            {
+              "label": "Não, dá permissão para enviar dinheiro"
+            }
+          ],
+          "help": [
+            "Leia o que o pedido faz com seu dinheiro."
+          ],
+          "feedback": {
+            "met": "A ação descrita envia seu dinheiro em vez de receber.",
+            "not_yet": "Leia o que o pedido faz com seu dinheiro."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Spend it now?",
+          "scene": "The sender and amount match, but funds are pending and unavailable.",
+          "options": [
+            {
+              "label": "Not until availability is confirmed"
+            },
+            {
+              "label": "Yes, matching amounts remove pending status"
+            },
+            {
+              "label": "Yes, sender identity makes it spendable"
+            }
+          ],
+          "help": [
+            "Check both identity and availability."
+          ],
+          "feedback": {
+            "met": "Matching details do not override the stated unavailable status.",
+            "not_yet": "Check both identity and availability."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Puede financiar un pago inmediato?",
+          "scene": "Una entrada verificada coincide en remitente y monto, pero dice pendiente y no disponible.",
+          "options": [
+            {
+              "label": "No hasta confirmar disponibilidad"
+            },
+            {
+              "label": "Sí, coincidir monto elimina estado pendiente"
+            },
+            {
+              "label": "Sí, identificar remitente permite gastarlo"
+            }
+          ],
+          "help": [
+            "Revisa identidad y disponibilidad."
+          ],
+          "feedback": {
+            "met": "Datos coincidentes no anulan el estado no disponible indicado.",
+            "not_yet": "Revisa identidad y disponibilidad."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Pode financiar um pagamento imediato?",
+          "scene": "Sua conta mostra a pessoa e o valor certos, mas diz pendente e bloqueado.",
+          "options": [
+            {
+              "label": "Não até confirmar que pode usar"
+            },
+            {
+              "label": "Sim, valor certo elimina a espera"
+            },
+            {
+              "label": "Sim, saber quem enviou permite gastar"
+            }
+          ],
+          "help": [
+            "Confira quem enviou e se pode usar o valor."
+          ],
+          "feedback": {
+            "met": "Dados certos não tornam livre um valor ainda bloqueado.",
+            "not_yet": "Confira quem enviou e se pode usar o valor."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Before returning money, establish what?",
+          "scene": "An alleged overpayment has no matching receipt in your records.",
+          "options": [
+            {
+              "label": "An assumption that screenshots cannot change"
+            },
+            {
+              "label": "Only the sender’s urgent claim"
+            },
+            {
+              "label": "Verified receipt and amount"
+            }
+          ],
+          "help": [
+            "Do not create an outgoing payment from an unverified receipt claim."
+          ],
+          "feedback": {
+            "met": "An alleged overpayment is not proof that extra funds arrived.",
+            "not_yet": "Do not create an outgoing payment from an unverified receipt claim."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué confirmar antes de devolver dinero?",
+          "scene": "Quien envía pide devolver un supuesto exceso; tus registros no muestran esa entrada.",
+          "options": [
+            {
+              "label": "Suponer que capturas no pueden cambiarse"
+            },
+            {
+              "label": "Solo la afirmación urgente del remitente"
+            },
+            {
+              "label": "Recepción y monto reales mediante registros verificados"
+            }
+          ],
+          "help": [
+            "No generes pago saliente por una entrada sin verificar."
+          ],
+          "feedback": {
+            "met": "Un supuesto exceso no demuestra que llegaron fondos adicionales.",
+            "not_yet": "No generes pago saliente por una entrada sin verificar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que conferir antes?",
+          "scene": "Alguém pede de volta um suposto valor extra; sua conta não mostra essa entrada.",
+          "options": [
+            {
+              "label": "Supor que capturas não podem mudar"
+            },
+            {
+              "label": "Só a pressa de quem pede"
+            },
+            {
+              "label": "Se o dinheiro chegou e o valor real"
+            }
+          ],
+          "help": [
+            "Não envie seu dinheiro por uma entrada sem prova."
+          ],
+          "feedback": {
+            "met": "Dizer que enviou a mais não prova que o valor chegou.",
+            "not_yet": "Não envie seu dinheiro por uma entrada sem prova."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Where should you check receipt?",
+          "scene": "A “payment received” email links to an unverified login.",
+          "options": [
+            {
+              "label": "Only the email subject"
+            },
+            {
+              "label": "Your independently opened verified account"
+            },
+            {
+              "label": "The unverified email login link"
+            }
+          ],
+          "help": [
+            "A message’s claim does not authenticate its link."
+          ],
+          "feedback": {
+            "met": "Use your established access route to verify the account record.",
+            "not_yet": "A message’s claim does not authenticate its link."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Dónde revisar recepción?",
+          "scene": "Un correo dice «pago recibido» y enlaza a un acceso no verificado.",
+          "options": [
+            {
+              "label": "Solo el asunto del correo"
+            },
+            {
+              "label": "Tu cuenta verificada abierta de forma independiente"
+            },
+            {
+              "label": "El enlace de acceso del correo sin verificar"
+            }
+          ],
+          "help": [
+            "Una afirmación del mensaje no autentica su enlace."
+          ],
+          "feedback": {
+            "met": "Usa tu vía de acceso establecida para verificar el registro.",
+            "not_yet": "Una afirmación del mensaje no autentica su enlace."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Onde conferir se chegou?",
+          "scene": "Um e-mail diz «pago» e traz um link de acesso que não conhece.",
+          "options": [
+            {
+              "label": "Só o assunto do e-mail"
+            },
+            {
+              "label": "Sua conta aberta pelo caminho já conhecido"
+            },
+            {
+              "label": "O link de acesso do e-mail desconhecido"
+            }
+          ],
+          "help": [
+            "O que a mensagem diz não prova que o link é seguro."
+          ],
+          "feedback": {
+            "met": "Abra sua conta pelo caminho conhecido para conferir.",
+            "not_yet": "O que a mensagem diz não prova que o link é seguro."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.payments-digital.03",
+      "copy": {
+        "en-US": {
+          "prompt": "What state is confirmed?",
+          "scene": "A buyer shows a transfer image; your verified records show no receipt.",
+          "options": [
+            {
+              "label": "The purchase is definitely paid"
+            },
+            {
+              "label": "Your account gained the shown amount"
+            },
+            {
+              "label": "Payment receipt remains unconfirmed"
+            }
+          ],
+          "help": [
+            "Base receipt status on the verified account record."
+          ],
+          "feedback": {
+            "met": "An image outside your account does not prove funds arrived.",
+            "not_yet": "Base receipt status on the verified account record."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué se confirma?",
+          "scene": "Un comprador muestra imagen de transferencia antes de recoger; tu saldo e historial verificados no muestran entrada.",
+          "options": [
+            {
+              "label": "La compra está definitivamente pagada"
+            },
+            {
+              "label": "Tu cuenta ganó el monto mostrado"
+            },
+            {
+              "label": "La recepción de pago sigue sin confirmarse"
+            }
+          ],
+          "help": [
+            "Basa la recepción en el registro de cuenta verificado."
+          ],
+          "feedback": {
+            "met": "Una imagen externa no prueba que llegaron fondos.",
+            "not_yet": "Basa la recepción en el registro de cuenta verificado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que já sabe?",
+          "scene": "Um comprador mostra imagem de envio; sua conta não mostra o dinheiro.",
+          "options": [
+            {
+              "label": "A compra já foi paga com certeza"
+            },
+            {
+              "label": "Sua conta já tem o valor da imagem"
+            },
+            {
+              "label": "Ainda não confirmou que o dinheiro chegou"
+            }
+          ],
+          "help": [
+            "Confira no registro da sua conta se o dinheiro chegou."
+          ],
+          "feedback": {
+            "met": "Uma imagem de fora não prova que o dinheiro chegou.",
+            "not_yet": "Confira no registro da sua conta se o dinheiro chegou."
+          }
+        }
+      }
+    }
+  ]
+}

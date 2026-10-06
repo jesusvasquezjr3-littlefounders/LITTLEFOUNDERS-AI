@@ -1,0 +1,843 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-cashflow-budget-part-2",
+  "lesson_id": "fe-production-cashflow-budget-07",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.cashflow-budget.07"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Allocate an irregular receipt across obligations due before the next reliable receipt.",
+  "title": {
+    "en-US": "Irregular receipts",
+    "es-MX": "Haz rendir una entrada irregular",
+    "pt-BR": "Faça uma entrada irregular durar"
+  },
+  "new_concepts": [
+    "finance.prod.cashflow-budget.07"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Make an irregular receipt last\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Haz rendir una entrada irregular\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Faça uma entrada irregular durar\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.cashflow-budget.07",
+      "observable_action": "Allocate an irregular receipt across obligations due before the next reliable receipt.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.cashflow-budget.03",
+      "prod.cashflow-budget.05",
+      "prod.income-work.06"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Cover obligations before the next reliable receipt, not just this week.",
+    "misconception": "Treating a large irregular receipt as spare money without checking how long it must cover required expenses.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.cashflow-budget.07",
+        "context_id": "fe-production-cashflow-budget-07-example-01",
+        "supports_from": [],
+        "reasoning": "An irregular payment arrives today. List obligations due before the next reliable receipt before allocating anything else."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.cashflow-budget.07",
+        "context_id": "fe-production-cashflow-budget-07-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The money must last across the stated gap between receipts."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.cashflow-budget.07",
+        "context_id": "fe-production-cashflow-budget-07-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "180 − 70 − 45 = 65 after both reserves."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.cashflow-budget.07",
+        "context_id": "fe-production-cashflow-budget-07-practice-01",
+        "supports_from": [],
+        "reasoning": "An unconfirmed receipt cannot support a definite spending commitment."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.cashflow-budget.07",
+        "context_id": "fe-production-cashflow-budget-07-practice-02",
+        "supports_from": [],
+        "reasoning": "210 − 90 − 60 − 35 = 25 remains."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.cashflow-budget.07",
+        "context_id": "fe-production-cashflow-budget-07-practice-03",
+        "supports_from": [],
+        "reasoning": "A longer gap can require the same money to cover more costs."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.cashflow-budget.07",
+        "context_id": "fe-production-cashflow-budget-07-transfer-01",
+        "supports_from": [],
+        "reasoning": "A seasonal receipt must be planned over the stated income gap."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.cashflow-budget.07",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Cover obligations before the next reliable receipt, not just this week."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Cubre obligaciones hasta la próxima entrada fiable, no solo esta semana."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Cubra obrigações até a próxima entrada confiável, não só esta semana."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Check the coverage window",
+          "line": "An irregular payment arrives today. List obligations due before the next reliable receipt before allocating anything else."
+        },
+        "es-MX": {
+          "prompt": "Revisa la ventana que debe cubrir",
+          "line": "Una entrada irregular llega hoy. Lista obligaciones hasta la próxima entrada fiable antes de asignar a otros usos."
+        },
+        "pt-BR": {
+          "prompt": "Confira a janela que deve cobrir",
+          "line": "Uma entrada irregular chega hoje. Liste obrigações até a próxima entrada confiável antes de destinar a outros usos."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Which window should be planned?",
+          "scene": "Today’s receipt must cover required costs until the next confirmed receipt in several weeks.",
+          "options": [
+            {
+              "label": "Until that confirmed receipt"
+            },
+            {
+              "label": "The receipt day alone"
+            },
+            {
+              "label": "Only the largest purchase"
+            }
+          ],
+          "help": [
+            "Use the next reliable receipt to define coverage."
+          ],
+          "feedback": {
+            "met": "The money must last across the stated gap between receipts.",
+            "not_yet": "Use the next reliable receipt to define coverage."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué ventana debes planear?",
+          "scene": "La entrada de hoy debe cubrir lo necesario hasta la próxima entrada confirmada dentro de varias semanas.",
+          "options": [
+            {
+              "label": "Hasta esa entrada confirmada"
+            },
+            {
+              "label": "Únicamente el día de recepción"
+            },
+            {
+              "label": "Solo la compra mayor"
+            }
+          ],
+          "help": [
+            "Usa la próxima entrada fiable para definir cobertura."
+          ],
+          "feedback": {
+            "met": "El dinero debe durar el intervalo indicado entre entradas.",
+            "not_yet": "Usa la próxima entrada fiable para definir cobertura."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual janela deve planejar?",
+          "scene": "A entrada de hoje deve cobrir o necessário até a próxima entrada confirmada daqui a várias semanas.",
+          "options": [
+            {
+              "label": "Até essa entrada confirmada"
+            },
+            {
+              "label": "Apenas o dia do recebimento"
+            },
+            {
+              "label": "Só a maior compra"
+            }
+          ],
+          "help": [
+            "Use a próxima entrada confiável para definir cobertura."
+          ],
+          "feedback": {
+            "met": "O dinheiro deve durar o intervalo informado entre entradas.",
+            "not_yet": "Use a próxima entrada confiável para definir cobertura."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Remainder after both reserves?",
+          "scene": "Receipt: 180; required bills before the next receipt: 70 and 45.",
+          "options": [
+            {
+              "label": "65"
+            },
+            {
+              "label": "110"
+            },
+            {
+              "label": "135"
+            }
+          ],
+          "help": [
+            "Reserve every obligation in the coverage window."
+          ],
+          "feedback": {
+            "met": "180 − 70 − 45 = 65 after both reserves.",
+            "not_yet": "Reserve every obligation in the coverage window."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Resto tras ambas reservas?",
+          "scene": "Entrada: 180; cuentas necesarias antes de recibir de nuevo: 70 y 45.",
+          "options": [
+            {
+              "label": "65"
+            },
+            {
+              "label": "110"
+            },
+            {
+              "label": "135"
+            }
+          ],
+          "help": [
+            "Reserva cada obligación de esa ventana."
+          ],
+          "feedback": {
+            "met": "180 − 70 − 45 = 65 tras ambas reservas.",
+            "not_yet": "Reserva cada obligación de esa ventana."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Restante após ambas as reservas?",
+          "scene": "Entrada: 180; contas necessárias antes de receber novamente: 70 e 45.",
+          "options": [
+            {
+              "label": "65"
+            },
+            {
+              "label": "110"
+            },
+            {
+              "label": "135"
+            }
+          ],
+          "help": [
+            "Reserve cada obrigação dessa janela."
+          ],
+          "feedback": {
+            "met": "180 − 70 − 45 = 65 após ambas as reservas.",
+            "not_yet": "Reserve cada obrigação dessa janela."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          180,
+          70,
+          45
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Which date anchors the plan?",
+          "scene": "A possible customer payment is unconfirmed; a later payment has a confirmed date.",
+          "options": [
+            {
+              "label": "The hoped-for early payment"
+            },
+            {
+              "label": "Whichever date permits more spending"
+            },
+            {
+              "label": "The confirmed payment date"
+            }
+          ],
+          "help": [
+            "Keep hoped-for receipts separate from the reliable plan."
+          ],
+          "feedback": {
+            "met": "An unconfirmed receipt cannot support a definite spending commitment.",
+            "not_yet": "Keep hoped-for receipts separate from the reliable plan."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué fecha es la referencia fiable?",
+          "scene": "Un pago posible de cliente no está confirmado; otro posterior tiene fecha confirmada.",
+          "options": [
+            {
+              "label": "El pago temprano deseado"
+            },
+            {
+              "label": "La fecha que permita gastar más"
+            },
+            {
+              "label": "La fecha del pago confirmado"
+            }
+          ],
+          "help": [
+            "Separa entradas deseadas del plan fiable."
+          ],
+          "feedback": {
+            "met": "Una entrada sin confirmar no respalda un compromiso de gasto definitivo.",
+            "not_yet": "Separa entradas deseadas del plan fiable."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual data é a referência confiável?",
+          "scene": "Um possível pagamento de cliente não está confirmado; outro posterior tem data confirmada.",
+          "options": [
+            {
+              "label": "O pagamento antecipado desejado"
+            },
+            {
+              "label": "A data que permita gastar mais"
+            },
+            {
+              "label": "A data do pagamento confirmado"
+            }
+          ],
+          "help": [
+            "Separe entradas desejadas do plano confiável."
+          ],
+          "feedback": {
+            "met": "Uma entrada não confirmada não sustenta um compromisso de gasto definitivo.",
+            "not_yet": "Separe entradas desejadas do plano confiável."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Unallocated remainder?",
+          "scene": "Available: 210; essential costs across the coverage window: 90, 60 and 35.",
+          "options": [
+            {
+              "label": "25"
+            },
+            {
+              "label": "120"
+            },
+            {
+              "label": "60"
+            }
+          ],
+          "help": [
+            "Include every stated cost before allocating the remainder."
+          ],
+          "feedback": {
+            "met": "210 − 90 − 60 − 35 = 25 remains.",
+            "not_yet": "Include every stated cost before allocating the remainder."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Resto sin asignar?",
+          "scene": "Disponible: 210; costos esenciales de la ventana: 90, 60 y 35.",
+          "options": [
+            {
+              "label": "25"
+            },
+            {
+              "label": "120"
+            },
+            {
+              "label": "60"
+            }
+          ],
+          "help": [
+            "Incluye cada costo indicado antes de asignar el resto."
+          ],
+          "feedback": {
+            "met": "210 − 90 − 60 − 35 = 25 restantes.",
+            "not_yet": "Incluye cada costo indicado antes de asignar el resto."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Restante sem destinar?",
+          "scene": "Disponível: 210; custos essenciais da janela: 90, 60 e 35.",
+          "options": [
+            {
+              "label": "25"
+            },
+            {
+              "label": "120"
+            },
+            {
+              "label": "60"
+            }
+          ],
+          "help": [
+            "Inclua cada custo informado antes de destinar o restante."
+          ],
+          "feedback": {
+            "met": "210 − 90 − 60 − 35 = 25 restantes.",
+            "not_yet": "Inclua cada custo informado antes de destinar o restante."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          210,
+          90,
+          60,
+          35
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "op": "subtract",
+                  "args": [
+                    {
+                      "input": 0
+                    },
+                    {
+                      "input": 1
+                    }
+                  ]
+                },
+                {
+                  "input": 2
+                }
+              ]
+            },
+            {
+              "input": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.07",
+      "copy": {
+        "en-US": {
+          "prompt": "What needs revision?",
+          "scene": "A delayed reliable receipt adds another necessary bill to the coverage window.",
+          "options": [
+            {
+              "label": "Nothing because today’s balance is unchanged"
+            },
+            {
+              "label": "Only the original bills"
+            },
+            {
+              "label": "The obligations covered by current money"
+            }
+          ],
+          "help": [
+            "Recheck required payments before the revised receipt date."
+          ],
+          "feedback": {
+            "met": "A longer gap can require the same money to cover more costs.",
+            "not_yet": "Recheck required payments before the revised receipt date."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe revisarse?",
+          "scene": "Se retrasa la próxima entrada fiable y otra cuenta necesaria queda dentro de la ventana.",
+          "options": [
+            {
+              "label": "Nada porque el saldo de hoy no cambió"
+            },
+            {
+              "label": "Solo las cuentas originales"
+            },
+            {
+              "label": "Obligaciones que cubre el dinero actual"
+            }
+          ],
+          "help": [
+            "Revisa pagos necesarios antes de la nueva fecha de entrada."
+          ],
+          "feedback": {
+            "met": "Un intervalo mayor puede exigir cubrir más costos con lo mismo.",
+            "not_yet": "Revisa pagos necesarios antes de la nueva fecha de entrada."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que deve ser revisto?",
+          "scene": "A próxima entrada confiável atrasa e outra conta necessária fica dentro da janela.",
+          "options": [
+            {
+              "label": "Nada porque o saldo de hoje não mudou"
+            },
+            {
+              "label": "Só as contas originais"
+            },
+            {
+              "label": "Obrigações cobertas pelo dinheiro atual"
+            }
+          ],
+          "help": [
+            "Confira pagamentos necessários antes da nova data de entrada."
+          ],
+          "feedback": {
+            "met": "Um intervalo maior pode exigir cobrir mais custos com o mesmo dinheiro.",
+            "not_yet": "Confira pagamentos necessários antes da nova data de entrada."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.cashflow-budget.07",
+      "copy": {
+        "en-US": {
+          "prompt": "What belongs in its plan?",
+          "scene": "Harvest income arrives now; no further reliable receipt comes until next season.",
+          "options": [
+            {
+              "label": "Only harvest-week purchases"
+            },
+            {
+              "label": "Needs throughout the intervening period"
+            },
+            {
+              "label": "Every hoped-for future sale as received"
+            }
+          ],
+          "help": [
+            "Match the coverage window to reliable receipts."
+          ],
+          "feedback": {
+            "met": "A seasonal receipt must be planned over the stated income gap.",
+            "not_yet": "Match the coverage window to reliable receipts."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué corresponde a su plan de asignación?",
+          "scene": "Una entrada llega tras la cosecha; no hay otra fiable hasta la próxima temporada.",
+          "options": [
+            {
+              "label": "Solo compras de la semana de cosecha"
+            },
+            {
+              "label": "Necesidades de todo el intervalo"
+            },
+            {
+              "label": "Cada venta futura deseada como recibida"
+            }
+          ],
+          "help": [
+            "Ajusta la ventana a las entradas fiables."
+          ],
+          "feedback": {
+            "met": "Una entrada temporal debe planearse durante el intervalo sin entradas indicado.",
+            "not_yet": "Ajusta la ventana a las entradas fiables."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que cabe no seu plano de destinação?",
+          "scene": "Uma entrada chega após a colheita; não há outra confiável até a próxima temporada.",
+          "options": [
+            {
+              "label": "Só compras da semana da colheita"
+            },
+            {
+              "label": "Necessidades de todo o intervalo"
+            },
+            {
+              "label": "Cada venda futura desejada como recebida"
+            }
+          ],
+          "help": [
+            "Ajuste a janela às entradas confiáveis."
+          ],
+          "feedback": {
+            "met": "Uma entrada sazonal deve ser planejada durante o intervalo sem entradas informado.",
+            "not_yet": "Ajuste a janela às entradas confiáveis."
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,746 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-goals-tradeoffs-part-2",
+  "lesson_id": "fe-production-goals-tradeoffs-review-1",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.cash.commitment",
+    "finance.prod.goals-tradeoffs.01",
+    "finance.prod.goals-tradeoffs.02",
+    "finance.prod.goals-tradeoffs.03",
+    "finance.prod.goals-tradeoffs.04"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Apply the previously taught financial relationships to the visible constraints of a new situation.",
+  "title": {
+    "en-US": "Repair plans",
+    "es-MX": "Planea una reparación del hogar",
+    "pt-BR": "Planeje um conserto da casa"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Plan a home repair\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Planea una reparación del hogar\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Planeje um conserto da casa\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "consolidate",
+    "objective": {
+      "skill_id": "cash.commitment",
+      "observable_action": "Apply the previously taught financial relationships to the visible constraints of a new situation.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "cash.received"
+    ],
+    "retrieval_skills": [
+      "prod.goals-tradeoffs.01",
+      "prod.goals-tradeoffs.02",
+      "prod.goals-tradeoffs.03",
+      "prod.goals-tradeoffs.04",
+      "cash.commitment"
+    ],
+    "relevance": "Use clear goals and consequences to protect a household plan.",
+    "misconception": "Reuse an earlier answer without checking the current quantities, units and conditions.",
+    "numeracy_support": "All required quantities remain on the current board.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.goals-tradeoffs.01",
+        "context_id": "fe-production-goals-tradeoffs-review-1-practice-01",
+        "supports_from": [],
+        "reasoning": "Purpose, amount and deadline make progress checkable."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.goals-tradeoffs.02",
+        "context_id": "fe-production-goals-tradeoffs-review-1-practice-02",
+        "supports_from": [],
+        "reasoning": "The stated damage risk explains the need."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.goals-tradeoffs.03",
+        "context_id": "fe-production-goals-tradeoffs-review-1-practice-03",
+        "supports_from": [],
+        "reasoning": "The competing feasible use is the opportunity forgone."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.goals-tradeoffs.04",
+        "context_id": "fe-production-goals-tradeoffs-review-1-practice-04",
+        "supports_from": [],
+        "reasoning": "The earlier harmful consequence makes repair the priority."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "cash.commitment",
+        "context_id": "fe-production-goals-tradeoffs-review-1-practice-05",
+        "supports_from": [],
+        "reasoning": "A pending obligation still claims its reserved money."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "cash.commitment",
+        "context_id": "fe-production-goals-tradeoffs-review-1-transfer-01",
+        "supports_from": [],
+        "reasoning": "Only the unpaid stated obligation remains to be funded."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "cash.commitment",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Use clear goals and consequences to protect a household plan."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Usa metas claras y consecuencias para proteger un plan del hogar."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Use metas claras e consequências para proteger um plano da casa."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Which goal is checkable?",
+          "scene": "A leaking tap needs replacement.",
+          "options": [
+            {
+              "label": "Spend less somehow"
+            },
+            {
+              "label": "Improve the home someday"
+            },
+            {
+              "label": "Have 75 dollars for repair by Friday"
+            }
+          ],
+          "help": [
+            "Look for the three concrete details."
+          ],
+          "feedback": {
+            "met": "Purpose, amount and deadline make progress checkable.",
+            "not_yet": "Look for the three concrete details."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué meta es verificable?",
+          "scene": "Una llave con fuga necesita reemplazo.",
+          "options": [
+            {
+              "label": "Gastar menos de algún modo"
+            },
+            {
+              "label": "Mejorar el hogar algún día"
+            },
+            {
+              "label": "Tener 75 pesos para reparar el viernes"
+            }
+          ],
+          "help": [
+            "Busca los tres datos concretos."
+          ],
+          "feedback": {
+            "met": "Propósito, monto y fecha permiten comprobar el avance.",
+            "not_yet": "Busca los tres datos concretos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual meta é verificável?",
+          "scene": "Uma torneira vazando precisa ser substituída.",
+          "options": [
+            {
+              "label": "Gastar menos de algum modo"
+            },
+            {
+              "label": "Melhorar a casa algum dia"
+            },
+            {
+              "label": "Ter 75 reais para consertar até sexta"
+            }
+          ],
+          "help": [
+            "Procure os três dados concretos."
+          ],
+          "feedback": {
+            "met": "Propósito, valor e prazo permitem conferir o progresso.",
+            "not_yet": "Procure os três dados concretos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Which consequence makes repair necessary?",
+          "scene": "The leak risks water damage; changing the tap’s color has no practical effect.",
+          "options": [
+            {
+              "label": "Having the newest design"
+            },
+            {
+              "label": "Preventing water damage"
+            },
+            {
+              "label": "Matching a new color"
+            }
+          ],
+          "help": [
+            "Use consequences rather than appearance."
+          ],
+          "feedback": {
+            "met": "The stated damage risk explains the need.",
+            "not_yet": "Use consequences rather than appearance."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué consecuencia hace necesaria la reparación?",
+          "scene": "La fuga arriesga daños por agua; cambiar el color no tiene efecto práctico.",
+          "options": [
+            {
+              "label": "Tener el diseño más nuevo"
+            },
+            {
+              "label": "Evitar daños por agua"
+            },
+            {
+              "label": "Combinar un color nuevo"
+            }
+          ],
+          "help": [
+            "Usa consecuencias en vez de apariencia."
+          ],
+          "feedback": {
+            "met": "El riesgo de daño indicado explica la necesidad.",
+            "not_yet": "Usa consecuencias en vez de apariencia."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual consequência torna o conserto necessário?",
+          "scene": "O vazamento arrisca danos por água; mudar a cor não tem efeito prático.",
+          "options": [
+            {
+              "label": "Ter o desenho mais novo"
+            },
+            {
+              "label": "Evitar danos por água"
+            },
+            {
+              "label": "Combinar uma cor nova"
+            }
+          ],
+          "help": [
+            "Use consequências em vez de aparência."
+          ],
+          "feedback": {
+            "met": "O risco de dano informado explica a necessidade.",
+            "not_yet": "Use consequências em vez de aparência."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.03",
+      "copy": {
+        "en-US": {
+          "prompt": "What is forgone by choosing repair?",
+          "scene": "Available money covers repair or a planned optional outing, not both.",
+          "options": [
+            {
+              "label": "The repair itself"
+            },
+            {
+              "label": "Every future outing"
+            },
+            {
+              "label": "The planned outing"
+            }
+          ],
+          "help": [
+            "Keep the actual constraint’s scope."
+          ],
+          "feedback": {
+            "met": "The competing feasible use is the opportunity forgone.",
+            "not_yet": "Keep the actual constraint’s scope."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿A qué renuncias al elegir reparar?",
+          "scene": "El dinero cubre reparación o un paseo opcional planeado, no ambos.",
+          "options": [
+            {
+              "label": "La reparación misma"
+            },
+            {
+              "label": "Todo paseo futuro"
+            },
+            {
+              "label": "El paseo planeado"
+            }
+          ],
+          "help": [
+            "Conserva el alcance de la condición real."
+          ],
+          "feedback": {
+            "met": "El uso viable competidor es la oportunidad descartada.",
+            "not_yet": "Conserva el alcance de la condición real."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Do que abre mão ao escolher consertar?",
+          "scene": "O dinheiro cobre conserto ou um passeio opcional planejado, não ambos.",
+          "options": [
+            {
+              "label": "O próprio conserto"
+            },
+            {
+              "label": "Todo passeio futuro"
+            },
+            {
+              "label": "O passeio planejado"
+            }
+          ],
+          "help": [
+            "Mantenha o alcance da condição real."
+          ],
+          "feedback": {
+            "met": "O uso viável concorrente é a oportunidade descartada.",
+            "not_yet": "Mantenha o alcance da condição real."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Which order follows the stated constraints?",
+          "scene": "Repair prevents tomorrow’s damage; optional repainting can wait until next month.",
+          "options": [
+            {
+              "label": "Repair before repainting"
+            },
+            {
+              "label": "Repaint before checking the leak"
+            },
+            {
+              "label": "Whichever advertisement appears first"
+            }
+          ],
+          "help": [
+            "Compare deadlines with consequences."
+          ],
+          "feedback": {
+            "met": "The earlier harmful consequence makes repair the priority.",
+            "not_yet": "Compare deadlines with consequences."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué orden sigue las condiciones indicadas?",
+          "scene": "Reparar evita daños mañana; pintar opcionalmente puede esperar al próximo mes.",
+          "options": [
+            {
+              "label": "Reparar antes de pintar"
+            },
+            {
+              "label": "Pintar antes de revisar la fuga"
+            },
+            {
+              "label": "Lo que se anuncie primero"
+            }
+          ],
+          "help": [
+            "Compara fechas con consecuencias."
+          ],
+          "feedback": {
+            "met": "La consecuencia dañina cercana da prioridad a reparar.",
+            "not_yet": "Compara fechas con consecuencias."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual ordem segue as condições informadas?",
+          "scene": "Consertar evita danos amanhã; pintura opcional pode esperar até o próximo mês.",
+          "options": [
+            {
+              "label": "Consertar antes de pintar"
+            },
+            {
+              "label": "Pintar antes de conferir o vazamento"
+            },
+            {
+              "label": "O que for anunciado primeiro"
+            }
+          ],
+          "help": [
+            "Compare prazos com consequências."
+          ],
+          "feedback": {
+            "met": "A consequência prejudicial próxima dá prioridade ao conserto.",
+            "not_yet": "Compare prazos com consequências."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.commitment",
+      "copy": {
+        "en-US": {
+          "prompt": "Is reserved money free for decorations?",
+          "scene": "The repair bill is unpaid; money has been reserved for it.",
+          "options": [
+            {
+              "label": "The obligation remains"
+            },
+            {
+              "label": "Because it is still held"
+            },
+            {
+              "label": "Labeling makes more money"
+            }
+          ],
+          "help": [
+            "Holding money is different from having it uncommitted."
+          ],
+          "feedback": {
+            "met": "A pending obligation still claims its reserved money.",
+            "not_yet": "Holding money is different from having it uncommitted."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Ese dinero está libre para decorar?",
+          "scene": "La cuenta de reparación está pendiente; hay dinero apartado.",
+          "options": [
+            {
+              "label": "No, la obligación sigue"
+            },
+            {
+              "label": "Sí, porque todavía lo tienes"
+            },
+            {
+              "label": "Sí, etiquetar crea dinero"
+            }
+          ],
+          "help": [
+            "Tener dinero no es lo mismo que tenerlo libre."
+          ],
+          "feedback": {
+            "met": "Una obligación pendiente sigue requiriendo su reserva.",
+            "not_yet": "Tener dinero no es lo mismo que tenerlo libre."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Esse dinheiro está livre para decorar?",
+          "scene": "A conta do conserto está pendente; há dinheiro reservado.",
+          "options": [
+            {
+              "label": "Não, a obrigação continua"
+            },
+            {
+              "label": "Sim, porque ainda está guardado"
+            },
+            {
+              "label": "Sim, etiquetar cria dinheiro"
+            }
+          ],
+          "help": [
+            "Ter dinheiro não é igual a tê-lo livre."
+          ],
+          "feedback": {
+            "met": "Uma obrigação pendente ainda exige sua reserva.",
+            "not_yet": "Ter dinheiro não é igual a tê-lo livre."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.cash.commitment",
+      "copy": {
+        "en-US": {
+          "prompt": "Which requires protected money?",
+          "scene": "A shared hall’s necessary cleaning fee is unpaid; the booking deposit is already paid.",
+          "options": [
+            {
+              "label": "The paid deposit again"
+            },
+            {
+              "label": "The unpaid cleaning fee"
+            },
+            {
+              "label": "Neither, the hall is booked"
+            }
+          ],
+          "help": [
+            "Separate paid costs from remaining commitments."
+          ],
+          "feedback": {
+            "met": "Only the unpaid stated obligation remains to be funded.",
+            "not_yet": "Separate paid costs from remaining commitments."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué sigue necesitando dinero protegido?",
+          "scene": "La limpieza necesaria de un salón está pendiente; el depósito ya está pagado.",
+          "options": [
+            {
+              "label": "Otra vez el depósito pagado"
+            },
+            {
+              "label": "El cargo de limpieza pendiente"
+            },
+            {
+              "label": "Ninguno, ya está reservado"
+            }
+          ],
+          "help": [
+            "Separa costos pagados y compromisos restantes."
+          ],
+          "feedback": {
+            "met": "Solo la obligación indicada pendiente sigue necesitando fondos.",
+            "not_yet": "Separa costos pagados y compromisos restantes."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que ainda precisa de dinheiro protegido?",
+          "scene": "A limpeza necessária de um salão está pendente; o sinal já está pago.",
+          "options": [
+            {
+              "label": "O sinal pago novamente"
+            },
+            {
+              "label": "A tarifa de limpeza pendente"
+            },
+            {
+              "label": "Nenhum, o salão está reservado"
+            }
+          ],
+          "help": [
+            "Separe custos pagos e compromissos restantes."
+          ],
+          "feedback": {
+            "met": "Só a obrigação informada pendente ainda precisa de recursos.",
+            "not_yet": "Separe custos pagos e compromissos restantes."
+          }
+        }
+      }
+    }
+  ]
+}

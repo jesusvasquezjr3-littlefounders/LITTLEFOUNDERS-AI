@@ -1,0 +1,918 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-purchase-decisions-part-1",
+  "lesson_id": "fe-production-purchase-decisions-01",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.purchase-decisions.01"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Compare unit prices after converting quantities to the same unit.",
+  "title": {
+    "en-US": "Unit Prices",
+    "es-MX": "Compara la misma cantidad",
+    "pt-BR": "Compare a mesma quantidade"
+  },
+  "new_concepts": [
+    "finance.prod.purchase-decisions.01"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Unit Prices\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Compara la misma cantidad\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Compare a mesma quantidade\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.purchase-decisions.01",
+      "observable_action": "Compare unit prices after converting quantities to the same unit.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.financial-math.06",
+      "prod.financial-math.11"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Package prices can hide the cost of each unit; align the quantities before comparing fictional dollars.",
+    "misconception": "A lower package price or a larger package automatically has a lower price per unit.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.purchase-decisions.01",
+        "context_id": "purchase-decisions-01-example-01",
+        "supports_from": [],
+        "reasoning": "Convert quantities to the same unit, then divide price by quantity. A cheaper package can cost more per unit."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.purchase-decisions.01",
+        "context_id": "purchase-decisions-01-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "B costs less per kilogram despite its higher package price."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.purchase-decisions.01",
+        "context_id": "purchase-decisions-01-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Different units must be converted before comparing unit prices."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.purchase-decisions.01",
+        "context_id": "purchase-decisions-01-practice-01",
+        "supports_from": [],
+        "reasoning": "Scale the price to the common kilogram quantity."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.purchase-decisions.01",
+        "context_id": "purchase-decisions-01-practice-02",
+        "supports_from": [],
+        "reasoning": "B has the lower price per kilogram."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.purchase-decisions.01",
+        "context_id": "purchase-decisions-01-practice-03",
+        "supports_from": [],
+        "reasoning": "Unit price is useful but unused quantity can waste money."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.purchase-decisions.01",
+        "context_id": "purchase-decisions-01-transfer-01",
+        "supports_from": [],
+        "reasoning": "Converting the volume makes the unit price comparable."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.purchase-decisions.01",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Package prices can hide the cost of each unit; align the quantities before comparing fictional dollars."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Precios de paquetes pueden ocultar costo por unidad; iguala cantidades antes de comparar pesos ficticios."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Preços de pacotes podem esconder custo por unidade; iguale quantidades antes de comparar reais fictícios."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Same unit, then compare",
+          "line": "Convert quantities to the same unit, then divide price by quantity. A cheaper package can cost more per unit."
+        },
+        "es-MX": {
+          "prompt": "Misma unidad, luego compara",
+          "line": "Convierte cantidades a misma unidad y divide precio entre cantidad. Un paquete barato puede costar más por unidad."
+        },
+        "pt-BR": {
+          "prompt": "Mesma unidade, depois compare",
+          "line": "Converta quantidades à mesma unidade e divida preço pela quantidade. Um pacote barato pode custar mais por unidade."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.01",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "step-1"
+          },
+          {
+            "id": "step-2"
+          },
+          {
+            "id": "step-3"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "step-2",
+          "step-3"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "step-2": "20",
+          "step-3": "18"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A: 500 grams for 10; B: 1 kilogram for 18. A kilogram is 1000 grams; compare price per kilogram.",
+          "feedback": {
+            "met": "B costs less per kilogram despite its higher package price.",
+            "not_yet": "Convert grams to kilograms before dividing each price."
+          },
+          "help": [
+            "Convert grams to kilograms before dividing each price."
+          ],
+          "steps": [
+            {
+              "expression": "500 / 1000",
+              "result": "0.5",
+              "spokenText": "A quantity in kilograms"
+            },
+            {
+              "expression": "10 / 0.5",
+              "result": "20",
+              "spokenText": "A price per kilogram"
+            },
+            {
+              "expression": "18 / 1",
+              "result": "18",
+              "spokenText": "B price per kilogram"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "A: 500 gramos por 10; B: 1 kilogramo por 18. Un kilogramo son 1000 gramos; compara precio por kilogramo.",
+          "feedback": {
+            "met": "B cuesta menos por kilogramo pese a paquete más caro.",
+            "not_yet": "Convierte gramos a kilogramos antes de dividir cada precio."
+          },
+          "help": [
+            "Convierte gramos a kilogramos antes de dividir cada precio."
+          ],
+          "steps": [
+            {
+              "expression": "500 / 1000",
+              "result": "0.5",
+              "spokenText": "Cantidad A en kilogramos"
+            },
+            {
+              "expression": "10 / 0.5",
+              "result": "20",
+              "spokenText": "Precio A por kilogramo"
+            },
+            {
+              "expression": "18 / 1",
+              "result": "18",
+              "spokenText": "Precio B por kilogramo"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "A: 500 gramas por 10; B: 1 quilograma por 18. Um quilograma tem 1000 gramas; compare preço por quilograma.",
+          "feedback": {
+            "met": "B custa menos por quilograma apesar do pacote mais caro.",
+            "not_yet": "Converta gramas a quilogramas antes de dividir cada preço."
+          },
+          "help": [
+            "Converta gramas a quilogramas antes de dividir cada preço."
+          ],
+          "steps": [
+            {
+              "expression": "500 / 1000",
+              "result": "0,5",
+              "spokenText": "Quantidade A em quilogramas"
+            },
+            {
+              "expression": "10 / 0,5",
+              "result": "20",
+              "spokenText": "Preço A por quilograma"
+            },
+            {
+              "expression": "18 / 1",
+              "result": "18",
+              "spokenText": "Preço B por quilograma"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What must be aligned first?",
+          "scene": "One package lists grams; the other lists kilograms.",
+          "options": [
+            {
+              "label": "Only advertised prices"
+            },
+            {
+              "label": "Quantity units"
+            },
+            {
+              "label": "Only package counts"
+            }
+          ],
+          "help": [
+            "Choose one common quantity unit."
+          ],
+          "feedback": {
+            "met": "Different units must be converted before comparing unit prices.",
+            "not_yet": "Choose one common quantity unit."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué igualar primero?",
+          "scene": "Un paquete indica gramos; otro kilogramos.",
+          "options": [
+            {
+              "label": "Solo precios anunciados"
+            },
+            {
+              "label": "Unidades de cantidad"
+            },
+            {
+              "label": "Solo cantidades de paquetes"
+            }
+          ],
+          "help": [
+            "Elige una misma unidad de cantidad."
+          ],
+          "feedback": {
+            "met": "Unidades distintas deben convertirse antes de comparar precios unitarios.",
+            "not_yet": "Elige una misma unidad de cantidad."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que igualar primeiro?",
+          "scene": "Um pacote indica gramas; outro quilogramas.",
+          "options": [
+            {
+              "label": "Só preços anunciados"
+            },
+            {
+              "label": "Unidades de quantidade"
+            },
+            {
+              "label": "Só quantidades de pacotes"
+            }
+          ],
+          "help": [
+            "Escolha uma mesma unidade de quantidade."
+          ],
+          "feedback": {
+            "met": "Unidades distintas devem ser convertidas antes de comparar preços unitários.",
+            "not_yet": "Escolha uma mesma unidade de quantidade."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What is the price per kilogram?",
+          "scene": "Package: 250 grams; Grams per kilogram: 1000; Price: 6.",
+          "options": [
+            {
+              "label": "24"
+            },
+            {
+              "label": "6"
+            },
+            {
+              "label": "12"
+            }
+          ],
+          "help": [
+            "Multiply price by grams per kilogram, then divide package grams."
+          ],
+          "feedback": {
+            "met": "Scale the price to the common kilogram quantity.",
+            "not_yet": "Multiply price by grams per kilogram, then divide package grams."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es precio por kilogramo?",
+          "scene": "Paquete: 250 gramos; Gramos por kilogramo: 1000; Precio: 6.",
+          "options": [
+            {
+              "label": "24"
+            },
+            {
+              "label": "6"
+            },
+            {
+              "label": "12"
+            }
+          ],
+          "help": [
+            "Multiplica precio por gramos del kilogramo y divide gramos del paquete."
+          ],
+          "feedback": {
+            "met": "Lleva el precio a la cantidad común de kilogramo.",
+            "not_yet": "Multiplica precio por gramos del kilogramo y divide gramos del paquete."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é preço por quilograma?",
+          "scene": "Pacote: 250 gramas; Gramas por quilograma: 1000; Preço: 6.",
+          "options": [
+            {
+              "label": "24"
+            },
+            {
+              "label": "6"
+            },
+            {
+              "label": "12"
+            }
+          ],
+          "help": [
+            "Multiplique preço por gramas do quilograma e divida gramas do pacote."
+          ],
+          "feedback": {
+            "met": "Leve o preço à quantidade comum de quilograma.",
+            "not_yet": "Multiplique preço por gramas do quilograma e divida gramas do pacote."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          250,
+          1000,
+          6
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "input": 2
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.01",
+      "visual": {
+        "type": "bar"
+      },
+      "payload": {
+        "data": {
+          "unit": "local",
+          "categories": [
+            {
+              "id": "earlier"
+            },
+            {
+              "id": "later"
+            }
+          ],
+          "series": [
+            {
+              "id": "projected-balance",
+              "values": [
+                24,
+                20
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "later"
+            },
+            {
+              "id": "earlier"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "later"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Same product; A 0.5 kilograms for 12, B 2 kilograms for 40. Chart shows price per kilogram.",
+          "title": "Unit price",
+          "data": {
+            "categories": [
+              {
+                "label": "A"
+              },
+              {
+                "label": "B"
+              }
+            ],
+            "series": [
+              {
+                "label": "Unit price"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Which is lower?",
+            "options": [
+              {
+                "label": "B"
+              },
+              {
+                "label": "A"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "B has the lower price per kilogram.",
+            "not_yet": "Compare common-unit costs, not the package prices."
+          },
+          "help": [
+            "Compare common-unit costs, not the package prices."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Mismo producto; A 0.5 kilogramos por 12, B 2 kilogramos por 40. Gráfica muestra precio por kilogramo.",
+          "title": "Precio unitario",
+          "data": {
+            "categories": [
+              {
+                "label": "A"
+              },
+              {
+                "label": "B"
+              }
+            ],
+            "series": [
+              {
+                "label": "Precio unitario"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Cuál es menor?",
+            "options": [
+              {
+                "label": "B"
+              },
+              {
+                "label": "A"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "B tiene menor precio por kilogramo.",
+            "not_yet": "Compara costos de unidad común, no precios de paquete."
+          },
+          "help": [
+            "Compara costos de unidad común, no precios de paquete."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Mesmo produto; A 0,5 quilogramas por 12, B 2 quilogramas por 40. Gráfico mostra preço por quilograma.",
+          "title": "Preço unitário",
+          "data": {
+            "categories": [
+              {
+                "label": "A"
+              },
+              {
+                "label": "B"
+              }
+            ],
+            "series": [
+              {
+                "label": "Preço unitário"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Qual é menor?",
+            "options": [
+              {
+                "label": "B"
+              },
+              {
+                "label": "A"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "B tem menor preço por quilograma.",
+            "not_yet": "Compare custos da mesma unidade, não preços de pacote."
+          },
+          "help": [
+            "Compare custos da mesma unidade, não preços de pacote."
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Does unit cost suffice?",
+          "scene": "The larger package costs less per unit, but much would spoil unused.",
+          "options": [
+            {
+              "label": "Yes, waste has no cost"
+            },
+            {
+              "label": "Yes, buy any larger package"
+            },
+            {
+              "label": "No, usable quantity also matters"
+            }
+          ],
+          "help": [
+            "Consider how much the household can actually use."
+          ],
+          "feedback": {
+            "met": "Unit price is useful but unused quantity can waste money.",
+            "not_yet": "Consider how much the household can actually use."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Menor precio unitario resuelve compra?",
+          "scene": "Paquete mayor cuesta menos por unidad, pero mucho se echaría a perder.",
+          "options": [
+            {
+              "label": "Sí, desperdicio no cuesta"
+            },
+            {
+              "label": "Sí, comprar cualquier paquete mayor"
+            },
+            {
+              "label": "No, cantidad utilizable también importa"
+            }
+          ],
+          "help": [
+            "Considera cuánto puede usar realmente el hogar."
+          ],
+          "feedback": {
+            "met": "Precio unitario ayuda, pero cantidad sin usar puede desperdiciar dinero.",
+            "not_yet": "Considera cuánto puede usar realmente el hogar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Menor preço unitário resolve a compra?",
+          "scene": "Pacote maior custa menos por unidade, mas muito estragaria sem uso.",
+          "options": [
+            {
+              "label": "Sim, desperdício não custa"
+            },
+            {
+              "label": "Sim, comprar qualquer pacote maior"
+            },
+            {
+              "label": "Não, quantidade utilizável também importa"
+            }
+          ],
+          "help": [
+            "Considere quanto a família pode usar de fato."
+          ],
+          "feedback": {
+            "met": "Preço unitário ajuda, mas quantidade sem uso pode desperdiçar dinheiro.",
+            "not_yet": "Considere quanto a família pode usar de fato."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.purchase-decisions.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What is the price per liter?",
+          "scene": "Bottle: 750 milliliters; Milliliters per liter: 1000; Price: 9.",
+          "options": [
+            {
+              "label": "18"
+            },
+            {
+              "label": "12"
+            },
+            {
+              "label": "9"
+            }
+          ],
+          "help": [
+            "Scale the price from bottle volume to one liter."
+          ],
+          "feedback": {
+            "met": "Converting the volume makes the unit price comparable.",
+            "not_yet": "Scale the price from bottle volume to one liter."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es precio por litro?",
+          "scene": "Botella: 750 mililitros; Mililitros por litro: 1000; Precio: 9.",
+          "options": [
+            {
+              "label": "18"
+            },
+            {
+              "label": "12"
+            },
+            {
+              "label": "9"
+            }
+          ],
+          "help": [
+            "Lleva precio del volumen de botella a un litro."
+          ],
+          "feedback": {
+            "met": "Convertir volumen permite comparar precio por unidad.",
+            "not_yet": "Lleva precio del volumen de botella a un litro."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é preço por litro?",
+          "scene": "Garrafa: 750 mililitros; Mililitros por litro: 1000; Preço: 9.",
+          "options": [
+            {
+              "label": "18"
+            },
+            {
+              "label": "12"
+            },
+            {
+              "label": "9"
+            }
+          ],
+          "help": [
+            "Leve preço do volume da garrafa a um litro."
+          ],
+          "feedback": {
+            "met": "Converter volume permite comparar preço por unidade.",
+            "not_yet": "Leve preço do volume da garrafa a um litro."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          750,
+          1000,
+          9
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "input": 2
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 0
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,755 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-retirement-future-part-1",
+  "lesson_id": "fe-production-retirement-future-06",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.retirement-future.06"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Recognize inflation and longevity as separate risks to a retirement spending plan.",
+  "title": {
+    "en-US": "Retirement Risks",
+    "es-MX": "Precios y años son riesgos distintos",
+    "pt-BR": "Preços e anos são riscos distintos"
+  },
+  "new_concepts": [
+    "finance.prod.retirement-future.06"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Retirement Risks\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Precios y años son riesgos distintos\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Preços e anos são riscos distintos\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.retirement-future.06",
+      "observable_action": "Recognize inflation and longevity as separate risks to a retirement spending plan.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.time-inflation.06",
+      "prod.saving-resilience.02"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A retirement plan can be strained by higher prices or by needing support for more years.",
+    "misconception": "Inflation and living longer describe the same risk, or a fixed balance automatically covers both.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.retirement-future.06",
+        "context_id": "retirement-future-06-example-01",
+        "supports_from": [],
+        "reasoning": "Rising prices increase the cost of each year. Living longer adds years needing support, even if prices stay unchanged."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.retirement-future.06",
+        "context_id": "retirement-future-06-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Higher prices raise the cost of the same needs."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.retirement-future.06",
+        "context_id": "retirement-future-06-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "More years require resources for a longer period."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.retirement-future.06",
+        "context_id": "retirement-future-06-practice-01",
+        "supports_from": [],
+        "reasoning": "The two pressures are distinct and can occur together."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.retirement-future.06",
+        "context_id": "retirement-future-06-practice-02",
+        "supports_from": [],
+        "reasoning": "Fixed prices are an assumption that may understate future costs."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.retirement-future.06",
+        "context_id": "retirement-future-06-practice-03",
+        "supports_from": [],
+        "reasoning": "The scenario changes years, not the price of each year."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.retirement-future.06",
+        "context_id": "retirement-future-06-transfer-01",
+        "supports_from": [],
+        "reasoning": "Today’s coverage does not establish future cost or duration coverage."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.retirement-future.06",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A retirement plan can be strained by higher prices or by needing support for more years."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un plan de retiro puede tensarse por precios mayores o por necesitar sostener más años."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Um plano de aposentadoria pode apertar por preços maiores ou por precisar sustentar mais anos."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Two different pressures",
+          "line": "Rising prices increase the cost of each year. Living longer adds years needing support, even if prices stay unchanged."
+        },
+        "es-MX": {
+          "prompt": "Dos presiones distintas",
+          "line": "Precios crecientes elevan el costo de cada año. Vivir más añade años que sostener, incluso si los precios no cambian."
+        },
+        "pt-BR": {
+          "prompt": "Duas pressões distintas",
+          "line": "Preços maiores elevam o custo de cada ano. Viver mais soma anos para sustentar, mesmo sem mudar os preços."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which risk is described?",
+          "scene": "The same food and housing needs now cost more, while the planned number of years stays unchanged.",
+          "options": [
+            {
+              "label": "No budget pressure"
+            },
+            {
+              "label": "Inflation risk"
+            },
+            {
+              "label": "More years of life"
+            }
+          ],
+          "help": [
+            "Identify whether prices or duration changed."
+          ],
+          "feedback": {
+            "met": "Higher prices raise the cost of the same needs.",
+            "not_yet": "Identify whether prices or duration changed."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué riesgo se describe?",
+          "scene": "Las mismas necesidades de comida y vivienda cuestan más; los años planeados no cambian.",
+          "options": [
+            {
+              "label": "Ninguna presión presupuestaria"
+            },
+            {
+              "label": "Riesgo de inflación"
+            },
+            {
+              "label": "Más años de vida"
+            }
+          ],
+          "help": [
+            "Identifica si cambiaron precios o duración."
+          ],
+          "feedback": {
+            "met": "Precios mayores elevan el costo de las mismas necesidades.",
+            "not_yet": "Identifica si cambiaron precios o duración."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual risco é descrito?",
+          "scene": "As mesmas necessidades de comida e moradia custam mais; os anos planejados não mudam.",
+          "options": [
+            {
+              "label": "Nenhuma pressão no orçamento"
+            },
+            {
+              "label": "Risco de inflação"
+            },
+            {
+              "label": "Mais anos de vida"
+            }
+          ],
+          "help": [
+            "Identifique se mudaram preços ou duração."
+          ],
+          "feedback": {
+            "met": "Preços maiores elevam o custo das mesmas necessidades.",
+            "not_yet": "Identifique se mudaram preços ou duração."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which risk is described?",
+          "scene": "Prices stay constant, but savings must support more years than originally planned.",
+          "options": [
+            {
+              "label": "Price inflation"
+            },
+            {
+              "label": "A guaranteed surplus"
+            },
+            {
+              "label": "Longevity risk"
+            }
+          ],
+          "help": [
+            "A longer duration can matter without higher prices."
+          ],
+          "feedback": {
+            "met": "More years require resources for a longer period.",
+            "not_yet": "A longer duration can matter without higher prices."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué riesgo se describe?",
+          "scene": "Los precios siguen iguales, pero el ahorro debe sostener más años de los planeados.",
+          "options": [
+            {
+              "label": "Inflación de precios"
+            },
+            {
+              "label": "Sobrante garantizado"
+            },
+            {
+              "label": "Riesgo de longevidad"
+            }
+          ],
+          "help": [
+            "La duración puede importar sin precios más altos."
+          ],
+          "feedback": {
+            "met": "Más años requieren recursos durante un periodo mayor.",
+            "not_yet": "La duración puede importar sin precios más altos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual risco é descrito?",
+          "scene": "Os preços ficam iguais, mas a poupança deve sustentar mais anos que o previsto.",
+          "options": [
+            {
+              "label": "Inflação de preços"
+            },
+            {
+              "label": "Sobra garantida"
+            },
+            {
+              "label": "Risco de longevidade"
+            }
+          ],
+          "help": [
+            "A duração pode importar sem preços mais altos."
+          ],
+          "feedback": {
+            "met": "Mais anos exigem recursos por um período maior.",
+            "not_yet": "A duração pode importar sem preços mais altos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Can both pressures occur?",
+          "scene": "A person needs more years of support while essential prices also rise.",
+          "options": [
+            {
+              "label": "Yes, duration and prices can both change"
+            },
+            {
+              "label": "No, only one risk can exist"
+            }
+          ],
+          "help": [
+            "Check both annual cost and years of support."
+          ],
+          "feedback": {
+            "met": "The two pressures are distinct and can occur together.",
+            "not_yet": "Check both annual cost and years of support."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Pueden ocurrir ambas presiones?",
+          "scene": "Una persona necesita más años de apoyo y también suben precios indispensables.",
+          "options": [
+            {
+              "label": "Sí, pueden cambiar duración y precios"
+            },
+            {
+              "label": "No, solo puede existir un riesgo"
+            }
+          ],
+          "help": [
+            "Revisa costo anual y años que sostener."
+          ],
+          "feedback": {
+            "met": "Las dos presiones son distintas y pueden coexistir.",
+            "not_yet": "Revisa costo anual y años que sostener."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Ambas as pressões podem ocorrer?",
+          "scene": "Uma pessoa precisa de mais anos de apoio e preços essenciais também sobem.",
+          "options": [
+            {
+              "label": "Sim, duração e preços podem mudar"
+            },
+            {
+              "label": "Não, só pode existir um risco"
+            }
+          ],
+          "help": [
+            "Confira custo anual e anos para sustentar."
+          ],
+          "feedback": {
+            "met": "As duas pressões são distintas e podem ocorrer juntas.",
+            "not_yet": "Confira custo anual e anos para sustentar."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.06",
+      "copy": {
+        "en-US": {
+          "prompt": "What assumption needs testing?",
+          "scene": "A plan projects unchanged prices for many future years.",
+          "options": [
+            {
+              "label": "Whether costs could rise"
+            },
+            {
+              "label": "Only whether account names change"
+            },
+            {
+              "label": "That the person must live fewer years"
+            }
+          ],
+          "help": [
+            "Test the price assumption separately from duration."
+          ],
+          "feedback": {
+            "met": "Fixed prices are an assumption that may understate future costs.",
+            "not_yet": "Test the price assumption separately from duration."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué supuesto debes probar?",
+          "scene": "Un plan proyecta precios sin cambios durante muchos años futuros.",
+          "options": [
+            {
+              "label": "Si los costos podrían subir"
+            },
+            {
+              "label": "Solo si cambian nombres de cuenta"
+            },
+            {
+              "label": "Que la persona deba vivir menos"
+            }
+          ],
+          "help": [
+            "Prueba precios por separado de duración."
+          ],
+          "feedback": {
+            "met": "Precios fijos son un supuesto que puede subestimar costos futuros.",
+            "not_yet": "Prueba precios por separado de duración."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual hipótese testar?",
+          "scene": "Um plano projeta preços sem mudança por muitos anos futuros.",
+          "options": [
+            {
+              "label": "Se os custos podem subir"
+            },
+            {
+              "label": "Só se mudam nomes de contas"
+            },
+            {
+              "label": "Que a pessoa deva viver menos"
+            }
+          ],
+          "help": [
+            "Teste preços separados da duração."
+          ],
+          "feedback": {
+            "met": "Preços fixos são hipótese que pode subestimar custos futuros.",
+            "not_yet": "Teste preços separados da duração."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Does a longer life imply higher prices?",
+          "scene": "A scenario extends the support period but explicitly holds prices constant.",
+          "options": [
+            {
+              "label": "Yes, years automatically prove inflation"
+            },
+            {
+              "label": "No, it isolates duration risk"
+            }
+          ],
+          "help": [
+            "Use the stated assumptions rather than merging the risks."
+          ],
+          "feedback": {
+            "met": "The scenario changes years, not the price of each year.",
+            "not_yet": "Use the stated assumptions rather than merging the risks."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Vivir más implica precios mayores?",
+          "scene": "Una situación extiende el periodo de apoyo, pero mantiene precios explícitamente iguales.",
+          "options": [
+            {
+              "label": "Sí, los años demuestran inflación"
+            },
+            {
+              "label": "No, aísla el riesgo de duración"
+            }
+          ],
+          "help": [
+            "Usa supuestos indicados sin mezclar riesgos."
+          ],
+          "feedback": {
+            "met": "La situación cambia años, no el precio de cada año.",
+            "not_yet": "Usa supuestos indicados sin mezclar riesgos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Viver mais implica preços maiores?",
+          "scene": "Uma situação amplia o período de apoio, mas mantém preços explicitamente iguais.",
+          "options": [
+            {
+              "label": "Sim, anos provam inflação"
+            },
+            {
+              "label": "Não, isola o risco de duração"
+            }
+          ],
+          "help": [
+            "Use hipóteses dadas sem misturar riscos."
+          ],
+          "feedback": {
+            "met": "A situação muda anos, não o preço de cada ano.",
+            "not_yet": "Use hipóteses dadas sem misturar riscos."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.retirement-future.06",
+      "copy": {
+        "en-US": {
+          "prompt": "What remains uncertain?",
+          "scene": "Fixed income covers today’s needs. Future prices and years of support are uncertain.",
+          "options": [
+            {
+              "label": "Only the current balance"
+            },
+            {
+              "label": "Today settles the future"
+            },
+            {
+              "label": "Changing costs and duration"
+            }
+          ],
+          "help": [
+            "Test both pressures against the resources available."
+          ],
+          "feedback": {
+            "met": "Today’s coverage does not establish future cost or duration coverage.",
+            "not_yet": "Test both pressures against the resources available."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué preguntas quedan?",
+          "scene": "Un ingreso fijo cubre necesidades actuales. Precios futuros y años de apoyo son inciertos.",
+          "options": [
+            {
+              "label": "Solo el saldo actual"
+            },
+            {
+              "label": "Ninguna, cubrir hoy resuelve el futuro"
+            },
+            {
+              "label": "Cómo cambiarían costos y duración"
+            }
+          ],
+          "help": [
+            "Prueba ambas presiones contra recursos disponibles."
+          ],
+          "feedback": {
+            "met": "Cubrir hoy no establece cobertura de costo o duración futuros.",
+            "not_yet": "Prueba ambas presiones contra recursos disponibles."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quais perguntas restam?",
+          "scene": "Uma renda fixa cobre necessidades atuais. Preços futuros e anos de apoio são incertos.",
+          "options": [
+            {
+              "label": "Só o saldo atual"
+            },
+            {
+              "label": "Nenhuma, cobrir hoje resolve o futuro"
+            },
+            {
+              "label": "Como custos e duração mudariam"
+            }
+          ],
+          "help": [
+            "Teste ambas as pressões contra recursos disponíveis."
+          ],
+          "feedback": {
+            "met": "Cobrir hoje não estabelece cobertura de custo ou duração futuros.",
+            "not_yet": "Teste ambas as pressões contra recursos disponíveis."
+          }
+        }
+      }
+    }
+  ]
+}

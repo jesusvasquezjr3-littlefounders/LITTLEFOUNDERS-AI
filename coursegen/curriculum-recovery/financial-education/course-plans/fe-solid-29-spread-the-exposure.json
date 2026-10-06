@@ -1,0 +1,850 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-solid-07-risk-and-protection",
+  "lesson_id": "fe-solid-29-spread-the-exposure",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.invest.diversify"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Identify concentration and overlapping holdings, and explain why diversification reduces some risks without guaranteeing no loss.",
+  "title": {
+    "en-US": "Spread the exposure",
+    "es-MX": "Distribuye la exposición",
+    "pt-BR": "Distribua a exposição"
+  },
+  "new_concepts": [
+    "finance.invest.diversify"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Spread the exposure\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Distribuye la exposición\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Distribua a exposição\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "invest.diversify",
+      "observable_action": "Identify concentration and overlapping holdings, and explain why diversification reduces some risks without guaranteeing no loss.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "invest.horizon"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Several labels can hide the same exposure. Check what you actually own and what could affect it.",
+    "misconception": "Counting account or fund names instead of underlying exposures, or treating diversification as insurance against every loss.",
+    "numeracy_support": "Use only the stated quantities, dates and conditions; distinguish a modeled result from a guarantee.",
+    "evidence": [
+      {
+        "segment_id": "example-holdings",
+        "skill_id": "invest.diversify",
+        "context_id": "spread-the-exposure-example-holdings",
+        "supports_from": [],
+        "reasoning": "A portfolio is a group of investments. A fund pools money to hold investments; inspect what it actually holds."
+      },
+      {
+        "segment_id": "example-01",
+        "skill_id": "invest.diversify",
+        "context_id": "spread-the-exposure-example-01",
+        "supports_from": [],
+        "reasoning": "Two funds both hold mostly the same company. Owning both still leaves money strongly exposed to that company."
+      },
+      {
+        "segment_id": "example-02",
+        "skill_id": "invest.diversify",
+        "context_id": "spread-the-exposure-example-02",
+        "supports_from": [],
+        "reasoning": "Spreading money across different exposures can reduce dependence on one outcome. A broad market decline can still cause losses."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "invest.diversify",
+        "context_id": "spread-the-exposure-guided-01",
+        "supports_from": [
+          "example-02"
+        ],
+        "reasoning": "More accounts do not change the underlying company exposure."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "invest.diversify",
+        "context_id": "spread-the-exposure-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Different exposures do not eliminate common market risk."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "invest.diversify",
+        "context_id": "spread-the-exposure-practice-01",
+        "supports_from": [],
+        "reasoning": "Holdings reveal whether the exposures actually differ."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "invest.diversify",
+        "context_id": "spread-the-exposure-practice-02",
+        "supports_from": [],
+        "reasoning": "Different companies can share an important source of risk."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "invest.diversify",
+        "context_id": "spread-the-exposure-practice-03",
+        "supports_from": [],
+        "reasoning": "The size of each exposure matters as well as its presence."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "invest.diversify",
+        "context_id": "spread-the-exposure-transfer-01",
+        "supports_from": [],
+        "reasoning": "Changing the access channel does not change what was bought."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "invest.diversify",
+      "fresh_context": "Apply this skill in a later integrated decision with a different constraint."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Several labels can hide the same exposure. Check what you actually own and what could affect it."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Varias etiquetas pueden ocultar la misma exposición. Revisa qué tienes y qué podría afectarlo."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Vários nomes podem esconder a mesma exposição. Confira o que possui e o que pode afetá-lo."
+        }
+      }
+    },
+    {
+      "id": "example-holdings",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "What is inside?",
+          "line": "A portfolio is a group of investments. A fund pools money to hold investments; inspect what it actually holds."
+        },
+        "es-MX": {
+          "prompt": "¿Qué contiene?",
+          "line": "Una cartera es un conjunto de inversiones. Un fondo reúne dinero para tener inversiones; revisa cuáles tiene realmente."
+        },
+        "pt-BR": {
+          "prompt": "O que contém?",
+          "line": "Uma carteira é um conjunto de investimentos. Um fundo reúne dinheiro para ter investimentos; confira quais realmente possui."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Look beneath the labels",
+          "line": "Two funds both hold mostly the same company. Owning both still leaves money strongly exposed to that company."
+        },
+        "es-MX": {
+          "prompt": "Mira detrás de las etiquetas",
+          "line": "Dos fondos tienen principalmente la misma empresa. Tener ambos aún deja el dinero muy expuesto a esa empresa."
+        },
+        "pt-BR": {
+          "prompt": "Olhe além dos nomes",
+          "line": "Dois fundos possuem principalmente a mesma empresa. Ter ambos ainda deixa o dinheiro muito exposto a essa empresa."
+        }
+      }
+    },
+    {
+      "id": "example-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Know the limit",
+          "line": "Spreading money across different exposures can reduce dependence on one outcome. A broad market decline can still cause losses."
+        },
+        "es-MX": {
+          "prompt": "Conoce el límite",
+          "line": "Distribuir dinero entre exposiciones distintas puede reducir la dependencia de un resultado. Una caída general aún puede causar pérdidas."
+        },
+        "pt-BR": {
+          "prompt": "Conheça o limite",
+          "line": "Distribuir dinheiro entre exposições diferentes pode reduzir a dependência de um resultado. Uma queda geral ainda pode causar perdas."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.invest.diversify",
+      "copy": {
+        "en-US": {
+          "prompt": "Which plan depends on one company?",
+          "scene": "A holds one company in two accounts. B holds companies across different sectors.",
+          "options": [
+            {
+              "label": "Neither: both use accounts"
+            },
+            {
+              "label": "Plan B"
+            },
+            {
+              "label": "Plan A"
+            }
+          ],
+          "help": [
+            "Count the underlying exposures, not account names."
+          ],
+          "feedback": {
+            "met": "More accounts do not change the underlying company exposure.",
+            "not_yet": "Count the underlying exposures, not account names."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué plan depende de una empresa?",
+          "scene": "El plan A tiene una sola empresa en dos cuentas. El B tiene empresas distintas de sectores distintos.",
+          "options": [
+            {
+              "label": "Ninguno, porque ambos usan cuentas"
+            },
+            {
+              "label": "El plan B"
+            },
+            {
+              "label": "El plan A"
+            }
+          ],
+          "help": [
+            "Cuenta las exposiciones, no los nombres de cuentas."
+          ],
+          "feedback": {
+            "met": "Más cuentas no cambian la exposición a esa empresa.",
+            "not_yet": "Cuenta las exposiciones, no los nombres de cuentas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual plano depende de uma empresa?",
+          "scene": "O plano A tem uma só empresa em duas contas. O B tem empresas diferentes de setores diferentes.",
+          "options": [
+            {
+              "label": "Nenhum, porque ambos usam contas"
+            },
+            {
+              "label": "O plano B"
+            },
+            {
+              "label": "O plano A"
+            }
+          ],
+          "help": [
+            "Conte as exposições, não os nomes das contas."
+          ],
+          "feedback": {
+            "met": "Mais contas não mudam a exposição àquela empresa.",
+            "not_yet": "Conte as exposições, não os nomes das contas."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.invest.diversify",
+      "copy": {
+        "en-US": {
+          "prompt": "What does diversification promise?",
+          "scene": "A portfolio spans sectors. A market decline affects many together.",
+          "options": [
+            {
+              "label": "No protection against every loss"
+            },
+            {
+              "label": "No possible loss"
+            },
+            {
+              "label": "A fixed positive return"
+            }
+          ],
+          "help": [
+            "Notice that different holdings can fall together."
+          ],
+          "feedback": {
+            "met": "Different exposures do not eliminate common market risk.",
+            "not_yet": "Notice that different holdings can fall together."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué promete diversificar?",
+          "scene": "Una cartera tiene sectores distintos. Una caída general afecta muchos a la vez.",
+          "options": [
+            {
+              "label": "Ninguna garantía contra toda pérdida"
+            },
+            {
+              "label": "Ninguna pérdida posible"
+            },
+            {
+              "label": "Un rendimiento positivo fijo"
+            }
+          ],
+          "help": [
+            "Observa que activos distintos pueden caer juntos."
+          ],
+          "feedback": {
+            "met": "Las exposiciones distintas no eliminan el riesgo común del mercado.",
+            "not_yet": "Observa que activos distintos pueden caer juntos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que diversificar promete?",
+          "scene": "Uma carteira tem setores diferentes. Uma queda geral afeta muitos ao mesmo tempo.",
+          "options": [
+            {
+              "label": "Nenhuma garantia contra toda perda"
+            },
+            {
+              "label": "Nenhuma perda possível"
+            },
+            {
+              "label": "Um retorno positivo fixo"
+            }
+          ],
+          "help": [
+            "Observe que ativos diferentes podem cair juntos."
+          ],
+          "feedback": {
+            "met": "Exposições diferentes não eliminam o risco comum do mercado.",
+            "not_yet": "Observe que ativos diferentes podem cair juntos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.invest.diversify",
+      "copy": {
+        "en-US": {
+          "prompt": "What should you inspect?",
+          "scene": "Three funds have different names. Their descriptions do not show their holdings.",
+          "options": [
+            {
+              "label": "Which account opened first"
+            },
+            {
+              "label": "Their names only"
+            },
+            {
+              "label": "Their underlying holdings and overlap"
+            }
+          ],
+          "help": [
+            "Labels do not establish the source of risk."
+          ],
+          "feedback": {
+            "met": "Holdings reveal whether the exposures actually differ.",
+            "not_yet": "Labels do not establish the source of risk."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debes revisar?",
+          "scene": "Tres fondos tienen nombres distintos. Sus descripciones no muestran lo que poseen.",
+          "options": [
+            {
+              "label": "Qué cuenta se abrió primero"
+            },
+            {
+              "label": "Solo sus nombres"
+            },
+            {
+              "label": "Sus activos y cuánto se repiten"
+            }
+          ],
+          "help": [
+            "Las etiquetas no establecen de dónde viene el riesgo."
+          ],
+          "feedback": {
+            "met": "Los activos muestran si las exposiciones realmente cambian.",
+            "not_yet": "Las etiquetas no establecen de dónde viene el riesgo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que deve conferir?",
+          "scene": "Três fundos têm nomes diferentes. Suas descrições não mostram o que possuem.",
+          "options": [
+            {
+              "label": "Qual conta foi aberta primeiro"
+            },
+            {
+              "label": "Só seus nomes"
+            },
+            {
+              "label": "Seus ativos e quanto se repetem"
+            }
+          ],
+          "help": [
+            "Os nomes não mostram de onde vem o risco."
+          ],
+          "feedback": {
+            "met": "Os ativos mostram se as exposições realmente diferem.",
+            "not_yet": "Os nomes não mostram de onde vem o risco."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.invest.diversify",
+      "copy": {
+        "en-US": {
+          "prompt": "What could affect both firms?",
+          "scene": "Two firms rely on one crop. Disease damages it across their region.",
+          "options": [
+            {
+              "label": "Only a firm-specific problem"
+            },
+            {
+              "label": "The shared crop damage"
+            },
+            {
+              "label": "Nothing: they are different firms"
+            }
+          ],
+          "help": [
+            "Look for a shared dependency."
+          ],
+          "feedback": {
+            "met": "Different companies can share an important source of risk.",
+            "not_yet": "Look for a shared dependency."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué evento podría afectar ambos activos?",
+          "scene": "Dos empresas distintas dependen del mismo cultivo. Una enfermedad daña ese cultivo en su región.",
+          "options": [
+            {
+              "label": "Solo un problema exclusivo de una empresa"
+            },
+            {
+              "label": "El daño al cultivo compartido"
+            },
+            {
+              "label": "Ninguno, porque son empresas distintas"
+            }
+          ],
+          "help": [
+            "Busca una dependencia compartida."
+          ],
+          "feedback": {
+            "met": "Empresas distintas pueden compartir una fuente importante de riesgo.",
+            "not_yet": "Busca una dependencia compartida."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual evento poderia afetar ambos os ativos?",
+          "scene": "Duas empresas diferentes dependem da mesma cultura. Uma doença prejudica essa cultura na região.",
+          "options": [
+            {
+              "label": "Só um problema exclusivo de uma empresa"
+            },
+            {
+              "label": "O dano à cultura compartilhada"
+            },
+            {
+              "label": "Nenhum, porque são empresas diferentes"
+            }
+          ],
+          "help": [
+            "Procure uma dependência compartilhada."
+          ],
+          "feedback": {
+            "met": "Empresas diferentes podem compartilhar uma fonte importante de risco.",
+            "not_yet": "Procure uma dependência compartilhada."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.invest.diversify",
+      "copy": {
+        "en-US": {
+          "prompt": "What changes?",
+          "scene": "Nearly all money stays in one company; a little enters another sector.",
+          "options": [
+            {
+              "label": "It removes concentration completely"
+            },
+            {
+              "label": "Most money retains the same exposure"
+            },
+            {
+              "label": "It guarantees no losses"
+            }
+          ],
+          "help": [
+            "Consider where most of the money remains."
+          ],
+          "feedback": {
+            "met": "The size of each exposure matters as well as its presence.",
+            "not_yet": "Consider where most of the money remains."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué cambia esta pequeña compra adicional?",
+          "scene": "Casi todo el dinero invertido sigue en una empresa. Se añade un monto pequeño a otro sector.",
+          "options": [
+            {
+              "label": "Elimina totalmente la concentración"
+            },
+            {
+              "label": "La mayor parte aún depende de una empresa"
+            },
+            {
+              "label": "Garantiza no perder"
+            }
+          ],
+          "help": [
+            "Considera dónde sigue la mayor parte del dinero."
+          ],
+          "feedback": {
+            "met": "Importa el tamaño de cada exposición, además de su presencia.",
+            "not_yet": "Considera dónde sigue la mayor parte del dinero."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que muda esta pequena compra adicional?",
+          "scene": "Quase todo o dinheiro investido continua em uma empresa. Uma quantia pequena é adicionada a outro setor.",
+          "options": [
+            {
+              "label": "Elimina totalmente a concentração"
+            },
+            {
+              "label": "A maior parte ainda depende de uma empresa"
+            },
+            {
+              "label": "Garante não perder"
+            }
+          ],
+          "help": [
+            "Considere onde permanece a maior parte do dinheiro."
+          ],
+          "feedback": {
+            "met": "O tamanho de cada exposição importa além de sua presença.",
+            "not_yet": "Considere onde permanece a maior parte do dinheiro."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.invest.diversify",
+      "copy": {
+        "en-US": {
+          "prompt": "Has this person diversified?",
+          "scene": "Someone buys more of the same investment through another app.",
+          "options": [
+            {
+              "label": "Yes, each app creates another asset"
+            },
+            {
+              "label": "Yes, another login guarantees protection"
+            },
+            {
+              "label": "No, the exposure is unchanged"
+            }
+          ],
+          "help": [
+            "Identify the investment rather than its interface."
+          ],
+          "feedback": {
+            "met": "Changing the access channel does not change what was bought.",
+            "not_yet": "Identify the investment rather than its interface."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿La segunda aplicación basta como prueba?",
+          "scene": "Una persona compra la misma inversión en otra aplicación y dice que ya diversificó.",
+          "options": [
+            {
+              "label": "Sí, cada aplicación crea otro activo"
+            },
+            {
+              "label": "Sí, otro acceso garantiza protección"
+            },
+            {
+              "label": "No, la exposición subyacente no cambió"
+            }
+          ],
+          "help": [
+            "Identifica la inversión y no su interfaz."
+          ],
+          "feedback": {
+            "met": "Cambiar el canal de acceso no cambia lo comprado.",
+            "not_yet": "Identifica la inversión y no su interfaz."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O segundo aplicativo basta como prova?",
+          "scene": "Uma pessoa compra o mesmo investimento em outro aplicativo e diz que diversificou.",
+          "options": [
+            {
+              "label": "Sim, cada aplicativo cria outro ativo"
+            },
+            {
+              "label": "Sim, outro acesso garante proteção"
+            },
+            {
+              "label": "Não, a exposição subjacente não mudou"
+            }
+          ],
+          "help": [
+            "Identifique o investimento em vez da interface."
+          ],
+          "feedback": {
+            "met": "Mudar o canal de acesso não muda o que foi comprado.",
+            "not_yet": "Identifique o investimento em vez da interface."
+          }
+        }
+      }
+    }
+  ]
+}

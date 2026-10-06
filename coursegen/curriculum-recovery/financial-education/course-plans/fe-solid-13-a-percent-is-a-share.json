@@ -1,0 +1,629 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-solid-03-compare-before-paying",
+  "lesson_id": "fe-solid-13-a-percent-is-a-share",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.price.percent"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Interpret a percentage as parts of a hundred and calculate a discount amount from its stated original price.",
+  "title": {
+    "en-US": "A percent is a share",
+    "es-MX": "Un porcentaje es una parte",
+    "pt-BR": "Um percentual é uma parte"
+  },
+  "new_concepts": [
+    "finance.price.percent"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"A percent is a share\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Un porcentaje es una parte\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Um percentual é uma parte\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "price.percent",
+      "observable_action": "Interpret a percentage as parts of a hundred and calculate a discount amount from its stated original price.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "cash.balance",
+      "price.unit"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A discount removes part of a price. These examples use dollars; percentages describe shares, not fixed amounts.",
+    "misconception": "Treating the percent number as a fixed currency amount regardless of the original price.",
+    "numeracy_support": "The grid divides the whole into a hundred equal parts; examples show bases of 100 and 200 before independent use.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "price.percent",
+        "context_id": "a-percent-is-a-share-example-01",
+        "supports_from": [],
+        "reasoning": "Percent means out of a hundred. A 20% discount on 100 removes 20; each grid square represents one equal part."
+      },
+      {
+        "segment_id": "example-02",
+        "skill_id": "price.percent",
+        "context_id": "a-percent-is-a-share-example-02",
+        "supports_from": [],
+        "reasoning": "Move the grid to 20%. See how 20 of the 100 equal parts become the discount amount."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "price.percent",
+        "context_id": "a-percent-is-a-share-guided-01",
+        "supports_from": [
+          "example-02"
+        ],
+        "reasoning": "You matched the share to the amount of this whole."
+      },
+      {
+        "segment_id": "example-03",
+        "skill_id": "price.percent",
+        "context_id": "a-percent-is-a-share-example-03",
+        "supports_from": [],
+        "reasoning": "For a price of 200, each hundredth is 2. A 10% share is ten parts: 10 × 2 = 20."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "price.percent",
+        "context_id": "a-percent-is-a-share-guided-02",
+        "supports_from": [
+          "example-03"
+        ],
+        "reasoning": "You used the original price to value each equal part."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "price.percent",
+        "context_id": "a-percent-is-a-share-practice-01",
+        "supports_from": [],
+        "reasoning": "The amount matches this share of the original price."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "price.percent",
+        "context_id": "a-percent-is-a-share-practice-02",
+        "supports_from": [],
+        "reasoning": "The same share of different wholes can have different amounts."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "price.percent",
+        "context_id": "a-percent-is-a-share-practice-03",
+        "supports_from": [],
+        "reasoning": "You found the stated share of a different original amount."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "price.percent",
+        "context_id": "a-percent-is-a-share-transfer-01",
+        "supports_from": [],
+        "reasoning": "You used the whole and its share in a new context."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "price.percent",
+      "fresh_context": "Apply this skill in a later integrated decision with a different constraint."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A discount removes part of a price. These examples use dollars; percentages describe shares, not fixed amounts."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un descuento quita parte del precio. En estos ejemplos en pesos, el porcentaje indica una parte, no un monto fijo."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Um desconto retira parte do preço. Nestes exemplos em reais, o percentual indica uma parte, não um valor fixo."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Parts of a hundred",
+          "line": "Percent means out of a hundred. A 20% discount on 100 removes 20; each grid square represents one equal part."
+        },
+        "es-MX": {
+          "prompt": "Partes de cien",
+          "line": "Por ciento significa de cada cien. Un descuento de 20% sobre 100 quita 20; cada cuadro representa una parte igual."
+        },
+        "pt-BR": {
+          "prompt": "Partes de cem",
+          "line": "Por cento significa de cada cem. Um desconto de 20% sobre 100 retira 20; cada quadrado representa uma parte igual."
+        }
+      }
+    },
+    {
+      "id": "example-02",
+      "type": "visual.percent-grid.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "percent-grid"
+      },
+      "payload": {
+        "baseUnits": 100,
+        "step": 5,
+        "initialPercent": 0,
+        "mode": "discount",
+        "currency": "local"
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Move the grid to 20%. See how 20 of the 100 equal parts become the discount amount."
+        },
+        "es-MX": {
+          "prompt": "Mueve la cuadrícula a 20%. Observa cómo 20 de las 100 partes iguales forman el descuento."
+        },
+        "pt-BR": {
+          "prompt": "Mova a grade para 20%. Veja como 20 das 100 partes iguais formam o desconto."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "visual.percent-grid.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "percent-grid"
+      },
+      "payload": {
+        "baseUnits": 100,
+        "step": 5,
+        "initialPercent": 0,
+        "mode": "discount",
+        "currency": "local"
+      },
+      "rubric": {
+        "target_percent": 30
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.price.percent",
+      "copy": {
+        "en-US": {
+          "prompt": "Set a 30% discount on 100 and enter the discount amount. Each square represents one unit here.",
+          "feedback": {
+            "met": "You matched the share to the amount of this whole.",
+            "not_yet": "Discount means the removed amount. Count marked parts, not the remainder."
+          },
+          "help": [
+            "Discount means the removed amount. Count marked parts, not the remainder."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Marca un descuento de 30% sobre 100 y escribe su monto. Aquí cada cuadro representa una unidad.",
+          "feedback": {
+            "met": "Relacionaste la parte con el monto de este total.",
+            "not_yet": "El descuento es lo que quitas, no el precio final. Cuenta las partes marcadas."
+          },
+          "help": [
+            "El descuento es lo que quitas, no el precio final. Cuenta las partes marcadas."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Marque um desconto de 30% sobre 100 e digite seu valor. Aqui cada quadrado representa uma unidade.",
+          "feedback": {
+            "met": "Você relacionou a parte ao valor deste total.",
+            "not_yet": "O desconto é o que retira, não o preço final. Conte as partes marcadas."
+          },
+          "help": [
+            "O desconto é o que retira, não o preço final. Conte as partes marcadas."
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-03",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A different whole",
+          "line": "For a price of 200, each hundredth is 2. A 10% share is ten parts: 10 × 2 = 20."
+        },
+        "es-MX": {
+          "prompt": "Un total distinto",
+          "line": "Con un precio de 200, cada centésima parte vale 2. Un 10% son diez partes: 10 × 2 = 20."
+        },
+        "pt-BR": {
+          "prompt": "Um total diferente",
+          "line": "Com um preço de 200, cada centésima parte vale 2. Um 10% são dez partes: 10 × 2 = 20."
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "visual.percent-grid.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "percent-grid"
+      },
+      "payload": {
+        "baseUnits": 200,
+        "step": 5,
+        "initialPercent": 0,
+        "mode": "discount",
+        "currency": "local"
+      },
+      "rubric": {
+        "target_percent": 10
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.price.percent",
+      "copy": {
+        "en-US": {
+          "prompt": "Set 10% of 200 and enter the discount amount. Each equal part represents 2.",
+          "feedback": {
+            "met": "You used the original price to value each equal part.",
+            "not_yet": "The percent chooses parts; the original price sets their value."
+          },
+          "help": [
+            "The percent chooses parts; the original price sets their value."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Marca 10% de 200 y escribe el descuento. Cada parte igual representa 2.",
+          "feedback": {
+            "met": "Usaste el precio original para valorar cada parte igual.",
+            "not_yet": "El porcentaje elige partes; el precio original determina su valor."
+          },
+          "help": [
+            "El porcentaje elige partes; el precio original determina su valor."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Marque 10% de 200 e digite o desconto. Cada parte igual representa 2.",
+          "feedback": {
+            "met": "Você usou o preço original para valorar cada parte igual.",
+            "not_yet": "O percentual escolhe partes; o preço original define seu valor."
+          },
+          "help": [
+            "O percentual escolhe partes; o preço original define seu valor."
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "visual.percent-grid.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "percent-grid"
+      },
+      "payload": {
+        "baseUnits": 200,
+        "step": 5,
+        "initialPercent": 0,
+        "mode": "discount",
+        "currency": "local"
+      },
+      "rubric": {
+        "target_percent": 25
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.price.percent",
+      "copy": {
+        "en-US": {
+          "prompt": "A 200 item has a 25% discount. Set the percentage and enter the discount amount.",
+          "feedback": {
+            "met": "The amount matches this share of the original price.",
+            "not_yet": "Use the stated original price, not the percentage alone."
+          },
+          "help": [
+            "Use the stated original price, not the percentage alone."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Un artículo de 200 tiene 25% de descuento. Marca el porcentaje y escribe el monto descontado.",
+          "feedback": {
+            "met": "El monto corresponde a esta parte del precio original.",
+            "not_yet": "Usa el precio original, no solo el porcentaje."
+          },
+          "help": [
+            "Usa el precio original, no solo el porcentaje."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Um item de 200 tem 25% de desconto. Marque o percentual e digite o valor descontado.",
+          "feedback": {
+            "met": "O valor corresponde a esta parte do preço original.",
+            "not_yet": "Use o preço original, não só o percentual."
+          },
+          "help": [
+            "Use o preço original, não só o percentual."
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.price.percent",
+      "copy": {
+        "en-US": {
+          "prompt": "Does equal percent mean equal amount?",
+          "scene": "Different prices offer the same discount percentage.",
+          "options": [
+            {
+              "label": "No, the original price matters"
+            },
+            {
+              "label": "Only the percent number matters"
+            },
+            {
+              "label": "Always the same amount"
+            }
+          ],
+          "help": [
+            "A percent always refers to a particular whole."
+          ],
+          "feedback": {
+            "met": "The same share of different wholes can have different amounts.",
+            "not_yet": "A percent always refers to a particular whole."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Igual porcentaje significa igual monto?",
+          "scene": "Dos precios son distintos, pero ofrecen el mismo porcentaje de descuento.",
+          "options": [
+            {
+              "label": "No, importa el precio original"
+            },
+            {
+              "label": "Solo importa el porcentaje"
+            },
+            {
+              "label": "Siempre el mismo monto"
+            }
+          ],
+          "help": [
+            "Un porcentaje siempre se refiere a un total concreto."
+          ],
+          "feedback": {
+            "met": "La misma parte de totales distintos puede dar montos distintos.",
+            "not_yet": "Un porcentaje siempre se refiere a un total concreto."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Percentuais iguais dão valores iguais?",
+          "scene": "Dois preços são diferentes, mas oferecem o mesmo percentual de desconto.",
+          "options": [
+            {
+              "label": "Não, o preço original importa"
+            },
+            {
+              "label": "Só o percentual importa"
+            },
+            {
+              "label": "Sempre o mesmo valor"
+            }
+          ],
+          "help": [
+            "Um percentual sempre se refere a um total específico."
+          ],
+          "feedback": {
+            "met": "A mesma parte de totais diferentes pode dar valores diferentes.",
+            "not_yet": "Um percentual sempre se refere a um total específico."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "visual.percent-grid.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "percent-grid"
+      },
+      "payload": {
+        "baseUnits": 400,
+        "step": 5,
+        "initialPercent": 0,
+        "mode": "discount",
+        "currency": "local"
+      },
+      "rubric": {
+        "target_percent": 10
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.price.percent",
+      "copy": {
+        "en-US": {
+          "prompt": "A repair quote of 400 offers 10% off. Set the percentage and enter the amount removed.",
+          "feedback": {
+            "met": "You found the stated share of a different original amount.",
+            "not_yet": "Split the original amount into equal hundredths."
+          },
+          "help": [
+            "Split the original amount into equal hundredths."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Una reparación cotizada en 400 ofrece 10% de descuento. Marca el porcentaje y escribe lo que se quita.",
+          "feedback": {
+            "met": "Hallaste la parte indicada de otro monto original.",
+            "not_yet": "Reparte el monto original en cien partes iguales."
+          },
+          "help": [
+            "Reparte el monto original en cien partes iguales."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Um conserto orçado em 400 oferece 10% de desconto. Marque o percentual e digite o valor retirado.",
+          "feedback": {
+            "met": "Você achou a parte indicada de outro valor original.",
+            "not_yet": "Divida o valor original em cem partes iguais."
+          },
+          "help": [
+            "Divida o valor original em cem partes iguais."
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "visual.percent-grid.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "percent-grid"
+      },
+      "payload": {
+        "baseUnits": 300,
+        "step": 5,
+        "initialPercent": 0,
+        "mode": "discount",
+        "currency": "local"
+      },
+      "rubric": {
+        "target_percent": 20
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.price.percent",
+      "copy": {
+        "en-US": {
+          "prompt": "A maintenance service priced at 300 offers 20% off. Set the percentage and enter the discount amount.",
+          "feedback": {
+            "met": "You used the whole and its share in a new context.",
+            "not_yet": "The whole is the stated service price before the discount."
+          },
+          "help": [
+            "The whole is the stated service price before the discount."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Un mantenimiento de 300 ofrece 20% de descuento. Marca el porcentaje y escribe el monto descontado.",
+          "feedback": {
+            "met": "Usaste el total y su parte en una situación nueva.",
+            "not_yet": "El total es el precio del servicio antes del descuento."
+          },
+          "help": [
+            "El total es el precio del servicio antes del descuento."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Uma manutenção de 300 oferece 20% de desconto. Marque o percentual e digite o valor descontado.",
+          "feedback": {
+            "met": "Você usou o total e sua parte em uma situação nova.",
+            "not_yet": "O total é o preço do serviço antes do desconto."
+          },
+          "help": [
+            "O total é o preço do serviço antes do desconto."
+          ]
+        }
+      }
+    }
+  ]
+}

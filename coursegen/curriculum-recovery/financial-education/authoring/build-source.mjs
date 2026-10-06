@@ -1,0 +1,46 @@
+// Offline authoring-source compiler. Writes drafts only; never calls a provider or database.
+import { readFileSync, writeFileSync } from 'node:fs';
+import path from 'node:path';
+import { root, writePlans, sharedKc } from './assemble.mjs';
+import { objectives } from './skill-objectives.mjs';
+import { attachArithmetic } from './arithmetic.mjs';
+import { attachFeedback } from './feedback.mjs';
+import { attachMentorRecovery } from './mentor-recovery.mjs';
+import { blueprint } from './outline.mjs';
+import { plans as a } from './unit-01.mjs';
+import { plans as b } from './unit-02.mjs';
+import { plans as c } from './unit-02-planning.mjs';
+import { plans as d } from './unit-02-review.mjs';
+import { plans as e } from './unit-03.mjs';
+import { plans as f } from './unit-03-review.mjs';
+import { plans as g } from './unit-04.mjs';
+import { plans as h } from './unit-04-review.mjs';
+import { plans as i } from './unit-05.mjs';
+import { plans as j } from './unit-05-interest.mjs';
+import { plans as l } from './unit-05-review.mjs';
+import { plans as m } from './unit-06.mjs';
+import { plans as n } from './unit-06-review.mjs';
+import { plans as o } from './unit-07.mjs';
+import { plans as p } from './unit-07-safety.mjs';
+import { plans as q } from './unit-08-access.mjs';
+import { plans as r } from './unit-08-agreements.mjs';
+import { plans as s } from './unit-08-capstones.mjs';
+export const plans = [...a, ...b, ...c, ...d, ...e, ...f, ...g, ...h, ...i, ...j, ...l, ...m, ...n, ...o, ...p, ...q, ...r, ...s].sort((left, right) => left.lesson_id.localeCompare(right.lesson_id));
+attachArithmetic(plans);
+attachFeedback(plans);
+attachMentorRecovery(plans);
+const taught = plans.filter(plan => plan.instruction.kind === 'teach');
+const graphPath = path.resolve(root, '../../../database/seeds/kc_graph.v1.json');
+const graph = JSON.parse(readFileSync(graphPath, 'utf8'));
+for (const plan of taught) {
+  const skill = plan.instruction.objective.skill_id;
+  if (!objectives[skill]) throw new Error(`Missing localized measurable objective for ${skill}`);
+  const key = sharedKc(skill);
+  if (!graph.kcs.some(node => node.key === key)) throw new Error(`Declare and review the shared KC before authoring: ${key}`);
+  const declared = new Set(plan.instruction.prerequisite_skills.map(sharedKc));
+  const missing = graph.edges.filter(([from, to]) => to === key && !declared.has(from)).map(([from]) => from);
+  if (missing.length) throw new Error(`${key} omits shared prerequisites: ${missing.join(', ')}`);
+}
+writePlans(plans);
+writeFileSync(path.join(root, 'blueprint.json'), `${JSON.stringify(blueprint, null, 2)}\n`);
+console.log(`Authored ${plans.length} lessons; ${taught.length} existing shared KCs checked read-only. Nothing published or activated.`);

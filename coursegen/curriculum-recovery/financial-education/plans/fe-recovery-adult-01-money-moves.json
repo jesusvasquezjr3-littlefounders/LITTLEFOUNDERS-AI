@@ -1,0 +1,762 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-recovery-adult-foundations",
+  "lesson_id": "fe-recovery-adult-01-money-moves",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "life.track-earnings"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Distinguish money received, money paid and no movement from one person's perspective. No percentages, payroll or assumptions about regular income.",
+  "title": {
+    "en-US": "Money in, money out",
+    "es-MX": "Dinero que entra y sale",
+    "pt-BR": "Dinheiro que entra e sai"
+  },
+  "new_concepts": [
+    "life.track-earnings"
+  ],
+  "regional": {
+    "universal": "Fictional everyday decisions with no named institutions, legal rules, currency amounts or market-specific products."
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Before making a plan",
+          "line": "Start by noticing money arriving and leaving. We will follow everyday payments."
+        },
+        "es-MX": {
+          "prompt": "Antes de hacer un plan",
+          "line": "Empieza por observar cuándo entra y sale dinero. Seguiremos pagos de todos los días."
+        },
+        "pt-BR": {
+          "prompt": "Antes de fazer um plano",
+          "line": "Comece observando quando o dinheiro entra e sai. Vamos acompanhar pagamentos do dia a dia."
+        }
+      }
+    },
+    {
+      "id": "example-in",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A payment arrives",
+          "line": "A customer pays Ana for a repair. Ana has more money: money enters."
+        },
+        "es-MX": {
+          "prompt": "Llega un pago",
+          "line": "Un cliente paga una reparación a Ana. Ana tiene más dinero: entra dinero."
+        },
+        "pt-BR": {
+          "prompt": "Um pagamento chega",
+          "line": "Um cliente paga um conserto à Ana. Ana tem mais dinheiro: o dinheiro entra."
+        }
+      }
+    },
+    {
+      "id": "example-out",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Ana pays for transport",
+          "line": "Ana pays for a bus ride. She has less money: money leaves."
+        },
+        "es-MX": {
+          "prompt": "Ana paga el transporte",
+          "line": "Ana paga un viaje en autobús. Tiene menos dinero: sale dinero."
+        },
+        "pt-BR": {
+          "prompt": "Ana paga o transporte",
+          "line": "Ana paga uma viagem de ônibus. Ela tem menos dinheiro: o dinheiro sai."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.track-earnings",
+      "copy": {
+        "en-US": {
+          "prompt": "What happens to the money you have?",
+          "scene": "You receive payment for a completed repair.",
+          "options": [
+            {
+              "label": "Money leaves"
+            },
+            {
+              "label": "No movement"
+            },
+            {
+              "label": "Money enters"
+            }
+          ],
+          "help": [
+            "After receiving payment, do you have more or less?"
+          ],
+          "feedback": {
+            "met": "The payment increases the money you have.",
+            "not_yet": "After receiving payment, do you have more or less?"
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué pasa con el dinero que tienes?",
+          "scene": "Recibes el pago de una reparación terminada.",
+          "options": [
+            {
+              "label": "Sale dinero"
+            },
+            {
+              "label": "Sin movimiento"
+            },
+            {
+              "label": "Entra dinero"
+            }
+          ],
+          "help": [
+            "Después de recibir el pago, ¿tienes más o menos?"
+          ],
+          "feedback": {
+            "met": "El pago aumenta el dinero que tienes.",
+            "not_yet": "Después de recibir el pago, ¿tienes más o menos?"
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que acontece com o dinheiro que você tem?",
+          "scene": "Você recebe o pagamento de um conserto concluído.",
+          "options": [
+            {
+              "label": "Dinheiro sai"
+            },
+            {
+              "label": "Sem movimento"
+            },
+            {
+              "label": "Dinheiro entra"
+            }
+          ],
+          "help": [
+            "Depois de receber o pagamento, você tem mais ou menos?"
+          ],
+          "feedback": {
+            "met": "O pagamento aumenta o dinheiro que você tem.",
+            "not_yet": "Depois de receber o pagamento, você tem mais ou menos?"
+          }
+        }
+      }
+    },
+    {
+      "id": "example-person",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Follow one person",
+          "line": "A payment leaves the buyer and reaches the seller. Always check whose money the question follows."
+        },
+        "es-MX": {
+          "prompt": "Sigue a una persona",
+          "line": "Un pago sale del comprador y llega al vendedor. Revisa de quién habla la pregunta."
+        },
+        "pt-BR": {
+          "prompt": "Acompanhe uma pessoa",
+          "line": "Um pagamento sai do comprador e chega ao vendedor. Confira de quem a pergunta fala."
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.track-earnings",
+      "copy": {
+        "en-US": {
+          "prompt": "What happens to the money you have?",
+          "scene": "You pay for groceries at the shop.",
+          "options": [
+            {
+              "label": "Money leaves"
+            },
+            {
+              "label": "No movement"
+            },
+            {
+              "label": "Money enters"
+            }
+          ],
+          "help": [
+            "Follow your money, not the shopkeeper’s."
+          ],
+          "feedback": {
+            "met": "Paying reduces the money you have.",
+            "not_yet": "Follow your money, not the shopkeeper’s."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué pasa con el dinero que tienes?",
+          "scene": "Pagas tus compras en la tienda.",
+          "options": [
+            {
+              "label": "Sale dinero"
+            },
+            {
+              "label": "Sin movimiento"
+            },
+            {
+              "label": "Entra dinero"
+            }
+          ],
+          "help": [
+            "Sigue tu dinero, no el de quien vende."
+          ],
+          "feedback": {
+            "met": "Pagar reduce el dinero que tienes.",
+            "not_yet": "Sigue tu dinero, no el de quien vende."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que acontece com o dinheiro que você tem?",
+          "scene": "Você paga suas compras na loja.",
+          "options": [
+            {
+              "label": "Dinheiro sai"
+            },
+            {
+              "label": "Sem movimento"
+            },
+            {
+              "label": "Dinheiro entra"
+            }
+          ],
+          "help": [
+            "Acompanhe seu dinheiro, não o de quem vende."
+          ],
+          "feedback": {
+            "met": "Pagar reduz o dinheiro que você tem.",
+            "not_yet": "Acompanhe seu dinheiro, não o de quem vende."
+          }
+        }
+      }
+    },
+    {
+      "id": "example-no-movement",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Looking is not paying",
+          "line": "Ana looks at a jacket but buys nothing. No money enters or leaves."
+        },
+        "es-MX": {
+          "prompt": "Mirar no es pagar",
+          "line": "Ana mira una chamarra, pero no compra nada. No entra ni sale dinero."
+        },
+        "pt-BR": {
+          "prompt": "Olhar não é pagar",
+          "line": "Ana olha uma jaqueta, mas não compra nada. Nenhum dinheiro entra ou sai."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.track-earnings",
+      "copy": {
+        "en-US": {
+          "prompt": "What happens to the money you have?",
+          "scene": "You check a price and leave without buying.",
+          "options": [
+            {
+              "label": "Money leaves"
+            },
+            {
+              "label": "No movement"
+            },
+            {
+              "label": "Money enters"
+            }
+          ],
+          "help": [
+            "Did anyone pay you, or did you pay anyone?"
+          ],
+          "feedback": {
+            "met": "No payment happened, so your money did not change.",
+            "not_yet": "Did anyone pay you, or did you pay anyone?"
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué pasa con el dinero que tienes?",
+          "scene": "Revisas un precio y te vas sin comprar.",
+          "options": [
+            {
+              "label": "Sale dinero"
+            },
+            {
+              "label": "Sin movimiento"
+            },
+            {
+              "label": "Entra dinero"
+            }
+          ],
+          "help": [
+            "¿Alguien te pagó o tú pagaste?"
+          ],
+          "feedback": {
+            "met": "No hubo ningún pago: tu dinero no cambió.",
+            "not_yet": "¿Alguien te pagó o tú pagaste?"
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que acontece com o dinheiro que você tem?",
+          "scene": "Você confere um preço e sai sem comprar.",
+          "options": [
+            {
+              "label": "Dinheiro sai"
+            },
+            {
+              "label": "Sem movimento"
+            },
+            {
+              "label": "Dinheiro entra"
+            }
+          ],
+          "help": [
+            "Alguém pagou você ou você pagou alguém?"
+          ],
+          "feedback": {
+            "met": "Não houve pagamento: seu dinheiro não mudou.",
+            "not_yet": "Alguém pagou você ou você pagou alguém?"
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.track-earnings",
+      "copy": {
+        "en-US": {
+          "prompt": "What happens to the money you have?",
+          "scene": "You sell your old chair and receive payment.",
+          "options": [
+            {
+              "label": "Money leaves"
+            },
+            {
+              "label": "No movement"
+            },
+            {
+              "label": "Money enters"
+            }
+          ],
+          "help": [
+            "Track the payment reaching you."
+          ],
+          "feedback": {
+            "met": "Receiving the buyer’s payment adds money.",
+            "not_yet": "Track the payment reaching you."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué pasa con el dinero que tienes?",
+          "scene": "Vendes tu silla usada y recibes el pago.",
+          "options": [
+            {
+              "label": "Sale dinero"
+            },
+            {
+              "label": "Sin movimiento"
+            },
+            {
+              "label": "Entra dinero"
+            }
+          ],
+          "help": [
+            "Sigue el pago que llega a ti."
+          ],
+          "feedback": {
+            "met": "Recibir el pago de quien compra agrega dinero.",
+            "not_yet": "Sigue el pago que llega a ti."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que acontece com o dinheiro que você tem?",
+          "scene": "Você vende sua cadeira usada e recebe o pagamento.",
+          "options": [
+            {
+              "label": "Dinheiro sai"
+            },
+            {
+              "label": "Sem movimento"
+            },
+            {
+              "label": "Dinheiro entra"
+            }
+          ],
+          "help": [
+            "Acompanhe o pagamento que chega até você."
+          ],
+          "feedback": {
+            "met": "Receber o pagamento de quem compra acrescenta dinheiro.",
+            "not_yet": "Acompanhe o pagamento que chega até você."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "life.track-earnings",
+      "copy": {
+        "en-US": {
+          "prompt": "What happens to the money you have?",
+          "scene": "You pay the electricity bill.",
+          "options": [
+            {
+              "label": "Money leaves"
+            },
+            {
+              "label": "No movement"
+            },
+            {
+              "label": "Money enters"
+            }
+          ],
+          "help": [
+            "After paying, compare what you have left."
+          ],
+          "feedback": {
+            "met": "The payment leaves your available money.",
+            "not_yet": "After paying, compare what you have left."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué pasa con el dinero que tienes?",
+          "scene": "Pagas el recibo de la luz.",
+          "options": [
+            {
+              "label": "Sale dinero"
+            },
+            {
+              "label": "Sin movimiento"
+            },
+            {
+              "label": "Entra dinero"
+            }
+          ],
+          "help": [
+            "Después de pagar, compara lo que te queda."
+          ],
+          "feedback": {
+            "met": "El pago sale del dinero que tienes.",
+            "not_yet": "Después de pagar, compara lo que te queda."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que acontece com o dinheiro que você tem?",
+          "scene": "Você paga a conta de luz.",
+          "options": [
+            {
+              "label": "Dinheiro sai"
+            },
+            {
+              "label": "Sem movimento"
+            },
+            {
+              "label": "Dinheiro entra"
+            }
+          ],
+          "help": [
+            "Depois de pagar, compare o que sobrou."
+          ],
+          "feedback": {
+            "met": "O pagamento sai do dinheiro que você tem.",
+            "not_yet": "Depois de pagar, compare o que sobrou."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "transfer",
+      "knowledge_component_id": "life.track-earnings",
+      "copy": {
+        "en-US": {
+          "prompt": "What happens to the money you have?",
+          "scene": "A shop refunds a returned item to you.",
+          "options": [
+            {
+              "label": "Money leaves"
+            },
+            {
+              "label": "No movement"
+            },
+            {
+              "label": "Money enters"
+            }
+          ],
+          "help": [
+            "Follow where the refunded money goes."
+          ],
+          "feedback": {
+            "met": "The refund returns money to you.",
+            "not_yet": "Follow where the refunded money goes."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué pasa con el dinero que tienes?",
+          "scene": "Una tienda te devuelve el dinero de una compra.",
+          "options": [
+            {
+              "label": "Sale dinero"
+            },
+            {
+              "label": "Sin movimiento"
+            },
+            {
+              "label": "Entra dinero"
+            }
+          ],
+          "help": [
+            "Sigue hacia dónde va el dinero devuelto."
+          ],
+          "feedback": {
+            "met": "La devolución hace que el dinero regrese a ti.",
+            "not_yet": "Sigue hacia dónde va el dinero devuelto."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que acontece com o dinheiro que você tem?",
+          "scene": "Uma loja devolve seu dinheiro por uma compra.",
+          "options": [
+            {
+              "label": "Dinheiro sai"
+            },
+            {
+              "label": "Sem movimento"
+            },
+            {
+              "label": "Dinheiro entra"
+            }
+          ],
+          "help": [
+            "Acompanhe para onde vai o dinheiro devolvido."
+          ],
+          "feedback": {
+            "met": "O reembolso faz o dinheiro voltar para você.",
+            "not_yet": "Acompanhe para onde vai o dinheiro devolvido."
+          }
+        }
+      },
+      "item_phase": "post"
+    }
+  ]
+}

@@ -1,0 +1,767 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-tax-public-systems-part-1",
+  "lesson_id": "fe-production-tax-public-systems-01",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.tax-public-systems.01"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Distinguish a tax, a fee and a social contribution in explicitly labeled examples.",
+  "title": {
+    "en-US": "Public Payments",
+    "es-MX": "Pagos públicos distintos",
+    "pt-BR": "Pagamentos públicos distintos"
+  },
+  "new_concepts": [
+    "finance.prod.tax-public-systems.01"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Public Payments\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Pagos públicos distintos\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Pagamentos públicos distintos\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.tax-public-systems.01",
+      "observable_action": "Distinguish a tax, a fee and a social contribution in explicitly labeled examples.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.income-work.02",
+      "prod.purchase-decisions.02"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A label and purpose help you understand what a public charge is funding.",
+    "misconception": "Every deduction or public payment is interchangeable regardless of its stated purpose.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.tax-public-systems.01",
+        "context_id": "tax-public-systems-01-example-01",
+        "supports_from": [],
+        "reasoning": "Here, tax funds public spending; a fee pays a specific service; a social contribution funds a named protection system."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.tax-public-systems.01",
+        "context_id": "tax-public-systems-01-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The notice explicitly identifies tax and its general purpose."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.tax-public-systems.01",
+        "context_id": "tax-public-systems-01-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The charge is labeled for a specific document service."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.tax-public-systems.01",
+        "context_id": "tax-public-systems-01-practice-01",
+        "supports_from": [],
+        "reasoning": "The stated contribution funds the named social protection system."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.tax-public-systems.01",
+        "context_id": "tax-public-systems-01-practice-02",
+        "supports_from": [],
+        "reasoning": "A deduction alone does not identify its legal or financial purpose."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.tax-public-systems.01",
+        "context_id": "tax-public-systems-01-practice-03",
+        "supports_from": [],
+        "reasoning": "A contribution label does not establish every benefit entitlement."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.tax-public-systems.01",
+        "context_id": "tax-public-systems-01-transfer-01",
+        "supports_from": [],
+        "reasoning": "The labels identify two different purposes on the same bill."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.tax-public-systems.01",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A label and purpose help you understand what a public charge is funding."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "La etiqueta y el propósito ayudan a entender qué financia un cargo público."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "O nome e a finalidade ajudam a entender o que uma cobrança pública financia."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Read the stated purpose",
+          "line": "Here, tax funds public spending; a fee pays a specific service; a social contribution funds a named protection system."
+        },
+        "es-MX": {
+          "prompt": "Lee el propósito indicado",
+          "line": "Aquí, un impuesto financia gasto público; una cuota paga un servicio específico; una contribución social financia un sistema de protección indicado."
+        },
+        "pt-BR": {
+          "prompt": "Leia a finalidade dada",
+          "line": "Aqui, imposto financia gasto público; tarifa paga um serviço específico; contribuição social financia um sistema de proteção indicado."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.tax-public-systems.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Which label fits this example?",
+          "scene": "A fictional notice labels a required payment “tax for general public spending.”",
+          "options": [
+            {
+              "label": "Social contribution"
+            },
+            {
+              "label": "Specific service fee"
+            },
+            {
+              "label": "Tax"
+            }
+          ],
+          "help": [
+            "Use the stated label and purpose."
+          ],
+          "feedback": {
+            "met": "The notice explicitly identifies tax and its general purpose.",
+            "not_yet": "Use the stated label and purpose."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué etiqueta corresponde?",
+          "scene": "Un aviso ficticio identifica un pago obligatorio como «impuesto para gasto público general».",
+          "options": [
+            {
+              "label": "Contribución social"
+            },
+            {
+              "label": "Cuota por servicio específico"
+            },
+            {
+              "label": "Impuesto"
+            }
+          ],
+          "help": [
+            "Usa la etiqueta y el propósito indicados."
+          ],
+          "feedback": {
+            "met": "El aviso identifica expresamente impuesto y propósito general.",
+            "not_yet": "Usa la etiqueta y el propósito indicados."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual nome corresponde?",
+          "scene": "Um aviso fictício identifica um pagamento obrigatório como “imposto para gasto público geral”.",
+          "options": [
+            {
+              "label": "Contribuição social"
+            },
+            {
+              "label": "Tarifa por serviço específico"
+            },
+            {
+              "label": "Imposto"
+            }
+          ],
+          "help": [
+            "Use o nome e a finalidade dados."
+          ],
+          "feedback": {
+            "met": "O aviso identifica imposto e sua finalidade geral.",
+            "not_yet": "Use o nome e a finalidade dados."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.tax-public-systems.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Which label fits here?",
+          "scene": "This fictional system calls payment for processing one document a “service fee.”",
+          "options": [
+            {
+              "label": "Investment return"
+            },
+            {
+              "label": "General tax"
+            },
+            {
+              "label": "Service fee"
+            }
+          ],
+          "help": [
+            "Do not replace the stated purpose with another category."
+          ],
+          "feedback": {
+            "met": "The charge is labeled for a specific document service.",
+            "not_yet": "Do not replace the stated purpose with another category."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué etiqueta corresponde aquí?",
+          "scene": "Este sistema ficticio llama «cuota por servicio» al pago por tramitar un documento.",
+          "options": [
+            {
+              "label": "Rendimiento de inversión"
+            },
+            {
+              "label": "Impuesto general"
+            },
+            {
+              "label": "Cuota por servicio"
+            }
+          ],
+          "help": [
+            "No sustituyas el propósito indicado por otra categoría."
+          ],
+          "feedback": {
+            "met": "El cargo está identificado para un servicio documental específico.",
+            "not_yet": "No sustituyas el propósito indicado por otra categoría."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual nome corresponde aqui?",
+          "scene": "Este sistema fictício chama de “tarifa de serviço” o pagamento para emitir um documento.",
+          "options": [
+            {
+              "label": "Rendimento de aplicação"
+            },
+            {
+              "label": "Imposto geral"
+            },
+            {
+              "label": "Tarifa de serviço"
+            }
+          ],
+          "help": [
+            "Não troque a finalidade dada por outra categoria."
+          ],
+          "feedback": {
+            "met": "A cobrança é identificada para um serviço específico de documento.",
+            "not_yet": "Não troque a finalidade dada por outra categoria."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.tax-public-systems.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What is this payment?",
+          "scene": "A fictional statement labels a deduction “social contribution” funding its stated protection system.",
+          "options": [
+            {
+              "label": "Social contribution"
+            },
+            {
+              "label": "Investment deposit"
+            },
+            {
+              "label": "Account maintenance fee"
+            }
+          ],
+          "help": [
+            "Read the statement’s purpose, not merely the deduction amount."
+          ],
+          "feedback": {
+            "met": "The stated contribution funds the named social protection system.",
+            "not_yet": "Read the statement’s purpose, not merely the deduction amount."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué pago es este?",
+          "scene": "Un estado ficticio llama «contribución social» a una deducción para su sistema de protección indicado.",
+          "options": [
+            {
+              "label": "Contribución social"
+            },
+            {
+              "label": "Depósito de inversión"
+            },
+            {
+              "label": "Mantenimiento de cuenta"
+            }
+          ],
+          "help": [
+            "Lee el propósito, no solo el monto deducido."
+          ],
+          "feedback": {
+            "met": "La contribución indicada financia el sistema de protección nombrado.",
+            "not_yet": "Lee el propósito, no solo el monto deducido."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que pagamento é este?",
+          "scene": "Um extrato fictício chama de “contribuição social” um desconto para seu sistema de proteção indicado.",
+          "options": [
+            {
+              "label": "Contribuição social"
+            },
+            {
+              "label": "Depósito de aplicação"
+            },
+            {
+              "label": "Manutenção de conta"
+            }
+          ],
+          "help": [
+            "Leia a finalidade, não só o valor descontado."
+          ],
+          "feedback": {
+            "met": "A contribuição dada financia o sistema de proteção nomeado.",
+            "not_yet": "Leia a finalidade, não só o valor descontado."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.tax-public-systems.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Can the category be known?",
+          "scene": "A statement says only “deduction,” without a label or purpose.",
+          "options": [
+            {
+              "label": "No, request the charge description"
+            },
+            {
+              "label": "Yes, every deduction buys insurance"
+            },
+            {
+              "label": "Yes, every deduction is tax"
+            }
+          ],
+          "help": [
+            "Ask what the charge actually represents."
+          ],
+          "feedback": {
+            "met": "A deduction alone does not identify its legal or financial purpose.",
+            "not_yet": "Ask what the charge actually represents."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Puedes conocer la categoría?",
+          "scene": "Un estado solo dice «deducción», sin etiqueta ni propósito.",
+          "options": [
+            {
+              "label": "No, pide describir el cargo"
+            },
+            {
+              "label": "Sí, toda deducción compra seguro"
+            },
+            {
+              "label": "Sí, toda deducción es impuesto"
+            }
+          ],
+          "help": [
+            "Pregunta qué representa realmente el cargo."
+          ],
+          "feedback": {
+            "met": "Una deducción sola no identifica su propósito jurídico o financiero.",
+            "not_yet": "Pregunta qué representa realmente el cargo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Pode saber a categoria?",
+          "scene": "Um extrato diz só “desconto”, sem nome nem finalidade.",
+          "options": [
+            {
+              "label": "Não, peça a descrição da cobrança"
+            },
+            {
+              "label": "Sim, todo desconto compra seguro"
+            },
+            {
+              "label": "Sim, todo desconto é imposto"
+            }
+          ],
+          "help": [
+            "Pergunte o que a cobrança de fato representa."
+          ],
+          "feedback": {
+            "met": "Um desconto sozinho não identifica sua finalidade jurídica ou financeira.",
+            "not_yet": "Pergunte o que a cobrança de fato representa."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.tax-public-systems.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What should not be assumed?",
+          "scene": "A contribution funds a protection system, but eligibility conditions are not provided.",
+          "options": [
+            {
+              "label": "That the payment has a stated purpose"
+            },
+            {
+              "label": "That this person automatically receives every benefit"
+            }
+          ],
+          "help": [
+            "Check the applicable eligibility rules separately."
+          ],
+          "feedback": {
+            "met": "A contribution label does not establish every benefit entitlement.",
+            "not_yet": "Check the applicable eligibility rules separately."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué no debes suponer?",
+          "scene": "Una contribución financia protección, pero no dan condiciones de elegibilidad.",
+          "options": [
+            {
+              "label": "Que el pago tiene propósito indicado"
+            },
+            {
+              "label": "Que esa persona recibe automáticamente todo beneficio"
+            }
+          ],
+          "help": [
+            "Verifica por separado las reglas de elegibilidad aplicables."
+          ],
+          "feedback": {
+            "met": "La etiqueta no establece derecho a todos los beneficios.",
+            "not_yet": "Verifica por separado las reglas de elegibilidad aplicables."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que não deve supor?",
+          "scene": "Uma contribuição financia proteção, mas não dão regras de acesso.",
+          "options": [
+            {
+              "label": "Que o pagamento tem finalidade dada"
+            },
+            {
+              "label": "Que a pessoa recebe todo benefício automaticamente"
+            }
+          ],
+          "help": [
+            "Confira à parte as regras de acesso aplicáveis."
+          ],
+          "feedback": {
+            "met": "O nome não estabelece direito a todos os benefícios.",
+            "not_yet": "Confira à parte as regras de acesso aplicáveis."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.tax-public-systems.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Which distinction is correct?",
+          "scene": "A fictional bill lists general tax and a separate fee for issuing a permit.",
+          "options": [
+            {
+              "label": "The fee cancels the tax"
+            },
+            {
+              "label": "Both are investment income"
+            },
+            {
+              "label": "Different stated purposes"
+            }
+          ],
+          "help": [
+            "A shared bill does not make all charges identical."
+          ],
+          "feedback": {
+            "met": "The labels identify two different purposes on the same bill.",
+            "not_yet": "A shared bill does not make all charges identical."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué distinción es correcta?",
+          "scene": "Una cuenta ficticia lista impuesto general y una cuota aparte por emitir un permiso.",
+          "options": [
+            {
+              "label": "La cuota cancela el impuesto"
+            },
+            {
+              "label": "Ambos son ingresos de inversión"
+            },
+            {
+              "label": "Propósitos indicados distintos"
+            }
+          ],
+          "help": [
+            "Compartir cuenta no vuelve iguales todos los cargos."
+          ],
+          "feedback": {
+            "met": "Las etiquetas distinguen dos propósitos en una misma cuenta.",
+            "not_yet": "Compartir cuenta no vuelve iguales todos los cargos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual distinção é correta?",
+          "scene": "Uma conta fictícia lista imposto geral e uma tarifa separada para emitir uma licença.",
+          "options": [
+            {
+              "label": "A tarifa cancela o imposto"
+            },
+            {
+              "label": "Ambos são renda de aplicação"
+            },
+            {
+              "label": "Finalidades dadas distintas"
+            }
+          ],
+          "help": [
+            "Estar na mesma conta não torna cobranças iguais."
+          ],
+          "feedback": {
+            "met": "Os nomes distinguem duas finalidades na mesma conta.",
+            "not_yet": "Estar na mesma conta não torna cobranças iguais."
+          }
+        }
+      }
+    }
+  ]
+}

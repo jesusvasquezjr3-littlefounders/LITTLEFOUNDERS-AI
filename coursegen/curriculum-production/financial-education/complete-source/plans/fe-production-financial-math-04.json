@@ -1,0 +1,861 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-financial-math-part-1",
+  "lesson_id": "fe-production-financial-math-04",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.financial-math.04"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Calculate the shortfall when stated obligations exceed available money.",
+  "title": {
+    "en-US": "The shortfall",
+    "es-MX": "Encuentra lo que falta",
+    "pt-BR": "Encontre o que falta"
+  },
+  "new_concepts": [
+    "finance.prod.financial-math.04"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Find the shortfall\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Encuentra lo que falta\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Encontre o que falta\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.financial-math.04",
+      "observable_action": "Calculate the shortfall when stated obligations exceed available money.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.financial-math.02",
+      "cash.reserved"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Knowing the gap lets you respond before a payment fails.",
+    "misconception": "Treat a shortfall as the whole bill or invent money to erase it.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.financial-math.04",
+        "context_id": "fe-production-financial-math-04-example-01",
+        "supports_from": [],
+        "reasoning": "A bill needs 90; you have 65. Subtract what you have: 90 − 65 = 25 still needed."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.financial-math.04",
+        "context_id": "fe-production-financial-math-04-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Only the uncovered part is missing."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.financial-math.04",
+        "context_id": "fe-production-financial-math-04-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The gap must cover all stated obligations."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.financial-math.04",
+        "context_id": "fe-production-financial-math-04-practice-01",
+        "supports_from": [],
+        "reasoning": "The shortfall is the cost above available money."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.financial-math.04",
+        "context_id": "fe-production-financial-math-04-practice-02",
+        "supports_from": [],
+        "reasoning": "Total obligations exceed available money by twenty-five."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.financial-math.04",
+        "context_id": "fe-production-financial-math-04-practice-03",
+        "supports_from": [],
+        "reasoning": "A covered bill has no shortfall."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.financial-math.04",
+        "context_id": "fe-production-financial-math-04-transfer-01",
+        "supports_from": [],
+        "reasoning": "A future receipt cannot cover today’s payment yet."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.financial-math.04",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Knowing the gap lets you respond before a payment fails."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Conocer la diferencia permite actuar antes de incumplir un pago."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Conhecer a diferença permite agir antes de faltar um pagamento."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Need minus available",
+          "line": "A bill needs 90; you have 65. Subtract what you have: 90 − 65 = 25 still needed."
+        },
+        "es-MX": {
+          "prompt": "Necesario menos disponible",
+          "line": "Una cuenta requiere 90; tienes 65. Resta lo que tienes: 90 − 65 = 25 faltantes."
+        },
+        "pt-BR": {
+          "prompt": "Necessário menos disponível",
+          "line": "Uma conta exige 90; você tem 65. Subtraia o que tem: 90 − 65 = 25 faltantes."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.04",
+      "copy": {
+        "en-US": {
+          "prompt": "How much is missing?",
+          "scene": "Need 70; available 50. Subtract available money from the need.",
+          "options": [
+            {
+              "label": "70"
+            },
+            {
+              "label": "20"
+            },
+            {
+              "label": "120"
+            }
+          ],
+          "help": [
+            "Start with the obligation."
+          ],
+          "feedback": {
+            "met": "Only the uncovered part is missing.",
+            "not_yet": "Start with the obligation."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto falta?",
+          "scene": "Necesitas 70; disponibles 50. Resta lo disponible de lo necesario.",
+          "options": [
+            {
+              "label": "70"
+            },
+            {
+              "label": "20"
+            },
+            {
+              "label": "120"
+            }
+          ],
+          "help": [
+            "Empieza con la obligación."
+          ],
+          "feedback": {
+            "met": "Solo falta la parte no cubierta.",
+            "not_yet": "Empieza con la obligación."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto falta?",
+          "scene": "Precisa de 70; disponíveis 50. Subtraia o disponível do necessário.",
+          "options": [
+            {
+              "label": "70"
+            },
+            {
+              "label": "20"
+            },
+            {
+              "label": "120"
+            }
+          ],
+          "help": [
+            "Comece pela obrigação."
+          ],
+          "feedback": {
+            "met": "Só falta a parte não coberta.",
+            "not_yet": "Comece pela obrigação."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          70,
+          50
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.04",
+      "copy": {
+        "en-US": {
+          "prompt": "What must you do first?",
+          "scene": "Two bills need 30 and 20; you have 40.",
+          "options": [
+            {
+              "label": "Ignore the smaller bill"
+            },
+            {
+              "label": "Count available money twice"
+            },
+            {
+              "label": "Add both bills"
+            }
+          ],
+          "help": [
+            "Find the complete need before subtracting."
+          ],
+          "feedback": {
+            "met": "The gap must cover all stated obligations.",
+            "not_yet": "Find the complete need before subtracting."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debes hacer primero?",
+          "scene": "Dos cuentas requieren 30 y 20; tienes 40.",
+          "options": [
+            {
+              "label": "Ignora la cuenta menor"
+            },
+            {
+              "label": "Cuenta tu dinero dos veces"
+            },
+            {
+              "label": "Suma ambas cuentas"
+            }
+          ],
+          "help": [
+            "Encuentra la necesidad completa antes de restar."
+          ],
+          "feedback": {
+            "met": "La diferencia debe cubrir todas las obligaciones indicadas.",
+            "not_yet": "Encuentra la necesidad completa antes de restar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que fazer primeiro?",
+          "scene": "Duas contas exigem 30 e 20; você tem 40.",
+          "options": [
+            {
+              "label": "Ignore a conta menor"
+            },
+            {
+              "label": "Conte seu dinheiro duas vezes"
+            },
+            {
+              "label": "Some as duas contas"
+            }
+          ],
+          "help": [
+            "Encontre a necessidade completa antes de subtrair."
+          ],
+          "feedback": {
+            "met": "A diferença deve cobrir todas as obrigações informadas.",
+            "not_yet": "Encontre a necessidade completa antes de subtrair."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.04",
+      "copy": {
+        "en-US": {
+          "prompt": "How much is missing?",
+          "scene": "Medicine costs 85; available money is 60.",
+          "options": [
+            {
+              "label": "60"
+            },
+            {
+              "label": "145"
+            },
+            {
+              "label": "25"
+            }
+          ],
+          "help": [
+            "Compare need with available money."
+          ],
+          "feedback": {
+            "met": "The shortfall is the cost above available money.",
+            "not_yet": "Compare need with available money."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto falta?",
+          "scene": "Las medicinas cuestan 85; tienes disponibles 60.",
+          "options": [
+            {
+              "label": "60"
+            },
+            {
+              "label": "145"
+            },
+            {
+              "label": "25"
+            }
+          ],
+          "help": [
+            "Compara necesidad y dinero disponible."
+          ],
+          "feedback": {
+            "met": "El faltante es el costo que supera lo disponible.",
+            "not_yet": "Compara necesidad y dinero disponible."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto falta?",
+          "scene": "Os remédios custam 85; há 60 disponíveis.",
+          "options": [
+            {
+              "label": "60"
+            },
+            {
+              "label": "145"
+            },
+            {
+              "label": "25"
+            }
+          ],
+          "help": [
+            "Compare necessidade e dinheiro disponível."
+          ],
+          "feedback": {
+            "met": "A falta é o custo acima do disponível.",
+            "not_yet": "Compare necessidade e dinheiro disponível."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          85,
+          60
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Combined shortfall?",
+          "scene": "Bills need 45 and 35; you have 55.",
+          "options": [
+            {
+              "label": "25"
+            },
+            {
+              "label": "80"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Add both needs, then subtract available money."
+          ],
+          "feedback": {
+            "met": "Total obligations exceed available money by twenty-five.",
+            "not_yet": "Add both needs, then subtract available money."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Faltante conjunto?",
+          "scene": "Cuentas pendientes: 45 y 35; tienes 55.",
+          "options": [
+            {
+              "label": "25"
+            },
+            {
+              "label": "80"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Suma ambas necesidades y resta lo disponible."
+          ],
+          "feedback": {
+            "met": "Las obligaciones superan lo disponible por veinticinco.",
+            "not_yet": "Suma ambas necesidades y resta lo disponible."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Falta total?",
+          "scene": "Contas pendentes: 45 e 35; você tem 55.",
+          "options": [
+            {
+              "label": "25"
+            },
+            {
+              "label": "80"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Some as necessidades e subtraia o disponível."
+          ],
+          "feedback": {
+            "met": "As obrigações superam o disponível em vinte e cinco.",
+            "not_yet": "Some as necessidades e subtraia o disponível."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          45,
+          35,
+          55
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "add",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Is there a shortfall for it?",
+          "scene": "You have enough for a bill, with money left afterward.",
+          "options": [
+            {
+              "label": "Yes, the bill amount"
+            },
+            {
+              "label": "Yes, the remaining money"
+            },
+            {
+              "label": "No"
+            }
+          ],
+          "help": [
+            "A shortfall means need exceeds available money."
+          ],
+          "feedback": {
+            "met": "A covered bill has no shortfall.",
+            "not_yet": "A shortfall means need exceeds available money."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Hay un faltante para esa cuenta?",
+          "scene": "Te alcanza para una cuenta y sobra dinero después.",
+          "options": [
+            {
+              "label": "Sí, el monto de la cuenta"
+            },
+            {
+              "label": "Sí, lo que sobra"
+            },
+            {
+              "label": "No"
+            }
+          ],
+          "help": [
+            "Un faltante implica necesidad mayor que lo disponible."
+          ],
+          "feedback": {
+            "met": "Una cuenta cubierta no tiene faltante.",
+            "not_yet": "Un faltante implica necesidad mayor que lo disponible."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Falta dinheiro para essa conta?",
+          "scene": "Você tem o suficiente para a conta e sobra dinheiro.",
+          "options": [
+            {
+              "label": "Sim, o valor da conta"
+            },
+            {
+              "label": "Sim, o que sobra"
+            },
+            {
+              "label": "Não"
+            }
+          ],
+          "help": [
+            "Falta significa necessidade maior que o disponível."
+          ],
+          "feedback": {
+            "met": "Uma conta coberta não tem falta.",
+            "not_yet": "Falta significa necessidade maior que o disponível."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.financial-math.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Today’s shortfall?",
+          "scene": "A deposit requires 120 today. You hold 80; tomorrow’s 50 has not arrived.",
+          "options": [
+            {
+              "label": "70"
+            },
+            {
+              "label": "0"
+            },
+            {
+              "label": "40"
+            }
+          ],
+          "help": [
+            "Use money available by the due date."
+          ],
+          "feedback": {
+            "met": "A future receipt cannot cover today’s payment yet.",
+            "not_yet": "Use money available by the due date."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Faltante de hoy?",
+          "scene": "Un depósito requiere 120 hoy. Tienes 80; los 50 de mañana no llegan aún.",
+          "options": [
+            {
+              "label": "70"
+            },
+            {
+              "label": "0"
+            },
+            {
+              "label": "40"
+            }
+          ],
+          "help": [
+            "Usa dinero disponible antes del vencimiento."
+          ],
+          "feedback": {
+            "met": "Una entrada futura aún no cubre el pago de hoy.",
+            "not_yet": "Usa dinero disponible antes del vencimiento."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Falta de hoje?",
+          "scene": "Um depósito exige 120 hoje. Você tem 80; os 50 de amanhã não chegaram.",
+          "options": [
+            {
+              "label": "70"
+            },
+            {
+              "label": "0"
+            },
+            {
+              "label": "40"
+            }
+          ],
+          "help": [
+            "Use dinheiro disponível até o vencimento."
+          ],
+          "feedback": {
+            "met": "Uma entrada futura ainda não cobre o pagamento de hoje.",
+            "not_yet": "Use dinheiro disponível até o vencimento."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          120,
+          80,
+          50
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

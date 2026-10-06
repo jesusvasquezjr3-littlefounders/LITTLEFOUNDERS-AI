@@ -1,0 +1,815 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-financial-math-part-3",
+  "lesson_id": "fe-production-financial-math-12",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.financial-math.12"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Round a monetary calculation at the specified step and explain the remaining difference.",
+  "title": {
+    "en-US": "Rounding steps",
+    "es-MX": "Redondea en el paso correcto",
+    "pt-BR": "Arredonde na etapa certa"
+  },
+  "new_concepts": [
+    "finance.prod.financial-math.12"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Round at the right step\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Redondea en el paso correcto\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Arredonde na etapa certa\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.financial-math.12",
+      "observable_action": "Round a monetary calculation at the specified step and explain the remaining difference.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.financial-math.01",
+      "prod.financial-math.06"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Small rounding differences still need an explanation.",
+    "misconception": "Round each intermediate number when the stated rule requires rounding the final total.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.financial-math.12",
+        "context_id": "fe-production-financial-math-12-example-01",
+        "supports_from": [],
+        "reasoning": "Split 10 three ways: 3.33 each totals 9.99. One cent remains; agree who covers it instead of pretending it vanished."
+      },
+      {
+        "segment_id": "example-rounding",
+        "skill_id": "prod.financial-math.12",
+        "context_id": "fe-production-financial-math-12-example-rounding",
+        "supports_from": [],
+        "reasoning": "Keep two decimals. Look at the third digit: five or more adds one cent; below five leaves the cents unchanged."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.financial-math.12",
+        "context_id": "fe-production-financial-math-12-guided-01",
+        "supports_from": [
+          "example-rounding"
+        ],
+        "reasoning": "A following digit of five or more rounds upward."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.financial-math.12",
+        "context_id": "fe-production-financial-math-12-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "A following digit below five leaves the retained digit unchanged."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.financial-math.12",
+        "context_id": "fe-production-financial-math-12-practice-01",
+        "supports_from": [],
+        "reasoning": "Rounding belongs at the step named by the rule."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.financial-math.12",
+        "context_id": "fe-production-financial-math-12-practice-02",
+        "supports_from": [],
+        "reasoning": "Rounded contributions leave a visible one-cent gap."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.financial-math.12",
+        "context_id": "fe-production-financial-math-12-practice-03",
+        "supports_from": [],
+        "reasoning": "Rounding can carry into the whole-unit place."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.financial-math.12",
+        "context_id": "fe-production-financial-math-12-transfer-01",
+        "supports_from": [],
+        "reasoning": "Different rounding steps can explain a small discrepancy."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.financial-math.12",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Small rounding differences still need an explanation."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Las diferencias pequeñas de redondeo también necesitan explicación."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Pequenas diferenças de arredondamento também precisam de explicação."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Keep the remainder visible",
+          "line": "Split 10 three ways: 3.33 each totals 9.99. One cent remains; agree who covers it instead of pretending it vanished."
+        },
+        "es-MX": {
+          "prompt": "Haz visible el resto",
+          "line": "Reparte 10 entre tres: 3.33 cada uno suma 9.99. Queda un centavo; acuerden quién lo cubre en vez de ignorarlo."
+        },
+        "pt-BR": {
+          "prompt": "Mantenha o resto visível",
+          "line": "Divida 10 entre três: 3,33 cada soma 9,99. Resta um centavo; combinem quem o cobre em vez de ignorá-lo."
+        }
+      }
+    },
+    {
+      "id": "example-rounding",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Round to cents",
+          "line": "Keep two decimals. Look at the third digit: five or more adds one cent; below five leaves the cents unchanged."
+        },
+        "es-MX": {
+          "prompt": "Redondea a centavos",
+          "line": "Conserva dos decimales. Mira el tercer dígito: cinco o más suma un centavo; menos de cinco deja los centavos iguales."
+        },
+        "pt-BR": {
+          "prompt": "Arredonde para centavos",
+          "line": "Mantenha duas casas decimais. Veja o terceiro dígito: cinco ou mais soma um centavo; abaixo de cinco mantém os centavos."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.12",
+      "copy": {
+        "en-US": {
+          "prompt": "Which result follows usual rounding?",
+          "scene": "Round 4.236 to two decimal places. The third digit is six.",
+          "options": [
+            {
+              "label": "Four units, thirty-six cents"
+            },
+            {
+              "label": "Four units, twenty-three cents"
+            },
+            {
+              "label": "Four units, twenty-four cents"
+            }
+          ],
+          "help": [
+            "Keep two decimal places and inspect the next digit."
+          ],
+          "feedback": {
+            "met": "A following digit of five or more rounds upward.",
+            "not_yet": "Keep two decimal places and inspect the next digit."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué resultado sigue el redondeo habitual?",
+          "scene": "Redondea 4.236 a dos decimales. El tercer dígito es seis.",
+          "options": [
+            {
+              "label": "Cuatro unidades, treinta y seis centavos"
+            },
+            {
+              "label": "Cuatro unidades, veintitrés centavos"
+            },
+            {
+              "label": "Cuatro unidades, veinticuatro centavos"
+            }
+          ],
+          "help": [
+            "Conserva dos decimales y revisa el siguiente dígito."
+          ],
+          "feedback": {
+            "met": "Un dígito siguiente de cinco o más redondea hacia arriba.",
+            "not_yet": "Conserva dos decimales y revisa el siguiente dígito."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual resultado segue o arredondamento usual?",
+          "scene": "Arredonde 4,236 para duas casas decimais. O terceiro dígito é seis.",
+          "options": [
+            {
+              "label": "Quatro unidades, trinta e seis centavos"
+            },
+            {
+              "label": "Quatro unidades, vinte e três centavos"
+            },
+            {
+              "label": "Quatro unidades, vinte e quatro centavos"
+            }
+          ],
+          "help": [
+            "Mantenha duas casas e confira o próximo dígito."
+          ],
+          "feedback": {
+            "met": "Um dígito seguinte de cinco ou mais arredonda para cima.",
+            "not_yet": "Mantenha duas casas e confira o próximo dígito."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.12",
+      "copy": {
+        "en-US": {
+          "prompt": "Which result follows?",
+          "scene": "Round 6.122 to two decimals. The next digit is below five.",
+          "options": [
+            {
+              "label": "Six units, twelve cents"
+            },
+            {
+              "label": "Six units, twenty-two cents"
+            },
+            {
+              "label": "Six units, thirteen cents"
+            }
+          ],
+          "help": [
+            "Inspect the digit after the last retained place."
+          ],
+          "feedback": {
+            "met": "A following digit below five leaves the retained digit unchanged.",
+            "not_yet": "Inspect the digit after the last retained place."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué resultado corresponde?",
+          "scene": "Redondea 6.122 a dos decimales. El siguiente dígito es menor que cinco.",
+          "options": [
+            {
+              "label": "Seis unidades, doce centavos"
+            },
+            {
+              "label": "Seis unidades, veintidós centavos"
+            },
+            {
+              "label": "Seis unidades, trece centavos"
+            }
+          ],
+          "help": [
+            "Revisa el dígito después del último lugar conservado."
+          ],
+          "feedback": {
+            "met": "Un dígito siguiente menor que cinco no cambia el conservado.",
+            "not_yet": "Revisa el dígito después del último lugar conservado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual resultado corresponde?",
+          "scene": "Arredonde 6,122 para duas casas. O próximo dígito é menor que cinco.",
+          "options": [
+            {
+              "label": "Seis unidades, doze centavos"
+            },
+            {
+              "label": "Seis unidades, vinte e dois centavos"
+            },
+            {
+              "label": "Seis unidades, treze centavos"
+            }
+          ],
+          "help": [
+            "Confira o dígito após a última casa mantida."
+          ],
+          "feedback": {
+            "met": "Um dígito seguinte menor que cinco não altera o mantido.",
+            "not_yet": "Confira o dígito após a última casa mantida."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.12",
+      "copy": {
+        "en-US": {
+          "prompt": "Which method follows it?",
+          "scene": "A rule says: sum exact charges, then round the final total.",
+          "options": [
+            {
+              "label": "Keep precision until the total"
+            },
+            {
+              "label": "Discard all cents"
+            },
+            {
+              "label": "Round every charge first"
+            }
+          ],
+          "help": [
+            "Changing the step can change the final amount."
+          ],
+          "feedback": {
+            "met": "Rounding belongs at the step named by the rule.",
+            "not_yet": "Changing the step can change the final amount."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué método la sigue?",
+          "scene": "Una regla dice: suma cargos exactos y después redondea el total final.",
+          "options": [
+            {
+              "label": "Conserva precisión hasta el total"
+            },
+            {
+              "label": "Descarta todos los centavos"
+            },
+            {
+              "label": "Redondea primero cada cargo"
+            }
+          ],
+          "help": [
+            "Cambiar el paso puede cambiar el monto final."
+          ],
+          "feedback": {
+            "met": "El redondeo corresponde al paso indicado por la regla.",
+            "not_yet": "Cambiar el paso puede cambiar el monto final."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual método a segue?",
+          "scene": "Uma regra diz: some cobranças exatas e depois arredonde o total final.",
+          "options": [
+            {
+              "label": "Mantenha precisão até o total"
+            },
+            {
+              "label": "Descarte todos os centavos"
+            },
+            {
+              "label": "Arredonde primeiro cada cobrança"
+            }
+          ],
+          "help": [
+            "Mudar a etapa pode mudar o valor final."
+          ],
+          "feedback": {
+            "met": "O arredondamento pertence à etapa indicada pela regra.",
+            "not_yet": "Mudar a etapa pode mudar o valor final."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.12",
+      "copy": {
+        "en-US": {
+          "prompt": "What remains unresolved?",
+          "scene": "Three contributions of 3.33 must cover 10.00.",
+          "options": [
+            {
+              "label": "One cent still needs allocation"
+            },
+            {
+              "label": "Nothing, the sum is exact"
+            },
+            {
+              "label": "Each person owes ten more"
+            }
+          ],
+          "help": [
+            "Check the sum after rounding."
+          ],
+          "feedback": {
+            "met": "Rounded contributions leave a visible one-cent gap.",
+            "not_yet": "Check the sum after rounding."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué falta resolver?",
+          "scene": "Tres aportaciones de 3.33 deben cubrir 10.00.",
+          "options": [
+            {
+              "label": "Falta asignar un centavo"
+            },
+            {
+              "label": "Nada, la suma es exacta"
+            },
+            {
+              "label": "Cada persona debe diez más"
+            }
+          ],
+          "help": [
+            "Revisa la suma después de redondear."
+          ],
+          "feedback": {
+            "met": "Las aportaciones redondeadas dejan un faltante visible de un centavo.",
+            "not_yet": "Revisa la suma después de redondear."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que falta resolver?",
+          "scene": "Três contribuições de 3,33 devem cobrir 10,00.",
+          "options": [
+            {
+              "label": "Falta atribuir um centavo"
+            },
+            {
+              "label": "Nada, a soma é exata"
+            },
+            {
+              "label": "Cada pessoa deve mais dez"
+            }
+          ],
+          "help": [
+            "Confira a soma depois de arredondar."
+          ],
+          "feedback": {
+            "met": "As contribuições arredondadas deixam uma falta visível de um centavo.",
+            "not_yet": "Confira a soma depois de arredondar."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.12",
+      "copy": {
+        "en-US": {
+          "prompt": "Rounded amount?",
+          "scene": "A calculated charge is 2.999; round once to two decimals.",
+          "options": [
+            {
+              "label": "Two units, ninety-nine cents"
+            },
+            {
+              "label": "Three whole units"
+            },
+            {
+              "label": "Twenty-nine units"
+            }
+          ],
+          "help": [
+            "The next digit requires rounding upward."
+          ],
+          "feedback": {
+            "met": "Rounding can carry into the whole-unit place.",
+            "not_yet": "The next digit requires rounding upward."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Monto redondeado?",
+          "scene": "Un cargo calculado es 2.999; redondea una vez a dos decimales.",
+          "options": [
+            {
+              "label": "Dos unidades, noventa y nueve centavos"
+            },
+            {
+              "label": "Tres unidades enteras"
+            },
+            {
+              "label": "Veintinueve unidades"
+            }
+          ],
+          "help": [
+            "El siguiente dígito exige redondear hacia arriba."
+          ],
+          "feedback": {
+            "met": "El redondeo puede llevar a la siguiente unidad entera.",
+            "not_yet": "El siguiente dígito exige redondear hacia arriba."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Valor arredondado?",
+          "scene": "Uma cobrança calculada é 2,999; arredonde uma vez para duas casas.",
+          "options": [
+            {
+              "label": "Duas unidades, noventa e nove centavos"
+            },
+            {
+              "label": "Três unidades inteiras"
+            },
+            {
+              "label": "Vinte e nove unidades"
+            }
+          ],
+          "help": [
+            "O próximo dígito exige arredondar para cima."
+          ],
+          "feedback": {
+            "met": "O arredondamento pode alcançar a próxima unidade inteira.",
+            "not_yet": "O próximo dígito exige arredondar para cima."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.financial-math.12",
+      "copy": {
+        "en-US": {
+          "prompt": "First useful check?",
+          "scene": "An invoice rounds each line; your spreadsheet rounds only the total. A small difference appears.",
+          "options": [
+            {
+              "label": "Delete the difference silently"
+            },
+            {
+              "label": "Compare the rounding rules"
+            },
+            {
+              "label": "Assume a new purchase occurred"
+            }
+          ],
+          "help": [
+            "Reproduce each stated rule before diagnosing the gap."
+          ],
+          "feedback": {
+            "met": "Different rounding steps can explain a small discrepancy.",
+            "not_yet": "Reproduce each stated rule before diagnosing the gap."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Primera revisión útil?",
+          "scene": "Una factura redondea cada renglón; tu hoja redondea solo el total. Aparece una diferencia pequeña.",
+          "options": [
+            {
+              "label": "Borra la diferencia sin registrarla"
+            },
+            {
+              "label": "Compara las reglas de redondeo"
+            },
+            {
+              "label": "Supón que hubo otra compra"
+            }
+          ],
+          "help": [
+            "Reproduce cada regla antes de diagnosticar la diferencia."
+          ],
+          "feedback": {
+            "met": "Distintos pasos de redondeo pueden explicar una diferencia pequeña.",
+            "not_yet": "Reproduce cada regla antes de diagnosticar la diferencia."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Primeira conferência útil?",
+          "scene": "Uma fatura arredonda cada linha; sua planilha arredonda só o total. Aparece uma pequena diferença.",
+          "options": [
+            {
+              "label": "Apague a diferença sem registrar"
+            },
+            {
+              "label": "Compare as regras de arredondamento"
+            },
+            {
+              "label": "Suponha que houve outra compra"
+            }
+          ],
+          "help": [
+            "Reproduza cada regra antes de diagnosticar a diferença."
+          ],
+          "feedback": {
+            "met": "Etapas diferentes de arredondamento podem explicar uma pequena diferença.",
+            "not_yet": "Reproduza cada regra antes de diagnosticar a diferença."
+          }
+        }
+      }
+    }
+  ]
+}

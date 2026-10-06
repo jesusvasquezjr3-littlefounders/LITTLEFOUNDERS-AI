@@ -1,0 +1,743 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-retirement-future-part-1",
+  "lesson_id": "fe-production-retirement-future-03",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.retirement-future.03"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Read contribution and ownership conditions in a fictional employer retirement arrangement.",
+  "title": {
+    "en-US": "Contribution Rules",
+    "es-MX": "Lee reglas de aportación y propiedad",
+    "pt-BR": "Leia regras de aporte e propriedade"
+  },
+  "new_concepts": [
+    "finance.prod.retirement-future.03"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Contribution Rules\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Lee reglas de aportación y propiedad\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Leia regras de aporte e propriedade\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.retirement-future.03",
+      "observable_action": "Read contribution and ownership conditions in a fictional employer retirement arrangement.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.retirement-future.02",
+      "prod.income-work.05"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Money shown in a workplace plan may include contributions with different ownership conditions.",
+    "misconception": "Every employer contribution shown on a statement is already unconditionally owned and withdrawable.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.retirement-future.03",
+        "context_id": "retirement-future-03-example-01",
+        "supports_from": [],
+        "reasoning": "This fictional plan makes employer contributions yours only after a service condition. A displayed total does not erase that condition."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.retirement-future.03",
+        "context_id": "retirement-future-03-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The stated ownership condition has not yet been met."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.retirement-future.03",
+        "context_id": "retirement-future-03-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The employer payment depends on the stated contribution and limit."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.retirement-future.03",
+        "context_id": "retirement-future-03-practice-01",
+        "supports_from": [],
+        "reasoning": "Departure timing can affect the stated conditional employer portion."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.retirement-future.03",
+        "context_id": "retirement-future-03-practice-02",
+        "supports_from": [],
+        "reasoning": "Owned funds can still have stated access restrictions."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.retirement-future.03",
+        "context_id": "retirement-future-03-practice-03",
+        "supports_from": [],
+        "reasoning": "Different arrangements can have different contribution and ownership rules."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.retirement-future.03",
+        "context_id": "retirement-future-03-transfer-01",
+        "supports_from": [],
+        "reasoning": "A conditional contribution is not the same as unconditional money."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.retirement-future.03",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Money shown in a workplace plan may include contributions with different ownership conditions."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "El dinero mostrado en un plan laboral puede incluir aportaciones con condiciones distintas de propiedad."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "O dinheiro mostrado num plano do trabalho pode incluir aportes com condições distintas de propriedade."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Use the fictional contract",
+          "line": "This fictional plan makes employer contributions yours only after a service condition. A displayed total does not erase that condition."
+        },
+        "es-MX": {
+          "prompt": "Usa el contrato ficticio",
+          "line": "Este plan ficticio entrega aportaciones patronales solo tras cumplir antigüedad. Un total mostrado no elimina esa condición."
+        },
+        "pt-BR": {
+          "prompt": "Use o contrato fictício",
+          "line": "Este plano fictício entrega aportes patronais só após cumprir tempo de serviço. Um total exibido não elimina essa condição."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Is the employer portion owned yet?",
+          "scene": "The fictional plan requires a service condition for employer contributions. The worker has not met it.",
+          "options": [
+            {
+              "label": "Not under the stated condition"
+            },
+            {
+              "label": "Yes, display equals ownership"
+            }
+          ],
+          "help": [
+            "Check conditions rather than only the displayed total."
+          ],
+          "feedback": {
+            "met": "The stated ownership condition has not yet been met.",
+            "not_yet": "Check conditions rather than only the displayed total."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Ya posee la parte patronal?",
+          "scene": "El plan ficticio exige una condición de antigüedad para aportaciones patronales. Aún no la cumple.",
+          "options": [
+            {
+              "label": "No según la condición indicada"
+            },
+            {
+              "label": "Sí, mostrar equivale a propiedad"
+            }
+          ],
+          "help": [
+            "Revisa condiciones, no solo el total mostrado."
+          ],
+          "feedback": {
+            "met": "Todavía no se cumple la condición de propiedad indicada.",
+            "not_yet": "Revisa condiciones, no solo el total mostrado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Já possui a parte patronal?",
+          "scene": "O plano fictício exige tempo de serviço para aportes patronais. A pessoa ainda não cumpriu.",
+          "options": [
+            {
+              "label": "Não pela condição dada"
+            },
+            {
+              "label": "Sim, exibir equivale a possuir"
+            }
+          ],
+          "help": [
+            "Confira condições, não só o total exibido."
+          ],
+          "feedback": {
+            "met": "A condição de propriedade dada ainda não foi cumprida.",
+            "not_yet": "Confira condições, não só o total exibido."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Which contribution rule applies?",
+          "scene": "A fictional employer matches only when the worker contributes, within a stated limit.",
+          "options": [
+            {
+              "label": "The conditional matching rule"
+            },
+            {
+              "label": "An unlimited automatic payment"
+            }
+          ],
+          "help": [
+            "Read both the trigger and maximum."
+          ],
+          "feedback": {
+            "met": "The employer payment depends on the stated contribution and limit.",
+            "not_yet": "Read both the trigger and maximum."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué regla de aportación aplica?",
+          "scene": "Un empleador ficticio iguala aportaciones solo si la persona aporta, dentro de un límite indicado.",
+          "options": [
+            {
+              "label": "La regla condicionada de igualación"
+            },
+            {
+              "label": "Un pago automático ilimitado"
+            }
+          ],
+          "help": [
+            "Lee la condición y el máximo."
+          ],
+          "feedback": {
+            "met": "El pago patronal depende de aportar y del límite indicado.",
+            "not_yet": "Lee la condición y el máximo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual regra de aporte vale?",
+          "scene": "Um empregador fictício iguala aportes só se a pessoa aportar, dentro de um limite dado.",
+          "options": [
+            {
+              "label": "A regra condicionada de contrapartida"
+            },
+            {
+              "label": "Um pagamento automático sem limite"
+            }
+          ],
+          "help": [
+            "Leia a condição e o máximo."
+          ],
+          "feedback": {
+            "met": "O pagamento patronal depende do aporte e do limite dado.",
+            "not_yet": "Leia a condição e o máximo."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Check what before leaving?",
+          "scene": "A worker may leave before meeting the fictional plan’s employer-ownership condition.",
+          "options": [
+            {
+              "label": "Which employer portion stays theirs"
+            },
+            {
+              "label": "Assume all displayed money stays theirs"
+            },
+            {
+              "label": "Only the total displayed balance"
+            }
+          ],
+          "help": [
+            "Use the plan’s actual ownership terms."
+          ],
+          "feedback": {
+            "met": "Departure timing can affect the stated conditional employer portion.",
+            "not_yet": "Use the plan’s actual ownership terms."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué revisar antes de irse?",
+          "scene": "Una persona podría irse antes de cumplir la condición de propiedad patronal del plan ficticio.",
+          "options": [
+            {
+              "label": "Qué parte patronal conservaría"
+            },
+            {
+              "label": "Suponer suyo todo monto mostrado"
+            },
+            {
+              "label": "Solo el saldo total mostrado"
+            }
+          ],
+          "help": [
+            "Usa los términos reales de propiedad del plan."
+          ],
+          "feedback": {
+            "met": "La fecha de salida puede afectar la parte patronal condicionada.",
+            "not_yet": "Usa los términos reales de propiedad del plan."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que conferir antes de sair?",
+          "scene": "Uma pessoa pode sair antes de cumprir a condição de propriedade patronal do plano fictício.",
+          "options": [
+            {
+              "label": "Qual parte patronal manteria"
+            },
+            {
+              "label": "Supor seu todo valor exibido"
+            },
+            {
+              "label": "Só o saldo total exibido"
+            }
+          ],
+          "help": [
+            "Use os termos reais de propriedade do plano."
+          ],
+          "feedback": {
+            "met": "A data de saída pode afetar a parte patronal condicionada.",
+            "not_yet": "Use os termos reais de propriedade do plano."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Does ownership imply immediate access?",
+          "scene": "The fictional plan grants ownership but restricts withdrawals until a later condition.",
+          "options": [
+            {
+              "label": "No, ownership and access differ"
+            },
+            {
+              "label": "Yes, ownership removes all restrictions"
+            }
+          ],
+          "help": [
+            "Check withdrawal rules separately from ownership."
+          ],
+          "feedback": {
+            "met": "Owned funds can still have stated access restrictions.",
+            "not_yet": "Check withdrawal rules separately from ownership."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Poseer implica acceso inmediato?",
+          "scene": "El plan ficticio concede propiedad, pero restringe retiros hasta otra condición posterior.",
+          "options": [
+            {
+              "label": "No, propiedad y acceso difieren"
+            },
+            {
+              "label": "Sí, poseer elimina restricciones"
+            }
+          ],
+          "help": [
+            "Revisa retiros por separado de propiedad."
+          ],
+          "feedback": {
+            "met": "Fondos propios aún pueden tener restricciones indicadas de acceso.",
+            "not_yet": "Revisa retiros por separado de propiedad."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Possuir implica acesso imediato?",
+          "scene": "O plano fictício concede propriedade, mas restringe saques até outra condição futura.",
+          "options": [
+            {
+              "label": "Não, propriedade e acesso diferem"
+            },
+            {
+              "label": "Sim, possuir elimina restrições"
+            }
+          ],
+          "help": [
+            "Confira saques à parte da propriedade."
+          ],
+          "feedback": {
+            "met": "Recursos próprios ainda podem ter restrições dadas de acesso.",
+            "not_yet": "Confira saques à parte da propriedade."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.03",
+      "copy": {
+        "en-US": {
+          "prompt": "How to resolve a mismatch?",
+          "scene": "A colleague’s description contradicts the current official plan terms.",
+          "options": [
+            {
+              "label": "Copy the colleague’s arrangement"
+            },
+            {
+              "label": "Assume all employers use identical rules"
+            },
+            {
+              "label": "Clarify using actual documents"
+            }
+          ],
+          "help": [
+            "Use the person’s own applicable plan terms."
+          ],
+          "feedback": {
+            "met": "Different arrangements can have different contribution and ownership rules.",
+            "not_yet": "Use the person’s own applicable plan terms."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué documento aclara la diferencia?",
+          "scene": "Una amistad describe el plan distinto de sus términos oficiales actuales.",
+          "options": [
+            {
+              "label": "Copiar el plan de la amistad"
+            },
+            {
+              "label": "Suponer reglas iguales en toda empresa"
+            },
+            {
+              "label": "Aclarar con documentos reales del plan"
+            }
+          ],
+          "help": [
+            "Usa los términos aplicables del plan propio."
+          ],
+          "feedback": {
+            "met": "Distintos planes pueden tener reglas de aportación y propiedad diferentes.",
+            "not_yet": "Usa los términos aplicables del plan propio."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual documento esclarece a diferença?",
+          "scene": "Uma amizade descreve o plano de modo distinto dos termos oficiais atuais.",
+          "options": [
+            {
+              "label": "Copiar o plano da amizade"
+            },
+            {
+              "label": "Supor regras iguais em toda empresa"
+            },
+            {
+              "label": "Esclarecer com documentos reais do plano"
+            }
+          ],
+          "help": [
+            "Use os termos aplicáveis do próprio plano."
+          ],
+          "feedback": {
+            "met": "Planos distintos podem ter regras de aporte e propriedade diferentes.",
+            "not_yet": "Use os termos aplicáveis do próprio plano."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.retirement-future.03",
+      "copy": {
+        "en-US": {
+          "prompt": "What should be compared?",
+          "scene": "An offer shows larger employer contributions, but ownership conditions may remain unmet.",
+          "options": [
+            {
+              "label": "Conditions and headline amount"
+            },
+            {
+              "label": "Only the larger amount"
+            },
+            {
+              "label": "Assume every promise already owned"
+            }
+          ],
+          "help": [
+            "Read contribution, ownership and access as separate questions."
+          ],
+          "feedback": {
+            "met": "A conditional contribution is not the same as unconditional money.",
+            "not_yet": "Read contribution, ownership and access as separate questions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debes comparar?",
+          "scene": "Una oferta muestra mayor aportación patronal, pero adquirirla exige condiciones que quizá no se cumplan.",
+          "options": [
+            {
+              "label": "Condiciones además del monto anunciado"
+            },
+            {
+              "label": "Solo el monto mostrado mayor"
+            },
+            {
+              "label": "Suponer propia toda promesa"
+            }
+          ],
+          "help": [
+            "Lee aportación, propiedad y acceso como preguntas distintas."
+          ],
+          "feedback": {
+            "met": "Una aportación condicionada no equivale a dinero incondicional.",
+            "not_yet": "Lee aportación, propiedad y acceso como preguntas distintas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que comparar?",
+          "scene": "Uma oferta mostra maior aporte patronal, mas possuí-lo exige condições que talvez não sejam cumpridas.",
+          "options": [
+            {
+              "label": "Condições além do valor anunciado"
+            },
+            {
+              "label": "Só o maior valor exibido"
+            },
+            {
+              "label": "Supor sua toda promessa"
+            }
+          ],
+          "help": [
+            "Leia aporte, propriedade e acesso como perguntas separadas."
+          ],
+          "feedback": {
+            "met": "Um aporte condicionado não equivale a dinheiro incondicional.",
+            "not_yet": "Leia aporte, propriedade e acesso como perguntas separadas."
+          }
+        }
+      }
+    }
+  ]
+}

@@ -4,6 +4,20 @@ How a new-catalog v2 lesson goes from a Stage 0 skeleton to learners (OD-17, OD-
 
 The v1 `generate`, `generate:track` and `author-publish` commands are retired. They refuse before provider calls, configuration access or Vault writes, including with paid ceilings or production confirmation. This v2 chain is the supported lesson authoring and publication path; catalog regeneration and paid steps still require the existing owner decisions.
 
+## Financial Education replacement: explicit source and safe ordering
+
+The 294-lesson adult replacement uses `coursegen/curriculum-production/financial-education/complete-source/`, produced by `authoring/collect-production.mjs`. The 36 recovery lessons remain calibration-only. The historical `release-v2-catalog.sh` defaults and OD-22 activation manifest describe the retired catalog; do not use them to release this replacement.
+
+1. Rebuild the complete source, then run `course:build` with its explicit blueprint and plans, writing `runs/production-complete`. Check its exact emitted documents with Core and review the actual player. Run the content gate from `coursegen/` with `npm run content:gates -- --course financial-education --blueprint curriculum-production/financial-education/complete-source/blueprint.json --plans curriculum-production/financial-education/complete-source/plans --lesson-ids runs/production-complete/lesson-ids.json --register adult`. An incomplete explicit source fails instead of falling back to the retired 112 lessons. Retain source hashes, findings and the distinction between automated evidence and human acceptance.
+2. Finish the repository push gates on the final tree. Deploy Core's authoritative adult KC eligibility checks before exposing or activating adult competencies. Apply migration `0259_archived_catalog_release.sql` before using the replacement release verifier. The new safeguard and governance classification have pending named sign-offs in the existing Tier 1 change record; technical tests do not provide those signatures.
+3. Review `agent/tools/prepare-financial-catalog-replacement.sql` against the verified local backup. It requires an authorized `actor_id`, the exact archived 112-lesson digest and a non-live course; it archives only retired parents and clears their stale KC bridges while preserving identities, mastery and lesson history. It defaults to `ROLLBACK`; use its audited transaction for the authorized production transition only after the release prerequisites are satisfied.
+4. Seed shared KC metadata with the generated replacement hierarchy supplied explicitly. Existing IDs, active/draft states and bridges are preserved; this is not the activation step. Import the generated hierarchy and all 882 localized v2 versions as drafts/review using explicit replacement blueprint, plans and lesson-ID mapping.
+5. Bind actual pedagogical and per-market findings to the current database content fingerprints through the existing staff workflow. The local `production-human-review.json` is an unsigned worksheet, not an attestation. Migration 0250 requires a real staff Content Author distinct from the Pedagogical Reviewer even when the source was AI-assisted; the operator must resolve that accountability, never invent an identity or reuse somebody's account as a placeholder. Calibration acceptance, owner publication authorization and agent editorial review do not fill findings or reviewer identities.
+6. Run exact-source `verify:course`, then release the whole course through the audited release RPC. Migration 0259 retains archived history, rejects active orphans and empty branches, and binds verification to the complete hierarchy fingerprint. A content or hierarchy change invalidates the relevant verification.
+7. Regenerate `database/seeds/kc_activation.financial-production.json` with `agent/tools/render-kc-activation.mjs` whenever the blueprint changes. Its guarded activation SQL requires all 294 lessons, all three current locales, current Forge attestation, current Stage 3 acceptance and exactly the 236 primary teaching bridges. Activate only then; do not substitute the historical OD-22 manifest. Finish with authenticated learner and Mentor smoke checks and fresh production status evidence.
+
+Native PostgreSQL tests of the retirement, release and activation guards use disposable databases and explicitly synthetic review fixtures. Those fixtures must never be copied into production as human acceptance. No emergency bypass is part of this replacement procedure.
+
 ## 1. Author the copy (Stage 1)
 
 ```bash
@@ -11,7 +25,7 @@ cd coursegen
 # Zero spend: answers from the committed plan, no model call.
 npm run v2:author -- --skeleton src/v2/fixtures/plans/22-v2-first-release-mixed.json --out /tmp/authored.json --dry-run
 # Paid (owner-run): DeepSeek, the same provider configuration as every Forge stage.
-npm run v2:author -- --skeleton <skeleton.json> --out <authored.json> --max-usd <approved USD>
+npm run v2:author -- --skeleton <skeleton.json> --blueprint <course-blueprint.json> --out <authored.json> --max-usd <approved USD>
 ```
 
 - A paid run refuses without `--max-usd` (`spendCeilingRefusal`) and runs under the usage ledger in the output folder; the ceiling only lowers `FORGE_MAX_USD_PER_RUN`.
@@ -30,14 +44,16 @@ cd coursegen
 # Zero spend, no Vault write: emit, gates, Core's contract and interactive-behaviour check, then the calls it would send.
 npm run v2:publish -- --plans <dir> --course <course-slug> --run-id <run-id> --out <dir> --dry-run
 # Owner-run: the same, then verify:course and Vault's reviewed publication transaction per market.
-npm run v2:publish -- --plans <dir> --course <course-slug> --run-id <run-id> --out <dir>
+npm run v2:publish -- --blueprint <course-blueprint.json> --plans <dir> --lesson-ids <ids.json> --course <course-slug> --run-id <run-id> --out <dir>
 # Owner-run, when a document holds a Horizonte segment type (see below).
-npm run v2:publish -- --plans <dir> --course <course-slug> --run-id <run-id> --out <dir> --core-has-horizonte
+npm run v2:publish -- --blueprint <course-blueprint.json> --plans <dir> --lesson-ids <ids.json> --course <course-slug> --run-id <run-id> --out <dir> --core-has-horizonte
 ```
 
 **Deploy order: Core first, then Forge.** The Core check in step 2 runs the Core source in this checkout, so it passes for a segment type the deployed Core does not know yet. An older Core answers 422 `UNSUPPORTED_LESSON` for a version that holds such a type: a new lesson stays unreachable, and a pending version that staff later release breaks a lesson that is already live. Every Horizonte type is new, so a Vault write (not a dry run) of a document that holds one stops at the Core check unless `--core-has-horizonte` confirms that the Core deploy is live. Deploy Core, then the browser, then publish.
 
 The chain stops at the first failing stage:
+
+Live authoring/publication now requires the [shared instructional workflow](COURSE-AUTHORING-WORKFLOW.md). Live publication verifies the exact blueprint, complete plan set and one-to-one lesson-ID mapping before environment or network access, then uses those same sources for its Vault-backed attestation. Historical catalogs are not selected by name when explicit sources are supplied. Personal-ledger fields and per-choice feedback additionally require `--core-has-instructional-fields` after the supporting Core deployment. These flags confirm deployed contract support; they do not approve content or clear Stage 3 findings. Legacy dry runs remain available for diagnostics.
 
 1. **emit and v2 gates**: `emitV2Lesson` (structure, gates 11-16).
 2. **Core check**: `npm --prefix backend run forge-v2:check -- <out>/documents.json`, Core's strict contract plus the interactive-behaviour gate over every permitted input state (reports its pass rate).

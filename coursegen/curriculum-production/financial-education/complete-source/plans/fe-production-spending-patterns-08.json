@@ -1,0 +1,778 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-spending-patterns-part-2",
+  "lesson_id": "fe-production-spending-patterns-08",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.spending-patterns.08"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Identify a purchase trigger and choose a pause that allows checking the cost.",
+  "title": {
+    "en-US": "Purchase pauses",
+    "es-MX": "Pausa antes de pagar",
+    "pt-BR": "Pause antes de pagar"
+  },
+  "new_concepts": [
+    "finance.prod.spending-patterns.08"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Pause before paying\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Pausa antes de pagar\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Pause antes de pagar\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.spending-patterns.08",
+      "observable_action": "Identify a purchase trigger and choose a pause that allows checking the cost.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.goals-tradeoffs.03"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Notice what pushes you to buy before checking the cost.",
+    "misconception": "Treating urgency, a mood or a discount as evidence that a purchase fits the current plan.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.spending-patterns.08",
+        "context_id": "fe-production-spending-patterns-08-example-01",
+        "supports_from": [],
+        "reasoning": "A sale countdown creates urgency. Pause to check the total and your plan before deciding."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.spending-patterns.08",
+        "context_id": "fe-production-spending-patterns-08-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "A deadline cue creates urgency without proving suitability."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.spending-patterns.08",
+        "context_id": "fe-production-spending-patterns-08-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Checking the full cost replaces urgency with relevant information."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.spending-patterns.08",
+        "context_id": "fe-production-spending-patterns-08-practice-01",
+        "supports_from": [],
+        "reasoning": "The scene connects the purchase urge to stress relief."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.spending-patterns.08",
+        "context_id": "fe-production-spending-patterns-08-practice-02",
+        "supports_from": [],
+        "reasoning": "A discount does not remove the existing rent commitment."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.spending-patterns.08",
+        "context_id": "fe-production-spending-patterns-08-practice-03",
+        "supports_from": [],
+        "reasoning": "A useful pause fits the actual need and available time."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.spending-patterns.08",
+        "context_id": "fe-production-spending-patterns-08-transfer-01",
+        "supports_from": [],
+        "reasoning": "Social pressure does not change the stated spending limit."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.spending-patterns.08",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Notice what pushes you to buy before checking the cost."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Detecta qué te empuja a comprar antes de revisar el costo."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Perceba o que leva você a comprar antes de conferir o custo."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "The cue and the check",
+          "line": "A sale countdown creates urgency. Pause to check the total and your plan before deciding."
+        },
+        "es-MX": {
+          "prompt": "La señal y la revisión",
+          "line": "Una cuenta regresiva crea urgencia. Pausa para revisar el total y tu plan antes de decidir."
+        },
+        "pt-BR": {
+          "prompt": "O sinal e a conferência",
+          "line": "Uma contagem regressiva cria urgência. Pause para conferir o total e seu plano antes de decidir."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.08",
+      "copy": {
+        "en-US": {
+          "prompt": "What is the immediate purchase trigger?",
+          "scene": "A shopping page says “ends soon”; you have not checked the total price.",
+          "options": [
+            {
+              "label": "The urgency message"
+            },
+            {
+              "label": "A confirmed household need"
+            },
+            {
+              "label": "A completed cost comparison"
+            }
+          ],
+          "help": [
+            "Identify what is pushing the decision now."
+          ],
+          "feedback": {
+            "met": "A deadline cue creates urgency without proving suitability.",
+            "not_yet": "Identify what is pushing the decision now."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué impulsa la compra inmediata?",
+          "scene": "Una tienda dice «termina pronto»; no has revisado el precio total.",
+          "options": [
+            {
+              "label": "El mensaje de urgencia"
+            },
+            {
+              "label": "Una necesidad familiar confirmada"
+            },
+            {
+              "label": "Una comparación de costos terminada"
+            }
+          ],
+          "help": [
+            "Identifica qué empuja la decisión ahora."
+          ],
+          "feedback": {
+            "met": "Una señal de plazo crea urgencia sin demostrar conveniencia.",
+            "not_yet": "Identifica qué empuja la decisión ahora."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que impulsiona a compra imediata?",
+          "scene": "Uma loja diz «acaba logo»; não conferiu o preço total.",
+          "options": [
+            {
+              "label": "A mensagem de urgência"
+            },
+            {
+              "label": "Uma necessidade familiar confirmada"
+            },
+            {
+              "label": "Uma comparação de custos concluída"
+            }
+          ],
+          "help": [
+            "Identifique o que impulsiona a decisão agora."
+          ],
+          "feedback": {
+            "met": "Um sinal de prazo cria urgência sem demonstrar adequação.",
+            "not_yet": "Identifique o que impulsiona a decisão agora."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Which pause helps?",
+          "scene": "You feel the countdown’s pressure and have not checked delivery charges.",
+          "options": [
+            {
+              "label": "Check the full cost before paying"
+            },
+            {
+              "label": "Pay before the timer ends"
+            },
+            {
+              "label": "Compare only the discount label"
+            }
+          ],
+          "help": [
+            "Use the pause to answer a missing cost question."
+          ],
+          "feedback": {
+            "met": "Checking the full cost replaces urgency with relevant information.",
+            "not_yet": "Use the pause to answer a missing cost question."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué pausa permite revisar mejor?",
+          "scene": "Sientes presión por la cuenta regresiva y no revisaste el envío.",
+          "options": [
+            {
+              "label": "Revisar el costo completo antes de pagar"
+            },
+            {
+              "label": "Pagar antes de que termine el reloj"
+            },
+            {
+              "label": "Comparar solo la etiqueta de descuento"
+            }
+          ],
+          "help": [
+            "Usa la pausa para aclarar un costo faltante."
+          ],
+          "feedback": {
+            "met": "Revisar el costo completo sustituye urgencia por información relevante.",
+            "not_yet": "Usa la pausa para aclarar un costo faltante."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual pausa permite conferir melhor?",
+          "scene": "Sente pressão pela contagem regressiva e não conferiu o frete.",
+          "options": [
+            {
+              "label": "Conferir o custo completo antes de pagar"
+            },
+            {
+              "label": "Pagar antes de acabar o relógio"
+            },
+            {
+              "label": "Comparar só a etiqueta de desconto"
+            }
+          ],
+          "help": [
+            "Use a pausa para esclarecer um custo ausente."
+          ],
+          "feedback": {
+            "met": "Conferir o custo completo substitui urgência por informação relevante.",
+            "not_yet": "Use a pausa para esclarecer um custo ausente."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Which trigger is stated?",
+          "scene": "After a stressful day, you add an unplanned item to feel better.",
+          "options": [
+            {
+              "label": "Replacing a broken necessity"
+            },
+            {
+              "label": "Meeting a verified deadline"
+            },
+            {
+              "label": "Seeking relief from stress"
+            }
+          ],
+          "help": [
+            "Recognizing a cue helps you choose the next step."
+          ],
+          "feedback": {
+            "met": "The scene connects the purchase urge to stress relief.",
+            "not_yet": "Recognizing a cue helps you choose the next step."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué impulso está indicado?",
+          "scene": "Tras un día estresante, agregas un artículo no planeado para sentirte mejor.",
+          "options": [
+            {
+              "label": "Reemplazar algo necesario averiado"
+            },
+            {
+              "label": "Cumplir un plazo verificado"
+            },
+            {
+              "label": "Buscar alivio del estrés"
+            }
+          ],
+          "help": [
+            "Reconocer la señal ayuda a elegir el siguiente paso."
+          ],
+          "feedback": {
+            "met": "La escena conecta el impulso de compra con aliviar estrés.",
+            "not_yet": "Reconocer la señal ayuda a elegir el siguiente paso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual impulso está informado?",
+          "scene": "Após um dia estressante, adiciona um item não planejado para se sentir melhor.",
+          "options": [
+            {
+              "label": "Substituir algo necessário quebrado"
+            },
+            {
+              "label": "Cumprir um prazo verificado"
+            },
+            {
+              "label": "Buscar alívio do estresse"
+            }
+          ],
+          "help": [
+            "Reconhecer o sinal ajuda a escolher o próximo passo."
+          ],
+          "feedback": {
+            "met": "A cena liga o impulso de compra ao alívio do estresse.",
+            "not_yet": "Reconhecer o sinal ajuda a escolher o próximo passo."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.08",
+      "copy": {
+        "en-US": {
+          "prompt": "What should the pause reveal?",
+          "scene": "Buying an optional sale item would use money reserved for rent.",
+          "options": [
+            {
+              "label": "That rent becomes optional"
+            },
+            {
+              "label": "The conflict with reserved money"
+            },
+            {
+              "label": "That discounts create extra money"
+            }
+          ],
+          "help": [
+            "Compare the purchase with money already committed."
+          ],
+          "feedback": {
+            "met": "A discount does not remove the existing rent commitment.",
+            "not_yet": "Compare the purchase with money already committed."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe revelar la pausa?",
+          "scene": "Un artículo opcional está en oferta, pero comprarlo usaría dinero reservado para renta.",
+          "options": [
+            {
+              "label": "Que la renta se vuelve opcional"
+            },
+            {
+              "label": "El conflicto con el dinero reservado"
+            },
+            {
+              "label": "Que los descuentos crean dinero extra"
+            }
+          ],
+          "help": [
+            "Compara la compra con el dinero comprometido."
+          ],
+          "feedback": {
+            "met": "Un descuento no elimina el compromiso de renta existente.",
+            "not_yet": "Compara la compra con el dinero comprometido."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que a pausa deve revelar?",
+          "scene": "Um item opcional está em oferta, mas comprá-lo usaria dinheiro reservado para aluguel.",
+          "options": [
+            {
+              "label": "Que o aluguel se torna opcional"
+            },
+            {
+              "label": "O conflito com o dinheiro reservado"
+            },
+            {
+              "label": "Que descontos criam dinheiro extra"
+            }
+          ],
+          "help": [
+            "Compare a compra com o dinheiro comprometido."
+          ],
+          "feedback": {
+            "met": "Um desconto não elimina o compromisso de aluguel existente.",
+            "not_yet": "Compare a compra com o dinheiro comprometido."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.08",
+      "copy": {
+        "en-US": {
+          "prompt": "What fits this deadline?",
+          "scene": "You need an essential replacement today; its total can still be checked.",
+          "options": [
+            {
+              "label": "Briefly checking total and suitability"
+            },
+            {
+              "label": "A fixed delay regardless of need"
+            },
+            {
+              "label": "Skipping every price check"
+            }
+          ],
+          "help": [
+            "Pause means checking, not imposing an arbitrary delay."
+          ],
+          "feedback": {
+            "met": "A useful pause fits the actual need and available time.",
+            "not_yet": "Pause means checking, not imposing an arbitrary delay."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué corresponde a este plazo real?",
+          "scene": "Necesitas un reemplazo esencial hoy; aún puedes verificar el total antes de pagar.",
+          "options": [
+            {
+              "label": "Revisar brevemente total y utilidad"
+            },
+            {
+              "label": "Esperar un plazo fijo sin considerar necesidad"
+            },
+            {
+              "label": "Omitir toda revisión del precio"
+            }
+          ],
+          "help": [
+            "Pausar significa revisar, no imponer una espera arbitraria."
+          ],
+          "feedback": {
+            "met": "Una pausa útil se adapta a la necesidad y tiempo disponibles.",
+            "not_yet": "Pausar significa revisar, no imponer una espera arbitraria."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que combina com esse prazo real?",
+          "scene": "Precisa de uma substituição essencial hoje; ainda pode conferir o total antes de pagar.",
+          "options": [
+            {
+              "label": "Conferir brevemente total e adequação"
+            },
+            {
+              "label": "Esperar prazo fixo sem considerar necessidade"
+            },
+            {
+              "label": "Pular toda conferência do preço"
+            }
+          ],
+          "help": [
+            "Pausar significa conferir, não impor espera arbitrária."
+          ],
+          "feedback": {
+            "met": "Uma pausa útil se adapta à necessidade e ao tempo disponíveis.",
+            "not_yet": "Pausar significa conferir, não impor espera arbitrária."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.spending-patterns.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Which pause helps?",
+          "scene": "Friends order matching accessories; joining would exceed your remaining optional-spending money.",
+          "options": [
+            {
+              "label": "Check the limit before joining"
+            },
+            {
+              "label": "Treat group interest as extra money"
+            },
+            {
+              "label": "Assume everyone can spend equally"
+            }
+          ],
+          "help": [
+            "Separate belonging to the group from this purchase decision."
+          ],
+          "feedback": {
+            "met": "Social pressure does not change the stated spending limit.",
+            "not_yet": "Separate belonging to the group from this purchase decision."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué respuesta usa una pausa útil?",
+          "scene": "Tus amistades piden accesorios iguales; sumarte excedería tu dinero restante para gastos opcionales.",
+          "options": [
+            {
+              "label": "Revisar el límite antes de sumarte"
+            },
+            {
+              "label": "Tratar el interés grupal como dinero extra"
+            },
+            {
+              "label": "Suponer que todos pueden gastar igual"
+            }
+          ],
+          "help": [
+            "Separa pertenecer al grupo de esta compra."
+          ],
+          "feedback": {
+            "met": "La presión social no cambia el límite de gasto indicado.",
+            "not_yet": "Separa pertenecer al grupo de esta compra."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual resposta usa uma pausa útil?",
+          "scene": "Seus amigos pedem acessórios iguais; participar excederia seu dinheiro restante para gastos opcionais.",
+          "options": [
+            {
+              "label": "Conferir o limite antes de participar"
+            },
+            {
+              "label": "Tratar interesse do grupo como dinheiro extra"
+            },
+            {
+              "label": "Supor que todos podem gastar igual"
+            }
+          ],
+          "help": [
+            "Separe pertencer ao grupo dessa compra."
+          ],
+          "feedback": {
+            "met": "A pressão social não muda o limite de gasto informado.",
+            "not_yet": "Separe pertencer ao grupo dessa compra."
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,834 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-debt-recovery-part-1",
+  "lesson_id": "fe-production-debt-recovery-03",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.debt-recovery.03"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Compare highest-rate-first and smallest-balance-first repayment using the same feasible surplus.",
+  "title": {
+    "en-US": "Repayment order",
+    "es-MX": "Compara órdenes de pago",
+    "pt-BR": "Compare ordens de pagamento"
+  },
+  "new_concepts": [
+    "finance.prod.debt-recovery.03"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Compare repayment orders\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Compara órdenes de pago\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Compare ordens de pagamento\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.debt-recovery.03",
+      "observable_action": "Compare highest-rate-first and smallest-balance-first repayment using the same feasible surplus.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.debt-recovery.01",
+      "prod.debt-recovery.02",
+      "prod.credit-mechanics.03",
+      "prod.cashflow-budget.11"
+    ],
+    "retrieval_skills": [],
+    "relevance": "After essentials and required payments, compare what the same feasible extra payment changes.",
+    "misconception": "Confusing highest-rate-first with smallest-balance-first, or comparing them using different available surpluses.",
+    "numeracy_support": "Every quantity and assumption needed to decide is visible in the current scenario. Examples explain the relationship before independent application.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.debt-recovery.03",
+        "context_id": "fe-production-debt-recovery-03-example-01",
+        "supports_from": [],
+        "reasoning": "Highest-rate-first targets cost; smallest-balance-first targets an earlier account closure. Compare both using the same feasible extra payment and actual terms."
+      },
+      {
+        "segment_id": "guided-worked-01",
+        "skill_id": "prod.debt-recovery.03",
+        "context_id": "fe-production-debt-recovery-03-guided-worked-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Same extra principal payment; different modeled interest costs avoided."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.debt-recovery.03",
+        "context_id": "fe-production-debt-recovery-03-guided-01",
+        "supports_from": [
+          "guided-worked-01"
+        ],
+        "reasoning": "This method orders by remaining balance, not interest rate."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.debt-recovery.03",
+        "context_id": "fe-production-debt-recovery-03-practice-02",
+        "supports_from": [],
+        "reasoning": "200 × 15% = 30 under the stated one-year model."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.debt-recovery.03",
+        "context_id": "fe-production-debt-recovery-03-practice-03",
+        "supports_from": [],
+        "reasoning": "250 − 100 = 150 remains; this debt is not closed yet."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.debt-recovery.03",
+        "context_id": "fe-production-debt-recovery-03-practice-04",
+        "supports_from": [],
+        "reasoning": "Different funding assumptions do not isolate the effect of repayment order."
+      },
+      {
+        "segment_id": "transfer-05",
+        "skill_id": "prod.debt-recovery.03",
+        "context_id": "fe-production-debt-recovery-03-transfer-05",
+        "supports_from": [],
+        "reasoning": "With the same extra 50, highest-rate-first selects A; smallest-balance-first selects B."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.debt-recovery.03",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "After essentials and required payments, compare what the same feasible extra payment changes."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Tras esenciales y pagos exigidos, compara qué cambia el mismo pago extra viable."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Após essenciais e pagamentos exigidos, compare o que muda o mesmo pagamento extra viável."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Follow the evidence",
+          "line": "Highest-rate-first targets cost; smallest-balance-first targets an earlier account closure. Compare both using the same feasible extra payment and actual terms."
+        },
+        "es-MX": {
+          "prompt": "Sigue las pruebas",
+          "line": "Mayor tasa primero busca reducir costo; menor saldo primero busca cerrar una cuenta antes. Compara con igual pago extra viable."
+        },
+        "pt-BR": {
+          "prompt": "Siga as provas",
+          "line": "Maior taxa primeiro busca reduzir custo; menor saldo primeiro busca fechar uma conta antes. Compare com igual pagamento extra viável."
+        }
+      }
+    },
+    {
+      "id": "guided-worked-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "step-1"
+          },
+          {
+            "id": "step-2"
+          },
+          {
+            "id": "step-3"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "step-2",
+          "step-3"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "step-2": "10",
+          "step-3": "10"
+        }
+      },
+      "item_role": "practice",
+      "copy": {
+        "en-US": {
+          "prompt": "Repay 100 now; otherwise outstanding one year. Model: fixed yearly simple interest, 20% or 10%; no compounding or fees.",
+          "steps": [
+            {
+              "expression": "100 * 20 / 100",
+              "result": "20",
+              "spokenText": "One-year interest avoided on the higher-rate principal."
+            },
+            {
+              "expression": "100 * 10 / 100",
+              "result": "10",
+              "spokenText": "One-year interest avoided on the lower-rate principal."
+            },
+            {
+              "expression": "20 - 10",
+              "result": "10",
+              "spokenText": "Difference under equal duration and no extra fees."
+            }
+          ],
+          "feedback": {
+            "met": "Same extra principal payment; different modeled interest costs avoided.",
+            "not_yet": "Compare the same extra amount and period."
+          },
+          "help": [
+            "Compare the same extra amount and period."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Paga 100 extra hoy; seguirían pendientes un año. Modelo: interés simple anual fijo, 20% o 10%; sin capitalización ni cargos.",
+          "steps": [
+            {
+              "expression": "100 * 20 / 100",
+              "result": "20",
+              "spokenText": "Interés anual evitado sobre capital a tasa mayor."
+            },
+            {
+              "expression": "100 * 10 / 100",
+              "result": "10",
+              "spokenText": "Interés anual evitado sobre capital a tasa menor."
+            },
+            {
+              "expression": "20 - 10",
+              "result": "10",
+              "spokenText": "Diferencia con igual duración y sin cargos extra."
+            }
+          ],
+          "feedback": {
+            "met": "Mismo pago extra de capital; distintos costos de interés evitados.",
+            "not_yet": "Compara el mismo monto extra y periodo."
+          },
+          "help": [
+            "Compara el mismo monto extra y periodo."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Pague 100 extras hoje; ficariam pendentes um ano. Modelo: juros simples anuais fixos, 20% ou 10%; sem capitalização nem tarifas.",
+          "steps": [
+            {
+              "expression": "100 * 20 / 100",
+              "result": "20",
+              "spokenText": "Juros anuais evitados sobre principal à taxa maior."
+            },
+            {
+              "expression": "100 * 10 / 100",
+              "result": "10",
+              "spokenText": "Juros anuais evitados sobre principal à taxa menor."
+            },
+            {
+              "expression": "20 - 10",
+              "result": "10",
+              "spokenText": "Diferença com mesmo prazo e sem tarifas extras."
+            }
+          ],
+          "feedback": {
+            "met": "Mesmo pagamento extra de principal; diferentes custos de juros evitados.",
+            "not_yet": "Compare o mesmo valor extra e período."
+          },
+          "help": [
+            "Compare o mesmo valor extra e período."
+          ]
+        }
+      },
+      "knowledge_component_id": "finance.prod.debt-recovery.03"
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Smallest-balance-first targets which debt?",
+          "scene": "A balance 600; B balance 200; required payments covered.",
+          "options": [
+            {
+              "label": "A"
+            },
+            {
+              "label": "Whichever rate is higher"
+            },
+            {
+              "label": "B"
+            }
+          ],
+          "help": [
+            "Find the smaller outstanding balance."
+          ],
+          "feedback": {
+            "met": "This method orders by remaining balance, not interest rate.",
+            "not_yet": "Find the smaller outstanding balance."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál elige menor saldo primero?",
+          "scene": "Saldo A 600; saldo B 200; pagos exigidos cubiertos.",
+          "options": [
+            {
+              "label": "A"
+            },
+            {
+              "label": "La tasa que sea mayor"
+            },
+            {
+              "label": "B"
+            }
+          ],
+          "help": [
+            "Busca el saldo pendiente menor."
+          ],
+          "feedback": {
+            "met": "Este método ordena por saldo restante, no por tasa.",
+            "not_yet": "Busca el saldo pendiente menor."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual escolhe menor saldo primeiro?",
+          "scene": "Saldo A 600; saldo B 200; pagamentos exigidos cobertos.",
+          "options": [
+            {
+              "label": "A"
+            },
+            {
+              "label": "A taxa que for maior"
+            },
+            {
+              "label": "B"
+            }
+          ],
+          "help": [
+            "Ache o menor saldo pendente."
+          ],
+          "feedback": {
+            "met": "Esse método ordena pelo saldo restante, não pela taxa.",
+            "not_yet": "Ache o menor saldo pendente."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Interest avoided?",
+          "scene": "Repay 200 now; otherwise outstanding one year. Model: fixed 15% yearly simple interest, no compounding or fees.",
+          "options": [
+            {
+              "label": "215"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "15"
+            }
+          ],
+          "help": [
+            "Apply the rate to the same extra principal reduction."
+          ],
+          "feedback": {
+            "met": "200 × 15% = 30 under the stated one-year model.",
+            "not_yet": "Apply the rate to the same extra principal reduction."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Interés evitado?",
+          "scene": "Paga 200 extra hoy; seguirían pendientes un año. Modelo: interés simple anual fijo 15%, sin capitalización ni cargos.",
+          "options": [
+            {
+              "label": "215"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "15"
+            }
+          ],
+          "help": [
+            "Aplica tasa a la misma reducción extra de capital."
+          ],
+          "feedback": {
+            "met": "200 × 15% = 30 bajo el modelo anual indicado.",
+            "not_yet": "Aplica tasa a la misma reducción extra de capital."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Juros evitados?",
+          "scene": "Pague 200 extras hoje; ficariam pendentes um ano. Modelo: juros simples anuais fixos 15%, sem capitalização nem tarifas.",
+          "options": [
+            {
+              "label": "215"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "15"
+            }
+          ],
+          "help": [
+            "Aplique taxa à mesma redução extra de principal."
+          ],
+          "feedback": {
+            "met": "200 × 15% = 30 sob o modelo anual informado.",
+            "not_yet": "Aplique taxa à mesma redução extra de principal."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          200,
+          15
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "constant": 100
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Balance remaining?",
+          "scene": "Smaller debt after required payment: 250; feasible extra payment: 100; no new charges.",
+          "options": [
+            {
+              "label": "150"
+            },
+            {
+              "label": "250"
+            },
+            {
+              "label": "350"
+            }
+          ],
+          "help": [
+            "Apply only the extra amount actually available."
+          ],
+          "feedback": {
+            "met": "250 − 100 = 150 remains; this debt is not closed yet.",
+            "not_yet": "Apply only the extra amount actually available."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Saldo restante?",
+          "scene": "Deuda menor tras pago exigido: 250; pago extra viable: 100; sin cargos nuevos.",
+          "options": [
+            {
+              "label": "150"
+            },
+            {
+              "label": "250"
+            },
+            {
+              "label": "350"
+            }
+          ],
+          "help": [
+            "Aplica solo monto extra realmente disponible."
+          ],
+          "feedback": {
+            "met": "250 − 100 = 150 queda; la deuda aún no termina.",
+            "not_yet": "Aplica solo monto extra realmente disponible."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Saldo restante?",
+          "scene": "Dívida menor após pagamento exigido: 250; pagamento extra viável: 100; sem novas tarifas.",
+          "options": [
+            {
+              "label": "150"
+            },
+            {
+              "label": "250"
+            },
+            {
+              "label": "350"
+            }
+          ],
+          "help": [
+            "Aplique só o valor extra de fato disponível."
+          ],
+          "feedback": {
+            "met": "250 − 100 = 150 resta; a dívida ainda não acaba.",
+            "not_yet": "Aplique só o valor extra de fato disponível."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          250,
+          100
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Fair comparison?",
+          "scene": "Plan A uses extra 100; B uses unexplained extra 300.",
+          "options": [
+            {
+              "label": "Yes, larger payment proves better method"
+            },
+            {
+              "label": "Yes, any assumed surplus is available"
+            },
+            {
+              "label": "No, use the same feasible surplus"
+            }
+          ],
+          "help": [
+            "Hold available money constant when comparing methods."
+          ],
+          "feedback": {
+            "met": "Different funding assumptions do not isolate the effect of repayment order.",
+            "not_yet": "Hold available money constant when comparing methods."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Es comparación justa de métodos?",
+          "scene": "Un plan usa extra 100; otro extra 300 de fondos no identificados.",
+          "options": [
+            {
+              "label": "Sí, pago mayor prueba mejor método"
+            },
+            {
+              "label": "Sí, cualquier excedente supuesto está disponible"
+            },
+            {
+              "label": "No, usa el mismo excedente viable"
+            }
+          ],
+          "help": [
+            "Conserva dinero disponible igual al comparar métodos."
+          ],
+          "feedback": {
+            "met": "Fondos supuestos distintos no aíslan el efecto del orden de pago.",
+            "not_yet": "Conserva dinero disponible igual al comparar métodos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "É comparação justa de métodos?",
+          "scene": "Um plano usa extra 100; outro extra 300 sem fonte indicada.",
+          "options": [
+            {
+              "label": "Sim, pagamento maior prova melhor método"
+            },
+            {
+              "label": "Sim, qualquer sobra suposta está disponível"
+            },
+            {
+              "label": "Não, use a mesma sobra viável"
+            }
+          ],
+          "help": [
+            "Mantenha dinheiro disponível igual ao comparar métodos."
+          ],
+          "feedback": {
+            "met": "Fontes diferentes não isolam o efeito da ordem de pagamento.",
+            "not_yet": "Mantenha dinheiro disponível igual ao comparar métodos."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.debt-recovery.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Highest-rate-first, then smallest-balance-first?",
+          "scene": "Extra 50 after essentials/minimums. Debts: A 400 at 20% yearly; B 100 at 10% yearly.",
+          "options": [
+            {
+              "label": "B; A"
+            },
+            {
+              "label": "A; B"
+            }
+          ],
+          "help": [
+            "Compare rates for the first method and balances for the second."
+          ],
+          "feedback": {
+            "met": "With the same extra 50, highest-rate-first selects A; smallest-balance-first selects B.",
+            "not_yet": "Compare rates for the first method and balances for the second."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Mayor tasa primero; luego menor saldo?",
+          "scene": "Sobran 50 tras esenciales y mínimos. Deudas: A 400 al 20% anual; B 100 al 10% anual.",
+          "options": [
+            {
+              "label": "B; A"
+            },
+            {
+              "label": "A; B"
+            }
+          ],
+          "help": [
+            "Compara tasas para el primer método y saldos para el segundo."
+          ],
+          "feedback": {
+            "met": "Con los mismos 50 extra, mayor tasa elige A; menor saldo elige B.",
+            "not_yet": "Compara tasas para el primer método y saldos para el segundo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Maior taxa primeiro; depois menor saldo?",
+          "scene": "Sobram 50 após essenciais e mínimos. Dívidas: A 400 a 20% anuais; B 100 a 10% anuais.",
+          "options": [
+            {
+              "label": "B; A"
+            },
+            {
+              "label": "A; B"
+            }
+          ],
+          "help": [
+            "Compare taxas para o primeiro método e saldos para o segundo."
+          ],
+          "feedback": {
+            "met": "Com os mesmos 50 extras, maior taxa escolhe A; menor saldo escolhe B.",
+            "not_yet": "Compare taxas para o primeiro método e saldos para o segundo."
+          }
+        }
+      }
+    }
+  ]
+}

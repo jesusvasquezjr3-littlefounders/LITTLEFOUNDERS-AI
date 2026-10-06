@@ -1,0 +1,845 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-housing-transport-part-1",
+  "lesson_id": "fe-production-housing-transport-05",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.housing-transport.05"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Explain how a down payment changes borrowing needs without making ownership automatically affordable.",
+  "title": {
+    "en-US": "Down Payments",
+    "es-MX": "Qué cambia el enganche",
+    "pt-BR": "O que muda com a entrada"
+  },
+  "new_concepts": [
+    "finance.prod.housing-transport.05"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Down Payments\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Qué cambia el enganche\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"O que muda com a entrada\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.housing-transport.05",
+      "observable_action": "Explain how a down payment changes borrowing needs without making ownership automatically affordable.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.housing-transport.04",
+      "prod.credit-mechanics.07"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A larger down payment reduces borrowing but also uses cash; test both effects with fictional dollars.",
+    "misconception": "A bigger down payment makes any home affordable regardless of remaining cash and monthly costs.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.housing-transport.05",
+        "context_id": "housing-transport-05-example-01",
+        "supports_from": [],
+        "reasoning": "Subtract the down payment from price to find borrowing. Then check remaining cash and ongoing payments separately."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.housing-transport.05",
+        "context_id": "housing-transport-05-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "A larger down payment reduces the amount borrowed."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.housing-transport.05",
+        "context_id": "housing-transport-05-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "A larger upfront payment leaves less liquid cash."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.housing-transport.05",
+        "context_id": "housing-transport-05-practice-01",
+        "supports_from": [],
+        "reasoning": "Borrowing covers the price left after the down payment."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.housing-transport.05",
+        "context_id": "housing-transport-05-practice-02",
+        "supports_from": [],
+        "reasoning": "Paying upfront does not solve a recurring monthly shortfall."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.housing-transport.05",
+        "context_id": "housing-transport-05-practice-03",
+        "supports_from": [],
+        "reasoning": "Both upfront amounts reduce the available savings."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.housing-transport.05",
+        "context_id": "housing-transport-05-transfer-01",
+        "supports_from": [],
+        "reasoning": "Lower debt can coexist with inadequate cash for unexpected costs."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.housing-transport.05",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A larger down payment reduces borrowing but also uses cash; test both effects with fictional dollars."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un enganche mayor reduce el préstamo pero usa efectivo; prueba ambos efectos con pesos ficticios."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Uma entrada maior reduz o empréstimo mas usa dinheiro; teste ambos os efeitos com reais fictícios."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Less borrowing, less cash",
+          "line": "Subtract the down payment from price to find borrowing. Then check remaining cash and ongoing payments separately."
+        },
+        "es-MX": {
+          "prompt": "Menos préstamo, menos efectivo",
+          "line": "Resta el enganche al precio para encontrar el préstamo. Después revisa por separado el efectivo restante y pagos continuos."
+        },
+        "pt-BR": {
+          "prompt": "Menos dívida, menos dinheiro",
+          "line": "Subtraia a entrada do preço para achar o empréstimo. Depois confira em separado o dinheiro restante e pagamentos contínuos."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.05",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "step-1"
+          },
+          {
+            "id": "step-2"
+          },
+          {
+            "id": "step-3"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "step-2",
+          "step-3"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "step-2": "80000",
+          "step-3": "70000"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Price 100000; compare down payments 20000 and 30000. No other financed charges.",
+          "feedback": {
+            "met": "A larger down payment reduces the amount borrowed.",
+            "not_yet": "Subtract each down payment from the same price."
+          },
+          "help": [
+            "Subtract each down payment from the same price."
+          ],
+          "steps": [
+            {
+              "expression": "100000",
+              "result": "100000",
+              "spokenText": "Price"
+            },
+            {
+              "expression": "100000 - 20000",
+              "result": "80000",
+              "spokenText": "Borrowing with smaller down payment"
+            },
+            {
+              "expression": "100000 - 30000",
+              "result": "70000",
+              "spokenText": "Borrowing with larger down payment"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Precio 100000; compara enganches de 20000 y 30000. Sin otros cargos financiados.",
+          "feedback": {
+            "met": "Un enganche mayor reduce el monto prestado.",
+            "not_yet": "Resta cada enganche al mismo precio."
+          },
+          "help": [
+            "Resta cada enganche al mismo precio."
+          ],
+          "steps": [
+            {
+              "expression": "100000",
+              "result": "100000",
+              "spokenText": "Precio"
+            },
+            {
+              "expression": "100000 - 20000",
+              "result": "80000",
+              "spokenText": "Préstamo con menor enganche"
+            },
+            {
+              "expression": "100000 - 30000",
+              "result": "70000",
+              "spokenText": "Préstamo con mayor enganche"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Preço 100000; compare entradas de 20000 e 30000. Sem outros custos financiados.",
+          "feedback": {
+            "met": "Uma entrada maior reduz o valor emprestado.",
+            "not_yet": "Subtraia cada entrada do mesmo preço."
+          },
+          "help": [
+            "Subtraia cada entrada do mesmo preço."
+          ],
+          "steps": [
+            {
+              "expression": "100000",
+              "result": "100000",
+              "spokenText": "Preço"
+            },
+            {
+              "expression": "100000 - 20000",
+              "result": "80000",
+              "spokenText": "Empréstimo com entrada menor"
+            },
+            {
+              "expression": "100000 - 30000",
+              "result": "70000",
+              "spokenText": "Empréstimo com entrada maior"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.05",
+      "copy": {
+        "en-US": {
+          "prompt": "What else changes?",
+          "scene": "The buyer uses more savings for the down payment, with no new income.",
+          "options": [
+            {
+              "label": "Monthly income rises"
+            },
+            {
+              "label": "All repairs disappear"
+            },
+            {
+              "label": "Less cash remains"
+            }
+          ],
+          "help": [
+            "Track the money used as well as the debt avoided."
+          ],
+          "feedback": {
+            "met": "A larger upfront payment leaves less liquid cash.",
+            "not_yet": "Track the money used as well as the debt avoided."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué más cambia?",
+          "scene": "Comprador usa más ahorros para el enganche, sin ingresos nuevos.",
+          "options": [
+            {
+              "label": "Sube ingreso mensual"
+            },
+            {
+              "label": "Desaparecen reparaciones"
+            },
+            {
+              "label": "Queda menos efectivo"
+            }
+          ],
+          "help": [
+            "Sigue el dinero usado y la deuda evitada."
+          ],
+          "feedback": {
+            "met": "Un pago inicial mayor deja menos efectivo disponible.",
+            "not_yet": "Sigue el dinero usado y la deuda evitada."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que mais muda?",
+          "scene": "Comprador usa mais poupança na entrada, sem renda nova.",
+          "options": [
+            {
+              "label": "Renda mensal sobe"
+            },
+            {
+              "label": "Consertos desaparecem"
+            },
+            {
+              "label": "Sobra menos dinheiro"
+            }
+          ],
+          "help": [
+            "Observe o dinheiro usado e a dívida evitada."
+          ],
+          "feedback": {
+            "met": "Uma entrada maior deixa menos dinheiro disponível.",
+            "not_yet": "Observe o dinheiro usado e a dívida evitada."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.05",
+      "copy": {
+        "en-US": {
+          "prompt": "How much is borrowed?",
+          "scene": "Price: 90000; Down payment: 18000; No other financed charges.",
+          "options": [
+            {
+              "label": "90000"
+            },
+            {
+              "label": "108000"
+            },
+            {
+              "label": "72000"
+            }
+          ],
+          "help": [
+            "Subtract the down payment from the price."
+          ],
+          "feedback": {
+            "met": "Borrowing covers the price left after the down payment.",
+            "not_yet": "Subtract the down payment from the price."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto se pide prestado?",
+          "scene": "Precio: 90000; Enganche: 18000; Sin otros cargos financiados.",
+          "options": [
+            {
+              "label": "90000"
+            },
+            {
+              "label": "108000"
+            },
+            {
+              "label": "72000"
+            }
+          ],
+          "help": [
+            "Resta el enganche al precio."
+          ],
+          "feedback": {
+            "met": "El préstamo cubre el precio restante tras el enganche.",
+            "not_yet": "Resta el enganche al precio."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto será emprestado?",
+          "scene": "Preço: 90000; Entrada: 18000; Sem outros custos financiados.",
+          "options": [
+            {
+              "label": "90000"
+            },
+            {
+              "label": "108000"
+            },
+            {
+              "label": "72000"
+            }
+          ],
+          "help": [
+            "Subtraia a entrada do preço."
+          ],
+          "feedback": {
+            "met": "O empréstimo cobre o preço que sobra após a entrada.",
+            "not_yet": "Subtraia a entrada do preço."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          90000,
+          18000
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.05",
+      "copy": {
+        "en-US": {
+          "prompt": "What prevents an affordability conclusion?",
+          "scene": "A buyer can cover the down payment; monthly housing costs exceed available monthly money.",
+          "options": [
+            {
+              "label": "The listing looks attractive"
+            },
+            {
+              "label": "The down payment exists"
+            },
+            {
+              "label": "Monthly shortfall"
+            }
+          ],
+          "help": [
+            "Check ongoing payments against available income."
+          ],
+          "feedback": {
+            "met": "Paying upfront does not solve a recurring monthly shortfall.",
+            "not_yet": "Check ongoing payments against available income."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué impide concluir que alcanza?",
+          "scene": "Comprador cubre enganche; costos mensuales de vivienda superan dinero mensual disponible.",
+          "options": [
+            {
+              "label": "El anuncio luce atractivo"
+            },
+            {
+              "label": "Existe el enganche"
+            },
+            {
+              "label": "Faltante mensual"
+            }
+          ],
+          "help": [
+            "Compara pagos continuos con ingreso disponible."
+          ],
+          "feedback": {
+            "met": "Pagar al inicio no resuelve un faltante mensual recurrente.",
+            "not_yet": "Compara pagos continuos con ingreso disponible."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que impede concluir que cabe?",
+          "scene": "Comprador cobre entrada; custos mensais da casa superam dinheiro mensal disponível.",
+          "options": [
+            {
+              "label": "O anúncio é bonito"
+            },
+            {
+              "label": "Existe a entrada"
+            },
+            {
+              "label": "Falta mensal de dinheiro"
+            }
+          ],
+          "help": [
+            "Compare pagamentos contínuos com renda disponível."
+          ],
+          "feedback": {
+            "met": "Pagar no início não resolve uma falta mensal contínua.",
+            "not_yet": "Compare pagamentos contínuos com renda disponível."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.05",
+      "copy": {
+        "en-US": {
+          "prompt": "What cash remains?",
+          "scene": "Savings: 25000; Down payment: 20000; Other upfront charges: 3000.",
+          "options": [
+            {
+              "label": "5000"
+            },
+            {
+              "label": "2000"
+            },
+            {
+              "label": "22000"
+            }
+          ],
+          "help": [
+            "Subtract the down payment and the other charges."
+          ],
+          "feedback": {
+            "met": "Both upfront amounts reduce the available savings.",
+            "not_yet": "Subtract the down payment and the other charges."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué efectivo queda?",
+          "scene": "Ahorros: 25000; Enganche: 20000; Otros cargos iniciales: 3000.",
+          "options": [
+            {
+              "label": "5000"
+            },
+            {
+              "label": "2000"
+            },
+            {
+              "label": "22000"
+            }
+          ],
+          "help": [
+            "Resta el enganche y los otros cargos."
+          ],
+          "feedback": {
+            "met": "Ambos montos iniciales reducen los ahorros disponibles.",
+            "not_yet": "Resta el enganche y los otros cargos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto dinheiro sobra?",
+          "scene": "Poupança: 25000; Entrada: 20000; Outros custos iniciais: 3000.",
+          "options": [
+            {
+              "label": "5000"
+            },
+            {
+              "label": "2000"
+            },
+            {
+              "label": "22000"
+            }
+          ],
+          "help": [
+            "Subtraia a entrada e os outros custos."
+          ],
+          "feedback": {
+            "met": "Ambos os valores iniciais reduzem a poupança disponível.",
+            "not_yet": "Subtraia a entrada e os outros custos."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          25000,
+          20000,
+          3000
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.housing-transport.05",
+      "copy": {
+        "en-US": {
+          "prompt": "What must this buyer check?",
+          "scene": "A larger down payment lowers borrowing but empties the planned emergency reserve.",
+          "options": [
+            {
+              "label": "Only the smaller loan"
+            },
+            {
+              "label": "Only the property size"
+            },
+            {
+              "label": "Remaining cash and monthly affordability"
+            }
+          ],
+          "help": [
+            "Evaluate debt, remaining cash and ongoing payments together."
+          ],
+          "feedback": {
+            "met": "Lower debt can coexist with inadequate cash for unexpected costs.",
+            "not_yet": "Evaluate debt, remaining cash and ongoing payments together."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe revisar este comprador?",
+          "scene": "Enganche mayor reduce préstamo pero vacía la reserva de emergencia prevista.",
+          "options": [
+            {
+              "label": "Solo el préstamo menor"
+            },
+            {
+              "label": "Solo tamaño del inmueble"
+            },
+            {
+              "label": "Efectivo restante y capacidad mensual"
+            }
+          ],
+          "help": [
+            "Evalúa juntos deuda, efectivo restante y pagos continuos."
+          ],
+          "feedback": {
+            "met": "Menor deuda puede coexistir con efectivo insuficiente para imprevistos.",
+            "not_yet": "Evalúa juntos deuda, efectivo restante y pagos continuos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que esse comprador deve conferir?",
+          "scene": "Entrada maior reduz dívida mas esgota a reserva de emergência prevista.",
+          "options": [
+            {
+              "label": "Só o empréstimo menor"
+            },
+            {
+              "label": "Só tamanho do imóvel"
+            },
+            {
+              "label": "Dinheiro restante e capacidade mensal"
+            }
+          ],
+          "help": [
+            "Avalie juntos dívida, dinheiro restante e pagamentos contínuos."
+          ],
+          "feedback": {
+            "met": "Menor dívida pode coexistir com pouco dinheiro para imprevistos.",
+            "not_yet": "Avalie juntos dívida, dinheiro restante e pagamentos contínuos."
+          }
+        }
+      }
+    }
+  ]
+}

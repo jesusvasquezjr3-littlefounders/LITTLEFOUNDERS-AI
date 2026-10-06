@@ -1,0 +1,816 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-usable-money",
+  "lesson_id": "fe-production-usable-money-04",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.cash.reserved"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Choose whether a purchase fits after protecting a stated commitment.",
+  "title": {
+    "en-US": "Does it fit?",
+    "es-MX": "¿Sí alcanza?",
+    "pt-BR": "Cabe no plano?"
+  },
+  "new_concepts": [
+    "finance.cash.reserved"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Does it fit?\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"¿Sí alcanza?\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Cabe no plano?\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "cash.reserved",
+      "observable_action": "Choose whether a purchase fits after protecting a stated commitment.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "cash.received",
+      "cash.balance",
+      "cash.commitment"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Check a purchase against money left after protecting your commitments.",
+    "misconception": "Affordability means that the purchase price is below the whole current balance.",
+    "numeracy_support": "Use a visible split or count-down in the worked example. Repeat all amounts needed on each assessment screen.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "cash.reserved",
+        "context_id": "production-money-4-example-01",
+        "supports_from": [],
+        "reasoning": "You have 70 and protect 45: 70 − 45 = 25 remains. A purchase of 20 fits; one costing 30 does not."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "cash.reserved",
+        "context_id": "production-money-4-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "40 − 30 = 10 is free for another use."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "cash.reserved",
+        "context_id": "production-money-4-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The purchase uses the free amount and leaves the protected money intact."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "cash.reserved",
+        "context_id": "production-money-4-practice-01",
+        "supports_from": [],
+        "reasoning": "50 − 35 = 15. The purchase would use some protected money."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "cash.reserved",
+        "context_id": "production-money-4-practice-02",
+        "supports_from": [],
+        "reasoning": "80 − 50 = 30 is available beyond this commitment."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "cash.reserved",
+        "context_id": "production-money-4-practice-03",
+        "supports_from": [],
+        "reasoning": "There is no free portion under the stated commitment."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "cash.reserved",
+        "context_id": "production-money-4-transfer-01",
+        "supports_from": [],
+        "reasoning": "60 − 42 = 18. The complete price of 22 does not fit."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "cash.reserved",
+      "fresh_context": "Use the skill in the scheduled usable-money review and later financial decisions; this draft does not yet contain those review exercises."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Check a purchase against money left after protecting your commitments."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Compara una compra con el dinero que queda después de proteger tus compromisos."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Compare uma compra com o dinheiro que sobra depois de proteger seus compromissos."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Protect, then compare",
+          "line": "You have 70 and protect 45: 70 − 45 = 25 remains. A purchase of 20 fits; one costing 30 does not."
+        },
+        "es-MX": {
+          "prompt": "Protege y compara",
+          "line": "Tienes 70 y proteges 45: 70 − 45 = 25 restantes. Una compra de 20 cabe; una de 30 no."
+        },
+        "pt-BR": {
+          "prompt": "Proteja e compare",
+          "line": "Você tem 70 e protege 45: 70 − 45 = 25 restantes. Uma compra de 20 cabe; uma de 30 não."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.reserved",
+      "copy": {
+        "en-US": {
+          "prompt": "How much is free?",
+          "scene": "You have 40 and protect 30. Subtract the protected amount.",
+          "options": [
+            {
+              "label": "40"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Separate the protected portion from the full amount."
+          ],
+          "feedback": {
+            "met": "40 − 30 = 10 is free for another use.",
+            "not_yet": "Separate the protected portion from the full amount."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto queda libre?",
+          "scene": "Tienes 40 y proteges 30. Resta el monto protegido.",
+          "options": [
+            {
+              "label": "40"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Separa la parte protegida del monto completo."
+          ],
+          "feedback": {
+            "met": "40 − 30 = 10 libres para otro uso.",
+            "not_yet": "Separa la parte protegida del monto completo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto fica livre?",
+          "scene": "Você tem 40 e protege 30. Subtraia o valor protegido.",
+          "options": [
+            {
+              "label": "40"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Separe a parte protegida do valor inteiro."
+          ],
+          "feedback": {
+            "met": "40 − 30 = 10 livres para outro uso.",
+            "not_yet": "Separe a parte protegida do valor inteiro."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          40,
+          30
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.reserved",
+      "copy": {
+        "en-US": {
+          "prompt": "Does this purchase fit?",
+          "scene": "You have 40, protect 30 and have 10 free. The purchase costs 10.",
+          "options": [
+            {
+              "label": "Yes, up to 40"
+            },
+            {
+              "label": "No, any spending is forbidden"
+            },
+            {
+              "label": "Yes, exactly"
+            }
+          ],
+          "help": [
+            "Compare the price with the free amount, not the full balance."
+          ],
+          "feedback": {
+            "met": "The purchase uses the free amount and leaves the protected money intact.",
+            "not_yet": "Compare the price with the free amount, not the full balance."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Esta compra cabe?",
+          "scene": "Tienes 40, proteges 30 y quedan 10 libres. La compra cuesta 10.",
+          "options": [
+            {
+              "label": "Sí, hasta 40"
+            },
+            {
+              "label": "No, está prohibido gastar"
+            },
+            {
+              "label": "Sí, exactamente"
+            }
+          ],
+          "help": [
+            "Compara el precio con lo libre, no con el saldo completo."
+          ],
+          "feedback": {
+            "met": "La compra usa el monto libre y deja intacto el dinero protegido.",
+            "not_yet": "Compara el precio con lo libre, no con el saldo completo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Esta compra cabe?",
+          "scene": "Você tem 40, protege 30 e restam 10 livres. A compra custa 10.",
+          "options": [
+            {
+              "label": "Sim, até 40"
+            },
+            {
+              "label": "Não, qualquer gasto é proibido"
+            },
+            {
+              "label": "Sim, exatamente"
+            }
+          ],
+          "help": [
+            "Compare o preço com o valor livre, não com o saldo inteiro."
+          ],
+          "feedback": {
+            "met": "A compra usa o valor livre e mantém o dinheiro protegido.",
+            "not_yet": "Compare o preço com o valor livre, não com o saldo inteiro."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.reserved",
+      "copy": {
+        "en-US": {
+          "prompt": "Can you buy?",
+          "scene": "You have 50, must reserve 35 and consider a purchase of 18.",
+          "options": [
+            {
+              "label": "Yes, the bill is unpaid"
+            },
+            {
+              "label": "No, only 15 is free"
+            },
+            {
+              "label": "Yes, 18 is below 50"
+            }
+          ],
+          "help": [
+            "First remove the amount needed for the bill."
+          ],
+          "feedback": {
+            "met": "50 − 35 = 15. The purchase would use some protected money.",
+            "not_yet": "First remove the amount needed for the bill."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Puedes proteger la cuenta?",
+          "scene": "Tienes 50, debes apartar 35 y quieres una compra de 18.",
+          "options": [
+            {
+              "label": "Sí, la cuenta sigue pendiente"
+            },
+            {
+              "label": "No, solo quedan 15 libres"
+            },
+            {
+              "label": "Sí, 18 es menor que 50"
+            }
+          ],
+          "help": [
+            "Primero separa el monto necesario para la cuenta."
+          ],
+          "feedback": {
+            "met": "50 − 35 = 15. La compra usaría parte del dinero protegido.",
+            "not_yet": "Primero separa el monto necesario para la cuenta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Dá para proteger a conta?",
+          "scene": "Você tem 50, precisa reservar 35 e quer uma compra de 18.",
+          "options": [
+            {
+              "label": "Sim, a conta está pendente"
+            },
+            {
+              "label": "Não, só restam 15 livres"
+            },
+            {
+              "label": "Sim, 18 é menor que 50"
+            }
+          ],
+          "help": [
+            "Primeiro separe o valor necessário para a conta."
+          ],
+          "feedback": {
+            "met": "50 − 35 = 15. A compra usaria parte do dinheiro protegido.",
+            "not_yet": "Primeiro separe o valor necessário para a conta."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.reserved",
+      "copy": {
+        "en-US": {
+          "prompt": "What is the spending limit?",
+          "scene": "You have 80. A required payment needs 50.",
+          "options": [
+            {
+              "label": "50"
+            },
+            {
+              "label": "80"
+            },
+            {
+              "label": "30"
+            }
+          ],
+          "help": [
+            "The commitment stays protected even before payment."
+          ],
+          "feedback": {
+            "met": "80 − 50 = 30 is available beyond this commitment.",
+            "not_yet": "The commitment stays protected even before payment."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es el límite?",
+          "scene": "Tienes 80. Un pago necesario requiere 50.",
+          "options": [
+            {
+              "label": "50"
+            },
+            {
+              "label": "80"
+            },
+            {
+              "label": "30"
+            }
+          ],
+          "help": [
+            "El compromiso sigue protegido aunque aún no lo pagues."
+          ],
+          "feedback": {
+            "met": "80 − 50 = 30 disponibles fuera de este compromiso.",
+            "not_yet": "El compromiso sigue protegido aunque aún no lo pagues."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é o limite?",
+          "scene": "Você tem 80. Um pagamento necessário exige 50.",
+          "options": [
+            {
+              "label": "50"
+            },
+            {
+              "label": "80"
+            },
+            {
+              "label": "30"
+            }
+          ],
+          "help": [
+            "O compromisso fica protegido mesmo antes do pagamento."
+          ],
+          "feedback": {
+            "met": "80 − 50 = 30 disponíveis além deste compromisso.",
+            "not_yet": "O compromisso fica protegido mesmo antes do pagamento."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          80,
+          50
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.reserved",
+      "copy": {
+        "en-US": {
+          "prompt": "Which purchase fits?",
+          "scene": "You have 30. All of it is required for an unpaid bill.",
+          "options": [
+            {
+              "label": "A purchase after labeling the bill"
+            },
+            {
+              "label": "None with this money"
+            },
+            {
+              "label": "Any purchase below 30"
+            }
+          ],
+          "help": [
+            "A label does not create more money."
+          ],
+          "feedback": {
+            "met": "There is no free portion under the stated commitment.",
+            "not_yet": "A label does not create more money."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué compra cabe?",
+          "scene": "Tienes 30. Todo ese dinero se necesita para una cuenta pendiente.",
+          "options": [
+            {
+              "label": "Comprar tras etiquetar la cuenta"
+            },
+            {
+              "label": "Ninguna con este dinero"
+            },
+            {
+              "label": "Cualquiera menor de 30"
+            }
+          ],
+          "help": [
+            "Una etiqueta no crea más dinero."
+          ],
+          "feedback": {
+            "met": "No queda una parte libre bajo el compromiso indicado.",
+            "not_yet": "Una etiqueta no crea más dinero."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual compra cabe?",
+          "scene": "Você tem 30. Todo esse dinheiro é necessário para uma conta pendente.",
+          "options": [
+            {
+              "label": "Comprar após etiquetar a conta"
+            },
+            {
+              "label": "Nenhuma com este dinheiro"
+            },
+            {
+              "label": "Qualquer uma abaixo de 30"
+            }
+          ],
+          "help": [
+            "Uma etiqueta não cria mais dinheiro."
+          ],
+          "feedback": {
+            "met": "Não existe uma parte livre diante do compromisso informado.",
+            "not_yet": "Uma etiqueta não cria mais dinheiro."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.cash.reserved",
+      "copy": {
+        "en-US": {
+          "prompt": "Can you pay?",
+          "scene": "You have 60, protect 42; the advertised 16 costs 22 including the required charge.",
+          "options": [
+            {
+              "label": "Yes, you hold 60"
+            },
+            {
+              "label": "Yes, use advertised 16"
+            },
+            {
+              "label": "No, only 18 free"
+            }
+          ],
+          "help": [
+            "Use the displayed complete price and keep the commitment protected."
+          ],
+          "feedback": {
+            "met": "60 − 42 = 18. The complete price of 22 does not fit.",
+            "not_yet": "Use the displayed complete price and keep the commitment protected."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cabe el precio completo?",
+          "scene": "Tienes 60 y proteges 42. Los 16 anunciados son 22 con el cargo obligatorio.",
+          "options": [
+            {
+              "label": "Sí, tienes 60"
+            },
+            {
+              "label": "Sí, usa los 16 anunciados"
+            },
+            {
+              "label": "No, solo hay 18 libres"
+            }
+          ],
+          "help": [
+            "Usa el precio completo indicado y protege el compromiso."
+          ],
+          "feedback": {
+            "met": "60 − 42 = 18. El precio completo de 22 no cabe.",
+            "not_yet": "Usa el precio completo indicado y protege el compromiso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O preço completo cabe?",
+          "scene": "Você tem 60 e protege 42. Os 16 anunciados viram 22 com a cobrança obrigatória.",
+          "options": [
+            {
+              "label": "Sim, você tem 60"
+            },
+            {
+              "label": "Sim, use os 16 anunciados"
+            },
+            {
+              "label": "Não, só há 18 livres"
+            }
+          ],
+          "help": [
+            "Use o preço completo informado e proteja o compromisso."
+          ],
+          "feedback": {
+            "met": "60 − 42 = 18. O preço completo de 22 não cabe.",
+            "not_yet": "Use o preço completo informado e proteja o compromisso."
+          }
+        }
+      }
+    }
+  ]
+}

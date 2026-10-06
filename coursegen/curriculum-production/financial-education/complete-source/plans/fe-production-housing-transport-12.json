@@ -1,0 +1,844 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-housing-transport-part-3",
+  "lesson_id": "fe-production-housing-transport-12",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.housing-transport.12"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Choose a feasible housing or transport adjustment using the household’s stated accessibility and time constraints.",
+  "title": {
+    "en-US": "Feasible Choices",
+    "es-MX": "Elige un plan combinado viable",
+    "pt-BR": "Escolha um plano conjunto viável"
+  },
+  "new_concepts": [
+    "finance.prod.housing-transport.12"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Feasible Choices\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Elige un plan combinado viable\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Escolha um plano conjunto viável\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.housing-transport.12",
+      "observable_action": "Choose a feasible housing or transport adjustment using the household’s stated accessibility and time constraints.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.housing-transport.02",
+      "prod.housing-transport.08",
+      "prod.goals-tradeoffs.03"
+    ],
+    "retrieval_skills": [],
+    "relevance": "The cheapest location may not work for daily life; check money, time and access together.",
+    "misconception": "The lowest rent is always best even when transport, time or accessibility makes the option unusable.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.housing-transport.12",
+        "context_id": "housing-transport-12-example-01",
+        "supports_from": [],
+        "reasoning": "First filter options by essential access and timing. Then compare combined housing and transport costs among feasible options."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.housing-transport.12",
+        "context_id": "housing-transport-12-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "An unusable entrance fails the stated access requirement."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.housing-transport.12",
+        "context_id": "housing-transport-12-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "A route must operate when the journey is needed."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.housing-transport.12",
+        "context_id": "housing-transport-12-practice-01",
+        "supports_from": [],
+        "reasoning": "Affordable rent does not fix unavailable essential access."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.housing-transport.12",
+        "context_id": "housing-transport-12-practice-02",
+        "supports_from": [],
+        "reasoning": "Unknown timing prevents checking the arrival constraint."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.housing-transport.12",
+        "context_id": "housing-transport-12-practice-03",
+        "supports_from": [],
+        "reasoning": "B has the lower combined cost among these feasible options."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.housing-transport.12",
+        "context_id": "housing-transport-12-transfer-01",
+        "supports_from": [],
+        "reasoning": "B is the only option meeting every stated essential constraint."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.housing-transport.12",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "The cheapest location may not work for daily life; check money, time and access together."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "La ubicación más barata puede no funcionar para la vida diaria; revisa juntos dinero, tiempo y acceso."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "O local mais barato pode não servir para o dia a dia; confira juntos dinheiro, tempo e acesso."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Feasible before cheaper",
+          "line": "First filter options by essential access and timing. Then compare combined housing and transport costs among feasible options."
+        },
+        "es-MX": {
+          "prompt": "Viable antes que barato",
+          "line": "Primero filtra opciones por acceso y horarios esenciales. Luego compara vivienda y transporte combinados entre opciones viables."
+        },
+        "pt-BR": {
+          "prompt": "Viável antes de barato",
+          "line": "Primeiro filtre opções por acesso e horários essenciais. Depois compare moradia e transporte juntos entre opções viáveis."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.12",
+      "copy": {
+        "en-US": {
+          "prompt": "Which option meets the stated need?",
+          "scene": "Ana requires step-free entry; A has stairs only, B has a working accessible entrance.",
+          "options": [
+            {
+              "label": "B"
+            },
+            {
+              "label": "Both automatically"
+            },
+            {
+              "label": "A because rent is lower"
+            }
+          ],
+          "help": [
+            "Check essential accessibility before comparing price."
+          ],
+          "feedback": {
+            "met": "An unusable entrance fails the stated access requirement.",
+            "not_yet": "Check essential accessibility before comparing price."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué opción cumple la necesidad?",
+          "scene": "Ana necesita entrada sin escalones; A solo escaleras, B entrada accesible funcional.",
+          "options": [
+            {
+              "label": "B"
+            },
+            {
+              "label": "Ambas automáticamente"
+            },
+            {
+              "label": "A porque renta es menor"
+            }
+          ],
+          "help": [
+            "Revisa accesibilidad esencial antes de comparar precio."
+          ],
+          "feedback": {
+            "met": "Una entrada inutilizable no cumple el requisito de acceso.",
+            "not_yet": "Revisa accesibilidad esencial antes de comparar precio."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual opção atende à necessidade?",
+          "scene": "Ana precisa de entrada sem degraus; A só tem escadas, B tem entrada acessível funcional.",
+          "options": [
+            {
+              "label": "B"
+            },
+            {
+              "label": "Ambas automaticamente"
+            },
+            {
+              "label": "A pois aluguel é menor"
+            }
+          ],
+          "help": [
+            "Confira acesso essencial antes de comparar preço."
+          ],
+          "feedback": {
+            "met": "Uma entrada inutilizável não atende ao requisito de acesso.",
+            "not_yet": "Confira acesso essencial antes de comparar preço."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.12",
+      "copy": {
+        "en-US": {
+          "prompt": "Which route meets the schedule?",
+          "scene": "Shift starts before dawn; A’s service begins afterward, B runs before the shift.",
+          "options": [
+            {
+              "label": "Either regardless of hours"
+            },
+            {
+              "label": "B"
+            },
+            {
+              "label": "A because fare is cheaper"
+            }
+          ],
+          "help": [
+            "Match transport availability to the actual schedule."
+          ],
+          "feedback": {
+            "met": "A route must operate when the journey is needed.",
+            "not_yet": "Match transport availability to the actual schedule."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué ruta cumple el horario?",
+          "scene": "Turno inicia antes del amanecer; servicio A empieza después, B funciona antes del turno.",
+          "options": [
+            {
+              "label": "Cualquiera sin importar horario"
+            },
+            {
+              "label": "B"
+            },
+            {
+              "label": "A porque pasaje es barato"
+            }
+          ],
+          "help": [
+            "Ajusta disponibilidad de transporte al horario real."
+          ],
+          "feedback": {
+            "met": "Una ruta debe funcionar cuando se necesita viajar.",
+            "not_yet": "Ajusta disponibilidad de transporte al horario real."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual rota atende ao horário?",
+          "scene": "Turno começa antes do amanhecer; serviço A começa depois, B funciona antes do turno.",
+          "options": [
+            {
+              "label": "Qualquer uma sem ver horários"
+            },
+            {
+              "label": "B"
+            },
+            {
+              "label": "A pois passagem é barata"
+            }
+          ],
+          "help": [
+            "Ajuste transporte disponível ao horário real."
+          ],
+          "feedback": {
+            "met": "Uma rota deve funcionar quando a viagem é necessária.",
+            "not_yet": "Ajuste transporte disponível ao horário real."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.12",
+      "copy": {
+        "en-US": {
+          "prompt": "Can this option be called feasible?",
+          "scene": "Rent fits the budget, but required accessible transport is unavailable.",
+          "options": [
+            {
+              "label": "Yes, rent alone fits"
+            },
+            {
+              "label": "No, access requirement fails"
+            },
+            {
+              "label": "Yes, ignore daily travel"
+            }
+          ],
+          "help": [
+            "Evaluate the combined housing and transport arrangement."
+          ],
+          "feedback": {
+            "met": "Affordable rent does not fix unavailable essential access.",
+            "not_yet": "Evaluate the combined housing and transport arrangement."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Puede llamarse viable esta opción?",
+          "scene": "Renta cabe en presupuesto, pero falta transporte accesible requerido.",
+          "options": [
+            {
+              "label": "Sí, solo renta cabe"
+            },
+            {
+              "label": "No, falla requisito de acceso"
+            },
+            {
+              "label": "Sí, ignorar viaje diario"
+            }
+          ],
+          "help": [
+            "Evalúa el conjunto de vivienda y transporte."
+          ],
+          "feedback": {
+            "met": "Renta asequible no resuelve falta de acceso esencial.",
+            "not_yet": "Evalúa el conjunto de vivienda y transporte."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Esta opção pode ser viável?",
+          "scene": "Aluguel cabe no orçamento, mas falta transporte acessível exigido.",
+          "options": [
+            {
+              "label": "Sim, só aluguel cabe"
+            },
+            {
+              "label": "Não, falha requisito de acesso"
+            },
+            {
+              "label": "Sim, ignorar viagem diária"
+            }
+          ],
+          "help": [
+            "Avalie o conjunto de moradia e transporte."
+          ],
+          "feedback": {
+            "met": "Aluguel acessível não resolve a falta de acesso essencial.",
+            "not_yet": "Avalie o conjunto de moradia e transporte."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.12",
+      "copy": {
+        "en-US": {
+          "prompt": "What information is still needed?",
+          "scene": "A cheap route has unknown travel time; the household has a strict arrival deadline.",
+          "options": [
+            {
+              "label": "Only the route’s distance"
+            },
+            {
+              "label": "Only the fare again"
+            },
+            {
+              "label": "Reliable journey time"
+            }
+          ],
+          "help": [
+            "Obtain journey timing before declaring the route feasible."
+          ],
+          "feedback": {
+            "met": "Unknown timing prevents checking the arrival constraint.",
+            "not_yet": "Obtain journey timing before declaring the route feasible."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué información falta todavía?",
+          "scene": "Ruta barata tiene duración desconocida; hogar necesita llegar antes de un límite estricto.",
+          "options": [
+            {
+              "label": "Solo la distancia de ruta"
+            },
+            {
+              "label": "Solo repetir el pasaje"
+            },
+            {
+              "label": "Tiempo confiable de viaje"
+            }
+          ],
+          "help": [
+            "Obtén duración antes de declarar viable la ruta."
+          ],
+          "feedback": {
+            "met": "Horario desconocido impide verificar el límite de llegada.",
+            "not_yet": "Obtén duración antes de declarar viable la ruta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que informação ainda falta?",
+          "scene": "Rota barata tem duração desconhecida; família precisa chegar antes de um limite rígido.",
+          "options": [
+            {
+              "label": "Só a distância da rota"
+            },
+            {
+              "label": "Só repetir a passagem"
+            },
+            {
+              "label": "Tempo confiável de viagem"
+            }
+          ],
+          "help": [
+            "Obtenha duração antes de declarar viável a rota."
+          ],
+          "feedback": {
+            "met": "Tempo desconhecido impede conferir o limite de chegada.",
+            "not_yet": "Obtenha duração antes de declarar viável a rota."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.12",
+      "visual": {
+        "type": "bar"
+      },
+      "payload": {
+        "data": {
+          "unit": "local",
+          "categories": [
+            {
+              "id": "earlier"
+            },
+            {
+              "id": "later"
+            }
+          ],
+          "series": [
+            {
+              "id": "projected-balance",
+              "values": [
+                900,
+                850
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "later"
+            },
+            {
+              "id": "earlier"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "later"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Both meet access and timing needs; complete monthly housing plus transport costs: A 900, B 850.",
+          "title": "Combined cost",
+          "data": {
+            "categories": [
+              {
+                "label": "A"
+              },
+              {
+                "label": "B"
+              }
+            ],
+            "series": [
+              {
+                "label": "Total cost"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Which costs less?",
+            "options": [
+              {
+                "label": "B"
+              },
+              {
+                "label": "A"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "B has the lower combined cost among these feasible options.",
+            "not_yet": "Compare combined costs after checking the essential constraints."
+          },
+          "help": [
+            "Compare combined costs after checking the essential constraints."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Ambas cumplen acceso y horarios; costos mensuales completos de vivienda y transporte: A 900, B 850.",
+          "title": "Costo combinado",
+          "data": {
+            "categories": [
+              {
+                "label": "A"
+              },
+              {
+                "label": "B"
+              }
+            ],
+            "series": [
+              {
+                "label": "Costo total"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Qué cuesta menos?",
+            "options": [
+              {
+                "label": "B"
+              },
+              {
+                "label": "A"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "B tiene menor costo combinado entre estas opciones viables.",
+            "not_yet": "Compara costos combinados tras revisar restricciones esenciales."
+          },
+          "help": [
+            "Compara costos combinados tras revisar restricciones esenciales."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Ambas atendem acesso e horários; custos mensais completos de moradia e transporte: A 900, B 850.",
+          "title": "Custo conjunto",
+          "data": {
+            "categories": [
+              {
+                "label": "A"
+              },
+              {
+                "label": "B"
+              }
+            ],
+            "series": [
+              {
+                "label": "Custo total"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Qual custa menos?",
+            "options": [
+              {
+                "label": "B"
+              },
+              {
+                "label": "A"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "B tem menor custo conjunto entre estas opções viáveis.",
+            "not_yet": "Compare custos conjuntos após conferir os limites essenciais."
+          },
+          "help": [
+            "Compare custos conjuntos após conferir os limites essenciais."
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.housing-transport.12",
+      "copy": {
+        "en-US": {
+          "prompt": "Which home remains feasible?",
+          "scene": "Required: accessible entry, late transport, affordable total; A fails transport, B meets all, C exceeds budget.",
+          "options": [
+            {
+              "label": "C"
+            },
+            {
+              "label": "A"
+            },
+            {
+              "label": "B"
+            }
+          ],
+          "help": [
+            "Check access, timing and combined affordability together."
+          ],
+          "feedback": {
+            "met": "B is the only option meeting every stated essential constraint.",
+            "not_yet": "Check access, timing and combined affordability together."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué vivienda sigue siendo viable?",
+          "scene": "Se requiere acceso, transporte nocturno y total asequible; A falla transporte, B cumple todo, C supera presupuesto.",
+          "options": [
+            {
+              "label": "C"
+            },
+            {
+              "label": "A"
+            },
+            {
+              "label": "B"
+            }
+          ],
+          "help": [
+            "Revisa juntos acceso, horario y capacidad combinada de pago."
+          ],
+          "feedback": {
+            "met": "B es la única opción que cumple toda restricción esencial.",
+            "not_yet": "Revisa juntos acceso, horario y capacidad combinada de pago."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual moradia segue viável?",
+          "scene": "Exige acesso, transporte noturno e total acessível; A falha transporte, B atende tudo, C supera orçamento.",
+          "options": [
+            {
+              "label": "C"
+            },
+            {
+              "label": "A"
+            },
+            {
+              "label": "B"
+            }
+          ],
+          "help": [
+            "Confira juntos acesso, horário e capacidade conjunta de pagar."
+          ],
+          "feedback": {
+            "met": "B é a única opção que atende todo limite essencial.",
+            "not_yet": "Confira juntos acesso, horário e capacidade conjunta de pagar."
+          }
+        }
+      }
+    }
+  ]
+}

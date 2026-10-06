@@ -1,0 +1,743 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-investment-comparison-part-2",
+  "lesson_id": "fe-production-investment-comparison-09",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.investment-comparison.09"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Identify which tax, fee or withdrawal assumptions prevent a fair net-return comparison.",
+  "title": {
+    "en-US": "Keepable Returns",
+    "es-MX": "Compara lo que conservas",
+    "pt-BR": "Compare o que fica com você"
+  },
+  "new_concepts": [
+    "finance.prod.investment-comparison.09"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Keepable Returns\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Compara lo que conservas\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Compare o que fica com você\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.investment-comparison.09",
+      "observable_action": "Identify which tax, fee or withdrawal assumptions prevent a fair net-return comparison.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.investment-comparison.01",
+      "prod.purchase-decisions.11"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A fair net comparison uses the same costs, tax assumptions and access conditions.",
+    "misconception": "A bigger headline return always means more money available for the learner’s goal.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.investment-comparison.09",
+        "context_id": "investment-comparison-09-example-01",
+        "supports_from": [],
+        "reasoning": "One offer shows returns before tax and fees; another deducts them. Align the assumptions before comparing what remains."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.investment-comparison.09",
+        "context_id": "investment-comparison-09-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "One figure includes a cost the other still omits."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.investment-comparison.09",
+        "context_id": "investment-comparison-09-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "An after-tax figure depends on its stated tax assumptions."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.investment-comparison.09",
+        "context_id": "investment-comparison-09-practice-01",
+        "supports_from": [],
+        "reasoning": "The comparison must use the learner’s actual withdrawal timing."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.investment-comparison.09",
+        "context_id": "investment-comparison-09-practice-02",
+        "supports_from": [],
+        "reasoning": "A missing price does not establish zero cost."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.investment-comparison.09",
+        "context_id": "investment-comparison-09-practice-03",
+        "supports_from": [],
+        "reasoning": "Different markets and account rules can change the net amount."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.investment-comparison.09",
+        "context_id": "investment-comparison-09-transfer-01",
+        "supports_from": [],
+        "reasoning": "The short-exit quote is missing conditions affecting available money."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.investment-comparison.09",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A fair net comparison uses the same costs, tax assumptions and access conditions."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Una comparación neta justa usa los mismos costos, supuestos de impuestos y condiciones de acceso."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Uma comparação líquida justa usa os mesmos custos, hipóteses de impostos e condições de acesso."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Find the missing assumption",
+          "line": "One offer shows returns before tax and fees; another deducts them. Align the assumptions before comparing what remains."
+        },
+        "es-MX": {
+          "prompt": "Busca el supuesto faltante",
+          "line": "Una oferta muestra rendimientos antes de impuestos y comisiones; otra los descuenta. Iguala supuestos antes de comparar lo restante."
+        },
+        "pt-BR": {
+          "prompt": "Ache a hipótese que falta",
+          "line": "Uma oferta mostra ganhos antes de impostos e tarifas; outra os desconta. Iguale hipóteses antes de comparar o que sobra."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.09",
+      "copy": {
+        "en-US": {
+          "prompt": "What prevents comparison?",
+          "scene": "Both returns cover the same period, but only one deducts required account fees.",
+          "options": [
+            {
+              "label": "Unequal fee treatment"
+            },
+            {
+              "label": "The matching dates"
+            },
+            {
+              "label": "The account names"
+            }
+          ],
+          "help": [
+            "Compare both after the same relevant charges."
+          ],
+          "feedback": {
+            "met": "One figure includes a cost the other still omits.",
+            "not_yet": "Compare both after the same relevant charges."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué impide comparar?",
+          "scene": "Ambos rendimientos cubren igual periodo, pero solo uno descuenta comisiones obligatorias de cuenta.",
+          "options": [
+            {
+              "label": "El trato desigual de comisiones"
+            },
+            {
+              "label": "Las fechas coincidentes"
+            },
+            {
+              "label": "Los nombres de cuenta"
+            }
+          ],
+          "help": [
+            "Compara ambos tras los cargos relevantes equivalentes."
+          ],
+          "feedback": {
+            "met": "Un monto incluye un costo que el otro omite.",
+            "not_yet": "Compara ambos tras los cargos relevantes equivalentes."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que impede comparar?",
+          "scene": "Ambos os ganhos cobrem igual período, mas só um desconta tarifas obrigatórias da conta.",
+          "options": [
+            {
+              "label": "O trato desigual das tarifas"
+            },
+            {
+              "label": "As datas iguais"
+            },
+            {
+              "label": "Os nomes das contas"
+            }
+          ],
+          "help": [
+            "Compare ambos após cobranças relevantes iguais."
+          ],
+          "feedback": {
+            "met": "Um valor inclui um custo que o outro omite.",
+            "not_yet": "Compare ambos após cobranças relevantes iguais."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Which assumption is missing?",
+          "scene": "An offer labels its figure “after tax” without stating whose tax situation it assumes.",
+          "options": [
+            {
+              "label": "The applicable tax assumptions"
+            },
+            {
+              "label": "Assume everyone owes the same"
+            },
+            {
+              "label": "Only the investment term"
+            }
+          ],
+          "help": [
+            "Do not import an unstated person’s tax situation."
+          ],
+          "feedback": {
+            "met": "An after-tax figure depends on its stated tax assumptions.",
+            "not_yet": "Do not import an unstated person’s tax situation."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué supuesto falta?",
+          "scene": "Una oferta dice «después de impuestos» sin indicar qué situación fiscal supone.",
+          "options": [
+            {
+              "label": "Los supuestos fiscales aplicados"
+            },
+            {
+              "label": "Suponer impuestos iguales para todos"
+            },
+            {
+              "label": "Solo el plazo de inversión"
+            }
+          ],
+          "help": [
+            "No importes una situación fiscal sin conocerla."
+          ],
+          "feedback": {
+            "met": "Un monto neto depende de los supuestos fiscales indicados.",
+            "not_yet": "No importes una situación fiscal sin conocerla."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual hipótese falta?",
+          "scene": "Uma oferta diz “após impostos” sem dizer qual situação fiscal supõe.",
+          "options": [
+            {
+              "label": "As hipóteses fiscais usadas"
+            },
+            {
+              "label": "Supor impostos iguais para todos"
+            },
+            {
+              "label": "Só o prazo do investimento"
+            }
+          ],
+          "help": [
+            "Não importe uma situação fiscal sem conhecê-la."
+          ],
+          "feedback": {
+            "met": "Um valor líquido depende das hipóteses fiscais dadas.",
+            "not_yet": "Não importe uma situação fiscal sem conhecê-la."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Which cost matters?",
+          "scene": "The goal needs cash early. An offer’s net figure assumes waiting until maturity, avoiding its early-exit fee.",
+          "options": [
+            {
+              "label": "Only the no-fee figure"
+            },
+            {
+              "label": "The actual early-exit fee"
+            }
+          ],
+          "help": [
+            "Check costs under the intended use."
+          ],
+          "feedback": {
+            "met": "The comparison must use the learner’s actual withdrawal timing.",
+            "not_yet": "Check costs under the intended use."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué costo de retiro importa?",
+          "scene": "La meta necesita efectivo antes. Una cifra neta supone mantener hasta vencimiento, evitando comisión de salida anticipada.",
+          "options": [
+            {
+              "label": "Solo la cifra sin comisión al vencimiento"
+            },
+            {
+              "label": "La comisión de la salida real"
+            }
+          ],
+          "help": [
+            "Revisa costos bajo el uso previsto."
+          ],
+          "feedback": {
+            "met": "La comparación debe usar el momento real del retiro.",
+            "not_yet": "Revisa costos bajo el uso previsto."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual custo de saque importa?",
+          "scene": "A meta precisa de dinheiro antes. Um valor líquido supõe esperar o vencimento, sem tarifa de saída antecipada.",
+          "options": [
+            {
+              "label": "Só o valor sem tarifa no vencimento"
+            },
+            {
+              "label": "A tarifa da saída real"
+            }
+          ],
+          "help": [
+            "Confira custos no uso previsto."
+          ],
+          "feedback": {
+            "met": "A comparação deve usar o prazo real do saque.",
+            "not_yet": "Confira custos no uso previsto."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Is an unknown fee zero?",
+          "scene": "A comparison omits a mandatory custody fee because its amount is unavailable.",
+          "options": [
+            {
+              "label": "Yes, absent means free"
+            },
+            {
+              "label": "No, the comparison is incomplete"
+            }
+          ],
+          "help": [
+            "Obtain the missing mandatory charge."
+          ],
+          "feedback": {
+            "met": "A missing price does not establish zero cost.",
+            "not_yet": "Obtain the missing mandatory charge."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Una comisión desconocida es cero?",
+          "scene": "Omiten una comisión obligatoria de custodia porque no conocen su monto.",
+          "options": [
+            {
+              "label": "Sí, ausente significa gratis"
+            },
+            {
+              "label": "No, la comparación está incompleta"
+            }
+          ],
+          "help": [
+            "Obtén el cargo obligatorio faltante."
+          ],
+          "feedback": {
+            "met": "Un precio faltante no establece costo cero.",
+            "not_yet": "Obtén el cargo obligatorio faltante."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Tarifa desconhecida é zero?",
+          "scene": "Omitem uma tarifa obrigatória de custódia porque não sabem seu valor.",
+          "options": [
+            {
+              "label": "Sim, ausente significa grátis"
+            },
+            {
+              "label": "Não, a comparação está incompleta"
+            }
+          ],
+          "help": [
+            "Obtenha a cobrança obrigatória que falta."
+          ],
+          "feedback": {
+            "met": "Um preço ausente não estabelece custo zero.",
+            "not_yet": "Obtenha a cobrança obrigatória que falta."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Can assumptions travel unchanged?",
+          "scene": "A net-return example uses another country’s tax rules for a different account type.",
+          "options": [
+            {
+              "label": "No, verify the applicable local rules"
+            },
+            {
+              "label": "Yes, every net return is universal"
+            }
+          ],
+          "help": [
+            "Use the rules relevant to the actual case."
+          ],
+          "feedback": {
+            "met": "Different markets and account rules can change the net amount.",
+            "not_yet": "Use the rules relevant to the actual case."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Los supuestos sirven sin cambios?",
+          "scene": "Un ejemplo neto usa reglas fiscales de otro país y otro tipo de cuenta.",
+          "options": [
+            {
+              "label": "No, verifica las reglas locales aplicables"
+            },
+            {
+              "label": "Sí, todo rendimiento neto es universal"
+            }
+          ],
+          "help": [
+            "Usa las reglas pertinentes al caso real."
+          ],
+          "feedback": {
+            "met": "Mercados y cuentas distintos pueden cambiar el monto neto.",
+            "not_yet": "Usa las reglas pertinentes al caso real."
+          }
+        },
+        "pt-BR": {
+          "prompt": "As hipóteses servem sem mudança?",
+          "scene": "Um exemplo líquido usa regras fiscais de outro país e outro tipo de conta.",
+          "options": [
+            {
+              "label": "Não, confira as regras locais aplicáveis"
+            },
+            {
+              "label": "Sim, todo ganho líquido é universal"
+            }
+          ],
+          "help": [
+            "Use as regras pertinentes ao caso real."
+          ],
+          "feedback": {
+            "met": "Mercados e contas distintos podem mudar o valor líquido.",
+            "not_yet": "Use as regras pertinentes ao caso real."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.investment-comparison.09",
+      "copy": {
+        "en-US": {
+          "prompt": "What needs correction?",
+          "scene": "A long-term offer deducts costs. A short-exit quote omits a mandatory penalty and tax assumption.",
+          "options": [
+            {
+              "label": "Rank printed gains"
+            },
+            {
+              "label": "Omitted charges vanish"
+            },
+            {
+              "label": "Complete short-exit assumptions"
+            }
+          ],
+          "help": [
+            "Compare amounts under the same actual-use assumptions."
+          ],
+          "feedback": {
+            "met": "The short-exit quote is missing conditions affecting available money.",
+            "not_yet": "Compare amounts under the same actual-use assumptions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué comparación corriges?",
+          "scene": "Una oferta larga descuenta costos. Una salida corta omite penalización obligatoria y supuesto fiscal.",
+          "options": [
+            {
+              "label": "Ordenar solo ganancias impresas"
+            },
+            {
+              "label": "Suponer que cargos omitidos desaparecen"
+            },
+            {
+              "label": "Completar supuestos de la salida corta"
+            }
+          ],
+          "help": [
+            "Compara bajo los mismos supuestos de uso real."
+          ],
+          "feedback": {
+            "met": "La salida corta omite condiciones que afectan el dinero disponible.",
+            "not_yet": "Compara bajo los mismos supuestos de uso real."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual comparação corrigir?",
+          "scene": "Uma oferta longa desconta custos. Uma saída curta omite multa obrigatória e hipótese fiscal.",
+          "options": [
+            {
+              "label": "Ordenar só ganhos impressos"
+            },
+            {
+              "label": "Supor que cobranças omitidas somem"
+            },
+            {
+              "label": "Completar hipóteses da saída curta"
+            }
+          ],
+          "help": [
+            "Compare sob as mesmas hipóteses de uso real."
+          ],
+          "feedback": {
+            "met": "A saída curta omite condições que afetam o dinheiro disponível.",
+            "not_yet": "Compare sob as mesmas hipóteses de uso real."
+          }
+        }
+      }
+    }
+  ]
+}

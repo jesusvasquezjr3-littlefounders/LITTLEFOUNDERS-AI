@@ -1,0 +1,852 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-accounts-records-part-2",
+  "lesson_id": "fe-production-accounts-records-review-2",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.cash.commitment",
+    "finance.prod.accounts-records.06",
+    "finance.prod.accounts-records.07",
+    "finance.prod.accounts-records.08",
+    "finance.prod.accounts-records.09",
+    "finance.prod.accounts-records.10"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Apply the previously taught financial relationships to the visible constraints of a new situation.",
+  "title": {
+    "en-US": "Verifying records",
+    "es-MX": "Verifica antes de confiar en el registro",
+    "pt-BR": "Confira antes de confiar no registro"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Verify before relying on the record\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Verifica antes de confiar en el registro\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Confira antes de confiar no registro\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "consolidate",
+    "objective": {
+      "skill_id": "cash.commitment",
+      "observable_action": "Apply the previously taught financial relationships to the visible constraints of a new situation.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "cash.received"
+    ],
+    "retrieval_skills": [
+      "prod.accounts-records.06",
+      "prod.accounts-records.07",
+      "prod.accounts-records.08",
+      "prod.accounts-records.09",
+      "prod.accounts-records.10",
+      "cash.commitment"
+    ],
+    "relevance": "Check status, access and evidence while protecting private information.",
+    "misconception": "Reuse an earlier answer without checking the current quantities, units and conditions.",
+    "numeracy_support": "All required quantities remain on the current board.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.accounts-records.06",
+        "context_id": "fe-production-accounts-records-review-2-practice-01",
+        "supports_from": [],
+        "reasoning": "One payment changing state should not be counted twice."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.accounts-records.07",
+        "context_id": "fe-production-accounts-records-review-2-practice-02",
+        "supports_from": [],
+        "reasoning": "The debit record and case code support a factual follow-up."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.accounts-records.08",
+        "context_id": "fe-production-accounts-records-review-2-practice-03",
+        "supports_from": [],
+        "reasoning": "A low fee does not solve unmet access requirements."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.accounts-records.09",
+        "context_id": "fe-production-accounts-records-review-2-practice-04",
+        "supports_from": [],
+        "reasoning": "The badge alone does not establish specific coverage."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.accounts-records.10",
+        "context_id": "fe-production-accounts-records-review-2-practice-05",
+        "supports_from": [],
+        "reasoning": "Evidence of spending does not require a private access code."
+      },
+      {
+        "segment_id": "practice-06",
+        "skill_id": "cash.commitment",
+        "context_id": "fe-production-accounts-records-review-2-practice-06",
+        "supports_from": [],
+        "reasoning": "The obligation exists before payment is completed."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "cash.commitment",
+        "context_id": "fe-production-accounts-records-review-2-transfer-01",
+        "supports_from": [],
+        "reasoning": "The incoming refund does not erase the stated replacement need."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "cash.commitment",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Check status, access and evidence while protecting private information."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Revisa estado, acceso y evidencia protegiendo la información privada."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Confira estado, acesso e provas protegendo os dados privados."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.06",
+      "copy": {
+        "en-US": {
+          "prompt": "How should records change?",
+          "scene": "A pending payment settles under its original reference; both views describe the same payment.",
+          "options": [
+            {
+              "label": "Count settlement as income"
+            },
+            {
+              "label": "Update that payment’s status"
+            },
+            {
+              "label": "Add an identical second purchase"
+            }
+          ],
+          "help": [
+            "Match the reference before adding another entry."
+          ],
+          "feedback": {
+            "met": "One payment changing state should not be counted twice.",
+            "not_yet": "Match the reference before adding another entry."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cómo cambiar tu registro?",
+          "scene": "Un pago pendiente se liquida con su referencia original; ambas vistas describen el mismo pago.",
+          "options": [
+            {
+              "label": "Contar liquidación como ingreso"
+            },
+            {
+              "label": "Actualizar estado de ese pago"
+            },
+            {
+              "label": "Añadir una segunda compra idéntica"
+            }
+          ],
+          "help": [
+            "Compara la referencia antes de añadir otra entrada."
+          ],
+          "feedback": {
+            "met": "Un pago que cambia de estado no debe contarse dos veces.",
+            "not_yet": "Compara la referencia antes de añadir otra entrada."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Como mudar seu registro?",
+          "scene": "Um pagamento pendente liquida com a referência original; ambas as telas descrevem o mesmo pagamento.",
+          "options": [
+            {
+              "label": "Contar liquidação como renda"
+            },
+            {
+              "label": "Atualizar estado desse pagamento"
+            },
+            {
+              "label": "Adicionar uma segunda compra idêntica"
+            }
+          ],
+          "help": [
+            "Compare a referência antes de adicionar outro registro."
+          ],
+          "feedback": {
+            "met": "Um pagamento que muda de estado não deve ser contado duas vezes.",
+            "not_yet": "Compare a referência antes de adicionar outro registro."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.07",
+      "copy": {
+        "en-US": {
+          "prompt": "What needs retaining?",
+          "scene": "An unfamiliar debit has date, amount and reference; support provides a case code.",
+          "options": [
+            {
+              "label": "The password inside a public report"
+            },
+            {
+              "label": "Only a guessed cause"
+            },
+            {
+              "label": "Debit details and case code"
+            }
+          ],
+          "help": [
+            "Save the facts without exposing access secrets."
+          ],
+          "feedback": {
+            "met": "The debit record and case code support a factual follow-up.",
+            "not_yet": "Save the facts without exposing access secrets."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe conservarse?",
+          "scene": "Un débito desconocido tiene fecha, monto y referencia; soporte da un folio.",
+          "options": [
+            {
+              "label": "La contraseña en un reporte público"
+            },
+            {
+              "label": "Solo una causa supuesta"
+            },
+            {
+              "label": "Datos del débito y folio"
+            }
+          ],
+          "help": [
+            "Guarda los hechos sin exponer secretos de acceso."
+          ],
+          "feedback": {
+            "met": "Registro del débito y folio permiten seguimiento basado en hechos.",
+            "not_yet": "Guarda los hechos sin exponer secretos de acceso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que deve ser guardado?",
+          "scene": "Um débito desconhecido tem data, valor e referência; o suporte dá um código do caso.",
+          "options": [
+            {
+              "label": "A senha num relato público"
+            },
+            {
+              "label": "Só uma causa suposta"
+            },
+            {
+              "label": "Dados do débito e código do caso"
+            }
+          ],
+          "help": [
+            "Guarde os fatos sem expor segredos de acesso."
+          ],
+          "feedback": {
+            "met": "Registro do débito e código do caso permitem acompanhar os fatos.",
+            "not_yet": "Guarde os fatos sem expor segredos de acesso."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.08",
+      "copy": {
+        "en-US": {
+          "prompt": "What needs checking?",
+          "scene": "A fictional account requires a document and device that the person lacks.",
+          "options": [
+            {
+              "label": "Supported alternatives for these requirements"
+            },
+            {
+              "label": "Only the lowest advertised fee"
+            },
+            {
+              "label": "Assume requirements are optional"
+            }
+          ],
+          "help": [
+            "Verify alternatives rather than inventing eligibility."
+          ],
+          "feedback": {
+            "met": "A low fee does not solve unmet access requirements.",
+            "not_yet": "Verify alternatives rather than inventing eligibility."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué revisar antes de contar con ella?",
+          "scene": "Una cuenta ficticia requiere documento y dispositivo que la persona no tiene.",
+          "options": [
+            {
+              "label": "Alternativas permitidas para esos requisitos de acceso"
+            },
+            {
+              "label": "Solo la comisión anunciada más baja"
+            },
+            {
+              "label": "Suponer opcionales los requisitos"
+            }
+          ],
+          "help": [
+            "Verifica alternativas sin inventar elegibilidad."
+          ],
+          "feedback": {
+            "met": "Una comisión baja no resuelve requisitos de acceso incumplidos.",
+            "not_yet": "Verifica alternativas sin inventar elegibilidad."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que conferir antes de contar com ela?",
+          "scene": "Uma conta fictícia exige documento e aparelho que a pessoa não tem.",
+          "options": [
+            {
+              "label": "Alternativas permitidas para esses requisitos de acesso"
+            },
+            {
+              "label": "Só a tarifa anunciada mais baixa"
+            },
+            {
+              "label": "Supor opcionais os requisitos"
+            }
+          ],
+          "help": [
+            "Confira alternativas sem inventar elegibilidade."
+          ],
+          "feedback": {
+            "met": "Uma tarifa baixa não resolve requisitos de acesso não cumpridos.",
+            "not_yet": "Confira alternativas sem inventar elegibilidade."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.09",
+      "copy": {
+        "en-US": {
+          "prompt": "What needs verification?",
+          "scene": "A protection logo names neither the covered product nor its conditions.",
+          "options": [
+            {
+              "label": "Only that the provider exists"
+            },
+            {
+              "label": "Assume all losses are covered"
+            },
+            {
+              "label": "The actual product and applicable coverage"
+            }
+          ],
+          "help": [
+            "Check the institution and protection rules through their real sources."
+          ],
+          "feedback": {
+            "met": "The badge alone does not establish specific coverage.",
+            "not_yet": "Check the institution and protection rules through their real sources."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué sigue por verificarse?",
+          "scene": "Un proveedor muestra un sello de protección sin producto cubierto ni condiciones.",
+          "options": [
+            {
+              "label": "Solo que el proveedor existe"
+            },
+            {
+              "label": "Suponer cubierta toda pérdida"
+            },
+            {
+              "label": "El producto real y cobertura aplicable"
+            }
+          ],
+          "help": [
+            "Revisa institución y reglas en sus fuentes reales."
+          ],
+          "feedback": {
+            "met": "El sello solo no demuestra una cobertura concreta.",
+            "not_yet": "Revisa institución y reglas en sus fuentes reales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que ainda precisa conferir?",
+          "scene": "Um fornecedor mostra um selo de proteção sem produto coberto nem condições.",
+          "options": [
+            {
+              "label": "Só que o fornecedor existe"
+            },
+            {
+              "label": "Supor coberta toda perda"
+            },
+            {
+              "label": "O produto real e cobertura aplicável"
+            }
+          ],
+          "help": [
+            "Confira instituição e regras em suas fontes reais."
+          ],
+          "feedback": {
+            "met": "O selo sozinho não demonstra cobertura concreta.",
+            "not_yet": "Confira instituição e regras em suas fontes reais."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Which version to share?",
+          "scene": "A shared expense receipt includes an unrelated private security code.",
+          "options": [
+            {
+              "label": "Relevant receipt details without code"
+            },
+            {
+              "label": "The full image including the code"
+            },
+            {
+              "label": "The code alone as payment proof"
+            }
+          ],
+          "help": [
+            "Keep private access separate from shared evidence."
+          ],
+          "feedback": {
+            "met": "Evidence of spending does not require a private access code.",
+            "not_yet": "Keep private access separate from shared evidence."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué versión es adecuada para compartir?",
+          "scene": "Una imagen de comprobante incluye un código privado ajeno al gasto compartido.",
+          "options": [
+            {
+              "label": "Datos pertinentes sin ese código"
+            },
+            {
+              "label": "La imagen completa con el código"
+            },
+            {
+              "label": "Solo el código como prueba de pago"
+            }
+          ],
+          "help": [
+            "Separa acceso privado de evidencia compartida."
+          ],
+          "feedback": {
+            "met": "Probar un gasto no requiere un código privado de acceso.",
+            "not_yet": "Separa acceso privado de evidencia compartida."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual versão é adequada para compartilhar?",
+          "scene": "Uma imagem de recibo inclui um código privado alheio ao gasto compartilhado.",
+          "options": [
+            {
+              "label": "Dados pertinentes sem esse código"
+            },
+            {
+              "label": "A imagem completa com o código"
+            },
+            {
+              "label": "Só o código como prova de pagamento"
+            }
+          ],
+          "help": [
+            "Separe acesso privado de provas compartilhadas."
+          ],
+          "feedback": {
+            "met": "Provar um gasto não exige um código privado de acesso.",
+            "not_yet": "Separe acesso privado de provas compartilhadas."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.commitment",
+      "copy": {
+        "en-US": {
+          "prompt": "Does holding it free it?",
+          "scene": "An unpaid necessary bill’s reserved money remains in the account.",
+          "options": [
+            {
+              "label": "Balances have no obligations"
+            },
+            {
+              "label": "Reservations count only after payment"
+            },
+            {
+              "label": "The bill still claims it"
+            }
+          ],
+          "help": [
+            "Keep commitments visible alongside balances."
+          ],
+          "feedback": {
+            "met": "The obligation exists before payment is completed.",
+            "not_yet": "Keep commitments visible alongside balances."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Tenerlo físicamente lo vuelve libre?",
+          "scene": "Una cuenta necesaria sigue pendiente; su dinero reservado sigue físicamente en la cuenta.",
+          "options": [
+            {
+              "label": "Sí, un saldo no tiene obligaciones"
+            },
+            {
+              "label": "Sí, reservas cuentan solo después de pagar"
+            },
+            {
+              "label": "No, la cuenta necesaria sigue comprometida"
+            }
+          ],
+          "help": [
+            "Conserva compromisos visibles junto a saldos."
+          ],
+          "feedback": {
+            "met": "La obligación existe antes de realizar el pago.",
+            "not_yet": "Conserva compromisos visibles junto a saldos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Tê-lo fisicamente o torna livre?",
+          "scene": "Uma conta necessária continua pendente; seu dinheiro reservado continua fisicamente na conta.",
+          "options": [
+            {
+              "label": "Sim, um saldo não tem obrigações"
+            },
+            {
+              "label": "Sim, reservas contam só após pagar"
+            },
+            {
+              "label": "Não, a conta necessária continua comprometida"
+            }
+          ],
+          "help": [
+            "Mantenha compromissos visíveis junto aos saldos."
+          ],
+          "feedback": {
+            "met": "A obrigação existe antes de concluir o pagamento.",
+            "not_yet": "Mantenha compromissos visíveis junto aos saldos."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.cash.commitment",
+      "copy": {
+        "en-US": {
+          "prompt": "What matters before optional spending?",
+          "scene": "A refund replenishes money assigned to an unpaid necessary replacement.",
+          "options": [
+            {
+              "label": "Treat the refund as a completed replacement"
+            },
+            {
+              "label": "The remaining replacement commitment"
+            },
+            {
+              "label": "Assuming every refund is free"
+            }
+          ],
+          "help": [
+            "Check the outstanding purpose before reallocating money."
+          ],
+          "feedback": {
+            "met": "The incoming refund does not erase the stated replacement need.",
+            "not_yet": "Check the outstanding purpose before reallocating money."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué importa antes de gastar opcionalmente?",
+          "scene": "Un reembolso repone dinero asignado a un reemplazo necesario aún sin pagar.",
+          "options": [
+            {
+              "label": "Tratar reembolso como reemplazo pagado"
+            },
+            {
+              "label": "El compromiso restante del reemplazo"
+            },
+            {
+              "label": "Suponer libre cualquier reembolso"
+            }
+          ],
+          "help": [
+            "Revisa el propósito pendiente antes de reasignar dinero."
+          ],
+          "feedback": {
+            "met": "El reembolso recibido no elimina la necesidad de reemplazo indicada.",
+            "not_yet": "Revisa el propósito pendiente antes de reasignar dinero."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que importa antes de gastar opcionalmente?",
+          "scene": "Um reembolso repõe dinheiro destinado a uma substituição necessária ainda não paga.",
+          "options": [
+            {
+              "label": "Tratar reembolso como substituição paga"
+            },
+            {
+              "label": "O compromisso restante da substituição"
+            },
+            {
+              "label": "Supor livre qualquer reembolso"
+            }
+          ],
+          "help": [
+            "Confira o propósito pendente antes de destinar o dinheiro de novo."
+          ],
+          "feedback": {
+            "met": "O reembolso recebido não elimina a necessidade de substituição informada.",
+            "not_yet": "Confira o propósito pendente antes de destinar o dinheiro de novo."
+          }
+        }
+      }
+    }
+  ]
+}

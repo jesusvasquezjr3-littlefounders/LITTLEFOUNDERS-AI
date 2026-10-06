@@ -147,7 +147,7 @@ const savingsRule = z.object({
 }).strict();
 const ledger = z.object({
   ...base, type: z.literal('money.running-ledger.v2'), grading: optionalServer, visual: z.object({ type: z.literal('balance-meter') }).strict(),
-  payload: z.object({ initial: nonnegative.max(100), sale: positive.max(100), cost: positive.max(100), maxEntries: positive.max(8) }).strict(),
+  payload: z.object({ initial: nonnegative.max(100), sale: positive.max(100), cost: positive.max(100), maxEntries: positive.max(8), personal: z.boolean().optional(), currency: z.enum(['coins', 'local']).optional() }).strict(),
 }).strict();
 const growth = z.object({
   ...base, type: z.literal('visual.growth-comparison.v2'), grading: optionalServer, visual: z.object({ type: z.literal('multi-line') }).strict(),

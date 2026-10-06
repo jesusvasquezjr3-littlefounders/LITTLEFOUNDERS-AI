@@ -1,0 +1,719 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-investing-foundations-part-2",
+  "lesson_id": "fe-production-investing-foundations-07",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.investing-foundations.07"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Explain why a fixed-rate bond’s resale price can change before maturity.",
+  "title": {
+    "en-US": "Bond Prices",
+    "es-MX": "Pago fijo, precio cambiante",
+    "pt-BR": "Pagamento fixo, preço variável"
+  },
+  "new_concepts": [
+    "finance.prod.investing-foundations.07"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Bond Prices\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Pago fijo, precio cambiante\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Pagamento fixo, preço variável\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.investing-foundations.07",
+      "observable_action": "Explain why a fixed-rate bond’s resale price can change before maturity.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.investing-foundations.05",
+      "prod.time-inflation.01"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Selling a bond early exposes you to the price buyers offer at that moment.",
+    "misconception": "A fixed interest payment means the bond has a fixed resale price.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.investing-foundations.07",
+        "context_id": "investing-foundations-07-example-01",
+        "supports_from": [],
+        "reasoning": "New comparable bonds pay more interest. Buyers may offer less for an older bond whose payments stay unchanged."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.investing-foundations.07",
+        "context_id": "investing-foundations-07-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Its unchanged payments compete with higher new payments."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.investing-foundations.07",
+        "context_id": "investing-foundations-07-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The contract and the resale market are different."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.investing-foundations.07",
+        "context_id": "investing-foundations-07-practice-01",
+        "supports_from": [],
+        "reasoning": "Market repricing does not itself prove a missed payment."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.investing-foundations.07",
+        "context_id": "investing-foundations-07-practice-02",
+        "supports_from": [],
+        "reasoning": "Higher unchanged payments can make the older bond more attractive."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.investing-foundations.07",
+        "context_id": "investing-foundations-07-practice-03",
+        "supports_from": [],
+        "reasoning": "An early sale uses the market price then available."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.investing-foundations.07",
+        "context_id": "investing-foundations-07-transfer-01",
+        "supports_from": [],
+        "reasoning": "Competing interest payments can change an early-sale quote."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.investing-foundations.07",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Selling a bond early exposes you to the price buyers offer at that moment."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Vender un bono antes de su vencimiento te expone al precio que ofrezcan en ese momento."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Vender um título antes do vencimento expõe você ao preço oferecido naquele momento."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Compare the payments",
+          "line": "New comparable bonds pay more interest. Buyers may offer less for an older bond whose payments stay unchanged."
+        },
+        "es-MX": {
+          "prompt": "Compara los pagos",
+          "line": "Bonos nuevos comparables pagan más intereses. Los compradores pueden ofrecer menos por uno anterior cuyos pagos no cambian."
+        },
+        "pt-BR": {
+          "prompt": "Compare os pagamentos",
+          "line": "Títulos novos comparáveis pagam mais juros. Compradores podem oferecer menos por um antigo cujos pagamentos não mudam."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.07",
+      "copy": {
+        "en-US": {
+          "prompt": "What pressure?",
+          "scene": "New bonds offer higher interest with the same term and credit risk. An older bond’s payments stay fixed.",
+          "options": [
+            {
+              "label": "Its payment automatically increases"
+            },
+            {
+              "label": "The older bond may sell for less"
+            }
+          ],
+          "help": [
+            "Compare equivalent terms and credit risk."
+          ],
+          "feedback": {
+            "met": "Its unchanged payments compete with higher new payments.",
+            "not_yet": "Compare equivalent terms and credit risk."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué presión hay?",
+          "scene": "Bonos nuevos ofrecen más interés con igual plazo y riesgo de crédito. Los pagos del anterior siguen fijos.",
+          "options": [
+            {
+              "label": "Su pago aumenta automáticamente"
+            },
+            {
+              "label": "El anterior puede venderse por menos"
+            }
+          ],
+          "help": [
+            "Compara iguales plazos y riesgo de crédito."
+          ],
+          "feedback": {
+            "met": "Sus pagos compiten con pagos nuevos más altos.",
+            "not_yet": "Compara iguales plazos y riesgo de crédito."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual pressão existe?",
+          "scene": "Títulos novos oferecem mais juros com igual prazo e risco de crédito. Os pagamentos do antigo continuam fixos.",
+          "options": [
+            {
+              "label": "Seu pagamento aumenta automaticamente"
+            },
+            {
+              "label": "O antigo pode vender por menos"
+            }
+          ],
+          "help": [
+            "Compare prazos e risco de crédito equivalentes."
+          ],
+          "feedback": {
+            "met": "Seus pagamentos competem com pagamentos novos mais altos.",
+            "not_yet": "Compare prazos e risco de crédito equivalentes."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Which part stays fixed?",
+          "scene": "A fixed-rate bond receives a lower resale offer after market interest rates rise.",
+          "options": [
+            {
+              "label": "Its resale offer"
+            },
+            {
+              "label": "Its contractual interest payment"
+            }
+          ],
+          "help": [
+            "Fixed interest does not mean fixed resale price."
+          ],
+          "feedback": {
+            "met": "The contract and the resale market are different.",
+            "not_yet": "Fixed interest does not mean fixed resale price."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué sigue fijo?",
+          "scene": "Un bono de tasa fija recibe una oferta menor tras subir las tasas de mercado.",
+          "options": [
+            {
+              "label": "Su oferta de reventa"
+            },
+            {
+              "label": "Su pago contractual de interés"
+            }
+          ],
+          "help": [
+            "Interés fijo no significa precio de reventa fijo."
+          ],
+          "feedback": {
+            "met": "El contrato y el mercado de reventa son distintos.",
+            "not_yet": "Interés fijo no significa precio de reventa fijo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que continua fixo?",
+          "scene": "Um título de taxa fixa recebe oferta menor após subirem os juros de mercado.",
+          "options": [
+            {
+              "label": "Sua oferta de revenda"
+            },
+            {
+              "label": "Seu pagamento contratual de juros"
+            }
+          ],
+          "help": [
+            "Juros fixos não significam preço de revenda fixo."
+          ],
+          "feedback": {
+            "met": "O contrato e o mercado de revenda são diferentes.",
+            "not_yet": "Juros fixos não significam preço de revenda fixo."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Does this prove default?",
+          "scene": "A bond’s resale price falls, but its issuer continues every scheduled payment.",
+          "options": [
+            {
+              "label": "No, price and default differ"
+            },
+            {
+              "label": "Yes, every price fall is default"
+            }
+          ],
+          "help": [
+            "Check the issuer’s payments separately."
+          ],
+          "feedback": {
+            "met": "Market repricing does not itself prove a missed payment.",
+            "not_yet": "Check the issuer’s payments separately."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Demuestra incumplimiento?",
+          "scene": "Cae el precio de reventa de un bono, pero el emisor cumple todos los pagos.",
+          "options": [
+            {
+              "label": "No, precio e incumplimiento difieren"
+            },
+            {
+              "label": "Sí, toda caída es incumplimiento"
+            }
+          ],
+          "help": [
+            "Revisa por separado los pagos del emisor."
+          ],
+          "feedback": {
+            "met": "Cambiar de precio no demuestra un pago omitido.",
+            "not_yet": "Revisa por separado los pagos del emisor."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Isso comprova inadimplência?",
+          "scene": "O preço de revenda cai, mas o emissor cumpre todos os pagamentos do título.",
+          "options": [
+            {
+              "label": "Não, preço e inadimplência diferem"
+            },
+            {
+              "label": "Sim, toda queda é inadimplência"
+            }
+          ],
+          "help": [
+            "Confira separadamente os pagamentos do emissor."
+          ],
+          "feedback": {
+            "met": "Mudar de preço não comprova falta de pagamento.",
+            "not_yet": "Confira separadamente os pagamentos do emissor."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Which direction is plausible?",
+          "scene": "Comparable new bonds pay less interest. An older bond keeps its higher fixed payments.",
+          "options": [
+            {
+              "label": "Buyers may offer more for it"
+            },
+            {
+              "label": "Its price must become zero"
+            }
+          ],
+          "help": [
+            "Compare payments while holding other conditions equal."
+          ],
+          "feedback": {
+            "met": "Higher unchanged payments can make the older bond more attractive.",
+            "not_yet": "Compare payments while holding other conditions equal."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué dirección es posible?",
+          "scene": "Bonos nuevos comparables pagan menos interés. Uno anterior mantiene pagos fijos mayores.",
+          "options": [
+            {
+              "label": "Pueden ofrecer más por el anterior"
+            },
+            {
+              "label": "Su precio debe volverse cero"
+            }
+          ],
+          "help": [
+            "Compara pagos manteniendo iguales las demás condiciones."
+          ],
+          "feedback": {
+            "met": "Pagos mayores sin cambios pueden volverlo más atractivo.",
+            "not_yet": "Compara pagos manteniendo iguales las demás condiciones."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual direção é possível?",
+          "scene": "Títulos novos comparáveis pagam menos juros. Um antigo mantém pagamentos fixos maiores.",
+          "options": [
+            {
+              "label": "Podem oferecer mais pelo antigo"
+            },
+            {
+              "label": "Seu preço deve virar zero"
+            }
+          ],
+          "help": [
+            "Compare pagamentos mantendo iguais as outras condições."
+          ],
+          "feedback": {
+            "met": "Pagamentos maiores inalterados podem torná-lo mais atraente.",
+            "not_yet": "Compare pagamentos mantendo iguais as outras condições."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.07",
+      "copy": {
+        "en-US": {
+          "prompt": "What needs checking?",
+          "scene": "Someone may need to sell a bond before maturity to cover a planned expense.",
+          "options": [
+            {
+              "label": "Possible resale price"
+            },
+            {
+              "label": "Only the maturity repayment promise"
+            }
+          ],
+          "help": [
+            "Match the actual sale date with its price risk."
+          ],
+          "feedback": {
+            "met": "An early sale uses the market price then available.",
+            "not_yet": "Match the actual sale date with its price risk."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debes revisar?",
+          "scene": "Una persona podría necesitar vender un bono antes del vencimiento para un gasto planeado.",
+          "options": [
+            {
+              "label": "El posible precio de reventa"
+            },
+            {
+              "label": "Solo la devolución al vencimiento"
+            }
+          ],
+          "help": [
+            "Relaciona la fecha de venta con su riesgo de precio."
+          ],
+          "feedback": {
+            "met": "Una venta anticipada usa el precio disponible entonces.",
+            "not_yet": "Relaciona la fecha de venta con su riesgo de precio."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que conferir?",
+          "scene": "Alguém pode precisar vender um título antes do vencimento para uma despesa planejada.",
+          "options": [
+            {
+              "label": "O possível preço de revenda"
+            },
+            {
+              "label": "Só a devolução no vencimento"
+            }
+          ],
+          "help": [
+            "Relacione a data da venda com seu risco de preço."
+          ],
+          "feedback": {
+            "met": "Uma venda antecipada usa o preço disponível naquele momento.",
+            "not_yet": "Relacione a data da venda com seu risco de preço."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.investing-foundations.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Why a lower quote?",
+          "scene": "A fixed bond pays punctually, but comparable new bonds offer higher interest. Its owner sells early.",
+          "options": [
+            {
+              "label": "Fixed prevents price changes"
+            },
+            {
+              "label": "Buyers compare payments"
+            },
+            {
+              "label": "The issuer necessarily defaulted"
+            }
+          ],
+          "help": [
+            "Do not confuse payment reliability with market price stability."
+          ],
+          "feedback": {
+            "met": "Competing interest payments can change an early-sale quote.",
+            "not_yet": "Do not confuse payment reliability with market price stability."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Por qué cambió la oferta?",
+          "scene": "Un bono fijo paga puntualmente. Nuevas emisiones comparables ofrecen mejor interés; su dueño necesita vender antes.",
+          "options": [
+            {
+              "label": "Fijo impide cambiar la oferta"
+            },
+            {
+              "label": "Los compradores comparan pagos alternativos"
+            },
+            {
+              "label": "El emisor necesariamente incumplió"
+            }
+          ],
+          "help": [
+            "No confundas cumplimiento de pagos con estabilidad del precio."
+          ],
+          "feedback": {
+            "met": "Los intereses alternativos pueden cambiar la oferta de venta anticipada.",
+            "not_yet": "No confundas cumplimiento de pagos con estabilidad del precio."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Por que mudou a oferta?",
+          "scene": "Um título fixo paga pontualmente. Emissões novas comparáveis oferecem mais juros; seu dono precisa vender antes.",
+          "options": [
+            {
+              "label": "Fixo impede mudar a oferta"
+            },
+            {
+              "label": "Compradores comparam pagamentos alternativos"
+            },
+            {
+              "label": "O emissor necessariamente deixou de pagar"
+            }
+          ],
+          "help": [
+            "Não confunda pagamentos pontuais com estabilidade de preço."
+          ],
+          "feedback": {
+            "met": "Juros alternativos podem mudar a oferta de venda antecipada.",
+            "not_yet": "Não confunda pagamentos pontuais com estabilidade de preço."
+          }
+        }
+      }
+    }
+  ]
+}

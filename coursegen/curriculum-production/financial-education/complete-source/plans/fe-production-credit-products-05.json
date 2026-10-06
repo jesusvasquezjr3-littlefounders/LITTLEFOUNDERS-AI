@@ -1,0 +1,818 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-credit-products-part-1",
+  "lesson_id": "fe-production-credit-products-05",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.credit-products.05"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Identify the separate costs of a cash advance in a fictional card agreement.",
+  "title": {
+    "en-US": "Cash Advances",
+    "es-MX": "Adelantos tienen términos propios",
+    "pt-BR": "Saques a crédito têm termos próprios"
+  },
+  "new_concepts": [
+    "finance.prod.credit-products.05"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Cash Advances\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Adelantos tienen términos propios\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Saques a crédito têm termos próprios\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.credit-products.05",
+      "observable_action": "Identify the separate costs of a cash advance in a fictional card agreement.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.credit-products.01",
+      "prod.credit-mechanics.02"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A cash advance can carry its own fee and interest rule; do not copy purchase terms without checking the agreement.",
+    "misconception": "A cash advance inherits all purchase grace terms or its only cost is the withdrawal fee.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.credit-products.05",
+        "context_id": "credit-products-05-example-01",
+        "supports_from": [],
+        "reasoning": "Identify cash received, the advance fee and when interest starts. The agreement may treat advances differently from purchases."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.credit-products.05",
+        "context_id": "credit-products-05-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The advance has both separately stated costs."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.credit-products.05",
+        "context_id": "credit-products-05-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The borrowing cost combines the fee and supplied interest."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.credit-products.05",
+        "context_id": "credit-products-05-practice-01",
+        "supports_from": [],
+        "reasoning": "The supplied advance rule starts interest on the transaction date."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.credit-products.05",
+        "context_id": "credit-products-05-practice-02",
+        "supports_from": [],
+        "reasoning": "Both supplied charges add to the borrowing cost."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.credit-products.05",
+        "context_id": "credit-products-05-practice-03",
+        "supports_from": [],
+        "reasoning": "The fee alone does not determine the missing interest cost."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.credit-products.05",
+        "context_id": "credit-products-05-transfer-01",
+        "supports_from": [],
+        "reasoning": "Different transaction rules require separate cost checks."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.credit-products.05",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A cash advance can carry its own fee and interest rule; do not copy purchase terms without checking the agreement."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Adelanto de efectivo puede tener cargo y regla de interés propios; no copies términos de compras sin revisar contrato."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Saque a crédito pode ter taxa e regra de juros próprios; não copie termos de compras sem conferir contrato."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Separate principal, fee and interest",
+          "line": "Identify cash received, the advance fee and when interest starts. The agreement may treat advances differently from purchases."
+        },
+        "es-MX": {
+          "prompt": "Separa capital, cargo e interés",
+          "line": "Identifica efectivo recibido, cargo por adelanto y cuándo inicia interés. Contrato puede tratar adelantos distinto de compras."
+        },
+        "pt-BR": {
+          "prompt": "Separe principal, taxa e juros",
+          "line": "Identifique dinheiro recebido, taxa do saque e quando começam juros. Contrato pode tratar saques distinto de compras."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Which costs apply under these terms?",
+          "scene": "Fictional advance charges a withdrawal fee and interest from the advance date.",
+          "options": [
+            {
+              "label": "Purchase grace automatically"
+            },
+            {
+              "label": "Fee plus interest"
+            },
+            {
+              "label": "Fee only"
+            }
+          ],
+          "help": [
+            "Read the advance clause rather than importing purchase terms."
+          ],
+          "feedback": {
+            "met": "The advance has both separately stated costs.",
+            "not_yet": "Read the advance clause rather than importing purchase terms."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué costos aplican bajo términos?",
+          "scene": "Adelanto ficticio cobra cargo de retiro e interés desde fecha del adelanto.",
+          "options": [
+            {
+              "label": "Regla de compras automáticamente"
+            },
+            {
+              "label": "Cargo más interés"
+            },
+            {
+              "label": "Solo cargo"
+            }
+          ],
+          "help": [
+            "Lee cláusula de adelanto sin importar términos de compras."
+          ],
+          "feedback": {
+            "met": "Adelanto tiene ambos costos indicados por separado.",
+            "not_yet": "Lee cláusula de adelanto sin importar términos de compras."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que custos valem sob termos?",
+          "scene": "Saque fictício cobra taxa de retirada e juros desde data do saque.",
+          "options": [
+            {
+              "label": "Regra de compras automaticamente"
+            },
+            {
+              "label": "Taxa mais juros"
+            },
+            {
+              "label": "Só taxa"
+            }
+          ],
+          "help": [
+            "Leia cláusula do saque sem importar termos de compras."
+          ],
+          "feedback": {
+            "met": "Saque tem ambos custos dados em separado.",
+            "not_yet": "Leia cláusula do saque sem importar termos de compras."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.05",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "step-1"
+          },
+          {
+            "id": "step-2"
+          },
+          {
+            "id": "step-3"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "step-2",
+          "step-3"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "step-2": "108",
+          "step-3": "8"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Fictional dollars: receive cash 100; fee 5; total interest until repayment 3; no other costs. Find borrowing cost.",
+          "feedback": {
+            "met": "The borrowing cost combines the fee and supplied interest.",
+            "not_yet": "Add fee and interest; separate cost from cash received."
+          },
+          "help": [
+            "Add fee and interest; separate cost from cash received."
+          ],
+          "steps": [
+            {
+              "expression": "100 + 5",
+              "result": "105",
+              "spokenText": "Cash plus fee"
+            },
+            {
+              "expression": "105 + 3",
+              "result": "108",
+              "spokenText": "Total repayment"
+            },
+            {
+              "expression": "108 - 100",
+              "result": "8",
+              "spokenText": "Cost above cash received"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Pesos ficticios: recibir efectivo 100; cargo 5; interés total hasta pago 3; sin otros costos. Calcula costo del préstamo.",
+          "feedback": {
+            "met": "Costo del préstamo combina cargo e interés dado.",
+            "not_yet": "Suma cargo e interés; separa costo de efectivo recibido."
+          },
+          "help": [
+            "Suma cargo e interés; separa costo de efectivo recibido."
+          ],
+          "steps": [
+            {
+              "expression": "100 + 5",
+              "result": "105",
+              "spokenText": "Efectivo más cargo"
+            },
+            {
+              "expression": "105 + 3",
+              "result": "108",
+              "spokenText": "Pago total"
+            },
+            {
+              "expression": "108 - 100",
+              "result": "8",
+              "spokenText": "Costo sobre efectivo recibido"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Reais fictícios: receber dinheiro 100; taxa 5; juros totais até pagamento 3; sem outros custos. Ache custo do empréstimo.",
+          "feedback": {
+            "met": "Custo do empréstimo combina taxa e juros dados.",
+            "not_yet": "Some taxa e juros; separe custo de dinheiro recebido."
+          },
+          "help": [
+            "Some taxa e juros; separe custo de dinheiro recebido."
+          ],
+          "steps": [
+            {
+              "expression": "100 + 5",
+              "result": "105",
+              "spokenText": "Dinheiro mais taxa"
+            },
+            {
+              "expression": "105 + 3",
+              "result": "108",
+              "spokenText": "Pagamento total"
+            },
+            {
+              "expression": "108 - 100",
+              "result": "8",
+              "spokenText": "Custo acima do dinheiro recebido"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.05",
+      "copy": {
+        "en-US": {
+          "prompt": "When do advance charges begin?",
+          "scene": "Fictional terms start advance interest on the transaction date; purchase grace is separate.",
+          "options": [
+            {
+              "label": "Transaction date"
+            },
+            {
+              "label": "Only the next due date"
+            },
+            {
+              "label": "Never if any minimum is paid"
+            }
+          ],
+          "help": [
+            "Use the timing rule for this transaction type."
+          ],
+          "feedback": {
+            "met": "The supplied advance rule starts interest on the transaction date.",
+            "not_yet": "Use the timing rule for this transaction type."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuándo inicia interés de este adelanto?",
+          "scene": "Términos ficticios inician interés de adelanto en fecha de transacción; regla de compras es distinta.",
+          "options": [
+            {
+              "label": "Fecha de transacción"
+            },
+            {
+              "label": "Solo siguiente vencimiento"
+            },
+            {
+              "label": "Nunca si se paga mínimo"
+            }
+          ],
+          "help": [
+            "Usa regla de tiempo para este tipo de transacción."
+          ],
+          "feedback": {
+            "met": "Regla dada inicia interés en fecha de transacción.",
+            "not_yet": "Usa regla de tiempo para este tipo de transacción."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quando começam juros deste saque?",
+          "scene": "Termos fictícios iniciam juros do saque na data da transação; regra de compras é distinta.",
+          "options": [
+            {
+              "label": "Data da transação"
+            },
+            {
+              "label": "Só próximo vencimento"
+            },
+            {
+              "label": "Nunca se paga mínimo"
+            }
+          ],
+          "help": [
+            "Use regra de prazo para este tipo de transação."
+          ],
+          "feedback": {
+            "met": "Regra dada inicia juros na data da transação.",
+            "not_yet": "Use regra de prazo para este tipo de transação."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.05",
+      "copy": {
+        "en-US": {
+          "prompt": "What is the total cost above cash received?",
+          "scene": "Fictional advance: fee 6; total interest 4; no other costs.",
+          "options": [
+            {
+              "label": "4"
+            },
+            {
+              "label": "6"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Add the fee and the total interest."
+          ],
+          "feedback": {
+            "met": "Both supplied charges add to the borrowing cost.",
+            "not_yet": "Add the fee and the total interest."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué costo total supera efectivo recibido?",
+          "scene": "Adelanto ficticio: cargo 6; interés total 4; sin otros costos.",
+          "options": [
+            {
+              "label": "4"
+            },
+            {
+              "label": "6"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Suma cargo e interés total."
+          ],
+          "feedback": {
+            "met": "Ambos cargos dados suman al costo del préstamo.",
+            "not_yet": "Suma cargo e interés total."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que custo total supera dinheiro recebido?",
+          "scene": "Saque fictício: taxa 6; juros totais 4; sem outros custos.",
+          "options": [
+            {
+              "label": "4"
+            },
+            {
+              "label": "6"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Some taxa e juros totais."
+          ],
+          "feedback": {
+            "met": "Ambos encargos dados somam ao custo do empréstimo.",
+            "not_yet": "Some taxa e juros totais."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          6,
+          4
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Is total cost known?",
+          "scene": "Fee is listed, but interest rate, calculation method and repayment time are missing.",
+          "options": [
+            {
+              "label": "Yes, fee is always everything"
+            },
+            {
+              "label": "Yes, assume zero interest"
+            },
+            {
+              "label": "No, interest inputs are missing"
+            }
+          ],
+          "help": [
+            "Obtain the interest terms and relevant repayment timing."
+          ],
+          "feedback": {
+            "met": "The fee alone does not determine the missing interest cost.",
+            "not_yet": "Obtain the interest terms and relevant repayment timing."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Puede conocerse costo total aquí?",
+          "scene": "Cargo aparece, pero faltan tasa, método de cálculo y plazo de pago.",
+          "options": [
+            {
+              "label": "Sí, cargo siempre es todo"
+            },
+            {
+              "label": "Sí, suponer interés cero"
+            },
+            {
+              "label": "No, faltan datos de interés"
+            }
+          ],
+          "help": [
+            "Obtén términos de interés y plazo relevante de pago."
+          ],
+          "feedback": {
+            "met": "Cargo solo no determina costo faltante de interés.",
+            "not_yet": "Obtén términos de interés y plazo relevante de pago."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Pode conhecer custo total aqui?",
+          "scene": "Taxa aparece, mas faltam juros, método de cálculo e prazo de pagamento.",
+          "options": [
+            {
+              "label": "Sim, taxa sempre é tudo"
+            },
+            {
+              "label": "Sim, supor juros zero"
+            },
+            {
+              "label": "Não, faltam dados de juros"
+            }
+          ],
+          "help": [
+            "Obtenha termos de juros e prazo relevante de pagamento."
+          ],
+          "feedback": {
+            "met": "Taxa só não define custo faltante de juros.",
+            "not_yet": "Obtenha termos de juros e prazo relevante de pagamento."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.credit-products.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Which comparison is valid?",
+          "scene": "Fictional purchases may qualify for grace; advances have a fee and immediate interest.",
+          "options": [
+            {
+              "label": "Ignore advance interest"
+            },
+            {
+              "label": "Compare each transaction’s own terms"
+            },
+            {
+              "label": "Apply purchase grace to advances"
+            }
+          ],
+          "help": [
+            "Read fees and interest timing for the actual transaction."
+          ],
+          "feedback": {
+            "met": "Different transaction rules require separate cost checks.",
+            "not_yet": "Read fees and interest timing for the actual transaction."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué comparación es válida?",
+          "scene": "Compras ficticias pueden evitar intereses bajo condiciones; adelantos tienen cargo e interés inmediato.",
+          "options": [
+            {
+              "label": "Ignorar interés del adelanto"
+            },
+            {
+              "label": "Comparar términos propios de cada transacción"
+            },
+            {
+              "label": "Aplicar regla de compras al adelanto"
+            }
+          ],
+          "help": [
+            "Lee cargos e inicio de interés de transacción real."
+          ],
+          "feedback": {
+            "met": "Reglas distintas requieren revisiones separadas de costos.",
+            "not_yet": "Lee cargos e inicio de interés de transacción real."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que comparação é válida?",
+          "scene": "Compras fictícias podem evitar juros sob condições; saques têm taxa e juros imediatos.",
+          "options": [
+            {
+              "label": "Ignorar juros do saque"
+            },
+            {
+              "label": "Comparar termos próprios de cada transação"
+            },
+            {
+              "label": "Aplicar regra de compras ao saque"
+            }
+          ],
+          "help": [
+            "Leia taxas e início de juros da transação real."
+          ],
+          "feedback": {
+            "met": "Regras distintas exigem conferências separadas de custos.",
+            "not_yet": "Leia taxas e início de juros da transação real."
+          }
+        }
+      }
+    }
+  ]
+}

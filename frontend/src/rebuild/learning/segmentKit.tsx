@@ -180,7 +180,7 @@ export function NumberAnswer({ label, locale, onChange, disabled, value, onTextC
 }
 
 /** GAP-FIX-R6: a graded step's authored banner text (v2 `feedback`, in the document's locale). */
-export type SegmentFeedback = { met?: string; not_yet?: string };
+export type SegmentFeedback = { met?: string; not_yet?: string; choice_hints?: Record<string, string> };
 
 /**
  * B.20 / Bible 02 §9.2 / Appendix B §1.8 (GAP-FIX-R6): the one banner text of
@@ -189,9 +189,9 @@ export type SegmentFeedback = { met?: string; not_yet?: string };
  * board's named confirmation (built from its graded state) is the fallback,
  * so no board ever answers a correct step with a bare "Correct".
  */
-export function verdictBannerText(locale: Locale, verdict: 'met' | 'review' | 'unavailable', named: NamedFeedback, feedback?: SegmentFeedback): string {
+export function verdictBannerText(locale: Locale, verdict: 'met' | 'review' | 'unavailable', named: NamedFeedback, feedback?: SegmentFeedback, choice?: string | null): string {
   if (verdict === 'unavailable') return copy[locale].unavailable;
-  return verdict === 'met' ? feedback?.met ?? named.met : feedback?.not_yet ?? named.hint;
+  return verdict === 'met' ? feedback?.met ?? named.met : (choice ? feedback?.choice_hints?.[choice] : undefined) ?? feedback?.not_yet ?? named.hint;
 }
 
 /**
@@ -218,17 +218,17 @@ export function useSegmentGrade(segmentId: string, onGrade: OnGradeSegment | und
   return { pending, result, check, reset: () => setResult(null), met: result !== null && result !== 'unavailable' && result.verdict === 'met' };
 }
 
-export function GradedFoot({ locale, grading, canCheck, onCheck, sequence, named, feedback }: {
+export function GradedFoot({ locale, grading, canCheck, onCheck, sequence, named, feedback, feedbackChoice }: {
   locale: Locale; grading: ReturnType<typeof useSegmentGrade>; canCheck: boolean; onCheck: () => void; sequence?: LessonSequenceControl;
   /** The board's named confirmation and hint (namedFeedback.ts), used when the segment has no authored feedback. */
-  named: NamedFeedback; feedback?: SegmentFeedback;
+  named: NamedFeedback; feedback?: SegmentFeedback; feedbackChoice?: string | null;
 }) {
   const t = copy[locale];
   const { result, pending, met } = grading;
   const verdict = result === null ? null : result === 'unavailable' ? 'unavailable' : result.verdict === 'met' ? 'met' : 'review';
   return <footer className="lf-learning-foot">
     <LessonFeedback verdict={verdict}>
-      {verdict === null ? null : verdictBannerText(locale, verdict, named, feedback)}
+      {verdict === null ? null : verdictBannerText(locale, verdict, named, feedback, feedbackChoice)}
     </LessonFeedback>
     <div className="lf-learning-actions">
       {met ? (sequence ? <Button variant="accent" onClick={sequence.onAdvance}>{t.continue}</Button> : null)

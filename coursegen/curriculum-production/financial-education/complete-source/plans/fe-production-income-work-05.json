@@ -1,0 +1,778 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-income-work-part-1",
+  "lesson_id": "fe-production-income-work-05",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.income-work.05"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Identify which payment date, amount or condition is still unknown in a work offer.",
+  "title": {
+    "en-US": "Payment terms",
+    "es-MX": "Aclara la oferta",
+    "pt-BR": "Esclareça a oferta"
+  },
+  "new_concepts": [
+    "finance.prod.income-work.05"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Clarify the offer\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Aclara la oferta\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Esclareça a oferta\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.income-work.05",
+      "observable_action": "Identify which payment date, amount or condition is still unknown in a work offer.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "cash.dates"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Know what must happen before a promised payment arrives.",
+    "misconception": "Treat an incomplete work offer as a confirmed amount available on a known date.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.income-work.05",
+        "context_id": "fe-production-income-work-05-example-01",
+        "supports_from": [],
+        "reasoning": "An offer promises 90 dollars after approval, without a date. Clarify approval and payment timing before planning bills."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.income-work.05",
+        "context_id": "fe-production-income-work-05-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "An amount alone does not show when money becomes available."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.income-work.05",
+        "context_id": "fe-production-income-work-05-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "An undefined condition leaves the payment trigger unclear."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.income-work.05",
+        "context_id": "fe-production-income-work-05-practice-01",
+        "supports_from": [],
+        "reasoning": "A date cannot supply the missing amount."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.income-work.05",
+        "context_id": "fe-production-income-work-05-practice-02",
+        "supports_from": [],
+        "reasoning": "The agreed terms support later payment checks."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.income-work.05",
+        "context_id": "fe-production-income-work-05-practice-03",
+        "supports_from": [],
+        "reasoning": "A possible offer is not a confirmed payment commitment."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.income-work.05",
+        "context_id": "fe-production-income-work-05-transfer-01",
+        "supports_from": [],
+        "reasoning": "An open-ended trigger leaves payment timing uncertain."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.income-work.05",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Know what must happen before a promised payment arrives."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Conoce qué debe pasar antes de que llegue un pago prometido."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Saiba o que precisa acontecer antes de chegar um pagamento prometido."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Amount, date, condition",
+          "line": "An offer promises 90 dollars after approval, without a date. Clarify approval and payment timing before planning bills."
+        },
+        "es-MX": {
+          "prompt": "Monto, fecha, condición",
+          "line": "Una oferta promete 90 pesos tras aprobación, sin fecha de pago. Pregunta cuándo se aprueba y paga antes de planear cuentas."
+        },
+        "pt-BR": {
+          "prompt": "Valor, data, condição",
+          "line": "Uma oferta promete 90 reais após aprovação, sem data de pagamento. Pergunte quando se aprova e paga antes de planejar contas."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.05",
+      "copy": {
+        "en-US": {
+          "prompt": "What is missing?",
+          "scene": "A work offer states the amount but says nothing about when it is paid.",
+          "options": [
+            {
+              "label": "The stated amount"
+            },
+            {
+              "label": "Payment date"
+            },
+            {
+              "label": "Nothing, the amount suffices"
+            }
+          ],
+          "help": [
+            "Check amount, timing and payment conditions."
+          ],
+          "feedback": {
+            "met": "An amount alone does not show when money becomes available.",
+            "not_yet": "Check amount, timing and payment conditions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué falta?",
+          "scene": "Una oferta indica monto, pero no cuándo se paga.",
+          "options": [
+            {
+              "label": "El monto indicado"
+            },
+            {
+              "label": "Fecha de pago"
+            },
+            {
+              "label": "Nada, basta el monto"
+            }
+          ],
+          "help": [
+            "Revisa monto, fecha y condiciones de pago."
+          ],
+          "feedback": {
+            "met": "Un monto solo no indica cuándo estará disponible.",
+            "not_yet": "Revisa monto, fecha y condiciones de pago."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que falta?",
+          "scene": "Uma oferta informa valor, mas não quando é pago.",
+          "options": [
+            {
+              "label": "O valor informado"
+            },
+            {
+              "label": "Data de pagamento"
+            },
+            {
+              "label": "Nada, basta o valor"
+            }
+          ],
+          "help": [
+            "Confira valor, data e condições de pagamento."
+          ],
+          "feedback": {
+            "met": "Só um valor não indica quando estará disponível.",
+            "not_yet": "Confira valor, data e condições de pagamento."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.05",
+      "copy": {
+        "en-US": {
+          "prompt": "What needs clarification?",
+          "scene": "An offer says payment follows acceptance, but acceptance rules are absent.",
+          "options": [
+            {
+              "label": "Nothing beyond submission"
+            },
+            {
+              "label": "The acceptance condition"
+            },
+            {
+              "label": "Nothing, work guarantees payment today"
+            }
+          ],
+          "help": [
+            "Ask what makes the work accepted."
+          ],
+          "feedback": {
+            "met": "An undefined condition leaves the payment trigger unclear.",
+            "not_yet": "Ask what makes the work accepted."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe aclararse?",
+          "scene": "Una oferta paga tras aceptación, pero no indica reglas para aceptar.",
+          "options": [
+            {
+              "label": "Nada más que entregar"
+            },
+            {
+              "label": "La condición de aceptación"
+            },
+            {
+              "label": "Nada, trabajar garantiza pago hoy"
+            }
+          ],
+          "help": [
+            "Pregunta qué hace que se acepte el trabajo."
+          ],
+          "feedback": {
+            "met": "Una condición sin definir deja incierto qué activa el pago.",
+            "not_yet": "Pregunta qué hace que se acepte el trabajo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que precisa esclarecer?",
+          "scene": "Uma oferta paga após aceite, mas não informa regras para aceitar.",
+          "options": [
+            {
+              "label": "Nada além da entrega"
+            },
+            {
+              "label": "A condição de aceite"
+            },
+            {
+              "label": "Nada, trabalhar garante pagamento hoje"
+            }
+          ],
+          "help": [
+            "Pergunte o que faz o trabalho ser aceito."
+          ],
+          "feedback": {
+            "met": "Uma condição indefinida deixa incerto o que libera o pagamento.",
+            "not_yet": "Pergunte o que faz o trabalho ser aceito."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Which information is missing?",
+          "scene": "Payment is due Friday, but the offer does not state an amount or rate.",
+          "options": [
+            {
+              "label": "Payment day"
+            },
+            {
+              "label": "A guess from a previous assignment"
+            },
+            {
+              "label": "Amount or calculation rule"
+            }
+          ],
+          "help": [
+            "Do not import another work arrangement’s terms."
+          ],
+          "feedback": {
+            "met": "A date cannot supply the missing amount.",
+            "not_yet": "Do not import another work arrangement’s terms."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué información sigue faltando?",
+          "scene": "El pago vence el viernes, pero la oferta no indica monto ni tarifa.",
+          "options": [
+            {
+              "label": "El día de pago indicado"
+            },
+            {
+              "label": "Una suposición de otro trabajo"
+            },
+            {
+              "label": "Monto o regla de cálculo"
+            }
+          ],
+          "help": [
+            "No importes condiciones de otro trabajo."
+          ],
+          "feedback": {
+            "met": "Una fecha no proporciona el monto faltante.",
+            "not_yet": "No importes condiciones de otro trabajo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual informação ainda falta?",
+          "scene": "O pagamento vence sexta, mas a oferta não informa valor nem taxa.",
+          "options": [
+            {
+              "label": "O dia de pagamento informado"
+            },
+            {
+              "label": "Uma suposição de outro trabalho"
+            },
+            {
+              "label": "Valor ou regra de cálculo"
+            }
+          ],
+          "help": [
+            "Não importe condições de outro trabalho."
+          ],
+          "feedback": {
+            "met": "Uma data não fornece o valor faltante.",
+            "not_yet": "Não importe condições de outro trabalho."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.05",
+      "copy": {
+        "en-US": {
+          "prompt": "What evidence should you retain?",
+          "scene": "A written agreement specifies the rate, paid work and payment date.",
+          "options": [
+            {
+              "label": "Only the total amount"
+            },
+            {
+              "label": "Nothing after reading once"
+            },
+            {
+              "label": "The agreed terms"
+            }
+          ],
+          "help": [
+            "Keep the record of what was actually agreed."
+          ],
+          "feedback": {
+            "met": "The agreed terms support later payment checks.",
+            "not_yet": "Keep the record of what was actually agreed."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué evidencia debes conservar?",
+          "scene": "Un acuerdo escrito especifica tarifa, trabajo pagado y fecha de pago.",
+          "options": [
+            {
+              "label": "Solo el monto total"
+            },
+            {
+              "label": "Nada después de leer una vez"
+            },
+            {
+              "label": "Las condiciones acordadas"
+            }
+          ],
+          "help": [
+            "Conserva registro de lo realmente acordado."
+          ],
+          "feedback": {
+            "met": "Las condiciones acordadas permiten revisar pagos después.",
+            "not_yet": "Conserva registro de lo realmente acordado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual evidência deve guardar?",
+          "scene": "Um acordo escrito especifica valor, trabalho pago e data de pagamento.",
+          "options": [
+            {
+              "label": "Só o valor total"
+            },
+            {
+              "label": "Nada depois de ler uma vez"
+            },
+            {
+              "label": "As condições combinadas"
+            }
+          ],
+          "help": [
+            "Guarde registro do que foi realmente combinado."
+          ],
+          "feedback": {
+            "met": "As condições combinadas permitem conferir pagamentos depois.",
+            "not_yet": "Guarde registro do que foi realmente combinado."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Can they fund a fixed commitment now?",
+          "scene": "The employer may offer extra hours, but has confirmed none.",
+          "options": [
+            {
+              "label": "Yes, possibility equals agreement"
+            },
+            {
+              "label": "Yes, if the bill is urgent"
+            },
+            {
+              "label": "Not as confirmed income"
+            }
+          ],
+          "help": [
+            "Separate possibility from agreed paid work."
+          ],
+          "feedback": {
+            "met": "A possible offer is not a confirmed payment commitment.",
+            "not_yet": "Separate possibility from agreed paid work."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Pueden financiar un compromiso fijo ahora?",
+          "scene": "Podrían ofrecer horas extra, pero no hay ninguna confirmada.",
+          "options": [
+            {
+              "label": "Sí, posibilidad equivale a acuerdo"
+            },
+            {
+              "label": "Sí, si la cuenta urge"
+            },
+            {
+              "label": "No como ingreso confirmado"
+            }
+          ],
+          "help": [
+            "Separa posibilidad y trabajo pagado acordado."
+          ],
+          "feedback": {
+            "met": "Una oferta posible no es un compromiso de pago confirmado.",
+            "not_yet": "Separa posibilidad y trabajo pagado acordado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Podem financiar compromisso fixo agora?",
+          "scene": "Podem oferecer horas extras, mas nenhuma foi confirmada.",
+          "options": [
+            {
+              "label": "Sim, possibilidade equivale a acordo"
+            },
+            {
+              "label": "Sim, se a conta é urgente"
+            },
+            {
+              "label": "Não como renda confirmada"
+            }
+          ],
+          "help": [
+            "Separe possibilidade e trabalho pago combinado."
+          ],
+          "feedback": {
+            "met": "Uma oferta possível não é compromisso de pagamento confirmado.",
+            "not_yet": "Separe possibilidade e trabalho pago combinado."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.income-work.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Main uncertainty?",
+          "scene": "Payment promised after the freelancer’s client gets paid, with no latest date.",
+          "options": [
+            {
+              "label": "Whether the promise is already cash"
+            },
+            {
+              "label": "Whether gross pay excludes expenses"
+            },
+            {
+              "label": "When payment will actually be due"
+            }
+          ],
+          "help": [
+            "Ask for a clear payment deadline and condition."
+          ],
+          "feedback": {
+            "met": "An open-ended trigger leaves payment timing uncertain.",
+            "not_yet": "Ask for a clear payment deadline and condition."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué incertidumbre importa para planear?",
+          "scene": "A un independiente le prometen pagar cuando cobre el cliente, sin fecha máxima.",
+          "options": [
+            {
+              "label": "Si la promesa ya es efectivo"
+            },
+            {
+              "label": "Si el pago bruto excluye gastos"
+            },
+            {
+              "label": "Cuándo deberá realizarse el pago"
+            }
+          ],
+          "help": [
+            "Pide plazo y condición de pago claros."
+          ],
+          "feedback": {
+            "met": "Una condición sin fecha deja incierto el momento del pago.",
+            "not_yet": "Pide plazo y condición de pago claros."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual incerteza importa para planejar?",
+          "scene": "Prometem pagar um autônomo quando o cliente receber, sem data limite.",
+          "options": [
+            {
+              "label": "Se a promessa já é dinheiro"
+            },
+            {
+              "label": "Se o valor bruto exclui despesas"
+            },
+            {
+              "label": "Quando o pagamento será de fato devido"
+            }
+          ],
+          "help": [
+            "Peça prazo e condição de pagamento claros."
+          ],
+          "feedback": {
+            "met": "Uma condição sem prazo deixa incerto o momento do pagamento.",
+            "not_yet": "Peça prazo e condição de pagamento claros."
+          }
+        }
+      }
+    }
+  ]
+}

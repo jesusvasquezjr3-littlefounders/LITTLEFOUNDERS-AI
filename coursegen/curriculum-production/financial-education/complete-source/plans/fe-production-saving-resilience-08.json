@@ -1,0 +1,824 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-saving-resilience-part-2",
+  "lesson_id": "fe-production-saving-resilience-08",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.saving-resilience.08"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Allocate a windfall among stated urgent obligations and goals without assuming one universal rule.",
+  "title": {
+    "en-US": "Unexpected Money",
+    "es-MX": "Da propósito al dinero inesperado",
+    "pt-BR": "Dê finalidade ao dinheiro extra"
+  },
+  "new_concepts": [
+    "finance.prod.saving-resilience.08"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Unexpected Money\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Da propósito al dinero inesperado\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Dê finalidade ao dinheiro extra\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.saving-resilience.08",
+      "observable_action": "Allocate a windfall among stated urgent obligations and goals without assuming one universal rule.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.cashflow-budget.03",
+      "prod.goals-tradeoffs.04"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A windfall creates choices, not a universal rule; use the stated urgent obligations, goals and priorities to allocate it.",
+    "misconception": "Every windfall must be spent, saved or invested in the same way regardless of urgent unpaid obligations.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.saving-resilience.08",
+        "context_id": "saving-resilience-08-example-01",
+        "supports_from": [],
+        "reasoning": "List urgent obligations and chosen goals. Allocate received money using the scenario’s priorities; there is no universal formula."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.saving-resilience.08",
+        "context_id": "saving-resilience-08-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The stated priority directs the first allocation."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.saving-resilience.08",
+        "context_id": "saving-resilience-08-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Funding the urgent obligation reduces the remaining windfall."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.saving-resilience.08",
+        "context_id": "saving-resilience-08-practice-01",
+        "supports_from": [],
+        "reasoning": "One amount cannot fully fund two separate uses simultaneously."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.saving-resilience.08",
+        "context_id": "saving-resilience-08-practice-02",
+        "supports_from": [],
+        "reasoning": "The goal receives only what remains after both stated allocations."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.saving-resilience.08",
+        "context_id": "saving-resilience-08-practice-03",
+        "supports_from": [],
+        "reasoning": "Unconfirmed money cannot yet fund a definite allocation."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.saving-resilience.08",
+        "context_id": "saving-resilience-08-transfer-01",
+        "supports_from": [],
+        "reasoning": "The stated priorities guide this household’s allocation."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.saving-resilience.08",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A windfall creates choices, not a universal rule; use the stated urgent obligations, goals and priorities to allocate it."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Dinero inesperado crea opciones, no regla universal; usa obligaciones urgentes, metas y prioridades indicadas para asignarlo."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Dinheiro extra cria escolhas, não regra universal; use deveres urgentes, metas e prioridades dadas para distribuí-lo."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Start with the stated priorities",
+          "line": "List urgent obligations and chosen goals. Allocate received money using the scenario’s priorities; there is no universal formula."
+        },
+        "es-MX": {
+          "prompt": "Empieza con prioridades indicadas",
+          "line": "Lista obligaciones urgentes y metas elegidas. Asigna solo dinero inesperado realmente recibido, según prioridades del caso, no fórmula universal."
+        },
+        "pt-BR": {
+          "prompt": "Comece com prioridades dadas",
+          "line": "Liste deveres urgentes e metas escolhidas. Distribua só dinheiro extra de fato recebido, pelas prioridades do caso, não fórmula universal."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Which use follows the stated priority?",
+          "scene": "The household prioritizes an overdue essential bill before an optional upgrade.",
+          "options": [
+            {
+              "label": "Ignore the stated priority"
+            },
+            {
+              "label": "Buy the optional upgrade first"
+            },
+            {
+              "label": "Fund the overdue essential first"
+            }
+          ],
+          "help": [
+            "Use the household’s actual urgent obligation."
+          ],
+          "feedback": {
+            "met": "The stated priority directs the first allocation.",
+            "not_yet": "Use the household’s actual urgent obligation."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué uso sigue prioridad indicada?",
+          "scene": "Hogar prioriza cuenta esencial vencida antes de mejora opcional.",
+          "options": [
+            {
+              "label": "Ignorar prioridad indicada"
+            },
+            {
+              "label": "Comprar mejora opcional primero"
+            },
+            {
+              "label": "Cubrir esencial vencido primero"
+            }
+          ],
+          "help": [
+            "Usa obligación urgente real del hogar."
+          ],
+          "feedback": {
+            "met": "Prioridad indicada dirige primera asignación.",
+            "not_yet": "Usa obligación urgente real del hogar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que uso segue prioridade dada?",
+          "scene": "Família prioriza conta essencial vencida antes de melhoria opcional.",
+          "options": [
+            {
+              "label": "Ignorar prioridade dada"
+            },
+            {
+              "label": "Comprar melhoria opcional primeiro"
+            },
+            {
+              "label": "Cobrir essencial vencido primeiro"
+            }
+          ],
+          "help": [
+            "Use dever urgente real da família."
+          ],
+          "feedback": {
+            "met": "Prioridade dada oriento primeiro uso.",
+            "not_yet": "Use dever urgente real da família."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.08",
+      "copy": {
+        "en-US": {
+          "prompt": "What remains after the urgent allocation?",
+          "scene": "Windfall received: 400; Stated urgent obligation funded first: 150; No other allocation yet.",
+          "options": [
+            {
+              "label": "400"
+            },
+            {
+              "label": "550"
+            },
+            {
+              "label": "250"
+            }
+          ],
+          "help": [
+            "Subtract the chosen first allocation from money received."
+          ],
+          "feedback": {
+            "met": "Funding the urgent obligation reduces the remaining windfall.",
+            "not_yet": "Subtract the chosen first allocation from money received."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué queda tras asignación urgente?",
+          "scene": "Dinero inesperado recibido: 400; Obligación urgente cubierta primero: 150; Sin otra asignación aún.",
+          "options": [
+            {
+              "label": "400"
+            },
+            {
+              "label": "550"
+            },
+            {
+              "label": "250"
+            }
+          ],
+          "help": [
+            "Resta primera asignación elegida al dinero recibido."
+          ],
+          "feedback": {
+            "met": "Cubrir obligación urgente reduce dinero inesperado restante.",
+            "not_yet": "Resta primera asignación elegida al dinero recibido."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto sobra após uso urgente?",
+          "scene": "Dinheiro extra recebido: 400; Dever urgente coberto primeiro: 150; Sem outro uso ainda.",
+          "options": [
+            {
+              "label": "400"
+            },
+            {
+              "label": "550"
+            },
+            {
+              "label": "250"
+            }
+          ],
+          "help": [
+            "Subtraia primeiro uso escolhido do dinheiro recebido."
+          ],
+          "feedback": {
+            "met": "Cobrir dever urgente reduz dinheiro extra restante.",
+            "not_yet": "Subtraia primeiro uso escolhido do dinheiro recebido."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          400,
+          150
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.08",
+      "copy": {
+        "en-US": {
+          "prompt": "What must this allocation avoid?",
+          "scene": "The same windfall is marked entirely for debt repayment and entirely for savings.",
+          "options": [
+            {
+              "label": "Counting the same money twice"
+            },
+            {
+              "label": "Checking the received amount"
+            },
+            {
+              "label": "Writing both goals down"
+            }
+          ],
+          "help": [
+            "Split the actual available amount between chosen uses."
+          ],
+          "feedback": {
+            "met": "One amount cannot fully fund two separate uses simultaneously.",
+            "not_yet": "Split the actual available amount between chosen uses."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe evitar asignación?",
+          "scene": "Mismo dinero inesperado se marca entero para pagar deuda y entero para ahorrar.",
+          "options": [
+            {
+              "label": "Contar mismo dinero dos veces"
+            },
+            {
+              "label": "Revisar monto recibido"
+            },
+            {
+              "label": "Escribir ambas metas"
+            }
+          ],
+          "help": [
+            "Divide monto real disponible entre usos elegidos."
+          ],
+          "feedback": {
+            "met": "Un monto no cubre completo dos usos separados al mismo tiempo.",
+            "not_yet": "Divide monto real disponible entre usos elegidos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que deve evitar o uso?",
+          "scene": "Mesmo dinheiro extra é marcado inteiro para pagar dívida e inteiro para poupar.",
+          "options": [
+            {
+              "label": "Contar mesmo dinheiro duas vezes"
+            },
+            {
+              "label": "Conferir valor recebido"
+            },
+            {
+              "label": "Escrever ambas as metas"
+            }
+          ],
+          "help": [
+            "Divida valor real disponível entre usos escolhidos."
+          ],
+          "feedback": {
+            "met": "Um valor não cobre inteiro dois usos separados ao mesmo tempo.",
+            "not_yet": "Divida valor real disponível entre usos escolhidos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.08",
+      "copy": {
+        "en-US": {
+          "prompt": "What remains for the chosen goal?",
+          "scene": "Windfall: 600; Urgent bill: 200; Chosen reserve addition: 250; No other allocations.",
+          "options": [
+            {
+              "label": "350"
+            },
+            {
+              "label": "150"
+            },
+            {
+              "label": "400"
+            }
+          ],
+          "help": [
+            "Subtract the bill and reserve allocation."
+          ],
+          "feedback": {
+            "met": "The goal receives only what remains after both stated allocations.",
+            "not_yet": "Subtract the bill and reserve allocation."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué queda para meta elegida?",
+          "scene": "Dinero inesperado: 600; Cuenta urgente: 200; Aporte elegido a reserva: 250; Sin otras asignaciones.",
+          "options": [
+            {
+              "label": "350"
+            },
+            {
+              "label": "150"
+            },
+            {
+              "label": "400"
+            }
+          ],
+          "help": [
+            "Resta cuenta y apartado de reserva."
+          ],
+          "feedback": {
+            "met": "Meta recibe solo resto tras ambas asignaciones indicadas.",
+            "not_yet": "Resta cuenta y apartado de reserva."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto sobra para meta escolhida?",
+          "scene": "Dinheiro extra: 600; Conta urgente: 200; Aporte escolhido à reserva: 250; Sem outras usos.",
+          "options": [
+            {
+              "label": "350"
+            },
+            {
+              "label": "150"
+            },
+            {
+              "label": "400"
+            }
+          ],
+          "help": [
+            "Subtraia conta e verba da reserva."
+          ],
+          "feedback": {
+            "met": "Meta recebe só restante após ambas as usos dados.",
+            "not_yet": "Subtraia conta e verba da reserva."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          600,
+          200,
+          250
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Can this windfall fund purchases?",
+          "scene": "A possible refund has no confirmed amount or payment date.",
+          "options": [
+            {
+              "label": "Yes, certainty is unnecessary"
+            },
+            {
+              "label": "Yes, spend the hoped-for amount"
+            },
+            {
+              "label": "Not as money already available"
+            }
+          ],
+          "help": [
+            "Separate a conditional plan from spending received funds."
+          ],
+          "feedback": {
+            "met": "Unconfirmed money cannot yet fund a definite allocation.",
+            "not_yet": "Separate a conditional plan from spending received funds."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Puede asignarse ingreso esperado como efectivo?",
+          "scene": "Posible devolución no tiene monto ni fecha de pago confirmados.",
+          "options": [
+            {
+              "label": "Sí, certeza no importa"
+            },
+            {
+              "label": "Sí, gastar monto deseado"
+            },
+            {
+              "label": "No como dinero ya disponible"
+            }
+          ],
+          "help": [
+            "Separa plan condicional de gastar fondos recibidos."
+          ],
+          "feedback": {
+            "met": "Dinero no confirmado aún no financia asignación definida.",
+            "not_yet": "Separa plan condicional de gastar fondos recibidos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Pode distribuir entrada esperada como dinheiro?",
+          "scene": "Possível devolução não tem valor nem data de pagamento confirmados.",
+          "options": [
+            {
+              "label": "Sim, certeza não importa"
+            },
+            {
+              "label": "Sim, gastar valor desejado"
+            },
+            {
+              "label": "Não como dinheiro já disponível"
+            }
+          ],
+          "help": [
+            "Separe plano condicional de gastar verba recebida."
+          ],
+          "feedback": {
+            "met": "Dinheiro não confirmado ainda não financia uso definido.",
+            "not_yet": "Separe plano condicional de gastar verba recebida."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.saving-resilience.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Which allocation fits?",
+          "scene": "No urgent bills remain; this household prioritizes rebuilding its reserve before optional purchases.",
+          "options": [
+            {
+              "label": "Assume every windfall must be invested"
+            },
+            {
+              "label": "Refill the reserve first"
+            },
+            {
+              "label": "Apply a stranger’s spending rule"
+            }
+          ],
+          "help": [
+            "Use the actual obligations and chosen goals, not a universal rule."
+          ],
+          "feedback": {
+            "met": "The stated priorities guide this household’s allocation.",
+            "not_yet": "Use the actual obligations and chosen goals, not a universal rule."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué asignación sigue elección del hogar?",
+          "scene": "No quedan cuentas urgentes; hogar prioriza reponer reserva usada antes de compras opcionales.",
+          "options": [
+            {
+              "label": "Suponer todo dinero inesperado se invierte"
+            },
+            {
+              "label": "Reponer reserva primero"
+            },
+            {
+              "label": "Aplicar regla ajena de gasto"
+            }
+          ],
+          "help": [
+            "Usa obligaciones reales y metas elegidas, no regla universal."
+          ],
+          "feedback": {
+            "met": "Prioridades indicadas guían asignación de este hogar.",
+            "not_yet": "Usa obligaciones reales y metas elegidas, no regla universal."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que uso segue escolha da família?",
+          "scene": "Não restam contas urgentes; família prioriza repor reserva usada antes de compras opcionais.",
+          "options": [
+            {
+              "label": "Supor toda entrada inesperada se investe"
+            },
+            {
+              "label": "Repor reserva primeiro"
+            },
+            {
+              "label": "Aplicar regra alheia de gasto"
+            }
+          ],
+          "help": [
+            "Use deveres reais e metas escolhidas, não regra universal."
+          ],
+          "feedback": {
+            "met": "Prioridades dadas orientam uso nesta família.",
+            "not_yet": "Use deveres reais e metas escolhidas, não regra universal."
+          }
+        }
+      }
+    }
+  ]
+}

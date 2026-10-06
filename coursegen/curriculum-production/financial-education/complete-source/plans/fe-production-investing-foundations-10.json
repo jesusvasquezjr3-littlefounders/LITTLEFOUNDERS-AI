@@ -1,0 +1,719 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-investing-foundations-part-2",
+  "lesson_id": "fe-production-investing-foundations-10",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.investing-foundations.10"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Distinguish a pooled fund from the assets it holds.",
+  "title": {
+    "en-US": "Fund Holdings",
+    "es-MX": "Mira dentro del fondo",
+    "pt-BR": "Olhe dentro do fundo"
+  },
+  "new_concepts": [
+    "finance.prod.investing-foundations.10"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Fund Holdings\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Mira dentro del fondo\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Olhe dentro do fundo\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.investing-foundations.10",
+      "observable_action": "Distinguish a pooled fund from the assets it holds.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.investing-foundations.05",
+      "prod.investing-foundations.08"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A fund is a way to hold investments together; its contents determine much of its risk.",
+    "misconception": "The word fund identifies the underlying assets or guarantees broad diversification.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.investing-foundations.10",
+        "context_id": "investing-foundations-10-example-01",
+        "supports_from": [],
+        "reasoning": "A fund pools investors’ money to hold assets. A bond fund and a share fund can contain very different risks."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.investing-foundations.10",
+        "context_id": "investing-foundations-10-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The fund’s units represent pooled exposure to its holdings."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.investing-foundations.10",
+        "context_id": "investing-foundations-10-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The contents create different exposures despite the shared label."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.investing-foundations.10",
+        "context_id": "investing-foundations-10-practice-01",
+        "supports_from": [],
+        "reasoning": "Many holdings can still share one concentrated risk."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.investing-foundations.10",
+        "context_id": "investing-foundations-10-practice-02",
+        "supports_from": [],
+        "reasoning": "Underlying asset losses can affect the fund’s investors."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.investing-foundations.10",
+        "context_id": "investing-foundations-10-practice-03",
+        "supports_from": [],
+        "reasoning": "A fund unit is participation in the pooled investment."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.investing-foundations.10",
+        "context_id": "investing-foundations-10-transfer-01",
+        "supports_from": [],
+        "reasoning": "The documented holdings contradict the impression of broad exposure."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.investing-foundations.10",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A fund is a way to hold investments together; its contents determine much of its risk."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un fondo reúne inversiones; lo que contiene determina gran parte de su riesgo."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Um fundo reúne investimentos; seu conteúdo determina grande parte do risco."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Container and contents",
+          "line": "A fund pools investors’ money to hold assets. A bond fund and a share fund can contain very different risks."
+        },
+        "es-MX": {
+          "prompt": "Recipiente y contenido",
+          "line": "Un fondo reúne dinero de inversionistas para tener activos. Un fondo de bonos y otro de acciones pueden tener riesgos distintos."
+        },
+        "pt-BR": {
+          "prompt": "Recipiente e conteúdo",
+          "line": "Um fundo reúne dinheiro de investidores para manter ativos. Um fundo de títulos e outro de ações podem ter riscos diferentes."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.10",
+      "copy": {
+        "en-US": {
+          "prompt": "What does the fund hold?",
+          "scene": "A fictional fund owns shares in food companies. Investors buy units in that fund.",
+          "options": [
+            {
+              "label": "Only cash because it is a fund"
+            },
+            {
+              "label": "Company shares underneath"
+            }
+          ],
+          "help": [
+            "Read the contents, not just the container’s name."
+          ],
+          "feedback": {
+            "met": "The fund’s units represent pooled exposure to its holdings.",
+            "not_yet": "Read the contents, not just the container’s name."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué tiene el fondo?",
+          "scene": "Un fondo ficticio posee acciones de empresas de alimentos. Compran participaciones del fondo.",
+          "options": [
+            {
+              "label": "Solo efectivo por ser fondo"
+            },
+            {
+              "label": "Acciones de empresas dentro"
+            }
+          ],
+          "help": [
+            "Lee el contenido, no solo el nombre del recipiente."
+          ],
+          "feedback": {
+            "met": "Las participaciones dan exposición conjunta a lo que contiene.",
+            "not_yet": "Lee el contenido, no solo el nombre del recipiente."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que o fundo possui?",
+          "scene": "Um fundo fictício possui ações de empresas de alimentos. Investidores compram cotas do fundo.",
+          "options": [
+            {
+              "label": "Só dinheiro porque é fundo"
+            },
+            {
+              "label": "Ações de empresas dentro"
+            }
+          ],
+          "help": [
+            "Leia o conteúdo, não só o nome do recipiente."
+          ],
+          "feedback": {
+            "met": "As cotas dão exposição conjunta ao que ele possui.",
+            "not_yet": "Leia o conteúdo, não só o nome do recipiente."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Which information matters?",
+          "scene": "Two products are called funds. One owns short-term debt; another owns shares in one industry.",
+          "options": [
+            {
+              "label": "Their underlying assets"
+            },
+            {
+              "label": "Only the shared word fund"
+            }
+          ],
+          "help": [
+            "Inspect what each fund actually holds."
+          ],
+          "feedback": {
+            "met": "The contents create different exposures despite the shared label.",
+            "not_yet": "Inspect what each fund actually holds."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué información importa?",
+          "scene": "Dos productos se llaman fondos. Uno tiene deuda de corto plazo; otro, acciones de una sola industria.",
+          "options": [
+            {
+              "label": "Sus activos subyacentes"
+            },
+            {
+              "label": "Solo la palabra fondo"
+            }
+          ],
+          "help": [
+            "Inspecciona qué tiene realmente cada fondo."
+          ],
+          "feedback": {
+            "met": "El contenido genera exposiciones distintas pese a compartir etiqueta.",
+            "not_yet": "Inspecciona qué tiene realmente cada fondo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual informação importa?",
+          "scene": "Dois produtos são chamados fundos. Um tem dívida de curto prazo; outro, ações de um setor.",
+          "options": [
+            {
+              "label": "Seus ativos subjacentes"
+            },
+            {
+              "label": "Só a palavra fundo"
+            }
+          ],
+          "help": [
+            "Inspecione o que cada fundo realmente possui."
+          ],
+          "feedback": {
+            "met": "O conteúdo gera exposições diferentes apesar do nome comum.",
+            "not_yet": "Inspecione o que cada fundo realmente possui."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Is it broadly spread?",
+          "scene": "A fund holds many companies, all producing the same commodity.",
+          "options": [
+            {
+              "label": "Yes, every fund is diversified"
+            },
+            {
+              "label": "Not necessarily, one exposure dominates"
+            }
+          ],
+          "help": [
+            "Check shared dependencies among the holdings."
+          ],
+          "feedback": {
+            "met": "Many holdings can still share one concentrated risk.",
+            "not_yet": "Check shared dependencies among the holdings."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Está ampliamente distribuido?",
+          "scene": "Un fondo tiene muchas empresas que producen la misma materia prima.",
+          "options": [
+            {
+              "label": "Sí, todo fondo está diversificado"
+            },
+            {
+              "label": "No necesariamente, domina una exposición"
+            }
+          ],
+          "help": [
+            "Revisa dependencias comunes entre sus inversiones."
+          ],
+          "feedback": {
+            "met": "Muchas inversiones pueden compartir un riesgo concentrado.",
+            "not_yet": "Revisa dependencias comunes entre sus inversiones."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Está amplamente distribuído?",
+          "scene": "Um fundo tem muitas empresas que produzem a mesma matéria-prima.",
+          "options": [
+            {
+              "label": "Sim, todo fundo é diversificado"
+            },
+            {
+              "label": "Não necessariamente, uma exposição domina"
+            }
+          ],
+          "help": [
+            "Confira dependências comuns entre os investimentos."
+          ],
+          "feedback": {
+            "met": "Muitos investimentos podem compartilhar um risco concentrado.",
+            "not_yet": "Confira dependências comuns entre os investimentos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Where could losses originate?",
+          "scene": "A pooled fund owns borrowers’ bonds. Some borrowers cannot repay.",
+          "options": [
+            {
+              "label": "Funds cannot reflect borrower losses"
+            },
+            {
+              "label": "From the underlying bonds"
+            }
+          ],
+          "help": [
+            "Pooling does not remove the assets’ risks."
+          ],
+          "feedback": {
+            "met": "Underlying asset losses can affect the fund’s investors.",
+            "not_yet": "Pooling does not remove the assets’ risks."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿De dónde vendrían pérdidas?",
+          "scene": "Un fondo posee bonos de deudores. Algunos no pueden devolver el dinero.",
+          "options": [
+            {
+              "label": "Un fondo no refleja pérdidas de deudores"
+            },
+            {
+              "label": "De los bonos subyacentes"
+            }
+          ],
+          "help": [
+            "Reunir activos no elimina sus riesgos."
+          ],
+          "feedback": {
+            "met": "Pérdidas subyacentes pueden afectar a quienes invierten en el fondo.",
+            "not_yet": "Reunir activos no elimina sus riesgos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "De onde viriam perdas?",
+          "scene": "Um fundo possui títulos de devedores. Alguns não conseguem devolver o dinheiro.",
+          "options": [
+            {
+              "label": "Fundos não refletem perdas de devedores"
+            },
+            {
+              "label": "Dos títulos subjacentes"
+            }
+          ],
+          "help": [
+            "Reunir ativos não elimina seus riscos."
+          ],
+          "feedback": {
+            "met": "Perdas subjacentes podem afetar quem investe no fundo.",
+            "not_yet": "Reunir ativos não elimina seus riscos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.10",
+      "copy": {
+        "en-US": {
+          "prompt": "What does a unit mean?",
+          "scene": "A learner buys a unit of a fund containing many holdings.",
+          "options": [
+            {
+              "label": "A participation in the pool"
+            },
+            {
+              "label": "Direct ownership of every company entirely"
+            }
+          ],
+          "help": [
+            "One unit does not mean owning whole underlying companies."
+          ],
+          "feedback": {
+            "met": "A fund unit is participation in the pooled investment.",
+            "not_yet": "One unit does not mean owning whole underlying companies."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué representa la participación?",
+          "scene": "Una persona compra una participación de un fondo con varias inversiones.",
+          "options": [
+            {
+              "label": "Participación en el conjunto"
+            },
+            {
+              "label": "Propiedad completa de cada empresa"
+            }
+          ],
+          "help": [
+            "Una participación no equivale a poseer empresas completas."
+          ],
+          "feedback": {
+            "met": "La participación corresponde a la inversión conjunta del fondo.",
+            "not_yet": "Una participación no equivale a poseer empresas completas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que representa a cota?",
+          "scene": "Uma pessoa compra uma cota de um fundo com vários investimentos.",
+          "options": [
+            {
+              "label": "Participação no conjunto"
+            },
+            {
+              "label": "Propriedade completa de cada empresa"
+            }
+          ],
+          "help": [
+            "Uma cota não equivale a possuir empresas inteiras."
+          ],
+          "feedback": {
+            "met": "A cota corresponde à participação no investimento conjunto.",
+            "not_yet": "Uma cota não equivale a possuir empresas inteiras."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.investing-foundations.10",
+      "copy": {
+        "en-US": {
+          "prompt": "What should be checked?",
+          "scene": "A product’s name suggests global variety. Its document shows nearly all holdings in one sector.",
+          "options": [
+            {
+              "label": "Actual holdings"
+            },
+            {
+              "label": "The reassuring name"
+            },
+            {
+              "label": "The latest annual return"
+            }
+          ],
+          "help": [
+            "Use the contents to evaluate the product’s label."
+          ],
+          "feedback": {
+            "met": "The documented holdings contradict the impression of broad exposure.",
+            "not_yet": "Use the contents to evaluate the product’s label."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué revisas primero?",
+          "scene": "El nombre sugiere variedad mundial. El documento dice que casi todas sus inversiones dependen de un sector.",
+          "options": [
+            {
+              "label": "Las inversiones reales y concentración"
+            },
+            {
+              "label": "Solo el nombre tranquilizador"
+            },
+            {
+              "label": "El último rendimiento anual"
+            }
+          ],
+          "help": [
+            "Usa el contenido para evaluar la etiqueta."
+          ],
+          "feedback": {
+            "met": "Las inversiones documentadas contradicen la impresión de exposición amplia.",
+            "not_yet": "Usa el contenido para evaluar la etiqueta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que conferir primeiro?",
+          "scene": "O nome sugere variedade mundial. O documento diz que quase todos os investimentos dependem de um setor.",
+          "options": [
+            {
+              "label": "Os investimentos reais e a concentração"
+            },
+            {
+              "label": "Só o nome tranquilizador"
+            },
+            {
+              "label": "O último retorno anual"
+            }
+          ],
+          "help": [
+            "Use o conteúdo para avaliar o rótulo."
+          ],
+          "feedback": {
+            "met": "Os investimentos documentados contradizem a impressão de exposição ampla.",
+            "not_yet": "Use o conteúdo para avaliar o rótulo."
+          }
+        }
+      }
+    }
+  ]
+}

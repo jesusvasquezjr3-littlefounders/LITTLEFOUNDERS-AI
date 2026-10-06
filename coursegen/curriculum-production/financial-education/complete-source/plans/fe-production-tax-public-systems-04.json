@@ -1,0 +1,873 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-tax-public-systems-part-1",
+  "lesson_id": "fe-production-tax-public-systems-04",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.tax-public-systems.04"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Distinguish a deduction from a credit using a fictional simplified calculation.",
+  "title": {
+    "en-US": "Tax Reductions",
+    "es-MX": "¿Reducir ingreso o impuesto?",
+    "pt-BR": "Reduzir renda ou imposto?"
+  },
+  "new_concepts": [
+    "finance.prod.tax-public-systems.04"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Tax Reductions\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"¿Reducir ingreso o impuesto?\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Reduzir renda ou imposto?\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.tax-public-systems.04",
+      "observable_action": "Distinguish a deduction from a credit using a fictional simplified calculation.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.tax-public-systems.03",
+      "prod.financial-math.02"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A deduction and a tax credit change different steps in a calculation.",
+    "misconception": "A deduction reduces tax by its full face amount in the same way as a credit.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.tax-public-systems.04",
+        "context_id": "tax-public-systems-04-example-01",
+        "supports_from": [],
+        "reasoning": "In this fictional rule, a deduction reduces taxable income first. A credit reduces the calculated tax afterward."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.tax-public-systems.04",
+        "context_id": "tax-public-systems-04-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The deduction changes income; the credit changes calculated tax."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.tax-public-systems.04",
+        "context_id": "tax-public-systems-04-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The deduction belongs before the rate calculation."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.tax-public-systems.04",
+        "context_id": "tax-public-systems-04-practice-01",
+        "supports_from": [],
+        "reasoning": "Tax applies to income remaining after the deduction."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.tax-public-systems.04",
+        "context_id": "tax-public-systems-04-practice-02",
+        "supports_from": [],
+        "reasoning": "The credit reduces the calculated tax directly here."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.tax-public-systems.04",
+        "context_id": "tax-public-systems-04-practice-03",
+        "supports_from": [],
+        "reasoning": "The shortcut puts the deduction at the credit’s step."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.tax-public-systems.04",
+        "context_id": "tax-public-systems-04-transfer-01",
+        "supports_from": [],
+        "reasoning": "Apply the deduction before the rate and the credit afterward."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.tax-public-systems.04",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A deduction and a tax credit change different steps in a calculation."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Una deducción y un crédito fiscal cambian pasos distintos de un cálculo."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Uma dedução e um crédito fiscal mudam etapas distintas de um cálculo."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Keep the steps distinct",
+          "line": "In this fictional rule, a deduction reduces taxable income first. A credit reduces the calculated tax afterward."
+        },
+        "es-MX": {
+          "prompt": "Distingue los pasos",
+          "line": "En esta regla ficticia, una deducción reduce primero el ingreso gravable. Un crédito reduce después el impuesto calculado."
+        },
+        "pt-BR": {
+          "prompt": "Separe as etapas",
+          "line": "Nesta regra fictícia, uma dedução reduz primeiro a renda tributável. Um crédito reduz depois o imposto calculado."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.tax-public-systems.04",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "step-1"
+          },
+          {
+            "id": "step-2"
+          },
+          {
+            "id": "step-3"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "step-2",
+          "step-3"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "step-2": "8",
+          "step-3": "5"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Fictional rule: income 100 dollars; deduction 20; tax rate 10%; credit 3; Follow the order.",
+          "feedback": {
+            "met": "The deduction changes income; the credit changes calculated tax.",
+            "not_yet": "Deduct from income first, then calculate tax and subtract credit."
+          },
+          "help": [
+            "Deduct from income first, then calculate tax and subtract credit."
+          ],
+          "steps": [
+            {
+              "expression": "100 − 20",
+              "result": "80",
+              "spokenText": "Taxable income after deduction"
+            },
+            {
+              "expression": "80 × 10 ÷ 100",
+              "result": "8",
+              "spokenText": "Tax on reduced income"
+            },
+            {
+              "expression": "8 − 3",
+              "result": "5",
+              "spokenText": "Tax after credit"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Regla ficticia: ingreso 100 pesos; deducción 20; tasa 10%; crédito 3; Sigue el orden.",
+          "feedback": {
+            "met": "La deducción cambia ingreso; el crédito cambia impuesto calculado.",
+            "not_yet": "Deduce del ingreso, calcula impuesto y resta el crédito."
+          },
+          "help": [
+            "Deduce del ingreso, calcula impuesto y resta el crédito."
+          ],
+          "steps": [
+            {
+              "expression": "100 − 20",
+              "result": "80",
+              "spokenText": "Ingreso gravable tras deducción"
+            },
+            {
+              "expression": "80 × 10 ÷ 100",
+              "result": "8",
+              "spokenText": "Impuesto sobre ingreso reducido"
+            },
+            {
+              "expression": "8 − 3",
+              "result": "5",
+              "spokenText": "Impuesto después del crédito"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Regra fictícia: renda 100 reais; dedução 20; taxa 10%; crédito 3; Siga a ordem.",
+          "feedback": {
+            "met": "A dedução muda a renda; o crédito muda o imposto.",
+            "not_yet": "Deduza da renda, calcule imposto e subtraia o crédito."
+          },
+          "help": [
+            "Deduza da renda, calcule imposto e subtraia o crédito."
+          ],
+          "steps": [
+            {
+              "expression": "100 − 20",
+              "result": "80",
+              "spokenText": "Renda tributável após dedução"
+            },
+            {
+              "expression": "80 × 10 ÷ 100",
+              "result": "8",
+              "spokenText": "Imposto sobre renda reduzida"
+            },
+            {
+              "expression": "8 − 3",
+              "result": "5",
+              "spokenText": "Imposto após crédito"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.tax-public-systems.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Which base changes first?",
+          "scene": "The fictional rule says a deduction reduces income before tax is calculated.",
+          "options": [
+            {
+              "label": "Taxable income"
+            },
+            {
+              "label": "The already-calculated tax directly"
+            }
+          ],
+          "help": [
+            "Follow the rule’s stated calculation order."
+          ],
+          "feedback": {
+            "met": "The deduction belongs before the rate calculation.",
+            "not_yet": "Follow the rule’s stated calculation order."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué base cambia primero?",
+          "scene": "La regla ficticia dice que la deducción reduce ingreso antes de calcular impuesto.",
+          "options": [
+            {
+              "label": "El ingreso gravable"
+            },
+            {
+              "label": "Directamente el impuesto ya calculado"
+            }
+          ],
+          "help": [
+            "Sigue el orden indicado por la regla."
+          ],
+          "feedback": {
+            "met": "La deducción corresponde antes del cálculo con tasa.",
+            "not_yet": "Sigue el orden indicado por la regla."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual base muda primeiro?",
+          "scene": "A regra fictícia diz que a dedução reduz renda antes de calcular imposto.",
+          "options": [
+            {
+              "label": "A renda tributável"
+            },
+            {
+              "label": "Diretamente o imposto já calculado"
+            }
+          ],
+          "help": [
+            "Siga a ordem dada pela regra."
+          ],
+          "feedback": {
+            "met": "A dedução entra antes do cálculo com a taxa.",
+            "not_yet": "Siga a ordem dada pela regra."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.tax-public-systems.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Tax after the deduction?",
+          "scene": "Fictional income: 200; Deduction: 50; Tax rate: 10%. No credits.",
+          "options": [
+            {
+              "label": "150"
+            },
+            {
+              "label": "15"
+            },
+            {
+              "label": "20"
+            }
+          ],
+          "help": [
+            "Subtract the deduction, then apply the rate."
+          ],
+          "feedback": {
+            "met": "Tax applies to income remaining after the deduction.",
+            "not_yet": "Subtract the deduction, then apply the rate."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Impuesto tras deducir?",
+          "scene": "Ingreso ficticio: 200; Deducción: 50; Tasa: 10%. Sin créditos.",
+          "options": [
+            {
+              "label": "150"
+            },
+            {
+              "label": "15"
+            },
+            {
+              "label": "20"
+            }
+          ],
+          "help": [
+            "Resta la deducción y aplica la tasa."
+          ],
+          "feedback": {
+            "met": "El impuesto aplica al ingreso restante tras deducir.",
+            "not_yet": "Resta la deducción y aplica la tasa."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Imposto após deduzir?",
+          "scene": "Renda fictícia: 200; Dedução: 50; Taxa: 10%. Sem créditos.",
+          "options": [
+            {
+              "label": "150"
+            },
+            {
+              "label": "15"
+            },
+            {
+              "label": "20"
+            }
+          ],
+          "help": [
+            "Subtraia a dedução e aplique a taxa."
+          ],
+          "feedback": {
+            "met": "O imposto vale sobre a renda restante após deduzir.",
+            "not_yet": "Subtraia a dedução e aplique a taxa."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          200,
+          50,
+          10
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "op": "subtract",
+                  "args": [
+                    {
+                      "input": 0
+                    },
+                    {
+                      "input": 1
+                    }
+                  ]
+                },
+                {
+                  "input": 2
+                }
+              ]
+            },
+            {
+              "constant": 100
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.tax-public-systems.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Tax after the credit?",
+          "scene": "Fictional tax already calculated: 25; Allowed credit: 5; Subtract it directly under this rule.",
+          "options": [
+            {
+              "label": "25"
+            },
+            {
+              "label": "5"
+            },
+            {
+              "label": "20"
+            }
+          ],
+          "help": [
+            "Subtract the credit from the tax already calculated."
+          ],
+          "feedback": {
+            "met": "The credit reduces the calculated tax directly here.",
+            "not_yet": "Subtract the credit from the tax already calculated."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Impuesto tras el crédito?",
+          "scene": "Impuesto ficticio ya calculado: 25; Crédito permitido: 5; Esta regla lo resta directamente.",
+          "options": [
+            {
+              "label": "25"
+            },
+            {
+              "label": "5"
+            },
+            {
+              "label": "20"
+            }
+          ],
+          "help": [
+            "Resta el crédito del impuesto ya calculado."
+          ],
+          "feedback": {
+            "met": "Aquí el crédito reduce directamente el impuesto calculado.",
+            "not_yet": "Resta el crédito del impuesto ya calculado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Imposto após o crédito?",
+          "scene": "Imposto fictício já calculado: 25; Crédito permitido: 5; Esta regra o subtrai diretamente.",
+          "options": [
+            {
+              "label": "25"
+            },
+            {
+              "label": "5"
+            },
+            {
+              "label": "20"
+            }
+          ],
+          "help": [
+            "Subtraia o crédito do imposto já calculado."
+          ],
+          "feedback": {
+            "met": "Aqui o crédito reduz diretamente o imposto calculado.",
+            "not_yet": "Subtraia o crédito do imposto já calculado."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          25,
+          5
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.tax-public-systems.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Which shortcut fails?",
+          "scene": "In this example, a deduction reduces income, but someone subtracts it directly from the final tax.",
+          "options": [
+            {
+              "label": "Subtracting the deduction from final tax"
+            },
+            {
+              "label": "Reducing income before applying the rate"
+            }
+          ],
+          "help": [
+            "Identify which amount the rule says to reduce."
+          ],
+          "feedback": {
+            "met": "The shortcut puts the deduction at the credit’s step.",
+            "not_yet": "Identify which amount the rule says to reduce."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué atajo es incorrecto?",
+          "scene": "Aquí la deducción reduce ingreso, pero alguien la resta directamente del impuesto final.",
+          "options": [
+            {
+              "label": "Restarla del impuesto final"
+            },
+            {
+              "label": "Reducir ingreso antes de aplicar tasa"
+            }
+          ],
+          "help": [
+            "Identifica qué monto dice reducir la regla."
+          ],
+          "feedback": {
+            "met": "El atajo coloca la deducción donde corresponde el crédito.",
+            "not_yet": "Identifica qué monto dice reducir la regla."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual atalho está errado?",
+          "scene": "Aqui a dedução reduz renda, mas alguém a subtrai diretamente do imposto final.",
+          "options": [
+            {
+              "label": "Subtraí-la do imposto final"
+            },
+            {
+              "label": "Reduzir renda antes de aplicar taxa"
+            }
+          ],
+          "help": [
+            "Identifique qual valor a regra manda reduzir."
+          ],
+          "feedback": {
+            "met": "O atalho coloca a dedução na etapa do crédito.",
+            "not_yet": "Identifique qual valor a regra manda reduzir."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.tax-public-systems.04",
+      "copy": {
+        "en-US": {
+          "prompt": "What tax remains?",
+          "scene": "Fictional rule: income 300; deduction 100; rate 10%; then credit 4; No other adjustments.",
+          "options": [
+            {
+              "label": "20"
+            },
+            {
+              "label": "196"
+            },
+            {
+              "label": "16"
+            }
+          ],
+          "help": [
+            "Reduce income, calculate tax, then reduce that tax."
+          ],
+          "feedback": {
+            "met": "Apply the deduction before the rate and the credit afterward.",
+            "not_yet": "Reduce income, calculate tax, then reduce that tax."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué impuesto queda?",
+          "scene": "Regla ficticia: ingreso 300; deducción 100; tasa 10%; luego crédito 4; Sin otros ajustes.",
+          "options": [
+            {
+              "label": "20"
+            },
+            {
+              "label": "196"
+            },
+            {
+              "label": "16"
+            }
+          ],
+          "help": [
+            "Reduce ingreso, calcula impuesto y luego reduce ese impuesto."
+          ],
+          "feedback": {
+            "met": "Aplica deducción antes de tasa y crédito después.",
+            "not_yet": "Reduce ingreso, calcula impuesto y luego reduce ese impuesto."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual imposto resta?",
+          "scene": "Regra fictícia: renda 300; dedução 100; taxa 10%; depois crédito 4; Sem outros ajustes.",
+          "options": [
+            {
+              "label": "20"
+            },
+            {
+              "label": "196"
+            },
+            {
+              "label": "16"
+            }
+          ],
+          "help": [
+            "Reduza renda, calcule imposto e depois reduza esse imposto."
+          ],
+          "feedback": {
+            "met": "Aplique dedução antes da taxa e crédito depois.",
+            "not_yet": "Reduza renda, calcule imposto e depois reduza esse imposto."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          300,
+          100,
+          10,
+          4
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "divide",
+              "args": [
+                {
+                  "op": "multiply",
+                  "args": [
+                    {
+                      "op": "subtract",
+                      "args": [
+                        {
+                          "input": 0
+                        },
+                        {
+                          "input": 1
+                        }
+                      ]
+                    },
+                    {
+                      "input": 2
+                    }
+                  ]
+                },
+                {
+                  "constant": 100
+                }
+              ]
+            },
+            {
+              "input": 3
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

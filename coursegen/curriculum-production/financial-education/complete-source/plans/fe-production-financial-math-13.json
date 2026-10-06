@@ -1,0 +1,780 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-financial-math-part-3",
+  "lesson_id": "fe-production-financial-math-13",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.financial-math.13"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Check whether a financial result is plausible using an approximate calculation.",
+  "title": {
+    "en-US": "Reasonable estimates",
+    "es-MX": "Revisa la magnitud",
+    "pt-BR": "Confira a ordem de grandeza"
+  },
+  "new_concepts": [
+    "finance.prod.financial-math.13"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Check the scale\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Revisa la magnitud\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Confira a ordem de grandeza\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.financial-math.13",
+      "observable_action": "Check whether a financial result is plausible using an approximate calculation.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.financial-math.02",
+      "prod.financial-math.05",
+      "prod.financial-math.06"
+    ],
+    "retrieval_skills": [],
+    "relevance": "An estimate catches large mistakes before you trust a result.",
+    "misconception": "Treat an estimate as an exact bill or accept an implausible calculator output.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.financial-math.13",
+        "context_id": "fe-production-financial-math-13-example-01",
+        "supports_from": [],
+        "reasoning": "Six items near 10 each should cost near 60. A result near 600 suggests an input error; check it."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.financial-math.13",
+        "context_id": "fe-production-financial-math-13-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Repeated approximate prices give an approximate total."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.financial-math.13",
+        "context_id": "fe-production-financial-math-13-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Each equal share must be smaller than the total."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.financial-math.13",
+        "context_id": "fe-production-financial-math-13-practice-01",
+        "supports_from": [],
+        "reasoning": "Change is what remains after the approximate price."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.financial-math.13",
+        "context_id": "fe-production-financial-math-13-practice-02",
+        "supports_from": [],
+        "reasoning": "A plausible scale does not verify every individual charge."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.financial-math.13",
+        "context_id": "fe-production-financial-math-13-practice-03",
+        "supports_from": [],
+        "reasoning": "Rounding each fare upward gives an upper estimate."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.financial-math.13",
+        "context_id": "fe-production-financial-math-13-transfer-01",
+        "supports_from": [],
+        "reasoning": "The expected scale is tens, not hundreds."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.financial-math.13",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "An estimate catches large mistakes before you trust a result."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Una estimación detecta errores grandes antes de confiar en un resultado."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Uma estimativa detecta erros grandes antes de confiar num resultado."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Estimate, then calculate",
+          "line": "Six items near 10 each should cost near 60. A result near 600 suggests an input error; check it."
+        },
+        "es-MX": {
+          "prompt": "Estima y después calcula",
+          "line": "Seis artículos cerca de 10 deben costar cerca de 60. Un resultado cerca de 600 sugiere un dígito mal puesto."
+        },
+        "pt-BR": {
+          "prompt": "Estime e depois calcule",
+          "line": "Seis itens perto de 10 devem custar perto de 60. Um resultado perto de 600 sugere um dígito fora do lugar."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.13",
+      "copy": {
+        "en-US": {
+          "prompt": "Plausible total scale?",
+          "scene": "Four items cost about 20 each. Think four groups of twenty.",
+          "options": [
+            {
+              "label": "Around eighty"
+            },
+            {
+              "label": "Around eight hundred"
+            },
+            {
+              "label": "Around two"
+            }
+          ],
+          "help": [
+            "Multiply the rough price by the item count."
+          ],
+          "feedback": {
+            "met": "Repeated approximate prices give an approximate total.",
+            "not_yet": "Multiply the rough price by the item count."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Magnitud razonable del total?",
+          "scene": "Cuatro artículos cuestan cerca de 20 cada uno. Piensa en cuatro grupos de veinte.",
+          "options": [
+            {
+              "label": "Cerca de ochenta"
+            },
+            {
+              "label": "Cerca de ochocientos"
+            },
+            {
+              "label": "Cerca de dos"
+            }
+          ],
+          "help": [
+            "Multiplica el precio aproximado por la cantidad."
+          ],
+          "feedback": {
+            "met": "Los precios aproximados repetidos dan un total aproximado.",
+            "not_yet": "Multiplica el precio aproximado por la cantidad."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Ordem plausível do total?",
+          "scene": "Quatro itens custam perto de 20 cada. Pense em quatro grupos de vinte.",
+          "options": [
+            {
+              "label": "Perto de oitenta"
+            },
+            {
+              "label": "Perto de oitocentos"
+            },
+            {
+              "label": "Perto de dois"
+            }
+          ],
+          "help": [
+            "Multiplique o preço aproximado pela quantidade."
+          ],
+          "feedback": {
+            "met": "Preços aproximados repetidos dão um total aproximado.",
+            "not_yet": "Multiplique o preço aproximado pela quantidade."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.13",
+      "copy": {
+        "en-US": {
+          "prompt": "Approximate share?",
+          "scene": "A cost near 90 is shared among three people.",
+          "options": [
+            {
+              "label": "Around ninety each"
+            },
+            {
+              "label": "Around three hundred"
+            },
+            {
+              "label": "Around thirty"
+            }
+          ],
+          "help": [
+            "Divide the rough whole into equal groups."
+          ],
+          "feedback": {
+            "met": "Each equal share must be smaller than the total.",
+            "not_yet": "Divide the rough whole into equal groups."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Parte aproximada?",
+          "scene": "Un costo cercano a 90 se reparte entre tres personas.",
+          "options": [
+            {
+              "label": "Cerca de noventa cada uno"
+            },
+            {
+              "label": "Cerca de trescientos"
+            },
+            {
+              "label": "Cerca de treinta"
+            }
+          ],
+          "help": [
+            "Divide el total aproximado en grupos iguales."
+          ],
+          "feedback": {
+            "met": "Cada parte igual debe ser menor que el total.",
+            "not_yet": "Divide el total aproximado en grupos iguales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Parte aproximada?",
+          "scene": "Um custo perto de 90 é dividido entre três pessoas.",
+          "options": [
+            {
+              "label": "Perto de noventa cada"
+            },
+            {
+              "label": "Perto de trezentos"
+            },
+            {
+              "label": "Perto de trinta"
+            }
+          ],
+          "help": [
+            "Divida o total aproximado em grupos iguais."
+          ],
+          "feedback": {
+            "met": "Cada parte igual deve ser menor que o total.",
+            "not_yet": "Divida o total aproximado em grupos iguais."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.13",
+      "copy": {
+        "en-US": {
+          "prompt": "Plausible change?",
+          "scene": "You hand over 100 for a price near 70.",
+          "options": [
+            {
+              "label": "Around three hundred"
+            },
+            {
+              "label": "Around one hundred seventy"
+            },
+            {
+              "label": "Around thirty"
+            }
+          ],
+          "help": [
+            "Subtract the rough cost from the tendered amount."
+          ],
+          "feedback": {
+            "met": "Change is what remains after the approximate price.",
+            "not_yet": "Subtract the rough cost from the tendered amount."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cambio razonable?",
+          "scene": "Entregas 100 por un precio cercano a 70.",
+          "options": [
+            {
+              "label": "Cerca de trescientos"
+            },
+            {
+              "label": "Cerca de ciento setenta"
+            },
+            {
+              "label": "Cerca de treinta"
+            }
+          ],
+          "help": [
+            "Resta el costo aproximado de lo entregado."
+          ],
+          "feedback": {
+            "met": "El cambio es lo que queda tras el precio aproximado.",
+            "not_yet": "Resta el costo aproximado de lo entregado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Troco plausível?",
+          "scene": "Entrega 100 por um preço perto de 70.",
+          "options": [
+            {
+              "label": "Perto de trezentos"
+            },
+            {
+              "label": "Perto de cento e setenta"
+            },
+            {
+              "label": "Perto de trinta"
+            }
+          ],
+          "help": [
+            "Subtraia o custo aproximado do valor entregue."
+          ],
+          "feedback": {
+            "met": "Troco é o que resta após o preço aproximado.",
+            "not_yet": "Subtraia o custo aproximado do valor entregue."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.13",
+      "copy": {
+        "en-US": {
+          "prompt": "Does this prove every charge is correct?",
+          "scene": "Your estimate is close to the bill’s total.",
+          "options": [
+            {
+              "label": "No, check exact entries too"
+            },
+            {
+              "label": "Yes, estimates prove everything"
+            },
+            {
+              "label": "Yes, discard the receipt"
+            }
+          ],
+          "help": [
+            "Estimation screens for large errors, not all errors."
+          ],
+          "feedback": {
+            "met": "A plausible scale does not verify every individual charge.",
+            "not_yet": "Estimation screens for large errors, not all errors."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Demuestra que cada cargo es correcto?",
+          "scene": "Tu estimación está cerca del total de la cuenta.",
+          "options": [
+            {
+              "label": "No, revisa también cargos exactos"
+            },
+            {
+              "label": "Sí, las estimaciones prueban todo"
+            },
+            {
+              "label": "Sí, descarta el recibo"
+            }
+          ],
+          "help": [
+            "Estimar detecta errores grandes, no todos."
+          ],
+          "feedback": {
+            "met": "Una magnitud razonable no verifica cada cargo individual.",
+            "not_yet": "Estimar detecta errores grandes, no todos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Isso prova que cada cobrança está correta?",
+          "scene": "Sua estimativa está perto do total da conta.",
+          "options": [
+            {
+              "label": "Não, confira também cobranças exatas"
+            },
+            {
+              "label": "Sim, estimativas provam tudo"
+            },
+            {
+              "label": "Sim, descarte o recibo"
+            }
+          ],
+          "help": [
+            "Estimar detecta erros grandes, não todos."
+          ],
+          "feedback": {
+            "met": "Uma ordem plausível não verifica cada cobrança individual.",
+            "not_yet": "Estimar detecta erros grandes, não todos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.13",
+      "copy": {
+        "en-US": {
+          "prompt": "Expected total?",
+          "scene": "Eight identical fares cost just under 5 each.",
+          "options": [
+            {
+              "label": "A little below forty"
+            },
+            {
+              "label": "Much above four hundred"
+            },
+            {
+              "label": "Below five in total"
+            }
+          ],
+          "help": [
+            "Use the direction of the rounding."
+          ],
+          "feedback": {
+            "met": "Rounding each fare upward gives an upper estimate.",
+            "not_yet": "Use the direction of the rounding."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Total esperado?",
+          "scene": "Ocho pasajes iguales cuestan poco menos de 5 cada uno.",
+          "options": [
+            {
+              "label": "Un poco menos de cuarenta"
+            },
+            {
+              "label": "Muy por encima de cuatrocientos"
+            },
+            {
+              "label": "Menos de cinco en total"
+            }
+          ],
+          "help": [
+            "Usa la dirección del redondeo."
+          ],
+          "feedback": {
+            "met": "Redondear cada pasaje hacia arriba da una estimación superior.",
+            "not_yet": "Usa la dirección del redondeo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Total esperado?",
+          "scene": "Oito passagens iguais custam pouco menos de 5 cada.",
+          "options": [
+            {
+              "label": "Um pouco abaixo de quarenta"
+            },
+            {
+              "label": "Muito acima de quatrocentos"
+            },
+            {
+              "label": "Abaixo de cinco no total"
+            }
+          ],
+          "help": [
+            "Use a direção do arredondamento."
+          ],
+          "feedback": {
+            "met": "Arredondar cada passagem para cima dá uma estimativa superior.",
+            "not_yet": "Use a direção do arredondamento."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.financial-math.13",
+      "copy": {
+        "en-US": {
+          "prompt": "What happens next?",
+          "scene": "A calculator shows 720 for six hours at about 12 per hour.",
+          "options": [
+            {
+              "label": "Recheck input and decimal placement"
+            },
+            {
+              "label": "Accept it because it is digital"
+            },
+            {
+              "label": "Assume the rate increased"
+            }
+          ],
+          "help": [
+            "Compare with six groups near twelve."
+          ],
+          "feedback": {
+            "met": "The expected scale is tens, not hundreds.",
+            "not_yet": "Compare with six groups near twelve."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debes hacer después?",
+          "scene": "Una calculadora muestra 720 por seis horas a cerca de 12 por hora.",
+          "options": [
+            {
+              "label": "Revisa datos y posición decimal"
+            },
+            {
+              "label": "Acéptalo por ser digital"
+            },
+            {
+              "label": "Supón que la tarifa subió"
+            }
+          ],
+          "help": [
+            "Compara con seis grupos cercanos a doce."
+          ],
+          "feedback": {
+            "met": "La magnitud esperada es decenas, no centenas.",
+            "not_yet": "Compara con seis grupos cercanos a doce."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que fazer depois?",
+          "scene": "Uma calculadora mostra 720 por seis horas a cerca de 12 por hora.",
+          "options": [
+            {
+              "label": "Confira dados e posição decimal"
+            },
+            {
+              "label": "Aceite porque é digital"
+            },
+            {
+              "label": "Suponha que a tarifa aumentou"
+            }
+          ],
+          "help": [
+            "Compare com seis grupos perto de doze."
+          ],
+          "feedback": {
+            "met": "A ordem esperada é dezenas, não centenas.",
+            "not_yet": "Compare com seis grupos perto de doze."
+          }
+        }
+      }
+    }
+  ]
+}

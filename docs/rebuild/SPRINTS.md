@@ -1,5 +1,9 @@
 # Migration sprints and acceptance register
 
+## Financial Education rejection and recovery, 5 October 2026
+
+The owner rejected the published catalog and authorized a complete replacement using parallel agents. The [recovery checkpoint](sprints/S05-FINANCIAL-EDUCATION-RECOVERY.md) records the verified local backup and archival of the old 112 lessons, followed by 36 accepted calibration lessons that remain calibration-only. All 294 planned adult production lessons are now authored: 236 teaching objectives, 46 retrieval lessons and 12 capstones across 24 domains. The current candidate emits 882 localized documents, passes Core over 5,460 graded segments and 16,437 permitted states, and has exact-content evidence for 7,095 initial mobile/light screens plus 207 native-board and 83 sampled story journeys. Full EN/ES editorial coverage, targeted PT review and corrected findings are retained with source hashes. Shared authoring, release, KC activation and adult eligibility safeguards are implemented locally. Human per-lesson/market review, a distinct responsible staff author, new safeguard sign-offs, complete Supabase reset evidence and final release gates remain required. No replacement lesson is published, and no retention or mastery outcome is claimed.
+
 ## Local application artwork and composition, 2 October 2026
 
 [Application checkpoint](sprints/APPLICATION-ART-AND-COMPOSITION.md): original supporting AI artwork, readable application layouts, natural embedded-panel heights and the full flexible Mentor stage. Implementation complete; local verification passed using the 136-state matrix and final four-state delta; owner visual acceptance pending; release not requested. Existing product acceptance remains separate.

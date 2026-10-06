@@ -1,0 +1,798 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-financial-landscape-part-1",
+  "lesson_id": "fe-production-financial-landscape-03",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.financial-landscape.03"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Check the scope and eligibility conditions of a local deposit-protection claim.",
+  "title": {
+    "en-US": "Deposit Protection",
+    "es-MX": "Revisa protección de depósitos",
+    "pt-BR": "Confira proteção de depósitos"
+  },
+  "new_concepts": [
+    "finance.prod.financial-landscape.03"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Deposit Protection\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Revisa protección de depósitos\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Confira proteção de depósitos\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.financial-landscape.03",
+      "observable_action": "Check the scope and eligibility conditions of a local deposit-protection claim.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.financial-landscape.01",
+      "prod.financial-landscape.02",
+      "prod.accounts-records.09"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A protection badge is only a starting point; verify the institution, product, limits and event using local official information.",
+    "misconception": "Everything sold by a protected bank is protected without limits against all kinds of loss.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.financial-landscape.03",
+        "context_id": "financial-landscape-03-example-01",
+        "supports_from": [],
+        "reasoning": "Check the official scheme’s institution, eligible product, limit, ownership category and covered event. A logo alone cannot establish coverage."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.financial-landscape.03",
+        "context_id": "financial-landscape-03-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The stated scheme covers deposits, not this investment fund."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.financial-landscape.03",
+        "context_id": "financial-landscape-03-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Institution participation alone does not establish product coverage."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.financial-landscape.03",
+        "context_id": "financial-landscape-03-practice-01",
+        "supports_from": [],
+        "reasoning": "The portion above the stated applicable limit is uncovered here."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.financial-landscape.03",
+        "context_id": "financial-landscape-03-practice-02",
+        "supports_from": [],
+        "reasoning": "Coverage applies to the stated event and eligible deposit."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.financial-landscape.03",
+        "context_id": "financial-landscape-03-practice-03",
+        "supports_from": [],
+        "reasoning": "A displayed logo is not independent confirmation of participation."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.financial-landscape.03",
+        "context_id": "financial-landscape-03-transfer-01",
+        "supports_from": [],
+        "reasoning": "Indirect claims still require checking the actual coverage conditions."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.financial-landscape.03",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A protection badge is only a starting point; verify the institution, product, limits and event using local official information."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un sello de protección solo inicia la revisión; verifica institución, producto, límites y evento con información oficial local."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Um selo de proteção só inicia a conferência; verifique instituição, produto, limites e evento com informação oficial local."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Read the coverage conditions",
+          "line": "Check the official scheme’s institution, eligible product, limit, ownership category and covered event. A logo alone cannot establish coverage."
+        },
+        "es-MX": {
+          "prompt": "Lee condiciones de cobertura",
+          "line": "Revisa institución, producto elegible, límite, categoría de titularidad y evento cubierto del esquema oficial. Un logo solo no establece cobertura."
+        },
+        "pt-BR": {
+          "prompt": "Leia condições de cobertura",
+          "line": "Confira instituição, produto elegível, limite, categoria de titular e evento coberto do sistema oficial. Um logo só não define cobertura."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Is this fund covered here?",
+          "scene": "Fictional scheme covers eligible deposits only; this product is an investment fund.",
+          "options": [
+            {
+              "label": "Yes, same seller"
+            },
+            {
+              "label": "No, it is not a deposit"
+            },
+            {
+              "label": "Yes, its logo is identical"
+            }
+          ],
+          "help": [
+            "Apply product eligibility rather than the seller’s branding."
+          ],
+          "feedback": {
+            "met": "The stated scheme covers deposits, not this investment fund.",
+            "not_yet": "Apply product eligibility rather than the seller’s branding."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Este fondo está cubierto aquí?",
+          "scene": "Esquema ficticio cubre solo depósitos elegibles; producto es fondo de inversión.",
+          "options": [
+            {
+              "label": "Sí, mismo banco lo vende"
+            },
+            {
+              "label": "No, no es depósito"
+            },
+            {
+              "label": "Sí, logo es idéntico"
+            }
+          ],
+          "help": [
+            "Aplica reglas de acceso del producto, no marca del vendedor."
+          ],
+          "feedback": {
+            "met": "El esquema indicado cubre depósitos, no este fondo.",
+            "not_yet": "Aplica reglas de acceso del producto, no marca del vendedor."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Este fundo está coberto aqui?",
+          "scene": "Sistema fictício cobre só depósitos elegíveis; produto é fundo de investimento.",
+          "options": [
+            {
+              "label": "Sim, mesmo banco vende"
+            },
+            {
+              "label": "Não, não é depósito"
+            },
+            {
+              "label": "Sim, logo é idêntico"
+            }
+          ],
+          "help": [
+            "Aplique regras do produto, não a marca do vendedor."
+          ],
+          "feedback": {
+            "met": "O sistema dado cobre depósitos, não este fundo.",
+            "not_yet": "Aplique regras do produto, não a marca do vendedor."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.03",
+      "copy": {
+        "en-US": {
+          "prompt": "What remains to be checked?",
+          "scene": "The institution participates, but the product’s eligibility is unknown.",
+          "options": [
+            {
+              "label": "Whether this product qualifies"
+            },
+            {
+              "label": "Nothing else matters"
+            },
+            {
+              "label": "Only the bank’s advertising"
+            }
+          ],
+          "help": [
+            "Verify the actual account or product in the official rules."
+          ],
+          "feedback": {
+            "met": "Institution participation alone does not establish product coverage.",
+            "not_yet": "Verify the actual account or product in the official rules."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué falta revisar?",
+          "scene": "Institución participa, pero faltan reglas de cobertura del producto.",
+          "options": [
+            {
+              "label": "Si este producto califica"
+            },
+            {
+              "label": "Nada más importa"
+            },
+            {
+              "label": "Solo publicidad del banco"
+            }
+          ],
+          "help": [
+            "Verifica cuenta o producto real en reglas oficiales."
+          ],
+          "feedback": {
+            "met": "Registrar al banco no basta para cubrir este producto.",
+            "not_yet": "Verifica cuenta o producto real en reglas oficiales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que falta conferir?",
+          "scene": "Instituição participa, mas não se sabe se o produto é elegível.",
+          "options": [
+            {
+              "label": "Se este produto se enquadra"
+            },
+            {
+              "label": "Nada mais importa"
+            },
+            {
+              "label": "Só propaganda do banco"
+            }
+          ],
+          "help": [
+            "Confira conta ou produto real nas regras oficiais."
+          ],
+          "feedback": {
+            "met": "Participação da instituição só não define cobertura do produto.",
+            "not_yet": "Confira conta ou produto real nas regras oficiais."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.03",
+      "copy": {
+        "en-US": {
+          "prompt": "What exceeds this fictional limit?",
+          "scene": "Eligible balance: 140; Applicable total coverage limit: 100; No other accounts.",
+          "options": [
+            {
+              "label": "100"
+            },
+            {
+              "label": "140"
+            },
+            {
+              "label": "40"
+            }
+          ],
+          "help": [
+            "Subtract the stated coverage limit from the eligible balance."
+          ],
+          "feedback": {
+            "met": "The portion above the stated applicable limit is uncovered here.",
+            "not_yet": "Subtract the stated coverage limit from the eligible balance."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué supera este límite ficticio?",
+          "scene": "Saldo elegible: 140; Límite total aplicable de cobertura: 100; Sin otras cuentas.",
+          "options": [
+            {
+              "label": "100"
+            },
+            {
+              "label": "140"
+            },
+            {
+              "label": "40"
+            }
+          ],
+          "help": [
+            "Resta límite de cobertura indicado al saldo elegible."
+          ],
+          "feedback": {
+            "met": "La parte sobre el límite aplicable queda sin cubrir aquí.",
+            "not_yet": "Resta límite de cobertura indicado al saldo elegible."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto supera este limite fictício?",
+          "scene": "Saldo elegível: 140; Limite total aplicável de cobertura: 100; Sem outras contas.",
+          "options": [
+            {
+              "label": "100"
+            },
+            {
+              "label": "140"
+            },
+            {
+              "label": "40"
+            }
+          ],
+          "help": [
+            "Subtraia limite de cobertura dado do saldo elegível."
+          ],
+          "feedback": {
+            "met": "A parte acima do limite aplicável fica sem cobertura aqui.",
+            "not_yet": "Subtraia limite de cobertura dado do saldo elegível."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          140,
+          100
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Which loss is covered under this rule?",
+          "scene": "Fictional protection covers eligible deposits if the institution fails; it excludes market-price losses.",
+          "options": [
+            {
+              "label": "Any purchase regret"
+            },
+            {
+              "label": "Every market-price fall"
+            },
+            {
+              "label": "Eligible deposit after institution failure"
+            }
+          ],
+          "help": [
+            "Match both the product and the event."
+          ],
+          "feedback": {
+            "met": "Coverage applies to the stated event and eligible deposit.",
+            "not_yet": "Match both the product and the event."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué pérdida cubre esta regla?",
+          "scene": "Protección ficticia cubre depósitos elegibles si quiebra institución; excluye caídas de mercado.",
+          "options": [
+            {
+              "label": "Cualquier arrepentimiento de compra"
+            },
+            {
+              "label": "Toda caída de mercado"
+            },
+            {
+              "label": "Depósito elegible tras quiebra del banco"
+            }
+          ],
+          "help": [
+            "Haz coincidir producto y evento."
+          ],
+          "feedback": {
+            "met": "Cobertura aplica al evento indicado y depósito elegible.",
+            "not_yet": "Haz coincidir producto y evento."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que perda cobre esta regra?",
+          "scene": "Proteção fictícia cobre depósitos elegíveis se instituição quebrar; exclui quedas de mercado.",
+          "options": [
+            {
+              "label": "Qualquer arrependimento de compra"
+            },
+            {
+              "label": "Toda queda de mercado"
+            },
+            {
+              "label": "Depósito elegível após quebra da instituição"
+            }
+          ],
+          "help": [
+            "Confira produto e evento juntos."
+          ],
+          "feedback": {
+            "met": "Cobertura vale para o evento dado e depósito elegível.",
+            "not_yet": "Confira produto e evento juntos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Can this badge settle coverage?",
+          "scene": "A website displays a protection logo without a matching official institution record.",
+          "options": [
+            {
+              "label": "No, verify the official record"
+            },
+            {
+              "label": "Yes, polished design proves coverage"
+            },
+            {
+              "label": "Yes, any badge suffices"
+            }
+          ],
+          "help": [
+            "Use the scheme’s official information to verify eligibility."
+          ],
+          "feedback": {
+            "met": "A displayed logo is not independent confirmation of participation.",
+            "not_yet": "Use the scheme’s official information to verify eligibility."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿El sello copiado resuelve cobertura?",
+          "scene": "Sitio muestra logo de protección sin registro oficial coincidente de institución.",
+          "options": [
+            {
+              "label": "No, verificar registro oficial"
+            },
+            {
+              "label": "Sí, buen diseño prueba cobertura"
+            },
+            {
+              "label": "Sí, cualquier sello basta"
+            }
+          ],
+          "help": [
+            "Usa información oficial del esquema para verificar reglas de acceso."
+          ],
+          "feedback": {
+            "met": "Un logo mostrado no confirma registro de forma independiente.",
+            "not_yet": "Usa información oficial del esquema para verificar reglas de acceso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O selo copiado resolve cobertura?",
+          "scene": "Site mostra logo de proteção sem registro oficial correspondente da instituição.",
+          "options": [
+            {
+              "label": "Não, verificar registro oficial"
+            },
+            {
+              "label": "Sim, bom design prova cobertura"
+            },
+            {
+              "label": "Sim, qualquer selo basta"
+            }
+          ],
+          "help": [
+            "Use informação oficial do sistema para verificar as regras."
+          ],
+          "feedback": {
+            "met": "Um logo exibido não confirma participação de forma independente.",
+            "not_yet": "Use informação oficial do sistema para verificar as regras."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.financial-landscape.03",
+      "copy": {
+        "en-US": {
+          "prompt": "What must be verified?",
+          "scene": "A payment app says funds are protected through another institution; terms are incomplete.",
+          "options": [
+            {
+              "label": "Assume all app balances qualify"
+            },
+            {
+              "label": "Actual institution, product and conditions"
+            },
+            {
+              "label": "App popularity alone"
+            }
+          ],
+          "help": [
+            "Identify where funds are held and the applicable official rules."
+          ],
+          "feedback": {
+            "met": "Indirect claims still require checking the actual coverage conditions.",
+            "not_yet": "Identify where funds are held and the applicable official rules."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué verificar en esta afirmación?",
+          "scene": "App dice proteger fondos mediante otra institución; condiciones están incompletas.",
+          "options": [
+            {
+              "label": "Suponer todo saldo califica"
+            },
+            {
+              "label": "Institución, producto y condiciones reales"
+            },
+            {
+              "label": "Solo popularidad de app"
+            }
+          ],
+          "help": [
+            "Identifica dónde están fondos y reglas oficiales aplicables."
+          ],
+          "feedback": {
+            "met": "Afirmaciones indirectas también requieren revisar condiciones reales de cobertura.",
+            "not_yet": "Identifica dónde están fondos y reglas oficiales aplicables."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que verificar nesta alegação?",
+          "scene": "App diz proteger recursos por outra instituição; termos estão incompletos.",
+          "options": [
+            {
+              "label": "Supor todo saldo coberto"
+            },
+            {
+              "label": "Instituição, produto e condições reais"
+            },
+            {
+              "label": "Só popularidade do app"
+            }
+          ],
+          "help": [
+            "Identifique onde estão recursos e regras oficiais aplicáveis."
+          ],
+          "feedback": {
+            "met": "Alegações indiretas também exigem conferir condições reais de cobertura.",
+            "not_yet": "Identifique onde estão recursos e regras oficiais aplicáveis."
+          }
+        }
+      }
+    }
+  ]
+}

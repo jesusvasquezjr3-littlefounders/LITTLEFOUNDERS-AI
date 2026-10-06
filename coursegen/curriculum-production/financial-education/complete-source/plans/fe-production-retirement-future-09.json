@@ -1,0 +1,779 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-retirement-future-part-2",
+  "lesson_id": "fe-production-retirement-future-09",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.retirement-future.09"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Reassess contributions when income changes while preserving near-term essential obligations.",
+  "title": {
+    "en-US": "Adjust Contributions",
+    "es-MX": "Ajusta aportaciones si cambia el ingreso",
+    "pt-BR": "Ajuste aportes se a renda mudar"
+  },
+  "new_concepts": [
+    "finance.prod.retirement-future.09"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Adjust Contributions\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Ajusta aportaciones si cambia el ingreso\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Ajuste aportes se a renda mudar\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.retirement-future.09",
+      "observable_action": "Reassess contributions when income changes while preserving near-term essential obligations.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.cashflow-budget.09",
+      "prod.saving-resilience.07"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A long-term contribution plan must still fit the essential payments due now.",
+    "misconception": "Maintaining the original contribution at any cost is always preferable to reassessing changed income and essential obligations.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.retirement-future.09",
+        "context_id": "retirement-future-09-example-01",
+        "supports_from": [],
+        "reasoning": "Income falls but essentials remain due. Recalculate available money before maintaining a contribution that would leave those payments uncovered."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.retirement-future.09",
+        "context_id": "retirement-future-09-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The contribution must fit actual resources and essential obligations."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.retirement-future.09",
+        "context_id": "retirement-future-09-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "An unconfirmed receipt cannot support a fixed current commitment."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.retirement-future.09",
+        "context_id": "retirement-future-09-practice-01",
+        "supports_from": [],
+        "reasoning": "The plan’s terms can affect the consequences of an adjustment."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.retirement-future.09",
+        "context_id": "retirement-future-09-practice-02",
+        "supports_from": [],
+        "reasoning": "A changed income can justify another deliberate review."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.retirement-future.09",
+        "context_id": "retirement-future-09-practice-03",
+        "supports_from": [],
+        "reasoning": "Borrowing adds repayment obligations rather than removing the resource gap."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.retirement-future.09",
+        "context_id": "retirement-future-09-transfer-01",
+        "supports_from": [],
+        "reasoning": "The new plan must reflect reduced resources and actual needs."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.retirement-future.09",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A long-term contribution plan must still fit the essential payments due now."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un plan de aportaciones a largo plazo debe seguir siendo compatible con los pagos indispensables actuales."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Um plano de aportes de longo prazo ainda precisa caber nos pagamentos essenciais de agora."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Recheck the available amount",
+          "line": "Income falls but essentials remain due. Recalculate available money before maintaining a contribution that would leave those payments uncovered."
+        },
+        "es-MX": {
+          "prompt": "Revisa el monto disponible",
+          "line": "Baja el ingreso, pero lo indispensable sigue pendiente. Recalcula dinero disponible antes de mantener una aportación que deje pagos descubiertos."
+        },
+        "pt-BR": {
+          "prompt": "Confira o valor disponível",
+          "line": "A renda cai, mas o essencial continua devido. Recalcule dinheiro disponível antes de manter um aporte que deixe contas descobertas."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.09",
+      "copy": {
+        "en-US": {
+          "prompt": "What comes first?",
+          "scene": "Income drops. The old retirement contribution leaves tomorrow’s necessary food payment uncovered.",
+          "options": [
+            {
+              "label": "Recalculate and revise contributions"
+            },
+            {
+              "label": "Keep contributing despite the gap"
+            },
+            {
+              "label": "Ignore food costs"
+            }
+          ],
+          "help": [
+            "Protect the stated immediate need while reassessing the plan."
+          ],
+          "feedback": {
+            "met": "The contribution must fit actual resources and essential obligations.",
+            "not_yet": "Protect the stated immediate need while reassessing the plan."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe pasar primero?",
+          "scene": "Baja el ingreso. La aportación anterior dejaría sin cubrir comida necesaria de mañana.",
+          "options": [
+            {
+              "label": "Recalcular y revisar el plan de aportación"
+            },
+            {
+              "label": "Seguir aportando pese al faltante"
+            },
+            {
+              "label": "Ignorar el pago de comida"
+            }
+          ],
+          "help": [
+            "Protege la necesidad inmediata indicada al revisar el plan."
+          ],
+          "feedback": {
+            "met": "La aportación debe caber en recursos y obligaciones indispensables reales.",
+            "not_yet": "Protege la necesidad inmediata indicada al revisar el plan."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que fazer primeiro?",
+          "scene": "A renda cai. O aporte antigo deixaria sem cobertura a comida necessária de amanhã.",
+          "options": [
+            {
+              "label": "Recalcular e rever o plano de aporte"
+            },
+            {
+              "label": "Seguir aportando apesar da falta"
+            },
+            {
+              "label": "Ignorar o pagamento da comida"
+            }
+          ],
+          "help": [
+            "Proteja a necessidade imediata dada ao rever o plano."
+          ],
+          "feedback": {
+            "met": "O aporte precisa caber nos recursos e deveres essenciais reais.",
+            "not_yet": "Proteja a necessidade imediata dada ao rever o plano."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Which income belongs in the revision?",
+          "scene": "A lower payment has arrived; an extra contract payment is only hoped for.",
+          "options": [
+            {
+              "label": "Last year’s larger income"
+            },
+            {
+              "label": "Both as if already received"
+            },
+            {
+              "label": "Confirmed available income"
+            }
+          ],
+          "help": [
+            "Plan from received or reliably confirmed resources and timing."
+          ],
+          "feedback": {
+            "met": "An unconfirmed receipt cannot support a fixed current commitment.",
+            "not_yet": "Plan from received or reliably confirmed resources and timing."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué ingreso entra en la revisión?",
+          "scene": "Llegó un pago menor; solo se espera conseguir un contrato extra.",
+          "options": [
+            {
+              "label": "El ingreso mayor del año pasado"
+            },
+            {
+              "label": "Ambos como si ya llegaran"
+            },
+            {
+              "label": "Ingreso disponible confirmado"
+            }
+          ],
+          "help": [
+            "Planea con recursos y fechas recibidos o confirmados confiablemente."
+          ],
+          "feedback": {
+            "met": "Un cobro sin confirmar no sostiene un compromiso actual fijo.",
+            "not_yet": "Planea con recursos y fechas recibidos o confirmados confiablemente."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual renda entra na revisão?",
+          "scene": "Chegou um pagamento menor; só se espera conseguir um contrato extra.",
+          "options": [
+            {
+              "label": "A renda maior do ano passado"
+            },
+            {
+              "label": "Ambos como se já chegaram"
+            },
+            {
+              "label": "Renda disponível confirmada"
+            }
+          ],
+          "help": [
+            "Planeje com recursos e prazos recebidos ou confirmados de modo confiável."
+          ],
+          "feedback": {
+            "met": "Recebimento não confirmado não sustenta compromisso atual fixo.",
+            "not_yet": "Planeje com recursos e prazos recebidos ou confirmados de modo confiável."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Check what before changing?",
+          "scene": "Reducing contributions could affect a workplace plan’s conditions.",
+          "options": [
+            {
+              "label": "Its matching and access terms"
+            },
+            {
+              "label": "Assume changes are forbidden everywhere"
+            },
+            {
+              "label": "Assume every change is free"
+            }
+          ],
+          "help": [
+            "Review conditions while checking affordability."
+          ],
+          "feedback": {
+            "met": "The plan’s terms can affect the consequences of an adjustment.",
+            "not_yet": "Review conditions while checking affordability."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué revisas antes de cambiar?",
+          "scene": "Un plan patronal tiene condiciones que podrían cambiar al reducir la aportación.",
+          "options": [
+            {
+              "label": "Sus términos reales de aportación y acceso"
+            },
+            {
+              "label": "Suponer cambios prohibidos en todas partes"
+            },
+            {
+              "label": "Suponer que todo cambio es gratis"
+            }
+          ],
+          "help": [
+            "Revisa condiciones mientras compruebas capacidad de pago."
+          ],
+          "feedback": {
+            "met": "Los términos del plan pueden afectar consecuencias del ajuste.",
+            "not_yet": "Revisa condiciones mientras compruebas capacidad de pago."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que conferir antes de mudar?",
+          "scene": "Um plano patronal tem condições que podem mudar ao reduzir o aporte.",
+          "options": [
+            {
+              "label": "Seus termos reais de aporte e acesso"
+            },
+            {
+              "label": "Supor mudanças proibidas em todo lugar"
+            },
+            {
+              "label": "Supor que toda mudança é grátis"
+            }
+          ],
+          "help": [
+            "Confira condições enquanto verifica se cabe no orçamento."
+          ],
+          "feedback": {
+            "met": "Os termos do plano podem afetar consequências do ajuste.",
+            "not_yet": "Confira condições enquanto verifica se cabe no orçamento."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.09",
+      "copy": {
+        "en-US": {
+          "prompt": "What follows when income recovers?",
+          "scene": "The temporary income reduction ends and current essentials are covered.",
+          "options": [
+            {
+              "label": "Never revisit the reduced amount"
+            },
+            {
+              "label": "Automatically ignore new obligations"
+            },
+            {
+              "label": "Review the contribution plan again"
+            }
+          ],
+          "help": [
+            "Use the new resources and obligations together."
+          ],
+          "feedback": {
+            "met": "A changed income can justify another deliberate review.",
+            "not_yet": "Use the new resources and obligations together."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué sigue si se recupera el ingreso?",
+          "scene": "Termina la reducción temporal y lo indispensable actual está cubierto.",
+          "options": [
+            {
+              "label": "Nunca revisar el monto reducido"
+            },
+            {
+              "label": "Ignorar automáticamente obligaciones nuevas"
+            },
+            {
+              "label": "Revisar otra vez el plan de aportación"
+            }
+          ],
+          "help": [
+            "Usa juntos los recursos y obligaciones nuevos."
+          ],
+          "feedback": {
+            "met": "Cambiar el ingreso puede justificar otra revisión deliberada.",
+            "not_yet": "Usa juntos los recursos y obligaciones nuevos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que fazer se a renda se recuperar?",
+          "scene": "Termina a redução temporária e o essencial atual está coberto.",
+          "options": [
+            {
+              "label": "Nunca rever o valor reduzido"
+            },
+            {
+              "label": "Ignorar automaticamente novos deveres"
+            },
+            {
+              "label": "Rever de novo o plano de aporte"
+            }
+          ],
+          "help": [
+            "Use juntos os novos recursos e deveres."
+          ],
+          "feedback": {
+            "met": "Mudar a renda pode justificar outra revisão com critério.",
+            "not_yet": "Use juntos os novos recursos e deveres."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Does this fix the gap?",
+          "scene": "Someone borrows at high stated cost to maintain an unaffordable voluntary contribution.",
+          "options": [
+            {
+              "label": "It adds debt to assess"
+            },
+            {
+              "label": "It creates free money"
+            },
+            {
+              "label": "It erases affordability problems"
+            }
+          ],
+          "help": [
+            "Compare debt consequences with the revised budget."
+          ],
+          "feedback": {
+            "met": "Borrowing adds repayment obligations rather than removing the resource gap.",
+            "not_yet": "Compare debt consequences with the revised budget."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Esto arregla el faltante?",
+          "scene": "Piden prestado a costo alto indicado solo para mantener una aportación voluntaria que ya no alcanza.",
+          "options": [
+            {
+              "label": "Agrega deuda que debe evaluarse"
+            },
+            {
+              "label": "Crea dinero gratis"
+            },
+            {
+              "label": "Elimina el problema de capacidad"
+            }
+          ],
+          "help": [
+            "Compara consecuencias de deuda con el presupuesto revisado."
+          ],
+          "feedback": {
+            "met": "Pedir prestado agrega pagos en vez de eliminar el faltante.",
+            "not_yet": "Compara consecuencias de deuda con el presupuesto revisado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Isso resolve a falta?",
+          "scene": "Pegam empréstimo com custo alto dado só para manter um aporte voluntário que já não cabe.",
+          "options": [
+            {
+              "label": "Soma dívida que deve ser avaliada"
+            },
+            {
+              "label": "Cria dinheiro grátis"
+            },
+            {
+              "label": "Elimina o problema de recursos"
+            }
+          ],
+          "help": [
+            "Compare consequências da dívida com o orçamento revisto."
+          ],
+          "feedback": {
+            "met": "Pegar emprestado soma pagamentos em vez de eliminar a falta.",
+            "not_yet": "Compare consequências da dívida com o orçamento revisto."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.retirement-future.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Which revision fits?",
+          "scene": "Caregiving reduces income. Care and housing remain essential; contributions are adjustable.",
+          "options": [
+            {
+              "label": "Protect essentials, then recalculate contributions"
+            },
+            {
+              "label": "Use imaginary income"
+            },
+            {
+              "label": "Automatically call care optional"
+            }
+          ],
+          "help": [
+            "Use the changed situation rather than the old income pattern."
+          ],
+          "feedback": {
+            "met": "The new plan must reflect reduced resources and actual needs.",
+            "not_yet": "Use the changed situation rather than the old income pattern."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué revisión corresponde?",
+          "scene": "Cuidar a alguien reduce trabajo pagado. Siguen cuidado y vivienda indispensables; las aportaciones son ajustables.",
+          "options": [
+            {
+              "label": "Recalcular aportaciones tras proteger pagos indispensables"
+            },
+            {
+              "label": "Mantener el monto con ingresos imaginarios"
+            },
+            {
+              "label": "Tratar cuidado como opcional automáticamente"
+            }
+          ],
+          "help": [
+            "Usa la situación cambiada, no el ingreso anterior."
+          ],
+          "feedback": {
+            "met": "El nuevo plan debe reflejar menos recursos y necesidades reales.",
+            "not_yet": "Usa la situación cambiada, no el ingreso anterior."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual revisão cabe?",
+          "scene": "Cuidar de alguém reduz trabalho pago. Cuidados e moradia seguem essenciais; os aportes podem ser ajustados.",
+          "options": [
+            {
+              "label": "Recalcular aportes após proteger pagamentos essenciais"
+            },
+            {
+              "label": "Manter o valor com renda imaginária"
+            },
+            {
+              "label": "Tratar cuidado como opcional automaticamente"
+            }
+          ],
+          "help": [
+            "Use a situação mudada, não a renda antiga."
+          ],
+          "feedback": {
+            "met": "O novo plano deve refletir menos recursos e necessidades reais.",
+            "not_yet": "Use a situação mudada, não a renda antiga."
+          }
+        }
+      }
+    }
+  ]
+}

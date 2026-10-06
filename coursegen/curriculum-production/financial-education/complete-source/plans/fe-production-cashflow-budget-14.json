@@ -1,0 +1,815 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-cashflow-budget-part-3",
+  "lesson_id": "fe-production-cashflow-budget-14",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.cashflow-budget.14"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Carry an unresolved obligation into the next plan without counting it twice.",
+  "title": {
+    "en-US": "Carried bills",
+    "es-MX": "Lleva una cuenta pendiente una vez",
+    "pt-BR": "Leve uma conta pendente uma vez"
+  },
+  "new_concepts": [
+    "finance.prod.cashflow-budget.14"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Carry a bill forward once\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Lleva una cuenta pendiente una vez\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Leve uma conta pendente uma vez\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.cashflow-budget.14",
+      "observable_action": "Carry an unresolved obligation into the next plan without counting it twice.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.cashflow-budget.05",
+      "prod.cashflow-budget.13"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Keep an unpaid obligation visible without turning it into two different bills.",
+    "misconception": "Erasing an unpaid bill at period-end or adding its old and carried-forward records as separate obligations.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.cashflow-budget.14",
+        "context_id": "fe-production-cashflow-budget-14-example-01",
+        "supports_from": [],
+        "reasoning": "An unpaid bill remains owed next period. Carry its identifier and remaining amount forward, counting that obligation once."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.cashflow-budget.14",
+        "context_id": "fe-production-cashflow-budget-14-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Two records can refer to the same outstanding bill."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.cashflow-budget.14",
+        "context_id": "fe-production-cashflow-budget-14-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "90 − 35 = 55 remains unpaid."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.cashflow-budget.14",
+        "context_id": "fe-production-cashflow-budget-14-practice-01",
+        "supports_from": [],
+        "reasoning": "The repeated record does not create a second bill."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.cashflow-budget.14",
+        "context_id": "fe-production-cashflow-budget-14-practice-02",
+        "supports_from": [],
+        "reasoning": "The same provider can issue distinct bills for different periods."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.cashflow-budget.14",
+        "context_id": "fe-production-cashflow-budget-14-practice-03",
+        "supports_from": [],
+        "reasoning": "Verify actual updates instead of assuming or inventing charges."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.cashflow-budget.14",
+        "context_id": "fe-production-cashflow-budget-14-transfer-01",
+        "supports_from": [],
+        "reasoning": "160 − 95 = 65 remains on that invoice."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.cashflow-budget.14",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Keep an unpaid obligation visible without turning it into two different bills."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Conserva visible una obligación pendiente sin convertirla en dos cuentas distintas."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Mantenha visível uma obrigação pendente sem transformá-la em duas contas diferentes."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Same bill, new plan",
+          "line": "An unpaid bill remains owed next period. Carry its identifier and remaining amount forward, counting that obligation once."
+        },
+        "es-MX": {
+          "prompt": "Misma cuenta, nuevo plan",
+          "line": "Una cuenta pendiente sigue debiéndose el siguiente periodo. Lleva su identificador y monto restante, contando esa obligación una vez."
+        },
+        "pt-BR": {
+          "prompt": "Mesma conta, novo plano",
+          "line": "Uma conta pendente continua devida no próximo período. Leve seu identificador e valor restante, contando essa obrigação uma vez."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.14",
+      "copy": {
+        "en-US": {
+          "prompt": "How many obligations appear?",
+          "scene": "A bill remains unpaid at month-end; the next plan repeats that same bill’s identifier.",
+          "options": [
+            {
+              "label": "No obligation after month-end"
+            },
+            {
+              "label": "One carried-forward obligation"
+            },
+            {
+              "label": "Two separate bills automatically"
+            }
+          ],
+          "help": [
+            "Match the identifier before adding amounts."
+          ],
+          "feedback": {
+            "met": "Two records can refer to the same outstanding bill.",
+            "not_yet": "Match the identifier before adding amounts."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuántas obligaciones describen esos registros?",
+          "scene": "Una cuenta sigue pendiente al cerrar; el siguiente plan repite su identificador.",
+          "options": [
+            {
+              "label": "Ninguna obligación tras cerrar el mes"
+            },
+            {
+              "label": "Una obligación trasladada"
+            },
+            {
+              "label": "Dos cuentas distintas automáticamente"
+            }
+          ],
+          "help": [
+            "Compara el identificador antes de sumar montos."
+          ],
+          "feedback": {
+            "met": "Dos registros pueden referirse a la misma cuenta pendiente.",
+            "not_yet": "Compara el identificador antes de sumar montos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quantas obrigações esses registros descrevem?",
+          "scene": "Uma conta continua pendente ao fechar; o próximo plano repete seu identificador.",
+          "options": [
+            {
+              "label": "Nenhuma obrigação após fechar o mês"
+            },
+            {
+              "label": "Uma obrigação levada adiante"
+            },
+            {
+              "label": "Duas contas diferentes automaticamente"
+            }
+          ],
+          "help": [
+            "Compare o identificador antes de somar valores."
+          ],
+          "feedback": {
+            "met": "Dois registros podem se referir à mesma conta pendente.",
+            "not_yet": "Compare o identificador antes de somar valores."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.14",
+      "copy": {
+        "en-US": {
+          "prompt": "Amount carried forward?",
+          "scene": "Original bill: 90; completed payment: 35; no added charges.",
+          "options": [
+            {
+              "label": "55"
+            },
+            {
+              "label": "125"
+            },
+            {
+              "label": "90"
+            }
+          ],
+          "help": [
+            "Carry only the remaining unpaid amount."
+          ],
+          "feedback": {
+            "met": "90 − 35 = 55 remains unpaid.",
+            "not_yet": "Carry only the remaining unpaid amount."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Monto que pasa al siguiente plan?",
+          "scene": "Cuenta original: 90; pago realizado: 35; sin cargos adicionales.",
+          "options": [
+            {
+              "label": "55"
+            },
+            {
+              "label": "125"
+            },
+            {
+              "label": "90"
+            }
+          ],
+          "help": [
+            "Lleva solo el monto que sigue sin pagarse."
+          ],
+          "feedback": {
+            "met": "90 − 35 = 55 sigue pendiente.",
+            "not_yet": "Lleva solo el monto que sigue sin pagarse."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Valor levado ao próximo plano?",
+          "scene": "Conta original: 90; pagamento concluído: 35; sem cobranças adicionais.",
+          "options": [
+            {
+              "label": "55"
+            },
+            {
+              "label": "125"
+            },
+            {
+              "label": "90"
+            }
+          ],
+          "help": [
+            "Leve só o valor que continua não pago."
+          ],
+          "feedback": {
+            "met": "90 − 35 = 55 continua pendente.",
+            "not_yet": "Leve só o valor que continua não pago."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          90,
+          35
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.14",
+      "copy": {
+        "en-US": {
+          "prompt": "What prevents double counting?",
+          "scene": "The old record and next plan repeat the same unpaid bill for 60.",
+          "options": [
+            {
+              "label": "Delete the bill’s evidence"
+            },
+            {
+              "label": "Link the same obligation"
+            },
+            {
+              "label": "Add both entries as different bills"
+            }
+          ],
+          "help": [
+            "Track the obligation’s identity across periods."
+          ],
+          "feedback": {
+            "met": "The repeated record does not create a second bill.",
+            "not_yet": "Track the obligation’s identity across periods."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué evita contarla dos veces?",
+          "scene": "El registro anterior y el plan siguiente muestran la misma cuenta pendiente de 60.",
+          "options": [
+            {
+              "label": "Borrar toda evidencia de la cuenta"
+            },
+            {
+              "label": "Vincularlos como la misma obligación"
+            },
+            {
+              "label": "Sumar ambas entradas como cuentas distintas"
+            }
+          ],
+          "help": [
+            "Sigue la identidad de la obligación entre periodos."
+          ],
+          "feedback": {
+            "met": "Repetir el registro no crea una segunda cuenta.",
+            "not_yet": "Sigue la identidad de la obligación entre periodos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que evita contá-la duas vezes?",
+          "scene": "O registro anterior e o próximo plano mostram a mesma conta pendente de 60.",
+          "options": [
+            {
+              "label": "Apagar toda evidência da conta"
+            },
+            {
+              "label": "Vinculá-los como a mesma obrigação"
+            },
+            {
+              "label": "Somar ambas as entradas como contas distintas"
+            }
+          ],
+          "help": [
+            "Acompanhe a identidade da obrigação entre períodos."
+          ],
+          "feedback": {
+            "met": "Repetir o registro não cria uma segunda conta.",
+            "not_yet": "Acompanhe a identidade da obrigação entre períodos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.14",
+      "copy": {
+        "en-US": {
+          "prompt": "Are these duplicates?",
+          "scene": "The unpaid old electricity bill and new bill cover different service periods.",
+          "options": [
+            {
+              "label": "Yes, every monthly bill replaces arrears"
+            },
+            {
+              "label": "Yes, the provider name matches"
+            },
+            {
+              "label": "No, these are different obligations"
+            }
+          ],
+          "help": [
+            "Check bill identity and service period, not only the provider."
+          ],
+          "feedback": {
+            "met": "The same provider can issue distinct bills for different periods.",
+            "not_yet": "Check bill identity and service period, not only the provider."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Deben fusionarse como duplicado?",
+          "scene": "La cuenta eléctrica pendiente anterior y la nueva tienen distintos periodos de servicio.",
+          "options": [
+            {
+              "label": "Sí, toda cuenta mensual sustituye adeudos"
+            },
+            {
+              "label": "Sí, coincide el proveedor"
+            },
+            {
+              "label": "No, son obligaciones distintas"
+            }
+          ],
+          "help": [
+            "Revisa identidad y periodo, no solo proveedor."
+          ],
+          "feedback": {
+            "met": "Un proveedor puede emitir cuentas distintas por periodos distintos.",
+            "not_yet": "Revisa identidad y periodo, no solo proveedor."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Devem ser unidas como duplicata?",
+          "scene": "A conta de energia pendente anterior e a nova têm períodos de serviço diferentes.",
+          "options": [
+            {
+              "label": "Sim, toda conta mensal substitui atrasos"
+            },
+            {
+              "label": "Sim, coincide o fornecedor"
+            },
+            {
+              "label": "Não, são obrigações diferentes"
+            }
+          ],
+          "help": [
+            "Confira identidade e período, não só fornecedor."
+          ],
+          "feedback": {
+            "met": "Um fornecedor pode emitir contas diferentes por períodos diferentes.",
+            "not_yet": "Confira identidade e período, não só fornecedor."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.14",
+      "copy": {
+        "en-US": {
+          "prompt": "What must be verified?",
+          "scene": "A carried bill may have new charges; its updated statement remains unchecked.",
+          "options": [
+            {
+              "label": "The current amount and terms"
+            },
+            {
+              "label": "An invented standard penalty"
+            },
+            {
+              "label": "That old debts vanish automatically"
+            }
+          ],
+          "help": [
+            "Use the applicable updated record."
+          ],
+          "feedback": {
+            "met": "Verify actual updates instead of assuming or inventing charges.",
+            "not_yet": "Use the applicable updated record."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe verificarse?",
+          "scene": "Una cuenta trasladada podría tener cargos nuevos, pero no revisaste el estado actualizado.",
+          "options": [
+            {
+              "label": "El monto y condiciones actuales"
+            },
+            {
+              "label": "Una penalización estándar inventada"
+            },
+            {
+              "label": "Que adeudos anteriores desaparecen automáticamente"
+            }
+          ],
+          "help": [
+            "Usa el registro actualizado aplicable."
+          ],
+          "feedback": {
+            "met": "Verifica cambios reales sin suponer ni inventar cargos.",
+            "not_yet": "Usa el registro actualizado aplicable."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que deve ser verificado?",
+          "scene": "Uma conta levada adiante pode ter novas cobranças, mas não conferiu o extrato atualizado.",
+          "options": [
+            {
+              "label": "O valor e condições atuais"
+            },
+            {
+              "label": "Uma multa padrão inventada"
+            },
+            {
+              "label": "Que dívidas anteriores somem automaticamente"
+            }
+          ],
+          "help": [
+            "Use o registro atualizado aplicável."
+          ],
+          "feedback": {
+            "met": "Confira mudanças reais sem supor nem inventar cobranças.",
+            "not_yet": "Use o registro atualizado aplicável."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.cashflow-budget.14",
+      "copy": {
+        "en-US": {
+          "prompt": "Outstanding amount for the next plan?",
+          "scene": "A repair invoice was 160; verified payments total 95; no new charges apply.",
+          "options": [
+            {
+              "label": "160"
+            },
+            {
+              "label": "255"
+            },
+            {
+              "label": "65"
+            }
+          ],
+          "help": [
+            "Subtract verified payments once from the same obligation."
+          ],
+          "feedback": {
+            "met": "160 − 95 = 65 remains on that invoice.",
+            "not_yet": "Subtract verified payments once from the same obligation."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Monto pendiente para el siguiente plan?",
+          "scene": "Una factura de reparación era 160; pagos verificados suman 95; no hay cargos nuevos.",
+          "options": [
+            {
+              "label": "160"
+            },
+            {
+              "label": "255"
+            },
+            {
+              "label": "65"
+            }
+          ],
+          "help": [
+            "Resta pagos verificados una vez de la misma obligación."
+          ],
+          "feedback": {
+            "met": "160 − 95 = 65 queda en esa factura.",
+            "not_yet": "Resta pagos verificados una vez de la misma obligación."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Valor pendente para o próximo plano?",
+          "scene": "Uma fatura de conserto era 160; pagamentos verificados somam 95; não há cobranças novas.",
+          "options": [
+            {
+              "label": "160"
+            },
+            {
+              "label": "255"
+            },
+            {
+              "label": "65"
+            }
+          ],
+          "help": [
+            "Subtraia pagamentos verificados uma vez da mesma obrigação."
+          ],
+          "feedback": {
+            "met": "160 − 95 = 65 resta nessa fatura.",
+            "not_yet": "Subtraia pagamentos verificados uma vez da mesma obrigação."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          160,
+          95
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

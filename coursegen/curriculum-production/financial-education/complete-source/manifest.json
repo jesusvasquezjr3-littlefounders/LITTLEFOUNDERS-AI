@@ -1,0 +1,1211 @@
+{
+  "version": 1,
+  "status": "complete-source-awaiting-validation",
+  "planned_lessons": 294,
+  "authored_lessons": 294,
+  "missing_lessons": [],
+  "missing_localized_kcs": [],
+  "whole_course_complete": true,
+  "publication_verified": false,
+  "owner_authorization": "Generate and publish the complete course using multiagents; authorization does not certify missing release evidence.",
+  "design_sha256": "1ca157a2f38838c4aebda7a1ef006e7c3c12c38d869f5ff2f896fad83d07ec59",
+  "adopted_calibration_sources": [
+    [
+      "fe-solid-01-money-moves",
+      "b8c6870dbe4c7690efcd7a2d8f392c78e4813a44c58f13fc0acbb53c402e79d3"
+    ],
+    [
+      "fe-solid-02-received-not-promised",
+      "586db9db18c7100c8eac28fae445a3f193819ca0aca164414e45f6d025e999a5"
+    ],
+    [
+      "fe-solid-03-update-your-balance",
+      "1bcab3326bfc1fdf3eaa78a87b7856d0e760cbd0cd79b00123582375896997bc"
+    ]
+  ],
+  "lessons": [
+    {
+      "lesson_id": "fe-production-usable-money-00",
+      "sha256": "e2f1b095c91beaf5b91e08c1632b75e738ec6438abaeb9f54dc0347898365ae5"
+    },
+    {
+      "lesson_id": "fe-production-usable-money-01",
+      "sha256": "916996fe2cb0dd80ab74de733b2423f0fa1ff595f60f722be583bcea64825a39"
+    },
+    {
+      "lesson_id": "fe-production-usable-money-02",
+      "sha256": "d98bb41afd5c1c18a791095f59a044671438bb206b94e1d1d8131907b3beaf24"
+    },
+    {
+      "lesson_id": "fe-production-usable-money-03",
+      "sha256": "7b0c2cb7dd0e0c46a0e3b9f80c0be2e3bbb7e35bbfe52d3ad8202048c922e689"
+    },
+    {
+      "lesson_id": "fe-production-usable-money-04",
+      "sha256": "3fbdbbe23717fa83ae887ecfe4b1dbc97df3c5bab43aceba3ff180ab94942794"
+    },
+    {
+      "lesson_id": "fe-production-usable-money-05",
+      "sha256": "1784079767c51380c25678d68561dea352a25e75d4c95ef7a60396aa06466f49"
+    },
+    {
+      "lesson_id": "fe-production-usable-money-06",
+      "sha256": "b99ee2faf9cd2f0a3fd41cd526dd4b8f0805a3d2ae0658d4fe38c3d4dfe5b09a"
+    },
+    {
+      "lesson_id": "fe-production-usable-money-07",
+      "sha256": "29629123dfa9818581cb7599e1c992e8f5834b70dcb3d96b033c3bc5fc5071f8"
+    },
+    {
+      "lesson_id": "fe-production-usable-money-08",
+      "sha256": "df75598f916ef61b03623881d425c11c07ae00fb87f43bfef4c0297951dfc179"
+    },
+    {
+      "lesson_id": "fe-production-usable-money-review-1",
+      "sha256": "7c54dcd336b79cee8ce48ac62afc74fb9aa328b0d9c587ba9ae67b66651db85f"
+    },
+    {
+      "lesson_id": "fe-production-usable-money-review-2",
+      "sha256": "7702056a7cfc06dd00602550e79585958776868d905d4be21db7d13a5a9b1ed9"
+    },
+    {
+      "lesson_id": "fe-production-financial-math-01",
+      "sha256": "2e0c4b891eafe3704cfb0ff2654076434879ca080b535ad80cea207826c33359"
+    },
+    {
+      "lesson_id": "fe-production-financial-math-02",
+      "sha256": "8426fd9467fc69c0a9a4bfc2ce522cdabe4ee006eb613571ea6931a9911e0bd5"
+    },
+    {
+      "lesson_id": "fe-production-financial-math-03",
+      "sha256": "43c20f0873a077b321d5822cf7f75fa0c177008233adc3193dbaddf8c1b6ae3a"
+    },
+    {
+      "lesson_id": "fe-production-financial-math-04",
+      "sha256": "279a7204766afd3418b16915e75b212bcc8a60307ff1e59207137a29b520305d"
+    },
+    {
+      "lesson_id": "fe-production-financial-math-05",
+      "sha256": "cb96977f0ae822ac0c830095d1803ca9498982bca39428f61592ec93fba48928"
+    },
+    {
+      "lesson_id": "fe-production-financial-math-06",
+      "sha256": "2d983d843beb936494343aa7bd5363744f8591d48fee75838ae9ea4f7de8feab"
+    },
+    {
+      "lesson_id": "fe-production-financial-math-07",
+      "sha256": "03285c1925ac82f33d47ec73bf310d8ece2891c3444ededf1af7fe89d500d3dc"
+    },
+    {
+      "lesson_id": "fe-production-financial-math-08",
+      "sha256": "6e9e128f6958c06aa9388f58e749fcd1a33658411c4655653df1550714dfb5a9"
+    },
+    {
+      "lesson_id": "fe-production-financial-math-09",
+      "sha256": "18f7e8f7c3c3ae9aed60334420d380aded553decf40193f237348d9e5362efae"
+    },
+    {
+      "lesson_id": "fe-production-financial-math-10",
+      "sha256": "82f16b217ffe1bfc5b3d0683cfbc5787868129357c96f637b9d3a595cff68e5d"
+    },
+    {
+      "lesson_id": "fe-production-financial-math-11",
+      "sha256": "098c0235659c82cce77f84ea2ecef9332b20a2feb29948d9185a6418a7317f77"
+    },
+    {
+      "lesson_id": "fe-production-financial-math-12",
+      "sha256": "d8ed7a8d0b93059d53cc06345f6dca5a6c6cdeee6bfedf1118d9ec2dc677f3a2"
+    },
+    {
+      "lesson_id": "fe-production-financial-math-13",
+      "sha256": "a1232974871f11fd9adef66cace852d1e0b7fb30f48339ac4e098f4f10b48a3d"
+    },
+    {
+      "lesson_id": "fe-production-financial-math-review-1",
+      "sha256": "35d282ab07bf6f5a71be006d3bdafdceef646b915c413585ae602987d6fd2bc7"
+    },
+    {
+      "lesson_id": "fe-production-financial-math-review-2",
+      "sha256": "7dc59303e9c5a86d97274c493eee5f73746f0569900ffdcb8c4b29b0abf1caac"
+    },
+    {
+      "lesson_id": "fe-production-goals-tradeoffs-01",
+      "sha256": "e24d9095b515ff9bb8c5e24c4a6313ee953e60961def2f34524f192d7f5479c7"
+    },
+    {
+      "lesson_id": "fe-production-goals-tradeoffs-02",
+      "sha256": "7c8e35e0fb37d2541f496d4e3999e8303f5cc5f944acbef2c8439cb325897a68"
+    },
+    {
+      "lesson_id": "fe-production-goals-tradeoffs-03",
+      "sha256": "921476d6ef7c164b76a7b5026219530fa497132c4709707733c2d505279e67b9"
+    },
+    {
+      "lesson_id": "fe-production-goals-tradeoffs-04",
+      "sha256": "78b8932af51fdb529b9ed256a4ca18f0573a616a2ddc4ae24f77d0ab3b3922d5"
+    },
+    {
+      "lesson_id": "fe-production-goals-tradeoffs-05",
+      "sha256": "baab38a0319f1b32bd0d307523080038078e798a092a37b1345e3018208ae247"
+    },
+    {
+      "lesson_id": "fe-production-goals-tradeoffs-06",
+      "sha256": "6ef46c8e9902d812db4dbbaf7e212b92d90f8d7803e6dc4bd3e34a2b9861daf6"
+    },
+    {
+      "lesson_id": "fe-production-goals-tradeoffs-07",
+      "sha256": "18d5b0406b4b6e5d0c04d81d5a3cefc4b759da22a517a5634759bcd1e80aff7b"
+    },
+    {
+      "lesson_id": "fe-production-goals-tradeoffs-08",
+      "sha256": "df075b00edfe797b250ee17a086b4c657a8edaa140a133c8963bd8625add0ea0"
+    },
+    {
+      "lesson_id": "fe-production-goals-tradeoffs-review-1",
+      "sha256": "84ffd6b3eac9463cb179115154c4a311aa4d1d96346736d5674f459914ccd76e"
+    },
+    {
+      "lesson_id": "fe-production-goals-tradeoffs-review-2",
+      "sha256": "e827ca88eae966e64f85666ed068bde00ccaccf4f7599620fcc802149e4d4dee"
+    },
+    {
+      "lesson_id": "fe-production-income-work-01",
+      "sha256": "d389f0e4632706036411c48105fc617d383331f7f3024b79c954a35cb565bcff"
+    },
+    {
+      "lesson_id": "fe-production-income-work-02",
+      "sha256": "cad29b99f30ee449918905c3258559102f95a0e2558cfe742d194e5b3ba15f29"
+    },
+    {
+      "lesson_id": "fe-production-income-work-03",
+      "sha256": "c59e2409149549b68bf311c3642a138f9745b9eb409e8ade73c9e5e6dc87e002"
+    },
+    {
+      "lesson_id": "fe-production-income-work-04",
+      "sha256": "09adbe2bbafd9e345104cf08d1067f319ecbc5c008c32d6c9cedb4dd3c050571"
+    },
+    {
+      "lesson_id": "fe-production-income-work-05",
+      "sha256": "023c97f49c8e835b37615c31f5dd046c0b8f8ef8f7b5787474a6dcc825104f81"
+    },
+    {
+      "lesson_id": "fe-production-income-work-06",
+      "sha256": "ad7538164b3210e6e243be3b378a0fc624afe757191810eb68253e2af1bff22d"
+    },
+    {
+      "lesson_id": "fe-production-income-work-07",
+      "sha256": "f645e66af308f9ecd26947e320d415aba976928f5bfc05d9845fe363fbfd3518"
+    },
+    {
+      "lesson_id": "fe-production-income-work-08",
+      "sha256": "3f940632922dc2a86a169a701511459f546dadf3c2b0df06b1094057f25f78b2"
+    },
+    {
+      "lesson_id": "fe-production-income-work-09",
+      "sha256": "66f8be361ce28757573e7c62549c57582823be66a1e2baf6cb927981bb148947"
+    },
+    {
+      "lesson_id": "fe-production-income-work-10",
+      "sha256": "92e9748de22e179d50b34b46e6a74529b3f0eb4dba1a061f8578c299594c5c3f"
+    },
+    {
+      "lesson_id": "fe-production-income-work-review-1",
+      "sha256": "4c4afb970b52de566ba1538d896a089ae899f8c7c617e5aabd0436dc4cf8aa8f"
+    },
+    {
+      "lesson_id": "fe-production-income-work-review-2",
+      "sha256": "27ba277022bf00106a9d4f3939c100e5bc1d9791205a0c802fdc01fc699f78bf"
+    },
+    {
+      "lesson_id": "fe-production-spending-patterns-01",
+      "sha256": "396fea91b6062eddc27a25730b72d8bd5d741305f01296c6d404b915d1352c7b"
+    },
+    {
+      "lesson_id": "fe-production-spending-patterns-02",
+      "sha256": "bcb1be0f87d468b4f21f4725187e05e8ac39c8dc6464104b3739cbd7a87ff15e"
+    },
+    {
+      "lesson_id": "fe-production-spending-patterns-03",
+      "sha256": "423f4090f694b59f6fee87644dbd9024f312f9cd59d537da186f2c92cd1ab4fe"
+    },
+    {
+      "lesson_id": "fe-production-spending-patterns-04",
+      "sha256": "f03f9c31abd67ff427cc4c7b711e168532145fc4b6f98d69d043b9922d39de24"
+    },
+    {
+      "lesson_id": "fe-production-spending-patterns-05",
+      "sha256": "798cfa961ddd43ec8e509ce2f3e29b9384636ecd6eb6c15a1e042624ccae65e4"
+    },
+    {
+      "lesson_id": "fe-production-spending-patterns-06",
+      "sha256": "fbe015767a05295bb0926e58593b3b3b2a42f675ad3b79435cab85dbc46a7b93"
+    },
+    {
+      "lesson_id": "fe-production-spending-patterns-07",
+      "sha256": "5a0b17186f5cbac13bb6a849fe7ddf8331e6a4ce5ad19ec497df3f5693f757db"
+    },
+    {
+      "lesson_id": "fe-production-spending-patterns-08",
+      "sha256": "e6696ec7700f62a059b867884f0fa309888d1b5b2a2ce7d2826bb8d3d1ddd91b"
+    },
+    {
+      "lesson_id": "fe-production-spending-patterns-09",
+      "sha256": "76d78140b69d44a753a5850d050b5c3b3b074b10f3345bf5f93c852145366c92"
+    },
+    {
+      "lesson_id": "fe-production-spending-patterns-10",
+      "sha256": "b4debbc8bf61415990400ccbb6239f07de6c47f7397481b5dab72f3668738c20"
+    },
+    {
+      "lesson_id": "fe-production-spending-patterns-review-1",
+      "sha256": "7b6f7f286fcac2a6b26804ccccc264b43081cf814a6ea241bf4d63e74de13464"
+    },
+    {
+      "lesson_id": "fe-production-spending-patterns-review-2",
+      "sha256": "cb0d620af672ef7dad8d14f316acf0e27bb79a5528f52d1573d26715c5202780"
+    },
+    {
+      "lesson_id": "fe-production-cashflow-budget-01",
+      "sha256": "3f8ff14cce7b6b188344b396c4ef89c4c792a4a86aecb1f4b38f2a38a2b148b8"
+    },
+    {
+      "lesson_id": "fe-production-cashflow-budget-02",
+      "sha256": "980c456d3c35662c5864fd20950525c179f5858d6e630d9c09df3dd82434d076"
+    },
+    {
+      "lesson_id": "fe-production-cashflow-budget-03",
+      "sha256": "3aca38bd3b354b20de0f864b137ff8fd0fb1f508d39aab774d432c8f0dc7d5e4"
+    },
+    {
+      "lesson_id": "fe-production-cashflow-budget-04",
+      "sha256": "2aea4c6c4b04660b2ba06570f94a2fd60ef4b57cac7675fbf7280e198597d997"
+    },
+    {
+      "lesson_id": "fe-production-cashflow-budget-05",
+      "sha256": "d6bd21179cc883e986c16bb38447362cf93dcaf3159a3130c18481482e8f09e3"
+    },
+    {
+      "lesson_id": "fe-production-cashflow-budget-06",
+      "sha256": "d9a2efa75dc2136e7f7af0cdc412c9af42943f9d3b1429a92ee3ab48ae33ccc4"
+    },
+    {
+      "lesson_id": "fe-production-cashflow-budget-07",
+      "sha256": "a030b3a3cfd9049f15ddbff795f553e5be74ad698bef00a46d32eab62be2fa63"
+    },
+    {
+      "lesson_id": "fe-production-cashflow-budget-08",
+      "sha256": "f455e4257d1f497a2a4714b671c3065f9a5a799ad3db7066038fb93306417b1f"
+    },
+    {
+      "lesson_id": "fe-production-cashflow-budget-09",
+      "sha256": "66fe2d2374a96ae59df8a60430dc1f4bf2c0986ed501f39166740cd739baac19"
+    },
+    {
+      "lesson_id": "fe-production-cashflow-budget-10",
+      "sha256": "66bf2f7bee6809dfd2f44ec1aa4e052142352d937a77405177e25614158bcf5b"
+    },
+    {
+      "lesson_id": "fe-production-cashflow-budget-11",
+      "sha256": "e02ab93a06d9d56049d0958206c8a4f0bb3c7852e1f22bb54733b3647e4e78d8"
+    },
+    {
+      "lesson_id": "fe-production-cashflow-budget-12",
+      "sha256": "7dd87bbb424771533062f872d36129eb10f0f6e9f39284ecf7970b87bd03ba43"
+    },
+    {
+      "lesson_id": "fe-production-cashflow-budget-13",
+      "sha256": "629586640bff91a24cf3548448adeff0bc7eaca26e2ed04c4783dbdd67fbdd23"
+    },
+    {
+      "lesson_id": "fe-production-cashflow-budget-14",
+      "sha256": "e6fa53f66a10a28c6b98534e15498924713edcee72b7231700119990ca19e001"
+    },
+    {
+      "lesson_id": "fe-production-cashflow-budget-review-1",
+      "sha256": "0d55abc7a86e0824b22e8e040b8fc3330e6921b9da722db50255841e6aabf2bf"
+    },
+    {
+      "lesson_id": "fe-production-cashflow-budget-review-2",
+      "sha256": "b0d45dcbe6fba5e00fe9aa84a4359c733760aa77ef1575305a2510315db2cf96"
+    },
+    {
+      "lesson_id": "fe-production-accounts-records-01",
+      "sha256": "7c97c447f1cd25ff98234eca9b48195c113efe2db85ad025dc96088c117d7ed3"
+    },
+    {
+      "lesson_id": "fe-production-accounts-records-02",
+      "sha256": "4cc0c8040561759526876a476fafbbf591221acbca3790170fd7f31ef6ccd6db"
+    },
+    {
+      "lesson_id": "fe-production-accounts-records-03",
+      "sha256": "78f2242db6c737ac5ec10bff41737c8ecac5055d475024faea2e994f1ac78d49"
+    },
+    {
+      "lesson_id": "fe-production-accounts-records-04",
+      "sha256": "9a1a6c3ca44ad85ae43d39a05e8fe33ab9694b72af37f67678e99b25706c6266"
+    },
+    {
+      "lesson_id": "fe-production-accounts-records-05",
+      "sha256": "7703c240dccf03b914fe686b5dcd7c9eed34c9afcac33c23c71c90d3ac201e96"
+    },
+    {
+      "lesson_id": "fe-production-accounts-records-06",
+      "sha256": "1d2a68be67661cfa7b61c07edb1ef5b576b4d4e5df0c8e5067e9aa39929bbaca"
+    },
+    {
+      "lesson_id": "fe-production-accounts-records-07",
+      "sha256": "e6f9bddede8b179b239bdc519c5bbd887bc3d391142a38410b6278dc962c74cd"
+    },
+    {
+      "lesson_id": "fe-production-accounts-records-08",
+      "sha256": "736ab9f100dd984abb54eab4924f042b0dc6ef217f160d28cdaffa426d649aef"
+    },
+    {
+      "lesson_id": "fe-production-accounts-records-09",
+      "sha256": "3703dc2b6a3c8bd1dcf5519d8201241db32f7983a8ed4e485220eba819e0433c"
+    },
+    {
+      "lesson_id": "fe-production-accounts-records-10",
+      "sha256": "7365641b27e6bcbfd22e68ba5307e7a720ceec4e7bc6f48fedc5705980433f25"
+    },
+    {
+      "lesson_id": "fe-production-accounts-records-review-1",
+      "sha256": "4ef3c8e97cd5e59fed2ee2e3527f2a2e96812ddd4a007970f70ba056a85cb1e2"
+    },
+    {
+      "lesson_id": "fe-production-accounts-records-review-2",
+      "sha256": "155dfe49f186229438f336c0382bb719bcd6f5933abd777237839d63f3899c9d"
+    },
+    {
+      "lesson_id": "fe-production-payments-digital-01",
+      "sha256": "77bfbc778783f995c43cfc07639919e079b065189f88a014af7ea318e377de6f"
+    },
+    {
+      "lesson_id": "fe-production-payments-digital-02",
+      "sha256": "02c298e727d7dacf05b20ea17165a81d84883c940226244ec894d446e8f03f33"
+    },
+    {
+      "lesson_id": "fe-production-payments-digital-03",
+      "sha256": "cbdd698da67f83fd8c2c3360f01eda7d57e603d7d3ae083f2bc2bda5887f2255"
+    },
+    {
+      "lesson_id": "fe-production-payments-digital-04",
+      "sha256": "abafabee5068167682ce81b87186d4196cd2a37bab046dbd84fde1cd68b619e6"
+    },
+    {
+      "lesson_id": "fe-production-payments-digital-05",
+      "sha256": "c3b2432fb2a8110b12b48ce308ed7b50699b817e5c9811d89788ffad74612d8c"
+    },
+    {
+      "lesson_id": "fe-production-payments-digital-06",
+      "sha256": "0e4dcdf94316e0c6eed65a7f68651c9106c356b3b434a15f28d92ccec681935a"
+    },
+    {
+      "lesson_id": "fe-production-payments-digital-07",
+      "sha256": "05dff21eb7cf3139a489a681c13a52abaaf70886760e054130cb56d71edeb459"
+    },
+    {
+      "lesson_id": "fe-production-payments-digital-08",
+      "sha256": "98c6beee8a31b744bae517e9915bf136e7cd2c519e1643354a60630f72c1c9c3"
+    },
+    {
+      "lesson_id": "fe-production-payments-digital-09",
+      "sha256": "eefbf1d51e8263b60a57869915390a33afd4fc768506e3a6d4ac5c8d97b76ff0"
+    },
+    {
+      "lesson_id": "fe-production-payments-digital-10",
+      "sha256": "b7095fdfc9f304ff7297b3378b54bfc11488cf7e41f4895c68c362fd18862b2a"
+    },
+    {
+      "lesson_id": "fe-production-payments-digital-review-1",
+      "sha256": "a6490512b4828d971635829495731402f68a33010cb5d71112f21d6fc10ebcae"
+    },
+    {
+      "lesson_id": "fe-production-payments-digital-review-2",
+      "sha256": "cd3654aac79b96a6e3ee931ed326daf571fbcd715cff27c17e0f577bbfa5fc19"
+    },
+    {
+      "lesson_id": "fe-production-purchase-decisions-01",
+      "sha256": "5eab25cda71d2932da0a4f02420834dff4a69f5c3a3d094dfcc14d1a4d98c229"
+    },
+    {
+      "lesson_id": "fe-production-purchase-decisions-02",
+      "sha256": "afed7830f97670250feeae8b4894fa73592f32f92b9b05c3ee6b3814cef00916"
+    },
+    {
+      "lesson_id": "fe-production-purchase-decisions-03",
+      "sha256": "150263659542d9c908dcd2f2c13836896039436f6411f1dde932a24cedfdd838"
+    },
+    {
+      "lesson_id": "fe-production-purchase-decisions-04",
+      "sha256": "d650bf59b944c7a2c0fc1a6fedcb17ca894e2196630727ee93c962f97045bccd"
+    },
+    {
+      "lesson_id": "fe-production-purchase-decisions-05",
+      "sha256": "c2bc85c07bc89e8adec3fa88a0d4cd6346c31fe16ab6026fcc21282ddaab8bd0"
+    },
+    {
+      "lesson_id": "fe-production-purchase-decisions-06",
+      "sha256": "f4fde8d9be28df00d7b691ed379ba63d2ad181d3b5982e99dffd87bce3b49570"
+    },
+    {
+      "lesson_id": "fe-production-purchase-decisions-07",
+      "sha256": "87cea7443fc4e0181762bd7a05bfa807a4a0f5aa01d781772a09d8e2d718d98a"
+    },
+    {
+      "lesson_id": "fe-production-purchase-decisions-08",
+      "sha256": "558f90fbc9976b9856d690e3e4da223e534d2fa132fca0394d20da3494c31eee"
+    },
+    {
+      "lesson_id": "fe-production-purchase-decisions-09",
+      "sha256": "a0b3449e5e0185b356937585cc94b44ade1985990697d7d564203fadb9a6a946"
+    },
+    {
+      "lesson_id": "fe-production-purchase-decisions-10",
+      "sha256": "3917e3135ce9911fa4c433ce8a96c1bb71e6e0c91792fc1130e918f9bddad1bb"
+    },
+    {
+      "lesson_id": "fe-production-purchase-decisions-11",
+      "sha256": "7e66ce84102a673c53371a4663e95eb22b9ec48cba79ba3940a8f6ad65513b2f"
+    },
+    {
+      "lesson_id": "fe-production-purchase-decisions-12",
+      "sha256": "a547bb1d566d59efdafc0be3483e226e57067f5cb5112ff8622ef93740bd2ff7"
+    },
+    {
+      "lesson_id": "fe-production-purchase-decisions-review-1",
+      "sha256": "903c877359471098c5305404a2bd1f3e431b20c333868ecf0a8e6d70e8c3e3c7"
+    },
+    {
+      "lesson_id": "fe-production-purchase-decisions-review-2",
+      "sha256": "a7656af25daeb579c99396c36e65a87a7bd2c1f03de5737cb44e9c6ae04975a9"
+    },
+    {
+      "lesson_id": "fe-production-saving-resilience-01",
+      "sha256": "78935257b89ac0496bc3224fe64a7ce761faec81a64bddf0027015cbf95417ef"
+    },
+    {
+      "lesson_id": "fe-production-saving-resilience-02",
+      "sha256": "6dc4607d1324853ed18ca0e55e02dc2b5ab05746ad037b899b6c1691a2ce3e97"
+    },
+    {
+      "lesson_id": "fe-production-saving-resilience-03",
+      "sha256": "54f1bfa7e022da02269363236e500cf0b0427b50b9329e38a74a9f2122cef521"
+    },
+    {
+      "lesson_id": "fe-production-saving-resilience-04",
+      "sha256": "1b9e09d5535a94da8d7dc0ad6d0ace70317e4580fe0bed10bbffa8958fdb7df2"
+    },
+    {
+      "lesson_id": "fe-production-saving-resilience-05",
+      "sha256": "6fb4dc1146ecb3c67711da3be0cc427cae4e483fdc696abb153d8dc928ac2594"
+    },
+    {
+      "lesson_id": "fe-production-saving-resilience-06",
+      "sha256": "afe9161a68e70a3fbd70fd2db6459d6f91dbb1707bd32f84ea3b687b58f8b567"
+    },
+    {
+      "lesson_id": "fe-production-saving-resilience-07",
+      "sha256": "288057182c1b7eb68b47291f5cd7eb7c5517d94ab4cb84d729f6061e5958601c"
+    },
+    {
+      "lesson_id": "fe-production-saving-resilience-08",
+      "sha256": "bf4b80bdfed8e70975be7b6f5c901a66a3ea21dab51f432a96ee2b384bcdc638"
+    },
+    {
+      "lesson_id": "fe-production-saving-resilience-09",
+      "sha256": "0133e09498856ec619f64a4cb17833a5f9bfa87ca02c372e246fbd3e5762cba5"
+    },
+    {
+      "lesson_id": "fe-production-saving-resilience-10",
+      "sha256": "cb3c27c014fcbcb91c6a08eae16a504d32e9dfaa6b8437b6554449018b161e9b"
+    },
+    {
+      "lesson_id": "fe-production-saving-resilience-review-1",
+      "sha256": "1f569e587ffb3e586fa6c09d50bac1f5193d95df432ad9ebbd9f291bfcd9991e"
+    },
+    {
+      "lesson_id": "fe-production-saving-resilience-review-2",
+      "sha256": "2f7cbfe5331b84d58fadd090ba0d00d5c899dcda74009f54677e44f0ef7014bc"
+    },
+    {
+      "lesson_id": "fe-production-time-inflation-01",
+      "sha256": "a8d325cf46145fc7929d7578cd17ff46bd8a3a62ef02b1e05902235a3e293177"
+    },
+    {
+      "lesson_id": "fe-production-time-inflation-02",
+      "sha256": "ba071d39525a1c38ee61a6ce19fed794068653e970ecfaa3070e0932418736bd"
+    },
+    {
+      "lesson_id": "fe-production-time-inflation-03",
+      "sha256": "edbc708226b7cc2956659948b2afe9e6149abc4351e7f748c0fece9c7f4b11e5"
+    },
+    {
+      "lesson_id": "fe-production-time-inflation-04",
+      "sha256": "acd9037d9e24410f0cbec2b9695ecb9510738ba0bddd1c7a90953fc094cc0989"
+    },
+    {
+      "lesson_id": "fe-production-time-inflation-05",
+      "sha256": "8b6d45c68a8ac45ad9b412eb072328dd3498cd86c3e7401b6007a4b41602fe87"
+    },
+    {
+      "lesson_id": "fe-production-time-inflation-06",
+      "sha256": "7e73145ab6fd25c4c27023cf2486cb497a815a9c4e580b1099fd6fde236724fc"
+    },
+    {
+      "lesson_id": "fe-production-time-inflation-07",
+      "sha256": "8974460b0a931988c171cbc3d200407849f46bc6530c7ed052557f2d374d06f9"
+    },
+    {
+      "lesson_id": "fe-production-time-inflation-08",
+      "sha256": "fcfb883a7deb96427359bbd1230a5eace0c746d77b69871f7cd9a200c78fdb87"
+    },
+    {
+      "lesson_id": "fe-production-time-inflation-09",
+      "sha256": "4cf7f0211c2097af8e28495cbe7201d09d12837900f6fbbbebe568628171b0a8"
+    },
+    {
+      "lesson_id": "fe-production-time-inflation-10",
+      "sha256": "3b3ced618dd6b0edd2411cb007be6c5e99b6562e5aa1f54b6e5f9af73ed58754"
+    },
+    {
+      "lesson_id": "fe-production-time-inflation-review-1",
+      "sha256": "0d23a512709dbfead1aa70fc66e44493e5ba752e7fff1232d4d876c0a581fbfd"
+    },
+    {
+      "lesson_id": "fe-production-time-inflation-review-2",
+      "sha256": "bf32e2b4760d9156113aa17a9d52fd3ae896ed9b5660b1410a4aea3f665df04c"
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-01",
+      "sha256": "681d9b2823bdae159e11fd64801b5c0a2564d63ae5bb0cda4c67913d550f453d"
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-02",
+      "sha256": "404dbad20533a5d33ffb38a677af634b3b7379578024410d2cfbd68b0a00f671"
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-03",
+      "sha256": "d31a17b66a267a43239d91092b1408033965e82273568f8b58c429c931b11ad2"
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-04",
+      "sha256": "5a62fcca8e92c1979f0dda203b8edaadbee06c08354d47231caf029ef950e0a1"
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-05",
+      "sha256": "e80cdb25895f4ec2be2449a28e2dafb83d0b684a20db0c36d7a5f47b3919268f"
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-06",
+      "sha256": "12b605db4c5194f4e7c6f2f2e053689520be001ee0929060f6e7034317db43da"
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-07",
+      "sha256": "c38e4c4094111081705629c2eb1b5ff9b14f47b06bbb5f5dc48c988c7e21c217"
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-08",
+      "sha256": "8470668f76e049708381fd2520fb1e3728bd15825f7c00aacbff25a61ec6aadd"
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-09",
+      "sha256": "94ae272c309ddcc60e47031813ae240b99a66010f6ad3def1f0d3d52f50d5f4c"
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-10",
+      "sha256": "81dd42c0aba1e351fc072256c9c9892518f23fd2cb6e4bea128d348dad2dc522"
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-11",
+      "sha256": "38882a61aaa3a2e8b29e1c7fb2f8ee50b1967e3f59a4a497559c0f7590e17ac3"
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-12",
+      "sha256": "43620f3a924f3fd1ec64a8651b6826bdf08330c69f8ff0d3b9a2c3a086df4b0e"
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-review-1",
+      "sha256": "6b78fb12f7e1f4bbc374bd717423b549a8138a32a402ac4485b15b992789b732"
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-review-2",
+      "sha256": "271780724bd452e49fe277f21dac11660dcce8b0b6e6f5502f88c566e51c9f43"
+    },
+    {
+      "lesson_id": "fe-production-credit-products-01",
+      "sha256": "9b8e175fa40c0dbdcc5a53d0d14aba50d57e76f35311c58d94d5f5cedc85dc4f"
+    },
+    {
+      "lesson_id": "fe-production-credit-products-02",
+      "sha256": "ddfc69f99c0ce2f8255b774fb4daf62b780a652a26017607a3b9ddd65044e9eb"
+    },
+    {
+      "lesson_id": "fe-production-credit-products-03",
+      "sha256": "24809096c1bfb16aa761656b95b87a2befe9c8cb695bfbc2ef4f93633a81a27b"
+    },
+    {
+      "lesson_id": "fe-production-credit-products-04",
+      "sha256": "02449e73c0848114e1743d4556f7c6ec95a60699d88676130dc38dfb639b1970"
+    },
+    {
+      "lesson_id": "fe-production-credit-products-05",
+      "sha256": "2958736885fe78f428ee4a4d1becdc36c088e5f24a68e8baabe861b5b688c39d"
+    },
+    {
+      "lesson_id": "fe-production-credit-products-06",
+      "sha256": "87c94d81f5f0dc1663fca3cf6bbd3b462c464747612ad6fd3a46cb97bbb763b9"
+    },
+    {
+      "lesson_id": "fe-production-credit-products-07",
+      "sha256": "5adfecd680c84ba198f73c36d9bb244d5647b41f08dac9f33979a1527fd0c190"
+    },
+    {
+      "lesson_id": "fe-production-credit-products-08",
+      "sha256": "d38acbb66cc1eee6ee7b464ee193a033f0ff0449da2641b58a2d792fac02be76"
+    },
+    {
+      "lesson_id": "fe-production-credit-products-09",
+      "sha256": "7fb9fbf57896919808c8a2d397645a6d07817375dcfcaeb527027a0498c44931"
+    },
+    {
+      "lesson_id": "fe-production-credit-products-10",
+      "sha256": "48a5cfceceae1651dc0589a9df4e40cceb19d0564a362f01a6d87ba548553f52"
+    },
+    {
+      "lesson_id": "fe-production-credit-products-review-1",
+      "sha256": "2a238be645e7576fcf4bb6f1008d118c1f31763c2d195e1ed613e956bd377872"
+    },
+    {
+      "lesson_id": "fe-production-credit-products-review-2",
+      "sha256": "d1167524a233c15ae01cf50c7bb54ad78decce1f48d47b7599cdefadf5345022"
+    },
+    {
+      "lesson_id": "fe-production-debt-recovery-01",
+      "sha256": "ae323923da591b7f3a6799b19a1cff239bfcb1bfd5fc529606a99824b35dc4d8"
+    },
+    {
+      "lesson_id": "fe-production-debt-recovery-02",
+      "sha256": "c9b37732ace85e6b00b44159927bb2293747085f9f191a63136b7de751c10b20"
+    },
+    {
+      "lesson_id": "fe-production-debt-recovery-03",
+      "sha256": "f21682232b02aaddd6b19d2d25c365792ae00392d09df4f1970ff69e10b437f7"
+    },
+    {
+      "lesson_id": "fe-production-debt-recovery-04",
+      "sha256": "3fcee8d147db09151b58349bfa739a89f752fdf2bcb5806284a5439efdf2dea3"
+    },
+    {
+      "lesson_id": "fe-production-debt-recovery-05",
+      "sha256": "eb9ce6d4372594471eaa67f525b7136a58e34bd938b9a99c7cc26ad044330c68"
+    },
+    {
+      "lesson_id": "fe-production-debt-recovery-06",
+      "sha256": "9a841127f50b43257840efe04bb0c06d5e3c27b62bda0f729d0b3dc3b85ea7f0"
+    },
+    {
+      "lesson_id": "fe-production-debt-recovery-07",
+      "sha256": "ec55587f421fa3258eda3b3c0e3b2df9816bc8cd23fce87d4987accc3d454200"
+    },
+    {
+      "lesson_id": "fe-production-debt-recovery-08",
+      "sha256": "cdd667b7cb929de36d0a6cc060ed44f76f093a9c5e000e792273d6d4cd044577"
+    },
+    {
+      "lesson_id": "fe-production-debt-recovery-review-1",
+      "sha256": "b3ef0a68fd5ecf0b0a37982790f98cee1725cb0bb6803aeabce0324fe67d6f0b"
+    },
+    {
+      "lesson_id": "fe-production-debt-recovery-review-2",
+      "sha256": "16b292f1ba5619d20cfed319d2bfdea162efa8825a159098cf7ed77b6eccb163"
+    },
+    {
+      "lesson_id": "fe-production-credit-records-01",
+      "sha256": "9c5543d16ebc34c511aa2329446ab95a3a6530c8b49209a57e0ce1ab7804029e"
+    },
+    {
+      "lesson_id": "fe-production-credit-records-02",
+      "sha256": "11ebc550f2451b33c4dacf9af7554d3c1c0df037f9c000773ffd3af9b84535da"
+    },
+    {
+      "lesson_id": "fe-production-credit-records-03",
+      "sha256": "c91714c63dea33d31dcc375996723c3fdba196e376d1c8eb674e34ea0bd5f4ce"
+    },
+    {
+      "lesson_id": "fe-production-credit-records-04",
+      "sha256": "a1d23bf139d68d6de121323568b780053d9bb055ce594dc71b2e81e2a6846f4b"
+    },
+    {
+      "lesson_id": "fe-production-credit-records-05",
+      "sha256": "15fb37b6f2fa79d33a26c2a374db87ae21d0b1a3a22775ac2c7b7eb4a7457f26"
+    },
+    {
+      "lesson_id": "fe-production-credit-records-06",
+      "sha256": "651e8ef81add97c256bd090227ade7d751fc790b81d3393000f61708bffb84c0"
+    },
+    {
+      "lesson_id": "fe-production-credit-records-review-1",
+      "sha256": "93ae59aaa0274403978bd3d33605a63225b8547611f46f6fb6166bf1f798a63f"
+    },
+    {
+      "lesson_id": "fe-production-credit-records-review-2",
+      "sha256": "fd346a8767b401f80fb7b9e8e05842235d40faae9b0edddf2213b7cc8576423e"
+    },
+    {
+      "lesson_id": "fe-production-insurance-risk-01",
+      "sha256": "da43e8f70ee4026938fcd4bb6eec2251f2c8e619eaea020e8497f7082d8462e5"
+    },
+    {
+      "lesson_id": "fe-production-insurance-risk-02",
+      "sha256": "cf3fb6c7fb05d3544a6490bcafa9ff265f9e65ed09d4925d425c9190aa62004e"
+    },
+    {
+      "lesson_id": "fe-production-insurance-risk-03",
+      "sha256": "281218aec35fb59a40591a02c823f679b3402331e852540daf4fe14eb257b38f"
+    },
+    {
+      "lesson_id": "fe-production-insurance-risk-04",
+      "sha256": "5eca9f9b94a00dd6617eac8f3d39646a94321265d16ec351d7004fdbe082db11"
+    },
+    {
+      "lesson_id": "fe-production-insurance-risk-05",
+      "sha256": "db0cdac8cda0ae29b7ecbb686d23b62ec5a2b7ce171603e7e1a8917e55a3c796"
+    },
+    {
+      "lesson_id": "fe-production-insurance-risk-06",
+      "sha256": "9685cf8e2e2f8373113dbdcdbf4df5d3983cb29408b5ce79369232ac603542ac"
+    },
+    {
+      "lesson_id": "fe-production-insurance-risk-07",
+      "sha256": "fdf0143c4ee15e05bb219a3cf954823b67a13d18ea692889d465b69b906d45e8"
+    },
+    {
+      "lesson_id": "fe-production-insurance-risk-08",
+      "sha256": "29f7c520b56fc9f923b8ff4f1ef6fc139692e6a7fe92ec4a6725d842dee8549e"
+    },
+    {
+      "lesson_id": "fe-production-insurance-risk-09",
+      "sha256": "055dedd8f88eb3d4e9ed8d87140f0cf4e65b05881b27cfcb4d034f13e916bdf5"
+    },
+    {
+      "lesson_id": "fe-production-insurance-risk-10",
+      "sha256": "ffdaeae918f1f431a46d187341d13c936caf612add1578363e179406c362e3b1"
+    },
+    {
+      "lesson_id": "fe-production-insurance-risk-11",
+      "sha256": "b976e22d3261a730425dbf8f51ca2f0211115a9502968094daad468ee6ecd3c7"
+    },
+    {
+      "lesson_id": "fe-production-insurance-risk-12",
+      "sha256": "a5e96d5ed1b7cb643a7b383f41fdda9de146bae1d48bfc1f080366f159172f9f"
+    },
+    {
+      "lesson_id": "fe-production-insurance-risk-review-1",
+      "sha256": "e50723afe014a269c2ffb4cebd3a2fa9fcbdbe7f00187f6a5cb7c5926efca915"
+    },
+    {
+      "lesson_id": "fe-production-insurance-risk-review-2",
+      "sha256": "368aaf53d2511b369818fe25bd951a48dd1145dc491ef7fca3c924d7820a5c4d"
+    },
+    {
+      "lesson_id": "fe-production-investing-foundations-01",
+      "sha256": "6ed431098a755dbde91a03e80665a2dc97914398613344a179558ec7b30f2489"
+    },
+    {
+      "lesson_id": "fe-production-investing-foundations-02",
+      "sha256": "3b4656aa1891007d4a2da93fd4610bd89ed8730cdec21962786df221661fae91"
+    },
+    {
+      "lesson_id": "fe-production-investing-foundations-03",
+      "sha256": "e83f2b902ebd414953ec617f7adf3b8211a56af42c4760867d810ad77fb39632"
+    },
+    {
+      "lesson_id": "fe-production-investing-foundations-04",
+      "sha256": "db1c11aeba7ca7c38d36c566911888b1e703bc630f3170dc6358238718ae5c42"
+    },
+    {
+      "lesson_id": "fe-production-investing-foundations-05",
+      "sha256": "019e1bd6848cd29cbb234f93c3d2cd7eb9c50b2f115ccc61c179eac169c6de2e"
+    },
+    {
+      "lesson_id": "fe-production-investing-foundations-06",
+      "sha256": "57a2b0904f143bebbea68cb7b56b8c9a18d9d388d57b6b8d38386acd8dd917f0"
+    },
+    {
+      "lesson_id": "fe-production-investing-foundations-07",
+      "sha256": "66b14e022024f92114922d23cdbd2f01f5214cfc831747675d74ab69598ef7d5"
+    },
+    {
+      "lesson_id": "fe-production-investing-foundations-08",
+      "sha256": "e16f897f0859bbf4d123aa0af8b6d144c2d27650f71ace3ab7d65da4efe292f1"
+    },
+    {
+      "lesson_id": "fe-production-investing-foundations-09",
+      "sha256": "acc6dfd2353884925c943b052b9cceaa15a492ce772e4f6203e24f565f252f3a"
+    },
+    {
+      "lesson_id": "fe-production-investing-foundations-10",
+      "sha256": "df0674023d5170b2f77a2e430626e3e78994a25acab7fc0c393c9f1bb23a3028"
+    },
+    {
+      "lesson_id": "fe-production-investing-foundations-11",
+      "sha256": "0f4f5e4cd1dd6cca8e7c6d3de631c0def460eef90cc8e19a57b02b00e3dc17b9"
+    },
+    {
+      "lesson_id": "fe-production-investing-foundations-12",
+      "sha256": "42018ae66403675d726753879490c67df029a5b8157bc6a087d2e0efae5ab31b"
+    },
+    {
+      "lesson_id": "fe-production-investing-foundations-13",
+      "sha256": "d3042d807a391afac394da36405465b1abf252a7bc84a672459759eb15dbc77b"
+    },
+    {
+      "lesson_id": "fe-production-investing-foundations-14",
+      "sha256": "5f424b2af7c09fc62bedf38660b66bebd63298df9ce9b539dc1c7bf057d0290b"
+    },
+    {
+      "lesson_id": "fe-production-investing-foundations-review-1",
+      "sha256": "2df404f6b4e55b5f555720e58464386ecf3f5613d66ab6763cae07402603be23"
+    },
+    {
+      "lesson_id": "fe-production-investing-foundations-review-2",
+      "sha256": "f5f352fbf4c26664cb85fada140603ba123d993249c759bf953dd2da51257dbc"
+    },
+    {
+      "lesson_id": "fe-production-investment-comparison-01",
+      "sha256": "64f2909a7dd968472d242630d851d9df2f4fb07a8737205417f62439ee03a5ef"
+    },
+    {
+      "lesson_id": "fe-production-investment-comparison-02",
+      "sha256": "1476e1a8cb0b1a7f1eb230898fe8689c7227fd18e4c03c1a0b71c1ba7e7f9f23"
+    },
+    {
+      "lesson_id": "fe-production-investment-comparison-03",
+      "sha256": "954405f1a11dd2e83044ab05005e2e496add6c5f270e2f002c668a7afd4c918d"
+    },
+    {
+      "lesson_id": "fe-production-investment-comparison-04",
+      "sha256": "ee456097f902c648de3eca4a1645c4fdf101e77340b8674ac2c2fe9ff704f2d9"
+    },
+    {
+      "lesson_id": "fe-production-investment-comparison-05",
+      "sha256": "e84e0146d6504ffbacef24d96a9e267e0295a941d38bc6af57b7ca64e686d1e2"
+    },
+    {
+      "lesson_id": "fe-production-investment-comparison-06",
+      "sha256": "a51e3c42de5be22518a8f0fa21be9460ba0e3522ac03299a11ce9400ed399a62"
+    },
+    {
+      "lesson_id": "fe-production-investment-comparison-07",
+      "sha256": "99990cab2d4aa517bf20a337edf5ad2e43f0d7165b2197c0d1fd47a378eed229"
+    },
+    {
+      "lesson_id": "fe-production-investment-comparison-08",
+      "sha256": "a7f18981334f4cf8b6cda96d14b820b379d8e7d15a786270e28774d98f4103dd"
+    },
+    {
+      "lesson_id": "fe-production-investment-comparison-09",
+      "sha256": "dee126f671122bfd097ffb1946f0048beb2d2178380d3b72db7dbc471fd7d3ed"
+    },
+    {
+      "lesson_id": "fe-production-investment-comparison-10",
+      "sha256": "f60cb92cf9dfa8915d0f137b7531000caf6d1abf98191c51f2ba9ae91ba17b56"
+    },
+    {
+      "lesson_id": "fe-production-investment-comparison-review-1",
+      "sha256": "46fafe20e6e7f3df9c8f1e57b3462e05daa6daf94585c5be1a50fa7c902fe3cb"
+    },
+    {
+      "lesson_id": "fe-production-investment-comparison-review-2",
+      "sha256": "d928fc31d2b2a17b74b9b6d6e8ae699d0159b81228979239317fff099a74984e"
+    },
+    {
+      "lesson_id": "fe-production-tax-public-systems-01",
+      "sha256": "3bd781031146973f586ddf658035bd46151bbc175c947da6a3f1c55eaf113c95"
+    },
+    {
+      "lesson_id": "fe-production-tax-public-systems-02",
+      "sha256": "b51b76e5eddc08ae72141c5f50efa4235bda5890681eaa6a1080e05b9021f655"
+    },
+    {
+      "lesson_id": "fe-production-tax-public-systems-03",
+      "sha256": "e3e60a2fe2f1f14dc8d87e8bda976cddeb25480702fbabd876efe00e5c89bbc5"
+    },
+    {
+      "lesson_id": "fe-production-tax-public-systems-04",
+      "sha256": "621c3aa3328d898996ca8a152bff6fd60210621d936a99186e0ff804df62ac87"
+    },
+    {
+      "lesson_id": "fe-production-tax-public-systems-05",
+      "sha256": "710fa4df9777c036c142b468c6ad8a5419207b294785af4820131572d0dfa171"
+    },
+    {
+      "lesson_id": "fe-production-tax-public-systems-06",
+      "sha256": "e1d0fa632514a8d9da8481b0e0af1a880fa86ba0e99c76d73a2b7ecddc38b4ab"
+    },
+    {
+      "lesson_id": "fe-production-tax-public-systems-07",
+      "sha256": "67aa45031b9349c7c54665b44ea7af9a2ceb3acbe1e15c326c981776bc6e4458"
+    },
+    {
+      "lesson_id": "fe-production-tax-public-systems-08",
+      "sha256": "15607787e648bc0a3adecf7f88ac3194329ad15807a661cb92d5f92eced962a2"
+    },
+    {
+      "lesson_id": "fe-production-tax-public-systems-review-1",
+      "sha256": "b784393b6c514d04daa1122e38e7f61322cbf0a14721fd6ced1b1c449e87b16e"
+    },
+    {
+      "lesson_id": "fe-production-tax-public-systems-review-2",
+      "sha256": "91657cca0ac7c5f95166cd1ef62c1b1e2db1877a4e479f6145d90b00b3a52f1b"
+    },
+    {
+      "lesson_id": "fe-production-retirement-future-01",
+      "sha256": "93a94ff41807ea41e458921c3f3251d6f61a994980e1b32bb5c946ba239d24fe"
+    },
+    {
+      "lesson_id": "fe-production-retirement-future-02",
+      "sha256": "40295495918c1e37363e994227ca591262f32de6b703fb4fba5b49861d2ea443"
+    },
+    {
+      "lesson_id": "fe-production-retirement-future-03",
+      "sha256": "e1874fdae6c041dcb1f99ecd380e0cfecff07ea13bfea0f08aeb944c1d833855"
+    },
+    {
+      "lesson_id": "fe-production-retirement-future-04",
+      "sha256": "8ba3c7a7e0dcb794a6f1bf36029bb13882773b5c2500fdc859d40236c1315c1c"
+    },
+    {
+      "lesson_id": "fe-production-retirement-future-05",
+      "sha256": "c15a3b4cf8a07f419e187ef7eb8741f6cba0f5ae7e9731839c7b6c9bb325c6d5"
+    },
+    {
+      "lesson_id": "fe-production-retirement-future-06",
+      "sha256": "8a93e9467f97d0a959fd6adbc4d43eb0dd9dabf89314d34e7fed066b73886f8d"
+    },
+    {
+      "lesson_id": "fe-production-retirement-future-07",
+      "sha256": "064ce7182e23275266da1a72e6ffc2c4db611303599affc620eb63cbe3d46537"
+    },
+    {
+      "lesson_id": "fe-production-retirement-future-08",
+      "sha256": "bd5f74ee97c241b28b5dbb9d901c90a567dd44d401615ace3a6c10d292a91da7"
+    },
+    {
+      "lesson_id": "fe-production-retirement-future-09",
+      "sha256": "4eb26b04ba5eb07c73d0deef804a36d9918c2f846c42bdd85cc98f94854dfe1a"
+    },
+    {
+      "lesson_id": "fe-production-retirement-future-10",
+      "sha256": "b030e600ef7c9a80311a89cfebedbbba716cb3fa57e1340a89ecf001351259c6"
+    },
+    {
+      "lesson_id": "fe-production-retirement-future-review-1",
+      "sha256": "928e810d11779c6bd42752612fc968155692c721292b28cf069cc8192acd8ebc"
+    },
+    {
+      "lesson_id": "fe-production-retirement-future-review-2",
+      "sha256": "1001f9aa215b6f10a9a0f425937aa9d5badc84ace786e0f5a93bdb41dd4f8796"
+    },
+    {
+      "lesson_id": "fe-production-housing-transport-01",
+      "sha256": "2b0357f350b48b2c6e91f241e36ddc60a1e91139f864db19a28d41c589e142fa"
+    },
+    {
+      "lesson_id": "fe-production-housing-transport-02",
+      "sha256": "a9a203286de5ee21ad8869c5419c8010fe1cd0a1f75d1a09ceae54a668ebe7f4"
+    },
+    {
+      "lesson_id": "fe-production-housing-transport-03",
+      "sha256": "e2944b2c72d7667450437028a1847f8489fcf400235f9b11a56709e37e293b05"
+    },
+    {
+      "lesson_id": "fe-production-housing-transport-04",
+      "sha256": "924b88688ccd7cdcf3059a7e2f21d12b462db5c48c4fa05d7a3c4e426ef90f24"
+    },
+    {
+      "lesson_id": "fe-production-housing-transport-05",
+      "sha256": "9964e154f7b669ac560b2b9c5aa03b5529b147959fe00c6d88d54b62b4cb3bbf"
+    },
+    {
+      "lesson_id": "fe-production-housing-transport-06",
+      "sha256": "9783fae6b478b50e3465853d6d10f9ba5c1061e8793316b69d951034a00de94c"
+    },
+    {
+      "lesson_id": "fe-production-housing-transport-07",
+      "sha256": "b280756632678ebe29df479a266b9f7932a90fe6fdcbc019044bc53692fb6da0"
+    },
+    {
+      "lesson_id": "fe-production-housing-transport-08",
+      "sha256": "4b8602bcd2d90081225c9e396a99857505f542fb35aeb888fda919b25528d674"
+    },
+    {
+      "lesson_id": "fe-production-housing-transport-09",
+      "sha256": "7c8888b36d5036b0c2473457f206185c1e1549809e3c266ac9908a8f0452a97c"
+    },
+    {
+      "lesson_id": "fe-production-housing-transport-10",
+      "sha256": "64ec34a589d9f8d8518cac16f53139075244e25ab9d8f3d0e7fb34b77b1e90cc"
+    },
+    {
+      "lesson_id": "fe-production-housing-transport-11",
+      "sha256": "1f1406042071ef1b15c7d309d9e559c84e0b02e032c4e6f92735c43ed83f176e"
+    },
+    {
+      "lesson_id": "fe-production-housing-transport-12",
+      "sha256": "3f99ffecd0b4e16137bb1a1dc6a2177e27ff539fc4aed4c7dfb1d7384d2ee992"
+    },
+    {
+      "lesson_id": "fe-production-housing-transport-review-1",
+      "sha256": "b049215f4ed521718f67869d93f0f33db037ce7e193589d158283206f9e03e85"
+    },
+    {
+      "lesson_id": "fe-production-housing-transport-review-2",
+      "sha256": "1175c03e8edb140d8856a389214c72906820325d7d9904f7b5b1f44a581f47e5"
+    },
+    {
+      "lesson_id": "fe-production-shared-finances-01",
+      "sha256": "e17b1cac664f841533a2085832a75a7ca1663353c00f1ab4a242441a19c3f087"
+    },
+    {
+      "lesson_id": "fe-production-shared-finances-02",
+      "sha256": "9212762fb6e89d0d88cad0318c40bafbd5335c795b96b5bad9ef1e4d6cbc163d"
+    },
+    {
+      "lesson_id": "fe-production-shared-finances-03",
+      "sha256": "8338f9625e81773fe6f17a94e10bc739aa5f076b26c2e3b3d10d8426c2726e8f"
+    },
+    {
+      "lesson_id": "fe-production-shared-finances-04",
+      "sha256": "ed7ebc1aa79f81907321d1f7ef6d75fc2884f8c1eb140941c989c6b34689aab3"
+    },
+    {
+      "lesson_id": "fe-production-shared-finances-05",
+      "sha256": "17a0549c7ce5229b70604f3fb667b2d4f92fe1ae4a9429a2570152edbe4e87c1"
+    },
+    {
+      "lesson_id": "fe-production-shared-finances-06",
+      "sha256": "243ea221a471fa2792e80830095a2d4eb82db78f48c9b0890cbce32cda20f950"
+    },
+    {
+      "lesson_id": "fe-production-shared-finances-07",
+      "sha256": "b5f5c0285d741b17a61f7cc528dfef0a4d7f0161f175bfcd5f321727aa139cd3"
+    },
+    {
+      "lesson_id": "fe-production-shared-finances-08",
+      "sha256": "fb8b01ef1fada6fb69ae5021336e061864a08fb5673b23e68768fa55ac70ebaa"
+    },
+    {
+      "lesson_id": "fe-production-shared-finances-review-1",
+      "sha256": "55d8e6559157808c810923ef925b05741935263c87140af8dbcd6511b5543efe"
+    },
+    {
+      "lesson_id": "fe-production-shared-finances-review-2",
+      "sha256": "d8d998426fd637ced7e5fa78643aa2c5626fd89e4d78042f09a8ffbcf044f60a"
+    },
+    {
+      "lesson_id": "fe-production-financial-landscape-01",
+      "sha256": "ffc20bff9b511be84b0bffb97175807d1f7ab5024e199e5597fed4ecb826e114"
+    },
+    {
+      "lesson_id": "fe-production-financial-landscape-02",
+      "sha256": "d309bfae9778555c3a19e1fff6d82c450c88926c6678cde47ba8e853ef70a8f2"
+    },
+    {
+      "lesson_id": "fe-production-financial-landscape-03",
+      "sha256": "9542ce46e7a923080437adaa2c6b7c00b93ecd59d585b66667caba5ad250cbe4"
+    },
+    {
+      "lesson_id": "fe-production-financial-landscape-04",
+      "sha256": "3b6ca9afe32104839680f944b70dc31ec6124181c3005f268aaeadd0252fbc84"
+    },
+    {
+      "lesson_id": "fe-production-financial-landscape-05",
+      "sha256": "d78d5d6eec1d7ce3d76b73442f002ebe2f5b491b56eadc040d0059eb0398d72c"
+    },
+    {
+      "lesson_id": "fe-production-financial-landscape-06",
+      "sha256": "ec5bdc1b9c5784c3ce604db54c17ca459302a251b1f925b129589ba2907b2481"
+    },
+    {
+      "lesson_id": "fe-production-financial-landscape-07",
+      "sha256": "e5106c18baca4380aceac301753b681001fc4eb87f0a3c98750f1788e06ba9a5"
+    },
+    {
+      "lesson_id": "fe-production-financial-landscape-08",
+      "sha256": "0a4e9f220cd32ecb7312e5b85227451e0c2edc8c189d9e40786b87403dbc1f93"
+    },
+    {
+      "lesson_id": "fe-production-financial-landscape-09",
+      "sha256": "4cdba81377b9011096981a19777555aba9e896d8046269e8579fd41cd04701e8"
+    },
+    {
+      "lesson_id": "fe-production-financial-landscape-10",
+      "sha256": "f0b090c4d0ee61351f0d01c8ef49e387e73baadb77890678f242bfc89ee726c5"
+    },
+    {
+      "lesson_id": "fe-production-financial-landscape-review-1",
+      "sha256": "ab0477e72a5f134974204a2f7b0e1ac3c552db61b793b0615fbabb68ab63f66b"
+    },
+    {
+      "lesson_id": "fe-production-financial-landscape-review-2",
+      "sha256": "373ba277ce29d176ec62f7217acc27d08400a38d3eee071332f212574b1ddcdc"
+    },
+    {
+      "lesson_id": "fe-production-integrated-decisions-01",
+      "sha256": "c3d043f5e1c0a29218ee5c481b0274e37900002faffb6c1a9019a27c9ed93f1a"
+    },
+    {
+      "lesson_id": "fe-production-integrated-decisions-02",
+      "sha256": "f8797df5ef2536d5d9b58e29527f38a8320ae521a63602d832dde04b6489c96b"
+    },
+    {
+      "lesson_id": "fe-production-integrated-decisions-03",
+      "sha256": "04f0a19f41680cea2438ec66d6276c26ff17548c9ca1cc3ecebe1df2d2205750"
+    },
+    {
+      "lesson_id": "fe-production-integrated-decisions-04",
+      "sha256": "a0e801c2e5c8a39cbf90046a8fe5a0c41d4052fec2dc2d35edb6da5421a0181a"
+    },
+    {
+      "lesson_id": "fe-production-integrated-decisions-05",
+      "sha256": "8fde7e863c0442b57c1a41561660d99c8b9a42420b53cd9973170974cb5487ad"
+    },
+    {
+      "lesson_id": "fe-production-integrated-decisions-06",
+      "sha256": "82fa130f07a9f7847bf20c7efb233f155351d48339e7e18dbb54422c1ec80213"
+    },
+    {
+      "lesson_id": "fe-production-integrated-decisions-07",
+      "sha256": "7259c106c1c14f272fbd0d368aa5012f4099df5e3bd1061f07c5b35e7c133c22"
+    },
+    {
+      "lesson_id": "fe-production-integrated-decisions-08",
+      "sha256": "bf81357cfd470f24fbe586704942f0da0fa949d969a440f308b51a9206b8d1f7"
+    },
+    {
+      "lesson_id": "fe-production-integrated-decisions-09",
+      "sha256": "7d6468a7e7ace8965fe4a6dafa17c1fe6c21738a4c6ab06b08a2e2223caa6e74"
+    },
+    {
+      "lesson_id": "fe-production-integrated-decisions-10",
+      "sha256": "7f2a229e4e22fef92d7eaa1985145181b9a295af1e779aed5504920d9129dbd2"
+    },
+    {
+      "lesson_id": "fe-production-integrated-decisions-11",
+      "sha256": "665de1eff7dcc25f986042e45fe33ea1ceea47a9c810f18697f37a0b7023929e"
+    },
+    {
+      "lesson_id": "fe-production-integrated-decisions-12",
+      "sha256": "71c8938a4f0c1a17035b50f794b45113ddbf3e878a3fda3f7d9367692a87d08a"
+    }
+  ],
+  "calls": {
+    "model": 0,
+    "image": 0,
+    "voice": 0,
+    "network": 0,
+    "publication": 0
+  }
+}

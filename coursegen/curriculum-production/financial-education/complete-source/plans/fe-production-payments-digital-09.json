@@ -1,0 +1,779 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-payments-digital-part-2",
+  "lesson_id": "fe-production-payments-digital-09",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.payments-digital.09"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Check recurring-payment terms and retain evidence of a cancellation request.",
+  "title": {
+    "en-US": "Recurring payments",
+    "es-MX": "Revisa qué se repite y qué termina",
+    "pt-BR": "Confira o que repete e o que termina"
+  },
+  "new_concepts": [
+    "finance.prod.payments-digital.09"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Check what repeats and what stops\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Revisa qué se repite y qué termina\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Confira o que repete e o que termina\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.payments-digital.09",
+      "observable_action": "Check recurring-payment terms and retain evidence of a cancellation request.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.accounts-records.04",
+      "prod.spending-patterns.06"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Read recurring charges and cancellation evidence as separate parts of a payment agreement.",
+    "misconception": "Assuming deleting an app or stopping a payment automatically ends a service contract.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.payments-digital.09",
+        "context_id": "fe-production-payments-digital-09-example-01",
+        "supports_from": [],
+        "reasoning": "Stopping an automatic payment may not end the service contract. Check both processes and keep confirmation of what ends when."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.payments-digital.09",
+        "context_id": "fe-production-payments-digital-09-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The starting price does not describe later recurring charges."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.payments-digital.09",
+        "context_id": "fe-production-payments-digital-09-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Use the stated process; lack of use is not its cancellation step."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.payments-digital.09",
+        "context_id": "fe-production-payments-digital-09-practice-01",
+        "supports_from": [],
+        "reasoning": "The record states what was accepted and when it takes effect."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.payments-digital.09",
+        "context_id": "fe-production-payments-digital-09-practice-02",
+        "supports_from": [],
+        "reasoning": "Changing payment instructions does not establish the contract’s status."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.payments-digital.09",
+        "context_id": "fe-production-payments-digital-09-practice-03",
+        "supports_from": [],
+        "reasoning": "The confirmation helps identify what needs explanation or correction."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.payments-digital.09",
+        "context_id": "fe-production-payments-digital-09-transfer-01",
+        "supports_from": [],
+        "reasoning": "The annual term and renewal instruction are separate details."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.payments-digital.09",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Read recurring charges and cancellation evidence as separate parts of a payment agreement."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Lee cobros recurrentes y pruebas de cancelación como partes distintas del acuerdo."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Leia cobranças recorrentes e provas de cancelamento como partes distintas do acordo."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A payment is not the contract",
+          "line": "Stopping an automatic payment may not end the service contract. Check both processes and keep confirmation of what ends when."
+        },
+        "es-MX": {
+          "prompt": "Un pago no es el contrato",
+          "line": "Detener un pago automático puede no terminar el contrato. Revisa ambos procesos y guarda confirmación de qué termina y cuándo."
+        },
+        "pt-BR": {
+          "prompt": "Um pagamento não é o contrato",
+          "line": "Parar um pagamento automático pode não encerrar o contrato. Confira ambos os processos e guarde prova do que termina e quando."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.09",
+      "copy": {
+        "en-US": {
+          "prompt": "What matters before joining?",
+          "scene": "Fictional terms renew monthly after a free trial unless cancellation is confirmed.",
+          "options": [
+            {
+              "label": "Renewal cost and cancellation process"
+            },
+            {
+              "label": "Only the first login date"
+            },
+            {
+              "label": "Only the free starting period"
+            }
+          ],
+          "help": [
+            "Read what follows the trial."
+          ],
+          "feedback": {
+            "met": "The starting price does not describe later recurring charges.",
+            "not_yet": "Read what follows the trial."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué importa antes de aceptar?",
+          "scene": "Condiciones ficticias renuevan mensualmente tras una prueba gratuita salvo cancelación confirmada.",
+          "options": [
+            {
+              "label": "Costo de renovación y proceso de cancelación"
+            },
+            {
+              "label": "Solo la fecha del primer acceso"
+            },
+            {
+              "label": "Solo el periodo gratuito inicial"
+            }
+          ],
+          "help": [
+            "Lee qué sigue después de la prueba."
+          ],
+          "feedback": {
+            "met": "El precio inicial no describe cobros recurrentes posteriores.",
+            "not_yet": "Lee qué sigue después de la prueba."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que importa antes de aceitar?",
+          "scene": "Regras fictícias renovam todo mês após teste grátis, salvo cancelamento confirmado.",
+          "options": [
+            {
+              "label": "Custo de renovação e processo de cancelamento"
+            },
+            {
+              "label": "Só a data do primeiro acesso"
+            },
+            {
+              "label": "Só o período grátis inicial"
+            }
+          ],
+          "help": [
+            "Leia o que vem após o teste."
+          ],
+          "feedback": {
+            "met": "O preço inicial não descreve cobranças recorrentes depois.",
+            "not_yet": "Leia o que vem após o teste."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.09",
+      "copy": {
+        "en-US": {
+          "prompt": "What ends membership under those terms?",
+          "scene": "A fictional service says deletion of its app does not cancel membership.",
+          "options": [
+            {
+              "label": "Not opening the app"
+            },
+            {
+              "label": "Completing the stated cancellation process"
+            },
+            {
+              "label": "Deleting the app alone"
+            }
+          ],
+          "help": [
+            "Follow the actual agreement’s ending process."
+          ],
+          "feedback": {
+            "met": "Use the stated process; lack of use is not its cancellation step.",
+            "not_yet": "Follow the actual agreement’s ending process."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué termina la membresía según esas condiciones?",
+          "scene": "Un servicio ficticio indica que borrar su aplicación no cancela la membresía.",
+          "options": [
+            {
+              "label": "No abrir la aplicación"
+            },
+            {
+              "label": "Completar el proceso de cancelación indicado"
+            },
+            {
+              "label": "Solo borrar la aplicación"
+            }
+          ],
+          "help": [
+            "Sigue el proceso real para terminar el acuerdo."
+          ],
+          "feedback": {
+            "met": "Usa el proceso indicado; dejar de usarlo no equivale a cancelar.",
+            "not_yet": "Sigue el proceso real para terminar el acuerdo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que encerra a assinatura nessas regras?",
+          "scene": "Um serviço fictício diz que apagar seu aplicativo não cancela a assinatura.",
+          "options": [
+            {
+              "label": "Não abrir o aplicativo"
+            },
+            {
+              "label": "Concluir o processo de cancelamento informado"
+            },
+            {
+              "label": "Só apagar o aplicativo"
+            }
+          ],
+          "help": [
+            "Siga o processo real para encerrar o acordo."
+          ],
+          "feedback": {
+            "met": "Use o processo informado; deixar de usar não equivale a cancelar.",
+            "not_yet": "Siga o processo real para encerrar o acordo."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.09",
+      "copy": {
+        "en-US": {
+          "prompt": "What should you keep?",
+          "scene": "Support confirms cancellation next cycle and provides a reference.",
+          "options": [
+            {
+              "label": "Only a screenshot of the deleted app"
+            },
+            {
+              "label": "Confirmation, effective date and reference"
+            },
+            {
+              "label": "Only your memory of the call"
+            }
+          ],
+          "help": [
+            "Keep evidence that can resolve a later disagreement."
+          ],
+          "feedback": {
+            "met": "The record states what was accepted and when it takes effect.",
+            "not_yet": "Keep evidence that can resolve a later disagreement."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debes conservar?",
+          "scene": "Soporte confirma cancelación desde el próximo ciclo y da un folio.",
+          "options": [
+            {
+              "label": "Solo captura de la aplicación borrada"
+            },
+            {
+              "label": "Confirmación, fecha efectiva y folio"
+            },
+            {
+              "label": "Solo tu recuerdo de la llamada"
+            }
+          ],
+          "help": [
+            "Guarda evidencia útil para aclarar diferencias posteriores."
+          ],
+          "feedback": {
+            "met": "El registro indica qué se aceptó y cuándo surte efecto.",
+            "not_yet": "Guarda evidencia útil para aclarar diferencias posteriores."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que deve guardar?",
+          "scene": "Suporte confirma cancelamento a partir do próximo ciclo e dá um protocolo.",
+          "options": [
+            {
+              "label": "Só captura do aplicativo apagado"
+            },
+            {
+              "label": "Confirmação, data de efeito e protocolo"
+            },
+            {
+              "label": "Só sua lembrança da ligação"
+            }
+          ],
+          "help": [
+            "Guarde prova útil para esclarecer diferenças depois."
+          ],
+          "feedback": {
+            "met": "O registro diz o que foi aceito e quando passa a valer.",
+            "not_yet": "Guarde prova útil para esclarecer diferenças depois."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.09",
+      "copy": {
+        "en-US": {
+          "prompt": "What remains to check?",
+          "scene": "You stopped a payment instruction; the service contract’s status is still unknown.",
+          "options": [
+            {
+              "label": "Whether deleting records erases obligations"
+            },
+            {
+              "label": "Whether the contract also ended"
+            },
+            {
+              "label": "Nothing, both always end together"
+            }
+          ],
+          "help": [
+            "Distinguish how money moves from what remains owed."
+          ],
+          "feedback": {
+            "met": "Changing payment instructions does not establish the contract’s status.",
+            "not_yet": "Distinguish how money moves from what remains owed."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué sigue pendiente de revisar?",
+          "scene": "Detuviste una instrucción de pago; aún desconoces el estado del contrato.",
+          "options": [
+            {
+              "label": "Si borrar registros elimina obligaciones"
+            },
+            {
+              "label": "Si el contrato también terminó"
+            },
+            {
+              "label": "Nada, ambos siempre terminan juntos"
+            }
+          ],
+          "help": [
+            "Distingue cómo se paga de qué sigue debiéndose."
+          ],
+          "feedback": {
+            "met": "Cambiar instrucciones de pago no demuestra el estado del contrato.",
+            "not_yet": "Distingue cómo se paga de qué sigue debiéndose."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que falta conferir?",
+          "scene": "Parou uma ordem de pagamento; ainda não sabe o estado do contrato.",
+          "options": [
+            {
+              "label": "Se apagar registros elimina obrigações"
+            },
+            {
+              "label": "Se o contrato também terminou"
+            },
+            {
+              "label": "Nada, ambos sempre terminam juntos"
+            }
+          ],
+          "help": [
+            "Separe como se paga do que ainda se deve."
+          ],
+          "feedback": {
+            "met": "Mudar ordens de pagamento não prova o estado do contrato.",
+            "not_yet": "Separe como se paga do que ainda se deve."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Which follow-up fits?",
+          "scene": "A charge appears after your documented effective cancellation date.",
+          "options": [
+            {
+              "label": "Erase the charge from your record"
+            },
+            {
+              "label": "Compare the charge with confirmation and report"
+            },
+            {
+              "label": "Assume all future charges are valid"
+            }
+          ],
+          "help": [
+            "Use dates and records rather than guessing."
+          ],
+          "feedback": {
+            "met": "The confirmation helps identify what needs explanation or correction.",
+            "not_yet": "Use dates and records rather than guessing."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué seguimiento usa evidencia?",
+          "scene": "Aparece un cobro después de tu fecha efectiva de cancelación documentada.",
+          "options": [
+            {
+              "label": "Borrar el cobro de tu registro"
+            },
+            {
+              "label": "Comparar cobro con confirmación y reportar"
+            },
+            {
+              "label": "Suponer válido todo cobro futuro"
+            }
+          ],
+          "help": [
+            "Usa fechas y registros, no suposiciones."
+          ],
+          "feedback": {
+            "met": "La confirmación ayuda a identificar qué requiere aclaración o corrección.",
+            "not_yet": "Usa fechas y registros, no suposiciones."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual resposta usa provas?",
+          "scene": "Surge uma cobrança após sua data de cancelamento que foi confirmada.",
+          "options": [
+            {
+              "label": "Apagar a cobrança do seu registro"
+            },
+            {
+              "label": "Comparar cobrança com confirmação e relatar"
+            },
+            {
+              "label": "Supor válida toda cobrança futura"
+            }
+          ],
+          "help": [
+            "Use datas e registros, não palpites."
+          ],
+          "feedback": {
+            "met": "A confirmação ajuda a ver o que precisa de explicação ou correção.",
+            "not_yet": "Use datas e registros, não palpites."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.payments-digital.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Your plan?",
+          "scene": "Your yearly service renews automatically; you want to end it.",
+          "options": [
+            {
+              "label": "Assume the yearly term prevents renewal"
+            },
+            {
+              "label": "Wait for account funds to run out"
+            },
+            {
+              "label": "Check timing, cancel and retain confirmation"
+            }
+          ],
+          "help": [
+            "Verify the ending process before its stated deadline."
+          ],
+          "feedback": {
+            "met": "The annual term and renewal instruction are separate details.",
+            "not_yet": "Verify the ending process before its stated deadline."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe incluir tu plan?",
+          "scene": "Un servicio anual tiene renovación automática; quieres que termine al vencer.",
+          "options": [
+            {
+              "label": "Suponer que el plazo anual impide renovar"
+            },
+            {
+              "label": "Esperar a que se agote el saldo"
+            },
+            {
+              "label": "Revisar plazos, cancelar y guardar confirmación"
+            }
+          ],
+          "help": [
+            "Verifica el proceso de salida antes del plazo indicado."
+          ],
+          "feedback": {
+            "met": "El plazo anual y la instrucción de renovación son datos distintos.",
+            "not_yet": "Verifica el proceso de salida antes del plazo indicado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que seu plano deve incluir?",
+          "scene": "Um serviço anual tem renovação automática; quer que termine ao vencer.",
+          "options": [
+            {
+              "label": "Supor que o prazo anual impede renovar"
+            },
+            {
+              "label": "Esperar o saldo acabar"
+            },
+            {
+              "label": "Conferir prazos, cancelar e guardar confirmação"
+            }
+          ],
+          "help": [
+            "Confira o processo de saída antes do prazo informado."
+          ],
+          "feedback": {
+            "met": "O prazo anual e a ordem de renovação são dados distintos.",
+            "not_yet": "Confira o processo de saída antes do prazo informado."
+          }
+        }
+      }
+    }
+  ]
+}

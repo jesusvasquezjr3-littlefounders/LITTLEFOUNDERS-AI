@@ -1,0 +1,759 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-integrated-decisions-part-2",
+  "lesson_id": "fe-production-integrated-decisions-08",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.insurance-risk.11",
+    "finance.prod.cashflow-budget.09",
+    "finance.prod.shared-finances.05"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Revise protection and cash-flow plans when a household takes on a new dependent.",
+  "title": {
+    "en-US": "New dependents",
+    "es-MX": "Una persona a cargo",
+    "pt-BR": "Uma pessoa dependente"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"A new dependent\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Una persona a cargo\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Uma pessoa dependente\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "capstone",
+    "objective": {
+      "skill_id": "prod.insurance-risk.11",
+      "observable_action": "Revise protection and cash-flow plans when a household takes on a new dependent.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.insurance-risk.01",
+      "prod.insurance-risk.02",
+      "prod.goals-tradeoffs.08"
+    ],
+    "retrieval_skills": [
+      "prod.insurance-risk.11",
+      "prod.cashflow-budget.09",
+      "prod.shared-finances.05"
+    ],
+    "relevance": "New care responsibilities change both daily money needs and protection needs.",
+    "misconception": "Updating daily spending without reconsidering lost income, protection gaps or how long care lasts.",
+    "numeracy_support": "Use the explicitly stated totals, deadlines and constraints. Earlier financial arithmetic is retrieved; no current rate or legal entitlement is implied.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.insurance-risk.11",
+        "context_id": "integrated-decisions-8-practice-01",
+        "supports_from": [],
+        "reasoning": "A new dependent changes the consequences of losing income."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.cashflow-budget.09",
+        "context_id": "integrated-decisions-8-practice-02",
+        "supports_from": [],
+        "reasoning": "500 − 350 − 100 = 50 remains unallocated."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.shared-finances.05",
+        "context_id": "integrated-decisions-8-practice-03",
+        "supports_from": [],
+        "reasoning": "Both temporary changes affect what the household can commit."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.insurance-risk.11",
+        "context_id": "integrated-decisions-8-practice-04",
+        "supports_from": [],
+        "reasoning": "Existing coverage may leave gaps for the new responsibility."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.shared-finances.05",
+        "context_id": "integrated-decisions-8-practice-05",
+        "supports_from": [],
+        "reasoning": "Update the plan when its income and cost assumptions change."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.insurance-risk.11",
+        "context_id": "integrated-decisions-8-transfer-01",
+        "supports_from": [],
+        "reasoning": "Funded daily bills do not settle protection if care becomes unavailable."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.insurance-risk.11",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "New care responsibilities change both daily money needs and protection needs."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Las nuevas responsabilidades cambian necesidades de dinero y protección."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Novas responsabilidades mudam necessidades de dinheiro e proteção."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.11",
+      "copy": {
+        "en-US": {
+          "prompt": "What needs reassessment?",
+          "scene": "Someone now depends on your income; existing protection was chosen before that responsibility.",
+          "options": [
+            {
+              "label": "Only the current premium"
+            },
+            {
+              "label": "The needs protection must cover"
+            }
+          ],
+          "help": [
+            "An unchanged policy does not prove unchanged protection needs."
+          ],
+          "feedback": {
+            "met": "A new dependent changes the consequences of losing income.",
+            "not_yet": "An unchanged policy does not prove unchanged protection needs."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debes reconsiderar?",
+          "scene": "Alguien ahora depende de tu ingreso; elegiste la protección antes de esa responsabilidad.",
+          "options": [
+            {
+              "label": "Solo la prima actual"
+            },
+            {
+              "label": "Las necesidades que debe cubrir"
+            }
+          ],
+          "help": [
+            "Una póliza igual no demuestra necesidades de protección iguales."
+          ],
+          "feedback": {
+            "met": "Una persona dependiente cambia las consecuencias de perder ingresos.",
+            "not_yet": "Una póliza igual no demuestra necesidades de protección iguales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que reavaliar?",
+          "scene": "Alguém agora depende da sua renda; a proteção foi escolhida antes dessa responsabilidade.",
+          "options": [
+            {
+              "label": "Só o prêmio atual"
+            },
+            {
+              "label": "As necessidades que deve cobrir"
+            }
+          ],
+          "help": [
+            "Uma apólice igual não comprova necessidades de proteção iguais."
+          ],
+          "feedback": {
+            "met": "Uma pessoa dependente muda as consequências da perda de renda.",
+            "not_yet": "Uma apólice igual não comprova necessidades de proteção iguais."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Unallocated amount after the update?",
+          "scene": "Confirmed funds: 500. Previous essentials: 350; newly required care: 100.",
+          "options": [
+            {
+              "label": "250"
+            },
+            {
+              "label": "150"
+            },
+            {
+              "label": "50"
+            }
+          ],
+          "help": [
+            "Include the new care expense in the revised total."
+          ],
+          "feedback": {
+            "met": "500 − 350 − 100 = 50 remains unallocated.",
+            "not_yet": "Include the new care expense in the revised total."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Monto sin asignar tras ajustar?",
+          "scene": "Fondos confirmados: 500. Necesidades anteriores: 350; nuevo cuidado necesario: 100.",
+          "options": [
+            {
+              "label": "250"
+            },
+            {
+              "label": "150"
+            },
+            {
+              "label": "50"
+            }
+          ],
+          "help": [
+            "Incluye el nuevo cuidado en el total ajustado."
+          ],
+          "feedback": {
+            "met": "500 − 350 − 100 = 50 quedan sin asignar.",
+            "not_yet": "Incluye el nuevo cuidado en el total ajustado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Valor sem destino após ajustar?",
+          "scene": "Recursos confirmados: 500. Necessidades anteriores: 350; novo cuidado necessário: 100.",
+          "options": [
+            {
+              "label": "250"
+            },
+            {
+              "label": "150"
+            },
+            {
+              "label": "50"
+            }
+          ],
+          "help": [
+            "Inclua o novo cuidado no total revisto."
+          ],
+          "feedback": {
+            "met": "500 − 350 − 100 = 50 ficam sem destino.",
+            "not_yet": "Inclua o novo cuidado no total revisto."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          500,
+          350,
+          100
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.05",
+      "copy": {
+        "en-US": {
+          "prompt": "What belongs in the temporary plan?",
+          "scene": "For three months of care, paid work falls and appointment transport costs rise.",
+          "options": [
+            {
+              "label": "Transport alone"
+            },
+            {
+              "label": "Old earnings unchanged"
+            },
+            {
+              "label": "Lower earnings and higher transport"
+            }
+          ],
+          "help": [
+            "The care period changes income as well as expenses."
+          ],
+          "feedback": {
+            "met": "Both temporary changes affect what the household can commit.",
+            "not_yet": "The care period changes income as well as expenses."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué incluye el plan temporal?",
+          "scene": "El cuidado dura tres meses; durante ese periodo baja el trabajo pagado y aumenta el transporte a citas.",
+          "options": [
+            {
+              "label": "Solo el transporte"
+            },
+            {
+              "label": "El ingreso anterior sin cambios"
+            },
+            {
+              "label": "Menor ingreso y mayor transporte"
+            }
+          ],
+          "help": [
+            "El periodo de cuidado cambia ingresos además de gastos."
+          ],
+          "feedback": {
+            "met": "Ambos cambios temporales afectan lo que el hogar puede comprometer.",
+            "not_yet": "El periodo de cuidado cambia ingresos además de gastos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que inclui o plano temporário?",
+          "scene": "O cuidado dura três meses; nesse período cai o trabalho pago e aumenta o transporte às consultas.",
+          "options": [
+            {
+              "label": "Só o transporte"
+            },
+            {
+              "label": "A renda anterior sem mudanças"
+            },
+            {
+              "label": "Menor renda e maior transporte"
+            }
+          ],
+          "help": [
+            "O período de cuidados muda a renda e as despesas."
+          ],
+          "feedback": {
+            "met": "As duas mudanças temporárias afetam o que a família pode comprometer.",
+            "not_yet": "O período de cuidados muda a renda e as despesas."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.11",
+      "copy": {
+        "en-US": {
+          "prompt": "Which next step?",
+          "scene": "New care needs; existing policy events and limits remain unchecked.",
+          "options": [
+            {
+              "label": "Check coverage against new needs"
+            },
+            {
+              "label": "Confirm only that a policy exists"
+            },
+            {
+              "label": "Assume every care cost is insured"
+            }
+          ],
+          "help": [
+            "A policy’s existence alone does not establish adequate coverage."
+          ],
+          "feedback": {
+            "met": "Existing coverage may leave gaps for the new responsibility.",
+            "not_yet": "A policy’s existence alone does not establish adequate coverage."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué sigue?",
+          "scene": "Surgen nuevas necesidades de cuidado; existe póliza, pero no revisaste eventos cubiertos ni límites.",
+          "options": [
+            {
+              "label": "Revisar si cubre las nuevas necesidades"
+            },
+            {
+              "label": "Confirmar solo que existe una póliza"
+            },
+            {
+              "label": "Suponer que cubre todo cuidado"
+            }
+          ],
+          "help": [
+            "Tener una póliza no demuestra que la cobertura sea adecuada."
+          ],
+          "feedback": {
+            "met": "La cobertura existente puede dejar huecos ante la nueva responsabilidad.",
+            "not_yet": "Tener una póliza no demuestra que la cobertura sea adecuada."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual o próximo passo?",
+          "scene": "Surgem novas necessidades de cuidado; existe apólice, mas eventos cobertos e limites não foram conferidos.",
+          "options": [
+            {
+              "label": "Conferir se cobre as novas necessidades"
+            },
+            {
+              "label": "Confirmar só que existe uma apólice"
+            },
+            {
+              "label": "Supor que cobre todo cuidado"
+            }
+          ],
+          "help": [
+            "Ter uma apólice não comprova que a cobertura seja adequada."
+          ],
+          "feedback": {
+            "met": "A cobertura existente pode deixar lacunas diante da nova responsabilidade.",
+            "not_yet": "Ter uma apólice não comprova que a cobertura seja adequada."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.05",
+      "copy": {
+        "en-US": {
+          "prompt": "When can the old plan return?",
+          "scene": "Care may end soon; paid hours and transport needs remain unchanged.",
+          "options": [
+            {
+              "label": "Never; changes are permanent"
+            },
+            {
+              "label": "Immediately after an estimate"
+            },
+            {
+              "label": "When relevant conditions change"
+            }
+          ],
+          "help": [
+            "An estimated end date is not a confirmed restoration of income."
+          ],
+          "feedback": {
+            "met": "Update the plan when its income and cost assumptions change.",
+            "not_yet": "An estimated end date is not a confirmed restoration of income."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuándo retomar el plan anterior?",
+          "scene": "El cuidado podría terminar pronto, pero las horas laborales y necesidades de transporte siguen iguales.",
+          "options": [
+            {
+              "label": "Nunca; todo cambio es permanente"
+            },
+            {
+              "label": "En cuanto haya una estimación"
+            },
+            {
+              "label": "Cuando cambien las condiciones reales"
+            }
+          ],
+          "help": [
+            "Una fecha estimada no confirma que vuelva el ingreso anterior."
+          ],
+          "feedback": {
+            "met": "Ajusta el plan cuando cambien sus supuestos de ingreso y costo.",
+            "not_yet": "Una fecha estimada no confirma que vuelva el ingreso anterior."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quando retomar o plano anterior?",
+          "scene": "O cuidado pode acabar logo, mas horas de trabalho e necessidades de transporte ainda não mudaram.",
+          "options": [
+            {
+              "label": "Nunca; toda mudança é permanente"
+            },
+            {
+              "label": "Assim que houver uma estimativa"
+            },
+            {
+              "label": "Quando as condições reais mudarem"
+            }
+          ],
+          "help": [
+            "Uma data estimada não confirma a volta da renda anterior."
+          ],
+          "feedback": {
+            "met": "Ajuste o plano quando mudarem as premissas de renda e custo.",
+            "not_yet": "Uma data estimada não confirma a volta da renda anterior."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.insurance-risk.11",
+      "copy": {
+        "en-US": {
+          "prompt": "Which review is warranted?",
+          "scene": "An adult relative now needs your care; daily costs funded, backup care unplanned.",
+          "options": [
+            {
+              "label": "Buy any advertised policy"
+            },
+            {
+              "label": "None: bills are funded"
+            },
+            {
+              "label": "Assess the new backup-care gap"
+            }
+          ],
+          "help": [
+            "Review the new responsibility before choosing a protection response."
+          ],
+          "feedback": {
+            "met": "Funded daily bills do not settle protection if care becomes unavailable.",
+            "not_yet": "Review the new responsibility before choosing a protection response."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué revisión corresponde?",
+          "scene": "Un familiar adulto vive contigo y depende de tus cuidados; gastos diarios cubiertos, pero sin cuidado de respaldo.",
+          "options": [
+            {
+              "label": "Comprar cualquier póliza anunciada"
+            },
+            {
+              "label": "Ninguna: las cuentas están pagadas"
+            },
+            {
+              "label": "Evaluar el faltante de cuidado alterno"
+            }
+          ],
+          "help": [
+            "Revisa la nueva responsabilidad antes de elegir una protección."
+          ],
+          "feedback": {
+            "met": "Pagar cuentas diarias no resuelve qué pasa si falta quien cuida.",
+            "not_yet": "Revisa la nueva responsabilidad antes de elegir una protección."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual revisão é necessária?",
+          "scene": "Um familiar adulto mora com você e depende dos seus cuidados; gastos diários cobertos, mas sem cuidado substituto.",
+          "options": [
+            {
+              "label": "Comprar qualquer apólice anunciada"
+            },
+            {
+              "label": "Nenhuma: contas estão pagas"
+            },
+            {
+              "label": "Avaliar a falta de cuidado substituto"
+            }
+          ],
+          "help": [
+            "Revise a nova responsabilidade antes de escolher uma proteção."
+          ],
+          "feedback": {
+            "met": "Pagar contas diárias não resolve a ausência de quem cuida.",
+            "not_yet": "Revise a nova responsabilidade antes de escolher uma proteção."
+          }
+        }
+      }
+    }
+  ]
+}

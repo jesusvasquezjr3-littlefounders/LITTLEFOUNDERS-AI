@@ -1,0 +1,796 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-retirement-future-part-2",
+  "lesson_id": "fe-production-retirement-future-08",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.retirement-future.08"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Identify how early poor returns can affect withdrawals from a fictional retirement portfolio.",
+  "title": {
+    "en-US": "Return Order",
+    "es-MX": "Importa el orden de rendimientos",
+    "pt-BR": "A ordem dos rendimentos importa"
+  },
+  "new_concepts": [
+    "finance.prod.retirement-future.08"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Return Order\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Importa el orden de rendimientos\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"A ordem dos rendimentos importa\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.retirement-future.08",
+      "observable_action": "Identify how early poor returns can affect withdrawals from a fictional retirement portfolio.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.investing-foundations.04",
+      "prod.time-inflation.10"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Withdrawals during early losses can leave less money to participate in a later recovery.",
+    "misconception": "The same set of returns always produces the same retirement result even when money is withdrawn between them.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.retirement-future.08",
+        "context_id": "retirement-future-08-example-01",
+        "supports_from": [],
+        "reasoning": "A loss shrinks the balance. A withdrawal shrinks it further, leaving less money for a later recovery to grow."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.retirement-future.08",
+        "context_id": "retirement-future-08-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Withdrawals leave less balance for the later recovery."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.retirement-future.08",
+        "context_id": "retirement-future-08-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Only money still invested participates in that later return."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.retirement-future.08",
+        "context_id": "retirement-future-08-practice-01",
+        "supports_from": [],
+        "reasoning": "Withdrawals interact with the balance left by earlier returns."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.retirement-future.08",
+        "context_id": "retirement-future-08-practice-02",
+        "supports_from": [],
+        "reasoning": "An average hides the order affecting withdrawn portfolios."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.retirement-future.08",
+        "context_id": "retirement-future-08-practice-03",
+        "supports_from": [],
+        "reasoning": "Recovery applies to the remaining investment, not money already spent."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.retirement-future.08",
+        "context_id": "retirement-future-08-transfer-01",
+        "supports_from": [],
+        "reasoning": "Early losses and withdrawals can jointly strain the plan."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.retirement-future.08",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Withdrawals during early losses can leave less money to participate in a later recovery."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Retirar durante pérdidas tempranas puede dejar menos dinero para participar en una recuperación posterior."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Sacar durante perdas iniciais pode deixar menos dinheiro para participar de uma recuperação posterior."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Loss, withdrawal, recovery",
+          "line": "A loss shrinks the balance. A withdrawal shrinks it further, leaving less money for a later recovery to grow."
+        },
+        "es-MX": {
+          "prompt": "Pérdida, retiro, recuperación",
+          "line": "Una pérdida reduce el saldo. Un retiro lo reduce más, dejando menos dinero para crecer en una recuperación posterior."
+        },
+        "pt-BR": {
+          "prompt": "Perda, saque, recuperação",
+          "line": "Uma perda reduz o saldo. Um saque o reduz mais, deixando menos dinheiro para crescer numa recuperação posterior."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.08",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "step-1"
+          },
+          {
+            "id": "step-2"
+          },
+          {
+            "id": "step-3"
+          },
+          {
+            "id": "step-4"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "step-2",
+          "step-3",
+          "step-4"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "step-2": "70",
+          "step-3": "87.5",
+          "step-4": "77.5"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Fictional: start 100 dollars; lose 20%, withdraw 10; gain 25%, withdraw 10. No fees.",
+          "feedback": {
+            "met": "Withdrawals leave less balance for the later recovery.",
+            "not_yet": "Apply each return before its stated withdrawal."
+          },
+          "help": [
+            "Apply each return before its stated withdrawal."
+          ],
+          "steps": [
+            {
+              "expression": "100 × 80 ÷ 100",
+              "result": "80",
+              "spokenText": "Balance after early loss"
+            },
+            {
+              "expression": "80 − 10",
+              "result": "70",
+              "spokenText": "First withdrawal"
+            },
+            {
+              "expression": "70 × 125 ÷ 100",
+              "result": "87.5",
+              "spokenText": "Later recovery on remaining money"
+            },
+            {
+              "expression": "87.5 − 10",
+              "result": "77.5",
+              "spokenText": "Second withdrawal"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Ficticio: inicia 100 pesos; pierde 20%, retira 10; gana 25%, retira 10. Sin comisiones.",
+          "feedback": {
+            "met": "Los retiros dejan menos saldo para la recuperación posterior.",
+            "not_yet": "Aplica cada rendimiento antes de su retiro indicado."
+          },
+          "help": [
+            "Aplica cada rendimiento antes de su retiro indicado."
+          ],
+          "steps": [
+            {
+              "expression": "100 × 80 ÷ 100",
+              "result": "80",
+              "spokenText": "Saldo tras pérdida inicial"
+            },
+            {
+              "expression": "80 − 10",
+              "result": "70",
+              "spokenText": "Primer retiro"
+            },
+            {
+              "expression": "70 × 125 ÷ 100",
+              "result": "87.5",
+              "spokenText": "Recuperación sobre dinero restante"
+            },
+            {
+              "expression": "87.5 − 10",
+              "result": "77.5",
+              "spokenText": "Segundo retiro"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Fictício: comece 100 reais; perca 20%, saque 10; ganhe 25%, saque 10. Sem tarifas.",
+          "feedback": {
+            "met": "Os saques deixam menos saldo para a recuperação posterior.",
+            "not_yet": "Aplique cada rendimento antes do saque dado."
+          },
+          "help": [
+            "Aplique cada rendimento antes do saque dado."
+          ],
+          "steps": [
+            {
+              "expression": "100 × 80 ÷ 100",
+              "result": "80",
+              "spokenText": "Saldo após perda inicial"
+            },
+            {
+              "expression": "80 − 10",
+              "result": "70",
+              "spokenText": "Primeiro saque"
+            },
+            {
+              "expression": "70 × 125 ÷ 100",
+              "result": "87,5",
+              "spokenText": "Recuperação sobre dinheiro restante"
+            },
+            {
+              "expression": "87,5 − 10",
+              "result": "77,5",
+              "spokenText": "Segundo saque"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.08",
+      "copy": {
+        "en-US": {
+          "prompt": "What receives the later recovery?",
+          "scene": "A loss is followed by a withdrawal before the next positive return.",
+          "options": [
+            {
+              "label": "The money already spent"
+            },
+            {
+              "label": "The original untouched balance"
+            },
+            {
+              "label": "The smaller remaining balance"
+            }
+          ],
+          "help": [
+            "Track the balance after both the loss and withdrawal."
+          ],
+          "feedback": {
+            "met": "Only money still invested participates in that later return.",
+            "not_yet": "Track the balance after both the loss and withdrawal."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué recibe la recuperación posterior?",
+          "scene": "Una pérdida va seguida de un retiro antes del siguiente rendimiento positivo.",
+          "options": [
+            {
+              "label": "El dinero ya gastado"
+            },
+            {
+              "label": "El saldo original intacto"
+            },
+            {
+              "label": "El saldo restante menor"
+            }
+          ],
+          "help": [
+            "Sigue saldo tras pérdida y retiro."
+          ],
+          "feedback": {
+            "met": "Solo el dinero aún invertido participa del rendimiento posterior.",
+            "not_yet": "Sigue saldo tras pérdida y retiro."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que recebe a recuperação depois?",
+          "scene": "Uma perda é seguida de saque antes do próximo rendimento positivo.",
+          "options": [
+            {
+              "label": "O dinheiro já gasto"
+            },
+            {
+              "label": "O saldo original intacto"
+            },
+            {
+              "label": "O saldo restante menor"
+            }
+          ],
+          "help": [
+            "Siga o saldo após perda e saque."
+          ],
+          "feedback": {
+            "met": "Só o dinheiro ainda aplicado participa do rendimento posterior.",
+            "not_yet": "Siga o saldo após perda e saque."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Can order matter with withdrawals?",
+          "scene": "Two models use the same returns in opposite order and withdraw between periods.",
+          "options": [
+            {
+              "label": "Yes, withdrawals change the balance path"
+            },
+            {
+              "label": "No, ordering never matters"
+            }
+          ],
+          "help": [
+            "Check when money leaves, not only the listed returns."
+          ],
+          "feedback": {
+            "met": "Withdrawals interact with the balance left by earlier returns.",
+            "not_yet": "Check when money leaves, not only the listed returns."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Puede importar el orden con retiros?",
+          "scene": "Dos modelos usan iguales rendimientos en orden opuesto y retiran entre periodos.",
+          "options": [
+            {
+              "label": "Sí, los retiros cambian la trayectoria"
+            },
+            {
+              "label": "No, ordenar nunca importa"
+            }
+          ],
+          "help": [
+            "Revisa cuándo sale dinero, no solo rendimientos listados."
+          ],
+          "feedback": {
+            "met": "Los retiros interactúan con el saldo dejado por rendimientos anteriores.",
+            "not_yet": "Revisa cuándo sale dinero, no solo rendimientos listados."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A ordem pode importar com saques?",
+          "scene": "Dois modelos usam iguais rendimentos em ordem oposta e sacam entre períodos.",
+          "options": [
+            {
+              "label": "Sim, saques mudam o caminho do saldo"
+            },
+            {
+              "label": "Não, a ordem nunca importa"
+            }
+          ],
+          "help": [
+            "Confira quando sai dinheiro, não só rendimentos listados."
+          ],
+          "feedback": {
+            "met": "Saques interagem com o saldo deixado pelos ganhos anteriores.",
+            "not_yet": "Confira quando sai dinheiro, não só rendimentos listados."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.08",
+      "copy": {
+        "en-US": {
+          "prompt": "What does an average omit?",
+          "scene": "A withdrawal plan uses only an average return, ignoring when losses occur.",
+          "options": [
+            {
+              "label": "Only the account name"
+            },
+            {
+              "label": "Nothing important can be omitted"
+            },
+            {
+              "label": "The sequence around withdrawals"
+            }
+          ],
+          "help": [
+            "Inspect the timing of returns and spending."
+          ],
+          "feedback": {
+            "met": "An average hides the order affecting withdrawn portfolios.",
+            "not_yet": "Inspect the timing of returns and spending."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué omite un promedio?",
+          "scene": "Un plan de retiros usa solo rendimiento promedio e ignora cuándo ocurren pérdidas.",
+          "options": [
+            {
+              "label": "Solo el nombre de cuenta"
+            },
+            {
+              "label": "Nada importante puede faltar"
+            },
+            {
+              "label": "La secuencia alrededor de retiros"
+            }
+          ],
+          "help": [
+            "Inspecciona tiempos de rendimientos y gastos."
+          ],
+          "feedback": {
+            "met": "Un promedio oculta el orden que afecta carteras con retiros.",
+            "not_yet": "Inspecciona tiempos de rendimientos y gastos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que a média omite?",
+          "scene": "Um plano de saques usa só rendimento médio e ignora quando ocorrem perdas.",
+          "options": [
+            {
+              "label": "Só o nome da conta"
+            },
+            {
+              "label": "Nada importante pode faltar"
+            },
+            {
+              "label": "A sequência perto dos saques"
+            }
+          ],
+          "help": [
+            "Inspecione prazos de rendimentos e gastos."
+          ],
+          "feedback": {
+            "met": "Uma média esconde a ordem que afeta carteiras com saques.",
+            "not_yet": "Inspecione prazos de rendimentos e gastos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Does a later rebound erase withdrawals?",
+          "scene": "An investor spends withdrawn money after a loss. The remaining investment later rises.",
+          "options": [
+            {
+              "label": "Yes, every rebound restores all spending"
+            },
+            {
+              "label": "No, spent money no longer participates"
+            }
+          ],
+          "help": [
+            "Keep withdrawn money out of the later invested balance."
+          ],
+          "feedback": {
+            "met": "Recovery applies to the remaining investment, not money already spent.",
+            "not_yet": "Keep withdrawn money out of the later invested balance."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Un repunte borra los retiros?",
+          "scene": "Se gasta dinero retirado después de perder. La inversión restante después sube.",
+          "options": [
+            {
+              "label": "Sí, todo repunte restaura los gastos"
+            },
+            {
+              "label": "No, el dinero gastado ya no participa"
+            }
+          ],
+          "help": [
+            "Excluye dinero retirado del saldo invertido posterior."
+          ],
+          "feedback": {
+            "met": "Recuperar aplica a la inversión restante, no al dinero gastado.",
+            "not_yet": "Excluye dinero retirado del saldo invertido posterior."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Uma recuperação apaga os saques?",
+          "scene": "Gastam dinheiro sacado depois de perder. A aplicação restante depois sobe.",
+          "options": [
+            {
+              "label": "Sim, toda recuperação repõe os gastos"
+            },
+            {
+              "label": "Não, dinheiro gasto já não participa"
+            }
+          ],
+          "help": [
+            "Exclua dinheiro sacado do saldo aplicado depois."
+          ],
+          "feedback": {
+            "met": "Recuperar vale para a aplicação restante, não para dinheiro gasto.",
+            "not_yet": "Exclua dinheiro sacado do saldo aplicado depois."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.retirement-future.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Which scenario deserves a stress test?",
+          "scene": "Essential withdrawals begin just as the portfolio falls sharply.",
+          "options": [
+            {
+              "label": "Only the long-run average"
+            },
+            {
+              "label": "Early losses combined with required withdrawals"
+            },
+            {
+              "label": "Assume recovery arrives before bills"
+            }
+          ],
+          "help": [
+            "Test the sequence rather than relying only on averages."
+          ],
+          "feedback": {
+            "met": "Early losses and withdrawals can jointly strain the plan.",
+            "not_yet": "Test the sequence rather than relying only on averages."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué situación debes probar?",
+          "scene": "Empiezan retiros indispensables justo cuando la cartera cae fuertemente.",
+          "options": [
+            {
+              "label": "Solo el promedio a largo plazo"
+            },
+            {
+              "label": "Pérdidas iniciales junto con retiros necesarios"
+            },
+            {
+              "label": "Suponer recuperación antes de las cuentas"
+            }
+          ],
+          "help": [
+            "Prueba la secuencia sin depender solo de promedios."
+          ],
+          "feedback": {
+            "met": "Pérdidas iniciales y retiros pueden tensionar juntos el plan.",
+            "not_yet": "Prueba la secuencia sin depender solo de promedios."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual situação deve testar?",
+          "scene": "Começam saques essenciais justo quando a carteira cai muito.",
+          "options": [
+            {
+              "label": "Só a média de longo prazo"
+            },
+            {
+              "label": "Perdas iniciais junto com saques necessários"
+            },
+            {
+              "label": "Supor recuperação antes das contas"
+            }
+          ],
+          "help": [
+            "Teste a sequência sem depender só de médias."
+          ],
+          "feedback": {
+            "met": "Perdas iniciais e saques podem apertar juntos o plano.",
+            "not_yet": "Teste a sequência sem depender só de médias."
+          }
+        }
+      }
+    }
+  ]
+}

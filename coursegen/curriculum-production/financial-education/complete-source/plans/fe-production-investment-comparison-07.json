@@ -1,0 +1,754 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-investment-comparison-part-2",
+  "lesson_id": "fe-production-investment-comparison-07",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.investment-comparison.07"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Identify a conflict of interest in how an investment seller is compensated.",
+  "title": {
+    "en-US": "Sales Incentives",
+    "es-MX": "¿Quién gana con la venta?",
+    "pt-BR": "Quem ganha com a venda?"
+  },
+  "new_concepts": [
+    "finance.prod.investment-comparison.07"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Sales Incentives\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"¿Quién gana con la venta?\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Quem ganha com a venda?\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.investment-comparison.07",
+      "observable_action": "Identify a conflict of interest in how an investment seller is compensated.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.purchase-decisions.11"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A seller’s pay can create an incentive that differs from your financial goal.",
+    "misconception": "A recommendation is impartial simply because it sounds confident or comes from a friendly person.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.investment-comparison.07",
+        "context_id": "investment-comparison-07-example-01",
+        "supports_from": [],
+        "reasoning": "A seller earns more from one product than another. Ask how they are paid before treating their recommendation as neutral."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.investment-comparison.07",
+        "context_id": "investment-comparison-07-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The bonus rewards selling A regardless of the customer’s outcome."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.investment-comparison.07",
+        "context_id": "investment-comparison-07-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Different compensation can help explain a sales preference."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.investment-comparison.07",
+        "context_id": "investment-comparison-07-practice-01",
+        "supports_from": [],
+        "reasoning": "Disclosure explains an incentive; it does not erase it."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.investment-comparison.07",
+        "context_id": "investment-comparison-07-practice-02",
+        "supports_from": [],
+        "reasoning": "Per-trade payment can reward activity rather than useful outcomes."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.investment-comparison.07",
+        "context_id": "investment-comparison-07-practice-03",
+        "supports_from": [],
+        "reasoning": "Knowing the incentive does not replace evaluating the product."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.investment-comparison.07",
+        "context_id": "investment-comparison-07-transfer-01",
+        "supports_from": [],
+        "reasoning": "Referral payments can influence which provider gets promoted."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.investment-comparison.07",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A seller’s pay can create an incentive that differs from your financial goal."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "El pago de un vendedor puede crear un incentivo distinto de tu meta financiera."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "O pagamento do vendedor pode criar um incentivo diferente da sua meta financeira."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Follow the payment",
+          "line": "A seller earns more from one product than another. Ask how they are paid before treating their recommendation as neutral."
+        },
+        "es-MX": {
+          "prompt": "Sigue el pago",
+          "line": "Un vendedor gana más con un producto que con otro. Pregunta cómo le pagan antes de considerar neutral su recomendación."
+        },
+        "pt-BR": {
+          "prompt": "Siga o pagamento",
+          "line": "Um vendedor ganha mais com um produto que com outro. Pergunte como recebe antes de tratar a sugestão como neutra."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Which incentive exists?",
+          "scene": "A seller receives a bonus only when customers buy Fund A.",
+          "options": [
+            {
+              "label": "Proof every statement is false"
+            },
+            {
+              "label": "An incentive to promote A"
+            },
+            {
+              "label": "Proof A is best for everyone"
+            }
+          ],
+          "help": [
+            "Identify the incentive without assuming every claim is false."
+          ],
+          "feedback": {
+            "met": "The bonus rewards selling A regardless of the customer’s outcome.",
+            "not_yet": "Identify the incentive without assuming every claim is false."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué incentivo existe?",
+          "scene": "Un vendedor recibe un bono solo cuando compran el Fondo A.",
+          "options": [
+            {
+              "label": "Prueba de que todo es falso"
+            },
+            {
+              "label": "Incentivo para promover A"
+            },
+            {
+              "label": "Prueba de que A conviene a todos"
+            }
+          ],
+          "help": [
+            "Identifica el incentivo sin suponer falsa toda afirmación."
+          ],
+          "feedback": {
+            "met": "El bono premia vender A, sin asegurar el resultado del cliente.",
+            "not_yet": "Identifica el incentivo sin suponer falsa toda afirmación."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual incentivo existe?",
+          "scene": "Um vendedor recebe bônus só quando compram o Fundo A.",
+          "options": [
+            {
+              "label": "Prova de que tudo é falso"
+            },
+            {
+              "label": "Incentivo para promover A"
+            },
+            {
+              "label": "Prova de que A serve para todos"
+            }
+          ],
+          "help": [
+            "Identifique o incentivo sem supor falsa toda afirmação."
+          ],
+          "feedback": {
+            "met": "O bônus premia vender A, sem garantir resultado ao cliente.",
+            "not_yet": "Identifique o incentivo sem supor falsa toda afirmação."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Ask what?",
+          "scene": "Two investments look similar. The adviser strongly favors one without explaining compensation.",
+          "options": [
+            {
+              "label": "How are you paid for each option?"
+            },
+            {
+              "label": "Which performed best last year?"
+            },
+            {
+              "label": "What minimum deposit is required?"
+            }
+          ],
+          "help": [
+            "Ask about payment and incentives directly."
+          ],
+          "feedback": {
+            "met": "Different compensation can help explain a sales preference.",
+            "not_yet": "Ask about payment and incentives directly."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué pregunta ayuda?",
+          "scene": "Dos inversiones parecen similares. Favorecen una sin explicar la remuneración.",
+          "options": [
+            {
+              "label": "¿Cómo te pagan por cada opción?"
+            },
+            {
+              "label": "¿Cuál rindió más el año pasado?"
+            },
+            {
+              "label": "¿Qué depósito mínimo exige?"
+            }
+          ],
+          "help": [
+            "Pregunta directamente por pago e incentivos."
+          ],
+          "feedback": {
+            "met": "Pagos distintos pueden explicar una preferencia de venta.",
+            "not_yet": "Pregunta directamente por pago e incentivos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual pergunta ajuda?",
+          "scene": "Duas aplicações parecem similares. Favorecem uma sem explicar a remuneração.",
+          "options": [
+            {
+              "label": "Como recebe por cada opção?"
+            },
+            {
+              "label": "Qual rendeu mais no ano passado?"
+            },
+            {
+              "label": "Qual é o depósito mínimo?"
+            }
+          ],
+          "help": [
+            "Pergunte diretamente sobre pagamento e incentivos."
+          ],
+          "feedback": {
+            "met": "Pagamentos distintos podem explicar uma preferência de venda.",
+            "not_yet": "Pergunte diretamente sobre pagamento e incentivos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Does disclosure remove the conflict?",
+          "scene": "A seller clearly discloses a commission that rises with the purchase amount.",
+          "options": [
+            {
+              "label": "No, the incentive still exists"
+            },
+            {
+              "label": "Yes, naming it cancels it"
+            }
+          ],
+          "help": [
+            "Use the disclosure when evaluating the proposal."
+          ],
+          "feedback": {
+            "met": "Disclosure explains an incentive; it does not erase it.",
+            "not_yet": "Use the disclosure when evaluating the proposal."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Revelarlo elimina el conflicto?",
+          "scene": "Un vendedor informa una comisión que aumenta con el monto comprado.",
+          "options": [
+            {
+              "label": "No, el incentivo sigue existiendo"
+            },
+            {
+              "label": "Sí, nombrarlo lo cancela"
+            }
+          ],
+          "help": [
+            "Usa esa información al evaluar la propuesta."
+          ],
+          "feedback": {
+            "met": "Informar explica un incentivo; no lo borra.",
+            "not_yet": "Usa esa información al evaluar la propuesta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Informar elimina o conflito?",
+          "scene": "Um vendedor informa uma comissão que cresce com o valor comprado.",
+          "options": [
+            {
+              "label": "Não, o incentivo continua"
+            },
+            {
+              "label": "Sim, dar nome o cancela"
+            }
+          ],
+          "help": [
+            "Use essa informação ao avaliar a proposta."
+          ],
+          "feedback": {
+            "met": "Informar explica um incentivo; não o apaga.",
+            "not_yet": "Use essa informação ao avaliar a proposta."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.07",
+      "copy": {
+        "en-US": {
+          "prompt": "What can this fee encourage?",
+          "scene": "A service earns a fee whenever a customer makes another trade.",
+          "options": [
+            {
+              "label": "More frequent trading"
+            },
+            {
+              "label": "Guaranteed better customer returns"
+            }
+          ],
+          "help": [
+            "Compare the incentive with the customer’s goal."
+          ],
+          "feedback": {
+            "met": "Per-trade payment can reward activity rather than useful outcomes.",
+            "not_yet": "Compare the incentive with the customer’s goal."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué puede incentivar el cobro?",
+          "scene": "Un servicio gana una comisión cada vez que el cliente opera otra vez.",
+          "options": [
+            {
+              "label": "Operar más seguido"
+            },
+            {
+              "label": "Garantizar mejores rendimientos del cliente"
+            }
+          ],
+          "help": [
+            "Compara el incentivo con la meta del cliente."
+          ],
+          "feedback": {
+            "met": "Cobrar por operación puede premiar actividad, no resultados útiles.",
+            "not_yet": "Compara el incentivo con la meta del cliente."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que a cobrança pode incentivar?",
+          "scene": "Um serviço recebe tarifa toda vez que o cliente faz outra operação.",
+          "options": [
+            {
+              "label": "Operar mais vezes"
+            },
+            {
+              "label": "Garantir melhores ganhos ao cliente"
+            }
+          ],
+          "help": [
+            "Compare o incentivo com a meta do cliente."
+          ],
+          "feedback": {
+            "met": "Cobrar por operação pode premiar atividade, não resultados úteis.",
+            "not_yet": "Compare o incentivo com a meta do cliente."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.07",
+      "copy": {
+        "en-US": {
+          "prompt": "What next?",
+          "scene": "A pay conflict is disclosed. The learner still needs to evaluate the investment.",
+          "options": [
+            {
+              "label": "Only the seller’s friendliness"
+            },
+            {
+              "label": "Disclosure approves everything"
+            },
+            {
+              "label": "Costs, risks and goal fit"
+            }
+          ],
+          "help": [
+            "Check the offer’s actual conditions independently."
+          ],
+          "feedback": {
+            "met": "Knowing the incentive does not replace evaluating the product.",
+            "not_yet": "Check the offer’s actual conditions independently."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué comparas después?",
+          "scene": "Se revela un conflicto de remuneración. Todavía necesitas evaluar la inversión.",
+          "options": [
+            {
+              "label": "Solo la amabilidad"
+            },
+            {
+              "label": "Nada, informar aprueba la compra"
+            },
+            {
+              "label": "Costos, riesgos y ajuste a la meta"
+            }
+          ],
+          "help": [
+            "Revisa independientemente las condiciones reales de la oferta."
+          ],
+          "feedback": {
+            "met": "Conocer el incentivo no sustituye evaluar el producto.",
+            "not_yet": "Revisa independientemente las condiciones reales de la oferta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que comparar depois?",
+          "scene": "Revelam um conflito de remuneração. Ainda é preciso avaliar a aplicação.",
+          "options": [
+            {
+              "label": "Só a simpatia"
+            },
+            {
+              "label": "Nada, informar aprova a compra"
+            },
+            {
+              "label": "Custos, riscos e ajuste à meta"
+            }
+          ],
+          "help": [
+            "Confira de forma independente as condições reais da oferta."
+          ],
+          "feedback": {
+            "met": "Conhecer o incentivo não substitui avaliar o produto.",
+            "not_yet": "Confira de forma independente as condições reais da oferta."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.investment-comparison.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Which hidden incentive matters?",
+          "scene": "A popular educator receives payment for every account opened through a private referral link.",
+          "options": [
+            {
+              "label": "Payment for successful referrals"
+            },
+            {
+              "label": "The educator’s own portfolio"
+            },
+            {
+              "label": "The number of lessons posted"
+            }
+          ],
+          "help": [
+            "Check financial incentives behind apparently educational promotion."
+          ],
+          "feedback": {
+            "met": "Referral payments can influence which provider gets promoted.",
+            "not_yet": "Check financial incentives behind apparently educational promotion."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué incentivo oculto importa?",
+          "scene": "Una persona que enseña recibe dinero por cada cuenta abierta mediante su enlace de referencia.",
+          "options": [
+            {
+              "label": "El pago por referencias exitosas"
+            },
+            {
+              "label": "Su cartera personal"
+            },
+            {
+              "label": "Cuántas lecciones publica"
+            }
+          ],
+          "help": [
+            "Revisa incentivos financieros tras una promoción aparentemente educativa."
+          ],
+          "feedback": {
+            "met": "Los pagos por referir pueden influir en qué proveedor promueve.",
+            "not_yet": "Revisa incentivos financieros tras una promoción aparentemente educativa."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual incentivo oculto importa?",
+          "scene": "Uma pessoa que ensina recebe por cada conta aberta pelo seu link de indicação.",
+          "options": [
+            {
+              "label": "O pagamento por indicações bem-sucedidas"
+            },
+            {
+              "label": "Sua carteira pessoal"
+            },
+            {
+              "label": "Quantas aulas publica"
+            }
+          ],
+          "help": [
+            "Confira incentivos financeiros por trás de uma promoção educativa."
+          ],
+          "feedback": {
+            "met": "Pagamentos por indicar podem influenciar qual prestador promove.",
+            "not_yet": "Confira incentivos financeiros por trás de uma promoção educativa."
+          }
+        }
+      }
+    }
+  ]
+}

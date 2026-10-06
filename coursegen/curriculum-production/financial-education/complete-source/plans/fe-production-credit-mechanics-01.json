@@ -1,0 +1,719 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-credit-mechanics-part-1",
+  "lesson_id": "fe-production-credit-mechanics-01",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.credit-mechanics.01"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Identify principal, interest and fees in a fictional loan agreement.",
+  "title": {
+    "en-US": "Loan parts",
+    "es-MX": "Partes del préstamo",
+    "pt-BR": "Partes do empréstimo"
+  },
+  "new_concepts": [
+    "finance.prod.credit-mechanics.01"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Parts of a loan\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Partes del préstamo\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Partes do empréstimo\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.credit-mechanics.01",
+      "observable_action": "Identify principal, interest and fees in a fictional loan agreement.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "debt.obligation",
+      "prod.purchase-decisions.02"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Identify what you borrowed and what you are charged for borrowing it.",
+    "misconception": "Principal, interest and administrative fees are all interchangeable names for the borrowed cash.",
+    "numeracy_support": "Every quantity and assumption needed to decide is visible in the current scenario. Examples explain the relationship before independent application.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.credit-mechanics.01",
+        "context_id": "fe-production-credit-mechanics-01-example-01",
+        "supports_from": [],
+        "reasoning": "Borrowed money is principal. Interest charges for using it; a separately listed processing fee is another charge."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.credit-mechanics.01",
+        "context_id": "fe-production-credit-mechanics-01-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Principal is the money borrowed, not the borrowing charges."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.credit-mechanics.01",
+        "context_id": "fe-production-credit-mechanics-01-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Interest is charged for using the borrowed money."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.credit-mechanics.01",
+        "context_id": "fe-production-credit-mechanics-01-practice-03",
+        "supports_from": [],
+        "reasoning": "The agreement explicitly separates processing fees from interest."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.credit-mechanics.01",
+        "context_id": "fe-production-credit-mechanics-01-practice-04",
+        "supports_from": [],
+        "reasoning": "Waiving interest does not waive the separately stated fee."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.credit-mechanics.01",
+        "context_id": "fe-production-credit-mechanics-01-practice-05",
+        "supports_from": [],
+        "reasoning": "Principal repayment and interest charges serve different purposes."
+      },
+      {
+        "segment_id": "transfer-06",
+        "skill_id": "prod.credit-mechanics.01",
+        "context_id": "fe-production-credit-mechanics-01-transfer-06",
+        "supports_from": [],
+        "reasoning": "Withholding a fee does not itself repay borrowed principal."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.credit-mechanics.01",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Identify what you borrowed and what you are charged for borrowing it."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Identifica qué pediste prestado y qué te cobran por usarlo."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Identifique o que tomou emprestado e o que cobram pelo seu uso."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Follow the evidence",
+          "line": "Borrowed money is principal. Interest charges for using it; a separately listed processing fee is another charge."
+        },
+        "es-MX": {
+          "prompt": "Sigue las pruebas",
+          "line": "El dinero prestado es capital. El interés cobra por usarlo; una comisión de trámite separada es otro cargo."
+        },
+        "pt-BR": {
+          "prompt": "Siga as provas",
+          "line": "O dinheiro emprestado é o principal. Juros cobram pelo seu uso; uma tarifa separada de processamento é outro encargo."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Identify the principal.",
+          "scene": "Fictional agreement: borrowed cash, interest and a separate setup fee.",
+          "options": [
+            {
+              "label": "Setup fee"
+            },
+            {
+              "label": "Borrowed cash"
+            },
+            {
+              "label": "Interest"
+            }
+          ],
+          "help": [
+            "Separate the original borrowed money from its charges."
+          ],
+          "feedback": {
+            "met": "Principal is the money borrowed, not the borrowing charges.",
+            "not_yet": "Separate the original borrowed money from its charges."
+          }
+        },
+        "es-MX": {
+          "prompt": "Identifica el capital.",
+          "scene": "Contrato ficticio: dinero prestado, interés y comisión de apertura separada.",
+          "options": [
+            {
+              "label": "Comisión de apertura"
+            },
+            {
+              "label": "Dinero prestado"
+            },
+            {
+              "label": "Interés"
+            }
+          ],
+          "help": [
+            "Distingue el dinero originalmente prestado de sus cargos."
+          ],
+          "feedback": {
+            "met": "El capital es el dinero prestado, no los cargos.",
+            "not_yet": "Distingue el dinero originalmente prestado de sus cargos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Identifique o principal.",
+          "scene": "Contrato fictício: dinheiro emprestado, juros e tarifa de abertura separada.",
+          "options": [
+            {
+              "label": "Tarifa de abertura"
+            },
+            {
+              "label": "Dinheiro emprestado"
+            },
+            {
+              "label": "Juros"
+            }
+          ],
+          "help": [
+            "Separe o dinheiro tomado emprestado dos encargos."
+          ],
+          "feedback": {
+            "met": "O principal é o dinheiro emprestado, não os encargos.",
+            "not_yet": "Separe o dinheiro tomado emprestado dos encargos."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Identify the interest.",
+          "scene": "The contract labels a periodic charge for using borrowed money as interest.",
+          "options": [
+            {
+              "label": "The periodic borrowing charge"
+            },
+            {
+              "label": "The original borrowed money"
+            }
+          ],
+          "help": [
+            "Follow the contract’s stated purpose for the charge."
+          ],
+          "feedback": {
+            "met": "Interest is charged for using the borrowed money.",
+            "not_yet": "Follow the contract’s stated purpose for the charge."
+          }
+        },
+        "es-MX": {
+          "prompt": "Identifica el interés.",
+          "scene": "El contrato llama interés al cargo periódico por usar el dinero prestado.",
+          "options": [
+            {
+              "label": "El cargo periódico del préstamo"
+            },
+            {
+              "label": "El dinero originalmente prestado"
+            }
+          ],
+          "help": [
+            "Sigue el propósito del cargo indicado en el contrato."
+          ],
+          "feedback": {
+            "met": "El interés se cobra por usar el dinero prestado.",
+            "not_yet": "Sigue el propósito del cargo indicado en el contrato."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Identifique os juros.",
+          "scene": "O contrato chama de juros o encargo periódico pelo uso do dinheiro emprestado.",
+          "options": [
+            {
+              "label": "O encargo periódico do empréstimo"
+            },
+            {
+              "label": "O dinheiro tomado emprestado"
+            }
+          ],
+          "help": [
+            "Siga a finalidade do encargo indicada no contrato."
+          ],
+          "feedback": {
+            "met": "Os juros são cobrados pelo uso do dinheiro emprestado.",
+            "not_yet": "Siga a finalidade do encargo indicada no contrato."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Which is a separate fee?",
+          "scene": "The agreement lists interest and a one-time processing fee as different charges.",
+          "options": [
+            {
+              "label": "The processing fee"
+            },
+            {
+              "label": "The interest rate"
+            }
+          ],
+          "help": [
+            "Use the agreement’s labels rather than merging distinct charges."
+          ],
+          "feedback": {
+            "met": "The agreement explicitly separates processing fees from interest.",
+            "not_yet": "Use the agreement’s labels rather than merging distinct charges."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es una comisión separada?",
+          "scene": "El contrato distingue interés y comisión única de trámite.",
+          "options": [
+            {
+              "label": "La comisión de trámite"
+            },
+            {
+              "label": "La tasa de interés"
+            }
+          ],
+          "help": [
+            "Usa las etiquetas del contrato sin mezclar cargos distintos."
+          ],
+          "feedback": {
+            "met": "El contrato separa expresamente la comisión del interés.",
+            "not_yet": "Usa las etiquetas del contrato sin mezclar cargos distintos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é uma tarifa separada?",
+          "scene": "O contrato distingue juros e tarifa única de processamento.",
+          "options": [
+            {
+              "label": "A tarifa de processamento"
+            },
+            {
+              "label": "A taxa de juros"
+            }
+          ],
+          "help": [
+            "Use os nomes do contrato sem misturar encargos distintos."
+          ],
+          "feedback": {
+            "met": "O contrato separa a tarifa dos juros.",
+            "not_yet": "Use os nomes do contrato sem misturar encargos distintos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Does “no interest” mean no charges?",
+          "scene": "The offer waives interest but explicitly lists a processing fee.",
+          "options": [
+            {
+              "label": "Yes, all charges disappear"
+            },
+            {
+              "label": "No, the fee remains"
+            }
+          ],
+          "help": [
+            "Check fees separately from interest."
+          ],
+          "feedback": {
+            "met": "Waiving interest does not waive the separately stated fee.",
+            "not_yet": "Check fees separately from interest."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Sin interés significa sin cargos?",
+          "scene": "La oferta elimina el interés, pero incluye una comisión de trámite.",
+          "options": [
+            {
+              "label": "Sí, desaparecen todos los cargos"
+            },
+            {
+              "label": "No, queda la comisión"
+            }
+          ],
+          "help": [
+            "Revisa las comisiones por separado del interés."
+          ],
+          "feedback": {
+            "met": "Eliminar el interés no elimina la comisión indicada aparte.",
+            "not_yet": "Revisa las comisiones por separado del interés."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Sem juros significa sem encargos?",
+          "scene": "A oferta dispensa juros, mas inclui uma tarifa de processamento.",
+          "options": [
+            {
+              "label": "Sim, todos os encargos somem"
+            },
+            {
+              "label": "Não, a tarifa continua"
+            }
+          ],
+          "help": [
+            "Confira as tarifas separadas dos juros."
+          ],
+          "feedback": {
+            "met": "Dispensar juros não dispensa a tarifa indicada à parte.",
+            "not_yet": "Confira as tarifas separadas dos juros."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Which distinction matters?",
+          "scene": "Your payment includes a principal portion and an interest portion.",
+          "options": [
+            {
+              "label": "They pay different parts of the agreement"
+            },
+            {
+              "label": "Both are entirely new borrowed money"
+            }
+          ],
+          "help": [
+            "Repaying borrowed money differs from paying its use charge."
+          ],
+          "feedback": {
+            "met": "Principal repayment and interest charges serve different purposes.",
+            "not_yet": "Repaying borrowed money differs from paying its use charge."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué distinción importa?",
+          "scene": "Tu pago incluye una parte de capital y otra de interés.",
+          "options": [
+            {
+              "label": "Cubren partes distintas del contrato"
+            },
+            {
+              "label": "Todo es dinero nuevo prestado"
+            }
+          ],
+          "help": [
+            "Devolver dinero difiere de pagar el cargo por usarlo."
+          ],
+          "feedback": {
+            "met": "Devolver capital y pagar interés tienen funciones diferentes.",
+            "not_yet": "Devolver dinero difiere de pagar el cargo por usarlo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual distinção importa?",
+          "scene": "Sua parcela inclui uma parte do principal e outra de juros.",
+          "options": [
+            {
+              "label": "Cobrem partes distintas do contrato"
+            },
+            {
+              "label": "Tudo é dinheiro novo emprestado"
+            }
+          ],
+          "help": [
+            "Devolver dinheiro difere de pagar pelo seu uso."
+          ],
+          "feedback": {
+            "met": "Devolver principal e pagar juros têm funções diferentes.",
+            "not_yet": "Devolver dinheiro difere de pagar pelo seu uso."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.credit-mechanics.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What has been deducted?",
+          "scene": "A loan’s principal stays unchanged, but the lender withholds the stated setup fee from disbursement.",
+          "options": [
+            {
+              "label": "A fee, not principal repayment"
+            },
+            {
+              "label": "A payment reducing principal"
+            }
+          ],
+          "help": [
+            "Distinguish a fee deducted from cash from principal repaid."
+          ],
+          "feedback": {
+            "met": "Withholding a fee does not itself repay borrowed principal.",
+            "not_yet": "Distinguish a fee deducted from cash from principal repaid."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué se descontó?",
+          "scene": "El capital del préstamo no cambia, pero la entidad retiene la comisión de apertura del desembolso.",
+          "options": [
+            {
+              "label": "Una comisión, no abono a capital"
+            },
+            {
+              "label": "Un pago que reduce capital"
+            }
+          ],
+          "help": [
+            "Distingue una comisión retenida de un abono a capital."
+          ],
+          "feedback": {
+            "met": "Retener una comisión no devuelve por sí mismo capital prestado.",
+            "not_yet": "Distingue una comisión retenida de un abono a capital."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que foi descontado?",
+          "scene": "O principal não muda, mas a entidade retém a tarifa de abertura do dinheiro liberado.",
+          "options": [
+            {
+              "label": "Uma tarifa, não abatimento do principal"
+            },
+            {
+              "label": "Um pagamento que reduz principal"
+            }
+          ],
+          "help": [
+            "Separe uma tarifa retida de um abatimento do principal."
+          ],
+          "feedback": {
+            "met": "Reter uma tarifa não devolve por si só o principal.",
+            "not_yet": "Separe uma tarifa retida de um abatimento do principal."
+          }
+        }
+      }
+    }
+  ]
+}

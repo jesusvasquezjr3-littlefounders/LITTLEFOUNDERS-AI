@@ -1,0 +1,707 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-integrated-decisions-part-2",
+  "lesson_id": "fe-production-integrated-decisions-11",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.financial-landscape.07",
+    "finance.cash.dates",
+    "finance.prod.cashflow-budget.06"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Compare two cross-border payment plans while accounting for uncertainty in the receipt date.",
+  "title": {
+    "en-US": "Across borders",
+    "es-MX": "Entre países",
+    "pt-BR": "Entre países"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Across borders\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Entre países\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Entre países\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "capstone",
+    "objective": {
+      "skill_id": "prod.financial-landscape.07",
+      "observable_action": "Compare two cross-border payment plans while accounting for uncertainty in the receipt date.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.financial-landscape.06",
+      "prod.payments-digital.04"
+    ],
+    "retrieval_skills": [
+      "prod.financial-landscape.07",
+      "cash.dates",
+      "prod.cashflow-budget.06"
+    ],
+    "relevance": "A transfer must arrive in a usable form before the payment deadline.",
+    "misconception": "Choosing a headline exchange rate without considering recipient amount, access or uncertain arrival.",
+    "numeracy_support": "Use the explicitly stated totals, deadlines and constraints. Earlier financial arithmetic is retrieved; no current rate or legal entitlement is implied.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.financial-landscape.07",
+        "context_id": "integrated-decisions-11-practice-01",
+        "supports_from": [],
+        "reasoning": "B meets the stated access constraint as well as the deadline."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "cash.dates",
+        "context_id": "integrated-decisions-11-practice-02",
+        "supports_from": [],
+        "reasoning": "A Wednesday guarantee does not establish Monday access."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.cashflow-budget.06",
+        "context_id": "integrated-decisions-11-practice-03",
+        "supports_from": [],
+        "reasoning": "The totals suffice, but the calendar repeatedly leaves a gap."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.financial-landscape.07",
+        "context_id": "integrated-decisions-11-practice-04",
+        "supports_from": [],
+        "reasoning": "A delivers more under the stated equal cost and timing."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.cashflow-budget.06",
+        "context_id": "integrated-decisions-11-practice-05",
+        "supports_from": [],
+        "reasoning": "Earlier access cannot fill a persistent shortfall in total funds."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.financial-landscape.07",
+        "context_id": "integrated-decisions-11-transfer-01",
+        "supports_from": [],
+        "reasoning": "B combines sufficient amount, timely arrival and accessible collection."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.financial-landscape.07",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A transfer must arrive in a usable form before the payment deadline."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Una transferencia debe llegar utilizable antes del vencimiento."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Uma transferência deve chegar utilizável antes do vencimento."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Which offer meets the need?",
+          "scene": "Both deliver equal amounts before Friday. A requires distant pickup; B reaches the recipient’s accessible account.",
+          "options": [
+            {
+              "label": "A, ignoring pickup"
+            },
+            {
+              "label": "B, accessible delivery"
+            }
+          ],
+          "help": [
+            "Compare collection conditions alongside amount and arrival."
+          ],
+          "feedback": {
+            "met": "B meets the stated access constraint as well as the deadline.",
+            "not_yet": "Compare collection conditions alongside amount and arrival."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué oferta cumple la necesidad?",
+          "scene": "Ambas entregan igual monto antes del viernes. A exige retiro lejano; B llega a la cuenta accesible del destinatario.",
+          "options": [
+            {
+              "label": "A, ignorando el retiro"
+            },
+            {
+              "label": "B, entrega accesible"
+            }
+          ],
+          "help": [
+            "Compara condiciones de cobro, monto y llegada."
+          ],
+          "feedback": {
+            "met": "B cumple la condición de acceso y también el plazo.",
+            "not_yet": "Compara condiciones de cobro, monto y llegada."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual oferta atende?",
+          "scene": "Ambas entregam igual valor antes de sexta. A exige retirada distante; B chega à conta acessível do destinatário.",
+          "options": [
+            {
+              "label": "A, ignorando a retirada"
+            },
+            {
+              "label": "B, entrega acessível"
+            }
+          ],
+          "help": [
+            "Compare condições de recebimento, valor e chegada."
+          ],
+          "feedback": {
+            "met": "B atende à condição de acesso e também ao prazo.",
+            "not_yet": "Compare condições de recebimento, valor e chegada."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.dates",
+      "copy": {
+        "en-US": {
+          "prompt": "Can the receipt fund Monday?",
+          "scene": "Bill due Monday; transfer guaranteed by Wednesday, with no other money.",
+          "options": [
+            {
+              "label": "Not reliably on time"
+            },
+            {
+              "label": "Yes, Wednesday is guaranteed"
+            }
+          ],
+          "help": [
+            "Compare the guaranteed arrival with the actual due date."
+          ],
+          "feedback": {
+            "met": "A Wednesday guarantee does not establish Monday access.",
+            "not_yet": "Compare the guaranteed arrival with the actual due date."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿La entrada paga el lunes?",
+          "scene": "La cuenta vence el lunes; la transferencia solo se garantiza para el miércoles. Sin otro dinero.",
+          "options": [
+            {
+              "label": "No asegura pagar a tiempo"
+            },
+            {
+              "label": "Sí, el miércoles está garantizado"
+            }
+          ],
+          "help": [
+            "Compara la llegada garantizada con la fecha real de vencimiento."
+          ],
+          "feedback": {
+            "met": "Garantizar el miércoles no demuestra acceso el lunes.",
+            "not_yet": "Compara la llegada garantizada con la fecha real de vencimiento."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O recebimento paga segunda?",
+          "scene": "A conta vence segunda; a transferência só é garantida até quarta. Sem outro dinheiro.",
+          "options": [
+            {
+              "label": "Não assegura pagar no prazo"
+            },
+            {
+              "label": "Sim, quarta está garantida"
+            }
+          ],
+          "help": [
+            "Compare a chegada garantida com o vencimento real."
+          ],
+          "feedback": {
+            "met": "Garantir quarta não comprova acesso na segunda.",
+            "not_yet": "Compare a chegada garantida com o vencimento real."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which problem is shown?",
+          "scene": "Each month’s confirmed income covers expenses, but arrives after that month’s bill deadline.",
+          "options": [
+            {
+              "label": "A permanent monthly deficit"
+            },
+            {
+              "label": "No problem at all"
+            },
+            {
+              "label": "A recurring timing gap"
+            }
+          ],
+          "help": [
+            "Separate amount sufficiency from the timing of access."
+          ],
+          "feedback": {
+            "met": "The totals suffice, but the calendar repeatedly leaves a gap.",
+            "not_yet": "Separate amount sufficiency from the timing of access."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué problema aparece?",
+          "scene": "Cada mes el ingreso confirmado cubre gastos, pero llega después del vencimiento de la cuenta.",
+          "options": [
+            {
+              "label": "Un déficit mensual permanente"
+            },
+            {
+              "label": "Ningún problema"
+            },
+            {
+              "label": "Un desfase recurrente de fechas"
+            }
+          ],
+          "help": [
+            "Separa suficiencia de montos y momento de acceso."
+          ],
+          "feedback": {
+            "met": "Los totales alcanzan, pero el calendario deja un desfase recurrente.",
+            "not_yet": "Separa suficiencia de montos y momento de acceso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual problema aparece?",
+          "scene": "Todo mês a renda confirmada cobre despesas, mas chega depois do vencimento da conta.",
+          "options": [
+            {
+              "label": "Um déficit mensal permanente"
+            },
+            {
+              "label": "Nenhum problema"
+            },
+            {
+              "label": "Um desencontro recorrente de datas"
+            }
+          ],
+          "help": [
+            "Separe suficiência de valores e momento de acesso."
+          ],
+          "feedback": {
+            "met": "Os totais bastam, mas o calendário deixa um desencontro recorrente.",
+            "not_yet": "Separe suficiência de valores e momento de acesso."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Which offer delivers more?",
+          "scene": "Same sending cost and timing: A delivers 90 after all deductions; B delivers 85 after all deductions.",
+          "options": [
+            {
+              "label": "Cannot compare net amounts"
+            },
+            {
+              "label": "A"
+            },
+            {
+              "label": "B"
+            }
+          ],
+          "help": [
+            "Compare what the recipient actually receives after deductions."
+          ],
+          "feedback": {
+            "met": "A delivers more under the stated equal cost and timing.",
+            "not_yet": "Compare what the recipient actually receives after deductions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué oferta entrega más?",
+          "scene": "Mismo costo de envío y plazo: A entrega 90 tras descuentos; B entrega 85 tras descuentos.",
+          "options": [
+            {
+              "label": "No se comparan montos netos"
+            },
+            {
+              "label": "A"
+            },
+            {
+              "label": "B"
+            }
+          ],
+          "help": [
+            "Compara lo recibido realmente después de los descuentos."
+          ],
+          "feedback": {
+            "met": "A entrega más con el mismo costo y plazo indicados.",
+            "not_yet": "Compara lo recibido realmente después de los descuentos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual oferta entrega mais?",
+          "scene": "Mesmo custo de envio e prazo: A entrega 90 após descontos; B entrega 85 após descontos.",
+          "options": [
+            {
+              "label": "Não se comparam valores líquidos"
+            },
+            {
+              "label": "A"
+            },
+            {
+              "label": "B"
+            }
+          ],
+          "help": [
+            "Compare o recebimento real depois dos descontos."
+          ],
+          "feedback": {
+            "met": "A entrega mais com o mesmo custo e prazo informados.",
+            "not_yet": "Compare o recebimento real depois dos descontos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Would earlier arrival solve this?",
+          "scene": "Every month expenses exceed confirmed income, even if every transfer arrives before the deadline.",
+          "options": [
+            {
+              "label": "No, an amount gap remains"
+            },
+            {
+              "label": "Yes, timing solves any deficit"
+            }
+          ],
+          "help": [
+            "Changing dates does not increase the amount received."
+          ],
+          "feedback": {
+            "met": "Earlier access cannot fill a persistent shortfall in total funds.",
+            "not_yet": "Changing dates does not increase the amount received."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Llegar antes lo resolvería?",
+          "scene": "Cada mes los gastos superan ingresos confirmados, aunque todas las transferencias lleguen antes del vencimiento.",
+          "options": [
+            {
+              "label": "No, sigue faltando monto"
+            },
+            {
+              "label": "Sí, las fechas resuelven todo déficit"
+            }
+          ],
+          "help": [
+            "Cambiar fechas no aumenta el monto recibido."
+          ],
+          "feedback": {
+            "met": "Acceder antes no cubre un faltante persistente de fondos totales.",
+            "not_yet": "Cambiar fechas no aumenta el monto recibido."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Chegar antes resolveria?",
+          "scene": "Todo mês as despesas superam a renda confirmada, mesmo com transferências antes do vencimento.",
+          "options": [
+            {
+              "label": "Não, ainda falta valor"
+            },
+            {
+              "label": "Sim, datas resolvem qualquer déficit"
+            }
+          ],
+          "help": [
+            "Mudar datas não aumenta o valor recebido."
+          ],
+          "feedback": {
+            "met": "Acesso antecipado não cobre uma falta persistente de recursos totais.",
+            "not_yet": "Mudar datas não aumenta o valor recebido."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.financial-landscape.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Which offer fits this bill?",
+          "scene": "Bill due tomorrow. A: more money, uncertain arrival; B: enough tomorrow, accessible pickup.",
+          "options": [
+            {
+              "label": "B meets the constraints"
+            },
+            {
+              "label": "A because amount is higher"
+            },
+            {
+              "label": "Either: both send money"
+            }
+          ],
+          "help": [
+            "A larger receipt cannot compensate for missing the required deadline."
+          ],
+          "feedback": {
+            "met": "B combines sufficient amount, timely arrival and accessible collection.",
+            "not_yet": "A larger receipt cannot compensate for missing the required deadline."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué oferta sirve para esta cuenta?",
+          "scene": "Vence mañana. A: mayor monto, llegada incierta; B: monto suficiente mañana, retiro accesible.",
+          "options": [
+            {
+              "label": "B cumple las condiciones"
+            },
+            {
+              "label": "A porque entrega más"
+            },
+            {
+              "label": "Cualquiera porque ambas envían"
+            }
+          ],
+          "help": [
+            "Un monto mayor no compensa incumplir el plazo necesario."
+          ],
+          "feedback": {
+            "met": "B combina monto suficiente, llegada a tiempo y cobro accesible.",
+            "not_yet": "Un monto mayor no compensa incumplir el plazo necesario."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual oferta serve para esta conta?",
+          "scene": "Vence amanhã. A: maior valor, chegada incerta; B: valor suficiente amanhã, retirada acessível.",
+          "options": [
+            {
+              "label": "B atende às condições"
+            },
+            {
+              "label": "A porque entrega mais"
+            },
+            {
+              "label": "Qualquer uma porque ambas enviam"
+            }
+          ],
+          "help": [
+            "Um valor maior não compensa perder o prazo necessário."
+          ],
+          "feedback": {
+            "met": "B combina valor suficiente, chegada no prazo e recebimento acessível.",
+            "not_yet": "Um valor maior não compensa perder o prazo necessário."
+          }
+        }
+      }
+    }
+  ]
+}

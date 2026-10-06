@@ -31,6 +31,7 @@
     "contract:check": "tsx src/contract/check.ts",
     "content:gates": "tsx src/contentGates/cli.ts",
     "v2:emit": "tsx src/v2/cli.ts",
+    "course:build": "tsx src/v2/courseBuild.ts",
     "v2:author": "tsx --env-file-if-exists=.env src/v2/releaseCli.ts author",
     "v2:publish": "tsx --env-file-if-exists=.env src/v2/releaseCli.ts publish",
     "v2:hierarchy": "tsx src/v2/hierarchyCli.ts",

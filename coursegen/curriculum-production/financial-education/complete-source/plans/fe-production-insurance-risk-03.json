@@ -1,0 +1,778 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-insurance-risk-part-1",
+  "lesson_id": "fe-production-insurance-risk-03",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.insurance-risk.03"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Identify the policyholder, insured event and beneficiary in a fictional policy.",
+  "title": {
+    "en-US": "Policy Roles",
+    "es-MX": "Lee quién y qué está cubierto",
+    "pt-BR": "Leia quem e o que está coberto"
+  },
+  "new_concepts": [
+    "finance.prod.insurance-risk.03"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Policy Roles\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Lee quién y qué está cubierto\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Leia quem e o que está coberto\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.insurance-risk.03",
+      "observable_action": "Identify the policyholder, insured event and beneficiary in a fictional policy.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.insurance-risk.02"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A policy identifies the contracting person, the covered event and who receives a benefit; these roles need not be identical.",
+    "misconception": "The person paying always receives the benefit, and a named person means every event is covered.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.insurance-risk.03",
+        "context_id": "insurance-risk-03-example-01",
+        "supports_from": [],
+        "reasoning": "Read who holds the contract, which event triggers coverage, and who receives the benefit. Do not infer roles from names."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.insurance-risk.03",
+        "context_id": "insurance-risk-03-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Ana is explicitly named as the contracting policyholder."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.insurance-risk.03",
+        "context_id": "insurance-risk-03-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The stated insured event must match the policy wording."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.insurance-risk.03",
+        "context_id": "insurance-risk-03-practice-01",
+        "supports_from": [],
+        "reasoning": "The named beneficiary receives the benefit under the stated terms."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.insurance-risk.03",
+        "context_id": "insurance-risk-03-practice-02",
+        "supports_from": [],
+        "reasoning": "The missing event terms prevent deciding what triggers coverage."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.insurance-risk.03",
+        "context_id": "insurance-risk-03-practice-03",
+        "supports_from": [],
+        "reasoning": "The contract can assign multiple roles to the same person."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.insurance-risk.03",
+        "context_id": "insurance-risk-03-transfer-01",
+        "supports_from": [],
+        "reasoning": "Pat is the beneficiary identified in the stated contract."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.insurance-risk.03",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A policy identifies the contracting person, the covered event and who receives a benefit; these roles need not be identical."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Póliza dice quién contrata, qué cubre y quién recibe pago. Pueden ser personas distintas."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Apólice identifica contratante, evento coberto e quem recebe benefício; esses papéis não precisam coincidir."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Follow the named roles",
+          "line": "Read who holds the contract, which event triggers coverage, and who receives the benefit. Do not infer roles from names."
+        },
+        "es-MX": {
+          "prompt": "Sigue los papeles indicados",
+          "line": "Lee quién tiene contrato, qué evento activa cobertura y quién recibe beneficio. No deduzcas papeles por los nombres."
+        },
+        "pt-BR": {
+          "prompt": "Siga os papéis dados",
+          "line": "Leia quem tem contrato, que evento aciona cobertura e quem recebe benefício. Não deduza papéis pelos nomes."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Who is the policyholder?",
+          "scene": "Fictional policy: Ana contracts; Rui is insured; Lee receives the stated death benefit.",
+          "options": [
+            {
+              "label": "Ana"
+            },
+            {
+              "label": "Rui"
+            },
+            {
+              "label": "Lee"
+            }
+          ],
+          "help": [
+            "Follow the role assigned by the policy."
+          ],
+          "feedback": {
+            "met": "Ana is explicitly named as the contracting policyholder.",
+            "not_yet": "Follow the role assigned by the policy."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Quién es contratante?",
+          "scene": "Póliza ficticia: Ana contrata; Rui es asegurado; Lee recibe beneficio indicado por fallecimiento.",
+          "options": [
+            {
+              "label": "Ana"
+            },
+            {
+              "label": "Rui"
+            },
+            {
+              "label": "Lee"
+            }
+          ],
+          "help": [
+            "Sigue papel asignado por póliza."
+          ],
+          "feedback": {
+            "met": "Ana está nombrada como contratante de póliza.",
+            "not_yet": "Sigue papel asignado por póliza."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quem é titular do contrato?",
+          "scene": "Apólice fictícia: Ana contrata; Rui é segurado; Lee recebe benefício dado por morte.",
+          "options": [
+            {
+              "label": "Ana"
+            },
+            {
+              "label": "Rui"
+            },
+            {
+              "label": "Lee"
+            }
+          ],
+          "help": [
+            "Siga papel atribuído pela apólice."
+          ],
+          "feedback": {
+            "met": "Ana está nomeada como titular do contrato.",
+            "not_yet": "Siga papel atribuído pela apólice."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Which event triggers this stated benefit?",
+          "scene": "Fictional policy covers insured Rui’s death during its term; no other event is listed.",
+          "options": [
+            {
+              "label": "Rui’s survival"
+            },
+            {
+              "label": "Rui’s death during the term"
+            },
+            {
+              "label": "Rui reaches retirement"
+            }
+          ],
+          "help": [
+            "A named insured does not make all events covered."
+          ],
+          "feedback": {
+            "met": "The stated insured event must match the policy wording.",
+            "not_yet": "A named insured does not make all events covered."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué evento activa beneficio indicado?",
+          "scene": "Póliza ficticia cubre fallecimiento de Rui asegurado durante vigencia; no lista otro evento.",
+          "options": [
+            {
+              "label": "Supervivencia de Rui"
+            },
+            {
+              "label": "Fallecimiento de Rui durante vigencia"
+            },
+            {
+              "label": "Rui llega al retiro"
+            }
+          ],
+          "help": [
+            "Persona asegurada no vuelve cubiertos todos los eventos."
+          ],
+          "feedback": {
+            "met": "Evento asegurado debe coincidir con texto de póliza.",
+            "not_yet": "Persona asegurada no vuelve cubiertos todos los eventos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que evento aciona benefício dado?",
+          "scene": "Apólice fictícia cobre morte do segurado Rui durante vigência; não lista outro evento.",
+          "options": [
+            {
+              "label": "Sobrevivência de Rui"
+            },
+            {
+              "label": "Morte de Rui durante vigência"
+            },
+            {
+              "label": "Rui chega à aposentadoria"
+            }
+          ],
+          "help": [
+            "Pessoa segurada não torna todos os eventos cobertos."
+          ],
+          "feedback": {
+            "met": "Evento segurado deve coincidir com texto da apólice.",
+            "not_yet": "Pessoa segurada não torna todos os eventos cobertos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Who receives the stated benefit?",
+          "scene": "Fictional policy names Noor as beneficiary; Mika pays premiums.",
+          "options": [
+            {
+              "label": "Noor"
+            },
+            {
+              "label": "Mika automatically"
+            },
+            {
+              "label": "Whoever reports first"
+            }
+          ],
+          "help": [
+            "Payment of premiums does not alone identify the beneficiary."
+          ],
+          "feedback": {
+            "met": "The named beneficiary receives the benefit under the stated terms.",
+            "not_yet": "Payment of premiums does not alone identify the beneficiary."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Quién recibe beneficio indicado?",
+          "scene": "Póliza ficticia nombra a Noor para recibir el pago; Mika paga primas.",
+          "options": [
+            {
+              "label": "Noor"
+            },
+            {
+              "label": "Mika por sí solo"
+            },
+            {
+              "label": "Quien reporte primero"
+            }
+          ],
+          "help": [
+            "Pagar primas no identifica por sí solo a quien recibe el pago."
+          ],
+          "feedback": {
+            "met": "Beneficiaria nombrada recibe beneficio según términos indicados.",
+            "not_yet": "Pagar primas no identifica por sí solo a quien recibe el pago."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quem recebe benefício dado?",
+          "scene": "Apólice fictícia nomeia Noor beneficiária; Mika paga prêmios.",
+          "options": [
+            {
+              "label": "Noor"
+            },
+            {
+              "label": "Mika automaticamente"
+            },
+            {
+              "label": "Quem informar primeiro"
+            }
+          ],
+          "help": [
+            "Pagar prêmios não identifica por si só a beneficiária."
+          ],
+          "feedback": {
+            "met": "Beneficiária nomeada recebe benefício conforme termos dados.",
+            "not_yet": "Pagar prêmios não identifica por si só a beneficiária."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.03",
+      "copy": {
+        "en-US": {
+          "prompt": "What remains unknown?",
+          "scene": "A summary names the insured person but omits covered events.",
+          "options": [
+            {
+              "label": "Which events trigger payment"
+            },
+            {
+              "label": "The insured person’s name"
+            },
+            {
+              "label": "Whether events are listed"
+            }
+          ],
+          "help": [
+            "Do not turn an omitted condition into unlimited coverage."
+          ],
+          "feedback": {
+            "met": "The missing event terms prevent deciding what triggers coverage.",
+            "not_yet": "Do not turn an omitted condition into unlimited coverage."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué sigue desconocido?",
+          "scene": "Resumen nombra persona asegurada pero omite eventos cubiertos.",
+          "options": [
+            {
+              "label": "Qué eventos activan pago"
+            },
+            {
+              "label": "Nombre de persona asegurada"
+            },
+            {
+              "label": "Si se enumeran eventos"
+            }
+          ],
+          "help": [
+            "No conviertas condición omitida en cobertura sin límites."
+          ],
+          "feedback": {
+            "met": "Faltan términos para decidir qué activa cobertura.",
+            "not_yet": "No conviertas condición omitida en cobertura sin límites."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que segue desconhecido?",
+          "scene": "Resumo nomeia pessoa segurada mas omite eventos cobertos.",
+          "options": [
+            {
+              "label": "Que eventos acionam pagamento"
+            },
+            {
+              "label": "Nome da pessoa segurada"
+            },
+            {
+              "label": "Se há eventos listados"
+            }
+          ],
+          "help": [
+            "Não transforme condição omitida em cobertura sem limites."
+          ],
+          "feedback": {
+            "met": "Faltam termos para decidir o que aciona cobertura.",
+            "not_yet": "Não transforme condição omitida em cobertura sem limites."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Can these roles coincide here?",
+          "scene": "Fictional policy explicitly names Jo as both policyholder and insured.",
+          "options": [
+            {
+              "label": "Yes, as stated"
+            },
+            {
+              "label": "Yes, so every loss is covered"
+            },
+            {
+              "label": "No, always different people"
+            }
+          ],
+          "help": [
+            "Read the stated roles without assuming extra coverage."
+          ],
+          "feedback": {
+            "met": "The contract can assign multiple roles to the same person.",
+            "not_yet": "Read the stated roles without assuming extra coverage."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Pueden coincidir estos papeles aquí?",
+          "scene": "Póliza ficticia nombra de forma clara a Jo contratante y asegurado.",
+          "options": [
+            {
+              "label": "Sí, según texto"
+            },
+            {
+              "label": "Sí, entonces cubre toda pérdida"
+            },
+            {
+              "label": "No, siempre personas distintas"
+            }
+          ],
+          "help": [
+            "Lee papeles indicados sin suponer cobertura extra."
+          ],
+          "feedback": {
+            "met": "Contrato puede asignar varios papeles a misma persona.",
+            "not_yet": "Lee papeles indicados sin suponer cobertura extra."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Esses papéis podem coincidir aqui?",
+          "scene": "Apólice fictícia nomeia Jo titular e segurado de forma expressa.",
+          "options": [
+            {
+              "label": "Sim, conforme texto"
+            },
+            {
+              "label": "Sim, então cobre toda perda"
+            },
+            {
+              "label": "Não, sempre pessoas distintas"
+            }
+          ],
+          "help": [
+            "Leia papéis dados sem supor cobertura extra."
+          ],
+          "feedback": {
+            "met": "Contrato pode dar vários papéis à mesma pessoa.",
+            "not_yet": "Leia papéis dados sem supor cobertura extra."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.insurance-risk.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Who is entitled under these terms?",
+          "scene": "Fictional contract: Sam holds policy; Lee is insured; Pat receives benefit after Lee’s covered death.",
+          "options": [
+            {
+              "label": "Pat"
+            },
+            {
+              "label": "Sam because Sam signed"
+            },
+            {
+              "label": "Lee’s employer automatically"
+            }
+          ],
+          "help": [
+            "Distinguish holder, insured person and recipient of the benefit."
+          ],
+          "feedback": {
+            "met": "Pat is the beneficiary identified in the stated contract.",
+            "not_yet": "Distinguish holder, insured person and recipient of the benefit."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Quién tiene derecho según términos?",
+          "scene": "Contrato ficticio: Sam contrata; Lee es asegurado; Pat recibe beneficio tras fallecimiento cubierto de Lee.",
+          "options": [
+            {
+              "label": "Pat"
+            },
+            {
+              "label": "Sam porque firmó"
+            },
+            {
+              "label": "Empleador de Lee por sí solo"
+            }
+          ],
+          "help": [
+            "Distingue contratante, persona asegurada y quien recibe el pago."
+          ],
+          "feedback": {
+            "met": "Contrato indica que Pat recibe el pago.",
+            "not_yet": "Distingue contratante, persona asegurada y quien recibe el pago."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quem tem direito pelos termos?",
+          "scene": "Contrato fictício: Sam contrata; Lee é segurado; Pat recebe benefício após morte coberta de Lee.",
+          "options": [
+            {
+              "label": "Pat"
+            },
+            {
+              "label": "Sam porque assinou"
+            },
+            {
+              "label": "Empregador de Lee automaticamente"
+            }
+          ],
+          "help": [
+            "Separe titular, pessoa segurada e quem recebe benefício."
+          ],
+          "feedback": {
+            "met": "Pat é beneficiário identificado no contrato dado.",
+            "not_yet": "Separe titular, pessoa segurada e quem recebe benefício."
+          }
+        }
+      }
+    }
+  ]
+}

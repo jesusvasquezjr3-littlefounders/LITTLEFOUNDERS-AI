@@ -1,0 +1,816 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-solid-05-understand-borrowing",
+  "lesson_id": "fe-solid-20-borrowing-is-an-obligation",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.debt.obligation"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Distinguish borrowed money from earned income and identify the future repayment obligation created by using credit.",
+  "title": {
+    "en-US": "Borrowing creates an obligation",
+    "es-MX": "Pedir prestado crea una obligación",
+    "pt-BR": "Pegar emprestado cria obrigação"
+  },
+  "new_concepts": [
+    "finance.debt.obligation"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Borrowing creates an obligation\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Pedir prestado crea una obligación\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Pegar emprestado cria obrigação\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "debt.obligation",
+      "observable_action": "Distinguish borrowed money from earned income and identify the future repayment obligation created by using credit.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "cash.balance",
+      "cash.dates",
+      "plan.revise"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Borrowing can make money available now, but creates a payment obligation later. Keep both sides in the plan.",
+    "misconception": "Treating an available credit limit or borrowed deposit as extra income with no future claim on resources.",
+    "numeracy_support": "Use money direction and future payment dates; this lesson introduces the obligation before interest calculations.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "debt.obligation",
+        "context_id": "borrowing-is-an-obligation-example-01",
+        "supports_from": [],
+        "reasoning": "Ana receives a loan of 100. Her usable money rises by 100, but she also owes repayment under the agreement."
+      },
+      {
+        "segment_id": "example-02",
+        "skill_id": "debt.obligation",
+        "context_id": "borrowing-is-an-obligation-example-02",
+        "supports_from": [],
+        "reasoning": "A credit limit states how much may be borrowed. Using it creates debt; it is not earned income."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "debt.obligation",
+        "context_id": "borrowing-is-an-obligation-guided-01",
+        "supports_from": [
+          "example-02"
+        ],
+        "reasoning": "The receipt and the repayment obligation exist together."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "debt.obligation",
+        "context_id": "borrowing-is-an-obligation-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Credit availability describes borrowing capacity, not income."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "debt.obligation",
+        "context_id": "borrowing-is-an-obligation-practice-01",
+        "supports_from": [],
+        "reasoning": "A useful purchase still leaves its financing obligation."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "debt.obligation",
+        "context_id": "borrowing-is-an-obligation-practice-02",
+        "supports_from": [],
+        "reasoning": "Receiving money can mean different things depending on its source and terms."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "debt.obligation",
+        "context_id": "borrowing-is-an-obligation-practice-03",
+        "supports_from": [],
+        "reasoning": "The future obligation cannot be planned without its terms."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "debt.obligation",
+        "context_id": "borrowing-is-an-obligation-transfer-01",
+        "supports_from": [],
+        "reasoning": "Receiving the item now does not remove the later payment commitments."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "debt.obligation",
+      "fresh_context": "Apply this skill in a later integrated decision with a different constraint."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Borrowing can make money available now, but creates a payment obligation later. Keep both sides in the plan."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Pedir prestado puede dar dinero hoy, pero crea un pago futuro. Incluye ambos lados en el plan."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Pegar emprestado pode dar dinheiro agora, mas cria um pagamento futuro. Inclua os dois lados no plano."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Cash and obligation",
+          "line": "Ana receives a loan of 100. Her usable money rises by 100, but she also owes repayment under the agreement."
+        },
+        "es-MX": {
+          "prompt": "Dinero y obligación",
+          "line": "Ana recibe un préstamo de 100. Su dinero utilizable aumenta 100, pero también debe pagar según el acuerdo."
+        },
+        "pt-BR": {
+          "prompt": "Dinheiro e obrigação",
+          "line": "Ana recebe um empréstimo de 100. Seu dinheiro utilizável aumenta 100, mas também deve pagar conforme o acordo."
+        }
+      }
+    },
+    {
+      "id": "example-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A limit is not income",
+          "line": "A credit limit states how much may be borrowed. Using it creates debt; it is not earned income."
+        },
+        "es-MX": {
+          "prompt": "Un límite no es ingreso",
+          "line": "Un límite de crédito indica cuánto se puede pedir según sus condiciones. Usarlo crea deuda; no es ingreso ganado."
+        },
+        "pt-BR": {
+          "prompt": "Um limite não é renda",
+          "line": "Um limite de crédito indica quanto se pode pegar conforme suas condições. Usá-lo cria dívida; não é renda ganha."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.debt.obligation",
+      "copy": {
+        "en-US": {
+          "prompt": "Which record describes the loan?",
+          "scene": "Ana receives 100 that must be repaid under a loan agreement.",
+          "options": [
+            {
+              "label": "Only money leaving immediately"
+            },
+            {
+              "label": "Income with no repayment"
+            },
+            {
+              "label": "Usable cash plus an obligation"
+            }
+          ],
+          "help": [
+            "Track both what arrived and what the agreement requires later."
+          ],
+          "feedback": {
+            "met": "The receipt and the repayment obligation exist together.",
+            "not_yet": "Track both what arrived and what the agreement requires later."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué registro describe el préstamo?",
+          "scene": "Ana recibe 100 que debe devolver según un acuerdo de préstamo.",
+          "options": [
+            {
+              "label": "Solo dinero que sale de inmediato"
+            },
+            {
+              "label": "Ingreso sin devolución"
+            },
+            {
+              "label": "Dinero utilizable y una obligación"
+            }
+          ],
+          "help": [
+            "Registra lo recibido y lo que el acuerdo exige después."
+          ],
+          "feedback": {
+            "met": "La entrada y la obligación de pago existen juntas.",
+            "not_yet": "Registra lo recibido y lo que el acuerdo exige después."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual registro descreve o empréstimo?",
+          "scene": "Ana recebe 100 que deve devolver conforme um acordo de empréstimo.",
+          "options": [
+            {
+              "label": "Só dinheiro saindo imediatamente"
+            },
+            {
+              "label": "Renda sem devolução"
+            },
+            {
+              "label": "Dinheiro utilizável e uma obrigação"
+            }
+          ],
+          "help": [
+            "Registre o recebido e o que o acordo exige depois."
+          ],
+          "feedback": {
+            "met": "A entrada e a obrigação de pagamento existem juntas.",
+            "not_yet": "Registre o recebido e o que o acordo exige depois."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.debt.obligation",
+      "copy": {
+        "en-US": {
+          "prompt": "What is an unused credit limit?",
+          "scene": "A card permits borrowing under its stated limit.",
+          "options": [
+            {
+              "label": "Permission to borrow, not earnings"
+            },
+            {
+              "label": "Savings already owned without repayment"
+            },
+            {
+              "label": "A payment already received for work"
+            }
+          ],
+          "help": [
+            "Check whether using the amount creates a debt."
+          ],
+          "feedback": {
+            "met": "Credit availability describes borrowing capacity, not income.",
+            "not_yet": "Check whether using the amount creates a debt."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué representa un límite de crédito sin usar?",
+          "scene": "Una tarjeta permite pedir hasta su límite según sus condiciones.",
+          "options": [
+            {
+              "label": "Capacidad de pedir, no dinero ganado"
+            },
+            {
+              "label": "Ahorro propio sin devolución"
+            },
+            {
+              "label": "Un pago ya recibido por trabajar"
+            }
+          ],
+          "help": [
+            "Comprueba si usar el monto crea una deuda."
+          ],
+          "feedback": {
+            "met": "El crédito disponible describe capacidad de pedir, no ingreso.",
+            "not_yet": "Comprueba si usar el monto crea una deuda."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que representa um limite de crédito não usado?",
+          "scene": "Um cartão permite tomar até seu limite conforme suas condições.",
+          "options": [
+            {
+              "label": "Capacidade de tomar, não dinheiro ganho"
+            },
+            {
+              "label": "Poupança própria sem devolução"
+            },
+            {
+              "label": "Um pagamento já recebido por trabalho"
+            }
+          ],
+          "help": [
+            "Confira se usar o valor cria uma dívida."
+          ],
+          "feedback": {
+            "met": "O crédito disponível descreve capacidade de tomar, não renda.",
+            "not_yet": "Confira se usar o valor cria uma dívida."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.debt.obligation",
+      "copy": {
+        "en-US": {
+          "prompt": "Which future item belongs in the plan?",
+          "scene": "You buy a necessary tool using a loan.",
+          "options": [
+            {
+              "label": "Only the cash received"
+            },
+            {
+              "label": "Only the tool value"
+            },
+            {
+              "label": "The required repayment dates and amounts"
+            }
+          ],
+          "help": [
+            "The purpose of a purchase does not cancel its repayment terms."
+          ],
+          "feedback": {
+            "met": "A useful purchase still leaves its financing obligation.",
+            "not_yet": "The purpose of a purchase does not cancel its repayment terms."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué dato futuro pertenece al plan?",
+          "scene": "Compras una herramienta necesaria mediante un préstamo.",
+          "options": [
+            {
+              "label": "Solo el dinero recibido"
+            },
+            {
+              "label": "Solo el valor de la herramienta"
+            },
+            {
+              "label": "Fechas y montos obligatorios de pago"
+            }
+          ],
+          "help": [
+            "El propósito de la compra no elimina sus condiciones de pago."
+          ],
+          "feedback": {
+            "met": "Una compra útil conserva su obligación de financiamiento.",
+            "not_yet": "El propósito de la compra no elimina sus condiciones de pago."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual dado futuro pertence ao plano?",
+          "scene": "Você compra uma ferramenta necessária usando um empréstimo.",
+          "options": [
+            {
+              "label": "Só o dinheiro recebido"
+            },
+            {
+              "label": "Só o valor da ferramenta"
+            },
+            {
+              "label": "Datas e valores obrigatórios de pagamento"
+            }
+          ],
+          "help": [
+            "O propósito da compra não elimina suas condições de pagamento."
+          ],
+          "feedback": {
+            "met": "Uma compra útil mantém sua obrigação de financiamento.",
+            "not_yet": "O propósito da compra não elimina suas condições de pagamento."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.debt.obligation",
+      "copy": {
+        "en-US": {
+          "prompt": "Which receipt creates no loan debt?",
+          "scene": "Compare earned pay with a loan requiring repayment.",
+          "options": [
+            {
+              "label": "The completed payment for work"
+            },
+            {
+              "label": "Both are loans because money arrives"
+            },
+            {
+              "label": "The loan deposit"
+            }
+          ],
+          "help": [
+            "Ask whether this receipt must be repaid under an agreement."
+          ],
+          "feedback": {
+            "met": "Receiving money can mean different things depending on its source and terms.",
+            "not_yet": "Ask whether this receipt must be repaid under an agreement."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué entrada no crea esa deuda de préstamo?",
+          "scene": "Compara un pago por trabajo realizado con un préstamo que exige devolución.",
+          "options": [
+            {
+              "label": "El pago por trabajo realizado"
+            },
+            {
+              "label": "Ambos son préstamos porque entra dinero"
+            },
+            {
+              "label": "El depósito del préstamo"
+            }
+          ],
+          "help": [
+            "Pregunta si esta entrada debe devolverse según un acuerdo."
+          ],
+          "feedback": {
+            "met": "Recibir dinero tiene distinto significado según su origen y condiciones.",
+            "not_yet": "Pregunta si esta entrada debe devolverse según un acuerdo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual entrada não cria essa dívida de empréstimo?",
+          "scene": "Compare um pagamento por trabalho feito com um empréstimo que exige devolução.",
+          "options": [
+            {
+              "label": "O pagamento por trabalho feito"
+            },
+            {
+              "label": "Ambos são empréstimos porque entra dinheiro"
+            },
+            {
+              "label": "O depósito do empréstimo"
+            }
+          ],
+          "help": [
+            "Pergunte se essa entrada deve ser devolvida conforme um acordo."
+          ],
+          "feedback": {
+            "met": "Receber dinheiro tem significados diferentes conforme a origem e condições.",
+            "not_yet": "Pergunte se essa entrada deve ser devolvida conforme um acordo."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.debt.obligation",
+      "copy": {
+        "en-US": {
+          "prompt": "What is missing before deciding?",
+          "scene": "An offer omits its repayment schedule.",
+          "options": [
+            {
+              "label": "Whether the amount appears attractive"
+            },
+            {
+              "label": "Only the amount received today"
+            },
+            {
+              "label": "What must be paid and when"
+            }
+          ],
+          "help": [
+            "A cash receipt alone does not describe the whole agreement."
+          ],
+          "feedback": {
+            "met": "The future obligation cannot be planned without its terms.",
+            "not_yet": "A cash receipt alone does not describe the whole agreement."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué falta antes de decidir?",
+          "scene": "Una oferta anuncia dinero hoy, pero no muestra el calendario de devolución.",
+          "options": [
+            {
+              "label": "Si el monto parece atractivo"
+            },
+            {
+              "label": "Solo el monto recibido hoy"
+            },
+            {
+              "label": "Qué se debe pagar y cuándo"
+            }
+          ],
+          "help": [
+            "Una entrada de dinero no describe todo el acuerdo."
+          ],
+          "feedback": {
+            "met": "Sin condiciones no se puede planear la obligación futura.",
+            "not_yet": "Una entrada de dinero no describe todo el acuerdo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que falta antes de decidir?",
+          "scene": "Uma oferta anuncia dinheiro hoje, mas não mostra o calendário de devolução.",
+          "options": [
+            {
+              "label": "Se o valor parece atraente"
+            },
+            {
+              "label": "Só o valor recebido hoje"
+            },
+            {
+              "label": "O que deve ser pago e quando"
+            }
+          ],
+          "help": [
+            "Uma entrada de dinheiro não descreve todo o acordo."
+          ],
+          "feedback": {
+            "met": "Sem condições não se pode planejar a obrigação futura.",
+            "not_yet": "Uma entrada de dinheiro não descreve todo o acordo."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.debt.obligation",
+      "copy": {
+        "en-US": {
+          "prompt": "What happens when you accept?",
+          "scene": "Take a device now; pay agreed installments later.",
+          "options": [
+            {
+              "label": "You create future payment commitments"
+            },
+            {
+              "label": "The later payments become income"
+            },
+            {
+              "label": "No obligation exists until the last date"
+            }
+          ],
+          "help": [
+            "The borrowing arrangement may appear at a checkout rather than a bank."
+          ],
+          "feedback": {
+            "met": "Receiving the item now does not remove the later payment commitments.",
+            "not_yet": "The borrowing arrangement may appear at a checkout rather than a bank."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué ocurre si aceptas estas cuotas?",
+          "scene": "Un vendedor entrega un aparato hoy y permite pagar cuotas acordadas después.",
+          "options": [
+            {
+              "label": "Creas compromisos futuros de pago"
+            },
+            {
+              "label": "Los pagos futuros se vuelven ingreso"
+            },
+            {
+              "label": "No hay obligación hasta la última fecha"
+            }
+          ],
+          "help": [
+            "El financiamiento puede aparecer en la caja, no solo en un banco."
+          ],
+          "feedback": {
+            "met": "Recibir el aparato hoy no elimina los pagos posteriores.",
+            "not_yet": "El financiamiento puede aparecer en la caja, no solo en un banco."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que ocorre ao aceitar estas parcelas?",
+          "scene": "Um vendedor entrega um aparelho agora e permite pagar parcelas combinadas depois.",
+          "options": [
+            {
+              "label": "Você cria compromissos futuros de pagamento"
+            },
+            {
+              "label": "Os pagamentos futuros viram renda"
+            },
+            {
+              "label": "Não há obrigação até a última data"
+            }
+          ],
+          "help": [
+            "O financiamento pode aparecer no caixa, não só em um banco."
+          ],
+          "feedback": {
+            "met": "Receber o aparelho agora não elimina os pagamentos posteriores.",
+            "not_yet": "O financiamento pode aparecer no caixa, não só em um banco."
+          }
+        }
+      }
+    }
+  ]
+}

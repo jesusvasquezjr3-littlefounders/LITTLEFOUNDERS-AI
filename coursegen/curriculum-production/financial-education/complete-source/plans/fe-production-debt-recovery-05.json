@@ -1,0 +1,845 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-debt-recovery-part-1",
+  "lesson_id": "fe-production-debt-recovery-05",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.debt-recovery.05"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Compare a proposed restructuring using total cost, term and payment feasibility.",
+  "title": {
+    "en-US": "Replacement plans",
+    "es-MX": "Lee el plan nuevo completo",
+    "pt-BR": "Leia o novo plano inteiro"
+  },
+  "new_concepts": [
+    "finance.prod.debt-recovery.05"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Read the whole replacement plan\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Lee el plan nuevo completo\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Leia o novo plano inteiro\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.debt-recovery.05",
+      "observable_action": "Compare a proposed restructuring using total cost, term and payment feasibility.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.credit-mechanics.06",
+      "prod.credit-mechanics.07"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A replacement schedule changes payment size, duration and possibly total cost.",
+    "misconception": "Treating a smaller revised installment as proof of lower total cost or guaranteed affordability.",
+    "numeracy_support": "Every quantity and assumption needed to decide is visible in the current scenario. Examples explain the relationship before independent application.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.debt-recovery.05",
+        "context_id": "fe-production-debt-recovery-05-example-01",
+        "supports_from": [],
+        "reasoning": "A smaller installment can last longer and cost more overall. Compare total payments, fees, duration and your actual payment capacity."
+      },
+      {
+        "segment_id": "guided-worked-01",
+        "skill_id": "prod.debt-recovery.05",
+        "context_id": "fe-production-debt-recovery-05-guided-worked-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The replacement produces a larger remaining total here."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.debt-recovery.05",
+        "context_id": "fe-production-debt-recovery-05-guided-01",
+        "supports_from": [
+          "guided-worked-01"
+        ],
+        "reasoning": "8 × 45 + 15 = 375."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.debt-recovery.05",
+        "context_id": "fe-production-debt-recovery-05-practice-02",
+        "supports_from": [],
+        "reasoning": "18 × 30 = 540; included fees are not added again."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.debt-recovery.05",
+        "context_id": "fe-production-debt-recovery-05-practice-03",
+        "supports_from": [],
+        "reasoning": "Installment size alone does not reveal total repayment."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.debt-recovery.05",
+        "context_id": "fe-production-debt-recovery-05-practice-04",
+        "supports_from": [],
+        "reasoning": "A lower total can still have an unaffordable payment date."
+      },
+      {
+        "segment_id": "transfer-05",
+        "skill_id": "prod.debt-recovery.05",
+        "context_id": "fe-production-debt-recovery-05-transfer-05",
+        "supports_from": [],
+        "reasoning": "New collateral changes consequences even when installment size falls."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.debt-recovery.05",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A replacement schedule changes payment size, duration and possibly total cost."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un calendario nuevo cambia tamaño del pago, duración y posiblemente costo total."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Um calendário novo muda tamanho da parcela, prazo e talvez custo total."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Follow the evidence",
+          "line": "A smaller installment can last longer and cost more overall. Compare total payments, fees, duration and your actual payment capacity."
+        },
+        "es-MX": {
+          "prompt": "Sigue las pruebas",
+          "line": "Una cuota menor puede durar más y costar más en total. Compara pagos totales, cargos, duración y capacidad real."
+        },
+        "pt-BR": {
+          "prompt": "Siga as provas",
+          "line": "Uma parcela menor pode durar mais e custar mais no total. Compare pagamentos totais, tarifas, prazo e capacidade real."
+        }
+      }
+    },
+    {
+      "id": "guided-worked-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "step-1"
+          },
+          {
+            "id": "step-2"
+          },
+          {
+            "id": "step-3"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "step-2",
+          "step-3"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "step-2": "440",
+          "step-3": "40"
+        }
+      },
+      "item_role": "practice",
+      "copy": {
+        "en-US": {
+          "prompt": "Fictional replacement: 12 payments of 35; separate fee 20.",
+          "steps": [
+            {
+              "expression": "12 * 35",
+              "result": "420",
+              "spokenText": "Add the full payment schedule."
+            },
+            {
+              "expression": "420 + 20",
+              "result": "440",
+              "spokenText": "Include the separate fee."
+            },
+            {
+              "expression": "440 - 400",
+              "result": "40",
+              "spokenText": "Compared with an old remaining total of 400."
+            }
+          ],
+          "feedback": {
+            "met": "The replacement produces a larger remaining total here.",
+            "not_yet": "Compare remaining totals from the same decision date."
+          },
+          "help": [
+            "Compare remaining totals from the same decision date."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Reemplazo ficticio: 12 pagos de 35; comisión aparte 20.",
+          "steps": [
+            {
+              "expression": "12 * 35",
+              "result": "420",
+              "spokenText": "Suma todo el calendario de pagos."
+            },
+            {
+              "expression": "420 + 20",
+              "result": "440",
+              "spokenText": "Incluye la comisión separada."
+            },
+            {
+              "expression": "440 - 400",
+              "result": "40",
+              "spokenText": "Comparado con un total pendiente anterior de 400."
+            }
+          ],
+          "feedback": {
+            "met": "El reemplazo produce un total pendiente mayor en este caso.",
+            "not_yet": "Compara totales pendientes desde la misma fecha de decisión."
+          },
+          "help": [
+            "Compara totales pendientes desde la misma fecha de decisión."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Troca fictícia: 12 parcelas de 35; tarifa separada 20.",
+          "steps": [
+            {
+              "expression": "12 * 35",
+              "result": "420",
+              "spokenText": "Some todo o calendário de parcelas."
+            },
+            {
+              "expression": "420 + 20",
+              "result": "440",
+              "spokenText": "Inclua a tarifa separada."
+            },
+            {
+              "expression": "440 - 400",
+              "result": "40",
+              "spokenText": "Comparado com um total restante anterior de 400."
+            }
+          ],
+          "feedback": {
+            "met": "A troca produz um total restante maior neste caso.",
+            "not_yet": "Compare totais restantes a partir da mesma data de decisão."
+          },
+          "help": [
+            "Compare totais restantes a partir da mesma data de decisão."
+          ]
+        }
+      },
+      "knowledge_component_id": "finance.prod.debt-recovery.05"
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.05",
+      "copy": {
+        "en-US": {
+          "prompt": "New total from today?",
+          "scene": "Fictional new plan: 8 payments of 45 plus separate fee 15; nothing else.",
+          "options": [
+            {
+              "label": "375"
+            },
+            {
+              "label": "360"
+            },
+            {
+              "label": "60"
+            }
+          ],
+          "help": [
+            "Count all payments and every separate charge."
+          ],
+          "feedback": {
+            "met": "8 × 45 + 15 = 375.",
+            "not_yet": "Count all payments and every separate charge."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Total nuevo desde hoy?",
+          "scene": "Plan nuevo ficticio: 8 pagos de 45 más comisión aparte 15; nada más.",
+          "options": [
+            {
+              "label": "375"
+            },
+            {
+              "label": "360"
+            },
+            {
+              "label": "60"
+            }
+          ],
+          "help": [
+            "Cuenta todos los pagos y cada cargo separado."
+          ],
+          "feedback": {
+            "met": "8 × 45 + 15 = 375.",
+            "not_yet": "Cuenta todos los pagos y cada cargo separado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Total novo a partir de hoje?",
+          "scene": "Plano novo fictício: 8 parcelas de 45 mais tarifa separada 15; nada mais.",
+          "options": [
+            {
+              "label": "375"
+            },
+            {
+              "label": "360"
+            },
+            {
+              "label": "60"
+            }
+          ],
+          "help": [
+            "Conte todas as parcelas e cada cobrança separada."
+          ],
+          "feedback": {
+            "met": "8 × 45 + 15 = 375.",
+            "not_yet": "Conte todas as parcelas e cada cobrança separada."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          8,
+          45,
+          15
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Total remaining payments?",
+          "scene": "Replacement schedule: 18 payments of 30; fees already included.",
+          "options": [
+            {
+              "label": "30"
+            },
+            {
+              "label": "540"
+            },
+            {
+              "label": "48"
+            }
+          ],
+          "help": [
+            "Use the full number of payments."
+          ],
+          "feedback": {
+            "met": "18 × 30 = 540; included fees are not added again.",
+            "not_yet": "Use the full number of payments."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Total de pagos restantes?",
+          "scene": "Calendario nuevo: 18 pagos de 30; comisiones ya incluidas.",
+          "options": [
+            {
+              "label": "30"
+            },
+            {
+              "label": "540"
+            },
+            {
+              "label": "48"
+            }
+          ],
+          "help": [
+            "Usa la cantidad completa de pagos."
+          ],
+          "feedback": {
+            "met": "18 × 30 = 540; cargos incluidos no se suman otra vez.",
+            "not_yet": "Usa la cantidad completa de pagos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Total de parcelas restantes?",
+          "scene": "Calendário novo: 18 parcelas de 30; tarifas já incluídas.",
+          "options": [
+            {
+              "label": "30"
+            },
+            {
+              "label": "540"
+            },
+            {
+              "label": "48"
+            }
+          ],
+          "help": [
+            "Use a quantidade completa de parcelas."
+          ],
+          "feedback": {
+            "met": "18 × 30 = 540; tarifas incluídas não se somam de novo.",
+            "not_yet": "Use a quantidade completa de parcelas."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          18,
+          30
+        ],
+        "expression": {
+          "op": "multiply",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Smaller installment means cheaper?",
+          "scene": "Plan A: higher installments, shorter term. Plan B: lower installments, longer term.",
+          "options": [
+            {
+              "label": "Smaller always means cheaper"
+            },
+            {
+              "label": "Calculate all payments and charges"
+            },
+            {
+              "label": "Longer terms erase principal"
+            }
+          ],
+          "help": [
+            "Compare complete schedules from the same starting date."
+          ],
+          "feedback": {
+            "met": "Installment size alone does not reveal total repayment.",
+            "not_yet": "Compare complete schedules from the same starting date."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Pago menor prueba costo total menor?",
+          "scene": "Plan A: cuotas mayores, plazo corto. Plan B: cuotas menores, plazo largo.",
+          "options": [
+            {
+              "label": "Sí, menor siempre significa más barato"
+            },
+            {
+              "label": "No, calcula todos los pagos y cargos pendientes"
+            },
+            {
+              "label": "Sí, plazo largo elimina capital"
+            }
+          ],
+          "help": [
+            "Compara calendarios completos desde la misma fecha."
+          ],
+          "feedback": {
+            "met": "El tamaño de cuota solo no revela el total pagado.",
+            "not_yet": "Compara calendarios completos desde la misma fecha."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Parcela menor prova custo total menor?",
+          "scene": "Plano A: parcelas maiores, prazo curto. Plano B: parcelas menores, prazo longo.",
+          "options": [
+            {
+              "label": "Sim, menor sempre significa mais barato"
+            },
+            {
+              "label": "Não, calcule todos os pagamentos e custos restantes"
+            },
+            {
+              "label": "Sim, prazo longo elimina principal"
+            }
+          ],
+          "help": [
+            "Compare calendários completos a partir da mesma data."
+          ],
+          "feedback": {
+            "met": "O tamanho da parcela sozinho não revela o total pago.",
+            "not_yet": "Compare calendários completos a partir da mesma data."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.05",
+      "copy": {
+        "en-US": {
+          "prompt": "What determines feasibility?",
+          "scene": "A cheaper replacement requires a large immediate payment before income arrives.",
+          "options": [
+            {
+              "label": "Cash available on that actual date"
+            },
+            {
+              "label": "Assume the provider accepts any date"
+            },
+            {
+              "label": "Only its lower overall total"
+            }
+          ],
+          "help": [
+            "Check timing as well as total cost."
+          ],
+          "feedback": {
+            "met": "A lower total can still have an unaffordable payment date.",
+            "not_yet": "Check timing as well as total cost."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué más determina viabilidad?",
+          "scene": "Un reemplazo más barato exige pago inicial grande antes de recibir ingreso.",
+          "options": [
+            {
+              "label": "Efectivo disponible en esa fecha real"
+            },
+            {
+              "label": "Suponer cualquier fecha aceptada"
+            },
+            {
+              "label": "Solo su total general menor"
+            }
+          ],
+          "help": [
+            "Revisa fechas además del costo total."
+          ],
+          "feedback": {
+            "met": "Un total menor puede tener una fecha de pago inviable.",
+            "not_yet": "Revisa fechas además del costo total."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que mais determina viabilidade?",
+          "scene": "Uma troca mais barata exige entrada grande antes de receber renda.",
+          "options": [
+            {
+              "label": "Dinheiro disponível nessa data real"
+            },
+            {
+              "label": "Supor que qualquer data será aceita"
+            },
+            {
+              "label": "Só seu total geral menor"
+            }
+          ],
+          "help": [
+            "Confira datas além do custo total."
+          ],
+          "feedback": {
+            "met": "Um total menor pode ter uma data de pagamento inviável.",
+            "not_yet": "Confira datas além do custo total."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.debt-recovery.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Assess before accepting?",
+          "scene": "A revised contract lowers monthly payments but adds collateral and extends repayment.",
+          "options": [
+            {
+              "label": "Cost, feasibility and newly exposed asset"
+            },
+            {
+              "label": "Only the lower monthly amount"
+            },
+            {
+              "label": "Assume previous consequences stay identical"
+            }
+          ],
+          "help": [
+            "Read all changed terms, not just the headline payment."
+          ],
+          "feedback": {
+            "met": "New collateral changes consequences even when installment size falls.",
+            "not_yet": "Read all changed terms, not just the headline payment."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué evaluar antes de aceptar?",
+          "scene": "Un contrato nuevo baja mensualidades, pero añade garantía y extiende pagos.",
+          "options": [
+            {
+              "label": "Costo, viabilidad y bien ahora expuesto"
+            },
+            {
+              "label": "Solo la mensualidad menor"
+            },
+            {
+              "label": "Suponer consecuencias previas idénticas"
+            }
+          ],
+          "help": [
+            "Lee todas las condiciones cambiadas, no solo el pago anunciado."
+          ],
+          "feedback": {
+            "met": "Una nueva garantía cambia consecuencias aunque baje la cuota.",
+            "not_yet": "Lee todas las condiciones cambiadas, no solo el pago anunciado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que avaliar antes de aceitar?",
+          "scene": "Um contrato novo baixa parcelas, mas soma garantia e estende pagamentos.",
+          "options": [
+            {
+              "label": "Custo, viabilidade e bem agora exposto"
+            },
+            {
+              "label": "Só a parcela mensal menor"
+            },
+            {
+              "label": "Supor efeitos anteriores iguais"
+            }
+          ],
+          "help": [
+            "Leia todas as regras alteradas, não só o pagamento anunciado."
+          ],
+          "feedback": {
+            "met": "Uma nova garantia muda efeitos mesmo se a parcela cair.",
+            "not_yet": "Leia todas as regras alteradas, não só o pagamento anunciado."
+          }
+        }
+      }
+    }
+  ]
+}

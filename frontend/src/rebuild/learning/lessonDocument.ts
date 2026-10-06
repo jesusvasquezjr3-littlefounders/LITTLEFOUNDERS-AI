@@ -179,7 +179,7 @@ const runningLedgerSegment = z.object({
   grading: optionalServer,
   visual: z.object({ type: z.literal('balance-meter') }).strict(),
   payload: z.object({ initial: nonnegativeInteger.max(100), sale: positiveInteger.max(100),
-    cost: positiveInteger.max(100), maxEntries: positiveInteger.max(8) }).strict(),
+    cost: positiveInteger.max(100), maxEntries: positiveInteger.max(8), personal: z.boolean().optional(), currency: z.enum(['coins', 'local']).optional() }).strict(),
 }).strict();
 
 const growthComparisonSegment = z.object({

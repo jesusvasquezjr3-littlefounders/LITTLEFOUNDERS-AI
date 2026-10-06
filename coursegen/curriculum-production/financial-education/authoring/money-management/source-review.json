@@ -1,0 +1,10 @@
+{
+  "review_date": "2026-10-05",
+  "scope": "Credit-record concepts and cautious, jurisdiction-neutral verification steps; no universal legal deadlines, deletion entitlement or guaranteed lender decision is taught.",
+  "sources": [
+    { "authority": "CFPB", "market": "US", "url": "https://www.consumerfinance.gov/ask-cfpb/how-do-i-dispute-an-error-on-my-credit-report-en-314/", "supports": "Identify the specific disputed entry, supply relevant records and use verified reporting channels." },
+    { "authority": "CONDUSEF", "market": "MX", "url": "https://revista.condusef.gob.mx/usuario-inteligente/a-tu-favor/2026/01/revisa-tu-reporte/", "supports": "Review the account information in the credit report and investigate inconsistencies." },
+    { "authority": "Banco Central do Brasil", "market": "BR", "url": "https://bcb.gov.br/meubc/faqs/s/relatorio-de-emprestimos-e-financiamentos-scr", "supports": "Check reporting periods and institution-provided loan records. SCR is not presented as interchangeable with every private credit report or score." }
+  ],
+  "editorial_status": "Author source check only; coordinator review and actual-player checks remain separate."
+}

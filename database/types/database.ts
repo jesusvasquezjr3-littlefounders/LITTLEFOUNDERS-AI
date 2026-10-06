@@ -2469,6 +2469,7 @@ export type Database = {
           description: string
           gate_id: string
           gate_number: number | null
+          owner_role: string
           spec_refs: string[]
         }
         Insert: {
@@ -2476,6 +2477,7 @@ export type Database = {
           description: string
           gate_id: string
           gate_number?: number | null
+          owner_role?: string
           spec_refs?: string[]
         }
         Update: {
@@ -2483,6 +2485,7 @@ export type Database = {
           description?: string
           gate_id?: string
           gate_number?: number | null
+          owner_role?: string
           spec_refs?: string[]
         }
         Relationships: []
@@ -2507,6 +2510,70 @@ export type Database = {
             isOneToOne: true
             referencedRelation: "forge_release_gates"
             referencedColumns: ["gate_id"]
+          },
+        ]
+      }
+      gate_effectiveness_reviews: {
+        Row: {
+          escape_id: string
+          gate_change_ref: string | null
+          gate_id: string
+          id: string
+          opened_at: string
+          outcome: string | null
+          owner_role: string
+          resolution_note: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          status: string
+        }
+        Insert: {
+          escape_id: string
+          gate_change_ref?: string | null
+          gate_id: string
+          id?: string
+          opened_at?: string
+          outcome?: string | null
+          owner_role: string
+          resolution_note?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string
+        }
+        Update: {
+          escape_id?: string
+          gate_change_ref?: string | null
+          gate_id?: string
+          id?: string
+          opened_at?: string
+          outcome?: string | null
+          owner_role?: string
+          resolution_note?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gate_effectiveness_reviews_escape_id_fkey"
+            columns: ["escape_id"]
+            isOneToOne: true
+            referencedRelation: "content_defect_escapes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "gate_effectiveness_reviews_gate_id_fkey"
+            columns: ["gate_id"]
+            isOneToOne: false
+            referencedRelation: "forge_release_gates"
+            referencedColumns: ["gate_id"]
+          },
+          {
+            foreignKeyName: "gate_effectiveness_reviews_resolved_by_fkey"
+            columns: ["resolved_by"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -3988,6 +4055,50 @@ export type Database = {
           },
         ]
       }
+      learning_retention_release_baseline: {
+        Row: {
+          correct: number
+          kc_id: string
+          kc_key: string
+          learners: number
+          period_end: string
+          period_start: string
+          recorded_at: string
+          release_id: string
+          window_days: number
+        }
+        Insert: {
+          correct: number
+          kc_id: string
+          kc_key: string
+          learners: number
+          period_end: string
+          period_start: string
+          recorded_at?: string
+          release_id: string
+          window_days: number
+        }
+        Update: {
+          correct?: number
+          kc_id?: string
+          kc_key?: string
+          learners?: number
+          period_end?: string
+          period_start?: string
+          recorded_at?: string
+          release_id?: string
+          window_days?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "learning_retention_release_baseline_kc_id_fkey"
+            columns: ["kc_id"]
+            isOneToOne: false
+            referencedRelation: "kc"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       learning_stats: {
         Row: {
           day_lessons_passed: number
@@ -4430,6 +4541,93 @@ export type Database = {
           },
         ]
       }
+      lesson_pedagogical_reviews: {
+        Row: {
+          author_id: string | null
+          author_source: string
+          checks: Json
+          content_fingerprint: string | null
+          document_version_id: string | null
+          finding_count: number
+          forge_items: Json
+          id: string
+          lesson_id: string
+          recorded_at: string
+          result: string
+          reviewer_id: string | null
+          seq: number
+          subject_kind: string
+        }
+        Insert: {
+          author_id?: string | null
+          author_source: string
+          checks: Json
+          content_fingerprint?: string | null
+          document_version_id?: string | null
+          finding_count: number
+          forge_items?: Json
+          id?: string
+          lesson_id: string
+          recorded_at?: string
+          result: string
+          reviewer_id?: string | null
+          seq?: never
+          subject_kind: string
+        }
+        Update: {
+          author_id?: string | null
+          author_source?: string
+          checks?: Json
+          content_fingerprint?: string | null
+          document_version_id?: string | null
+          finding_count?: number
+          forge_items?: Json
+          id?: string
+          lesson_id?: string
+          recorded_at?: string
+          result?: string
+          reviewer_id?: string | null
+          seq?: never
+          subject_kind?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lesson_pedagogical_reviews_author_id_fkey"
+            columns: ["author_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "lesson_pedagogical_reviews_document_version_id_fkey"
+            columns: ["document_version_id"]
+            isOneToOne: false
+            referencedRelation: "lesson_document_versions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lesson_pedagogical_reviews_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_lessons_sync"
+            referencedColumns: ["lesson_id"]
+          },
+          {
+            foreignKeyName: "lesson_pedagogical_reviews_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lesson_pedagogical_reviews_reviewer_id_fkey"
+            columns: ["reviewer_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       lesson_progress: {
         Row: {
           attempts: number
@@ -4561,6 +4759,77 @@ export type Database = {
           },
         ]
       }
+      lesson_stage3_review_items: {
+        Row: {
+          created_at: string
+          document_version_id: string | null
+          flag_text: string
+          gate: number
+          id: string
+          lesson_id: string
+          locale: string | null
+          resolution: string | null
+          resolution_note: string | null
+          review_id: string | null
+          run_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          document_version_id?: string | null
+          flag_text: string
+          gate: number
+          id?: string
+          lesson_id: string
+          locale?: string | null
+          resolution?: string | null
+          resolution_note?: string | null
+          review_id?: string | null
+          run_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          document_version_id?: string | null
+          flag_text?: string
+          gate?: number
+          id?: string
+          lesson_id?: string
+          locale?: string | null
+          resolution?: string | null
+          resolution_note?: string | null
+          review_id?: string | null
+          run_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lesson_stage3_review_items_document_version_id_fkey"
+            columns: ["document_version_id"]
+            isOneToOne: false
+            referencedRelation: "lesson_document_versions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lesson_stage3_review_items_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_lessons_sync"
+            referencedColumns: ["lesson_id"]
+          },
+          {
+            foreignKeyName: "lesson_stage3_review_items_lesson_id_fkey"
+            columns: ["lesson_id"]
+            isOneToOne: false
+            referencedRelation: "lessons"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lesson_stage3_review_items_review_id_fkey"
+            columns: ["review_id"]
+            isOneToOne: false
+            referencedRelation: "lesson_pedagogical_reviews"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lesson_v2_attempt_nonces: {
         Row: {
           consumed_at: string | null
@@ -4672,6 +4941,7 @@ export type Database = {
           jti: string
           run_id: string
           segment_id: string
+          time_spent_seconds: number | null
           user_id: string
           verdict: Json
         }
@@ -4681,6 +4951,7 @@ export type Database = {
           jti: string
           run_id: string
           segment_id: string
+          time_spent_seconds?: number | null
           user_id: string
           verdict: Json
         }
@@ -4690,6 +4961,7 @@ export type Database = {
           jti?: string
           run_id?: string
           segment_id?: string
+          time_spent_seconds?: number | null
           user_id?: string
           verdict?: Json
         }
@@ -4726,6 +4998,7 @@ export type Database = {
       }
       lesson_v2_runs: {
         Row: {
+          approach_id: string | null
           completed_at: string | null
           cpa_entry_stage: string | null
           document_version_id: string
@@ -4737,6 +5010,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          approach_id?: string | null
           completed_at?: string | null
           cpa_entry_stage?: string | null
           document_version_id: string
@@ -4748,6 +5022,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          approach_id?: string | null
           completed_at?: string | null
           cpa_entry_stage?: string | null
           document_version_id?: string
@@ -4802,6 +5077,7 @@ export type Database = {
           document_version_id: string
           run_id: string
           segment_id: string
+          time_spent_seconds: number | null
           user_id: string
         }
         Insert: {
@@ -4809,6 +5085,7 @@ export type Database = {
           document_version_id: string
           run_id: string
           segment_id: string
+          time_spent_seconds?: number | null
           user_id: string
         }
         Update: {
@@ -4816,6 +5093,7 @@ export type Database = {
           document_version_id?: string
           run_id?: string
           segment_id?: string
+          time_spent_seconds?: number | null
           user_id?: string
         }
         Relationships: [
@@ -4926,6 +5204,7 @@ export type Database = {
           difficulty: number
           estimated_minutes: number
           id: string
+          optional_enrichment: boolean
           position: number
           slug: string
           status: string
@@ -4939,6 +5218,7 @@ export type Database = {
           difficulty?: number
           estimated_minutes?: number
           id?: string
+          optional_enrichment?: boolean
           position: number
           slug: string
           status?: string
@@ -4952,6 +5232,7 @@ export type Database = {
           difficulty?: number
           estimated_minutes?: number
           id?: string
+          optional_enrichment?: boolean
           position?: number
           slug?: string
           status?: string
@@ -8145,6 +8426,8 @@ export type Database = {
       }
       tutor_sessions: {
         Row: {
+          canary_arm: string | null
+          canary_proposal_id: string | null
           character: string
           close_reason: string | null
           closing_script: string | null
@@ -8176,6 +8459,8 @@ export type Database = {
           xp_awarded: number
         }
         Insert: {
+          canary_arm?: string | null
+          canary_proposal_id?: string | null
           character: string
           close_reason?: string | null
           closing_script?: string | null
@@ -8207,6 +8492,8 @@ export type Database = {
           xp_awarded?: number
         }
         Update: {
+          canary_arm?: string | null
+          canary_proposal_id?: string | null
           character?: string
           close_reason?: string | null
           closing_script?: string | null
@@ -9461,6 +9748,10 @@ export type Database = {
         Args: { p_accepting: string; p_token: string }
         Returns: string
       }
+      account_age_record_is_minor: {
+        Args: { p_user: string }
+        Returns: boolean
+      }
       account_erasure_in_progress: {
         Args: { p_first: string; p_second: string }
         Returns: boolean
@@ -9624,6 +9915,16 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      clear_learner_memory: {
+        Args: {
+          p_actor: string
+          p_decided_by: string
+          p_expected: string
+          p_store: string
+          p_user: string
+        }
+        Returns: string
+      }
       commit_course_pathway_placement: {
         Args: { p_lesson_ids: string[]; p_result: Json }
         Returns: string
@@ -9766,6 +10067,10 @@ export type Database = {
         Returns: boolean
       }
       coop_goal_guardian_allows: { Args: { p_user: string }; Returns: boolean }
+      coop_goal_guardian_goals: {
+        Args: { p_guardian: string; p_kid: string }
+        Returns: Json
+      }
       coop_goal_guardian_view: {
         Args: { p_guardian: string; p_kid: string }
         Returns: Json
@@ -9880,6 +10185,10 @@ export type Database = {
       end_coop_goal_membership: {
         Args: { p_actor: string; p_goal: string; p_member: string }
         Returns: string
+      }
+      end_revoked_tutor_powers: {
+        Args: { p_actor: string; p_user: string }
+        Returns: Json
       }
       erase_account_data: { Args: { p_request: string }; Returns: Json }
       evaluate_social_pattern: { Args: { p_subject: string }; Returns: boolean }
@@ -10263,6 +10572,10 @@ export type Database = {
         Args: { p_kid: string; p_task: string }
         Returns: boolean
       }
+      forge_release_catalog_fingerprint: {
+        Args: { p_course_id: string }
+        Returns: string
+      }
       forge_release_content_watermark: {
         Args: { p_course_id: string }
         Returns: string
@@ -10277,6 +10590,20 @@ export type Database = {
       fulfill_redemption: {
         Args: { p_actor: string; p_redemption_id: string }
         Returns: boolean
+      }
+      gate_effectiveness_reviews_open: {
+        Args: { p_now?: string }
+        Returns: {
+          age_days: number
+          defect_kind: string
+          escape_id: string
+          gate_description: string
+          gate_id: string
+          lesson_id: string
+          opened_at: string
+          owner_role: string
+          review_id: string
+        }[]
       }
       get_completed_course_badges: {
         Args: { p_user_id: string }
@@ -10323,6 +10650,10 @@ export type Database = {
       guardian_end_chore_streak_pause: {
         Args: { p_actor: string; p_pause: string }
         Returns: string
+      }
+      guardian_end_social_connection: {
+        Args: { p_guardian: string; p_kid: string; p_other: string }
+        Returns: number
       }
       guardian_pause_chore_streak: {
         Args: {
@@ -10492,6 +10823,17 @@ export type Database = {
           responses: number
         }[]
       }
+      learning_delayed_retention: {
+        Args: { p_mastery?: number; p_since: string; p_until: string }
+        Returns: {
+          correct: number
+          correct_share: number
+          kc_id: string
+          kc_key: string
+          learners: number
+          window_days: number
+        }[]
+      }
       learning_detection_cells: {
         Args: { p_since: string; p_until: string }
         Returns: {
@@ -10529,6 +10871,7 @@ export type Database = {
           stage: string
         }[]
       }
+      learning_json_array: { Args: { p_value: Json }; Returns: Json }
       learning_judgment_differentiation: {
         Args: { p_since: string; p_until: string }
         Returns: {
@@ -10540,6 +10883,13 @@ export type Database = {
           incorrect_not_sound: number
           incorrect_sound: number
           lesson_id: string
+        }[]
+      }
+      learning_kc_learner_age_bands: {
+        Args: { p_since: string }
+        Returns: {
+          age_band: string
+          user_id: string
         }[]
       }
       learning_narrative_metrics: {
@@ -10591,6 +10941,10 @@ export type Database = {
           week_start: string
         }[]
       }
+      learning_story_decision_segment: {
+        Args: { p_segment: Json }
+        Returns: boolean
+      }
       learning_streak_paused_dates: {
         Args: { p_after: string; p_before: string; p_user_id: string }
         Returns: string[]
@@ -10623,6 +10977,18 @@ export type Database = {
         Args: { p_document: Json }
         Returns: Json
       }
+      lesson_effective_locale_count: {
+        Args: { p_lesson_id: string }
+        Returns: number
+      }
+      lesson_stage3_fingerprint: {
+        Args: { p_lesson_id: string }
+        Returns: string
+      }
+      lesson_stage3_review_state: {
+        Args: { p_document_version_id?: string; p_lesson_id: string }
+        Returns: Json
+      }
       lesson_version_request_for_decision: {
         Args: { p_document_version_id: string; p_lesson_id: string }
         Returns: {
@@ -10635,7 +11001,29 @@ export type Database = {
           version_id: string
         }[]
       }
+      list_expired_kid_suspensions: {
+        Args: { p_limit: number; p_older_than_days: number }
+        Returns: {
+          suspended_at: string
+          user_id: string
+        }[]
+      }
+      list_minor_record_tutors: {
+        Args: never
+        Returns: {
+          user_id: string
+        }[]
+      }
       mark_under13_origin: { Args: { p_user_id: string }; Returns: boolean }
+      mentor_age_calibration_coverage: {
+        Args: { p_from: string; p_to: string }
+        Returns: {
+          calibrated_before_start: number
+          coverage: number
+          sessions: number
+          unknown_age_sessions: number
+        }[]
+      }
       mentor_resolution_efficiency: {
         Args: { p_since: string; p_until: string }
         Returns: {
@@ -10729,6 +11117,10 @@ export type Database = {
           signups: number
           within_target: number
         }[]
+      }
+      pin_v2_run_approach: {
+        Args: { p_approach_id: string; p_run_id: string; p_user_id: string }
+        Returns: string
       }
       practice_difficulty_actor_allowed: {
         Args: { p_actor: string }
@@ -10848,6 +11240,16 @@ export type Database = {
         Args: { p_period?: string }
         Returns: number
       }
+      record_forge_stage3_items: {
+        Args: {
+          p_items: Json
+          p_lesson_id: string
+          p_locale: string
+          p_run_id: string
+          p_version_id: string
+        }
+        Returns: number
+      }
       record_learner_decisions: {
         Args: {
           p_course_id: string
@@ -10863,6 +11265,10 @@ export type Database = {
         Args: { p_local_date: string; p_user_id: string }
         Returns: Json
       }
+      record_learning_retention_release: {
+        Args: { p_release_id: string; p_since: string; p_until?: string }
+        Returns: number
+      }
       record_lesson_grade: {
         Args: {
           p_client_attempt: number
@@ -10876,6 +11282,24 @@ export type Database = {
           p_verdict: Json
         }
         Returns: Json
+      }
+      record_lesson_pedagogical_review: {
+        Args: {
+          p_actor: string
+          p_author: string
+          p_checks: Json
+          p_document_version_id: string
+          p_fingerprint: string
+          p_forge_items: Json
+          p_lesson_id: string
+        }
+        Returns: {
+          code: string
+          message: string
+          ok: boolean
+          result: string
+          review_id: string
+        }[]
       }
       record_mentor_age_calibration: {
         Args: { p_tier: number; p_user_id: string }
@@ -11007,6 +11431,16 @@ export type Database = {
         }
         Returns: boolean
       }
+      record_v2_time_on_task: {
+        Args: {
+          p_receipt_jti: string
+          p_run_id: string
+          p_seconds: number
+          p_segment_id: string
+          p_user_id: string
+        }
+        Returns: boolean
+      }
       record_wallet_split: {
         Args: {
           p_goal_id: string
@@ -11036,7 +11470,7 @@ export type Database = {
         }[]
       }
       release_course: {
-        Args: { p_course_id: string }
+        Args: { p_actor: string; p_course_id: string }
         Returns: {
           adventures_published: number
           code: string
@@ -11048,7 +11482,7 @@ export type Database = {
         }[]
       }
       release_lesson: {
-        Args: { p_lesson_id: string }
+        Args: { p_actor: string; p_lesson_id: string }
         Returns: {
           code: string
           lessons_published: number
@@ -11117,6 +11551,20 @@ export type Database = {
         Args: { p_requester_id: string; p_subject_id: string }
         Returns: string
       }
+      resolve_gate_effectiveness_review: {
+        Args: {
+          p_actor: string
+          p_gate_change_ref: string
+          p_note: string
+          p_outcome: string
+          p_review_id: string
+        }
+        Returns: {
+          code: string
+          message: string
+          ok: boolean
+        }[]
+      }
       resolve_practice_difficulty_review: {
         Args: {
           p_actor: string
@@ -11140,6 +11588,15 @@ export type Database = {
       }
       revoke_parent_verification: {
         Args: { p_actor: string; p_reason: string; p_user: string }
+        Returns: string
+      }
+      revoke_staff_grant: {
+        Args: {
+          p_actor: string
+          p_grant: string
+          p_kind: string
+          p_subject: string
+        }
         Returns: string
       }
       run_due_scheduled_credits: {
@@ -11176,6 +11633,18 @@ export type Database = {
         Args: { p_enabled: boolean; p_guardian: string; p_kid: string }
         Returns: boolean
       }
+      set_course_status: {
+        Args: { p_actor: string; p_course_id: string; p_status: string }
+        Returns: {
+          code: string
+          message: string
+          ok: boolean
+        }[]
+      }
+      set_kid_sign_in_ban: {
+        Args: { p_banned: boolean; p_user: string }
+        Returns: undefined
+      }
       set_learning_streak_pause: {
         Args: {
           p_ends_on: string
@@ -11185,6 +11654,14 @@ export type Database = {
           p_today: string
         }
         Returns: Json
+      }
+      set_lesson_status: {
+        Args: { p_actor: string; p_lesson_id: string; p_status: string }
+        Returns: {
+          code: string
+          message: string
+          ok: boolean
+        }[]
       }
       set_practice_difficulty_band: {
         Args: {
@@ -11316,6 +11793,49 @@ export type Database = {
           source: string
         }[]
       }
+      stage3_open_items: {
+        Args: { p_document_version_id: string; p_lesson_id: string }
+        Returns: {
+          created_at: string
+          document_version_id: string | null
+          flag_text: string
+          gate: number
+          id: string
+          lesson_id: string
+          locale: string | null
+          resolution: string | null
+          resolution_note: string | null
+          review_id: string | null
+          run_id: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "lesson_stage3_review_items"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
+      stage3_refuse_or_bypass: {
+        Args: {
+          p_document_version_id: string
+          p_lesson_id: string
+          p_refusal: string
+        }
+        Returns: undefined
+      }
+      stage3_release_refusal: {
+        Args: { p_document_version_id?: string; p_lesson_id: string }
+        Returns: string
+      }
+      stage3_review_checks_valid: { Args: { p_checks: Json }; Returns: boolean }
+      stage3_review_items: {
+        Args: never
+        Returns: {
+          allows_not_applicable: boolean
+          item: string
+          item_position: number
+        }[]
+      }
       start_tutor_session_checked: {
         Args: {
           p_cap: number
@@ -11334,6 +11854,8 @@ export type Database = {
           p_voice_used: boolean
         }
         Returns: {
+          canary_arm: string | null
+          canary_proposal_id: string | null
           character: string
           close_reason: string | null
           closing_script: string | null
@@ -11401,6 +11923,10 @@ export type Database = {
         Args: { p_confirm: boolean; p_link_id: string; p_teen: string }
         Returns: string
       }
+      teen_discoverable_base_eligible: {
+        Args: { p_user: string }
+        Returns: boolean
+      }
       teen_discoverable_eligible: { Args: { p_user: string }; Returns: boolean }
       teen_log_income: {
         Args: {
@@ -11435,6 +11961,15 @@ export type Database = {
       }
       teen_wallet_holder: { Args: { p_user: string }; Returns: boolean }
       tutor_fts_config: { Args: { p_locale: string }; Returns: unknown }
+      tutor_verification_revoked: { Args: { p_user: string }; Returns: boolean }
+      v2_document_approach_ids: {
+        Args: { p_document: Json }
+        Returns: string[]
+      }
+      v2_segment_approach_id: {
+        Args: { p_document: Json; p_segment_id: string }
+        Returns: string
+      }
       wallet_access: { Args: { p_user: string }; Returns: Json }
       wallet_holder_kind: { Args: { p_user: string }; Returns: string }
       wallet_recommended_split: {
@@ -11549,8 +12084,7 @@ export type Tables<
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
-    | { schema: keyof DatabaseWithoutInternals },
+    keyof DefaultSchema["Tables"] | { schema: keyof DatabaseWithoutInternals },
   TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
@@ -11574,8 +12108,7 @@ export type TablesInsert<
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema["Tables"]
-    | { schema: keyof DatabaseWithoutInternals },
+    keyof DefaultSchema["Tables"] | { schema: keyof DatabaseWithoutInternals },
   TableName extends (DefaultSchemaTableNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }
@@ -11599,8 +12132,7 @@ export type TablesUpdate<
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-    | keyof DefaultSchema["Enums"]
-    | { schema: keyof DatabaseWithoutInternals },
+    keyof DefaultSchema["Enums"] | { schema: keyof DatabaseWithoutInternals },
   EnumName extends (DefaultSchemaEnumNameOrOptions extends {
     schema: keyof DatabaseWithoutInternals
   }

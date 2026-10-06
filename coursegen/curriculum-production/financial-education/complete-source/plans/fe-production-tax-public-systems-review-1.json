@@ -1,0 +1,887 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-tax-public-systems-part-2",
+  "lesson_id": "fe-production-tax-public-systems-review-1",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.tax-public-systems.01",
+    "finance.prod.tax-public-systems.02",
+    "finance.prod.tax-public-systems.03",
+    "finance.prod.tax-public-systems.04",
+    "finance.prod.income-work.02"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Classify stated public charges and calculate simplified fictional brackets, credits and remaining tax.",
+  "title": {
+    "en-US": "Tax Calculations",
+    "es-MX": "Sigue el cálculo del pago público",
+    "pt-BR": "Siga o cálculo do pagamento público"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Tax Calculations\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Sigue el cálculo del pago público\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Siga o cálculo do pagamento público\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "consolidate",
+    "objective": {
+      "skill_id": "prod.tax-public-systems.01",
+      "observable_action": "Classify stated public charges and calculate simplified fictional brackets, credits and remaining tax.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.income-work.02",
+      "prod.purchase-decisions.02"
+    ],
+    "retrieval_skills": [
+      "prod.tax-public-systems.01",
+      "prod.tax-public-systems.02",
+      "prod.tax-public-systems.03",
+      "prod.tax-public-systems.04",
+      "prod.income-work.02"
+    ],
+    "relevance": "Separate the charge, the calculation and amounts already paid.",
+    "misconception": "All deductions are the same, the top rate applies to all income, and withholding always settles the final amount.",
+    "numeracy_support": "Use the current visible conditions; do not reuse a previous scenario’s answer.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.tax-public-systems.01",
+        "context_id": "tax-public-systems-review-1-practice-01",
+        "supports_from": [],
+        "reasoning": "The label and purpose identify the stated social contribution."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.tax-public-systems.02",
+        "context_id": "tax-public-systems-review-1-practice-02",
+        "supports_from": [],
+        "reasoning": "Withholding covers part of the final tax."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.tax-public-systems.03",
+        "context_id": "tax-public-systems-review-1-practice-03",
+        "supports_from": [],
+        "reasoning": "Separate slice taxes add to the total."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.tax-public-systems.04",
+        "context_id": "tax-public-systems-review-1-practice-04",
+        "supports_from": [],
+        "reasoning": "The deduction reduces income; the credit reduces calculated tax."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.income-work.02",
+        "context_id": "tax-public-systems-review-1-practice-05",
+        "supports_from": [],
+        "reasoning": "The deduction reduces gross pay to money received."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.tax-public-systems.01",
+        "context_id": "tax-public-systems-review-1-transfer-01",
+        "supports_from": [],
+        "reasoning": "The fee is tied to the stated specific service."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.tax-public-systems.01",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Separate the charge, the calculation and amounts already paid."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Distingue el cargo, el cálculo y los montos ya pagados."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Separe a cobrança, o cálculo e os valores já pagos."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.tax-public-systems.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Which charge is described?",
+          "scene": "A fictional notice labels a payment “social contribution” supporting its stated protection system.",
+          "options": [
+            {
+              "label": "Social contribution"
+            },
+            {
+              "label": "Investment return"
+            },
+            {
+              "label": "Account service fee"
+            }
+          ],
+          "help": [
+            "Read the stated charge rather than guessing from its amount."
+          ],
+          "feedback": {
+            "met": "The label and purpose identify the stated social contribution.",
+            "not_yet": "Read the stated charge rather than guessing from its amount."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué cargo se describe?",
+          "scene": "Un aviso ficticio llama «contribución social» al pago para su sistema de protección indicado.",
+          "options": [
+            {
+              "label": "Contribución social"
+            },
+            {
+              "label": "Rendimiento de inversión"
+            },
+            {
+              "label": "Servicio de cuenta"
+            }
+          ],
+          "help": [
+            "Lee el cargo indicado sin adivinar por el monto."
+          ],
+          "feedback": {
+            "met": "La etiqueta y propósito identifican la contribución social indicada.",
+            "not_yet": "Lee el cargo indicado sin adivinar por el monto."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual cobrança é descrita?",
+          "scene": "Um aviso fictício chama de “contribuição social” o pagamento para seu sistema de proteção dado.",
+          "options": [
+            {
+              "label": "Contribuição social"
+            },
+            {
+              "label": "Rendimento de aplicação"
+            },
+            {
+              "label": "Serviço de conta"
+            }
+          ],
+          "help": [
+            "Leia a cobrança dada sem adivinhar pelo valor."
+          ],
+          "feedback": {
+            "met": "O nome e a finalidade identificam a contribuição social dada.",
+            "not_yet": "Leia a cobrança dada sem adivinhar pelo valor."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.tax-public-systems.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What remains payable?",
+          "scene": "Fictional final tax: 120; Already withheld: 95; No other adjustments.",
+          "options": [
+            {
+              "label": "25"
+            },
+            {
+              "label": "120"
+            },
+            {
+              "label": "95"
+            }
+          ],
+          "help": [
+            "Subtract the amount already paid."
+          ],
+          "feedback": {
+            "met": "Withholding covers part of the final tax.",
+            "not_yet": "Subtract the amount already paid."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué queda pendiente?",
+          "scene": "Impuesto final ficticio: 120; Ya retenido: 95; Sin otros ajustes.",
+          "options": [
+            {
+              "label": "25"
+            },
+            {
+              "label": "120"
+            },
+            {
+              "label": "95"
+            }
+          ],
+          "help": [
+            "Resta el monto ya pagado."
+          ],
+          "feedback": {
+            "met": "La retención cubre parte del impuesto final.",
+            "not_yet": "Resta el monto ya pagado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto falta pagar?",
+          "scene": "Imposto final fictício: 120; Já retido: 95; Sem outros ajustes.",
+          "options": [
+            {
+              "label": "25"
+            },
+            {
+              "label": "120"
+            },
+            {
+              "label": "95"
+            }
+          ],
+          "help": [
+            "Subtraia o valor já pago."
+          ],
+          "feedback": {
+            "met": "A retenção cobre parte do imposto final.",
+            "not_yet": "Subtraia o valor já pago."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          120,
+          95
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.tax-public-systems.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Calculate the fictional tax",
+          "scene": "Income: 180; First 100 at 10%; excess at 20%. No other rules.",
+          "options": [
+            {
+              "label": "36"
+            },
+            {
+              "label": "26"
+            },
+            {
+              "label": "18"
+            }
+          ],
+          "help": [
+            "The higher rate applies only above the threshold."
+          ],
+          "feedback": {
+            "met": "Separate slice taxes add to the total.",
+            "not_yet": "The higher rate applies only above the threshold."
+          }
+        },
+        "es-MX": {
+          "prompt": "Calcula el impuesto ficticio",
+          "scene": "Ingreso: 180; Primeros 100 al 10%; exceso al 20%. Sin otras reglas.",
+          "options": [
+            {
+              "label": "36"
+            },
+            {
+              "label": "26"
+            },
+            {
+              "label": "18"
+            }
+          ],
+          "help": [
+            "La tasa mayor solo aplica por encima del límite."
+          ],
+          "feedback": {
+            "met": "Los impuestos de tramos separados suman el total.",
+            "not_yet": "La tasa mayor solo aplica por encima del límite."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Calcule o imposto fictício",
+          "scene": "Renda: 180; Primeiros 100 a 10%; excesso a 20%. Sem outras regras.",
+          "options": [
+            {
+              "label": "36"
+            },
+            {
+              "label": "26"
+            },
+            {
+              "label": "18"
+            }
+          ],
+          "help": [
+            "A taxa maior vale só acima do limite."
+          ],
+          "feedback": {
+            "met": "Os impostos de faixas separadas somam o total.",
+            "not_yet": "A taxa maior vale só acima do limite."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          180,
+          100,
+          10,
+          20
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "op": "divide",
+              "args": [
+                {
+                  "op": "multiply",
+                  "args": [
+                    {
+                      "input": 1
+                    },
+                    {
+                      "input": 2
+                    }
+                  ]
+                },
+                {
+                  "constant": 100
+                }
+              ]
+            },
+            {
+              "op": "divide",
+              "args": [
+                {
+                  "op": "multiply",
+                  "args": [
+                    {
+                      "op": "subtract",
+                      "args": [
+                        {
+                          "input": 0
+                        },
+                        {
+                          "input": 1
+                        }
+                      ]
+                    },
+                    {
+                      "input": 3
+                    }
+                  ]
+                },
+                {
+                  "constant": 100
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.tax-public-systems.04",
+      "copy": {
+        "en-US": {
+          "prompt": "What tax remains?",
+          "scene": "Fictional rule: income 200; deduction 40; rate 10%; then credit 6.",
+          "options": [
+            {
+              "label": "16"
+            },
+            {
+              "label": "154"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Follow the order rather than treating both reductions identically."
+          ],
+          "feedback": {
+            "met": "The deduction reduces income; the credit reduces calculated tax.",
+            "not_yet": "Follow the order rather than treating both reductions identically."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué impuesto queda?",
+          "scene": "Regla ficticia: ingreso 200; deducción 40; tasa 10%; después crédito 6.",
+          "options": [
+            {
+              "label": "16"
+            },
+            {
+              "label": "154"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Sigue el orden sin tratar ambas reducciones igual."
+          ],
+          "feedback": {
+            "met": "La deducción reduce ingreso; el crédito reduce impuesto calculado.",
+            "not_yet": "Sigue el orden sin tratar ambas reducciones igual."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual imposto resta?",
+          "scene": "Regra fictícia: renda 200; dedução 40; taxa 10%; depois crédito 6.",
+          "options": [
+            {
+              "label": "16"
+            },
+            {
+              "label": "154"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Siga a ordem sem tratar ambas as reduções igualmente."
+          ],
+          "feedback": {
+            "met": "A dedução reduz renda; o crédito reduz imposto calculado.",
+            "not_yet": "Siga a ordem sem tratar ambas as reduções igualmente."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          200,
+          40,
+          10,
+          6
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "divide",
+              "args": [
+                {
+                  "op": "multiply",
+                  "args": [
+                    {
+                      "op": "subtract",
+                      "args": [
+                        {
+                          "input": 0
+                        },
+                        {
+                          "input": 1
+                        }
+                      ]
+                    },
+                    {
+                      "input": 2
+                    }
+                  ]
+                },
+                {
+                  "constant": 100
+                }
+              ]
+            },
+            {
+              "input": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What pay is received?",
+          "scene": "Gross pay: 90; Stated deduction: 15; No other deductions.",
+          "options": [
+            {
+              "label": "15"
+            },
+            {
+              "label": "90"
+            },
+            {
+              "label": "75"
+            }
+          ],
+          "help": [
+            "Subtract the stated deduction from gross pay."
+          ],
+          "feedback": {
+            "met": "The deduction reduces gross pay to money received.",
+            "not_yet": "Subtract the stated deduction from gross pay."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué pago recibes?",
+          "scene": "Pago bruto: 90; Deducción indicada: 15; Sin otras deducciones.",
+          "options": [
+            {
+              "label": "15"
+            },
+            {
+              "label": "90"
+            },
+            {
+              "label": "75"
+            }
+          ],
+          "help": [
+            "Resta la deducción indicada del pago bruto."
+          ],
+          "feedback": {
+            "met": "La deducción reduce el pago bruto al dinero recibido.",
+            "not_yet": "Resta la deducción indicada del pago bruto."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual pagamento recebe?",
+          "scene": "Pagamento bruto: 90; Desconto dado: 15; Sem outros descontos.",
+          "options": [
+            {
+              "label": "15"
+            },
+            {
+              "label": "90"
+            },
+            {
+              "label": "75"
+            }
+          ],
+          "help": [
+            "Subtraia o desconto dado do pagamento bruto."
+          ],
+          "feedback": {
+            "met": "O desconto reduz o pagamento bruto ao dinheiro recebido.",
+            "not_yet": "Subtraia o desconto dado do pagamento bruto."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          90,
+          15
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.tax-public-systems.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Which purpose belongs to the fee?",
+          "scene": "A fictional statement separates general tax from a fee specifically charged to process one permit.",
+          "options": [
+            {
+              "label": "Investment ownership"
+            },
+            {
+              "label": "Every public expense"
+            },
+            {
+              "label": "The permit-processing service"
+            }
+          ],
+          "help": [
+            "Separate the labeled purposes on the same statement."
+          ],
+          "feedback": {
+            "met": "The fee is tied to the stated specific service.",
+            "not_yet": "Separate the labeled purposes on the same statement."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué propósito tiene la cuota?",
+          "scene": "Un estado ficticio separa impuesto general de una cuota por tramitar un permiso.",
+          "options": [
+            {
+              "label": "Propiedad de inversión"
+            },
+            {
+              "label": "Todo gasto público"
+            },
+            {
+              "label": "El servicio de tramitar el permiso"
+            }
+          ],
+          "help": [
+            "Distingue los propósitos etiquetados en el mismo estado."
+          ],
+          "feedback": {
+            "met": "La cuota corresponde al servicio específico indicado.",
+            "not_yet": "Distingue los propósitos etiquetados en el mismo estado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual finalidade tem a tarifa?",
+          "scene": "Um extrato fictício separa imposto geral de tarifa para emitir uma licença.",
+          "options": [
+            {
+              "label": "Propriedade de aplicação"
+            },
+            {
+              "label": "Todo gasto público"
+            },
+            {
+              "label": "O serviço de emitir a licença"
+            }
+          ],
+          "help": [
+            "Separe as finalidades nomeadas no mesmo extrato."
+          ],
+          "feedback": {
+            "met": "A tarifa corresponde ao serviço específico dado.",
+            "not_yet": "Separe as finalidades nomeadas no mesmo extrato."
+          }
+        }
+      }
+    }
+  ]
+}

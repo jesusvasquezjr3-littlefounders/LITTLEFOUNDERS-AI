@@ -1,0 +1,1029 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-time-inflation-part-2",
+  "lesson_id": "fe-production-time-inflation-review-1",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.price.percent",
+    "finance.prod.time-inflation.01",
+    "finance.prod.time-inflation.02",
+    "finance.time.compound",
+    "finance.prod.time-inflation.04",
+    "finance.prod.time-inflation.05"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Apply previously learned growth, price and percentage relationships under a new scenario’s explicit assumptions.",
+  "title": {
+    "en-US": "Growth records",
+    "es-MX": "Sigue el origen del crecimiento modelado",
+    "pt-BR": "Siga a origem do crescimento modelado"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Follow the source of modeled growth\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Sigue el origen del crecimiento modelado\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Siga a origem do crescimento modelado\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "consolidate",
+    "objective": {
+      "skill_id": "price.percent",
+      "observable_action": "Apply previously learned growth, price and percentage relationships under a new scenario’s explicit assumptions.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.financial-math.05",
+      "prod.financial-math.07",
+      "cash.balance"
+    ],
+    "retrieval_skills": [
+      "prod.time-inflation.01",
+      "prod.time-inflation.02",
+      "time.compound",
+      "prod.time-inflation.04",
+      "prod.time-inflation.05",
+      "price.percent"
+    ],
+    "relevance": "Connect rates, periods, retained gains and added money.",
+    "misconception": "Reuse a previous answer without checking the current base, period, contributions or prices.",
+    "numeracy_support": "Every quantity and assumption needed to decide is visible in the current scenario. Examples explain the relationship before independent application.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.time-inflation.01",
+        "context_id": "fe-production-time-inflation-review-1-practice-01",
+        "supports_from": [],
+        "reasoning": "800 × 3% × 2 = 48 interest."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.time-inflation.02",
+        "context_id": "fe-production-time-inflation-review-1-practice-02",
+        "supports_from": [],
+        "reasoning": "714 − 600 − 90 = 24 interest."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "time.compound",
+        "context_id": "fe-production-time-inflation-review-1-practice-03",
+        "supports_from": [],
+        "reasoning": "330 + (330 × 10%) = 363."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.time-inflation.04",
+        "context_id": "fe-production-time-inflation-review-1-practice-04",
+        "supports_from": [],
+        "reasoning": "The starting amount also affects the final total."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.time-inflation.05",
+        "context_id": "fe-production-time-inflation-review-1-practice-05",
+        "supports_from": [],
+        "reasoning": "950 − 700 − 200 = 50 modeled return."
+      },
+      {
+        "segment_id": "practice-06",
+        "skill_id": "price.percent",
+        "context_id": "fe-production-time-inflation-review-1-practice-06",
+        "supports_from": [],
+        "reasoning": "400 × 15% = 60."
+      },
+      {
+        "segment_id": "transfer-07",
+        "skill_id": "price.percent",
+        "context_id": "fe-production-time-inflation-review-1-transfer-07",
+        "supports_from": [],
+        "reasoning": "750 × 8% = 60 reserved."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "price.percent",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Connect rates, periods, retained gains and added money."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Relaciona tasas, periodos, ganancias conservadas y dinero añadido."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Relacione taxas, períodos, ganhos mantidos e dinheiro somado."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.time-inflation.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Total simple interest?",
+          "scene": "Fictional principal 800; annual rate 3%; duration 2 years; simple interest.",
+          "options": [
+            {
+              "label": "848"
+            },
+            {
+              "label": "48"
+            },
+            {
+              "label": "24"
+            }
+          ],
+          "help": [
+            "Keep original principal as the base each year."
+          ],
+          "feedback": {
+            "met": "800 × 3% × 2 = 48 interest.",
+            "not_yet": "Keep original principal as the base each year."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Interés simple total?",
+          "scene": "Capital ficticio 800; tasa anual 3%; duración 2 años; interés simple.",
+          "options": [
+            {
+              "label": "848"
+            },
+            {
+              "label": "48"
+            },
+            {
+              "label": "24"
+            }
+          ],
+          "help": [
+            "Conserva capital original como base cada año."
+          ],
+          "feedback": {
+            "met": "800 × 3% × 2 = 48 de interés.",
+            "not_yet": "Conserva capital original como base cada año."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Juros simples totais?",
+          "scene": "Principal fictício 800; taxa anual 3%; prazo 2 anos; juros simples.",
+          "options": [
+            {
+              "label": "848"
+            },
+            {
+              "label": "48"
+            },
+            {
+              "label": "24"
+            }
+          ],
+          "help": [
+            "Mantenha principal original como base todo ano."
+          ],
+          "feedback": {
+            "met": "800 × 3% × 2 = 48 de juros.",
+            "not_yet": "Mantenha principal original como base todo ano."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          800,
+          3,
+          2
+        ],
+        "expression": {
+          "op": "multiply",
+          "args": [
+            {
+              "op": "divide",
+              "args": [
+                {
+                  "op": "multiply",
+                  "args": [
+                    {
+                      "input": 0
+                    },
+                    {
+                      "input": 1
+                    }
+                  ]
+                },
+                {
+                  "constant": 100
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.time-inflation.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Interest credited?",
+          "scene": "Opening 600; owner deposit 90; closing 714; no other movement.",
+          "options": [
+            {
+              "label": "24"
+            },
+            {
+              "label": "90"
+            },
+            {
+              "label": "114"
+            }
+          ],
+          "help": [
+            "Separate the owner’s deposit from the bank’s interest."
+          ],
+          "feedback": {
+            "met": "714 − 600 − 90 = 24 interest.",
+            "not_yet": "Separate the owner’s deposit from the bank’s interest."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Interés abonado?",
+          "scene": "Inicio 600; depósito propio 90; cierre 714; sin otros movimientos.",
+          "options": [
+            {
+              "label": "24"
+            },
+            {
+              "label": "90"
+            },
+            {
+              "label": "114"
+            }
+          ],
+          "help": [
+            "Separa depósito propio del interés bancario."
+          ],
+          "feedback": {
+            "met": "714 − 600 − 90 = 24 de interés.",
+            "not_yet": "Separa depósito propio del interés bancario."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Juros creditados?",
+          "scene": "Início 600; depósito próprio 90; fechamento 714; sem outros movimentos.",
+          "options": [
+            {
+              "label": "24"
+            },
+            {
+              "label": "90"
+            },
+            {
+              "label": "114"
+            }
+          ],
+          "help": [
+            "Separe depósito próprio dos juros bancários."
+          ],
+          "feedback": {
+            "met": "714 − 600 − 90 = 24 de juros.",
+            "not_yet": "Separe depósito próprio dos juros bancários."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          600,
+          90,
+          714
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 2
+                },
+                {
+                  "input": 0
+                }
+              ]
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.time.compound",
+      "copy": {
+        "en-US": {
+          "prompt": "Next-period balance?",
+          "scene": "Model balance now 330 after retained gains; next rate 10%; no other changes.",
+          "options": [
+            {
+              "label": "33"
+            },
+            {
+              "label": "360"
+            },
+            {
+              "label": "363"
+            }
+          ],
+          "help": [
+            "Use the full updated balance."
+          ],
+          "feedback": {
+            "met": "330 + (330 × 10%) = 363.",
+            "not_yet": "Use the full updated balance."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Saldo del siguiente periodo?",
+          "scene": "Saldo modelado ahora 330 tras ganancias conservadas; siguiente tasa 10%; sin otros cambios.",
+          "options": [
+            {
+              "label": "33"
+            },
+            {
+              "label": "360"
+            },
+            {
+              "label": "363"
+            }
+          ],
+          "help": [
+            "Usa todo el saldo actualizado."
+          ],
+          "feedback": {
+            "met": "330 + (330 × 10%) = 363.",
+            "not_yet": "Usa todo el saldo actualizado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Saldo do próximo período?",
+          "scene": "Saldo modelado agora 330 após ganhos mantidos; próxima taxa 10%; sem outras mudanças.",
+          "options": [
+            {
+              "label": "33"
+            },
+            {
+              "label": "360"
+            },
+            {
+              "label": "363"
+            }
+          ],
+          "help": [
+            "Use todo o saldo atualizado."
+          ],
+          "feedback": {
+            "met": "330 + (330 × 10%) = 363.",
+            "not_yet": "Use todo o saldo atualizado."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          330,
+          10
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "op": "divide",
+              "args": [
+                {
+                  "op": "multiply",
+                  "args": [
+                    {
+                      "input": 0
+                    },
+                    {
+                      "input": 1
+                    }
+                  ]
+                },
+                {
+                  "constant": 100
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.time-inflation.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Fair comparison of compounding?",
+          "scene": "Two models share a rate but use different starting amounts.",
+          "options": [
+            {
+              "label": "No, align principal and other assumptions"
+            },
+            {
+              "label": "Yes, equal rates are sufficient"
+            },
+            {
+              "label": "Yes, larger totals prove better compounding"
+            }
+          ],
+          "help": [
+            "Hold other inputs equal to compare the compounding effect."
+          ],
+          "feedback": {
+            "met": "The starting amount also affects the final total.",
+            "not_yet": "Hold other inputs equal to compare the compounding effect."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Comparación justa de capitalización?",
+          "scene": "Dos modelos comparten tasa, pero usan montos iniciales distintos.",
+          "options": [
+            {
+              "label": "No, iguala capital y otros supuestos"
+            },
+            {
+              "label": "Sí, tasas iguales bastan"
+            },
+            {
+              "label": "Sí, mayor total prueba mejor capitalización"
+            }
+          ],
+          "help": [
+            "Iguala otras entradas al comparar el efecto de capitalizar."
+          ],
+          "feedback": {
+            "met": "El monto inicial también afecta el total final.",
+            "not_yet": "Iguala otras entradas al comparar el efecto de capitalizar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Comparação justa da capitalização?",
+          "scene": "Dois modelos têm mesma taxa, mas valores iniciais diferentes.",
+          "options": [
+            {
+              "label": "Não, iguale principal e outras hipóteses"
+            },
+            {
+              "label": "Sim, taxas iguais bastam"
+            },
+            {
+              "label": "Sim, maior total prova melhor capitalização"
+            }
+          ],
+          "help": [
+            "Iguale outras entradas ao comparar o efeito de capitalizar."
+          ],
+          "feedback": {
+            "met": "O valor inicial também afeta o total final.",
+            "not_yet": "Iguale outras entradas ao comparar o efeito de capitalizar."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.time-inflation.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Modeled return?",
+          "scene": "Forecast: starting 700; added deposits 200; ending 950; no other changes.",
+          "options": [
+            {
+              "label": "250"
+            },
+            {
+              "label": "200"
+            },
+            {
+              "label": "50"
+            }
+          ],
+          "help": [
+            "Added deposits are not investment returns."
+          ],
+          "feedback": {
+            "met": "950 − 700 − 200 = 50 modeled return.",
+            "not_yet": "Added deposits are not investment returns."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Rendimiento modelado?",
+          "scene": "Pronóstico: inicio 700; depósitos añadidos 200; final 950; sin otros cambios.",
+          "options": [
+            {
+              "label": "250"
+            },
+            {
+              "label": "200"
+            },
+            {
+              "label": "50"
+            }
+          ],
+          "help": [
+            "Depósitos añadidos no son rendimientos de inversión."
+          ],
+          "feedback": {
+            "met": "950 − 700 − 200 = 50 de rendimiento modelado.",
+            "not_yet": "Depósitos añadidos no son rendimientos de inversión."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Retorno modelado?",
+          "scene": "Previsão: início 700; depósitos somados 200; final 950; sem outras mudanças.",
+          "options": [
+            {
+              "label": "250"
+            },
+            {
+              "label": "200"
+            },
+            {
+              "label": "50"
+            }
+          ],
+          "help": [
+            "Depósitos somados não são retornos de investimento."
+          ],
+          "feedback": {
+            "met": "950 − 700 − 200 = 50 de retorno modelado.",
+            "not_yet": "Depósitos somados não são retornos de investimento."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          700,
+          200,
+          950
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 2
+                },
+                {
+                  "input": 0
+                }
+              ]
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.price.percent",
+      "copy": {
+        "en-US": {
+          "prompt": "Amount represented by the share?",
+          "scene": "A model allocates 15% of a stated base of 400.",
+          "options": [
+            {
+              "label": "15"
+            },
+            {
+              "label": "60"
+            },
+            {
+              "label": "415"
+            }
+          ],
+          "help": [
+            "Apply the percentage to its stated base."
+          ],
+          "feedback": {
+            "met": "400 × 15% = 60.",
+            "not_yet": "Apply the percentage to its stated base."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Monto representado por la parte?",
+          "scene": "Un modelo asigna 15% de una base indicada de 400.",
+          "options": [
+            {
+              "label": "15"
+            },
+            {
+              "label": "60"
+            },
+            {
+              "label": "415"
+            }
+          ],
+          "help": [
+            "Aplica el porcentaje a su base indicada."
+          ],
+          "feedback": {
+            "met": "400 × 15% = 60.",
+            "not_yet": "Aplica el porcentaje a su base indicada."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Valor representado pela parte?",
+          "scene": "Um modelo destina 15% de uma base informada de 400.",
+          "options": [
+            {
+              "label": "15"
+            },
+            {
+              "label": "60"
+            },
+            {
+              "label": "415"
+            }
+          ],
+          "help": [
+            "Aplique a porcentagem à base informada."
+          ],
+          "feedback": {
+            "met": "400 × 15% = 60.",
+            "not_yet": "Aplique a porcentagem à base informada."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          15,
+          400
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "input": 1
+                },
+                {
+                  "input": 0
+                }
+              ]
+            },
+            {
+              "constant": 100
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-07",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.price.percent",
+      "copy": {
+        "en-US": {
+          "prompt": "Reserved share?",
+          "scene": "A shared plan reserves 8% of an actual contribution of 750.",
+          "options": [
+            {
+              "label": "8"
+            },
+            {
+              "label": "758"
+            },
+            {
+              "label": "60"
+            }
+          ],
+          "help": [
+            "Use the actual contribution, not a hoped-for balance."
+          ],
+          "feedback": {
+            "met": "750 × 8% = 60 reserved.",
+            "not_yet": "Use the actual contribution, not a hoped-for balance."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Parte reservada?",
+          "scene": "Un plan compartido reserva 8% de una aportación real de 750.",
+          "options": [
+            {
+              "label": "8"
+            },
+            {
+              "label": "758"
+            },
+            {
+              "label": "60"
+            }
+          ],
+          "help": [
+            "Usa aportación real, no saldo deseado."
+          ],
+          "feedback": {
+            "met": "750 × 8% = 60 reservado.",
+            "not_yet": "Usa aportación real, no saldo deseado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Parte reservada?",
+          "scene": "Um plano compartilhado reserva 8% de um aporte real de 750.",
+          "options": [
+            {
+              "label": "8"
+            },
+            {
+              "label": "758"
+            },
+            {
+              "label": "60"
+            }
+          ],
+          "help": [
+            "Use aporte real, não saldo desejado."
+          ],
+          "feedback": {
+            "met": "750 × 8% = 60 reservado.",
+            "not_yet": "Use aporte real, não saldo desejado."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          8,
+          750
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "input": 1
+                },
+                {
+                  "input": 0
+                }
+              ]
+            },
+            {
+              "constant": 100
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

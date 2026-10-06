@@ -30,6 +30,7 @@ import {
   type KcRow,
   type Localized,
 } from './kcData.js';
+import { eligibleMentorKcs } from './kcEligibility.js';
 
 export interface PlanMisconception {
   code: string;
@@ -246,9 +247,11 @@ export async function buildSessionPlan(
   if (kcs === null || edges === null || mastery === null || cards === null || streaks === null) return null;
   if (kcs.length === 0) return { plan: [], kcStates: [] };
 
-  const eligible = kcs.filter((k) => k.tier_min <= tier);
+  const allowed = await eligibleMentorKcs(userId, kcs);
+  if (allowed === null) return null;
+  const eligible = allowed.filter((k) => k.tier_min <= tier);
   const graph = assemble(eligible, edges, mastery);
-  const planKcs = rankPlanKcs(kcs, edges, mastery, cards, tier, streaks, rolledBackKcKeys);
+  const planKcs = rankPlanKcs(allowed, edges, mastery, cards, tier, streaks, rolledBackKcKeys);
 
   const misconceptions = await getMisconceptionsForKcs(planKcs.map((p) => p.kc.id));
   if (misconceptions === null) return null;

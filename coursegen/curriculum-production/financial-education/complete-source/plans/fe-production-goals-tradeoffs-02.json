@@ -1,0 +1,778 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-goals-tradeoffs-part-1",
+  "lesson_id": "fe-production-goals-tradeoffs-02",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.goals-tradeoffs.02"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Separate a stated essential consequence from a preference in a spending decision.",
+  "title": {
+    "en-US": "Real consequences",
+    "es-MX": "Consecuencias antes que etiquetas",
+    "pt-BR": "Consequências antes dos rótulos"
+  },
+  "new_concepts": [
+    "finance.prod.goals-tradeoffs.02"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Consequences before labels\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Consecuencias antes que etiquetas\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Consequências antes dos rótulos\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.goals-tradeoffs.02",
+      "observable_action": "Separate a stated essential consequence from a preference in a spending decision.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "cash.commitment"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Compare stated consequences before calling a purchase optional.",
+    "misconception": "Classify purchases by stereotypes instead of the stated person’s circumstances.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.goals-tradeoffs.02",
+        "context_id": "fe-production-goals-tradeoffs-02-example-01",
+        "supports_from": [],
+        "reasoning": "A phone repair may protect someone’s only work contact. A decorative case has no stated work consequence; context matters."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.goals-tradeoffs.02",
+        "context_id": "fe-production-goals-tradeoffs-02-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The fare enables the required treatment."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.goals-tradeoffs.02",
+        "context_id": "fe-production-goals-tradeoffs-02-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The safety consequence makes the coat necessary here."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.goals-tradeoffs.02",
+        "context_id": "fe-production-goals-tradeoffs-02-practice-01",
+        "supports_from": [],
+        "reasoning": "The stated work condition makes this access necessary."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.goals-tradeoffs.02",
+        "context_id": "fe-production-goals-tradeoffs-02-practice-02",
+        "supports_from": [],
+        "reasoning": "Circumstances can change a purchase’s importance."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.goals-tradeoffs.02",
+        "context_id": "fe-production-goals-tradeoffs-02-practice-03",
+        "supports_from": [],
+        "reasoning": "Cost does not reveal the consequence of going without."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.goals-tradeoffs.02",
+        "context_id": "fe-production-goals-tradeoffs-02-transfer-01",
+        "supports_from": [],
+        "reasoning": "The scenario identifies mobility as necessary."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.goals-tradeoffs.02",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Compare stated consequences before calling a purchase optional."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Compara consecuencias antes de llamar opcional a una compra."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Compare consequências antes de chamar uma compra de opcional."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Ask what would happen",
+          "line": "A phone repair may protect someone’s only work contact. A decorative case has no stated work consequence; context matters."
+        },
+        "es-MX": {
+          "prompt": "Pregunta qué pasaría",
+          "line": "Reparar un teléfono puede proteger el único contacto laboral. Una funda decorativa no tiene esa consecuencia indicada; importa el contexto."
+        },
+        "pt-BR": {
+          "prompt": "Pergunte o que aconteceria",
+          "line": "Consertar um telefone pode proteger o único contato de trabalho. Uma capa decorativa não tem essa consequência informada; o contexto importa."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Which protects the stated essential outcome?",
+          "scene": "Only bus fare gets you to required treatment; snacks can wait.",
+          "options": [
+            {
+              "label": "Snacks"
+            },
+            {
+              "label": "Bus fare"
+            },
+            {
+              "label": "Either has the same consequence"
+            }
+          ],
+          "help": [
+            "Use the consequence given in the scene."
+          ],
+          "feedback": {
+            "met": "The fare enables the required treatment.",
+            "not_yet": "Use the consequence given in the scene."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué protege el resultado necesario indicado?",
+          "scene": "Solo el pasaje permite llegar a un tratamiento necesario; los bocadillos pueden esperar.",
+          "options": [
+            {
+              "label": "Los bocadillos"
+            },
+            {
+              "label": "El pasaje"
+            },
+            {
+              "label": "Ambos tienen igual consecuencia"
+            }
+          ],
+          "help": [
+            "Usa la consecuencia indicada en la escena."
+          ],
+          "feedback": {
+            "met": "El pasaje permite llegar al tratamiento necesario.",
+            "not_yet": "Usa la consecuencia indicada en la escena."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que protege o resultado necessário informado?",
+          "scene": "Só a passagem permite chegar a um tratamento necessário; lanches podem esperar.",
+          "options": [
+            {
+              "label": "Os lanches"
+            },
+            {
+              "label": "A passagem"
+            },
+            {
+              "label": "Ambos têm a mesma consequência"
+            }
+          ],
+          "help": [
+            "Use a consequência informada na cena."
+          ],
+          "feedback": {
+            "met": "A passagem permite chegar ao tratamento necessário.",
+            "not_yet": "Use a consequência informada na cena."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Which need has a stated safety consequence?",
+          "scene": "A coat prevents dangerous cold; a second decorative scarf is optional here.",
+          "options": [
+            {
+              "label": "The coat"
+            },
+            {
+              "label": "Neither because both are clothes"
+            },
+            {
+              "label": "The decorative scarf"
+            }
+          ],
+          "help": [
+            "A product category alone does not decide necessity."
+          ],
+          "feedback": {
+            "met": "The safety consequence makes the coat necessary here.",
+            "not_yet": "A product category alone does not decide necessity."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué necesidad tiene consecuencia de seguridad?",
+          "scene": "Un abrigo evita frío peligroso; una segunda bufanda decorativa es opcional aquí.",
+          "options": [
+            {
+              "label": "El abrigo"
+            },
+            {
+              "label": "Ninguno porque ambos son ropa"
+            },
+            {
+              "label": "La bufanda decorativa"
+            }
+          ],
+          "help": [
+            "La categoría del producto no decide por sí sola."
+          ],
+          "feedback": {
+            "met": "La consecuencia de seguridad hace necesario el abrigo aquí.",
+            "not_yet": "La categoría del producto no decide por sí sola."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual necessidade tem consequência de segurança?",
+          "scene": "Um casaco evita frio perigoso; um segundo cachecol decorativo é opcional aqui.",
+          "options": [
+            {
+              "label": "O casaco"
+            },
+            {
+              "label": "Nenhum porque ambos são roupas"
+            },
+            {
+              "label": "O cachecol decorativo"
+            }
+          ],
+          "help": [
+            "A categoria do produto não decide sozinha."
+          ],
+          "feedback": {
+            "met": "A consequência de segurança torna o casaco necessário aqui.",
+            "not_yet": "A categoria do produto não decide sozinha."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Which expense protects earning access?",
+          "scene": "Internet is required for the only available paid work; entertainment streaming is optional.",
+          "options": [
+            {
+              "label": "Required internet access"
+            },
+            {
+              "label": "Neither is ever necessary"
+            },
+            {
+              "label": "Optional streaming"
+            }
+          ],
+          "help": [
+            "Follow the stated constraint, not a universal label."
+          ],
+          "feedback": {
+            "met": "The stated work condition makes this access necessary.",
+            "not_yet": "Follow the stated constraint, not a universal label."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué gasto protege el acceso al trabajo?",
+          "scene": "Internet es necesario para el único trabajo disponible; el streaming recreativo es opcional.",
+          "options": [
+            {
+              "label": "El acceso necesario a internet"
+            },
+            {
+              "label": "Ninguno es necesario nunca"
+            },
+            {
+              "label": "El streaming opcional"
+            }
+          ],
+          "help": [
+            "Sigue la condición indicada, no una etiqueta universal."
+          ],
+          "feedback": {
+            "met": "La condición laboral indicada hace necesario este acceso.",
+            "not_yet": "Sigue la condición indicada, no una etiqueta universal."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual gasto protege o acesso ao trabalho?",
+          "scene": "Internet é necessária para o único trabalho disponível; streaming recreativo é opcional.",
+          "options": [
+            {
+              "label": "O acesso necessário à internet"
+            },
+            {
+              "label": "Nenhum é necessário nunca"
+            },
+            {
+              "label": "O streaming opcional"
+            }
+          ],
+          "help": [
+            "Siga a condição informada, não um rótulo universal."
+          ],
+          "feedback": {
+            "met": "A condição de trabalho informada torna esse acesso necessário.",
+            "not_yet": "Siga a condição informada, não um rótulo universal."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Must it have the same priority for both?",
+          "scene": "Two people buy the same item for different reasons.",
+          "options": [
+            {
+              "label": "No, consequences may differ"
+            },
+            {
+              "label": "Yes, the item decides everything"
+            },
+            {
+              "label": "Yes, the higher price wins"
+            }
+          ],
+          "help": [
+            "Ask what each person would lose without it."
+          ],
+          "feedback": {
+            "met": "Circumstances can change a purchase’s importance.",
+            "not_yet": "Ask what each person would lose without it."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Debe tener igual prioridad para ambos?",
+          "scene": "Dos personas compran el mismo artículo por razones distintas.",
+          "options": [
+            {
+              "label": "No, las consecuencias pueden diferir"
+            },
+            {
+              "label": "Sí, el artículo decide todo"
+            },
+            {
+              "label": "Sí, gana el precio mayor"
+            }
+          ],
+          "help": [
+            "Pregunta qué perdería cada persona sin ello."
+          ],
+          "feedback": {
+            "met": "Las circunstancias pueden cambiar la importancia de una compra.",
+            "not_yet": "Pregunta qué perdería cada persona sin ello."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Deve ter a mesma prioridade para ambos?",
+          "scene": "Duas pessoas compram o mesmo item por motivos diferentes.",
+          "options": [
+            {
+              "label": "Não, as consequências podem diferir"
+            },
+            {
+              "label": "Sim, o item decide tudo"
+            },
+            {
+              "label": "Sim, vence o preço maior"
+            }
+          ],
+          "help": [
+            "Pergunte o que cada pessoa perderia sem ele."
+          ],
+          "feedback": {
+            "met": "As circunstâncias podem mudar a importância de uma compra.",
+            "not_yet": "Pergunte o que cada pessoa perderia sem ele."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Can price alone establish necessity?",
+          "scene": "You know a purchase costs 80, but not what it is needed for.",
+          "options": [
+            {
+              "label": "No, ask about consequences"
+            },
+            {
+              "label": "Yes, cheap means essential"
+            },
+            {
+              "label": "Yes, expensive means essential"
+            }
+          ],
+          "help": [
+            "Separate affordability from necessity."
+          ],
+          "feedback": {
+            "met": "Cost does not reveal the consequence of going without.",
+            "not_yet": "Separate affordability from necessity."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿El precio solo establece necesidad?",
+          "scene": "Sabes que una compra cuesta 80, pero no para qué se necesita.",
+          "options": [
+            {
+              "label": "No, pregunta por consecuencias"
+            },
+            {
+              "label": "Sí, barato significa esencial"
+            },
+            {
+              "label": "Sí, caro significa esencial"
+            }
+          ],
+          "help": [
+            "Separa viabilidad de necesidad."
+          ],
+          "feedback": {
+            "met": "El costo no revela la consecuencia de prescindir.",
+            "not_yet": "Separa viabilidad de necesidad."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Só o preço estabelece necessidade?",
+          "scene": "Sabe que uma compra custa 80, mas não para que é necessária.",
+          "options": [
+            {
+              "label": "Não, pergunte sobre consequências"
+            },
+            {
+              "label": "Sim, barato significa essencial"
+            },
+            {
+              "label": "Sim, caro significa essencial"
+            }
+          ],
+          "help": [
+            "Separe viabilidade de necessidade."
+          ],
+          "feedback": {
+            "met": "O custo não revela a consequência de ficar sem.",
+            "not_yet": "Separe viabilidade de necessidade."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Which stated consequence has priority?",
+          "scene": "A borrowed wheelchair must be returned; renting one preserves mobility. An outing is optional.",
+          "options": [
+            {
+              "label": "Preserving necessary mobility"
+            },
+            {
+              "label": "Choosing whichever is advertised"
+            },
+            {
+              "label": "Keeping the optional outing"
+            }
+          ],
+          "help": [
+            "Apply the stated need without judging the person."
+          ],
+          "feedback": {
+            "met": "The scenario identifies mobility as necessary.",
+            "not_yet": "Apply the stated need without judging the person."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué consecuencia indicada tiene prioridad?",
+          "scene": "Debe devolverse una silla de ruedas prestada; rentar una conserva movilidad. Un paseo es opcional.",
+          "options": [
+            {
+              "label": "Conservar movilidad necesaria"
+            },
+            {
+              "label": "Elegir lo anunciado"
+            },
+            {
+              "label": "Conservar el paseo opcional"
+            }
+          ],
+          "help": [
+            "Aplica la necesidad indicada sin juzgar a la persona."
+          ],
+          "feedback": {
+            "met": "La escena identifica la movilidad como necesaria.",
+            "not_yet": "Aplica la necesidad indicada sin juzgar a la persona."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual consequência informada tem prioridade?",
+          "scene": "Uma cadeira de rodas emprestada deve voltar; alugar uma preserva mobilidade. Um passeio é opcional.",
+          "options": [
+            {
+              "label": "Preservar mobilidade necessária"
+            },
+            {
+              "label": "Escolher o anunciado"
+            },
+            {
+              "label": "Manter o passeio opcional"
+            }
+          ],
+          "help": [
+            "Aplique a necessidade informada sem julgar a pessoa."
+          ],
+          "feedback": {
+            "met": "A cena identifica a mobilidade como necessária.",
+            "not_yet": "Aplique a necessidade informada sem julgar a pessoa."
+          }
+        }
+      }
+    }
+  ]
+}

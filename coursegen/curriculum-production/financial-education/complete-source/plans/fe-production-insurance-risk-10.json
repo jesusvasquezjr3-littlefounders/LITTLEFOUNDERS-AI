@@ -1,0 +1,780 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-insurance-risk-part-2",
+  "lesson_id": "fe-production-insurance-risk-10",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.insurance-risk.10"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Detect overlapping coverage without assuming all overlap is useless.",
+  "title": {
+    "en-US": "Overlapping Coverage",
+    "es-MX": "Examina protección que se solapa",
+    "pt-BR": "Examine proteção que se sobrepõe"
+  },
+  "new_concepts": [
+    "finance.prod.insurance-risk.10"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Overlapping Coverage\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Examina protección que se solapa\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Examine proteção que se sobrepõe\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.insurance-risk.10",
+      "observable_action": "Detect overlapping coverage without assuming all overlap is useless.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.insurance-risk.03",
+      "prod.insurance-risk.06",
+      "prod.insurance-risk.07"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Two policies can cover similar risks while paying differently; inspect coordination, limits and extra benefits before calling the overlap useless.",
+    "misconception": "Two policies automatically double reimbursement, or every overlap has no possible value.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.insurance-risk.10",
+        "context_id": "insurance-risk-10-example-01",
+        "supports_from": [],
+        "reasoning": "Compare payments, coordination rules and extra benefits across policies. Similar titles do not settle value."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.insurance-risk.10",
+        "context_id": "insurance-risk-10-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The stated combined cap prevents reimbursement beyond the repair cost."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.insurance-risk.10",
+        "context_id": "insurance-risk-10-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The stated transport benefit is distinct from repair reimbursement."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.insurance-risk.10",
+        "context_id": "insurance-risk-10-practice-01",
+        "supports_from": [],
+        "reasoning": "Similar titles do not establish duplicate benefits or equivalent protection."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.insurance-risk.10",
+        "context_id": "insurance-risk-10-practice-02",
+        "supports_from": [],
+        "reasoning": "Matching event, expense and period identifies potential overlap."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.insurance-risk.10",
+        "context_id": "insurance-risk-10-practice-03",
+        "supports_from": [],
+        "reasoning": "The label does not establish how much the second policy pays."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.insurance-risk.10",
+        "context_id": "insurance-risk-10-transfer-01",
+        "supports_from": [],
+        "reasoning": "Different terms can change the protection each arrangement actually provides."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.insurance-risk.10",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Two policies can cover similar risks while paying differently; inspect coordination, limits and extra benefits before calling the overlap useless."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Dos pólizas pueden cubrir riesgos similares y pagar distinto; revisa coordinación, límites y beneficios extra antes de llamar inútil solapamiento."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Dois seguros podem cobrir o mesmo risco. Veja como pagam e o que cada um soma antes de dizer que um sobra."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Overlap is a question",
+          "line": "Compare payments, coordination rules and extra benefits across policies. Similar titles do not settle value."
+        },
+        "es-MX": {
+          "prompt": "Solapamiento requiere preguntas",
+          "line": "Compara pagos, reglas de suma y beneficios extra entre pólizas. Títulos similares no deciden valor."
+        },
+        "pt-BR": {
+          "prompt": "Sobreposição exige perguntas",
+          "line": "Compare o que cada seguro paga e como soma com o outro. Nomes parecidos não bastam."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Do these terms promise double reimbursement?",
+          "scene": "Fictional policies reimburse the same repair; combined payment cannot exceed repair cost.",
+          "options": [
+            {
+              "label": "Yes, two premiums override terms"
+            },
+            {
+              "label": "No"
+            },
+            {
+              "label": "Yes, two policies double it"
+            }
+          ],
+          "help": [
+            "Apply the coordination rule rather than counting policy titles."
+          ],
+          "feedback": {
+            "met": "The stated combined cap prevents reimbursement beyond the repair cost.",
+            "not_yet": "Apply the coordination rule rather than counting policy titles."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Términos prometen doble pago?",
+          "scene": "Pólizas ficticias reembolsan mismo arreglo; pago combinado no puede superar costo del arreglo.",
+          "options": [
+            {
+              "label": "Sí, dos primas anulan términos"
+            },
+            {
+              "label": "No"
+            },
+            {
+              "label": "Sí, dos pólizas duplican"
+            }
+          ],
+          "help": [
+            "Aplica regla de coordinación, no cuentes títulos de pólizas."
+          ],
+          "feedback": {
+            "met": "Tope combinado indicado evita pago sobre costo del arreglo.",
+            "not_yet": "Aplica regla de coordinación, no cuentes títulos de pólizas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Termos prometem pagamento duplo?",
+          "scene": "Apólices fictícias pagam mesmo conserto; pagamento combinado não pode superar custo do conserto.",
+          "options": [
+            {
+              "label": "Sim, dois prêmios anulam termos"
+            },
+            {
+              "label": "Não"
+            },
+            {
+              "label": "Sim, duas apólices dobram"
+            }
+          ],
+          "help": [
+            "Aplique regra de soma, não conte títulos de apólices."
+          ],
+          "feedback": {
+            "met": "Teto combinado dado evita pagamento acima do custo do conserto.",
+            "not_yet": "Aplique regra de soma, não conte títulos de apólices."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Does another policy add value?",
+          "scene": "Fictional A pays covered repairs; B separately pays stated transport costs A excludes.",
+          "options": [
+            {
+              "label": "No, any overlap is useless"
+            },
+            {
+              "label": "Yes, all costs double"
+            },
+            {
+              "label": "Yes, transport benefit differs"
+            }
+          ],
+          "help": [
+            "Compare actual benefits before dismissing the second policy."
+          ],
+          "feedback": {
+            "met": "The stated transport benefit is distinct from repair reimbursement.",
+            "not_yet": "Compare actual benefits before dismissing the second policy."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Segunda póliza podría agregar beneficio distinto?",
+          "scene": "A ficticia paga arreglos cubiertos; B paga aparte transporte indicado que A excluye.",
+          "options": [
+            {
+              "label": "No, todo solapamiento es inútil"
+            },
+            {
+              "label": "Sí, todo costo se duplica"
+            },
+            {
+              "label": "Sí, beneficio de transporte difiere"
+            }
+          ],
+          "help": [
+            "Compara beneficios reales antes de descartar segunda póliza."
+          ],
+          "feedback": {
+            "met": "Beneficio indicado de transporte difiere del pago de arreglo.",
+            "not_yet": "Compara beneficios reales antes de descartar segunda póliza."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Segunda apólice pode somar benefício distinto?",
+          "scene": "A fictícia paga consertos cobertos; B paga à parte transporte dado que A exclui.",
+          "options": [
+            {
+              "label": "Não, toda parte em comum é inútil"
+            },
+            {
+              "label": "Sim, todo custo dobra"
+            },
+            {
+              "label": "Sim, benefício de transporte difere"
+            }
+          ],
+          "help": [
+            "Compare pagamentos reais antes de descartar segunda apólice."
+          ],
+          "feedback": {
+            "met": "Benefício dado de transporte difere do pagamento de conserto.",
+            "not_yet": "Compare pagamentos reais antes de descartar segunda apólice."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.10",
+      "copy": {
+        "en-US": {
+          "prompt": "What precedes removing one policy?",
+          "scene": "Two policy titles sound similar; payment conditions have not been compared.",
+          "options": [
+            {
+              "label": "Compare terms and remaining protection"
+            },
+            {
+              "label": "Assume both pay identically"
+            },
+            {
+              "label": "Cancel the older one immediately"
+            }
+          ],
+          "help": [
+            "Check what protection would remain before changing coverage."
+          ],
+          "feedback": {
+            "met": "Similar titles do not establish duplicate benefits or equivalent protection.",
+            "not_yet": "Check what protection would remain before changing coverage."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué falta antes de quitar una póliza?",
+          "scene": "Títulos de dos pólizas suenan similares, pero no se compararon condiciones de pago.",
+          "options": [
+            {
+              "label": "Comparar términos y protección restante"
+            },
+            {
+              "label": "Suponer que ambas pagan igual"
+            },
+            {
+              "label": "Cancelar más antigua de inmediato"
+            }
+          ],
+          "help": [
+            "Revisa qué protección quedaría antes de cambiar cobertura."
+          ],
+          "feedback": {
+            "met": "Títulos similares no prueban beneficios duplicados ni protección equivalente.",
+            "not_yet": "Revisa qué protección quedaría antes de cambiar cobertura."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que falta antes de tirar uma apólice?",
+          "scene": "Títulos de duas apólices parecem iguais, mas condições de pagamento não foram comparadas.",
+          "options": [
+            {
+              "label": "Comparar termos e proteção restante"
+            },
+            {
+              "label": "Supor que ambas pagam igual"
+            },
+            {
+              "label": "Cancelar mais antiga logo"
+            }
+          ],
+          "help": [
+            "Veja que proteção restaria antes de mudar cobertura."
+          ],
+          "feedback": {
+            "met": "Títulos parecidos não provam pagamentos duplicados nem proteção igual.",
+            "not_yet": "Veja que proteção restaria antes de mudar cobertura."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Which wording suggests overlap worth checking?",
+          "scene": "Both fictional policies cover the same event, expense and period.",
+          "options": [
+            {
+              "label": "Equal premiums alone"
+            },
+            {
+              "label": "Different household names alone"
+            },
+            {
+              "label": "Same event, expense and period"
+            }
+          ],
+          "help": [
+            "Next check payment coordination and differences in benefits."
+          ],
+          "feedback": {
+            "met": "Matching event, expense and period identifies potential overlap.",
+            "not_yet": "Next check payment coordination and differences in benefits."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué texto sugiere solapamiento por revisar?",
+          "scene": "Ambas pólizas ficticias cubren mismo evento, gasto y periodo.",
+          "options": [
+            {
+              "label": "Solo primas iguales"
+            },
+            {
+              "label": "Solo nombres distintos del hogar"
+            },
+            {
+              "label": "Mismo evento, gasto y periodo"
+            }
+          ],
+          "help": [
+            "Luego revisa coordinación de pagos y diferencias de beneficios."
+          ],
+          "feedback": {
+            "met": "Coincidir evento, gasto y periodo identifica posible solapamiento.",
+            "not_yet": "Luego revisa coordinación de pagos y diferencias de beneficios."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que texto sugere parte em comum por conferir?",
+          "scene": "Ambas apólices fictícias cobrem mesmo evento, gasto e período.",
+          "options": [
+            {
+              "label": "Só prêmios iguais"
+            },
+            {
+              "label": "Só nomes distintos da família"
+            },
+            {
+              "label": "Mesmo evento, gasto e período"
+            }
+          ],
+          "help": [
+            "Depois confira regras de soma e o que cada seguro paga."
+          ],
+          "feedback": {
+            "met": "Coincidir evento, gasto e período identifica possível parte em comum.",
+            "not_yet": "Depois confira regras de soma e o que cada seguro paga."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Can the extra payout be assumed?",
+          "scene": "Second policy is advertised as supplemental; its payment rule is missing.",
+          "options": [
+            {
+              "label": "Yes, another premium proves payment"
+            },
+            {
+              "label": "Yes, supplemental means unlimited"
+            },
+            {
+              "label": "No, verify the actual rule"
+            }
+          ],
+          "help": [
+            "Read its conditions and coordination with existing coverage."
+          ],
+          "feedback": {
+            "met": "The label does not establish how much the second policy pays.",
+            "not_yet": "Read its conditions and coordination with existing coverage."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Puede suponerse pago extra?",
+          "scene": "Segunda póliza se anuncia complementaria; falta regla de pago.",
+          "options": [
+            {
+              "label": "Sí, otra prima prueba pago"
+            },
+            {
+              "label": "Sí, complementaria significa ilimitada"
+            },
+            {
+              "label": "No, verificar regla real"
+            }
+          ],
+          "help": [
+            "Lee condiciones y coordinación con cobertura existente."
+          ],
+          "feedback": {
+            "met": "Etiqueta no establece cuánto paga segunda póliza.",
+            "not_yet": "Lee condiciones y coordinación con cobertura existente."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Pode supor pagamento extra?",
+          "scene": "Segunda apólice é anunciada como extra; falta regra de pagamento.",
+          "options": [
+            {
+              "label": "Sim, outro prêmio prova pagamento"
+            },
+            {
+              "label": "Sim, extra significa ilimitada"
+            },
+            {
+              "label": "Não, verificar regra real"
+            }
+          ],
+          "help": [
+            "Leia condições e soma com cobertura existente."
+          ],
+          "feedback": {
+            "met": "Nome não define quanto paga segunda apólice.",
+            "not_yet": "Leia condições e soma com cobertura existente."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.insurance-risk.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Compare what?",
+          "scene": "Employer and personal travel cover may overlap; limits, exclusions and continued eligibility differ.",
+          "options": [
+            {
+              "label": "That every claim doubles"
+            },
+            {
+              "label": "That overlap is always waste"
+            },
+            {
+              "label": "Net protection and cost under both"
+            }
+          ],
+          "help": [
+            "Compare the combined rules before deciding whether coverage is redundant."
+          ],
+          "feedback": {
+            "met": "Different terms can change the protection each arrangement actually provides.",
+            "not_yet": "Compare the combined rules before deciding whether coverage is redundant."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe establecer comparación?",
+          "scene": "Coberturas laboral y personal de viaje pueden solaparse; límites, exclusiones y elegibilidad continua difieren.",
+          "options": [
+            {
+              "label": "Que todo reclamo se duplica"
+            },
+            {
+              "label": "Que solapamiento siempre desperdicia"
+            },
+            {
+              "label": "Protección neta y costo de ambas"
+            }
+          ],
+          "help": [
+            "Compara reglas combinadas antes de decidir si cobertura sobra."
+          ],
+          "feedback": {
+            "met": "Términos distintos pueden cambiar protección real de cada conjunto.",
+            "not_yet": "Compara reglas combinadas antes de decidir si cobertura sobra."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que comparar aqui?",
+          "scene": "Coberturas de viagem do emprego e pessoal podem se somar; limites, riscos de fora e quem segue coberto diferem.",
+          "options": [
+            {
+              "label": "Que todo pedido dobra"
+            },
+            {
+              "label": "Que parte em comum sempre desperdiça"
+            },
+            {
+              "label": "Proteção conjunta e custo de ambas"
+            }
+          ],
+          "help": [
+            "Compare regras combinadas antes de decidir se cobertura sobra."
+          ],
+          "feedback": {
+            "met": "Termos distintos podem mudar proteção real de cada conjunto.",
+            "not_yet": "Compare regras combinadas antes de decidir se cobertura sobra."
+          }
+        }
+      }
+    }
+  ]
+}

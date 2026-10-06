@@ -1,0 +1,798 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-saving-resilience-part-1",
+  "lesson_id": "fe-production-saving-resilience-04",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.saving-resilience.04"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Choose where to keep a near-term reserve using stated access, safety and fee conditions.",
+  "title": {
+    "en-US": "Reserve Access",
+    "es-MX": "Mantén reserva al alcance",
+    "pt-BR": "Mantenha reserva ao alcance"
+  },
+  "new_concepts": [
+    "finance.prod.saving-resilience.04"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Reserve Access\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Mantén reserva al alcance\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Mantenha reserva ao alcance\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.saving-resilience.04",
+      "observable_action": "Choose where to keep a near-term reserve using stated access, safety and fee conditions.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.accounts-records.01",
+      "prod.accounts-records.03",
+      "cash.dates"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A near-term reserve needs usable access; compare fictional choices by access timing, stated safety conditions and fees.",
+    "misconception": "The highest advertised return is best for emergency money even if access is delayed or principal can fall.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.saving-resilience.04",
+        "context_id": "saving-resilience-04-example-01",
+        "supports_from": [],
+        "reasoning": "Check access timing, possible losses and withdrawal fees. Match these conditions to the reserve’s purpose."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.saving-resilience.04",
+        "context_id": "saving-resilience-04-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "A matches the stated near-term access requirement."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.saving-resilience.04",
+        "context_id": "saving-resilience-04-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "A price decline can reduce money available for the fixed need."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.saving-resilience.04",
+        "context_id": "saving-resilience-04-practice-01",
+        "supports_from": [],
+        "reasoning": "The withdrawal fee reduces the amount available for the need."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.saving-resilience.04",
+        "context_id": "saving-resilience-04-practice-02",
+        "supports_from": [],
+        "reasoning": "A protection slogan does not establish actual coverage."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.saving-resilience.04",
+        "context_id": "saving-resilience-04-practice-03",
+        "supports_from": [],
+        "reasoning": "A reserve may fail its purpose if money arrives too late."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.saving-resilience.04",
+        "context_id": "saving-resilience-04-transfer-01",
+        "supports_from": [],
+        "reasoning": "A alone meets every stated reserve condition."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.saving-resilience.04",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A near-term reserve needs usable access; compare fictional choices by access timing, stated safety conditions and fees."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Reserva cercana necesita acceso utilizable; compara opciones ficticias por tiempo de acceso, seguridad indicada y cargos."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Reserva próxima precisa de acesso utilizável; compare opções fictícias por prazo de acesso, segurança dada e taxas."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Access, safety and cost",
+          "line": "Check access timing, possible losses and withdrawal fees. Match these conditions to the reserve’s purpose."
+        },
+        "es-MX": {
+          "prompt": "Acceso, seguridad y costo",
+          "line": "Revisa cuándo usar dinero, si monto puede bajar y cargos de acceso. Ajusta condiciones al propósito de reserva."
+        },
+        "pt-BR": {
+          "prompt": "Acesso, segurança e custo",
+          "line": "Confira quando usar dinheiro, se valor pode cair e taxas de acesso. Ajuste condições à finalidade da reserva."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Which access meets tomorrow’s need?",
+          "scene": "A allows confirmed withdrawal today; B locks withdrawals until next month.",
+          "options": [
+            {
+              "label": "Either regardless of timing"
+            },
+            {
+              "label": "B because the ad looks better"
+            },
+            {
+              "label": "A"
+            }
+          ],
+          "help": [
+            "Compare withdrawal timing with when money may be needed."
+          ],
+          "feedback": {
+            "met": "A matches the stated near-term access requirement.",
+            "not_yet": "Compare withdrawal timing with when money may be needed."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué acceso cumple necesidad de mañana?",
+          "scene": "A permite retiro confirmado hoy; B bloquea hasta próximo mes.",
+          "options": [
+            {
+              "label": "Cualquiera sin mirar tiempo"
+            },
+            {
+              "label": "B porque anuncio luce mejor"
+            },
+            {
+              "label": "A"
+            }
+          ],
+          "help": [
+            "Compara plazo de retiro con cuándo puede requerirse dinero."
+          ],
+          "feedback": {
+            "met": "A cumple requisito indicado de acceso cercano.",
+            "not_yet": "Compara plazo de retiro con cuándo puede requerirse dinero."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que acesso atende necessidade de amanhã?",
+          "scene": "A permite saque confirmado hoje; B bloqueia até próximo mês.",
+          "options": [
+            {
+              "label": "Qualquer um sem ver prazo"
+            },
+            {
+              "label": "B pois anúncio parece melhor"
+            },
+            {
+              "label": "A"
+            }
+          ],
+          "help": [
+            "Compare prazo de saque com quando pode precisar do dinheiro."
+          ],
+          "feedback": {
+            "met": "A atende requisito dado de acesso próximo.",
+            "not_yet": "Compare prazo de saque com quando pode precisar do dinheiro."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Which condition threatens the amount?",
+          "scene": "Reserve must cover a bill soon; an investment’s value can fall before then.",
+          "options": [
+            {
+              "label": "Possible principal decline"
+            },
+            {
+              "label": "A known statement date"
+            },
+            {
+              "label": "A clearly stated withdrawal process"
+            }
+          ],
+          "help": [
+            "Check whether the reserve amount can change before use."
+          ],
+          "feedback": {
+            "met": "A price decline can reduce money available for the fixed need.",
+            "not_yet": "Check whether the reserve amount can change before use."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué condición amenaza monto necesario?",
+          "scene": "Reserva debe cubrir cuenta fija pronto; valor de inversión puede caer antes.",
+          "options": [
+            {
+              "label": "Posible caída del capital"
+            },
+            {
+              "label": "Fecha conocida de estado"
+            },
+            {
+              "label": "Proceso de retiro claro"
+            }
+          ],
+          "help": [
+            "Revisa si monto de reserva puede cambiar antes de usarlo."
+          ],
+          "feedback": {
+            "met": "Caída de precio puede reducir dinero para necesidad fija.",
+            "not_yet": "Revisa si monto de reserva puede cambiar antes de usarlo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que condição ameaça valor necessário?",
+          "scene": "Reserva deve cobrir conta fixa logo; valor da aplicação pode cair antes.",
+          "options": [
+            {
+              "label": "Possível queda do capital"
+            },
+            {
+              "label": "Data conhecida do extrato"
+            },
+            {
+              "label": "Processo de saque claro"
+            }
+          ],
+          "help": [
+            "Confira se valor da reserva pode mudar antes do uso."
+          ],
+          "feedback": {
+            "met": "Queda de preço pode reduzir dinheiro para necessidade fixa.",
+            "not_yet": "Confira se valor da reserva pode mudar antes do uso."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.04",
+      "copy": {
+        "en-US": {
+          "prompt": "How much can be used after this fee?",
+          "scene": "Reserve balance: 250; Required withdrawal fee: 10; No other deductions.",
+          "options": [
+            {
+              "label": "250"
+            },
+            {
+              "label": "240"
+            },
+            {
+              "label": "260"
+            }
+          ],
+          "help": [
+            "Subtract the required access fee from the balance."
+          ],
+          "feedback": {
+            "met": "The withdrawal fee reduces the amount available for the need.",
+            "not_yet": "Subtract the required access fee from the balance."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto puede usarse tras cargo?",
+          "scene": "Saldo de reserva: 250; Cargo obligatorio de retiro: 10; Sin otros descuentos.",
+          "options": [
+            {
+              "label": "250"
+            },
+            {
+              "label": "240"
+            },
+            {
+              "label": "260"
+            }
+          ],
+          "help": [
+            "Resta cargo requerido de acceso al saldo."
+          ],
+          "feedback": {
+            "met": "Cargo de retiro reduce monto disponible para necesidad.",
+            "not_yet": "Resta cargo requerido de acceso al saldo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto pode usar após taxa?",
+          "scene": "Saldo da reserva: 250; Taxa obrigatória de saque: 10; Sem outros descontos.",
+          "options": [
+            {
+              "label": "250"
+            },
+            {
+              "label": "240"
+            },
+            {
+              "label": "260"
+            }
+          ],
+          "help": [
+            "Subtraia taxa exigida de acesso do saldo."
+          ],
+          "feedback": {
+            "met": "Taxa de saque reduz valor disponível para necessidade.",
+            "not_yet": "Subtraia taxa exigida de acesso do saldo."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          250,
+          10
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Which safety claim needs verification?",
+          "scene": "An app says “protected” without identifying where funds sit or the actual coverage.",
+          "options": [
+            {
+              "label": "Only download popularity"
+            },
+            {
+              "label": "Only bright branding"
+            },
+            {
+              "label": "Institution, product and coverage conditions"
+            }
+          ],
+          "help": [
+            "Verify the relevant official conditions for this arrangement."
+          ],
+          "feedback": {
+            "met": "A protection slogan does not establish actual coverage.",
+            "not_yet": "Verify the relevant official conditions for this arrangement."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué afirmación requiere verificar?",
+          "scene": "App dice «protegido» sin indicar dónde están fondos ni cobertura real.",
+          "options": [
+            {
+              "label": "Solo popularidad de descargas"
+            },
+            {
+              "label": "Solo marca llamativa"
+            },
+            {
+              "label": "Institución, producto y condiciones de cobertura"
+            }
+          ],
+          "help": [
+            "Verifica condiciones oficiales pertinentes de este acuerdo."
+          ],
+          "feedback": {
+            "met": "Lema de protección no establece cobertura real.",
+            "not_yet": "Verifica condiciones oficiales pertinentes de este acuerdo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que alegação exige verificar?",
+          "scene": "App diz “protegido” sem indicar onde estão recursos nem cobertura real.",
+          "options": [
+            {
+              "label": "Só popularidade de downloads"
+            },
+            {
+              "label": "Só marca chamativa"
+            },
+            {
+              "label": "Instituição, produto e condições de cobertura"
+            }
+          ],
+          "help": [
+            "Verifique condições oficiais relevantes deste acordo."
+          ],
+          "feedback": {
+            "met": "Lema de proteção não define cobertura real.",
+            "not_yet": "Verifique condições oficiais relevantes deste acordo."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Does higher return settle placement?",
+          "scene": "The higher-return option has withdrawal delays that exceed the stated emergency horizon.",
+          "options": [
+            {
+              "label": "Yes, delays never matter"
+            },
+            {
+              "label": "Yes, return overrides access"
+            },
+            {
+              "label": "No, access must fit the purpose"
+            }
+          ],
+          "help": [
+            "Evaluate access, amount stability and fees together."
+          ],
+          "feedback": {
+            "met": "A reserve may fail its purpose if money arrives too late.",
+            "not_yet": "Evaluate access, amount stability and fees together."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Mayor rendimiento decide dónde reservar?",
+          "scene": "Opción de mayor rendimiento retrasa retiros más allá del plazo de emergencia indicado.",
+          "options": [
+            {
+              "label": "Sí, retrasos nunca importan"
+            },
+            {
+              "label": "Sí, rendimiento manda sobre acceso"
+            },
+            {
+              "label": "No, acceso debe cumplir propósito"
+            }
+          ],
+          "help": [
+            "Evalúa acceso, estabilidad del monto y cargos juntos."
+          ],
+          "feedback": {
+            "met": "Reserva puede fallar si dinero llega demasiado tarde.",
+            "not_yet": "Evalúa acceso, estabilidad del monto y cargos juntos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Maior rendimento decide onde reservar?",
+          "scene": "Opção de maior rendimento atrasa saques além do prazo de emergência dado.",
+          "options": [
+            {
+              "label": "Sim, atrasos nunca importam"
+            },
+            {
+              "label": "Sim, rendimento manda sobre acesso"
+            },
+            {
+              "label": "Não, acesso deve atender finalidade"
+            }
+          ],
+          "help": [
+            "Avalie acesso, estabilidade do valor e taxas juntos."
+          ],
+          "feedback": {
+            "met": "Reserva pode falhar se dinheiro chegar tarde demais.",
+            "not_yet": "Avalie acesso, estabilidade do valor e taxas juntos."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.saving-resilience.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Which option meets these stated requirements?",
+          "scene": "Need: prompt access, stable stated balance, no access fee; A meets all, B locks funds, C charges a fee.",
+          "options": [
+            {
+              "label": "C"
+            },
+            {
+              "label": "B"
+            },
+            {
+              "label": "A"
+            }
+          ],
+          "help": [
+            "Match each option to the actual access, safety and cost requirements."
+          ],
+          "feedback": {
+            "met": "A alone meets every stated reserve condition.",
+            "not_yet": "Match each option to the actual access, safety and cost requirements."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué opción cumple requisitos indicados?",
+          "scene": "Se necesita acceso pronto, saldo estable indicado y retiro gratis; A cumple todo, B bloquea, C cobra.",
+          "options": [
+            {
+              "label": "C"
+            },
+            {
+              "label": "B"
+            },
+            {
+              "label": "A"
+            }
+          ],
+          "help": [
+            "Relaciona opciones con requisitos reales de acceso, seguridad y costo."
+          ],
+          "feedback": {
+            "met": "Solo A cumple cada condición de reserva indicada.",
+            "not_yet": "Relaciona opciones con requisitos reales de acceso, seguridad y costo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que opção atende requisitos dados?",
+          "scene": "Precisa acesso rápido, saldo estável dado e saque grátis; A atende tudo, B bloqueia, C cobra.",
+          "options": [
+            {
+              "label": "C"
+            },
+            {
+              "label": "B"
+            },
+            {
+              "label": "A"
+            }
+          ],
+          "help": [
+            "Ligue opções aos requisitos reais de acesso, segurança e custo."
+          ],
+          "feedback": {
+            "met": "Só A atende cada condição de reserva dada.",
+            "not_yet": "Ligue opções aos requisitos reais de acesso, segurança e custo."
+          }
+        }
+      }
+    }
+  ]
+}

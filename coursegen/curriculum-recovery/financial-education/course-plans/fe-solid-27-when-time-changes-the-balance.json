@@ -1,0 +1,744 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-solid-06-money-over-time",
+  "lesson_id": "fe-solid-27-when-time-changes-the-balance",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.debt.interest",
+    "finance.debt.minimum",
+    "finance.time.purchasing-power"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Separate period interest, minimum payments and purchasing power in fresh account decisions.",
+  "title": {
+    "en-US": "When time changes the balance",
+    "es-MX": "Cuando el tiempo cambia el saldo",
+    "pt-BR": "Quando o tempo muda o saldo"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"When time changes the balance\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Cuando el tiempo cambia el saldo\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Quando o tempo muda o saldo\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "consolidate",
+    "objective": {
+      "skill_id": "debt.interest",
+      "observable_action": "Separate period interest, minimum payments and purchasing power in fresh account decisions.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "debt.total-cost",
+      "price.percent",
+      "cash.balance"
+    ],
+    "retrieval_skills": [
+      "debt.interest",
+      "debt.minimum",
+      "time.purchasing-power"
+    ],
+    "relevance": "Read what changed, over which period, and what the remaining money can buy.",
+    "misconception": "Reading an unchanged nominal balance as proof that neither charges nor purchasing power changed.",
+    "numeracy_support": "Use only the stated quantities, dates and conditions; distinguish a modeled result from a guarantee.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "debt.interest",
+        "context_id": "when-time-changes-the-balance-practice-01",
+        "supports_from": [],
+        "reasoning": "The stated rule uses the remaining debt as its base."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "debt.minimum",
+        "context_id": "when-time-changes-the-balance-practice-02",
+        "supports_from": [],
+        "reasoning": "The receipt and remaining statement answer different questions."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "time.purchasing-power",
+        "context_id": "when-time-changes-the-balance-practice-03",
+        "supports_from": [],
+        "reasoning": "The basket costs more while the available amount stays fixed."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "debt.interest",
+        "context_id": "when-time-changes-the-balance-practice-04",
+        "supports_from": [],
+        "reasoning": "Equal additions and payments leave the original debt unchanged."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "time.purchasing-power",
+        "context_id": "when-time-changes-the-balance-practice-05",
+        "supports_from": [],
+        "reasoning": "A single observed price does not measure the whole economy."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "debt.interest",
+        "context_id": "when-time-changes-the-balance-transfer-01",
+        "supports_from": [],
+        "reasoning": "Charges affect repayment regardless of their label."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "debt.interest",
+      "fresh_context": "Apply this skill in a later integrated decision with a different constraint."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Read what changed, over which period, and what the remaining money can buy."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Revisa qué cambió, en qué periodo y qué compra el dinero restante."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Confira o que mudou, em qual período e o que o dinheiro restante compra."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.debt.interest",
+      "copy": {
+        "en-US": {
+          "prompt": "Which balance is charged here?",
+          "scene": "Interest applies after payment to the remaining debt.",
+          "options": [
+            {
+              "label": "The remaining debt"
+            },
+            {
+              "label": "The original loan forever"
+            },
+            {
+              "label": "The payment amount"
+            }
+          ],
+          "help": [
+            "Identify the base named in this agreement."
+          ],
+          "feedback": {
+            "met": "The stated rule uses the remaining debt as its base.",
+            "not_yet": "Identify the base named in this agreement."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Sobre qué saldo se cobra aquí?",
+          "scene": "El acuerdo cobra interés sobre la deuda restante después de cada pago. Un pago redujo esa deuda.",
+          "options": [
+            {
+              "label": "La deuda restante"
+            },
+            {
+              "label": "Siempre el préstamo original"
+            },
+            {
+              "label": "El monto del pago"
+            }
+          ],
+          "help": [
+            "Identifica la base que nombra este acuerdo."
+          ],
+          "feedback": {
+            "met": "La regla indicada usa como base la deuda restante.",
+            "not_yet": "Identifica la base que nombra este acuerdo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Sobre qual saldo se cobra aqui?",
+          "scene": "O acordo cobra juros sobre a dívida restante após cada pagamento. Um pagamento reduziu essa dívida.",
+          "options": [
+            {
+              "label": "A dívida restante"
+            },
+            {
+              "label": "Sempre o empréstimo original"
+            },
+            {
+              "label": "O valor do pagamento"
+            }
+          ],
+          "help": [
+            "Identifique a base indicada neste acordo."
+          ],
+          "feedback": {
+            "met": "A regra informada usa a dívida restante como base.",
+            "not_yet": "Identifique a base indicada neste acordo."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.debt.minimum",
+      "copy": {
+        "en-US": {
+          "prompt": "What can this payment establish?",
+          "scene": "You paid the minimum on time; debt and interest remain.",
+          "options": [
+            {
+              "label": "Minimum met; debt remains"
+            },
+            {
+              "label": "The balance was cleared"
+            },
+            {
+              "label": "Interest was automatically waived"
+            }
+          ],
+          "help": [
+            "Check what remains after the payment."
+          ],
+          "feedback": {
+            "met": "The receipt and remaining statement answer different questions.",
+            "not_yet": "Check what remains after the payment."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué demuestra este pago?",
+          "scene": "Se pagó el mínimo a tiempo. El estado aún muestra saldo pendiente y un cargo de interés.",
+          "options": [
+            {
+              "label": "Se cumplió el mínimo y queda deuda"
+            },
+            {
+              "label": "Se liquidó el saldo"
+            },
+            {
+              "label": "Se canceló automáticamente el interés"
+            }
+          ],
+          "help": [
+            "Revisa qué queda después del pago."
+          ],
+          "feedback": {
+            "met": "El comprobante y el saldo pendiente responden preguntas distintas.",
+            "not_yet": "Revisa qué queda después del pago."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que este pagamento demonstra?",
+          "scene": "O mínimo foi pago no prazo. O extrato ainda mostra saldo pendente e uma cobrança de juros.",
+          "options": [
+            {
+              "label": "O mínimo foi cumprido e resta dívida"
+            },
+            {
+              "label": "O saldo foi quitado"
+            },
+            {
+              "label": "Os juros foram cancelados automaticamente"
+            }
+          ],
+          "help": [
+            "Confira o que resta após o pagamento."
+          ],
+          "feedback": {
+            "met": "O comprovante e o saldo pendente respondem a perguntas diferentes.",
+            "not_yet": "Confira o que resta após o pagamento."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.time.purchasing-power",
+      "copy": {
+        "en-US": {
+          "prompt": "What changed for this household?",
+          "scene": "Cash is unchanged, but the same necessary groceries now cost more.",
+          "options": [
+            {
+              "label": "Cash increased"
+            },
+            {
+              "label": "Money buys fewer groceries"
+            },
+            {
+              "label": "Groceries remain equally affordable"
+            }
+          ],
+          "help": [
+            "Compare the same basket with the same money."
+          ],
+          "feedback": {
+            "met": "The basket costs more while the available amount stays fixed.",
+            "not_yet": "Compare the same basket with the same money."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué cambió para este hogar?",
+          "scene": "El efectivo no cambió, pero los mismos alimentos necesarios ahora cuestan más.",
+          "options": [
+            {
+              "label": "Aumentó el efectivo"
+            },
+            {
+              "label": "El efectivo compra menos de esta canasta"
+            },
+            {
+              "label": "Las mismas compras siguen igual de accesibles"
+            }
+          ],
+          "help": [
+            "Compara la misma canasta con el mismo dinero."
+          ],
+          "feedback": {
+            "met": "La canasta cuesta más y el monto disponible sigue fijo.",
+            "not_yet": "Compara la misma canasta con el mismo dinero."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que mudou para esta família?",
+          "scene": "O dinheiro não mudou, mas os mesmos alimentos necessários agora custam mais.",
+          "options": [
+            {
+              "label": "O dinheiro aumentou"
+            },
+            {
+              "label": "O dinheiro compra menos desta cesta"
+            },
+            {
+              "label": "As mesmas compras continuam igualmente acessíveis"
+            }
+          ],
+          "help": [
+            "Compare a mesma cesta com o mesmo dinheiro."
+          ],
+          "feedback": {
+            "met": "A cesta custa mais e o valor disponível permanece fixo.",
+            "not_yet": "Compare a mesma cesta com o mesmo dinheiro."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.debt.interest",
+      "copy": {
+        "en-US": {
+          "prompt": "Does the original debt shrink?",
+          "scene": "Payment equals interest. No other changes occur.",
+          "options": [
+            {
+              "label": "No, only interest is covered"
+            },
+            {
+              "label": "Yes, it clears the account"
+            },
+            {
+              "label": "Yes, every payment reduces principal"
+            }
+          ],
+          "help": [
+            "Compare the amount added with the amount paid."
+          ],
+          "feedback": {
+            "met": "Equal additions and payments leave the original debt unchanged.",
+            "not_yet": "Compare the amount added with the amount paid."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Este pago reduce la deuda original?",
+          "scene": "El pago iguala el interés del periodo. No hay otros cargos ni compras.",
+          "options": [
+            {
+              "label": "No, solo cubre el cargo añadido"
+            },
+            {
+              "label": "Sí, liquida la cuenta"
+            },
+            {
+              "label": "Sí, todo pago reduce el capital"
+            }
+          ],
+          "help": [
+            "Compara lo añadido con lo pagado."
+          ],
+          "feedback": {
+            "met": "Un cargo y un pago iguales dejan intacta la deuda original.",
+            "not_yet": "Compara lo añadido con lo pagado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Este pagamento reduz a dívida original?",
+          "scene": "O pagamento é igual aos juros do período. Não há outras cobranças nem compras.",
+          "options": [
+            {
+              "label": "Não, só cobre a cobrança adicionada"
+            },
+            {
+              "label": "Sim, quita a conta"
+            },
+            {
+              "label": "Sim, todo pagamento reduz o principal"
+            }
+          ],
+          "help": [
+            "Compare o valor adicionado com o valor pago."
+          ],
+          "feedback": {
+            "met": "Uma cobrança e um pagamento iguais deixam a dívida original intacta.",
+            "not_yet": "Compare o valor adicionado com o valor pago."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.time.purchasing-power",
+      "copy": {
+        "en-US": {
+          "prompt": "What does this price prove?",
+          "scene": "One shop raises one price; others are unknown.",
+          "options": [
+            {
+              "label": "Everyone loses equal purchasing power"
+            },
+            {
+              "label": "All prices rise equally"
+            },
+            {
+              "label": "That item costs more there"
+            }
+          ],
+          "help": [
+            "Keep the conclusion within the evidence given."
+          ],
+          "feedback": {
+            "met": "A single observed price does not measure the whole economy.",
+            "not_yet": "Keep the conclusion within the evidence given."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué demuestra este precio?",
+          "scene": "Una tienda sube el precio de un artículo. No tienes información sobre otros precios.",
+          "options": [
+            {
+              "label": "Todos los hogares perdieron el mismo poder de compra"
+            },
+            {
+              "label": "Todos los precios subieron igual"
+            },
+            {
+              "label": "Ese artículo cuesta más allí"
+            }
+          ],
+          "help": [
+            "Limita la conclusión a la información disponible."
+          ],
+          "feedback": {
+            "met": "Un precio observado no mide toda la economía.",
+            "not_yet": "Limita la conclusión a la información disponible."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que este preço demonstra?",
+          "scene": "Uma loja aumenta o preço de um item. Você não tem informação sobre outros preços.",
+          "options": [
+            {
+              "label": "Todas as famílias perderam o mesmo poder de compra"
+            },
+            {
+              "label": "Todos os preços subiram igualmente"
+            },
+            {
+              "label": "Esse item custa mais ali"
+            }
+          ],
+          "help": [
+            "Limite a conclusão à informação disponível."
+          ],
+          "feedback": {
+            "met": "Um preço observado não mede toda a economia.",
+            "not_yet": "Limite a conclusão à informação disponível."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.debt.interest",
+      "copy": {
+        "en-US": {
+          "prompt": "What should you compare?",
+          "scene": "Same loan amount and period: A adds interest; B adds a higher fee.",
+          "options": [
+            {
+              "label": "Ignore non-interest fees"
+            },
+            {
+              "label": "Compare rate labels only"
+            },
+            {
+              "label": "Compare added amounts"
+            }
+          ],
+          "help": [
+            "Include each required charge for the same period."
+          ],
+          "feedback": {
+            "met": "Charges affect repayment regardless of their label.",
+            "not_yet": "Include each required charge for the same period."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué comparación ayuda a decidir?",
+          "scene": "Mismo préstamo y periodo: A añade interés; B añade un cargo mayor.",
+          "options": [
+            {
+              "label": "Ignorar el cargo porque no es interés"
+            },
+            {
+              "label": "Elegir solo por la etiqueta de tasa"
+            },
+            {
+              "label": "Comparar los montos realmente añadidos"
+            }
+          ],
+          "help": [
+            "Incluye cada cargo obligatorio del mismo periodo."
+          ],
+          "feedback": {
+            "met": "Los cargos afectan la devolución sin importar su nombre.",
+            "not_yet": "Incluye cada cargo obligatorio del mismo periodo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual comparação ajuda a decidir?",
+          "scene": "Mesmo empréstimo e período: A adiciona juros; B adiciona uma tarifa maior.",
+          "options": [
+            {
+              "label": "Ignorar a tarifa porque não é juros"
+            },
+            {
+              "label": "Escolher só pelo nome da taxa"
+            },
+            {
+              "label": "Comparar os valores realmente adicionados"
+            }
+          ],
+          "help": [
+            "Inclua cada cobrança obrigatória do mesmo período."
+          ],
+          "feedback": {
+            "met": "As cobranças afetam a devolução independentemente do nome.",
+            "not_yet": "Inclua cada cobrança obrigatória do mesmo período."
+          }
+        }
+      }
+    }
+  ]
+}

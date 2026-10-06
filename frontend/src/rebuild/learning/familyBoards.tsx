@@ -387,7 +387,7 @@ export function StoryChoiceBoard({ document, segment, onBack, sequence, onGrade 
   const options = segment.type === 'story.dialogue-choice.v2' ? segment.payload.replies : segment.payload.options;
   return <BoardShell screen={segment.type.replace('.v2', '').replace('.', '-')} locale={document.locale} title={document.title} segment={segment}
     onBack={onBack} sequence={sequence} finished={grading.met} verdict={grading.result && grading.result !== 'unavailable' ? grading.result.verdict : null}
-    foot={<GradedFoot locale={document.locale} grading={grading} named={namedFeedback(document.locale, 'story')} feedback={segment.feedback} canCheck={choice !== null} sequence={sequence} onCheck={() => grading.check({ choice })} />}>
+      foot={<GradedFoot locale={document.locale} grading={grading} named={namedFeedback(document.locale, 'story')} feedback={segment.feedback} feedbackChoice={choice} canCheck={choice !== null} sequence={sequence} onCheck={() => grading.check({ choice })} />}>
     <section className="lf-learning-board lf-family-board lf-story-board">
       {segment.type === 'story.branch.v2' ? <p className="lf-story-scene" data-copy-role="narrative">{segment.payload.scene}</p> : null}
       {segment.type === 'story.dialogue-choice.v2' ? <div className="lf-speech-plate"><span className="lf-speech-plate-name" data-copy-role="data">{segment.payload.speaker}</span>
@@ -442,7 +442,7 @@ export function ChartBoard({ document, segment, onBack, sequence, onGrade }: Boa
   const question = segment.payload.question;
   return <BoardShell screen={`chart-${segment.visual.type}`} locale={document.locale} title={document.title} segment={segment} onBack={onBack} sequence={sequence}
     finished={question ? grading.met : true} verdict={grading.result && grading.result !== 'unavailable' ? grading.result.verdict : null}
-    foot={question ? <GradedFoot locale={document.locale} grading={grading} named={namedFeedback(document.locale, 'chart-question')} feedback={segment.feedback} canCheck={choice !== null} sequence={sequence} onCheck={() => grading.check({ choice })} />
+    foot={question ? <GradedFoot locale={document.locale} grading={grading} named={namedFeedback(document.locale, 'chart-question')} feedback={segment.feedback} feedbackChoice={choice} canCheck={choice !== null} sequence={sequence} onCheck={() => grading.check({ choice })} />
       : <ViewedFoot locale={document.locale} sequence={sequence} />}>
     <section className="lf-learning-board lf-family-board">
       <TeachingChart kind={segment.visual.type} data={segment.payload.data} title={segment.payload.title} locale={document.locale} />

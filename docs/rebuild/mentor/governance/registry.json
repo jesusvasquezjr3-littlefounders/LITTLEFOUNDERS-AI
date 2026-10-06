@@ -33,6 +33,7 @@
         "oracle/src/session/review.ts",
         "oracle/src/session/memoryRevision.ts",
         "oracle/src/context/**",
+        "backend/src/services/pedagogy/kcEligibility.ts",
         "agent/tools/check-mentor-minor-safeguards.mjs"
       ],
       "examples": [

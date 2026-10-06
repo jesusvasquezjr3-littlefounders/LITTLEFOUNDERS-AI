@@ -1,0 +1,642 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-solid-01-money-today",
+  "lesson_id": "fe-solid-03-update-your-balance",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.cash.balance"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Update a starting balance after completed receipts and payments, and distinguish the balance from the size of one transaction.",
+  "title": {
+    "en-US": "Follow your balance",
+    "es-MX": "Sigue tu saldo",
+    "pt-BR": "Acompanhe seu saldo"
+  },
+  "new_concepts": [
+    "finance.cash.balance"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Follow your balance\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Sigue tu saldo\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Acompanhe seu saldo\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "cash.balance",
+      "observable_action": "Update a starting balance after completed receipts and payments, and distinguish the balance from the size of one transaction.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "cash.direction",
+      "cash.received"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Track receipts and payments in dollars to see what remains. Your balance changes after each completed payment.",
+    "misconception": "Ignoring the starting amount or adding a payment instead of subtracting it.",
+    "numeracy_support": "The visible meter and replay show each addition and subtraction before independent calculation.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "cash.balance",
+        "context_id": "update-your-balance-example-01",
+        "supports_from": [],
+        "reasoning": "Start with 20 and receive 10: 20 + 10 = 30. Then pay 5: 30 − 5 = 25 remains."
+      },
+      {
+        "segment_id": "example-02",
+        "skill_id": "cash.balance",
+        "context_id": "update-your-balance-example-02",
+        "supports_from": [],
+        "reasoning": "Receive 10, then pay 5. Watch the balance. Replay the moves to see why 25 remains."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "cash.balance",
+        "context_id": "update-your-balance-guided-01",
+        "supports_from": [
+          "example-02"
+        ],
+        "reasoning": "You subtracted the payment from the starting balance."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "cash.balance",
+        "context_id": "update-your-balance-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The note copied the payment instead of subtracting it from the start."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "cash.balance",
+        "context_id": "update-your-balance-practice-01",
+        "supports_from": [],
+        "reasoning": "You included both the starting money and the completed receipt."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "cash.balance",
+        "context_id": "update-your-balance-practice-02",
+        "supports_from": [],
+        "reasoning": "You counted both payments, including the repeated one."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "cash.balance",
+        "context_id": "update-your-balance-practice-03",
+        "supports_from": [],
+        "reasoning": "Both changes affect the money remaining."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "cash.balance",
+        "context_id": "update-your-balance-transfer-01",
+        "supports_from": [],
+        "reasoning": "You combined the payment and the refund with the starting balance."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "cash.balance",
+      "fresh_context": "Apply this skill in a later integrated decision with a different constraint."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Track receipts and payments in dollars to see what remains. Your balance changes after each completed payment."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Registra entradas y pagos en pesos para ver lo que queda. El saldo cambia con cada pago realizado."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Registre entradas e pagamentos em reais para ver o que resta. O saldo muda com cada pagamento realizado."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Start, then change",
+          "line": "Start with 20 and receive 10: 20 + 10 = 30. Then pay 5: 30 − 5 = 25 remains."
+        },
+        "es-MX": {
+          "prompt": "Inicio y cambio",
+          "line": "Empieza con 20 y recibe 10: 20 + 10 = 30. Luego paga 5: 30 − 5 = 25 restantes."
+        },
+        "pt-BR": {
+          "prompt": "Início e mudança",
+          "line": "Comece com 20 e receba 10: 20 + 10 = 30. Depois pague 5: 30 − 5 = 25 restantes."
+        }
+      }
+    },
+    {
+      "id": "example-02",
+      "type": "money.running-ledger.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "balance-meter"
+      },
+      "payload": {
+        "initial": 20,
+        "sale": 10,
+        "cost": 5,
+        "maxEntries": 2,
+        "personal": true,
+        "currency": "local"
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Receive 10, then pay 5. Watch the balance. Replay the moves to see why 25 remains."
+        },
+        "es-MX": {
+          "prompt": "Recibe 10 y paga 5. Observa el saldo. Repite los movimientos para ver por qué quedan 25."
+        },
+        "pt-BR": {
+          "prompt": "Receba 10 e pague 5. Observe o saldo. Reveja os movimentos para ver por que restam 25."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "money.running-ledger.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "balance-meter"
+      },
+      "payload": {
+        "initial": 30,
+        "sale": 10,
+        "cost": 5,
+        "maxEntries": 1,
+        "personal": true,
+        "currency": "local"
+      },
+      "rubric": {
+        "target_balance": 25
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.balance",
+      "copy": {
+        "en-US": {
+          "prompt": "From a balance of 30, log a payment of 5. Subtract it from the start and enter the balance.",
+          "feedback": {
+            "met": "You subtracted the payment from the starting balance.",
+            "not_yet": "A payment reduces what you had. Use the starting amount."
+          },
+          "help": [
+            "A payment reduces what you had. Use the starting amount."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Con un saldo de 30, registra un pago de 5. Réstalo al monto inicial y escribe el saldo.",
+          "feedback": {
+            "met": "Restaste el pago al saldo inicial.",
+            "not_yet": "Un pago reduce lo que tenías. Usa el monto inicial."
+          },
+          "help": [
+            "Un pago reduce lo que tenías. Usa el monto inicial."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Com um saldo de 30, registre um pagamento de 5. Subtraia do início e digite o saldo.",
+          "feedback": {
+            "met": "Você subtraiu o pagamento do saldo inicial.",
+            "not_yet": "Um pagamento reduz o que você tinha. Use o valor inicial."
+          },
+          "help": [
+            "Um pagamento reduz o que você tinha. Use o valor inicial."
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.balance",
+      "copy": {
+        "en-US": {
+          "prompt": "What was missed?",
+          "scene": "You had 40 and paid 10. A note says the balance is 10.",
+          "options": [
+            {
+              "label": "The starting amount"
+            },
+            {
+              "label": "A future payment"
+            },
+            {
+              "label": "The payment"
+            }
+          ],
+          "help": [
+            "The balance is what remains, not the size of the payment."
+          ],
+          "feedback": {
+            "met": "The note copied the payment instead of subtracting it from the start.",
+            "not_yet": "The balance is what remains, not the size of the payment."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué faltó considerar?",
+          "scene": "Tenías 40 y pagaste 10. Una nota dice que el saldo es 10.",
+          "options": [
+            {
+              "label": "El monto inicial"
+            },
+            {
+              "label": "Un pago futuro"
+            },
+            {
+              "label": "El pago"
+            }
+          ],
+          "help": [
+            "El saldo es lo que queda, no el tamaño del pago."
+          ],
+          "feedback": {
+            "met": "La nota copió el pago en vez de restarlo al monto inicial.",
+            "not_yet": "El saldo es lo que queda, no el tamaño del pago."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que ficou de fora?",
+          "scene": "Você tinha 40 e pagou 10. Uma nota diz que o saldo é 10.",
+          "options": [
+            {
+              "label": "O valor inicial"
+            },
+            {
+              "label": "Um pagamento futuro"
+            },
+            {
+              "label": "O pagamento"
+            }
+          ],
+          "help": [
+            "O saldo é o que resta, não o tamanho do pagamento."
+          ],
+          "feedback": {
+            "met": "A nota copiou o pagamento em vez de subtraí-lo do início.",
+            "not_yet": "O saldo é o que resta, não o tamanho do pagamento."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "money.running-ledger.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "balance-meter"
+      },
+      "payload": {
+        "initial": 15,
+        "sale": 20,
+        "cost": 5,
+        "maxEntries": 1,
+        "personal": true,
+        "currency": "local"
+      },
+      "rubric": {
+        "target_balance": 35
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.balance",
+      "copy": {
+        "en-US": {
+          "prompt": "You have 15 and receive 20 for a repair. Log the receipt and enter the balance.",
+          "feedback": {
+            "met": "You included both the starting money and the completed receipt.",
+            "not_yet": "Receiving money increases the amount already there."
+          },
+          "help": [
+            "Receiving money increases the amount already there."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Tienes 15 y recibes 20 por una reparación. Registra la entrada y escribe el saldo.",
+          "feedback": {
+            "met": "Incluiste el dinero inicial y el pago recibido.",
+            "not_yet": "Recibir dinero aumenta el monto que ya había."
+          },
+          "help": [
+            "Recibir dinero aumenta el monto que ya había."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Você tem 15 e recebe 20 por um conserto. Registre a entrada e digite o saldo.",
+          "feedback": {
+            "met": "Você incluiu o dinheiro inicial e o pagamento recebido.",
+            "not_yet": "Receber dinheiro aumenta o valor que já estava lá."
+          },
+          "help": [
+            "Receber dinheiro aumenta o valor que já estava lá."
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "money.running-ledger.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "balance-meter"
+      },
+      "payload": {
+        "initial": 50,
+        "sale": 20,
+        "cost": 15,
+        "maxEntries": 2,
+        "personal": true,
+        "currency": "local"
+      },
+      "rubric": {
+        "target_balance": 20
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.balance",
+      "copy": {
+        "en-US": {
+          "prompt": "You have 50 and pay 15 twice. Log both payments and enter the balance.",
+          "feedback": {
+            "met": "You counted both payments, including the repeated one.",
+            "not_yet": "Each completed payment changes the balance, even when the amounts match."
+          },
+          "help": [
+            "Each completed payment changes the balance, even when the amounts match."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Tienes 50 y pagas 15 dos veces. Registra ambos pagos y escribe el saldo.",
+          "feedback": {
+            "met": "Contaste ambos pagos, incluido el repetido.",
+            "not_yet": "Cada pago cambia el saldo, aunque los montos sean iguales."
+          },
+          "help": [
+            "Cada pago cambia el saldo, aunque los montos sean iguales."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Você tem 50 e paga 15 duas vezes. Registre os dois pagamentos e digite o saldo.",
+          "feedback": {
+            "met": "Você contou os dois pagamentos, inclusive o repetido.",
+            "not_yet": "Cada pagamento muda o saldo, mesmo com valores iguais."
+          },
+          "help": [
+            "Cada pagamento muda o saldo, mesmo com valores iguais."
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.balance",
+      "copy": {
+        "en-US": {
+          "prompt": "Which note is complete?",
+          "scene": "You had 60. You received 20 and paid 10.",
+          "options": [
+            {
+              "label": "Record both changes"
+            },
+            {
+              "label": "Record only the payment"
+            },
+            {
+              "label": "Record only the receipt"
+            }
+          ],
+          "help": [
+            "The balance must include everything that actually entered or left."
+          ],
+          "feedback": {
+            "met": "Both changes affect the money remaining.",
+            "not_yet": "The balance must include everything that actually entered or left."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué registro está completo?",
+          "scene": "Tenías 60. Recibiste 20 y pagaste 10.",
+          "options": [
+            {
+              "label": "Anotar ambos cambios"
+            },
+            {
+              "label": "Anotar solo el pago"
+            },
+            {
+              "label": "Anotar solo la entrada"
+            }
+          ],
+          "help": [
+            "El saldo debe incluir todo lo que realmente entró o salió."
+          ],
+          "feedback": {
+            "met": "Ambos cambios afectan el dinero que queda.",
+            "not_yet": "El saldo debe incluir todo lo que realmente entró o salió."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual registro está completo?",
+          "scene": "Você tinha 60. Recebeu 20 e pagou 10.",
+          "options": [
+            {
+              "label": "Anotar as duas mudanças"
+            },
+            {
+              "label": "Anotar só o pagamento"
+            },
+            {
+              "label": "Anotar só a entrada"
+            }
+          ],
+          "help": [
+            "O saldo deve incluir tudo o que realmente entrou ou saiu."
+          ],
+          "feedback": {
+            "met": "As duas mudanças afetam o dinheiro restante.",
+            "not_yet": "O saldo deve incluir tudo o que realmente entrou ou saiu."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "money.running-ledger.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "balance-meter"
+      },
+      "payload": {
+        "initial": 40,
+        "sale": 10,
+        "cost": 20,
+        "maxEntries": 2,
+        "personal": true,
+        "currency": "local"
+      },
+      "rubric": {
+        "target_balance": 30
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.cash.balance",
+      "copy": {
+        "en-US": {
+          "prompt": "Starting with 40, pay 20 for transport, then receive a refund of 10. Log both and enter the balance.",
+          "feedback": {
+            "met": "You combined the payment and the refund with the starting balance.",
+            "not_yet": "Track the completed movements in their stated order."
+          },
+          "help": [
+            "Track the completed movements in their stated order."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Partiendo de 40, pagas 20 de transporte y recibes una devolución de 10. Registra ambos y escribe el saldo.",
+          "feedback": {
+            "met": "Combinaste el pago y la devolución con el saldo inicial.",
+            "not_yet": "Sigue los movimientos realizados en el orden indicado."
+          },
+          "help": [
+            "Sigue los movimientos realizados en el orden indicado."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Partindo de 40, pague 20 de transporte e receba um reembolso de 10. Registre ambos e digite o saldo.",
+          "feedback": {
+            "met": "Você combinou o pagamento e o reembolso com o saldo inicial.",
+            "not_yet": "Acompanhe os movimentos realizados na ordem indicada."
+          },
+          "help": [
+            "Acompanhe os movimentos realizados na ordem indicada."
+          ]
+        }
+      }
+    }
+  ]
+}

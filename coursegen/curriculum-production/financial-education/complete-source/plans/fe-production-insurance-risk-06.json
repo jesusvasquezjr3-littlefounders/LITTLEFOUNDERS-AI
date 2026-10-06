@@ -1,0 +1,778 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-insurance-risk-part-2",
+  "lesson_id": "fe-production-insurance-risk-06",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.insurance-risk.06"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Identify an exclusion that prevents coverage in a given scenario.",
+  "title": {
+    "en-US": "Excluded Events",
+    "es-MX": "Lee el evento excluido",
+    "pt-BR": "Leia o evento excluído"
+  },
+  "new_concepts": [
+    "finance.prod.insurance-risk.06"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Excluded Events\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Lee el evento excluido\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Leia o evento excluído\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.insurance-risk.06",
+      "observable_action": "Identify an exclusion that prevents coverage in a given scenario.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.insurance-risk.03"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Coverage names do not decide every claim; compare the actual cause with the policy’s exclusions and any amendments.",
+    "misconception": "A broad coverage label or paid premium overrides an explicit exclusion.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.insurance-risk.06",
+        "context_id": "insurance-risk-06-example-01",
+        "supports_from": [],
+        "reasoning": "Match the actual event to covered causes and exclusions. A broad policy title cannot override a specific excluded cause."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.insurance-risk.06",
+        "context_id": "insurance-risk-06-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The actual cause matches the explicit exclusion."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.insurance-risk.06",
+        "context_id": "insurance-risk-06-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Without the cause, this coverage decision remains unresolved."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.insurance-risk.06",
+        "context_id": "insurance-risk-06-practice-01",
+        "supports_from": [],
+        "reasoning": "An applicable contract amendment can change the stated coverage."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.insurance-risk.06",
+        "context_id": "insurance-risk-06-practice-02",
+        "supports_from": [],
+        "reasoning": "A higher limit does not change an unchanged excluded cause."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.insurance-risk.06",
+        "context_id": "insurance-risk-06-practice-03",
+        "supports_from": [],
+        "reasoning": "The scenario matches the stated unattended-theft exclusion."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.insurance-risk.06",
+        "context_id": "insurance-risk-06-transfer-01",
+        "supports_from": [],
+        "reasoning": "The voluntary change falls under the stated exclusion."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.insurance-risk.06",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Coverage names do not decide every claim; compare the actual cause with the policy’s exclusions and any amendments."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Nombre de cobertura no decide todo reclamo; compara causa real con exclusiones y cambios de póliza."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Nome da cobertura não decide todo pedido; compare causa real com exclusões e mudanças da apólice."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Cause and conditions matter",
+          "line": "Match the actual event to covered causes and exclusions. A broad policy title cannot override a specific excluded cause."
+        },
+        "es-MX": {
+          "prompt": "Causa y condiciones importan",
+          "line": "Relaciona evento real con causas cubiertas y exclusiones. Título amplio de póliza no anula causa excluida específica."
+        },
+        "pt-BR": {
+          "prompt": "Causa e condições importam",
+          "line": "Ligue evento real a causas cobertas e exclusões. Título amplo da apólice não anula causa excluída específica."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Does this policy cover it?",
+          "scene": "Fictional policy covers pipe bursts but excludes river floods; river flooding causes damage.",
+          "options": [
+            {
+              "label": "No, excluded river flood"
+            },
+            {
+              "label": "Yes, because premiums were paid"
+            },
+            {
+              "label": "Yes, all water damage"
+            }
+          ],
+          "help": [
+            "Identify the cause rather than relying on the policy title."
+          ],
+          "feedback": {
+            "met": "The actual cause matches the explicit exclusion.",
+            "not_yet": "Identify the cause rather than relying on the policy title."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Esta póliza indicada cubre pérdida?",
+          "scene": "Póliza ficticia cubre roturas de tubo pero excluye desbordes de río; desborde causa daño.",
+          "options": [
+            {
+              "label": "No, desborde de río excluido"
+            },
+            {
+              "label": "Sí, porque se pagaron primas"
+            },
+            {
+              "label": "Sí, todo daño por agua"
+            }
+          ],
+          "help": [
+            "Identifica causa sin depender del título de póliza."
+          ],
+          "feedback": {
+            "met": "Causa real coincide con exclusión expresa.",
+            "not_yet": "Identifica causa sin depender del título de póliza."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Esta apólice dada cobre perda?",
+          "scene": "Apólice fictícia cobre cano rompido mas exclui enchente de rio; enchente causa dano.",
+          "options": [
+            {
+              "label": "Não, enchente de rio excluída"
+            },
+            {
+              "label": "Sim, pois prêmios foram pagos"
+            },
+            {
+              "label": "Sim, todo dano por água"
+            }
+          ],
+          "help": [
+            "Identifique causa sem depender do título da apólice."
+          ],
+          "feedback": {
+            "met": "Causa real coincide com exclusão expressa.",
+            "not_yet": "Identifique causa sem depender do título da apólice."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.06",
+      "copy": {
+        "en-US": {
+          "prompt": "What evidence is missing?",
+          "scene": "Policy covers accidental breakage but excludes wear; the cause of damage is unknown.",
+          "options": [
+            {
+              "label": "Cause of damage"
+            },
+            {
+              "label": "The purchase price alone"
+            },
+            {
+              "label": "Proof that every cause qualifies"
+            }
+          ],
+          "help": [
+            "Find the relevant event facts before applying the exclusion."
+          ],
+          "feedback": {
+            "met": "Without the cause, this coverage decision remains unresolved.",
+            "not_yet": "Find the relevant event facts before applying the exclusion."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué evidencia falta?",
+          "scene": "Póliza cubre rotura accidental pero excluye desgaste; causa del daño es desconocida.",
+          "options": [
+            {
+              "label": "Causa del daño"
+            },
+            {
+              "label": "Solo el precio de compra"
+            },
+            {
+              "label": "Prueba de que toda causa cumple"
+            }
+          ],
+          "help": [
+            "Busca hechos relevantes antes de aplicar exclusión."
+          ],
+          "feedback": {
+            "met": "Sin causa, decisión de cobertura sigue sin resolver.",
+            "not_yet": "Busca hechos relevantes antes de aplicar exclusión."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que prova falta?",
+          "scene": "Apólice cobre quebra acidental mas exclui desgaste; causa do dano é desconhecida.",
+          "options": [
+            {
+              "label": "Causa do dano"
+            },
+            {
+              "label": "Só o preço de compra"
+            },
+            {
+              "label": "Prova de que toda causa atende"
+            }
+          ],
+          "help": [
+            "Busque fatos relevantes antes de aplicar exclusão."
+          ],
+          "feedback": {
+            "met": "Sem causa, decisão de cobertura segue sem solução.",
+            "not_yet": "Busque fatos relevantes antes de aplicar exclusão."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which document may change this exclusion?",
+          "scene": "A signed amendment adds river-flood coverage to the fictional policy.",
+          "options": [
+            {
+              "label": "A friend’s different policy"
+            },
+            {
+              "label": "An unrelated advertisement"
+            },
+            {
+              "label": "The applicable amendment"
+            }
+          ],
+          "help": [
+            "Check which written terms actually apply to this policy."
+          ],
+          "feedback": {
+            "met": "An applicable contract amendment can change the stated coverage.",
+            "not_yet": "Check which written terms actually apply to this policy."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué documento puede cambiar exclusión?",
+          "scene": "Modificación firmada agrega cobertura de desborde de río a póliza ficticia.",
+          "options": [
+            {
+              "label": "Póliza distinta de amigo"
+            },
+            {
+              "label": "Anuncio ajeno"
+            },
+            {
+              "label": "Modificación aplicable"
+            }
+          ],
+          "help": [
+            "Revisa qué términos escritos aplican a esta póliza."
+          ],
+          "feedback": {
+            "met": "Modificación aplicable del contrato puede cambiar cobertura indicada.",
+            "not_yet": "Revisa qué términos escritos aplican a esta póliza."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que documento pode mudar exclusão?",
+          "scene": "Alteração assinada inclui cobertura de enchente de rio na apólice fictícia.",
+          "options": [
+            {
+              "label": "Apólice distinta de amigo"
+            },
+            {
+              "label": "Anúncio alheio"
+            },
+            {
+              "label": "Alteração aplicável"
+            }
+          ],
+          "help": [
+            "Veja que termos escritos se aplicam a esta apólice."
+          ],
+          "feedback": {
+            "met": "Alteração aplicável do contrato pode mudar cobertura dada.",
+            "not_yet": "Veja que termos escritos se aplicam a esta apólice."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Does a bigger limit remove the exclusion?",
+          "scene": "Fictional policy increases its payout limit but keeps wear excluded.",
+          "options": [
+            {
+              "label": "Yes"
+            },
+            {
+              "label": "No"
+            },
+            {
+              "label": "Only after another premium"
+            }
+          ],
+          "help": [
+            "Separate how much is payable from which events qualify."
+          ],
+          "feedback": {
+            "met": "A higher limit does not change an unchanged excluded cause.",
+            "not_yet": "Separate how much is payable from which events qualify."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Límite mayor elimina exclusión?",
+          "scene": "Póliza ficticia aumenta límite de pago pero sigue excluyendo desgaste.",
+          "options": [
+            {
+              "label": "Sí"
+            },
+            {
+              "label": "No"
+            },
+            {
+              "label": "Solo tras otra prima"
+            }
+          ],
+          "help": [
+            "Separa cuánto se paga de qué eventos cumplen."
+          ],
+          "feedback": {
+            "met": "Límite mayor no cambia causa excluida sin cambio.",
+            "not_yet": "Separa cuánto se paga de qué eventos cumplen."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Limite maior elimina exclusão?",
+          "scene": "Apólice fictícia aumenta limite de pagamento mas segue excluindo desgaste.",
+          "options": [
+            {
+              "label": "Sim"
+            },
+            {
+              "label": "Não"
+            },
+            {
+              "label": "Só após outro prêmio"
+            }
+          ],
+          "help": [
+            "Separe quanto se paga de que eventos atendem."
+          ],
+          "feedback": {
+            "met": "Limite maior não muda causa excluída sem mudança.",
+            "not_yet": "Separe quanto se paga de que eventos atendem."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which loss matches the stated exclusion?",
+          "scene": "Fictional phone policy excludes unattended theft; the phone was left unattended and stolen.",
+          "options": [
+            {
+              "label": "This unattended theft"
+            },
+            {
+              "label": "Every accidental drop"
+            },
+            {
+              "label": "No loss after paying premium"
+            }
+          ],
+          "help": [
+            "Match the actual facts to the exact exclusion."
+          ],
+          "feedback": {
+            "met": "The scenario matches the stated unattended-theft exclusion.",
+            "not_yet": "Match the actual facts to the exact exclusion."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué pérdida coincide con exclusión?",
+          "scene": "Póliza ficticia de teléfono excluye robo sin vigilancia; teléfono quedó sin vigilancia y fue robado.",
+          "options": [
+            {
+              "label": "Este robo sin vigilancia"
+            },
+            {
+              "label": "Toda caída accidental"
+            },
+            {
+              "label": "Ninguna tras pagar prima"
+            }
+          ],
+          "help": [
+            "Relaciona hechos reales con exclusión exacta."
+          ],
+          "feedback": {
+            "met": "Escenario coincide con exclusión indicada de robo sin vigilancia.",
+            "not_yet": "Relaciona hechos reales con exclusión exacta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que perda coincide com exclusão?",
+          "scene": "Apólice fictícia de celular exclui furto sem vigilância; celular ficou sem vigilância e foi furtado.",
+          "options": [
+            {
+              "label": "Este furto sem vigilância"
+            },
+            {
+              "label": "Toda queda acidental"
+            },
+            {
+              "label": "Nenhuma após pagar prêmio"
+            }
+          ],
+          "help": [
+            "Ligue fatos reais à exclusão exata."
+          ],
+          "feedback": {
+            "met": "Cenário coincide com exclusão dada de furto sem vigilância.",
+            "not_yet": "Ligue fatos reais à exclusão exata."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.insurance-risk.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Is this covered?",
+          "scene": "Fictional travel policy covers carrier cancellation but excludes voluntary changes; traveler chooses a new date.",
+          "options": [
+            {
+              "label": "Yes, carrier coverage means everything"
+            },
+            {
+              "label": "No, voluntary change excluded"
+            },
+            {
+              "label": "Yes, any changed trip"
+            }
+          ],
+          "help": [
+            "Distinguish the covered trigger from the actual reason."
+          ],
+          "feedback": {
+            "met": "The voluntary change falls under the stated exclusion.",
+            "not_yet": "Distinguish the covered trigger from the actual reason."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Causa está cubierta según texto?",
+          "scene": "Póliza ficticia de viaje cubre cancelación del transportista pero excluye cambios voluntarios; viajero elige otra fecha.",
+          "options": [
+            {
+              "label": "Sí, cubrir transportista cubre todo"
+            },
+            {
+              "label": "No, cambio voluntario excluido"
+            },
+            {
+              "label": "Sí, todo viaje cambiado"
+            }
+          ],
+          "help": [
+            "Distingue causa cubierta del motivo real."
+          ],
+          "feedback": {
+            "met": "Cambio voluntario cae en exclusión indicada.",
+            "not_yet": "Distingue causa cubierta del motivo real."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Causa está coberta pelo texto?",
+          "scene": "Apólice fictícia de viagem cobre cancelamento da empresa mas exclui mudanças voluntárias; viajante escolhe outra data.",
+          "options": [
+            {
+              "label": "Sim, cobrir empresa cobre tudo"
+            },
+            {
+              "label": "Não, mudança voluntária excluída"
+            },
+            {
+              "label": "Sim, toda viagem mudada"
+            }
+          ],
+          "help": [
+            "Separe causa coberta do motivo real."
+          ],
+          "feedback": {
+            "met": "Mudança voluntária cai na exclusão dada.",
+            "not_yet": "Separe causa coberta do motivo real."
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,979 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-credit-products-part-1",
+  "lesson_id": "fe-production-credit-products-04",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.credit-products.04"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Trace how minimum-only payments affect a balance under a supplied schedule.",
+  "title": {
+    "en-US": "Minimum Payments",
+    "es-MX": "Sigue pagos de solo mínimo",
+    "pt-BR": "Acompanhe pagamentos de só mínimo"
+  },
+  "new_concepts": [
+    "finance.prod.credit-products.04"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Minimum Payments\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Sigue pagos de solo mínimo\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Acompanhe pagamentos de só mínimo\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.credit-products.04",
+      "observable_action": "Trace how minimum-only payments affect a balance under a supplied schedule.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.credit-products.01",
+      "prod.credit-mechanics.04",
+      "prod.credit-mechanics.05"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A minimum payment can leave debt and interest under the stated schedule; follow the balance rather than judging only punctuality.",
+    "misconception": "An on-time minimum automatically prevents interest or clears debt.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.credit-products.04",
+        "context_id": "credit-products-04-example-01",
+        "supports_from": [],
+        "reasoning": "Add the scheduled interest and fees, then subtract payments. Use the supplied order and check what debt remains."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.credit-products.04",
+        "context_id": "credit-products-04-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Both minimum payments leave debt and scheduled interest."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.credit-products.04",
+        "context_id": "credit-products-04-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The supplied schedule includes interest despite timely minimum payments."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.credit-products.04",
+        "context_id": "credit-products-04-practice-01",
+        "supports_from": [],
+        "reasoning": "The payment reduces the charged balance but does not clear it."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.credit-products.04",
+        "context_id": "credit-products-04-practice-02",
+        "supports_from": [],
+        "reasoning": "The larger payment leaves less debt under this schedule."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.credit-products.04",
+        "context_id": "credit-products-04-practice-03",
+        "supports_from": [],
+        "reasoning": "A short supplied schedule does not define every future balance."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.credit-products.04",
+        "context_id": "credit-products-04-transfer-01",
+        "supports_from": [],
+        "reasoning": "Both minimums reduce debt but leave the stated remaining balance."
+      },
+      {
+        "segment_id": "example-mentor-recovery",
+        "skill_id": "prod.credit-products.04",
+        "context_id": "production-minimum-payment-mentor-correction",
+        "supports_from": [],
+        "reasoning": "I checked: payment was incomplete. These terms still charge interest."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.credit-products.04",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A minimum payment can leave debt and interest under the stated schedule; follow the balance rather than judging only punctuality."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Pago mínimo puede dejar deuda e intereses bajo calendario dado; sigue saldo, no solo puntualidad."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Pagamento mínimo pode deixar dívida e juros sob calendário dado; acompanhe saldo, não só pontualidade."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Follow the balance change",
+          "line": "Add the scheduled interest and fees, then subtract payments. Use the supplied order and check what debt remains."
+        },
+        "es-MX": {
+          "prompt": "Sigue cambio del saldo",
+          "line": "Suma intereses y cargos indicados, luego resta pagos. Usa orden dado y revisa qué deuda queda."
+        },
+        "pt-BR": {
+          "prompt": "Siga mudança do saldo",
+          "line": "Some juros e taxas dados, depois subtraia pagamentos. Use ordem dada e veja que dívida resta."
+        }
+      }
+    },
+    {
+      "id": "example-mentor-recovery",
+      "type": "voice.mentor-episode.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {},
+      "copy": {
+        "en-US": {
+          "prompt": "Rho revises an assumption",
+          "setup": "Fictional terms: full timely payment avoids purchase interest; I paid minimum.",
+          "misjudgment": "I thought minimum payment stopped interest.",
+          "recovery": "I checked: payment was incomplete. These terms still charge interest."
+        },
+        "es-MX": {
+          "prompt": "Rho corrige una suposición",
+          "setup": "Términos ficticios exigen pago total puntual para evitar intereses de compras; pagué solo mínimo.",
+          "misjudgment": "Pensé que pagar mínimo evitaba intereses.",
+          "recovery": "Revisé: mi pago fue incompleto. Bajo estos términos, intereses siguen aplicando."
+        },
+        "pt-BR": {
+          "prompt": "Rho revê uma suposição",
+          "setup": "Termos fictícios exigem pagamento total pontual para evitar juros de compras; paguei só mínimo.",
+          "misjudgment": "Pensei que pagar mínimo evitava juros.",
+          "recovery": "Conferi: meu pagamento foi incompleto. Sob estes termos, juros ainda se aplicam."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.04",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "step-1"
+          },
+          {
+            "id": "step-2"
+          },
+          {
+            "id": "step-3"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "step-2",
+          "step-3"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "step-2": "190",
+          "step-3": "179"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Fictional dollars: debt 200; cycle interest 10 then minimum 20; next interest 9 then minimum 20; no other changes.",
+          "feedback": {
+            "met": "Both minimum payments leave debt and scheduled interest.",
+            "not_yet": "Apply each supplied charge and payment in order."
+          },
+          "help": [
+            "Apply each supplied charge and payment in order."
+          ],
+          "steps": [
+            {
+              "expression": "200 + 10",
+              "result": "210",
+              "spokenText": "After first interest"
+            },
+            {
+              "expression": "210 - 20",
+              "result": "190",
+              "spokenText": "After first payment"
+            },
+            {
+              "expression": "190 + 9 - 20",
+              "result": "179",
+              "spokenText": "After next cycle"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Pesos ficticios: deuda 200; interés 10 luego mínimo 20; siguiente interés 9 luego mínimo 20; sin otros cambios.",
+          "feedback": {
+            "met": "Ambos mínimos dejan deuda e intereses indicados.",
+            "not_yet": "Aplica cada cargo y pago dado en orden."
+          },
+          "help": [
+            "Aplica cada cargo y pago dado en orden."
+          ],
+          "steps": [
+            {
+              "expression": "200 + 10",
+              "result": "210",
+              "spokenText": "Tras primer interés"
+            },
+            {
+              "expression": "210 - 20",
+              "result": "190",
+              "spokenText": "Tras primer pago"
+            },
+            {
+              "expression": "190 + 9 - 20",
+              "result": "179",
+              "spokenText": "Tras siguiente periodo"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Reais fictícios: dívida 200; juros 10 depois mínimo 20; próximos juros 9 depois mínimo 20; sem outras mudanças.",
+          "feedback": {
+            "met": "Ambos mínimos deixam dívida e juros dados.",
+            "not_yet": "Aplique cada encargo e pagamento dado em ordem."
+          },
+          "help": [
+            "Aplique cada encargo e pagamento dado em ordem."
+          ],
+          "steps": [
+            {
+              "expression": "200 + 10",
+              "result": "210",
+              "spokenText": "Após primeiros juros"
+            },
+            {
+              "expression": "210 - 20",
+              "result": "190",
+              "spokenText": "Após primeiro pagamento"
+            },
+            {
+              "expression": "190 + 9 - 20",
+              "result": "179",
+              "spokenText": "Após próximo período"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.04",
+      "copy": {
+        "en-US": {
+          "prompt": "What does this disprove?",
+          "scene": "Schedule charges interest despite both minimum payments arriving on time.",
+          "options": [
+            {
+              "label": "That payments reduce debt at all"
+            },
+            {
+              "label": "That timely minimums stop interest here"
+            },
+            {
+              "label": "That late payments add fees"
+            }
+          ],
+          "help": [
+            "Use the actual charges rather than assuming minimum means interest-free."
+          ],
+          "feedback": {
+            "met": "The supplied schedule includes interest despite timely minimum payments.",
+            "not_yet": "Use the actual charges rather than assuming minimum means interest-free."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué desmiente calendario?",
+          "scene": "Calendario ficticio cobra intereses aunque ambos mínimos llegan a tiempo.",
+          "options": [
+            {
+              "label": "Que pagos reduzcan algo de deuda"
+            },
+            {
+              "label": "Que mínimos puntuales evitan intereses aquí"
+            },
+            {
+              "label": "Que atrasarse genera comisiones"
+            }
+          ],
+          "help": [
+            "Usa cargos reales sin suponer que mínimo evita intereses."
+          ],
+          "feedback": {
+            "met": "Calendario dado incluye intereses pese a mínimos puntuales.",
+            "not_yet": "Usa cargos reales sin suponer que mínimo evita intereses."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que desmente calendário?",
+          "scene": "Calendário fictício cobra juros apesar de ambos mínimos chegarem no prazo.",
+          "options": [
+            {
+              "label": "Que pagamentos reduzam alguma dívida"
+            },
+            {
+              "label": "Que mínimos pontuais evitam juros aqui"
+            },
+            {
+              "label": "Que atrasos geram tarifas"
+            }
+          ],
+          "help": [
+            "Use encargos reais sem supor que mínimo evita juros."
+          ],
+          "feedback": {
+            "met": "Calendário dado inclui juros apesar de mínimos pontuais.",
+            "not_yet": "Use encargos reais sem supor que mínimo evita juros."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.04",
+      "copy": {
+        "en-US": {
+          "prompt": "What debt remains after this cycle?",
+          "scene": "Fictional schedule: starting debt 300; interest added 12; minimum paid 25; no other changes.",
+          "options": [
+            {
+              "label": "287"
+            },
+            {
+              "label": "0"
+            },
+            {
+              "label": "275"
+            }
+          ],
+          "help": [
+            "Add the interest before subtracting the stated payment."
+          ],
+          "feedback": {
+            "met": "The payment reduces the charged balance but does not clear it.",
+            "not_yet": "Add the interest before subtracting the stated payment."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué deuda queda tras periodo?",
+          "scene": "Calendario ficticio: deuda inicial 300; interés sumado 12; mínimo pagado 25; sin otros cambios.",
+          "options": [
+            {
+              "label": "287"
+            },
+            {
+              "label": "0"
+            },
+            {
+              "label": "275"
+            }
+          ],
+          "help": [
+            "Suma interés antes de restar pago indicado."
+          ],
+          "feedback": {
+            "met": "Pago reduce saldo con cargo pero no lo liquida.",
+            "not_yet": "Suma interés antes de restar pago indicado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que dívida resta após período?",
+          "scene": "Calendário fictício: dívida inicial 300; juros somados 12; mínimo pago 25; sem outras mudanças.",
+          "options": [
+            {
+              "label": "287"
+            },
+            {
+              "label": "0"
+            },
+            {
+              "label": "275"
+            }
+          ],
+          "help": [
+            "Some juros antes de subtrair pagamento dado."
+          ],
+          "feedback": {
+            "met": "Pagamento reduz saldo com encargo mas não o quita.",
+            "not_yet": "Some juros antes de subtrair pagamento dado."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          300,
+          12,
+          25
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "add",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.04",
+      "visual": {
+        "type": "bar"
+      },
+      "payload": {
+        "data": {
+          "unit": "local",
+          "categories": [
+            {
+              "id": "earlier"
+            },
+            {
+              "id": "later"
+            }
+          ],
+          "series": [
+            {
+              "id": "projected-balance",
+              "values": [
+                287,
+                212
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "later"
+            },
+            {
+              "id": "earlier"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "later"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Fictional dollars: same 300 debt and 12 charge; payments 25 versus 100; no other changes. Compare remaining debt.",
+          "title": "Remaining debt",
+          "data": {
+            "categories": [
+              {
+                "label": "Pay 25"
+              },
+              {
+                "label": "Pay 100"
+              }
+            ],
+            "series": [
+              {
+                "label": "Balance"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Which leaves less?",
+            "options": [
+              {
+                "label": "Pay 100"
+              },
+              {
+                "label": "Pay 25"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "The larger payment leaves less debt under this schedule.",
+            "not_yet": "Both bars use the same starting debt and charge."
+          },
+          "help": [
+            "Both bars use the same starting debt and charge."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Pesos ficticios: misma deuda 300 y cargo 12; pagos 25 frente a 100; sin otros cambios. Compara deuda restante.",
+          "title": "Deuda restante",
+          "data": {
+            "categories": [
+              {
+                "label": "Pagar 25"
+              },
+              {
+                "label": "Pagar 100"
+              }
+            ],
+            "series": [
+              {
+                "label": "Saldo"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Cuál deja menos deuda?",
+            "options": [
+              {
+                "label": "Pagar 100"
+              },
+              {
+                "label": "Pagar 25"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "Pago mayor deja menos deuda bajo este calendario.",
+            "not_yet": "Ambas barras usan misma deuda inicial y cargo."
+          },
+          "help": [
+            "Ambas barras usan misma deuda inicial y cargo."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Reais fictícios: mesma dívida 300 e encargo 12; pagamentos 25 contra 100; sem outras mudanças. Compare dívida restante.",
+          "title": "Dívida restante",
+          "data": {
+            "categories": [
+              {
+                "label": "Pagar 25"
+              },
+              {
+                "label": "Pagar 100"
+              }
+            ],
+            "series": [
+              {
+                "label": "Saldo"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Qual deixa menos dívida?",
+            "options": [
+              {
+                "label": "Pagar 100"
+              },
+              {
+                "label": "Pagar 25"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "Pagamento maior deixa menos dívida sob este calendário.",
+            "not_yet": "Ambas barras usam mesma dívida inicial e encargo."
+          },
+          "help": [
+            "Ambas barras usam mesma dívida inicial e encargo."
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Does this predict every card’s payoff?",
+          "scene": "Only one fictional two-cycle schedule is supplied.",
+          "options": [
+            {
+              "label": "No, other terms and payments matter"
+            },
+            {
+              "label": "Yes, all cards follow it"
+            },
+            {
+              "label": "Yes, minimum always clears debt quickly"
+            }
+          ],
+          "help": [
+            "Use the actual future charges, payments and contract terms."
+          ],
+          "feedback": {
+            "met": "A short supplied schedule does not define every future balance.",
+            "not_yet": "Use the actual future charges, payments and contract terms."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Ejemplo predice plazo de pago de toda tarjeta?",
+          "scene": "Solo se da calendario ficticio de dos periodos.",
+          "options": [
+            {
+              "label": "No, importan otros términos y pagos"
+            },
+            {
+              "label": "Sí, toda tarjeta lo sigue"
+            },
+            {
+              "label": "Sí, mínimo siempre liquida pronto"
+            }
+          ],
+          "help": [
+            "Usa cargos futuros, pagos y términos reales del contrato."
+          ],
+          "feedback": {
+            "met": "Calendario breve dado no define todo saldo futuro.",
+            "not_yet": "Usa cargos futuros, pagos y términos reales del contrato."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Exemplo prevê prazo de quitação de todo cartão?",
+          "scene": "Só se dá calendário fictício de dois períodos.",
+          "options": [
+            {
+              "label": "Não, importam outros termos e pagamentos"
+            },
+            {
+              "label": "Sim, todo cartão segue isso"
+            },
+            {
+              "label": "Sim, mínimo sempre quita logo"
+            }
+          ],
+          "help": [
+            "Use encargos futuros, pagamentos e termos reais do contrato."
+          ],
+          "feedback": {
+            "met": "Calendário curto dado não define todo saldo futuro.",
+            "not_yet": "Use encargos futuros, pagamentos e termos reais do contrato."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.credit-products.04",
+      "copy": {
+        "en-US": {
+          "prompt": "What balance follows both minimums?",
+          "scene": "Fictional schedule: debt 100; add interest 5, pay 10; add interest 4, pay 10; no other changes.",
+          "options": [
+            {
+              "label": "0"
+            },
+            {
+              "label": "80"
+            },
+            {
+              "label": "89"
+            }
+          ],
+          "help": [
+            "Apply every charge and payment in the given order."
+          ],
+          "feedback": {
+            "met": "Both minimums reduce debt but leave the stated remaining balance.",
+            "not_yet": "Apply every charge and payment in the given order."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué saldo sigue a ambos mínimos?",
+          "scene": "Calendario ficticio: deuda 100; sumar interés 5, pagar 10; sumar interés 4, pagar 10; sin otros cambios.",
+          "options": [
+            {
+              "label": "0"
+            },
+            {
+              "label": "80"
+            },
+            {
+              "label": "89"
+            }
+          ],
+          "help": [
+            "Aplica cada cargo y pago en orden dado."
+          ],
+          "feedback": {
+            "met": "Ambos mínimos reducen deuda pero dejan saldo indicado.",
+            "not_yet": "Aplica cada cargo y pago en orden dado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que saldo segue ambos mínimos?",
+          "scene": "Calendário fictício: dívida 100; somar juros 5, pagar 10; somar juros 4, pagar 10; sem outras mudanças.",
+          "options": [
+            {
+              "label": "0"
+            },
+            {
+              "label": "80"
+            },
+            {
+              "label": "89"
+            }
+          ],
+          "help": [
+            "Aplique cada encargo e pagamento na ordem dada."
+          ],
+          "feedback": {
+            "met": "Ambos mínimos reduzem dívida mas deixam saldo dado.",
+            "not_yet": "Aplique cada encargo e pagamento na ordem dada."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          100,
+          5,
+          10,
+          4,
+          10
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "add",
+              "args": [
+                {
+                  "op": "subtract",
+                  "args": [
+                    {
+                      "op": "add",
+                      "args": [
+                        {
+                          "input": 0
+                        },
+                        {
+                          "input": 1
+                        }
+                      ]
+                    },
+                    {
+                      "input": 2
+                    }
+                  ]
+                },
+                {
+                  "input": 3
+                }
+              ]
+            },
+            {
+              "input": 4
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "mentor_misjudgment": {
+    "character": "rho",
+    "misjudgment": "I thought minimum payment stopped interest.",
+    "recovery": "I checked: payment was incomplete. These terms still charge interest."
+  }
+}

@@ -1,0 +1,1024 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-purchase-decisions-part-1",
+  "lesson_id": "fe-production-purchase-decisions-04",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.purchase-decisions.04"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Calculate successive discounts without adding their percentages.",
+  "title": {
+    "en-US": "Successive Discounts",
+    "es-MX": "Descuenta otra vez el precio reducido",
+    "pt-BR": "Desconte de novo o preço reduzido"
+  },
+  "new_concepts": [
+    "finance.prod.purchase-decisions.04"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Successive Discounts\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Descuenta otra vez el precio reducido\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Desconte de novo o preço reduzido\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.purchase-decisions.04",
+      "observable_action": "Calculate successive discounts without adding their percentages.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.purchase-decisions.03"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Successive discounts use different price bases; follow each step before treating the promotion as a combined saving.",
+    "misconception": "Two discount percentages can be added because both reductions apply to the original price.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.purchase-decisions.04",
+        "context_id": "purchase-decisions-04-example-01",
+        "supports_from": [],
+        "reasoning": "Apply the first discount, then apply the second to the reduced price. Adding percentages uses the wrong second base."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.purchase-decisions.04",
+        "context_id": "purchase-decisions-04-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The second discount uses the smaller remaining price."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.purchase-decisions.04",
+        "context_id": "purchase-decisions-04-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Successive discounts act on the remaining price."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.purchase-decisions.04",
+        "context_id": "purchase-decisions-04-practice-01",
+        "supports_from": [],
+        "reasoning": "The second reduction applies after the first one."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.purchase-decisions.04",
+        "context_id": "purchase-decisions-04-practice-02",
+        "supports_from": [],
+        "reasoning": "Adding treats both reductions as shares of the original."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.purchase-decisions.04",
+        "context_id": "purchase-decisions-04-practice-03",
+        "supports_from": [],
+        "reasoning": "The second saving is a percentage of the already reduced price."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.purchase-decisions.04",
+        "context_id": "purchase-decisions-04-transfer-01",
+        "supports_from": [],
+        "reasoning": "Successive discounts leave a higher price than the single discount."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.purchase-decisions.04",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Successive discounts use different price bases; follow each step before treating the promotion as a combined saving."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Descuentos sucesivos usan bases distintas; sigue cada paso antes de tratar promoción como ahorro combinado."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Descontos sucessivos usam bases distintas; siga cada passo antes de tratar promoção como economia conjunta."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "The second base is smaller",
+          "line": "Apply the first discount, then apply the second to the reduced price. Adding percentages uses the wrong second base."
+        },
+        "es-MX": {
+          "prompt": "La segunda base es menor",
+          "line": "Aplica primer descuento y después segundo al precio reducido. Sumar porcentajes usa base equivocada para el segundo."
+        },
+        "pt-BR": {
+          "prompt": "A segunda base é menor",
+          "line": "Aplique primeiro desconto e depois segundo ao preço reduzido. Somar percentuais usa base errada para o segundo."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.04",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "step-1"
+          },
+          {
+            "id": "step-2"
+          },
+          {
+            "id": "step-3"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "step-2",
+          "step-3"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "step-2": "72",
+          "step-3": "28"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Original 100; first discount 20%, then 10% on reduced price; no other charges. Track the remaining price and total saving.",
+          "feedback": {
+            "met": "The second discount uses the smaller remaining price.",
+            "not_yet": "Apply each discount in order to its current base."
+          },
+          "help": [
+            "Apply each discount in order to its current base."
+          ],
+          "steps": [
+            {
+              "expression": "100 * 0.8",
+              "result": "80",
+              "spokenText": "After first discount"
+            },
+            {
+              "expression": "80 * 0.9",
+              "result": "72",
+              "spokenText": "After second discount"
+            },
+            {
+              "expression": "100 - 72",
+              "result": "28",
+              "spokenText": "Total saving"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Original 100; descuento 20%, luego 10% sobre precio reducido; sin otros cargos. Sigue precio restante y ahorro total.",
+          "feedback": {
+            "met": "Segundo descuento usa menor precio restante.",
+            "not_yet": "Aplica cada descuento en orden a su base actual."
+          },
+          "help": [
+            "Aplica cada descuento en orden a su base actual."
+          ],
+          "steps": [
+            {
+              "expression": "100 * 0.8",
+              "result": "80",
+              "spokenText": "Tras primer descuento"
+            },
+            {
+              "expression": "80 * 0.9",
+              "result": "72",
+              "spokenText": "Tras segundo descuento"
+            },
+            {
+              "expression": "100 - 72",
+              "result": "28",
+              "spokenText": "Ahorro total"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Original 100; desconto 20%, depois 10% sobre preço reduzido; sem outros custos. Siga preço restante e economia total.",
+          "feedback": {
+            "met": "Segundo desconto usa menor preço restante.",
+            "not_yet": "Aplique cada desconto em ordem à base atual."
+          },
+          "help": [
+            "Aplique cada desconto em ordem à base atual."
+          ],
+          "steps": [
+            {
+              "expression": "100 * 0,8",
+              "result": "80",
+              "spokenText": "Após primeiro desconto"
+            },
+            {
+              "expression": "80 * 0,9",
+              "result": "72",
+              "spokenText": "Após segundo desconto"
+            },
+            {
+              "expression": "100 - 72",
+              "result": "28",
+              "spokenText": "Economia total"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.04",
+      "copy": {
+        "en-US": {
+          "prompt": "What is the second discount’s base?",
+          "scene": "The offer explicitly applies its second percentage after the first reduction.",
+          "options": [
+            {
+              "label": "Always the original price"
+            },
+            {
+              "label": "The first percentage number"
+            },
+            {
+              "label": "The already reduced price"
+            }
+          ],
+          "help": [
+            "Use the order and base stated in the offer."
+          ],
+          "feedback": {
+            "met": "Successive discounts act on the remaining price.",
+            "not_yet": "Use the order and base stated in the offer."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es base del segundo descuento?",
+          "scene": "Oferta aplica segundo porcentaje después de primera reducción.",
+          "options": [
+            {
+              "label": "Siempre precio original"
+            },
+            {
+              "label": "Número del primer porcentaje"
+            },
+            {
+              "label": "Precio ya reducido"
+            }
+          ],
+          "help": [
+            "Usa orden y base indicados en oferta."
+          ],
+          "feedback": {
+            "met": "Descuentos sucesivos actúan sobre precio restante.",
+            "not_yet": "Usa orden y base indicados en oferta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é base do segundo desconto?",
+          "scene": "Oferta aplica segundo percentual após primeira redução.",
+          "options": [
+            {
+              "label": "Sempre preço original"
+            },
+            {
+              "label": "Número do primeiro percentual"
+            },
+            {
+              "label": "Preço já reduzido"
+            }
+          ],
+          "help": [
+            "Use ordem e base dadas na oferta."
+          ],
+          "feedback": {
+            "met": "Descontos sucessivos agem sobre preço restante.",
+            "not_yet": "Use ordem e base dadas na oferta."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.04",
+      "copy": {
+        "en-US": {
+          "prompt": "What remains payable?",
+          "scene": "Original: 200; First discount: 10%; Second discount on reduced price: 20%; No fees.",
+          "options": [
+            {
+              "label": "160"
+            },
+            {
+              "label": "144"
+            },
+            {
+              "label": "140"
+            }
+          ],
+          "help": [
+            "Reduce the original price, then discount the remainder."
+          ],
+          "feedback": {
+            "met": "The second reduction applies after the first one.",
+            "not_yet": "Reduce the original price, then discount the remainder."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué queda pagadero?",
+          "scene": "Original: 200; Primer descuento: 10%; Segundo sobre precio reducido: 20%; Sin cargos.",
+          "options": [
+            {
+              "label": "160"
+            },
+            {
+              "label": "144"
+            },
+            {
+              "label": "140"
+            }
+          ],
+          "help": [
+            "Reduce precio original y luego descuenta resto."
+          ],
+          "feedback": {
+            "met": "Segunda reducción se aplica después de primera.",
+            "not_yet": "Reduce precio original y luego descuenta resto."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto resta pagar?",
+          "scene": "Original: 200; Primeiro desconto: 10%; Segundo sobre preço reduzido: 20%; Sem taxas.",
+          "options": [
+            {
+              "label": "160"
+            },
+            {
+              "label": "144"
+            },
+            {
+              "label": "140"
+            }
+          ],
+          "help": [
+            "Reduza preço original e depois desconte restante."
+          ],
+          "feedback": {
+            "met": "Segunda redução se aplica após primeira.",
+            "not_yet": "Reduza preço original e depois desconte restante."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          200,
+          10,
+          20
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "op": "divide",
+                  "args": [
+                    {
+                      "op": "multiply",
+                      "args": [
+                        {
+                          "input": 0
+                        },
+                        {
+                          "input": 1
+                        }
+                      ]
+                    },
+                    {
+                      "constant": 100
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "op": "divide",
+              "args": [
+                {
+                  "op": "multiply",
+                  "args": [
+                    {
+                      "op": "subtract",
+                      "args": [
+                        {
+                          "input": 0
+                        },
+                        {
+                          "op": "divide",
+                          "args": [
+                            {
+                              "op": "multiply",
+                              "args": [
+                                {
+                                  "input": 0
+                                },
+                                {
+                                  "input": 1
+                                }
+                              ]
+                            },
+                            {
+                              "constant": 100
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "input": 2
+                    }
+                  ]
+                },
+                {
+                  "constant": 100
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Why is adding percentages wrong?",
+          "scene": "The second percentage applies to the reduced price, not the original.",
+          "options": [
+            {
+              "label": "It ignores the changed base"
+            },
+            {
+              "label": "Percentages cannot ever be calculated"
+            },
+            {
+              "label": "It correctly uses both bases"
+            }
+          ],
+          "help": [
+            "Track which price each percentage actually uses."
+          ],
+          "feedback": {
+            "met": "Adding treats both reductions as shares of the original.",
+            "not_yet": "Track which price each percentage actually uses."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Por qué falla sumar porcentajes aquí?",
+          "scene": "Segundo porcentaje aplica al precio reducido, no al original.",
+          "options": [
+            {
+              "label": "Ignora cambio de base"
+            },
+            {
+              "label": "Porcentajes nunca pueden calcularse"
+            },
+            {
+              "label": "Usa correctamente ambas bases"
+            }
+          ],
+          "help": [
+            "Sigue qué precio usa realmente cada porcentaje."
+          ],
+          "feedback": {
+            "met": "Sumar trata ambas reducciones como partes del original.",
+            "not_yet": "Sigue qué precio usa realmente cada porcentaje."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Por que falha somar percentuais aqui?",
+          "scene": "Segundo percentual aplica ao preço reduzido, não ao original.",
+          "options": [
+            {
+              "label": "Ignora mudança da base"
+            },
+            {
+              "label": "Percentuais nunca podem ser calculados"
+            },
+            {
+              "label": "Usa corretamente ambas as bases"
+            }
+          ],
+          "help": [
+            "Observe que preço cada percentual usa de fato."
+          ],
+          "feedback": {
+            "met": "Somar trata ambas as reduções como partes do original.",
+            "not_yet": "Observe que preço cada percentual usa de fato."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.04",
+      "copy": {
+        "en-US": {
+          "prompt": "What is the second saving only?",
+          "scene": "Price after first discount: 160; Second discount: 25%; No fees.",
+          "options": [
+            {
+              "label": "40"
+            },
+            {
+              "label": "25"
+            },
+            {
+              "label": "120"
+            }
+          ],
+          "help": [
+            "Apply the stated percentage to the current price."
+          ],
+          "feedback": {
+            "met": "The second saving is a percentage of the already reduced price.",
+            "not_yet": "Apply the stated percentage to the current price."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es solo segundo ahorro?",
+          "scene": "Precio tras primer descuento: 160; Segundo descuento: 25%; Sin cargos.",
+          "options": [
+            {
+              "label": "40"
+            },
+            {
+              "label": "25"
+            },
+            {
+              "label": "120"
+            }
+          ],
+          "help": [
+            "Aplica porcentaje indicado al precio actual."
+          ],
+          "feedback": {
+            "met": "Segundo ahorro es porcentaje del precio ya reducido.",
+            "not_yet": "Aplica porcentaje indicado al precio actual."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é só segunda economia?",
+          "scene": "Preço após primeiro desconto: 160; Segundo desconto: 25%; Sem taxas.",
+          "options": [
+            {
+              "label": "40"
+            },
+            {
+              "label": "25"
+            },
+            {
+              "label": "120"
+            }
+          ],
+          "help": [
+            "Aplique percentual dado ao preço atual."
+          ],
+          "feedback": {
+            "met": "Segunda economia é percentual do preço já reduzido.",
+            "not_yet": "Aplique percentual dado ao preço atual."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          160,
+          25
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "constant": 100
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.purchase-decisions.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Extra cost of choosing A?",
+          "scene": "Same bike, 200: A discounts 20%, then 10% on reduced price; B discounts 30% once. No fees.",
+          "options": [
+            {
+              "label": "10"
+            },
+            {
+              "label": "4"
+            },
+            {
+              "label": "0"
+            }
+          ],
+          "help": [
+            "Apply both successive discounts before comparing with the single discount."
+          ],
+          "feedback": {
+            "met": "Successive discounts leave a higher price than the single discount.",
+            "not_yet": "Apply both successive discounts before comparing with the single discount."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Costo adicional al elegir A?",
+          "scene": "Misma bicicleta, 200: A descuenta 20% y luego 10% del reducido; B descuenta 30% una vez. Sin cargos.",
+          "options": [
+            {
+              "label": "10"
+            },
+            {
+              "label": "4"
+            },
+            {
+              "label": "0"
+            }
+          ],
+          "help": [
+            "Aplica descuentos sucesivos antes de comparar con descuento único."
+          ],
+          "feedback": {
+            "met": "Los descuentos sucesivos dejan un precio mayor que el descuento único.",
+            "not_yet": "Aplica descuentos sucesivos antes de comparar con descuento único."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Custo extra ao escolher A?",
+          "scene": "Mesma bicicleta, 200: A desconta 20%, depois 10% do reduzido; B desconta 30% uma vez. Sem tarifas.",
+          "options": [
+            {
+              "label": "10"
+            },
+            {
+              "label": "4"
+            },
+            {
+              "label": "0"
+            }
+          ],
+          "help": [
+            "Aplique descontos sucessivos antes de comparar com desconto único."
+          ],
+          "feedback": {
+            "met": "Os descontos sucessivos deixam preço maior que o desconto único.",
+            "not_yet": "Aplique descontos sucessivos antes de comparar com desconto único."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          200,
+          20,
+          10,
+          30
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "op": "subtract",
+                  "args": [
+                    {
+                      "input": 0
+                    },
+                    {
+                      "op": "divide",
+                      "args": [
+                        {
+                          "op": "multiply",
+                          "args": [
+                            {
+                              "input": 0
+                            },
+                            {
+                              "input": 1
+                            }
+                          ]
+                        },
+                        {
+                          "constant": 100
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "op": "divide",
+                  "args": [
+                    {
+                      "op": "multiply",
+                      "args": [
+                        {
+                          "op": "subtract",
+                          "args": [
+                            {
+                              "input": 0
+                            },
+                            {
+                              "op": "divide",
+                              "args": [
+                                {
+                                  "op": "multiply",
+                                  "args": [
+                                    {
+                                      "input": 0
+                                    },
+                                    {
+                                      "input": 1
+                                    }
+                                  ]
+                                },
+                                {
+                                  "constant": 100
+                                }
+                              ]
+                            }
+                          ]
+                        },
+                        {
+                          "input": 2
+                        }
+                      ]
+                    },
+                    {
+                      "constant": 100
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "op": "divide",
+                  "args": [
+                    {
+                      "op": "multiply",
+                      "args": [
+                        {
+                          "input": 0
+                        },
+                        {
+                          "input": 3
+                        }
+                      ]
+                    },
+                    {
+                      "constant": 100
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,779 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-insurance-risk-part-1",
+  "lesson_id": "fe-production-insurance-risk-02",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.insurance-risk.02"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Match a stated risk to prevention, a reserve or risk transfer without treating one as sufficient for all risks.",
+  "title": {
+    "en-US": "Risk Tools",
+    "es-MX": "Combina formas de manejar riesgo",
+    "pt-BR": "Combine formas de lidar com risco"
+  },
+  "new_concepts": [
+    "finance.prod.insurance-risk.02"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Risk Tools\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Combina formas de manejar riesgo\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Combine formas de lidar com risco\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.insurance-risk.02",
+      "observable_action": "Match a stated risk to prevention, a reserve or risk transfer without treating one as sufficient for all risks.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.insurance-risk.01",
+      "prod.saving-resilience.03"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Prevention reduces a risk, reserves absorb costs and insurance transfers specified losses under a contract; they can complement each other.",
+    "misconception": "Insurance replaces prevention and all reserves, or prevention removes every possible loss.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.insurance-risk.02",
+        "context_id": "insurance-risk-02-example-01",
+        "supports_from": [],
+        "reasoning": "Reduce avoidable risks, reserve money for manageable costs, and check insurance for severe covered losses. One tool cannot cover everything."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.insurance-risk.02",
+        "context_id": "insurance-risk-02-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Repairing the fault addresses a cause of the loss."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.insurance-risk.02",
+        "context_id": "insurance-risk-02-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The earmarked reserve can absorb the manageable repair cost."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.insurance-risk.02",
+        "context_id": "insurance-risk-02-practice-01",
+        "supports_from": [],
+        "reasoning": "Insurance transfers specified financial losses under its terms."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.insurance-risk.02",
+        "context_id": "insurance-risk-02-practice-02",
+        "supports_from": [],
+        "reasoning": "The stated maintenance duty remains even with insurance."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.insurance-risk.02",
+        "context_id": "insurance-risk-02-practice-03",
+        "supports_from": [],
+        "reasoning": "The household still needs money for its retained share."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.insurance-risk.02",
+        "context_id": "insurance-risk-02-transfer-01",
+        "supports_from": [],
+        "reasoning": "Different loss sizes and causes call for complementary tools."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.insurance-risk.02",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Prevention reduces a risk, reserves absorb costs and insurance transfers specified losses under a contract; they can complement each other."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Cuidado reduce riesgo, ahorro cubre costos y seguro paga pérdidas bajo contrato. Puedes usar los tres."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Cuidado reduz risco, poupança cobre custos e seguro paga perdas sob contrato. Você pode usar os três."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Different tools, different tasks",
+          "line": "Reduce avoidable risks, reserve money for manageable costs, and check insurance for severe covered losses. One tool cannot cover everything."
+        },
+        "es-MX": {
+          "prompt": "Herramientas distintas, usos distintos",
+          "line": "Reduce riesgos evitables, reserva dinero para costos manejables y revisa seguro para pérdidas graves cubiertas. Una herramienta no cubre todo."
+        },
+        "pt-BR": {
+          "prompt": "Formas distintas, usos distintos",
+          "line": "Reduza riscos evitáveis, reserve dinheiro para custos manejáveis e veja seguro para perdas graves cobertas. Uma ferramenta não cobre tudo."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Which action reduces the chance of loss?",
+          "scene": "A faulty lock raises theft risk; it can be repaired.",
+          "options": [
+            {
+              "label": "Repair the lock"
+            },
+            {
+              "label": "Only read a premium quote"
+            },
+            {
+              "label": "Only label savings"
+            }
+          ],
+          "help": [
+            "Distinguish reducing risk from paying after it occurs."
+          ],
+          "feedback": {
+            "met": "Repairing the fault addresses a cause of the loss.",
+            "not_yet": "Distinguish reducing risk from paying after it occurs."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué acción reduce probabilidad de pérdida?",
+          "scene": "Cerradura defectuosa eleva riesgo de robo; puede repararse.",
+          "options": [
+            {
+              "label": "Reparar cerradura"
+            },
+            {
+              "label": "Solo leer prima cotizada"
+            },
+            {
+              "label": "Solo etiquetar ahorro"
+            }
+          ],
+          "help": [
+            "Distingue reducir riesgo de pagar después de que ocurra."
+          ],
+          "feedback": {
+            "met": "Reparar falla atiende causa de pérdida.",
+            "not_yet": "Distingue reducir riesgo de pagar después de que ocurra."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que ação reduz chance de perda?",
+          "scene": "Fechadura com defeito eleva risco de furto; pode ser consertada.",
+          "options": [
+            {
+              "label": "Consertar fechadura"
+            },
+            {
+              "label": "Só ler prêmio cotado"
+            },
+            {
+              "label": "Só nomear poupança"
+            }
+          ],
+          "help": [
+            "Separe reduzir risco de pagar após ele ocorrer."
+          ],
+          "feedback": {
+            "met": "Consertar falha trata causa da perda.",
+            "not_yet": "Separe reduzir risco de pagar após ele ocorrer."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What absorbs this stated cost?",
+          "scene": "A small repair fits money already saved for repairs.",
+          "options": [
+            {
+              "label": "A promise that nothing breaks"
+            },
+            {
+              "label": "The repair reserve"
+            },
+            {
+              "label": "Only a premium payment"
+            }
+          ],
+          "help": [
+            "Match the tool to the stated financial need."
+          ],
+          "feedback": {
+            "met": "The earmarked reserve can absorb the manageable repair cost.",
+            "not_yet": "Match the tool to the stated financial need."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué cubre este costo indicado?",
+          "scene": "Arreglo pequeño cabe en dinero ya ahorrado para reparaciones.",
+          "options": [
+            {
+              "label": "Promesa de que nada falla"
+            },
+            {
+              "label": "Reserva de reparación"
+            },
+            {
+              "label": "Solo pago de prima"
+            }
+          ],
+          "help": [
+            "Relaciona herramienta con necesidad financiera indicada."
+          ],
+          "feedback": {
+            "met": "Reserva apartada puede cubrir costo manejable del arreglo.",
+            "not_yet": "Relaciona herramienta con necesidad financiera indicada."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que cobre este custo dado?",
+          "scene": "Conserto pequeno cabe no dinheiro já poupado para reparos.",
+          "options": [
+            {
+              "label": "Promessa de que nada quebra"
+            },
+            {
+              "label": "Reserva de reparo"
+            },
+            {
+              "label": "Só pagamento de prêmio"
+            }
+          ],
+          "help": [
+            "Ligue ferramenta à necessidade financeira dada."
+          ],
+          "feedback": {
+            "met": "Reserva separada pode cobrir custo manejável do conserto.",
+            "not_yet": "Ligue ferramenta à necessidade financeira dada."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What does this contract provide?",
+          "scene": "Fictional policy pays specified major fire losses, subject to its conditions.",
+          "options": [
+            {
+              "label": "Payment for every possible expense"
+            },
+            {
+              "label": "Removal of all fire risk"
+            },
+            {
+              "label": "Transfer of stated covered risk"
+            }
+          ],
+          "help": [
+            "Coverage does not prevent every event or cover every cost."
+          ],
+          "feedback": {
+            "met": "Insurance transfers specified financial losses under its terms.",
+            "not_yet": "Coverage does not prevent every event or cover every cost."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué ofrece este contrato?",
+          "scene": "Póliza ficticia paga pérdidas concretas de incendio mayor bajo sus condiciones.",
+          "options": [
+            {
+              "label": "Pago de todo gasto posible"
+            },
+            {
+              "label": "Eliminar todo riesgo de incendio"
+            },
+            {
+              "label": "Transferencia del riesgo cubierto indicado"
+            }
+          ],
+          "help": [
+            "Cobertura no evita todo evento ni cubre todo costo."
+          ],
+          "feedback": {
+            "met": "Seguro transfiere pérdidas financieras concretas bajo sus términos.",
+            "not_yet": "Cobertura no evita todo evento ni cubre todo costo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que oferece este contrato?",
+          "scene": "Apólice fictícia paga perdas específicas de incêndio grande sob suas condições.",
+          "options": [
+            {
+              "label": "Pagamento de todo gasto possível"
+            },
+            {
+              "label": "Eliminar todo risco de incêndio"
+            },
+            {
+              "label": "Transferência do risco coberto dado"
+            }
+          ],
+          "help": [
+            "Cobertura não evita todo evento nem cobre todo custo."
+          ],
+          "feedback": {
+            "met": "Seguro transfere perdas financeiras específicas sob seus termos.",
+            "not_yet": "Cobertura não evita todo evento nem cobre todo custo."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Does coverage replace maintenance?",
+          "scene": "The policy requires maintaining the alarm; an alarm fault is known.",
+          "options": [
+            {
+              "label": "Yes, premiums prevent every loss"
+            },
+            {
+              "label": "Yes, stop maintaining it"
+            },
+            {
+              "label": "No, address the fault"
+            }
+          ],
+          "help": [
+            "Use both risk reduction and the actual policy conditions."
+          ],
+          "feedback": {
+            "met": "The stated maintenance duty remains even with insurance.",
+            "not_yet": "Use both risk reduction and the actual policy conditions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cobertura sustituye cuidado del equipo?",
+          "scene": "Póliza exige mantener alarma; hay falla conocida.",
+          "options": [
+            {
+              "label": "Sí, primas evitan toda pérdida"
+            },
+            {
+              "label": "Sí, dejar cuidado del equipo"
+            },
+            {
+              "label": "No, atender falla"
+            }
+          ],
+          "help": [
+            "Usa reducción del riesgo y condiciones reales de póliza."
+          ],
+          "feedback": {
+            "met": "Deber indicado de cuidado del equipo sigue aunque exista seguro.",
+            "not_yet": "Usa reducción del riesgo y condiciones reales de póliza."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Cobertura substitui cuidado do bem?",
+          "scene": "Apólice exige manter alarme; há falha conhecida.",
+          "options": [
+            {
+              "label": "Sim, prêmios evitam toda perda"
+            },
+            {
+              "label": "Sim, parar cuidado do bem"
+            },
+            {
+              "label": "Não, cuidar da falha"
+            }
+          ],
+          "help": [
+            "Use redução do risco e condições reais da apólice."
+          ],
+          "feedback": {
+            "met": "Dever dado de cuidado do bem segue mesmo com seguro.",
+            "not_yet": "Use redução do risco e condições reais da apólice."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Why keep some accessible savings?",
+          "scene": "Fictional coverage leaves a stated deductible payable by the household.",
+          "options": [
+            {
+              "label": "To make exclusions disappear"
+            },
+            {
+              "label": "To double the claim automatically"
+            },
+            {
+              "label": "To fund the retained cost"
+            }
+          ],
+          "help": [
+            "A covered event can still leave an out-of-pocket cost."
+          ],
+          "feedback": {
+            "met": "The household still needs money for its retained share.",
+            "not_yet": "A covered event can still leave an out-of-pocket cost."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Por qué conservar ahorro accesible?",
+          "scene": "Cobertura ficticia deja deducible indicado a cargo del hogar.",
+          "options": [
+            {
+              "label": "Para borrar exclusiones"
+            },
+            {
+              "label": "Para duplicar reclamo automáticamente"
+            },
+            {
+              "label": "Para cubrir costo propio"
+            }
+          ],
+          "help": [
+            "Evento cubierto aún puede dejar costo de bolsillo."
+          ],
+          "feedback": {
+            "met": "Hogar aún necesita dinero para su parte.",
+            "not_yet": "Evento cubierto aún puede dejar costo de bolsillo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Por que manter poupança acessível?",
+          "scene": "Cobertura fictícia deixa franquia dada a cargo da família.",
+          "options": [
+            {
+              "label": "Para apagar exclusões"
+            },
+            {
+              "label": "Para dobrar pedido automaticamente"
+            },
+            {
+              "label": "Para cobrir custo próprio"
+            }
+          ],
+          "help": [
+            "Evento coberto ainda pode deixar custo próprio."
+          ],
+          "feedback": {
+            "met": "Família ainda precisa de dinheiro para sua parte.",
+            "not_yet": "Evento coberto ainda pode deixar custo próprio."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.insurance-risk.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Which combined plan fits?",
+          "scene": "Preventable leaks need maintenance; small repairs fit savings; severe covered damage exceeds savings.",
+          "options": [
+            {
+              "label": "Only hope leaks stop"
+            },
+            {
+              "label": "Only buy a policy"
+            },
+            {
+              "label": "Maintain, reserve, verify coverage"
+            }
+          ],
+          "help": [
+            "Match prevention, reserves and coverage to their distinct roles."
+          ],
+          "feedback": {
+            "met": "Different loss sizes and causes call for complementary tools.",
+            "not_yet": "Match prevention, reserves and coverage to their distinct roles."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué plan combinado corresponde?",
+          "scene": "Fugas evitables requieren cuidado del equipo; arreglos pequeños caben en ahorro; daño grave cubierto supera ahorro.",
+          "options": [
+            {
+              "label": "Solo esperar que fugas paren"
+            },
+            {
+              "label": "Solo comprar póliza"
+            },
+            {
+              "label": "Mantener, reservar, verificar cobertura"
+            }
+          ],
+          "help": [
+            "Relaciona cuidado previo, reservas y cobertura con sus funciones distintas."
+          ],
+          "feedback": {
+            "met": "Causas y tamaños distintos requieren formas de apoyo.",
+            "not_yet": "Relaciona cuidado previo, reservas y cobertura con sus funciones distintas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que plano combinado cabe?",
+          "scene": "Vazamentos evitáveis exigem cuidado do bem; reparos pequenos cabem na poupança; dano grave coberto supera poupança.",
+          "options": [
+            {
+              "label": "Só esperar vazamentos pararem"
+            },
+            {
+              "label": "Só comprar apólice"
+            },
+            {
+              "label": "Manter, reservar, verificar cobertura"
+            }
+          ],
+          "help": [
+            "Ligue prevenção, reservas e cobertura às suas funções distintas."
+          ],
+          "feedback": {
+            "met": "Causas e tamanhos distintos exigem formas que se complementam.",
+            "not_yet": "Ligue prevenção, reservas e cobertura às suas funções distintas."
+          }
+        }
+      }
+    }
+  ]
+}

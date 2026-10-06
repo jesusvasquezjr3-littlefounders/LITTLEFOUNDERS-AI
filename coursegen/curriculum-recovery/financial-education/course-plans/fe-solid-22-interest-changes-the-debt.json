@@ -1,0 +1,1015 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-solid-05-understand-borrowing",
+  "lesson_id": "fe-solid-22-interest-changes-the-debt",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.debt.interest"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Calculate a stated period interest charge from the amount owed, then update the debt after that charge and a payment.",
+  "title": {
+    "en-US": "Interest changes the debt",
+    "es-MX": "El interés cambia la deuda",
+    "pt-BR": "Os juros mudam a dívida"
+  },
+  "new_concepts": [
+    "finance.debt.interest"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Interest changes the debt\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"El interés cambia la deuda\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Os juros mudam a dívida\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "debt.interest",
+      "observable_action": "Calculate a stated period interest charge from the amount owed, then update the debt after that charge and a payment.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "debt.total-cost",
+      "price.percent",
+      "cash.balance"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Interest is a charge for borrowing. These fictional dollar examples state the period and rules; real agreements can work differently.",
+    "misconception": "Subtracting a payment from the old debt while ignoring interest, or applying a rate without its stated period and balance.",
+    "numeracy_support": "Use the previously taught percent-of-a-whole calculation and addition/subtraction; the optional schedule illustrates cents without requiring an annuity formula.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "debt.interest",
+        "context_id": "interest-changes-the-debt-example-01",
+        "supports_from": [],
+        "reasoning": "This toy period charges 10% interest on debt of 100: 10. With no other changes, debt becomes 110."
+      },
+      {
+        "segment_id": "example-02",
+        "skill_id": "debt.interest",
+        "context_id": "interest-changes-the-debt-example-02",
+        "supports_from": [],
+        "reasoning": "If 30 is paid after that charge, 110 − 30 = 80 remains owed. Ignoring interest would understate the debt."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "debt.interest",
+        "context_id": "interest-changes-the-debt-guided-01",
+        "supports_from": [
+          "example-02"
+        ],
+        "reasoning": "The interest charge is added to the amount already owed."
+      },
+      {
+        "segment_id": "example-cents",
+        "skill_id": "debt.interest",
+        "context_id": "interest-changes-the-debt-example-cents",
+        "supports_from": [],
+        "reasoning": "Part of each payment covers interest; the rest reduces debt. Decimals show cents: 1.00 is one dollar."
+      },
+      {
+        "segment_id": "example-schedule",
+        "skill_id": "debt.interest",
+        "context_id": "interest-changes-the-debt-example-schedule",
+        "supports_from": [],
+        "reasoning": "Model: 100 dollars, 12% yearly, 12 monthly payments, no fees. Move through months; compare interest and debt reduction."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "debt.interest",
+        "context_id": "interest-changes-the-debt-guided-02",
+        "supports_from": [
+          "example-schedule"
+        ],
+        "reasoning": "The update includes both the interest charge and the payment."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "debt.interest",
+        "context_id": "interest-changes-the-debt-practice-01",
+        "supports_from": [],
+        "reasoning": "The charge uses the debt amount that the stated rule applies to."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "debt.interest",
+        "context_id": "interest-changes-the-debt-practice-02",
+        "supports_from": [],
+        "reasoning": "The time period is part of the rate meaning."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "debt.interest",
+        "context_id": "interest-changes-the-debt-practice-03",
+        "supports_from": [],
+        "reasoning": "Both completed changes affect what remains owed."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "debt.interest",
+        "context_id": "interest-changes-the-debt-transfer-01",
+        "supports_from": [],
+        "reasoning": "You calculated the charge on the new debt and applied the payment."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "debt.interest",
+      "fresh_context": "Apply this skill in a later integrated decision with a different constraint."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Interest is a charge for borrowing. These fictional dollar examples state the period and rules; real agreements can work differently."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "El interés es un cargo por pedir prestado. Estos ejemplos ficticios en pesos indican sus reglas; un contrato real puede ser distinto."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Juros são uma cobrança pelo empréstimo. Estes exemplos fictícios em reais indicam as regras; um contrato real pode ser diferente."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A charge on what is owed",
+          "line": "This toy period charges 10% interest on debt of 100: 10. With no other changes, debt becomes 110."
+        },
+        "es-MX": {
+          "prompt": "Un cargo sobre lo que debes",
+          "line": "En este periodo ficticio, una deuda de 100 genera 10% de interés: 10. Sin otros cambios, se deben 110."
+        },
+        "pt-BR": {
+          "prompt": "Uma cobrança sobre o que deve",
+          "line": "Neste período fictício, uma dívida de 100 gera 10% de juros: 10. Sem outras mudanças, deve-se 110."
+        }
+      }
+    },
+    {
+      "id": "example-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Then apply the payment",
+          "line": "If 30 is paid after that charge, 110 − 30 = 80 remains owed. Ignoring interest would understate the debt."
+        },
+        "es-MX": {
+          "prompt": "Luego aplica el pago",
+          "line": "Si se pagan 30 después del cargo, quedan 110 − 30 = 80 de deuda. Ignorar el interés reduciría falsamente el saldo."
+        },
+        "pt-BR": {
+          "prompt": "Depois aplique o pagamento",
+          "line": "Se forem pagos 30 após a cobrança, restam 110 − 30 = 80 de dívida. Ignorar os juros reduziria falsamente o saldo."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.debt.interest",
+      "copy": {
+        "en-US": {
+          "prompt": "What is owed after this period charge?",
+          "scene": "A debt of 100 is charged 10% for this fictional period. No payments, fees or new borrowing occur.",
+          "options": [
+            {
+              "label": "100"
+            },
+            {
+              "label": "110"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Find the stated percentage, then add the charge to the debt."
+          ],
+          "feedback": {
+            "met": "The interest charge is added to the amount already owed.",
+            "not_yet": "Find the stated percentage, then add the charge to the debt."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto se debe tras el cargo del periodo?",
+          "scene": "Una deuda de 100 genera 10% en este periodo ficticio. No hay pagos, comisiones ni nuevos préstamos.",
+          "options": [
+            {
+              "label": "100"
+            },
+            {
+              "label": "110"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Halla el porcentaje indicado y suma el cargo a la deuda."
+          ],
+          "feedback": {
+            "met": "El cargo de interés se suma al monto que ya se debía.",
+            "not_yet": "Halla el porcentaje indicado y suma el cargo a la deuda."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto se deve após a cobrança do período?",
+          "scene": "Uma dívida de 100 gera 10% neste período fictício. Não há pagamentos, taxas ou novos empréstimos.",
+          "options": [
+            {
+              "label": "100"
+            },
+            {
+              "label": "110"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Ache o percentual informado e some a cobrança à dívida."
+          ],
+          "feedback": {
+            "met": "A cobrança de juros é somada ao valor que já era devido.",
+            "not_yet": "Ache o percentual informado e some a cobrança à dívida."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          100,
+          10
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "op": "divide",
+              "args": [
+                {
+                  "op": "multiply",
+                  "args": [
+                    {
+                      "input": 0
+                    },
+                    {
+                      "input": 1
+                    }
+                  ]
+                },
+                {
+                  "constant": 100
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "example-cents",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Read the payment split",
+          "line": "Part of each payment covers interest; the rest reduces debt. Decimals show cents: 1.00 is one dollar."
+        },
+        "es-MX": {
+          "prompt": "Lee las partes del pago",
+          "line": "En el modelo siguiente, parte del pago cubre interés; el resto reduce deuda. Los decimales muestran centavos: 1.00 es un peso."
+        },
+        "pt-BR": {
+          "prompt": "Leia as partes do pagamento",
+          "line": "No próximo modelo, parte do pagamento cobre juros; o resto reduz dívida. Decimais mostram centavos: 1,00 é um real."
+        }
+      }
+    },
+    {
+      "id": "example-schedule",
+      "type": "money.amortization.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "amortization"
+      },
+      "payload": {
+        "currency": "local",
+        "principal_minor": 10000,
+        "rate_bps": 1200,
+        "months": 12
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Model: 100 dollars, 12% yearly, 12 monthly payments, no fees. Move through months; compare interest and debt reduction."
+        },
+        "es-MX": {
+          "prompt": "Modelo: 100 pesos, tasa anual de 12%, 12 pagos mensuales, sin comisiones. Avanza por los meses y compara interés y reducción en la tabla."
+        },
+        "pt-BR": {
+          "prompt": "Modelo: 100 reais, taxa anual de 12%, 12 pagamentos mensais, sem taxas. Avance pelos meses e compare juros e redução na tabela."
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.debt.interest",
+      "copy": {
+        "en-US": {
+          "prompt": "How much remains owed?",
+          "scene": "This period started with debt of 100, added interest of 10, then received a payment of 30. No other changes occurred.",
+          "options": [
+            {
+              "label": "70"
+            },
+            {
+              "label": "80"
+            },
+            {
+              "label": "110"
+            }
+          ],
+          "help": [
+            "Apply the changes in the stated order."
+          ],
+          "feedback": {
+            "met": "The update includes both the interest charge and the payment.",
+            "not_yet": "Apply the changes in the stated order."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto queda por pagar?",
+          "scene": "El periodo empezó con deuda de 100, añadió 10 de interés y después recibió un pago de 30. No hubo otros cambios.",
+          "options": [
+            {
+              "label": "70"
+            },
+            {
+              "label": "80"
+            },
+            {
+              "label": "110"
+            }
+          ],
+          "help": [
+            "Aplica los cambios en el orden indicado."
+          ],
+          "feedback": {
+            "met": "La actualización incluye el cargo de interés y el pago.",
+            "not_yet": "Aplica los cambios en el orden indicado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto resta a pagar?",
+          "scene": "O período começou com dívida de 100, somou 10 de juros e depois recebeu um pagamento de 30. Não houve outras mudanças.",
+          "options": [
+            {
+              "label": "70"
+            },
+            {
+              "label": "80"
+            },
+            {
+              "label": "110"
+            }
+          ],
+          "help": [
+            "Aplique as mudanças na ordem informada."
+          ],
+          "feedback": {
+            "met": "A atualização inclui a cobrança de juros e o pagamento.",
+            "not_yet": "Aplique as mudanças na ordem informada."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          100,
+          10,
+          30
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "add",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.debt.interest",
+      "copy": {
+        "en-US": {
+          "prompt": "What is this period interest charge?",
+          "scene": "A fictional contract charges 10% on a starting debt of 80 for the stated period.",
+          "options": [
+            {
+              "label": "10"
+            },
+            {
+              "label": "80"
+            },
+            {
+              "label": "8"
+            }
+          ],
+          "help": [
+            "A fixed percentage does not mean a fixed currency amount."
+          ],
+          "feedback": {
+            "met": "The charge uses the debt amount that the stated rule applies to.",
+            "not_yet": "A fixed percentage does not mean a fixed currency amount."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es el interés de este periodo?",
+          "scene": "Un contrato ficticio cobra 10% sobre una deuda inicial de 80 para el periodo indicado.",
+          "options": [
+            {
+              "label": "10"
+            },
+            {
+              "label": "80"
+            },
+            {
+              "label": "8"
+            }
+          ],
+          "help": [
+            "Un porcentaje fijo no significa un monto fijo en dinero."
+          ],
+          "feedback": {
+            "met": "El cargo usa el monto de deuda al que se aplica la regla.",
+            "not_yet": "Un porcentaje fijo no significa un monto fijo en dinero."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é o juro deste período?",
+          "scene": "Um contrato fictício cobra 10% sobre uma dívida inicial de 80 no período informado.",
+          "options": [
+            {
+              "label": "10"
+            },
+            {
+              "label": "80"
+            },
+            {
+              "label": "8"
+            }
+          ],
+          "help": [
+            "Um percentual fixo não significa um valor fixo em dinheiro."
+          ],
+          "feedback": {
+            "met": "A cobrança usa o valor da dívida ao qual a regra se aplica.",
+            "not_yet": "Um percentual fixo não significa um valor fixo em dinheiro."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          10,
+          80
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "input": 1
+                },
+                {
+                  "input": 0
+                }
+              ]
+            },
+            {
+              "constant": 100
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.debt.interest",
+      "copy": {
+        "en-US": {
+          "prompt": "Can these rates be compared directly?",
+          "scene": "Offers quote 10% monthly and 10% yearly.",
+          "options": [
+            {
+              "label": "Yes, both show 10%"
+            },
+            {
+              "label": "No, they refer to different periods"
+            },
+            {
+              "label": "Yes, periods do not affect interest"
+            }
+          ],
+          "help": [
+            "Compare rates on the same time basis and with their conditions."
+          ],
+          "feedback": {
+            "met": "The time period is part of the rate meaning.",
+            "not_yet": "Compare rates on the same time basis and with their conditions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Puedes comparar directamente estas tasas?",
+          "scene": "Una oferta dice 10% mensual. Otra dice 10% anual.",
+          "options": [
+            {
+              "label": "Sí, ambas muestran 10%"
+            },
+            {
+              "label": "No, se refieren a periodos distintos"
+            },
+            {
+              "label": "Sí, el periodo no afecta el interés"
+            }
+          ],
+          "help": [
+            "Compara tasas con la misma base de tiempo y sus condiciones."
+          ],
+          "feedback": {
+            "met": "El periodo forma parte del significado de la tasa.",
+            "not_yet": "Compara tasas con la misma base de tiempo y sus condiciones."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Pode comparar diretamente estas taxas?",
+          "scene": "Uma oferta diz 10% ao mês. Outra diz 10% ao ano.",
+          "options": [
+            {
+              "label": "Sim, ambas mostram 10%"
+            },
+            {
+              "label": "Não, referem-se a períodos diferentes"
+            },
+            {
+              "label": "Sim, o período não afeta os juros"
+            }
+          ],
+          "help": [
+            "Compare taxas na mesma base de tempo e com suas condições."
+          ],
+          "feedback": {
+            "met": "O período faz parte do significado da taxa.",
+            "not_yet": "Compare taxas na mesma base de tempo e com suas condições."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.debt.interest",
+      "copy": {
+        "en-US": {
+          "prompt": "What must the debt update include?",
+          "scene": "Interest and a payment occur this period.",
+          "options": [
+            {
+              "label": "Only the old starting debt"
+            },
+            {
+              "label": "Both the charge and the payment"
+            },
+            {
+              "label": "Only the payment"
+            }
+          ],
+          "help": [
+            "A payment does not erase a separately stated interest charge."
+          ],
+          "feedback": {
+            "met": "Both completed changes affect what remains owed.",
+            "not_yet": "A payment does not erase a separately stated interest charge."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe incluir la actualización de deuda?",
+          "scene": "El estado muestra un cargo de interés y un pago durante el mismo periodo.",
+          "options": [
+            {
+              "label": "Solo la deuda inicial anterior"
+            },
+            {
+              "label": "El cargo y el pago"
+            },
+            {
+              "label": "Solo el pago"
+            }
+          ],
+          "help": [
+            "Un pago no elimina un cargo de interés indicado por separado."
+          ],
+          "feedback": {
+            "met": "Ambos cambios realizados afectan lo que queda por pagar.",
+            "not_yet": "Un pago no elimina un cargo de interés indicado por separado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que a atualização da dívida deve incluir?",
+          "scene": "O extrato mostra uma cobrança de juros e um pagamento no mesmo período.",
+          "options": [
+            {
+              "label": "Só a dívida inicial anterior"
+            },
+            {
+              "label": "A cobrança e o pagamento"
+            },
+            {
+              "label": "Só o pagamento"
+            }
+          ],
+          "help": [
+            "Um pagamento não elimina uma cobrança de juros informada separadamente."
+          ],
+          "feedback": {
+            "met": "As duas mudanças realizadas afetam o que resta a pagar.",
+            "not_yet": "Um pagamento não elimina uma cobrança de juros informada separadamente."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.debt.interest",
+      "copy": {
+        "en-US": {
+          "prompt": "What remains owed in this new example?",
+          "scene": "Debt is 200; this period adds 5% interest, then a payment of 60. There are no other changes.",
+          "options": [
+            {
+              "label": "150"
+            },
+            {
+              "label": "210"
+            },
+            {
+              "label": "140"
+            }
+          ],
+          "help": [
+            "Use the stated debt, rate, period and order of changes."
+          ],
+          "feedback": {
+            "met": "You calculated the charge on the new debt and applied the payment.",
+            "not_yet": "Use the stated debt, rate, period and order of changes."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto se debe en este nuevo ejemplo?",
+          "scene": "La deuda es 200; este periodo añade 5% de interés y después un pago de 60. No hay otros cambios.",
+          "options": [
+            {
+              "label": "150"
+            },
+            {
+              "label": "210"
+            },
+            {
+              "label": "140"
+            }
+          ],
+          "help": [
+            "Usa la deuda, tasa, periodo y orden de cambios indicados."
+          ],
+          "feedback": {
+            "met": "Calculaste el cargo sobre la nueva deuda y aplicaste el pago.",
+            "not_yet": "Usa la deuda, tasa, periodo y orden de cambios indicados."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto se deve neste novo exemplo?",
+          "scene": "A dívida é 200; este período soma 5% de juros e depois um pagamento de 60. Não há outras mudanças.",
+          "options": [
+            {
+              "label": "150"
+            },
+            {
+              "label": "210"
+            },
+            {
+              "label": "140"
+            }
+          ],
+          "help": [
+            "Use a dívida, taxa, período e ordem de mudanças informados."
+          ],
+          "feedback": {
+            "met": "Você calculou a cobrança sobre a nova dívida e aplicou o pagamento.",
+            "not_yet": "Use a dívida, taxa, período e ordem de mudanças informados."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          200,
+          5,
+          60
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "add",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "op": "divide",
+                  "args": [
+                    {
+                      "op": "multiply",
+                      "args": [
+                        {
+                          "input": 0
+                        },
+                        {
+                          "input": 1
+                        }
+                      ]
+                    },
+                    {
+                      "constant": 100
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

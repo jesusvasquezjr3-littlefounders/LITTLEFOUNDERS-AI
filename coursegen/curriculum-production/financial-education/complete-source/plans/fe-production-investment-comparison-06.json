@@ -1,0 +1,731 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-investment-comparison-part-1",
+  "lesson_id": "fe-production-investment-comparison-06",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.investment-comparison.06"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Explain currency exposure when the spending goal and investment use different currencies.",
+  "title": {
+    "en-US": "Currency Exposure",
+    "es-MX": "La meta tiene moneda",
+    "pt-BR": "A meta tem uma moeda"
+  },
+  "new_concepts": [
+    "finance.prod.investment-comparison.06"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Currency Exposure\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"La meta tiene moneda\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"A meta tem uma moeda\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.investment-comparison.06",
+      "observable_action": "Explain currency exposure when the spending goal and investment use different currencies.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.investing-foundations.04",
+      "prod.financial-math.05"
+    ],
+    "retrieval_skills": [],
+    "relevance": "An unchanged foreign balance can buy a different amount of the currency needed for your goal.",
+    "misconception": "An unchanged balance in the investment currency guarantees an unchanged amount in the spending currency.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.investment-comparison.06",
+        "context_id": "investment-comparison-06-example-01",
+        "supports_from": [],
+        "reasoning": "A foreign balance stays unchanged. A worse conversion rate can leave less money for the same local bill."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.investment-comparison.06",
+        "context_id": "investment-comparison-06-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The conversion now provides fewer spending-currency units."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.investment-comparison.06",
+        "context_id": "investment-comparison-06-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Both asset performance and conversion can affect the spending result."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.investment-comparison.06",
+        "context_id": "investment-comparison-06-practice-01",
+        "supports_from": [],
+        "reasoning": "The exchange-rate effect can offset an asset gain."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.investment-comparison.06",
+        "context_id": "investment-comparison-06-practice-02",
+        "supports_from": [],
+        "reasoning": "The obligation’s currency defines the conversion need."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.investment-comparison.06",
+        "context_id": "investment-comparison-06-practice-03",
+        "supports_from": [],
+        "reasoning": "Changing currencies introduces a different exposure, not universal safety."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.investment-comparison.06",
+        "context_id": "investment-comparison-06-transfer-01",
+        "supports_from": [],
+        "reasoning": "The same foreign bill now costs more household currency."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.investment-comparison.06",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "An unchanged foreign balance can buy a different amount of the currency needed for your goal."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un saldo extranjero sin cambios puede comprar distinta cantidad de la moneda que necesita tu meta."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Um saldo estrangeiro sem mudança pode comprar outra quantia da moeda necessária para sua meta."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Two moving parts",
+          "line": "A foreign balance stays unchanged. A worse conversion rate can leave less money for the same local bill."
+        },
+        "es-MX": {
+          "prompt": "Dos partes que cambian",
+          "line": "Una inversión extranjera no cambia en su moneda. Un cambio menos favorable puede reducir el dinero para tu cuenta local."
+        },
+        "pt-BR": {
+          "prompt": "Duas partes que mudam",
+          "line": "Uma aplicação estrangeira não muda na própria moeda. Um câmbio pior pode reduzir o dinheiro para sua conta local."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.06",
+      "copy": {
+        "en-US": {
+          "prompt": "What can change?",
+          "scene": "Foreign units stay unchanged. Each now converts into fewer units of the bill’s currency.",
+          "options": [
+            {
+              "label": "The amount available for the bill"
+            },
+            {
+              "label": "Nothing, foreign units are unchanged"
+            }
+          ],
+          "help": [
+            "Follow the currency the bill actually requires."
+          ],
+          "feedback": {
+            "met": "The conversion now provides fewer spending-currency units.",
+            "not_yet": "Follow the currency the bill actually requires."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué puede cambiar?",
+          "scene": "Las unidades extranjeras no cambian. Cada una se convierte ahora en menos unidades de la moneda de pago.",
+          "options": [
+            {
+              "label": "El monto disponible para pagar"
+            },
+            {
+              "label": "Nada, las unidades extranjeras siguen iguales"
+            }
+          ],
+          "help": [
+            "Sigue la moneda que exige la cuenta."
+          ],
+          "feedback": {
+            "met": "La conversión entrega menos unidades de la moneda necesaria.",
+            "not_yet": "Sigue la moneda que exige la cuenta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que pode mudar?",
+          "scene": "As unidades estrangeiras não mudam. Cada uma agora vira menos unidades da moeda da conta.",
+          "options": [
+            {
+              "label": "O valor disponível para pagar"
+            },
+            {
+              "label": "Nada, as unidades estrangeiras são iguais"
+            }
+          ],
+          "help": [
+            "Siga a moeda exigida pela conta."
+          ],
+          "feedback": {
+            "met": "A conversão entrega menos unidades da moeda necessária.",
+            "not_yet": "Siga a moeda exigida pela conta."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which changes matter?",
+          "scene": "A foreign asset changes price before conversion into the currency used for the goal.",
+          "options": [
+            {
+              "label": "Asset value and exchange rate"
+            },
+            {
+              "label": "Only the asset’s foreign price"
+            },
+            {
+              "label": "Only the account name"
+            }
+          ],
+          "help": [
+            "Track the investment and the currency conversion separately."
+          ],
+          "feedback": {
+            "met": "Both asset performance and conversion can affect the spending result.",
+            "not_yet": "Track the investment and the currency conversion separately."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué dos cambios importan?",
+          "scene": "Un activo extranjero cambia de precio antes de convertirse a la moneda de la meta.",
+          "options": [
+            {
+              "label": "Valor del activo y tipo de cambio"
+            },
+            {
+              "label": "Solo su precio extranjero"
+            },
+            {
+              "label": "Solo el nombre de cuenta"
+            }
+          ],
+          "help": [
+            "Sigue la inversión y la conversión por separado."
+          ],
+          "feedback": {
+            "met": "Activo y conversión pueden afectar el resultado para gastar.",
+            "not_yet": "Sigue la inversión y la conversión por separado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quais duas mudanças importam?",
+          "scene": "Um ativo estrangeiro muda de preço antes da conversão para a moeda da meta.",
+          "options": [
+            {
+              "label": "Valor do ativo e câmbio"
+            },
+            {
+              "label": "Só seu preço estrangeiro"
+            },
+            {
+              "label": "Só o nome da conta"
+            }
+          ],
+          "help": [
+            "Siga a aplicação e a conversão separadamente."
+          ],
+          "feedback": {
+            "met": "Ativo e conversão podem afetar o resultado para gastar.",
+            "not_yet": "Siga a aplicação e a conversão separadamente."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Does foreign gain settle it?",
+          "scene": "An asset gains abroad, but conversion moves against the spending currency.",
+          "options": [
+            {
+              "label": "Yes, foreign gains guarantee local gains"
+            },
+            {
+              "label": "No, check the combined result"
+            }
+          ],
+          "help": [
+            "Evaluate the result in the goal’s currency."
+          ],
+          "feedback": {
+            "met": "The exchange-rate effect can offset an asset gain.",
+            "not_yet": "Evaluate the result in the goal’s currency."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Basta ganar en moneda extranjera?",
+          "scene": "El activo gana en moneda extranjera, pero el cambio se vuelve desfavorable para la moneda de pago.",
+          "options": [
+            {
+              "label": "Sí, ganar afuera garantiza más dinero local"
+            },
+            {
+              "label": "No, falta revisar el resultado combinado"
+            }
+          ],
+          "help": [
+            "Evalúa el resultado en la moneda de la meta."
+          ],
+          "feedback": {
+            "met": "El efecto del cambio puede compensar la ganancia del activo.",
+            "not_yet": "Evalúa el resultado en la moneda de la meta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Basta ganhar em moeda estrangeira?",
+          "scene": "O ativo ganha em moeda estrangeira, mas o câmbio fica pior para a moeda da conta.",
+          "options": [
+            {
+              "label": "Sim, ganhar fora garante mais dinheiro local"
+            },
+            {
+              "label": "Não, falta conferir o resultado conjunto"
+            }
+          ],
+          "help": [
+            "Avalie o resultado na moeda da meta."
+          ],
+          "feedback": {
+            "met": "O efeito do câmbio pode anular o ganho do ativo.",
+            "not_yet": "Avalie o resultado na moeda da meta."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which currency is relevant?",
+          "scene": "The goal is tuition priced in another country’s currency, not local household spending.",
+          "options": [
+            {
+              "label": "Always the account display currency"
+            },
+            {
+              "label": "The tuition currency"
+            }
+          ],
+          "help": [
+            "Start from the payment the money must fund."
+          ],
+          "feedback": {
+            "met": "The obligation’s currency defines the conversion need.",
+            "not_yet": "Start from the payment the money must fund."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué moneda importa?",
+          "scene": "La meta es colegiatura fijada en moneda de otro país, no gasto local del hogar.",
+          "options": [
+            {
+              "label": "Siempre la moneda mostrada en cuenta"
+            },
+            {
+              "label": "La moneda de la colegiatura"
+            }
+          ],
+          "help": [
+            "Empieza por el pago que ese dinero cubrirá."
+          ],
+          "feedback": {
+            "met": "La moneda de la obligación define la necesidad de conversión.",
+            "not_yet": "Empieza por el pago que ese dinero cubrirá."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual moeda importa?",
+          "scene": "A meta é mensalidade fixada na moeda de outro país, não gasto local da casa.",
+          "options": [
+            {
+              "label": "Sempre a moeda exibida na conta"
+            },
+            {
+              "label": "A moeda da mensalidade"
+            }
+          ],
+          "help": [
+            "Comece pelo pagamento que esse dinheiro vai cobrir."
+          ],
+          "feedback": {
+            "met": "A moeda da obrigação define a necessidade de conversão.",
+            "not_yet": "Comece pelo pagamento que esse dinheiro vai cobrir."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which claim is unsupported?",
+          "scene": "A seller says holding foreign currency automatically removes every financial risk.",
+          "options": [
+            {
+              "label": "The claim of removing every risk"
+            },
+            {
+              "label": "That currencies can be exchanged"
+            }
+          ],
+          "help": [
+            "Compare the currency with the actual spending need."
+          ],
+          "feedback": {
+            "met": "Changing currencies introduces a different exposure, not universal safety.",
+            "not_yet": "Compare the currency with the actual spending need."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué afirmación no se sostiene?",
+          "scene": "Un vendedor dice que tener moneda extranjera elimina automáticamente todo riesgo financiero.",
+          "options": [
+            {
+              "label": "Que elimine todo riesgo"
+            },
+            {
+              "label": "Que las monedas se puedan cambiar"
+            }
+          ],
+          "help": [
+            "Compara la moneda con la necesidad real de gasto."
+          ],
+          "feedback": {
+            "met": "Cambiar monedas crea otra exposición, no seguridad universal.",
+            "not_yet": "Compara la moneda con la necesidad real de gasto."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual afirmação não se sustenta?",
+          "scene": "Um vendedor diz que ter moeda estrangeira elimina todo risco financeiro.",
+          "options": [
+            {
+              "label": "Que elimina todo risco"
+            },
+            {
+              "label": "Que moedas podem ser trocadas"
+            }
+          ],
+          "help": [
+            "Compare a moeda com a necessidade real do gasto."
+          ],
+          "feedback": {
+            "met": "Trocar moedas cria outro risco, não segurança universal.",
+            "not_yet": "Compare a moeda com a necessidade real do gasto."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.investment-comparison.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Why a larger gap?",
+          "scene": "An overseas bill stays fixed. Household currency now buys fewer foreign units.",
+          "options": [
+            {
+              "label": "Exchange cannot matter"
+            },
+            {
+              "label": "More household currency is needed"
+            },
+            {
+              "label": "The repair necessarily rose"
+            }
+          ],
+          "help": [
+            "Track the currency needed to settle the bill."
+          ],
+          "feedback": {
+            "met": "The same foreign bill now costs more household currency.",
+            "not_yet": "Track the currency needed to settle the bill."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Por qué creció el faltante?",
+          "scene": "Una reparación extranjera conserva su precio. La moneda del hogar compra menos unidades de esa moneda.",
+          "options": [
+            {
+              "label": "El cambio no puede importar"
+            },
+            {
+              "label": "Se necesita más moneda del hogar"
+            },
+            {
+              "label": "La reparación necesariamente subió"
+            }
+          ],
+          "help": [
+            "Sigue la moneda necesaria para liquidar la cuenta."
+          ],
+          "feedback": {
+            "met": "La misma cuenta extranjera ahora cuesta más moneda del hogar.",
+            "not_yet": "Sigue la moneda necesaria para liquidar la cuenta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Por que a falta cresceu?",
+          "scene": "Um conserto no exterior mantém seu preço. A moeda da casa compra menos unidades daquela moeda.",
+          "options": [
+            {
+              "label": "O câmbio não pode importar"
+            },
+            {
+              "label": "Precisa de mais moeda da casa"
+            },
+            {
+              "label": "O conserto necessariamente encareceu"
+            }
+          ],
+          "help": [
+            "Siga a moeda necessária para pagar a conta."
+          ],
+          "feedback": {
+            "met": "A mesma conta estrangeira agora custa mais moeda da casa.",
+            "not_yet": "Siga a moeda necessária para pagar a conta."
+          }
+        }
+      }
+    }
+  ]
+}

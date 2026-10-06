@@ -1,0 +1,887 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-payments-digital-part-1",
+  "lesson_id": "fe-production-payments-digital-04",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.payments-digital.04"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Compare payment methods using stated fees, timing and reversibility.",
+  "title": {
+    "en-US": "Payment routes",
+    "es-MX": "Compara la ruta completa del pago",
+    "pt-BR": "Compare a rota completa do pagamento"
+  },
+  "new_concepts": [
+    "finance.prod.payments-digital.04"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Compare the full payment route\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Compara la ruta completa del pago\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Compare a rota completa do pagamento\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.payments-digital.04",
+      "observable_action": "Compare payment methods using stated fees, timing and reversibility.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.payments-digital.01",
+      "cash.dates",
+      "prod.accounts-records.03"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Check cost, arrival timing and correction terms for the actual payment need.",
+    "misconception": "Choosing a payment route by fee alone or assuming that all completed transfers can be reversed.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.payments-digital.04",
+        "context_id": "fe-production-payments-digital-04-example-01",
+        "supports_from": [],
+        "reasoning": "A cheaper method may arrive after a deadline. Compare fees, arrival and correction terms before choosing the route."
+      },
+      {
+        "segment_id": "guided-chart",
+        "skill_id": "prod.payments-digital.04",
+        "context_id": "fe-production-payments-digital-04-guided-chart",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "A has the lower fee; timing still needs checking."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.payments-digital.04",
+        "context_id": "fe-production-payments-digital-04-guided-01",
+        "supports_from": [
+          "guided-chart"
+        ],
+        "reasoning": "The requirement concerns arrival, not merely sending the instruction."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.payments-digital.04",
+        "context_id": "fe-production-payments-digital-04-practice-01",
+        "supports_from": [],
+        "reasoning": "60 + 3 = 63 leaves the sender under these terms."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.payments-digital.04",
+        "context_id": "fe-production-payments-digital-04-practice-02",
+        "supports_from": [],
+        "reasoning": "The stated correction limit makes the initial check especially relevant."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.payments-digital.04",
+        "context_id": "fe-production-payments-digital-04-practice-03",
+        "supports_from": [],
+        "reasoning": "An undisclosed fee is missing information, not a zero charge."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.payments-digital.04",
+        "context_id": "fe-production-payments-digital-04-transfer-01",
+        "supports_from": [],
+        "reasoning": "The recipient must get the required net amount by the deadline."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.payments-digital.04",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Check cost, arrival timing and correction terms for the actual payment need."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Revisa costo, llegada y condiciones de corrección según el pago necesario."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Confira custo, chegada e condições de correção conforme o pagamento necessário."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "More than the fee",
+          "line": "A cheaper method may arrive after a deadline. Compare fees, arrival and correction terms before choosing the route."
+        },
+        "es-MX": {
+          "prompt": "Más que la comisión",
+          "line": "Un método más barato puede llegar tarde. Compara comisiones, llegada y condiciones de corrección antes de elegir."
+        },
+        "pt-BR": {
+          "prompt": "Mais que a tarifa",
+          "line": "Um método mais barato pode chegar tarde. Compare tarifas, chegada e condições de correção antes de escolher."
+        }
+      }
+    },
+    {
+      "id": "guided-chart",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.04",
+      "visual": {
+        "type": "bar"
+      },
+      "payload": {
+        "data": {
+          "unit": "local",
+          "categories": [
+            {
+              "id": "route-a"
+            },
+            {
+              "id": "route-b"
+            },
+            {
+              "id": "route-c"
+            }
+          ],
+          "series": [
+            {
+              "id": "fee",
+              "values": [
+                1,
+                4,
+                2
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "route-b"
+            },
+            {
+              "id": "route-a"
+            },
+            {
+              "id": "route-c"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "route-a"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Compare fictional transfer fees only.",
+          "title": "Transfer fees",
+          "data": {
+            "categories": [
+              {
+                "label": "A"
+              },
+              {
+                "label": "B"
+              },
+              {
+                "label": "C"
+              }
+            ],
+            "series": [
+              {
+                "label": "Fee"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Which fee is lower?",
+            "options": [
+              {
+                "label": "B"
+              },
+              {
+                "label": "A"
+              },
+              {
+                "label": "C"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "A has the lower fee; timing still needs checking.",
+            "not_yet": "Compare the fee bars, not the payment amount."
+          },
+          "help": [
+            "Compare the fee bars, not the payment amount."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Compara solo comisiones ficticias de transferencia.",
+          "title": "Comisiones de transferencia",
+          "data": {
+            "categories": [
+              {
+                "label": "A"
+              },
+              {
+                "label": "B"
+              },
+              {
+                "label": "C"
+              }
+            ],
+            "series": [
+              {
+                "label": "Comisión"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Qué comisión es menor?",
+            "options": [
+              {
+                "label": "B"
+              },
+              {
+                "label": "A"
+              },
+              {
+                "label": "C"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "A tiene menor comisión; aún debes revisar fechas.",
+            "not_yet": "Compara barras de comisión, no monto del pago."
+          },
+          "help": [
+            "Compara barras de comisión, no monto del pago."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Compare só tarifas fictícias de transferência.",
+          "title": "Tarifas de transferência",
+          "data": {
+            "categories": [
+              {
+                "label": "A"
+              },
+              {
+                "label": "B"
+              },
+              {
+                "label": "C"
+              }
+            ],
+            "series": [
+              {
+                "label": "Tarifa"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Qual tarifa é menor?",
+            "options": [
+              {
+                "label": "B"
+              },
+              {
+                "label": "A"
+              },
+              {
+                "label": "C"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "A tem menor tarifa; ainda precisa conferir datas.",
+            "not_yet": "Compare barras de tarifa, não valor do pagamento."
+          },
+          "help": [
+            "Compare barras de tarifa, não valor do pagamento."
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Which route meets the stated timing?",
+          "scene": "Fictional route A arrives tomorrow; B arrives today; the verified bill requires arrival today.",
+          "options": [
+            {
+              "label": "B"
+            },
+            {
+              "label": "A"
+            },
+            {
+              "label": "Either, because sending is enough"
+            }
+          ],
+          "help": [
+            "Compare arrival with the actual due time."
+          ],
+          "feedback": {
+            "met": "The requirement concerns arrival, not merely sending the instruction.",
+            "not_yet": "Compare arrival with the actual due time."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué ruta cumple las fechas indicadas?",
+          "scene": "La ruta ficticia A llega mañana; B llega hoy; la cuenta exige llegada hoy.",
+          "options": [
+            {
+              "label": "B"
+            },
+            {
+              "label": "A"
+            },
+            {
+              "label": "Cualquiera, porque basta enviar"
+            }
+          ],
+          "help": [
+            "Compara llegada con el vencimiento real."
+          ],
+          "feedback": {
+            "met": "El requisito es llegar, no solo enviar la instrucción.",
+            "not_yet": "Compara llegada con el vencimiento real."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual rota cumpre as datas informadas?",
+          "scene": "A rota fictícia A chega amanhã; B chega hoje; a conta exige chegada hoje.",
+          "options": [
+            {
+              "label": "B"
+            },
+            {
+              "label": "A"
+            },
+            {
+              "label": "Qualquer uma, porque basta enviar"
+            }
+          ],
+          "help": [
+            "Compare chegada com o vencimento real."
+          ],
+          "feedback": {
+            "met": "O requisito é chegar, não só enviar a instrução.",
+            "not_yet": "Compare chegada com o vencimento real."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Total leaving the sender?",
+          "scene": "Fictional transfer: recipient must receive 60 dollars; the sender pays a separate fee of 3.",
+          "options": [
+            {
+              "label": "60"
+            },
+            {
+              "label": "63"
+            },
+            {
+              "label": "57"
+            }
+          ],
+          "help": [
+            "The stated fee is additional, not deducted from the recipient amount."
+          ],
+          "feedback": {
+            "met": "60 + 3 = 63 leaves the sender under these terms.",
+            "not_yet": "The stated fee is additional, not deducted from the recipient amount."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Total que sale del remitente?",
+          "scene": "Transferencia ficticia: destinatario recibe 60 pesos; quien envía paga comisión aparte de 3.",
+          "options": [
+            {
+              "label": "60"
+            },
+            {
+              "label": "63"
+            },
+            {
+              "label": "57"
+            }
+          ],
+          "help": [
+            "La comisión indicada es aparte, no descuento al destinatario."
+          ],
+          "feedback": {
+            "met": "60 + 3 = 63 sale del remitente bajo esas condiciones.",
+            "not_yet": "La comisión indicada es aparte, no descuento al destinatario."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Total que sai de quem envia?",
+          "scene": "Transferência fictícia: destinatário recebe 60 reais; quem envia paga tarifa separada de 3.",
+          "options": [
+            {
+              "label": "60"
+            },
+            {
+              "label": "63"
+            },
+            {
+              "label": "57"
+            }
+          ],
+          "help": [
+            "A tarifa informada é separada, não desconto do destinatário."
+          ],
+          "feedback": {
+            "met": "60 + 3 = 63 sai de quem envia nessas condições.",
+            "not_yet": "A tarifa informada é separada, não desconto do destinatário."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          60,
+          3
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.04",
+      "copy": {
+        "en-US": {
+          "prompt": "What matters before confirming?",
+          "scene": "This fictional method normally cannot cancel completed transfers.",
+          "options": [
+            {
+              "label": "Verify the destination and amount carefully"
+            },
+            {
+              "label": "Send a guessed amount and fix it later"
+            },
+            {
+              "label": "Assume cancellation is always available"
+            }
+          ],
+          "help": [
+            "Use the actual method’s terms, not a universal reversal assumption."
+          ],
+          "feedback": {
+            "met": "The stated correction limit makes the initial check especially relevant.",
+            "not_yet": "Use the actual method’s terms, not a universal reversal assumption."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué importa antes de confirmar?",
+          "scene": "Un método ficticio avisa que transferencias realizadas no pueden cancelarse por su proceso normal.",
+          "options": [
+            {
+              "label": "Verificar cuidadosamente destino y monto"
+            },
+            {
+              "label": "Enviar monto supuesto y corregir después"
+            },
+            {
+              "label": "Suponer disponible toda cancelación"
+            }
+          ],
+          "help": [
+            "Usa condiciones reales, no supongas reversión universal."
+          ],
+          "feedback": {
+            "met": "El límite de corrección vuelve especialmente importante la revisión inicial.",
+            "not_yet": "Usa condiciones reales, no supongas reversión universal."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que importa antes de confirmar?",
+          "scene": "Um método fictício avisa que transferências concluídas não podem ser canceladas pelo processo normal.",
+          "options": [
+            {
+              "label": "Conferir destino e valor com cuidado"
+            },
+            {
+              "label": "Enviar valor suposto e corrigir depois"
+            },
+            {
+              "label": "Supor disponível todo cancelamento"
+            }
+          ],
+          "help": [
+            "Use condições reais, não suponha reversão universal."
+          ],
+          "feedback": {
+            "met": "O limite de correção torna especialmente importante a conferência inicial.",
+            "not_yet": "Use condições reais, não suponha reversão universal."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Can the cheaper route be established yet?",
+          "scene": "Both methods arrive on time; one fee is unknown.",
+          "options": [
+            {
+              "label": "No, verify the missing fee"
+            },
+            {
+              "label": "Yes, faster always means cheaper"
+            },
+            {
+              "label": "Yes, undisclosed always means zero"
+            }
+          ],
+          "help": [
+            "Compare complete terms before deciding on cost."
+          ],
+          "feedback": {
+            "met": "An undisclosed fee is missing information, not a zero charge.",
+            "not_yet": "Compare complete terms before deciding on cost."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Ya sabes cuál ruta cuesta menos?",
+          "scene": "Dos métodos cumplen el plazo; una comisión se indica y la otra se desconoce.",
+          "options": [
+            {
+              "label": "No, verifica la comisión faltante"
+            },
+            {
+              "label": "Sí, más rápido siempre es más barato"
+            },
+            {
+              "label": "Sí, no indicado siempre significa cero"
+            }
+          ],
+          "help": [
+            "Compara condiciones completas antes de decidir por costo."
+          ],
+          "feedback": {
+            "met": "Una comisión no indicada es dato faltante, no cobro cero.",
+            "not_yet": "Compara condiciones completas antes de decidir por costo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Já sabe qual rota custa menos?",
+          "scene": "Dois métodos cumprem o prazo; uma tarifa é informada e a outra é desconhecida.",
+          "options": [
+            {
+              "label": "Não, confira a tarifa ausente"
+            },
+            {
+              "label": "Sim, mais rápido sempre é mais barato"
+            },
+            {
+              "label": "Sim, não informado sempre significa zero"
+            }
+          ],
+          "help": [
+            "Compare condições completas antes de decidir pelo custo."
+          ],
+          "feedback": {
+            "met": "Uma tarifa não informada é dado ausente, não cobrança zero.",
+            "not_yet": "Compare condições completas antes de decidir pelo custo."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.payments-digital.04",
+      "copy": {
+        "en-US": {
+          "prompt": "What determines suitability?",
+          "scene": "A supplier needs full payment today; this route deducts fees.",
+          "options": [
+            {
+              "label": "Only app availability"
+            },
+            {
+              "label": "Only the amount typed by the sender"
+            },
+            {
+              "label": "Net receipt and arrival time"
+            }
+          ],
+          "help": [
+            "Check what arrives and when, not just what is sent."
+          ],
+          "feedback": {
+            "met": "The recipient must get the required net amount by the deadline.",
+            "not_yet": "Check what arrives and when, not just what is sent."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué datos determinan si sirve?",
+          "scene": "Un proveedor necesita el monto completo a tiempo; una ruta descuenta comisión de lo entregado.",
+          "options": [
+            {
+              "label": "Solo si la ruta tiene aplicación"
+            },
+            {
+              "label": "Solo el monto escrito al enviar"
+            },
+            {
+              "label": "Recepción neta y hora de llegada"
+            }
+          ],
+          "help": [
+            "Revisa qué llega y cuándo, no solo qué se envía."
+          ],
+          "feedback": {
+            "met": "El destinatario debe recibir el neto necesario dentro del plazo.",
+            "not_yet": "Revisa qué llega y cuándo, no solo qué se envía."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quais dados mostram adequação?",
+          "scene": "Um fornecedor precisa do valor completo no prazo; uma rota desconta tarifa do que entrega.",
+          "options": [
+            {
+              "label": "Só se a rota tem aplicativo"
+            },
+            {
+              "label": "Só o valor digitado por quem envia"
+            },
+            {
+              "label": "Recebimento líquido e hora de chegada"
+            }
+          ],
+          "help": [
+            "Confira o que chega e quando, não só o que é enviado."
+          ],
+          "feedback": {
+            "met": "O destinatário deve receber o líquido necessário dentro do prazo.",
+            "not_yet": "Confira o que chega e quando, não só o que é enviado."
+          }
+        }
+      }
+    }
+  ]
+}

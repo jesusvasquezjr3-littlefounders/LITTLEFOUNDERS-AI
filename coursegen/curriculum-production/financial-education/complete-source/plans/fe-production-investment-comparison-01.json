@@ -1,0 +1,830 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-investment-comparison-part-1",
+  "lesson_id": "fe-production-investment-comparison-01",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.investment-comparison.01"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Calculate an investment’s stated return after explicit transaction and ongoing fees.",
+  "title": {
+    "en-US": "After Fees",
+    "es-MX": "¿Qué queda tras comisiones?",
+    "pt-BR": "O que sobra após tarifas?"
+  },
+  "new_concepts": [
+    "finance.prod.investment-comparison.01"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"After Fees\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"¿Qué queda tras comisiones?\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"O que sobra após tarifas?\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.investment-comparison.01",
+      "observable_action": "Calculate an investment’s stated return after explicit transaction and ongoing fees.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.investing-foundations.04",
+      "prod.financial-math.02"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Quoted gains are not the amount you keep when fees must still be paid.",
+    "misconception": "A displayed gross gain already accounts for every transaction and ongoing charge.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.investment-comparison.01",
+        "context_id": "investment-comparison-01-example-01",
+        "supports_from": [],
+        "reasoning": "A gain before costs is gross. Subtract each stated fee once to find the gain left after those costs."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.investment-comparison.01",
+        "context_id": "investment-comparison-01-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The remaining gain deducts both fees once."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.investment-comparison.01",
+        "context_id": "investment-comparison-01-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Both stated mandatory charges reduce what the investor keeps."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.investment-comparison.01",
+        "context_id": "investment-comparison-01-practice-01",
+        "supports_from": [],
+        "reasoning": "Both fees reduce the gross gain."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.investment-comparison.01",
+        "context_id": "investment-comparison-01-practice-02",
+        "supports_from": [],
+        "reasoning": "Subtracting included fees again counts the same cost twice."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.investment-comparison.01",
+        "context_id": "investment-comparison-01-practice-03",
+        "supports_from": [],
+        "reasoning": "Costs above the gain leave a negative result."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.investment-comparison.01",
+        "context_id": "investment-comparison-01-transfer-01",
+        "supports_from": [],
+        "reasoning": "The sale gain is reduced by both stated costs."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.investment-comparison.01",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Quoted gains are not the amount you keep when fees must still be paid."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Las ganancias anunciadas no son lo que conservas si faltan comisiones por pagar."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Ganhos anunciados não são o que fica com você quando ainda faltam tarifas."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Start with the gain",
+          "line": "A gain before costs is gross. Subtract each stated fee once to find the gain left after those costs."
+        },
+        "es-MX": {
+          "prompt": "Empieza por la ganancia",
+          "line": "La ganancia antes de costos es bruta. Resta cada comisión indicada una vez para hallar lo que queda tras esos costos."
+        },
+        "pt-BR": {
+          "prompt": "Comece pelo ganho",
+          "line": "O ganho antes dos custos é bruto. Subtraia cada tarifa dada uma vez para achar o que sobra desses custos."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.01",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "gross-return"
+          },
+          {
+            "id": "after-trade"
+          },
+          {
+            "id": "after-ongoing"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "after-trade",
+          "after-ongoing"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "after-trade": "45",
+          "after-ongoing": "43"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Gross gain: 50 dollars; trade fee: 5; ongoing fee: 2. Finish the steps.",
+          "help": [
+            "Subtract each fee from the gain, not from each other."
+          ],
+          "feedback": {
+            "met": "The remaining gain deducts both fees once.",
+            "not_yet": "Subtract each fee from the gain, not from each other."
+          },
+          "steps": [
+            {
+              "expression": "Gross gain",
+              "result": "50",
+              "spokenText": "Gross gain"
+            },
+            {
+              "expression": "50 − 5",
+              "result": "45",
+              "spokenText": "Subtract trading fee"
+            },
+            {
+              "expression": "45 − 2",
+              "result": "43",
+              "spokenText": "Subtract ongoing fee"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Ganancia bruta: 50 pesos; comisión de operación: 5; de mantenimiento: 2. Completa los pasos.",
+          "help": [
+            "Resta cada comisión de la ganancia, no entre sí."
+          ],
+          "feedback": {
+            "met": "La ganancia restante descuenta ambas comisiones una vez.",
+            "not_yet": "Resta cada comisión de la ganancia, no entre sí."
+          },
+          "steps": [
+            {
+              "expression": "Ganancia bruta",
+              "result": "50",
+              "spokenText": "Ganancia bruta"
+            },
+            {
+              "expression": "50 − 5",
+              "result": "45",
+              "spokenText": "Resta la comisión de operación"
+            },
+            {
+              "expression": "45 − 2",
+              "result": "43",
+              "spokenText": "Resta la comisión de mantenimiento"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Ganho bruto: 50 reais; tarifa da operação: 5; de manutenção: 2. Complete os passos.",
+          "help": [
+            "Subtraia cada tarifa do ganho, não uma da outra."
+          ],
+          "feedback": {
+            "met": "O ganho restante desconta ambas as tarifas uma vez.",
+            "not_yet": "Subtraia cada tarifa do ganho, não uma da outra."
+          },
+          "steps": [
+            {
+              "expression": "Ganho bruto",
+              "result": "50",
+              "spokenText": "Ganho bruto"
+            },
+            {
+              "expression": "50 − 5",
+              "result": "45",
+              "spokenText": "Subtraia a tarifa da operação"
+            },
+            {
+              "expression": "45 − 2",
+              "result": "43",
+              "spokenText": "Subtraia a tarifa de manutenção"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Subtract which charges?",
+          "scene": "A quoted gain excludes trading and ongoing fees. Both are mandatory for this holding period.",
+          "options": [
+            {
+              "label": "Both fees once"
+            },
+            {
+              "label": "Neither fee"
+            },
+            {
+              "label": "Only the smaller fee"
+            }
+          ],
+          "help": [
+            "Count every included-period fee once."
+          ],
+          "feedback": {
+            "met": "Both stated mandatory charges reduce what the investor keeps.",
+            "not_yet": "Count every included-period fee once."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué cargos restas?",
+          "scene": "La ganancia anunciada excluye comisiones de operación y mantenimiento. Ambas son obligatorias para este periodo.",
+          "options": [
+            {
+              "label": "Ambas una vez"
+            },
+            {
+              "label": "Ninguna"
+            },
+            {
+              "label": "Solo la menor"
+            }
+          ],
+          "help": [
+            "Cuenta una vez cada comisión del periodo."
+          ],
+          "feedback": {
+            "met": "Ambos cargos obligatorios reducen lo que conserva quien invierte.",
+            "not_yet": "Cuenta una vez cada comisión del periodo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quais cobranças subtrair?",
+          "scene": "O ganho anunciado exclui tarifas de operação e manutenção. Ambas são obrigatórias neste período.",
+          "options": [
+            {
+              "label": "Ambas uma vez"
+            },
+            {
+              "label": "Nenhuma"
+            },
+            {
+              "label": "Só a menor"
+            }
+          ],
+          "help": [
+            "Conte uma vez cada tarifa do período."
+          ],
+          "feedback": {
+            "met": "Ambas as cobranças obrigatórias reduzem o que fica com você.",
+            "not_yet": "Conte uma vez cada tarifa do período."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What gain remains?",
+          "scene": "Gross gain is 80. Trading costs 6; ongoing charges cost 4.",
+          "options": [
+            {
+              "label": "80"
+            },
+            {
+              "label": "76"
+            },
+            {
+              "label": "70"
+            }
+          ],
+          "help": [
+            "Subtract both fees from the gain."
+          ],
+          "feedback": {
+            "met": "Both fees reduce the gross gain.",
+            "not_yet": "Subtract both fees from the gain."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué ganancia queda?",
+          "scene": "La ganancia bruta es 80. Operar cuesta 6; mantener cuesta 4.",
+          "options": [
+            {
+              "label": "80"
+            },
+            {
+              "label": "76"
+            },
+            {
+              "label": "70"
+            }
+          ],
+          "help": [
+            "Resta ambas comisiones de la ganancia."
+          ],
+          "feedback": {
+            "met": "Ambas comisiones reducen la ganancia bruta.",
+            "not_yet": "Resta ambas comisiones de la ganancia."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual ganho sobra?",
+          "scene": "O ganho bruto é 80. Operar custa 6; manter custa 4.",
+          "options": [
+            {
+              "label": "80"
+            },
+            {
+              "label": "76"
+            },
+            {
+              "label": "70"
+            }
+          ],
+          "help": [
+            "Subtraia as duas tarifas do ganho."
+          ],
+          "feedback": {
+            "met": "Ambas as tarifas reduzem o ganho bruto.",
+            "not_yet": "Subtraia as duas tarifas do ganho."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          80,
+          6,
+          4
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Deduct again?",
+          "scene": "The statement explicitly reports a gain after both fees. Someone subtracts those same fees again.",
+          "options": [
+            {
+              "label": "No, they are already included"
+            },
+            {
+              "label": "Yes, every fee must be doubled"
+            }
+          ],
+          "help": [
+            "Read whether the figure is before or after costs."
+          ],
+          "feedback": {
+            "met": "Subtracting included fees again counts the same cost twice.",
+            "not_yet": "Read whether the figure is before or after costs."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Restar otra vez?",
+          "scene": "El estado indica ganancia después de ambas comisiones. Alguien resta las mismas comisiones otra vez.",
+          "options": [
+            {
+              "label": "No, ya están incluidas"
+            },
+            {
+              "label": "Sí, hay que duplicarlas"
+            }
+          ],
+          "help": [
+            "Lee si el monto es antes o después de costos."
+          ],
+          "feedback": {
+            "met": "Restar comisiones incluidas cuenta dos veces el mismo costo.",
+            "not_yet": "Lee si el monto es antes o después de costos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Subtrair outra vez?",
+          "scene": "O extrato mostra ganho após ambas as tarifas. Alguém subtrai essas mesmas tarifas de novo.",
+          "options": [
+            {
+              "label": "Não, já estão incluídas"
+            },
+            {
+              "label": "Sim, deve duplicá-las"
+            }
+          ],
+          "help": [
+            "Leia se o valor é antes ou depois dos custos."
+          ],
+          "feedback": {
+            "met": "Subtrair tarifas incluídas conta duas vezes o mesmo custo.",
+            "not_yet": "Leia se o valor é antes ou depois dos custos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Can net gain be negative?",
+          "scene": "The gross gain is smaller than the mandatory fees for the same period.",
+          "options": [
+            {
+              "label": "Yes, fees can exceed the gain"
+            },
+            {
+              "label": "No, any gross gain ensures profit"
+            }
+          ],
+          "help": [
+            "Compare all costs with the gross gain."
+          ],
+          "feedback": {
+            "met": "Costs above the gain leave a negative result.",
+            "not_yet": "Compare all costs with the gross gain."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿La ganancia neta puede ser negativa?",
+          "scene": "La ganancia bruta es menor que las comisiones obligatorias del mismo periodo.",
+          "options": [
+            {
+              "label": "Sí, pueden superar la ganancia"
+            },
+            {
+              "label": "No, ganar bruto asegura utilidad"
+            }
+          ],
+          "help": [
+            "Compara todos los costos con la ganancia bruta."
+          ],
+          "feedback": {
+            "met": "Costos mayores que la ganancia dejan un resultado negativo.",
+            "not_yet": "Compara todos los costos con la ganancia bruta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O ganho líquido pode ser negativo?",
+          "scene": "O ganho bruto é menor que as tarifas obrigatórias do mesmo período.",
+          "options": [
+            {
+              "label": "Sim, podem superar o ganho"
+            },
+            {
+              "label": "Não, ganho bruto assegura lucro"
+            }
+          ],
+          "help": [
+            "Compare todos os custos com o ganho bruto."
+          ],
+          "feedback": {
+            "met": "Custos acima do ganho deixam um resultado negativo.",
+            "not_yet": "Compare todos os custos com o ganho bruto."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.investment-comparison.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What remains after sale costs?",
+          "scene": "Selling produces a gain of 45 before costs. Exit fee: 8; custody charge: 7.",
+          "options": [
+            {
+              "label": "30"
+            },
+            {
+              "label": "37"
+            },
+            {
+              "label": "45"
+            }
+          ],
+          "help": [
+            "Deduct the exit fee and custody charge once."
+          ],
+          "feedback": {
+            "met": "The sale gain is reduced by both stated costs.",
+            "not_yet": "Deduct the exit fee and custody charge once."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué queda tras los costos de venta?",
+          "scene": "Vender genera ganancia de 45 antes de costos. Salida: 8; custodia: 7.",
+          "options": [
+            {
+              "label": "30"
+            },
+            {
+              "label": "37"
+            },
+            {
+              "label": "45"
+            }
+          ],
+          "help": [
+            "Descuenta salida y custodia una vez."
+          ],
+          "feedback": {
+            "met": "Ambos costos indicados reducen la ganancia de venta.",
+            "not_yet": "Descuenta salida y custodia una vez."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que sobra após os custos da venda?",
+          "scene": "Vender gera ganho de 45 antes dos custos. Saída: 8; custódia: 7.",
+          "options": [
+            {
+              "label": "30"
+            },
+            {
+              "label": "37"
+            },
+            {
+              "label": "45"
+            }
+          ],
+          "help": [
+            "Desconte saída e custódia uma vez."
+          ],
+          "feedback": {
+            "met": "Ambos os custos dados reduzem o ganho da venda.",
+            "not_yet": "Desconte saída e custódia uma vez."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          45,
+          8,
+          7
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -48,9 +48,15 @@ describe('the real seed file has no tier inversion and no cycle', () => {
   });
 
   it('approves only the 25 Financial Education KCs with a real teaching bridge', () => {
-    expect(seed.kcs).toHaveLength(100);
+    // Preserve the reviewed legacy activation set; the replacement course adds draft nodes only.
+    expect(seed.kcs.slice(0, 100)).toHaveLength(100);
     expect(seed.kcs.filter((kc) => kc.status === 'active')).toHaveLength(53);
-    expect(seed.kcs.filter((kc) => kc.status === 'draft')).toHaveLength(47);
+    expect(seed.kcs.slice(0, 100).filter((kc) => kc.status === 'draft')).toHaveLength(47);
+    for (const kc of seed.kcs.slice(100)) {
+      expect(kc.key.startsWith('finance.'), kc.key).toBe(true);
+      expect(kc.status, kc.key).toBe('draft');
+      expect(kc.skill_key, kc.key).toBeNull();
+    }
     expect(activation.required_courses).toEqual(['financial-education']);
     expect(activation.activations).toHaveLength(25);
     expect(new Set(activation.activations.map((item) => item.key)).size).toBe(25);

@@ -1,0 +1,732 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-investing-foundations-part-3",
+  "lesson_id": "fe-production-investing-foundations-14",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.investing-foundations.14"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Recognize speculation in a volatile asset without treating past gains as evidence of safety.",
+  "title": {
+    "en-US": "Past Performance",
+    "es-MX": "Ganancias pasadas no protegen",
+    "pt-BR": "Ganhos passados não protegem"
+  },
+  "new_concepts": [
+    "finance.prod.investing-foundations.14"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Past Performance\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Ganancias pasadas no protegen\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Ganhos passados não protegem\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.investing-foundations.14",
+      "observable_action": "Recognize speculation in a volatile asset without treating past gains as evidence of safety.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.investing-foundations.03",
+      "prod.investing-foundations.04",
+      "prod.time-inflation.10"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A recent price jump tells you what happened, not what your money is guaranteed to do next.",
+    "misconception": "Recent gains, popularity or excitement demonstrate safety of a speculative asset.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.investing-foundations.14",
+        "context_id": "investing-foundations-14-example-01",
+        "supports_from": [],
+        "reasoning": "A token rose yesterday. Buying solely because someone else may pay more tomorrow is speculation, not evidence of safety."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.investing-foundations.14",
+        "context_id": "investing-foundations-14-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "A past price change does not guarantee the next one."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.investing-foundations.14",
+        "context_id": "investing-foundations-14-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The purchase relies on an uncertain future buyer’s price."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.investing-foundations.14",
+        "context_id": "investing-foundations-14-practice-01",
+        "supports_from": [],
+        "reasoning": "Attention does not establish a limit on future losses."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.investing-foundations.14",
+        "context_id": "investing-foundations-14-practice-02",
+        "supports_from": [],
+        "reasoning": "A small purchase can still lose its invested amount."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.investing-foundations.14",
+        "context_id": "investing-foundations-14-practice-03",
+        "supports_from": [],
+        "reasoning": "Selected winners do not describe everyone’s risk."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.investing-foundations.14",
+        "context_id": "investing-foundations-14-transfer-01",
+        "supports_from": [],
+        "reasoning": "Future buyers and prices can differ from last year’s."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.investing-foundations.14",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A recent price jump tells you what happened, not what your money is guaranteed to do next."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Una subida reciente dice qué ocurrió, no qué hará tu dinero con certeza después."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Uma alta recente conta o que aconteceu, não o que seu dinheiro fará com certeza depois."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Price hopes are uncertain",
+          "line": "A token rose yesterday. Buying solely because someone else may pay more tomorrow is speculation, not evidence of safety."
+        },
+        "es-MX": {
+          "prompt": "Esperar subidas es incierto",
+          "line": "Un token subió ayer. Comprar solo esperando que alguien pague más mañana es especulación, no prueba de seguridad."
+        },
+        "pt-BR": {
+          "prompt": "Esperar altas é incerto",
+          "line": "Um token subiu ontem. Comprar só esperando que alguém pague mais amanhã é especulação, não prova de segurança."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.14",
+      "copy": {
+        "en-US": {
+          "prompt": "What does yesterday prove?",
+          "scene": "An asset doubled yesterday. No reliable evidence establishes tomorrow’s price.",
+          "options": [
+            {
+              "label": "Only what happened yesterday"
+            },
+            {
+              "label": "That tomorrow must rise"
+            }
+          ],
+          "help": [
+            "Separate an observation from a prediction."
+          ],
+          "feedback": {
+            "met": "A past price change does not guarantee the next one.",
+            "not_yet": "Separate an observation from a prediction."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué demuestra ayer?",
+          "scene": "Un activo duplicó su precio ayer. No hay evidencia confiable del precio de mañana.",
+          "options": [
+            {
+              "label": "Solo lo ocurrido ayer"
+            },
+            {
+              "label": "Que mañana debe subir"
+            }
+          ],
+          "help": [
+            "Distingue una observación de una predicción."
+          ],
+          "feedback": {
+            "met": "Un cambio pasado no garantiza el siguiente.",
+            "not_yet": "Distingue una observación de una predicción."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que ontem comprova?",
+          "scene": "Um ativo dobrou de preço ontem. Não há evidência confiável do preço de amanhã.",
+          "options": [
+            {
+              "label": "Só o que ocorreu ontem"
+            },
+            {
+              "label": "Que amanhã deve subir"
+            }
+          ],
+          "help": [
+            "Separe uma observação de uma previsão."
+          ],
+          "feedback": {
+            "met": "Uma mudança passada não garante a próxima.",
+            "not_yet": "Separe uma observação de uma previsão."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.14",
+      "copy": {
+        "en-US": {
+          "prompt": "What drives this purchase?",
+          "scene": "A buyer knows no income or use for an asset, only hopes to resell it higher.",
+          "options": [
+            {
+              "label": "A guaranteed future payment"
+            },
+            {
+              "label": "A speculative resale expectation"
+            }
+          ],
+          "help": [
+            "Look for the source of the expected gain."
+          ],
+          "feedback": {
+            "met": "The purchase relies on an uncertain future buyer’s price.",
+            "not_yet": "Look for the source of the expected gain."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué impulsa esta compra?",
+          "scene": "No conocen ingresos ni uso del activo; solo esperan revenderlo más caro.",
+          "options": [
+            {
+              "label": "Un pago futuro garantizado"
+            },
+            {
+              "label": "Una expectativa especulativa de reventa"
+            }
+          ],
+          "help": [
+            "Busca de dónde saldría la ganancia esperada."
+          ],
+          "feedback": {
+            "met": "La compra depende del precio incierto de un comprador futuro.",
+            "not_yet": "Busca de dónde saldría la ganancia esperada."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que motiva essa compra?",
+          "scene": "Não conhecem rendimento nem uso do ativo; só esperam revendê-lo mais caro.",
+          "options": [
+            {
+              "label": "Um pagamento futuro garantido"
+            },
+            {
+              "label": "Uma expectativa especulativa de revenda"
+            }
+          ],
+          "help": [
+            "Procure de onde viria o ganho esperado."
+          ],
+          "feedback": {
+            "met": "A compra depende do preço incerto de um comprador futuro.",
+            "not_yet": "Procure de onde viria o ganho esperado."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.14",
+      "copy": {
+        "en-US": {
+          "prompt": "Does popularity establish safety?",
+          "scene": "Many online posts celebrate gains in a volatile collectible.",
+          "options": [
+            {
+              "label": "Yes, many posts guarantee demand"
+            },
+            {
+              "label": "No, popularity does not bound losses"
+            }
+          ],
+          "help": [
+            "Evaluate possible losses independently of social excitement."
+          ],
+          "feedback": {
+            "met": "Attention does not establish a limit on future losses.",
+            "not_yet": "Evaluate possible losses independently of social excitement."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿La popularidad demuestra seguridad?",
+          "scene": "Muchas publicaciones celebran ganancias en un objeto de colección volátil.",
+          "options": [
+            {
+              "label": "Sí, muchas publicaciones garantizan demanda"
+            },
+            {
+              "label": "No, ser popular no limita pérdidas"
+            }
+          ],
+          "help": [
+            "Evalúa posibles pérdidas aparte del entusiasmo social."
+          ],
+          "feedback": {
+            "met": "La atención no establece un límite a pérdidas futuras.",
+            "not_yet": "Evalúa posibles pérdidas aparte del entusiasmo social."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Popularidade comprova segurança?",
+          "scene": "Muitas publicações celebram ganhos num item de coleção volátil.",
+          "options": [
+            {
+              "label": "Sim, muitas publicações garantem demanda"
+            },
+            {
+              "label": "Não, popularidade não limita perdas"
+            }
+          ],
+          "help": [
+            "Avalie possíveis perdas separadas do entusiasmo social."
+          ],
+          "feedback": {
+            "met": "A atenção não estabelece limite para perdas futuras.",
+            "not_yet": "Avalie possíveis perdas separadas do entusiasmo social."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.14",
+      "copy": {
+        "en-US": {
+          "prompt": "What does starting small change?",
+          "scene": "A speculative offer accepts little money but provides no protection against loss.",
+          "options": [
+            {
+              "label": "Amount exposed, not certainty"
+            },
+            {
+              "label": "Price cannot fall"
+            },
+            {
+              "label": "It becomes guaranteed"
+            }
+          ],
+          "help": [
+            "Distinguish loss size from whether loss is possible."
+          ],
+          "feedback": {
+            "met": "A small purchase can still lose its invested amount.",
+            "not_yet": "Distinguish loss size from whether loss is possible."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué cambia entrar con poco?",
+          "scene": "Una oferta especulativa acepta un monto pequeño, sin protección contra perderlo.",
+          "options": [
+            {
+              "label": "El monto expuesto, no la certeza"
+            },
+            {
+              "label": "El precio ya no puede caer"
+            },
+            {
+              "label": "Se vuelve garantizada"
+            }
+          ],
+          "help": [
+            "Distingue tamaño de pérdida de posibilidad de perder."
+          ],
+          "feedback": {
+            "met": "Una compra pequeña puede perder el monto invertido.",
+            "not_yet": "Distingue tamaño de pérdida de posibilidad de perder."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que muda entrar com pouco?",
+          "scene": "Uma oferta especulativa aceita quantia pequena, sem proteção contra perdê-la.",
+          "options": [
+            {
+              "label": "O valor exposto, não a certeza"
+            },
+            {
+              "label": "O preço não pode mais cair"
+            },
+            {
+              "label": "Ela fica garantida"
+            }
+          ],
+          "help": [
+            "Separe tamanho da perda da possibilidade de perder."
+          ],
+          "feedback": {
+            "met": "Uma compra pequena pode perder o valor investido.",
+            "not_yet": "Separe tamanho da perda da possibilidade de perder."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.14",
+      "copy": {
+        "en-US": {
+          "prompt": "Which evidence is missing?",
+          "scene": "A promoter shows only winning buyers and hides losses or unsold holdings.",
+          "options": [
+            {
+              "label": "More winner celebrations"
+            },
+            {
+              "label": "The range of actual outcomes"
+            }
+          ],
+          "help": [
+            "Look for omitted outcomes as well as displayed gains."
+          ],
+          "feedback": {
+            "met": "Selected winners do not describe everyone’s risk.",
+            "not_yet": "Look for omitted outcomes as well as displayed gains."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué evidencia falta?",
+          "scene": "Un promotor muestra solo compradores ganadores y oculta pérdidas o activos sin vender.",
+          "options": [
+            {
+              "label": "Más celebraciones de ganadores"
+            },
+            {
+              "label": "La variedad real de resultados"
+            }
+          ],
+          "help": [
+            "Busca resultados omitidos además de ganancias mostradas."
+          ],
+          "feedback": {
+            "met": "Ganadores seleccionados no describen el riesgo de todos.",
+            "not_yet": "Busca resultados omitidos además de ganancias mostradas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual evidência falta?",
+          "scene": "Um promotor mostra só compradores vencedores e esconde perdas ou ativos sem vender.",
+          "options": [
+            {
+              "label": "Mais celebrações de vencedores"
+            },
+            {
+              "label": "A variedade real de resultados"
+            }
+          ],
+          "help": [
+            "Procure resultados omitidos além dos ganhos exibidos."
+          ],
+          "feedback": {
+            "met": "Vencedores selecionados não descrevem o risco de todos.",
+            "not_yet": "Procure resultados omitidos além dos ganhos exibidos."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.investing-foundations.14",
+      "copy": {
+        "en-US": {
+          "prompt": "What supports this?",
+          "scene": "A rare-item seller promises easy resale profit because last year’s buyers earned money.",
+          "options": [
+            {
+              "label": "Their gains guarantee yours"
+            },
+            {
+              "label": "Rarity removes all risk"
+            },
+            {
+              "label": "Past buyers do not guarantee future resale"
+            }
+          ],
+          "help": [
+            "Past success is not a buyer or a guaranteed price."
+          ],
+          "feedback": {
+            "met": "Future buyers and prices can differ from last year’s.",
+            "not_yet": "Past success is not a buyer or a guaranteed price."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué respalda la promesa?",
+          "scene": "Un vendedor promete ganar revendiendo una pieza rara porque compradores anteriores ganaron el año pasado.",
+          "options": [
+            {
+              "label": "Sus ganancias garantizan las tuyas"
+            },
+            {
+              "label": "Ser rara elimina todo riesgo"
+            },
+            {
+              "label": "Los anteriores no garantizan reventa futura"
+            }
+          ],
+          "help": [
+            "El éxito pasado no es comprador ni precio garantizado."
+          ],
+          "feedback": {
+            "met": "Compradores y precios futuros pueden diferir de los anteriores.",
+            "not_yet": "El éxito pasado no es comprador ni precio garantizado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que sustenta a promessa?",
+          "scene": "Um vendedor promete lucro revendendo uma peça rara porque compradores anteriores ganharam no ano passado.",
+          "options": [
+            {
+              "label": "Os ganhos deles garantem os seus"
+            },
+            {
+              "label": "Ser rara elimina qualquer risco"
+            },
+            {
+              "label": "Os anteriores não garantem revenda futura"
+            }
+          ],
+          "help": [
+            "Sucesso passado não é comprador nem preço garantido."
+          ],
+          "feedback": {
+            "met": "Compradores e preços futuros podem diferir dos anteriores.",
+            "not_yet": "Sucesso passado não é comprador nem preço garantido."
+          }
+        }
+      }
+    }
+  ]
+}

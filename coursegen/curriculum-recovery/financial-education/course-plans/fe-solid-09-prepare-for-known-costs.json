@@ -1,0 +1,833 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-solid-02-a-plan-that-fits",
+  "lesson_id": "fe-solid-09-prepare-for-known-costs",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.plan.periodic"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Recognize a known future bill as a planned expense and split a visible amount across equal available saving periods.",
+  "title": {
+    "en-US": "Prepare for known costs",
+    "es-MX": "Prepara los gastos previstos",
+    "pt-BR": "Prepare os gastos previstos"
+  },
+  "new_concepts": [
+    "finance.plan.periodic"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Prepare for known costs\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Prepara los gastos previstos\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Prepare os gastos previstos\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "plan.periodic",
+      "observable_action": "Recognize a known future bill as a planned expense and split a visible amount across equal available saving periods.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "cash.dates",
+      "cash.reserved"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Some bills arrive less often than monthly. Preparing known costs in parts can make payment easier.",
+    "misconception": "Calling every nonmonthly cost an emergency and counting reserved money as free money.",
+    "numeracy_support": "Repeated equal additions are shown before asking for a contribution; no division notation is assumed.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "plan.periodic",
+        "context_id": "prepare-for-known-costs-example-01",
+        "supports_from": [],
+        "reasoning": "A renewal costs 120 in three months. Setting aside 40 monthly gives 40 + 40 + 40 = 120 by then."
+      },
+      {
+        "segment_id": "example-02",
+        "skill_id": "plan.periodic",
+        "context_id": "prepare-for-known-costs-example-02",
+        "supports_from": [],
+        "reasoning": "The reserved money may still be in your balance. Spending it elsewhere removes part of the renewal plan."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "plan.periodic",
+        "context_id": "prepare-for-known-costs-guided-01",
+        "supports_from": [
+          "example-02"
+        ],
+        "reasoning": "The equal parts add up to the stated future bill."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "plan.periodic",
+        "context_id": "prepare-for-known-costs-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The future deadline does not cancel the reservation."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "plan.periodic",
+        "context_id": "prepare-for-known-costs-practice-01",
+        "supports_from": [],
+        "reasoning": "All the equal contributions together cover the known amount."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "plan.periodic",
+        "context_id": "prepare-for-known-costs-practice-02",
+        "supports_from": [],
+        "reasoning": "A known date and amount allow advance planning even for infrequent bills."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "plan.periodic",
+        "context_id": "prepare-for-known-costs-practice-03",
+        "supports_from": [],
+        "reasoning": "The plan must respond to the new required amount."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "plan.periodic",
+        "context_id": "prepare-for-known-costs-transfer-01",
+        "supports_from": [],
+        "reasoning": "The parts prepare a known maintenance cost before it is due."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "plan.periodic",
+      "fresh_context": "Apply this skill in a later integrated decision with a different constraint."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Some bills arrive less often than monthly. Preparing known costs in parts can make payment easier."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un recibo puede ser previsible aunque no llegue cada mes. Prepararlo por partes puede facilitar su pago."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Uma conta pode ser previsível mesmo sem chegar todo mês. Prepará-la em partes pode facilitar seu pagamento."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A known future bill",
+          "line": "A renewal costs 120 in three months. Setting aside 40 monthly gives 40 + 40 + 40 = 120 by then."
+        },
+        "es-MX": {
+          "prompt": "Un recibo futuro conocido",
+          "line": "Una renovación cuesta 120 en tres meses. Apartar 40 cada mes reúne 40 + 40 + 40 = 120 para esa fecha."
+        },
+        "pt-BR": {
+          "prompt": "Uma conta futura conhecida",
+          "line": "Uma renovação custa 120 em três meses. Reservar 40 por mês reúne 40 + 40 + 40 = 120 até essa data."
+        }
+      }
+    },
+    {
+      "id": "example-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Reserved is not free",
+          "line": "The reserved money may still be in your balance. Spending it elsewhere removes part of the renewal plan."
+        },
+        "es-MX": {
+          "prompt": "Apartado no es libre",
+          "line": "El dinero apartado puede seguir en tu saldo. Gastarlo en otra cosa quita una parte del plan de renovación."
+        },
+        "pt-BR": {
+          "prompt": "Reservado não está livre",
+          "line": "O dinheiro reservado pode continuar no saldo. Gastá-lo em outra coisa retira uma parte do plano de renovação."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.plan.periodic",
+      "copy": {
+        "en-US": {
+          "prompt": "What do these contributions prepare?",
+          "scene": "Renewal costs 120. Save 40 + 40 + 40 before its deadline.",
+          "options": [
+            {
+              "label": "The full renewal amount"
+            },
+            {
+              "label": "Only one payment of 40"
+            },
+            {
+              "label": "Money with no stated purpose"
+            }
+          ],
+          "help": [
+            "Add all the planned parts, not just the first one."
+          ],
+          "feedback": {
+            "met": "The equal parts add up to the stated future bill.",
+            "not_yet": "Add all the planned parts, not just the first one."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué preparan estas aportaciones?",
+          "scene": "La renovación cuesta 120. El plan aparta 40 + 40 + 40 antes del vencimiento.",
+          "options": [
+            {
+              "label": "El monto completo de renovación"
+            },
+            {
+              "label": "Solo un pago de 40"
+            },
+            {
+              "label": "Dinero sin propósito indicado"
+            }
+          ],
+          "help": [
+            "Suma todas las partes previstas, no solo la primera."
+          ],
+          "feedback": {
+            "met": "Las partes iguales suman el recibo futuro indicado.",
+            "not_yet": "Suma todas las partes previstas, no solo la primera."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que essas contribuições preparam?",
+          "scene": "A renovação custa 120. O plano reserva 40 + 40 + 40 antes do vencimento.",
+          "options": [
+            {
+              "label": "O valor completo da renovação"
+            },
+            {
+              "label": "Só um pagamento de 40"
+            },
+            {
+              "label": "Dinheiro sem propósito informado"
+            }
+          ],
+          "help": [
+            "Some todas as partes previstas, não só a primeira."
+          ],
+          "feedback": {
+            "met": "As partes iguais somam a conta futura informada.",
+            "not_yet": "Some todas as partes previstas, não só a primeira."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.plan.periodic",
+      "copy": {
+        "en-US": {
+          "prompt": "Is it available for another purchase?",
+          "scene": "Money is reserved for a renewal.",
+          "options": [
+            {
+              "label": "No, it is reserved"
+            },
+            {
+              "label": "Yes, because the bill is later"
+            },
+            {
+              "label": "Yes, because it remains visible"
+            }
+          ],
+          "help": [
+            "A visible balance can include money already committed."
+          ],
+          "feedback": {
+            "met": "The future deadline does not cancel the reservation.",
+            "not_yet": "A visible balance can include money already committed."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Este dinero está libre para otra compra?",
+          "scene": "Un saldo incluye dinero ya apartado para una renovación conocida.",
+          "options": [
+            {
+              "label": "No, ya tiene un uso previsto"
+            },
+            {
+              "label": "Sí, porque el recibo es posterior"
+            },
+            {
+              "label": "Sí, porque sigue visible"
+            }
+          ],
+          "help": [
+            "Un saldo visible puede incluir dinero ya comprometido."
+          ],
+          "feedback": {
+            "met": "Que el vencimiento sea posterior no elimina el apartado.",
+            "not_yet": "Un saldo visible puede incluir dinero ya comprometido."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Esse dinheiro está livre para outra compra?",
+          "scene": "Um saldo inclui dinheiro já reservado para uma renovação conhecida.",
+          "options": [
+            {
+              "label": "Não, já tem um uso previsto"
+            },
+            {
+              "label": "Sim, porque a conta é futura"
+            },
+            {
+              "label": "Sim, porque continua visível"
+            }
+          ],
+          "help": [
+            "Um saldo visível pode incluir dinheiro já comprometido."
+          ],
+          "feedback": {
+            "met": "O vencimento futuro não elimina a reserva.",
+            "not_yet": "Um saldo visível pode incluir dinheiro já comprometido."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.plan.periodic",
+      "copy": {
+        "en-US": {
+          "prompt": "Which equal plan reaches the bill?",
+          "scene": "A known bill is 60. There are three contribution dates before it is due.",
+          "options": [
+            {
+              "label": "10 + 10 + 10"
+            },
+            {
+              "label": "15 + 15 + 15"
+            },
+            {
+              "label": "20 + 20 + 20"
+            }
+          ],
+          "help": [
+            "Check the total of all contribution dates."
+          ],
+          "feedback": {
+            "met": "All the equal contributions together cover the known amount.",
+            "not_yet": "Check the total of all contribution dates."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué plan igualitario reúne el monto?",
+          "scene": "Un recibo conocido es de 60. Hay tres fechas para aportar antes de que venza.",
+          "options": [
+            {
+              "label": "10 + 10 + 10"
+            },
+            {
+              "label": "15 + 15 + 15"
+            },
+            {
+              "label": "20 + 20 + 20"
+            }
+          ],
+          "help": [
+            "Comprueba la suma de todas las fechas de aportación."
+          ],
+          "feedback": {
+            "met": "Todas las aportaciones iguales cubren el monto conocido.",
+            "not_yet": "Comprueba la suma de todas las fechas de aportación."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual plano de partes iguais reúne o valor?",
+          "scene": "Uma conta conhecida é de 60. Há três datas de contribuição antes do vencimento.",
+          "options": [
+            {
+              "label": "10 + 10 + 10"
+            },
+            {
+              "label": "15 + 15 + 15"
+            },
+            {
+              "label": "20 + 20 + 20"
+            }
+          ],
+          "help": [
+            "Confira a soma de todas as datas de contribuição."
+          ],
+          "feedback": {
+            "met": "Todas as contribuições iguais cobrem o valor conhecido.",
+            "not_yet": "Confira a soma de todas as datas de contribuição."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          60
+        ],
+        "expression": {
+          "input": 0
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.plan.periodic",
+      "copy": {
+        "en-US": {
+          "prompt": "What makes this expense predictable?",
+          "scene": "A membership contract states a renewal amount and date.",
+          "options": [
+            {
+              "label": "The amount and date are known"
+            },
+            {
+              "label": "It happens every day"
+            },
+            {
+              "label": "It never needs reviewing"
+            }
+          ],
+          "help": [
+            "Predictable does not mean monthly or unchangeable."
+          ],
+          "feedback": {
+            "met": "A known date and amount allow advance planning even for infrequent bills.",
+            "not_yet": "Predictable does not mean monthly or unchangeable."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué hace previsible este gasto?",
+          "scene": "Un contrato de membresía indica el monto y la fecha de renovación.",
+          "options": [
+            {
+              "label": "Se conocen el monto y la fecha"
+            },
+            {
+              "label": "Ocurre todos los días"
+            },
+            {
+              "label": "Nunca necesita revisión"
+            }
+          ],
+          "help": [
+            "Previsible no significa mensual ni invariable."
+          ],
+          "feedback": {
+            "met": "La fecha y el monto conocidos permiten preparar un recibo poco frecuente.",
+            "not_yet": "Previsible no significa mensual ni invariable."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que torna esse gasto previsível?",
+          "scene": "Um contrato de assinatura informa o valor e a data de renovação.",
+          "options": [
+            {
+              "label": "O valor e a data são conhecidos"
+            },
+            {
+              "label": "Acontece todos os dias"
+            },
+            {
+              "label": "Nunca precisa de revisão"
+            }
+          ],
+          "help": [
+            "Previsível não significa mensal ou imutável."
+          ],
+          "feedback": {
+            "met": "A data e o valor conhecidos permitem preparar uma conta pouco frequente.",
+            "not_yet": "Previsível não significa mensal ou imutável."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.plan.periodic",
+      "copy": {
+        "en-US": {
+          "prompt": "What needs updating?",
+          "scene": "An upcoming bill increases; planned savings no longer cover it.",
+          "options": [
+            {
+              "label": "Only the old contribution total"
+            },
+            {
+              "label": "Nothing until the deadline passes"
+            },
+            {
+              "label": "The contributions or the expense plan"
+            }
+          ],
+          "help": [
+            "Recheck the total against the changed bill before it is due."
+          ],
+          "feedback": {
+            "met": "The plan must respond to the new required amount.",
+            "not_yet": "Recheck the total against the changed bill before it is due."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué necesita actualizarse?",
+          "scene": "Aumenta un recibo futuro conocido. El plan anterior de aportaciones ya no alcanza.",
+          "options": [
+            {
+              "label": "Solo el total de aportaciones anterior"
+            },
+            {
+              "label": "Nada hasta después de vencer"
+            },
+            {
+              "label": "Las aportaciones o el plan del gasto"
+            }
+          ],
+          "help": [
+            "Compara lo reunido con el recibo actualizado antes del vencimiento."
+          ],
+          "feedback": {
+            "met": "El plan debe responder al nuevo monto requerido.",
+            "not_yet": "Compara lo reunido con el recibo actualizado antes del vencimiento."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que precisa ser atualizado?",
+          "scene": "Uma conta futura conhecida aumenta. O plano anterior de contribuições não basta.",
+          "options": [
+            {
+              "label": "Só o total anterior de contribuições"
+            },
+            {
+              "label": "Nada até passar o vencimento"
+            },
+            {
+              "label": "As contribuições ou o plano do gasto"
+            }
+          ],
+          "help": [
+            "Compare o total com a conta atualizada antes do vencimento."
+          ],
+          "feedback": {
+            "met": "O plano precisa responder ao novo valor exigido.",
+            "not_yet": "Compare o total com a conta atualizada antes do vencimento."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.plan.periodic",
+      "copy": {
+        "en-US": {
+          "prompt": "Which plan funds the stated expense?",
+          "scene": "Equipment maintenance costs 80 after two contribution dates. Both dates are before the bill.",
+          "options": [
+            {
+              "label": "30 + 30"
+            },
+            {
+              "label": "40 + 40"
+            },
+            {
+              "label": "20 + 20"
+            }
+          ],
+          "help": [
+            "The parts still need to cover the known whole."
+          ],
+          "feedback": {
+            "met": "The parts prepare a known maintenance cost before it is due.",
+            "not_yet": "The parts still need to cover the known whole."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué plan prepara el gasto indicado?",
+          "scene": "El mantenimiento de equipo cuesta 80 tras dos fechas de aportación. Ambas son antes del recibo.",
+          "options": [
+            {
+              "label": "30 + 30"
+            },
+            {
+              "label": "40 + 40"
+            },
+            {
+              "label": "20 + 20"
+            }
+          ],
+          "help": [
+            "Cambió la situación, pero las partes deben cubrir el total conocido."
+          ],
+          "feedback": {
+            "met": "Las partes preparan el costo conocido antes del vencimiento.",
+            "not_yet": "Cambió la situación, pero las partes deben cubrir el total conocido."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual plano prepara o gasto informado?",
+          "scene": "A manutenção de equipamento custa 80 após duas datas de contribuição. Ambas são antes da conta.",
+          "options": [
+            {
+              "label": "30 + 30"
+            },
+            {
+              "label": "40 + 40"
+            },
+            {
+              "label": "20 + 20"
+            }
+          ],
+          "help": [
+            "A situação mudou, mas as partes devem cobrir o total conhecido."
+          ],
+          "feedback": {
+            "met": "As partes preparam o custo conhecido antes do vencimento.",
+            "not_yet": "A situação mudou, mas as partes devem cobrir o total conhecido."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          80
+        ],
+        "expression": {
+          "input": 0
+        }
+      }
+    }
+  ]
+}

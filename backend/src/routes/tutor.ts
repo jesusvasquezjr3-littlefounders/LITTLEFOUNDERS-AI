@@ -157,6 +157,7 @@ import {
 } from '../services/pedagogy/kcData.js';
 import { purgeExpiredTutorSessions } from '../services/tutorRetention.js';
 import { buildSessionPlan } from '../services/pedagogy/sessionPlan.js';
+import { eligibleMentorKcs, eligibleMentorSkills } from '../services/pedagogy/kcEligibility.js';
 import { buildMasteryEvidence } from '../services/pedagogy/masteryEvidence.js';
 import { revealsAnswerKey } from '../services/pedagogy/answerReveal.js';
 import { buildTutorMap } from '../services/pedagogy/tutorMap.js';
@@ -548,6 +549,10 @@ function internalRouter(): Router {
     if (!calibration) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve mentor age calibration');
     if (calibration.tier === null) return fail(res, 403, 'MENTOR_AGE_CALIBRATION_REQUIRED', 'Complete mentor age calibration first');
     if (calibration.tier !== session.tier) return fail(res, 409, 'SESSION_AGE_CHANGED', 'Start a session with the confirmed teaching register');
+    const sessionSkills = [session.skill_key, session.topic_id ? `topic:${session.topic_id}` : null].filter((key): key is string => Boolean(key));
+    const sessionEligible = await eligibleMentorSkills(session.user_id, sessionSkills);
+    if (sessionEligible === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve content eligibility');
+    if (sessionSkills.some(key => !sessionEligible.has(key))) return fail(res, 403, 'CONTENT_AGE_RESTRICTED', 'This content is not available for this learner');
 
     const prefs = await getTutorPreferences(session.user_id);
     if (prefs === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read tutor preferences');
@@ -2233,9 +2238,18 @@ function internalRouter(): Router {
       let kcCatalog: KcRow[] | null = null;
       if (parsed.data.kcId) {
         kcCatalog = await getActiveKcs();
+        if (kcCatalog === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve content eligibility');
+        const allowedKcs = await eligibleMentorKcs(session.user_id, kcCatalog);
+        if (allowedKcs === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve content eligibility');
+        if (kcCatalog.some(k => k.id === parsed.data.kcId) && !allowedKcs.some(k => k.id === parsed.data.kcId)) return fail(res, 403, 'CONTENT_AGE_RESTRICTED', 'This content is not available for this learner');
+        kcCatalog = allowedKcs;
         const kc = kcCatalog?.find((k) => k.id === parsed.data.kcId);
         if (kc?.skill_key) namedSkill = kc.skill_key;
       }
+      const requestedSkills = [namedSkill, session.skill_key, session.topic_id ? `topic:${session.topic_id}` : null].filter((key): key is string => Boolean(key));
+      const allowedSkills = await eligibleMentorSkills(session.user_id, requestedSkills);
+      if (allowedSkills === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve content eligibility');
+      if (requestedSkills.some(key => !allowedSkills.has(key))) return fail(res, 403, 'CONTENT_AGE_RESTRICTED', 'This content is not available for this learner');
       const skill = namedSkill === null ? null : await resolveSkill(namedSkill);
       if (!skill && namedSkill !== null) {
         /*
@@ -2561,6 +2575,19 @@ function internalRouter(): Router {
 
     const session = await getTutorSession(parsed.data.sessionId);
     if (!session) return fail(res, 404, NOT_FOUND, 'No such session');
+    const requestedSkills = [session.skill_key, session.topic_id ? `topic:${session.topic_id}` : null,
+      typeof parsed.data.provenance.skill_key === 'string' ? parsed.data.provenance.skill_key : null,
+      typeof parsed.data.provenance.skillKey === 'string' ? parsed.data.provenance.skillKey : null,
+    ].filter((key): key is string => Boolean(key));
+    if (parsed.data.kcId) {
+      const kcs = await getActiveKcs();
+      if (kcs === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve content eligibility');
+      const key = kcs.find(k => k.id === parsed.data.kcId)?.skill_key;
+      if (key) requestedSkills.push(key);
+    }
+    const allowedSkills = await eligibleMentorSkills(session.user_id, requestedSkills);
+    if (allowedSkills === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve content eligibility');
+    if (requestedSkills.some(key => !allowedSkills.has(key))) return fail(res, 403, 'CONTENT_AGE_RESTRICTED', 'This content is not available for this learner');
 
     const segment = parsed.data.segment as unknown as SegmentBase;
     const ladderEvent = (
@@ -3631,6 +3658,10 @@ export function tutorRouter(): Router {
         return fail(res, 400, VALIDATION, 'skillKey does not name a real skill');
       }
     }
+    const requestedSkills = [parsed.data.skillKey, parsed.data.topicId ? `topic:${parsed.data.topicId}` : null].filter((key): key is string => Boolean(key));
+    const allowedSkills = await eligibleMentorSkills(user.id, requestedSkills);
+    if (allowedSkills === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve content eligibility');
+    if (requestedSkills.some(key => !allowedSkills.has(key))) return fail(res, 403, 'CONTENT_AGE_RESTRICTED', 'This content is not available for this learner');
 
     const roles = await getRolesForGate(user.id);
     if (roles === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve roles');

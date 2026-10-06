@@ -1,0 +1,914 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-solid-04-save-with-a-purpose",
+  "lesson_id": "fe-solid-16-make-a-saving-goal",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.save.goal"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Calculate the remaining amount for a goal and check whether repeated contributions fit both the deadline and available resources.",
+  "title": {
+    "en-US": "Make a saving goal",
+    "es-MX": "Prepara una meta de ahorro",
+    "pt-BR": "Prepare uma meta de poupança"
+  },
+  "new_concepts": [
+    "finance.save.goal"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Make a saving goal\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Prepara una meta de ahorro\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Prepare uma meta de poupança\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "save.goal",
+      "observable_action": "Calculate the remaining amount for a goal and check whether repeated contributions fit both the deadline and available resources.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "plan.periodic",
+      "plan.revise"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Give saving a purpose, an amount and a date. These examples use dollars; check whether each plan fits.",
+    "misconception": "Dividing the full target instead of the remaining gap, or treating an unaffordable contribution as a workable plan.",
+    "numeracy_support": "Subtract current savings from the target, then build the gap using repeated equal contributions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "save.goal",
+        "context_id": "make-a-saving-goal-example-01",
+        "supports_from": [],
+        "reasoning": "A repair goal is 100 and 20 is already saved. The missing amount is 100 − 20 = 80."
+      },
+      {
+        "segment_id": "example-02",
+        "skill_id": "save.goal",
+        "context_id": "make-a-saving-goal-example-02",
+        "supports_from": [],
+        "reasoning": "Four contributions of 20 make 80. This plan works only if each contribution fits and arrives before the repair deadline."
+      },
+      {
+        "segment_id": "example-03",
+        "skill_id": "save.goal",
+        "context_id": "make-a-saving-goal-example-03",
+        "supports_from": [],
+        "reasoning": "This chart starts from zero for the missing amount only. Try saving 20 weekly for four weeks, then compare 10."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "save.goal",
+        "context_id": "make-a-saving-goal-guided-01",
+        "supports_from": [
+          "example-03"
+        ],
+        "reasoning": "Existing savings reduce the amount still needed."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "save.goal",
+        "context_id": "make-a-saving-goal-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The contributions cover the missing amount by the stated dates."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "save.goal",
+        "context_id": "make-a-saving-goal-practice-01",
+        "supports_from": [],
+        "reasoning": "Fund the remaining gap, not the full target again."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "save.goal",
+        "context_id": "make-a-saving-goal-practice-02",
+        "supports_from": [],
+        "reasoning": "A correct sum is not enough if its contributions cannot fit."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "save.goal",
+        "context_id": "make-a-saving-goal-practice-03",
+        "supports_from": [],
+        "reasoning": "A flexible deadline can allow more affordable contribution periods."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "save.goal",
+        "context_id": "make-a-saving-goal-transfer-01",
+        "supports_from": [],
+        "reasoning": "The contributions fill the remaining gap before enrollment."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "save.goal",
+      "fresh_context": "Apply this skill in a later integrated decision with a different constraint."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Give saving a purpose, an amount and a date. These examples use dollars; check whether each plan fits."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Dale al ahorro un propósito, un monto y una fecha. Explora montos ficticios en pesos y comprueba si el plan cabe."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Dê à poupança um propósito, um valor e uma data. Explore valores fictícios em reais e confira se o plano cabe."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Find the missing amount",
+          "line": "A repair goal is 100 and 20 is already saved. The missing amount is 100 − 20 = 80."
+        },
+        "es-MX": {
+          "prompt": "Halla lo que falta",
+          "line": "La meta para una reparación es 100 y ya hay 20 ahorrados. Faltan 100 − 20 = 80."
+        },
+        "pt-BR": {
+          "prompt": "Ache o que falta",
+          "line": "A meta para um conserto é 100 e já há 20 poupados. Faltam 100 − 20 = 80."
+        }
+      }
+    },
+    {
+      "id": "example-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Build the gap in parts",
+          "line": "Four contributions of 20 make 80. This plan works only if each contribution fits and arrives before the repair deadline."
+        },
+        "es-MX": {
+          "prompt": "Reúne el faltante por partes",
+          "line": "Cuatro aportaciones de 20 reúnen 80. El plan funciona solo si cada aportación cabe y llega antes de la reparación."
+        },
+        "pt-BR": {
+          "prompt": "Reúna a falta em partes",
+          "line": "Quatro contribuições de 20 reúnem 80. O plano funciona só se cada contribuição couber e chegar antes do conserto."
+        }
+      }
+    },
+    {
+      "id": "example-03",
+      "type": "visual.savings-line.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "line"
+      },
+      "payload": {
+        "periods": 4,
+        "minimum": 0,
+        "maximum": 30,
+        "step": 10,
+        "initial": 0,
+        "currency": "local",
+        "unit": "week"
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "This chart starts from zero for the missing amount only. Try saving 20 weekly for four weeks, then compare 10."
+        },
+        "es-MX": {
+          "prompt": "Esta gráfica empieza en cero solo para el faltante. Prueba ahorrar 20 semanales durante cuatro semanas y compara con 10."
+        },
+        "pt-BR": {
+          "prompt": "Este gráfico começa em zero só para o valor que falta. Teste poupar 20 por semana durante quatro semanas e compare com 10."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.save.goal",
+      "copy": {
+        "en-US": {
+          "prompt": "How much is still needed?",
+          "scene": "Your target is 100 and you already have 20 saved for it.",
+          "options": [
+            {
+              "label": "80"
+            },
+            {
+              "label": "100"
+            },
+            {
+              "label": "120"
+            }
+          ],
+          "help": [
+            "Subtract what is already saved from the goal."
+          ],
+          "feedback": {
+            "met": "Existing savings reduce the amount still needed.",
+            "not_yet": "Subtract what is already saved from the goal."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto falta reunir?",
+          "scene": "Tu meta es 100 y ya tienes 20 ahorrados para ella.",
+          "options": [
+            {
+              "label": "80"
+            },
+            {
+              "label": "100"
+            },
+            {
+              "label": "120"
+            }
+          ],
+          "help": [
+            "Resta a la meta lo que ya tienes ahorrado."
+          ],
+          "feedback": {
+            "met": "Lo ahorrado reduce el monto que aún falta.",
+            "not_yet": "Resta a la meta lo que ya tienes ahorrado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto falta reunir?",
+          "scene": "Sua meta é 100 e você já tem 20 poupados para ela.",
+          "options": [
+            {
+              "label": "80"
+            },
+            {
+              "label": "100"
+            },
+            {
+              "label": "120"
+            }
+          ],
+          "help": [
+            "Subtraia da meta o que já tem poupado."
+          ],
+          "feedback": {
+            "met": "O que foi poupado reduz o valor que ainda falta.",
+            "not_yet": "Subtraia da meta o que já tem poupado."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          100,
+          20
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.save.goal",
+      "copy": {
+        "en-US": {
+          "prompt": "Which plan fills the stated gap?",
+          "scene": "You need 80 across four dates. Each contribution is affordable.",
+          "options": [
+            {
+              "label": "15 + 15 + 15 + 15"
+            },
+            {
+              "label": "20 + 20 + 20 + 20"
+            },
+            {
+              "label": "10 + 10 + 10 + 10"
+            }
+          ],
+          "help": [
+            "Add the contributions and compare with the gap."
+          ],
+          "feedback": {
+            "met": "The contributions cover the missing amount by the stated dates.",
+            "not_yet": "Add the contributions and compare with the gap."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué plan cubre el faltante indicado?",
+          "scene": "Aún faltan 80 y hay cuatro fechas para aportar. Cada aportación propuesta cabe en el presupuesto.",
+          "options": [
+            {
+              "label": "15 + 15 + 15 + 15"
+            },
+            {
+              "label": "20 + 20 + 20 + 20"
+            },
+            {
+              "label": "10 + 10 + 10 + 10"
+            }
+          ],
+          "help": [
+            "Suma las aportaciones y compáralas con el faltante."
+          ],
+          "feedback": {
+            "met": "Las aportaciones cubren el faltante en las fechas indicadas.",
+            "not_yet": "Suma las aportaciones y compáralas con el faltante."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual plano cobre a falta informada?",
+          "scene": "Ainda faltam 80 e há quatro datas para contribuir. Cada contribuição proposta cabe no orçamento.",
+          "options": [
+            {
+              "label": "15 + 15 + 15 + 15"
+            },
+            {
+              "label": "20 + 20 + 20 + 20"
+            },
+            {
+              "label": "10 + 10 + 10 + 10"
+            }
+          ],
+          "help": [
+            "Some as contribuições e compare com o que falta."
+          ],
+          "feedback": {
+            "met": "As contribuições cobrem a falta nas datas informadas.",
+            "not_yet": "Some as contribuições e compare com o que falta."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          80
+        ],
+        "expression": {
+          "input": 0
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.save.goal",
+      "copy": {
+        "en-US": {
+          "prompt": "What remains to be saved?",
+          "scene": "A goal costs 150; 50 is already reserved for it.",
+          "options": [
+            {
+              "label": "100"
+            },
+            {
+              "label": "150"
+            },
+            {
+              "label": "200"
+            }
+          ],
+          "help": [
+            "Keep the existing reserved amount in the calculation."
+          ],
+          "feedback": {
+            "met": "Fund the remaining gap, not the full target again.",
+            "not_yet": "Keep the existing reserved amount in the calculation."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto falta ahorrar?",
+          "scene": "Una meta cuesta 150; ya hay 50 apartados para ella.",
+          "options": [
+            {
+              "label": "100"
+            },
+            {
+              "label": "150"
+            },
+            {
+              "label": "200"
+            }
+          ],
+          "help": [
+            "Incluye el monto ya apartado en el cálculo."
+          ],
+          "feedback": {
+            "met": "El plan debe cubrir el faltante, no reunir toda la meta otra vez.",
+            "not_yet": "Incluye el monto ya apartado en el cálculo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto falta poupar?",
+          "scene": "Uma meta custa 150; já há 50 reservados para ela.",
+          "options": [
+            {
+              "label": "100"
+            },
+            {
+              "label": "150"
+            },
+            {
+              "label": "200"
+            }
+          ],
+          "help": [
+            "Inclua o valor já reservado no cálculo."
+          ],
+          "feedback": {
+            "met": "O plano deve cobrir a falta, não reunir toda a meta novamente.",
+            "not_yet": "Inclua o valor já reservado no cálculo."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          150,
+          50
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.save.goal",
+      "copy": {
+        "en-US": {
+          "prompt": "What makes this plan unworkable?",
+          "scene": "Weekly goal: save 40. Only 20 remains after essentials.",
+          "options": [
+            {
+              "label": "Saving must wait until month-end"
+            },
+            {
+              "label": "You cannot spare 40"
+            },
+            {
+              "label": "The goal is not reached yet"
+            }
+          ],
+          "help": [
+            "Check resources as well as the arithmetic target."
+          ],
+          "feedback": {
+            "met": "A correct sum is not enough if its contributions cannot fit.",
+            "not_yet": "Check resources as well as the arithmetic target."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué hace inviable este plan?",
+          "scene": "El plan exige ahorrar 40 por semana. Solo quedan 20 después de pagos necesarios cada semana.",
+          "options": [
+            {
+              "label": "Ahorrar exige esperar al fin de mes"
+            },
+            {
+              "label": "La aportación supera la capacidad indicada"
+            },
+            {
+              "label": "La meta aún no se alcanza"
+            }
+          ],
+          "help": [
+            "Comprueba los recursos además del objetivo numérico."
+          ],
+          "feedback": {
+            "met": "Una suma correcta no basta si las aportaciones no caben.",
+            "not_yet": "Comprueba los recursos además del objetivo numérico."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que torna este plano inviável?",
+          "scene": "O plano exige 40 semanais; sobram só 20 após gastos necessários.",
+          "options": [
+            {
+              "label": "Poupar exige esperar o fim do mês"
+            },
+            {
+              "label": "A contribuição supera a capacidade informada"
+            },
+            {
+              "label": "A meta ainda não foi alcançada"
+            }
+          ],
+          "help": [
+            "Confira os recursos além do objetivo numérico."
+          ],
+          "feedback": {
+            "met": "Uma soma correta não basta se as contribuições não cabem.",
+            "not_yet": "Confira os recursos além do objetivo numérico."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.save.goal",
+      "copy": {
+        "en-US": {
+          "prompt": "Which change makes it feasible?",
+          "scene": "Affordable contributions fall short by a flexible deadline.",
+          "options": [
+            {
+              "label": "Assume extra money arrives"
+            },
+            {
+              "label": "Count the same savings twice"
+            },
+            {
+              "label": "Extend the date and recalculate"
+            }
+          ],
+          "help": [
+            "Change a stated flexible constraint instead of inventing resources."
+          ],
+          "feedback": {
+            "met": "A flexible deadline can allow more affordable contribution periods.",
+            "not_yet": "Change a stated flexible constraint instead of inventing resources."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué cambio hace viable el plan?",
+          "scene": "La meta opcional tiene fecha flexible. Las aportaciones posibles no la alcanzan para la fecha inicial.",
+          "options": [
+            {
+              "label": "Mantener la fecha y suponer más dinero"
+            },
+            {
+              "label": "Contar el mismo ahorro dos veces"
+            },
+            {
+              "label": "Ampliar el plazo y recalcular"
+            }
+          ],
+          "help": [
+            "Cambia un límite flexible en vez de inventar recursos."
+          ],
+          "feedback": {
+            "met": "Un plazo flexible puede permitir más aportaciones posibles.",
+            "not_yet": "Cambia un límite flexible en vez de inventar recursos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual mudança poderia viabilizar o plano?",
+          "scene": "A meta opcional tem data flexível. As contribuições possíveis não bastam até a data inicial.",
+          "options": [
+            {
+              "label": "Manter a data e supor mais dinheiro"
+            },
+            {
+              "label": "Contar a mesma poupança duas vezes"
+            },
+            {
+              "label": "Ampliar o prazo e recalcular"
+            }
+          ],
+          "help": [
+            "Mude um limite flexível em vez de inventar recursos."
+          ],
+          "feedback": {
+            "met": "Um prazo flexível pode permitir mais contribuições possíveis.",
+            "not_yet": "Mude um limite flexível em vez de inventar recursos."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.save.goal",
+      "copy": {
+        "en-US": {
+          "prompt": "Which contribution plan reaches the goal?",
+          "scene": "Enrollment costs 120; 40 is saved. Four affordable contributions remain.",
+          "options": [
+            {
+              "label": "20 + 20 + 20 + 20"
+            },
+            {
+              "label": "15 + 15 + 15 + 15"
+            },
+            {
+              "label": "10 + 10 + 10 + 10"
+            }
+          ],
+          "help": [
+            "Account for existing savings before splitting what remains."
+          ],
+          "feedback": {
+            "met": "The contributions fill the remaining gap before enrollment.",
+            "not_yet": "Account for existing savings before splitting what remains."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué plan de aportaciones alcanza la meta?",
+          "scene": "Un curso cuesta 120; hay 40 ahorrados. Quedan cuatro aportaciones posibles antes de inscribirse.",
+          "options": [
+            {
+              "label": "20 + 20 + 20 + 20"
+            },
+            {
+              "label": "15 + 15 + 15 + 15"
+            },
+            {
+              "label": "10 + 10 + 10 + 10"
+            }
+          ],
+          "help": [
+            "Considera lo ya ahorrado antes de repartir lo que falta."
+          ],
+          "feedback": {
+            "met": "Las aportaciones cubren el faltante antes de la inscripción.",
+            "not_yet": "Considera lo ya ahorrado antes de repartir lo que falta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual plano de contribuições alcança a meta?",
+          "scene": "Um curso custa 120; há 40 poupados. Restam quatro contribuições possíveis antes da inscrição.",
+          "options": [
+            {
+              "label": "20 + 20 + 20 + 20"
+            },
+            {
+              "label": "15 + 15 + 15 + 15"
+            },
+            {
+              "label": "10 + 10 + 10 + 10"
+            }
+          ],
+          "help": [
+            "Considere o que já foi poupado antes de dividir o que falta."
+          ],
+          "feedback": {
+            "met": "As contribuições cobrem a falta antes da inscrição.",
+            "not_yet": "Considere o que já foi poupado antes de dividir o que falta."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          120,
+          40
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

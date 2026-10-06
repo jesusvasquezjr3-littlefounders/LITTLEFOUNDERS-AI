@@ -1,0 +1,806 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-debt-recovery-part-1",
+  "lesson_id": "fe-production-debt-recovery-04",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.debt-recovery.04"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Identify information to gather before asking a creditor about an unaffordable payment.",
+  "title": {
+    "en-US": "Creditor discussions",
+    "es-MX": "Prepara una conversación realista con acreedor",
+    "pt-BR": "Prepare uma conversa realista com credor"
+  },
+  "new_concepts": [
+    "finance.prod.debt-recovery.04"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Prepare a realistic creditor conversation\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Prepara una conversación realista con acreedor\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Prepare uma conversa realista com credor\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.debt-recovery.04",
+      "observable_action": "Identify information to gather before asking a creditor about an unaffordable payment.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.debt-recovery.01",
+      "prod.cashflow-budget.11"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Clear records help explain what changed and what payment may actually fit.",
+    "misconception": "Promising an unaffordable payment merely to end a difficult conversation, or assuming a request has already changed the agreement.",
+    "numeracy_support": "Every quantity and assumption needed to decide is visible in the current scenario. Examples explain the relationship before independent application.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.debt-recovery.04",
+        "context_id": "fe-production-debt-recovery-04-example-01",
+        "supports_from": [],
+        "reasoning": "Gather debt details, income, essentials and payment dates. Explain the shortfall and ask about documented options without promising unavailable money."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.debt-recovery.04",
+        "context_id": "fe-production-debt-recovery-04-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The discussion needs evidence of current capacity and the existing agreement."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.debt-recovery.04",
+        "context_id": "fe-production-debt-recovery-04-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "180 − 130 − 30 = 20 before this debt’s payment."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.debt-recovery.04",
+        "context_id": "fe-production-debt-recovery-04-practice-03",
+        "supports_from": [],
+        "reasoning": "A monthly total can hide a gap on the payment date."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.debt-recovery.04",
+        "context_id": "fe-production-debt-recovery-04-practice-04",
+        "supports_from": [],
+        "reasoning": "A lower installment alone does not describe the full agreement."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.debt-recovery.04",
+        "context_id": "fe-production-debt-recovery-04-practice-05",
+        "supports_from": [],
+        "reasoning": "A request alone does not establish an accepted new agreement."
+      },
+      {
+        "segment_id": "transfer-06",
+        "skill_id": "prod.debt-recovery.04",
+        "context_id": "fe-production-debt-recovery-04-transfer-06",
+        "supports_from": [],
+        "reasoning": "A promise should not depend on ignoring an essential constraint."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.debt-recovery.04",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Clear records help explain what changed and what payment may actually fit."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Registros claros ayudan a explicar qué cambió y qué pago podría caber."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Registros claros ajudam a explicar o que mudou e qual pagamento pode caber."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Follow the evidence",
+          "line": "Gather debt details, income, essentials and payment dates. Explain the shortfall and ask about documented options without promising unavailable money."
+        },
+        "es-MX": {
+          "prompt": "Sigue las pruebas",
+          "line": "Reúne datos de deuda, ingreso, esenciales y fechas. Explica el faltante y pregunta por opciones documentadas sin prometer dinero inexistente."
+        },
+        "pt-BR": {
+          "prompt": "Siga as provas",
+          "line": "Reúna dados da dívida, renda, essenciais e datas. Explique a falta e pergunte por opções por escrito sem prometer dinheiro inexistente."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.04",
+      "copy": {
+        "en-US": {
+          "prompt": "What preparation helps?",
+          "scene": "A reduced work schedule makes the previous loan payment unaffordable.",
+          "options": [
+            {
+              "label": "Only a promise to try harder"
+            },
+            {
+              "label": "Current income, essential costs and debt terms"
+            },
+            {
+              "label": "A guessed future windfall"
+            }
+          ],
+          "help": [
+            "Describe what changed using current records."
+          ],
+          "feedback": {
+            "met": "The discussion needs evidence of current capacity and the existing agreement.",
+            "not_yet": "Describe what changed using current records."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué preparación ayuda?",
+          "scene": "Menos horas de trabajo vuelven inviable el pago anterior del préstamo.",
+          "options": [
+            {
+              "label": "Solo prometer esforzarse más"
+            },
+            {
+              "label": "Ingreso actual, costos esenciales y contrato"
+            },
+            {
+              "label": "Una ganancia futura supuesta"
+            }
+          ],
+          "help": [
+            "Describe qué cambió usando registros actuales."
+          ],
+          "feedback": {
+            "met": "La conversación necesita evidencia de capacidad actual y acuerdo existente.",
+            "not_yet": "Describe qué cambió usando registros actuales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual preparo ajuda?",
+          "scene": "Menos horas de trabalho tornam inviável a parcela anterior do empréstimo.",
+          "options": [
+            {
+              "label": "Só prometer se esforçar mais"
+            },
+            {
+              "label": "Renda atual, custos essenciais e contrato"
+            },
+            {
+              "label": "Um ganho futuro suposto"
+            }
+          ],
+          "help": [
+            "Descreva o que mudou usando registros atuais."
+          ],
+          "feedback": {
+            "met": "A conversa precisa de provas da capacidade atual e do acordo.",
+            "not_yet": "Descreva o que mudou usando registros atuais."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Available before this debt’s payment?",
+          "scene": "Reliable income 180; essentials 130; other required payments 30; no other funds.",
+          "options": [
+            {
+              "label": "20"
+            },
+            {
+              "label": "50"
+            },
+            {
+              "label": "180"
+            }
+          ],
+          "help": [
+            "Include essentials and other commitments before stating capacity."
+          ],
+          "feedback": {
+            "met": "180 − 130 − 30 = 20 before this debt’s payment.",
+            "not_yet": "Include essentials and other commitments before stating capacity."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Disponible antes del pago de esta deuda?",
+          "scene": "Ingreso fiable 180; esenciales 130; otros pagos exigidos 30; sin otros fondos.",
+          "options": [
+            {
+              "label": "20"
+            },
+            {
+              "label": "50"
+            },
+            {
+              "label": "180"
+            }
+          ],
+          "help": [
+            "Incluye esenciales y otros compromisos antes de indicar capacidad."
+          ],
+          "feedback": {
+            "met": "180 − 130 − 30 = 20 antes de pagar esta deuda.",
+            "not_yet": "Incluye esenciales y otros compromisos antes de indicar capacidad."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Disponível antes de pagar esta dívida?",
+          "scene": "Renda confiável 180; essenciais 130; outros pagamentos exigidos 30; sem outros recursos.",
+          "options": [
+            {
+              "label": "20"
+            },
+            {
+              "label": "50"
+            },
+            {
+              "label": "180"
+            }
+          ],
+          "help": [
+            "Inclua essenciais e outros compromissos antes de informar capacidade."
+          ],
+          "feedback": {
+            "met": "180 − 130 − 30 = 20 antes de pagar esta dívida.",
+            "not_yet": "Inclua essenciais e outros compromissos antes de informar capacidade."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          180,
+          130,
+          30
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.04",
+      "copy": {
+        "en-US": {
+          "prompt": "What timing detail should be explained?",
+          "scene": "The proposed payment precedes the next reliable income.",
+          "options": [
+            {
+              "label": "Assume money arrives whenever needed"
+            },
+            {
+              "label": "The gap between payment and income dates"
+            },
+            {
+              "label": "Only total monthly income"
+            }
+          ],
+          "help": [
+            "Place the proposal on the real income calendar."
+          ],
+          "feedback": {
+            "met": "A monthly total can hide a gap on the payment date.",
+            "not_yet": "Place the proposal on the real income calendar."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué dato de fechas debes explicar?",
+          "scene": "El pago propuesto vence antes de la siguiente entrada fiable.",
+          "options": [
+            {
+              "label": "Suponer llegada de dinero cuando haga falta"
+            },
+            {
+              "label": "Desfase entre pago y entrada"
+            },
+            {
+              "label": "Solo ingreso mensual total"
+            }
+          ],
+          "help": [
+            "Coloca la propuesta en el calendario real de ingresos."
+          ],
+          "feedback": {
+            "met": "Un total mensual puede ocultar faltante en la fecha de pago.",
+            "not_yet": "Coloca la propuesta en el calendario real de ingresos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual dado de datas deve explicar?",
+          "scene": "O pagamento proposto vence antes da próxima entrada confiável.",
+          "options": [
+            {
+              "label": "Supor chegada de dinheiro quando precisar"
+            },
+            {
+              "label": "Desencontro entre pagamento e entrada"
+            },
+            {
+              "label": "Só renda mensal total"
+            }
+          ],
+          "help": [
+            "Ponha a proposta no calendário real de renda."
+          ],
+          "feedback": {
+            "met": "Um total mensal pode esconder falta na data de pagamento.",
+            "not_yet": "Ponha a proposta no calendário real de renda."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Check what before accepting?",
+          "scene": "An offer lowers the payment but does not state its duration or fees.",
+          "options": [
+            {
+              "label": "Only the smaller payment"
+            },
+            {
+              "label": "Complete written costs and schedule"
+            },
+            {
+              "label": "Assume omitted fees are zero"
+            }
+          ],
+          "help": [
+            "Ask for the missing terms before evaluating the offer."
+          ],
+          "feedback": {
+            "met": "A lower installment alone does not describe the full agreement.",
+            "not_yet": "Ask for the missing terms before evaluating the offer."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué revisar antes de aceptar?",
+          "scene": "Una oferta baja el pago, pero omite duración y comisiones.",
+          "options": [
+            {
+              "label": "Solo el pago menor"
+            },
+            {
+              "label": "Costos y calendario completos por escrito"
+            },
+            {
+              "label": "Suponer cero las comisiones omitidas"
+            }
+          ],
+          "help": [
+            "Pide condiciones faltantes antes de evaluar la oferta."
+          ],
+          "feedback": {
+            "met": "Una cuota menor sola no describe el acuerdo completo.",
+            "not_yet": "Pide condiciones faltantes antes de evaluar la oferta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que conferir antes de aceitar?",
+          "scene": "Uma oferta baixa a parcela, mas omite prazo e tarifas.",
+          "options": [
+            {
+              "label": "Só a parcela menor"
+            },
+            {
+              "label": "Custos e calendário completos por escrito"
+            },
+            {
+              "label": "Supor zero as tarifas omitidas"
+            }
+          ],
+          "help": [
+            "Peça regras ausentes antes de avaliar a oferta."
+          ],
+          "feedback": {
+            "met": "Uma parcela menor sozinha não descreve o acordo todo.",
+            "not_yet": "Peça regras ausentes antes de avaliar a oferta."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Has the agreement changed already?",
+          "scene": "You requested a new plan; no acceptance is confirmed.",
+          "options": [
+            {
+              "label": "Yes, silence guarantees acceptance"
+            },
+            {
+              "label": "No, verify the request’s outcome"
+            },
+            {
+              "label": "Yes, asking replaces the old terms"
+            }
+          ],
+          "help": [
+            "Separate asking from receiving a confirmed decision."
+          ],
+          "feedback": {
+            "met": "A request alone does not establish an accepted new agreement.",
+            "not_yet": "Separate asking from receiving a confirmed decision."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿El acuerdo ya cambió?",
+          "scene": "Pediste un plan nuevo; nadie confirma aceptación.",
+          "options": [
+            {
+              "label": "Sí, silencio garantiza aceptación"
+            },
+            {
+              "label": "No, verifica resultado de la solicitud"
+            },
+            {
+              "label": "Sí, pedir reemplaza condiciones previas"
+            }
+          ],
+          "help": [
+            "Separa pedir de recibir una decisión confirmada."
+          ],
+          "feedback": {
+            "met": "Una solicitud sola no establece un acuerdo nuevo aceptado.",
+            "not_yet": "Separa pedir de recibir una decisión confirmada."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O acordo já mudou?",
+          "scene": "Pediu um plano novo; ninguém confirma aceite.",
+          "options": [
+            {
+              "label": "Sim, silêncio garante aceite"
+            },
+            {
+              "label": "Não, confira resultado do pedido"
+            },
+            {
+              "label": "Sim, pedir troca as regras antigas"
+            }
+          ],
+          "help": [
+            "Separe pedir de receber uma decisão confirmada."
+          ],
+          "feedback": {
+            "met": "Um pedido sozinho não estabelece um acordo novo aceito.",
+            "not_yet": "Separe pedir de receber uma decisão confirmada."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.debt-recovery.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Realistic step?",
+          "scene": "The proposed amount leaves no money for necessary medicine.",
+          "options": [
+            {
+              "label": "Explain the constraint and seek verified alternatives"
+            },
+            {
+              "label": "Promise the amount to end the call"
+            },
+            {
+              "label": "Pretend medicine is an optional expense"
+            }
+          ],
+          "help": [
+            "Use real capacity and ask what alternatives actually exist."
+          ],
+          "feedback": {
+            "met": "A promise should not depend on ignoring an essential constraint.",
+            "not_yet": "Use real capacity and ask what alternatives actually exist."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es un siguiente paso realista?",
+          "scene": "Un hogar no puede cubrir lo propuesto sin perder medicina necesaria.",
+          "options": [
+            {
+              "label": "Explicar límite y buscar alternativas verificadas"
+            },
+            {
+              "label": "Prometer el monto para terminar llamada"
+            },
+            {
+              "label": "Fingir que medicina es gasto opcional"
+            }
+          ],
+          "help": [
+            "Usa capacidad real y pregunta qué alternativas existen."
+          ],
+          "feedback": {
+            "met": "Una promesa no debe depender de ignorar un límite esencial.",
+            "not_yet": "Usa capacidad real y pregunta qué alternativas existen."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é um próximo passo realista?",
+          "scene": "Uma casa não cobre o proposto sem perder remédio necessário.",
+          "options": [
+            {
+              "label": "Explicar limite e buscar alternativas conferidas"
+            },
+            {
+              "label": "Prometer o valor para encerrar ligação"
+            },
+            {
+              "label": "Fingir que remédio é gasto opcional"
+            }
+          ],
+          "help": [
+            "Use capacidade real e pergunte quais alternativas existem."
+          ],
+          "feedback": {
+            "met": "Uma promessa não deve depender de ignorar um limite essencial.",
+            "not_yet": "Use capacidade real e pergunte quais alternativas existem."
+          }
+        }
+      }
+    }
+  ]
+}

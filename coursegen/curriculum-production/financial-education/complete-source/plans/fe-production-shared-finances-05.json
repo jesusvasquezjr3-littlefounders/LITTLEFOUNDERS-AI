@@ -1,0 +1,824 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-shared-finances-part-1",
+  "lesson_id": "fe-production-shared-finances-05",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.shared-finances.05"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Revise a plan for a stated caregiving period with reduced paid work.",
+  "title": {
+    "en-US": "Caregiving Costs",
+    "es-MX": "Planea un periodo de cuidados",
+    "pt-BR": "Planeje um período de cuidados"
+  },
+  "new_concepts": [
+    "finance.prod.shared-finances.05"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Caregiving Costs\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Planea un periodo de cuidados\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Planeje um período de cuidados\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.shared-finances.05",
+      "observable_action": "Revise a plan for a stated caregiving period with reduced paid work.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.income-work.04",
+      "prod.cashflow-budget.09"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Caregiving can reduce paid hours and change costs; update a fictional budget for the stated period.",
+    "misconception": "Unpaid care has no budget effect, or temporary income loss can be ignored because the old budget balanced.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.shared-finances.05",
+        "context_id": "shared-finances-05-example-01",
+        "supports_from": [],
+        "reasoning": "Use expected paid income during care, include care costs, and check each month before relying on savings or support."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.shared-finances.05",
+        "context_id": "shared-finances-05-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Care costs turn the apparent surplus into a shortfall."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.shared-finances.05",
+        "context_id": "shared-finances-05-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The plan must reflect the changed paid hours."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.shared-finances.05",
+        "context_id": "shared-finances-05-practice-01",
+        "supports_from": [],
+        "reasoning": "A repeated monthly gap accumulates across the whole period."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.shared-finances.05",
+        "context_id": "shared-finances-05-practice-02",
+        "supports_from": [],
+        "reasoning": "Pending support cannot yet fund a definite payment."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.shared-finances.05",
+        "context_id": "shared-finances-05-practice-03",
+        "supports_from": [],
+        "reasoning": "Longer care can increase the cumulative funding gap."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.shared-finances.05",
+        "context_id": "shared-finances-05-transfer-01",
+        "supports_from": [],
+        "reasoning": "Both income and expense changes affect the revised balance."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.shared-finances.05",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Caregiving can reduce paid hours and change costs; update a fictional budget for the stated period."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Cuidar puede reducir horas pagadas y cambiar costos; actualiza un presupuesto ficticio para el periodo indicado."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Cuidar pode reduzir horas pagas e mudar custos; atualize um orçamento fictício para o período dado."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Change income and costs",
+          "line": "Use expected paid income during care, include care costs, and check each month before relying on savings or support."
+        },
+        "es-MX": {
+          "prompt": "Cambia ingresos y costos",
+          "line": "Usa ingreso pagado previsto durante cuidados, incluye sus costos y revisa cada mes antes de depender de ahorros o apoyos."
+        },
+        "pt-BR": {
+          "prompt": "Mude renda e custos",
+          "line": "Use renda paga prevista durante cuidados, inclua seus custos e confira cada mês antes de depender de poupança ou apoio."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.05",
+      "copy": {
+        "en-US": {
+          "prompt": "What is the monthly balance?",
+          "scene": "Care-period income: 1600; Existing essentials: 1300; Added care costs: 400.",
+          "options": [
+            {
+              "label": "300"
+            },
+            {
+              "label": "-100"
+            },
+            {
+              "label": "100"
+            }
+          ],
+          "help": [
+            "Include the added care cost with reduced paid income."
+          ],
+          "feedback": {
+            "met": "Care costs turn the apparent surplus into a shortfall.",
+            "not_yet": "Include the added care cost with reduced paid income."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es el saldo mensual?",
+          "scene": "Ingreso durante cuidados: 1600; Esenciales existentes: 1300; Costos nuevos de cuidado: 400.",
+          "options": [
+            {
+              "label": "300"
+            },
+            {
+              "label": "-100"
+            },
+            {
+              "label": "100"
+            }
+          ],
+          "help": [
+            "Incluye costo nuevo de cuidado con ingreso pagado reducido."
+          ],
+          "feedback": {
+            "met": "Costos de cuidado convierten el sobrante aparente en faltante.",
+            "not_yet": "Incluye costo nuevo de cuidado con ingreso pagado reducido."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é o saldo mensal?",
+          "scene": "Renda durante cuidados: 1600; Essenciais existentes: 1300; Novos custos de cuidado: 400.",
+          "options": [
+            {
+              "label": "300"
+            },
+            {
+              "label": "-100"
+            },
+            {
+              "label": "100"
+            }
+          ],
+          "help": [
+            "Inclua custo novo de cuidado com renda paga reduzida."
+          ],
+          "feedback": {
+            "met": "Custos de cuidado tornam a sobra aparente uma falta.",
+            "not_yet": "Inclua custo novo de cuidado com renda paga reduzida."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          1600,
+          1300,
+          400
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Which income belongs in the plan?",
+          "scene": "Paid hours will fall during the stated care period.",
+          "options": [
+            {
+              "label": "An unconfirmed benefit as certain"
+            },
+            {
+              "label": "Old full-hours income"
+            },
+            {
+              "label": "Expected income during care"
+            }
+          ],
+          "help": [
+            "Use confirmed or clearly conditional income assumptions."
+          ],
+          "feedback": {
+            "met": "The plan must reflect the changed paid hours.",
+            "not_yet": "Use confirmed or clearly conditional income assumptions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué ingreso va en el plan?",
+          "scene": "Horas pagadas caerán durante el periodo de cuidados indicado.",
+          "options": [
+            {
+              "label": "Apoyo no confirmado como seguro"
+            },
+            {
+              "label": "Ingreso anterior de horas completas"
+            },
+            {
+              "label": "Ingreso previsto durante cuidados"
+            }
+          ],
+          "help": [
+            "Usa supuestos de ingreso confirmados o claramente condicionales."
+          ],
+          "feedback": {
+            "met": "El plan debe reflejar las horas pagadas cambiadas.",
+            "not_yet": "Usa supuestos de ingreso confirmados o claramente condicionales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que renda entra no plano?",
+          "scene": "Horas pagas cairão durante o período de cuidados dado.",
+          "options": [
+            {
+              "label": "Apoio não confirmado como certo"
+            },
+            {
+              "label": "Renda antiga de horas completas"
+            },
+            {
+              "label": "Renda prevista durante cuidados"
+            }
+          ],
+          "help": [
+            "Use hipóteses de renda confirmadas ou claramente condicionais."
+          ],
+          "feedback": {
+            "met": "O plano deve refletir as horas pagas mudadas.",
+            "not_yet": "Use hipóteses de renda confirmadas ou claramente condicionais."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.05",
+      "copy": {
+        "en-US": {
+          "prompt": "How much bridges the stated period?",
+          "scene": "Monthly gap: 150; Care period: 4 months; Gap stays constant.",
+          "options": [
+            {
+              "label": "150"
+            },
+            {
+              "label": "450"
+            },
+            {
+              "label": "600"
+            }
+          ],
+          "help": [
+            "Multiply the monthly gap by the number of months."
+          ],
+          "feedback": {
+            "met": "A repeated monthly gap accumulates across the whole period.",
+            "not_yet": "Multiply the monthly gap by the number of months."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto cubre el periodo indicado?",
+          "scene": "Faltante mensual: 150; Periodo de cuidados: 4 meses; Faltante constante.",
+          "options": [
+            {
+              "label": "150"
+            },
+            {
+              "label": "450"
+            },
+            {
+              "label": "600"
+            }
+          ],
+          "help": [
+            "Multiplica faltante mensual por número de meses."
+          ],
+          "feedback": {
+            "met": "Un faltante mensual repetido se acumula durante todo el periodo.",
+            "not_yet": "Multiplica faltante mensual por número de meses."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto cobre o período dado?",
+          "scene": "Falta mensal: 150; Período de cuidados: 4 meses; Falta constante.",
+          "options": [
+            {
+              "label": "150"
+            },
+            {
+              "label": "450"
+            },
+            {
+              "label": "600"
+            }
+          ],
+          "help": [
+            "Multiplique falta mensal pelo número de meses."
+          ],
+          "feedback": {
+            "met": "Uma falta mensal repetida se acumula por todo o período.",
+            "not_yet": "Multiplique falta mensal pelo número de meses."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          150,
+          4
+        ],
+        "expression": {
+          "op": "multiply",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.05",
+      "copy": {
+        "en-US": {
+          "prompt": "How should uncertain support be handled?",
+          "scene": "Support is pending with no confirmed amount or start date.",
+          "options": [
+            {
+              "label": "Mark it conditional; plan the gap"
+            },
+            {
+              "label": "Count it as cash today"
+            },
+            {
+              "label": "Assume every cost disappears"
+            }
+          ],
+          "help": [
+            "Keep uncertain support separate from confirmed available money."
+          ],
+          "feedback": {
+            "met": "Pending support cannot yet fund a definite payment.",
+            "not_yet": "Keep uncertain support separate from confirmed available money."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cómo tratar apoyo incierto?",
+          "scene": "Solicitud está pendiente sin monto ni inicio confirmados.",
+          "options": [
+            {
+              "label": "Marcar condicional; planear faltante"
+            },
+            {
+              "label": "Contarlo como efectivo hoy"
+            },
+            {
+              "label": "Suponer todo costo desaparece"
+            }
+          ],
+          "help": [
+            "Separa apoyo incierto de dinero disponible confirmado."
+          ],
+          "feedback": {
+            "met": "Apoyo pendiente no financia todavía un pago definido.",
+            "not_yet": "Separa apoyo incierto de dinero disponible confirmado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Como tratar apoio incerto?",
+          "scene": "Pedido está pendente sem valor nem início confirmados.",
+          "options": [
+            {
+              "label": "Marcar condicional; planejar falta"
+            },
+            {
+              "label": "Contar como dinheiro hoje"
+            },
+            {
+              "label": "Supor todo custo desaparece"
+            }
+          ],
+          "help": [
+            "Separe apoio incerto de dinheiro disponível confirmado."
+          ],
+          "feedback": {
+            "met": "Apoio pendente ainda não financia um pagamento definido.",
+            "not_yet": "Separe apoio incerto de dinheiro disponível confirmado."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.05",
+      "copy": {
+        "en-US": {
+          "prompt": "What needs revising if care lasts longer?",
+          "scene": "A reserve covered the original short care period only.",
+          "options": [
+            {
+              "label": "Nothing because money was reserved"
+            },
+            {
+              "label": "Duration and total funding need"
+            },
+            {
+              "label": "Only the budget title"
+            }
+          ],
+          "help": [
+            "Recalculate the remaining months and available resources."
+          ],
+          "feedback": {
+            "met": "Longer care can increase the cumulative funding gap.",
+            "not_yet": "Recalculate the remaining months and available resources."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué revisar si cuidados duran más?",
+          "scene": "Una reserva cubría solo el periodo corto original.",
+          "options": [
+            {
+              "label": "Nada porque había reserva"
+            },
+            {
+              "label": "Duración y fondos totales necesarios"
+            },
+            {
+              "label": "Solo título del presupuesto"
+            }
+          ],
+          "help": [
+            "Recalcula meses restantes y recursos disponibles."
+          ],
+          "feedback": {
+            "met": "Más tiempo de cuidados puede aumentar el faltante acumulado.",
+            "not_yet": "Recalcula meses restantes y recursos disponibles."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que rever se cuidados duram mais?",
+          "scene": "Uma reserva cobria só o período curto original.",
+          "options": [
+            {
+              "label": "Nada pois havia reserva"
+            },
+            {
+              "label": "Duração e verba total necessária"
+            },
+            {
+              "label": "Só título do orçamento"
+            }
+          ],
+          "help": [
+            "Recalcule meses restantes e recursos disponíveis."
+          ],
+          "feedback": {
+            "met": "Mais tempo de cuidados pode aumentar a falta acumulada.",
+            "not_yet": "Recalcule meses restantes e recursos disponíveis."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.shared-finances.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Which revision fits this change?",
+          "scene": "A caregiver reduces paid hours, saves commuting costs, and adds care supplies.",
+          "options": [
+            {
+              "label": "Only reduce income"
+            },
+            {
+              "label": "Keep the old balanced budget"
+            },
+            {
+              "label": "Update all three changes"
+            }
+          ],
+          "help": [
+            "Rebuild the care-period budget using every stated change."
+          ],
+          "feedback": {
+            "met": "Both income and expense changes affect the revised balance.",
+            "not_yet": "Rebuild the care-period budget using every stated change."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué revisión corresponde al cambio?",
+          "scene": "Persona cuidadora reduce horas pagadas, ahorra traslados y agrega materiales de cuidado.",
+          "options": [
+            {
+              "label": "Solo reducir ingreso"
+            },
+            {
+              "label": "Conservar presupuesto anterior equilibrado"
+            },
+            {
+              "label": "Actualizar los tres cambios"
+            }
+          ],
+          "help": [
+            "Reconstruye presupuesto del periodo usando cada cambio indicado."
+          ],
+          "feedback": {
+            "met": "Cambios de ingreso y gasto afectan el saldo revisado.",
+            "not_yet": "Reconstruye presupuesto del periodo usando cada cambio indicado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que revisão cabe à mudança?",
+          "scene": "Pessoa cuidadora reduz horas pagas, poupa transporte e acrescenta materiais de cuidado.",
+          "options": [
+            {
+              "label": "Só reduzir renda"
+            },
+            {
+              "label": "Manter orçamento antigo equilibrado"
+            },
+            {
+              "label": "Atualizar as três mudanças"
+            }
+          ],
+          "help": [
+            "Refaça orçamento do período usando cada mudança dada."
+          ],
+          "feedback": {
+            "met": "Mudanças de renda e gasto afetam o saldo revisto.",
+            "not_yet": "Refaça orçamento do período usando cada mudança dada."
+          }
+        }
+      }
+    }
+  ]
+}

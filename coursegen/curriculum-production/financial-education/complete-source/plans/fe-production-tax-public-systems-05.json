@@ -1,0 +1,755 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-tax-public-systems-part-1",
+  "lesson_id": "fe-production-tax-public-systems-05",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.tax-public-systems.05"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Identify records needed to substantiate a fictional income or expense declaration.",
+  "title": {
+    "en-US": "Tax Evidence",
+    "es-MX": "Conserva pruebas del dato",
+    "pt-BR": "Guarde provas do dado"
+  },
+  "new_concepts": [
+    "finance.prod.tax-public-systems.05"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Tax Evidence\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Conserva pruebas del dato\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Guarde provas do dado\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.tax-public-systems.05",
+      "observable_action": "Identify records needed to substantiate a fictional income or expense declaration.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.accounts-records.10",
+      "prod.income-work.07"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A clear record helps explain where a declared amount came from.",
+    "misconception": "A remembered estimate or invented receipt is equivalent to evidence supporting a declaration.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.tax-public-systems.05",
+        "context_id": "tax-public-systems-05-example-01",
+        "supports_from": [],
+        "reasoning": "Keep the dated receipt and payment proof for this fictional declaration. Together they connect the expense to the event."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.tax-public-systems.05",
+        "context_id": "tax-public-systems-05-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The documents connect the expense and completed payment."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.tax-public-systems.05",
+        "context_id": "tax-public-systems-05-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "A complete receipt record supports the period’s income total."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.tax-public-systems.05",
+        "context_id": "tax-public-systems-05-practice-01",
+        "supports_from": [],
+        "reasoning": "Correct amounts still need the relevant dates and context."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.tax-public-systems.05",
+        "context_id": "tax-public-systems-05-practice-02",
+        "supports_from": [],
+        "reasoning": "Missing evidence calls for recovery or clarification, not fabrication."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.tax-public-systems.05",
+        "context_id": "tax-public-systems-05-practice-03",
+        "supports_from": [],
+        "reasoning": "Proof of payment does not establish every tax treatment."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.tax-public-systems.05",
+        "context_id": "tax-public-systems-05-transfer-01",
+        "supports_from": [],
+        "reasoning": "The evidence explains both the receipt and why it was corrected."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.tax-public-systems.05",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A clear record helps explain where a declared amount came from."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un registro claro ayuda a explicar de dónde salió un monto declarado."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Um registro claro ajuda a explicar de onde veio um valor declarado."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Connect amount and event",
+          "line": "Keep the dated receipt and payment proof for this fictional declaration. Together they connect the expense to the event."
+        },
+        "es-MX": {
+          "prompt": "Conecta monto y hecho",
+          "line": "Para declarar un gasto ficticio, guarda el recibo fechado y el comprobante de pago. Juntos conectan el monto con el hecho."
+        },
+        "pt-BR": {
+          "prompt": "Ligue valor e fato",
+          "line": "Para declarar uma despesa fictícia, guarde o recibo datado e a prova de pagamento. Juntos ligam o valor ao fato."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.tax-public-systems.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Which record supports the amount?",
+          "scene": "A fictional rule requires evidence of an expense actually paid.",
+          "options": [
+            {
+              "label": "A guessed total"
+            },
+            {
+              "label": "An unrelated old receipt"
+            },
+            {
+              "label": "Dated invoice and payment record"
+            }
+          ],
+          "help": [
+            "Match the record to the actual event."
+          ],
+          "feedback": {
+            "met": "The documents connect the expense and completed payment.",
+            "not_yet": "Match the record to the actual event."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué registro respalda el monto?",
+          "scene": "Una regla ficticia exige pruebas de un gasto realmente pagado.",
+          "options": [
+            {
+              "label": "Un total adivinado"
+            },
+            {
+              "label": "Un recibo viejo sin relación"
+            },
+            {
+              "label": "Factura fechada y registro de pago"
+            }
+          ],
+          "help": [
+            "Relaciona el registro con el hecho real."
+          ],
+          "feedback": {
+            "met": "Los documentos conectan gasto y pago realizado.",
+            "not_yet": "Relaciona el registro con el hecho real."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual registro sustenta o valor?",
+          "scene": "Uma regra fictícia exige prova de uma despesa de fato paga.",
+          "options": [
+            {
+              "label": "Um total chutado"
+            },
+            {
+              "label": "Um recibo antigo sem ligação"
+            },
+            {
+              "label": "Nota datada e registro do pagamento"
+            }
+          ],
+          "help": [
+            "Relacione o registro com o fato real."
+          ],
+          "feedback": {
+            "met": "Os documentos ligam despesa e pagamento feito.",
+            "not_yet": "Relacione o registro com o fato real."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.tax-public-systems.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Which income record helps?",
+          "scene": "A person receives payments from several clients during the stated period.",
+          "options": [
+            {
+              "label": "A dated record of each receipt"
+            },
+            {
+              "label": "An imagined average"
+            },
+            {
+              "label": "Only the largest client’s message"
+            }
+          ],
+          "help": [
+            "Include the relevant receipts, not a selected subset."
+          ],
+          "feedback": {
+            "met": "A complete receipt record supports the period’s income total.",
+            "not_yet": "Include the relevant receipts, not a selected subset."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué registro de ingreso ayuda?",
+          "scene": "Una persona recibe pagos de varios clientes durante el periodo indicado.",
+          "options": [
+            {
+              "label": "Un registro fechado de cada cobro"
+            },
+            {
+              "label": "Un promedio imaginado"
+            },
+            {
+              "label": "Solo el mensaje del cliente mayor"
+            }
+          ],
+          "help": [
+            "Incluye los cobros pertinentes, no una selección."
+          ],
+          "feedback": {
+            "met": "Un registro completo respalda el ingreso total del periodo.",
+            "not_yet": "Incluye los cobros pertinentes, no una selección."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual registro de renda ajuda?",
+          "scene": "Uma pessoa recebe de vários clientes no período dado.",
+          "options": [
+            {
+              "label": "Um registro datado de cada recebimento"
+            },
+            {
+              "label": "Uma média imaginada"
+            },
+            {
+              "label": "Só a mensagem do maior cliente"
+            }
+          ],
+          "help": [
+            "Inclua os recebimentos pertinentes, não uma seleção."
+          ],
+          "feedback": {
+            "met": "Um registro completo sustenta a renda total do período.",
+            "not_yet": "Inclua os recebimentos pertinentes, não uma seleção."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.tax-public-systems.05",
+      "copy": {
+        "en-US": {
+          "prompt": "What should be checked?",
+          "scene": "A receipt belongs to a different period from the declaration being prepared.",
+          "options": [
+            {
+              "label": "Use it because its amount is convenient"
+            },
+            {
+              "label": "Whether the record fits the required period"
+            }
+          ],
+          "help": [
+            "Match evidence to the claim’s period."
+          ],
+          "feedback": {
+            "met": "Correct amounts still need the relevant dates and context.",
+            "not_yet": "Match evidence to the claim’s period."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debes revisar?",
+          "scene": "Un recibo corresponde a otro periodo distinto del que se prepara para declarar.",
+          "options": [
+            {
+              "label": "Usarlo porque conviene su monto"
+            },
+            {
+              "label": "Si el registro coincide con el periodo requerido"
+            }
+          ],
+          "help": [
+            "Relaciona la prueba con el periodo declarado."
+          ],
+          "feedback": {
+            "met": "Montos correctos también necesitan fechas y contexto pertinentes.",
+            "not_yet": "Relaciona la prueba con el periodo declarado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que conferir?",
+          "scene": "Um recibo pertence a outro período que não o da declaração preparada.",
+          "options": [
+            {
+              "label": "Usá-lo porque seu valor convém"
+            },
+            {
+              "label": "Se o registro cabe no período exigido"
+            }
+          ],
+          "help": [
+            "Relacione a prova com o período declarado."
+          ],
+          "feedback": {
+            "met": "Valores corretos também precisam de datas e contexto pertinentes.",
+            "not_yet": "Relacione a prova com o período declarado."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.tax-public-systems.05",
+      "copy": {
+        "en-US": {
+          "prompt": "What if records are missing?",
+          "scene": "A required invoice cannot be found, and the amount is uncertain.",
+          "options": [
+            {
+              "label": "Invent a matching invoice"
+            },
+            {
+              "label": "Seek a genuine replacement or official guidance"
+            },
+            {
+              "label": "Copy someone else’s receipt"
+            }
+          ],
+          "help": [
+            "Preserve the difference between documented and uncertain amounts."
+          ],
+          "feedback": {
+            "met": "Missing evidence calls for recovery or clarification, not fabrication.",
+            "not_yet": "Preserve the difference between documented and uncertain amounts."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Y si falta un registro?",
+          "scene": "No aparece una factura requerida y el monto es incierto.",
+          "options": [
+            {
+              "label": "Inventar una factura coincidente"
+            },
+            {
+              "label": "Buscar reposición auténtica u orientación oficial"
+            },
+            {
+              "label": "Copiar un recibo ajeno"
+            }
+          ],
+          "help": [
+            "Distingue montos documentados de montos inciertos."
+          ],
+          "feedback": {
+            "met": "Faltar evidencia exige recuperarla o aclarar, no fabricarla.",
+            "not_yet": "Distingue montos documentados de montos inciertos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "E se faltar registro?",
+          "scene": "Uma nota exigida sumiu e o valor é incerto.",
+          "options": [
+            {
+              "label": "Inventar uma nota igual"
+            },
+            {
+              "label": "Buscar segunda via real ou orientação oficial"
+            },
+            {
+              "label": "Copiar recibo alheio"
+            }
+          ],
+          "help": [
+            "Separe valores documentados de valores incertos."
+          ],
+          "feedback": {
+            "met": "Faltar prova pede recuperação ou esclarecimento, não fabricação.",
+            "not_yet": "Separe valores documentados de valores incertos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.tax-public-systems.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Does a receipt alone prove eligibility?",
+          "scene": "An expense was paid, but the applicable rule’s eligibility conditions are unknown.",
+          "options": [
+            {
+              "label": "No, evidence and eligibility differ"
+            },
+            {
+              "label": "Yes, every receipt creates a deduction"
+            }
+          ],
+          "help": [
+            "Check the rule as well as the transaction evidence."
+          ],
+          "feedback": {
+            "met": "Proof of payment does not establish every tax treatment.",
+            "not_yet": "Check the rule as well as the transaction evidence."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿El recibo solo prueba elegibilidad?",
+          "scene": "Un gasto se pagó, pero no se conocen condiciones de la regla aplicable.",
+          "options": [
+            {
+              "label": "No, prueba y elegibilidad difieren"
+            },
+            {
+              "label": "Sí, todo recibo crea deducción"
+            }
+          ],
+          "help": [
+            "Revisa la regla además de la evidencia del pago."
+          ],
+          "feedback": {
+            "met": "Comprobar pago no establece todo tratamiento fiscal.",
+            "not_yet": "Revisa la regla además de la evidencia del pago."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O recibo sozinho prova direito?",
+          "scene": "Uma despesa foi paga, mas não se conhecem condições da regra aplicável.",
+          "options": [
+            {
+              "label": "Não, prova e direito diferem"
+            },
+            {
+              "label": "Sim, todo recibo cria dedução"
+            }
+          ],
+          "help": [
+            "Confira a regra além da prova do pagamento."
+          ],
+          "feedback": {
+            "met": "Provar pagamento não estabelece todo tratamento fiscal.",
+            "not_yet": "Confira a regra além da prova do pagamento."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.tax-public-systems.05",
+      "copy": {
+        "en-US": {
+          "prompt": "What supports correction?",
+          "scene": "A client payment was recorded twice. The declaration needs the true received total.",
+          "options": [
+            {
+              "label": "An unsupported changed total"
+            },
+            {
+              "label": "An invented receipt"
+            },
+            {
+              "label": "Original evidence and correction trail"
+            }
+          ],
+          "help": [
+            "Keep the correction traceable to real transactions."
+          ],
+          "feedback": {
+            "met": "The evidence explains both the receipt and why it was corrected.",
+            "not_yet": "Keep the correction traceable to real transactions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué archivo respalda corregir?",
+          "scene": "Registraron dos veces un pago de cliente. La declaración necesita el total realmente recibido.",
+          "options": [
+            {
+              "label": "Cambiar el total sin respaldo"
+            },
+            {
+              "label": "Inventar un recibo nuevo"
+            },
+            {
+              "label": "Prueba original y rastro de corrección"
+            }
+          ],
+          "help": [
+            "Conserva la corrección ligada a operaciones reales."
+          ],
+          "feedback": {
+            "met": "La prueba explica el cobro y por qué se corrigió.",
+            "not_yet": "Conserva la corrección ligada a operaciones reales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual arquivo sustenta corrigir?",
+          "scene": "Registraram duas vezes um pagamento de cliente. A declaração precisa do total realmente recebido.",
+          "options": [
+            {
+              "label": "Mudar o total sem respaldo"
+            },
+            {
+              "label": "Inventar recibo novo"
+            },
+            {
+              "label": "Prova original e rastro da correção"
+            }
+          ],
+          "help": [
+            "Mantenha a correção ligada a operações reais."
+          ],
+          "feedback": {
+            "met": "A prova explica o recebimento e por que foi corrigido.",
+            "not_yet": "Mantenha a correção ligada a operações reais."
+          }
+        }
+      }
+    }
+  ]
+}

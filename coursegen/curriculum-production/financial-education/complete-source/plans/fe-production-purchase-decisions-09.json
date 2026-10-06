@@ -1,0 +1,864 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-purchase-decisions-part-2",
+  "lesson_id": "fe-production-purchase-decisions-09",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.purchase-decisions.09"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Compare cash and instalment prices using their complete payment schedules.",
+  "title": {
+    "en-US": "Payment Options",
+    "es-MX": "¿Contado o cuotas?",
+    "pt-BR": "À vista ou em parcelas?"
+  },
+  "new_concepts": [
+    "finance.prod.purchase-decisions.09"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Payment Options\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"¿Contado o cuotas?\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"À vista ou em parcelas?\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.purchase-decisions.09",
+      "observable_action": "Compare cash and instalment prices using their complete payment schedules.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.purchase-decisions.02",
+      "prod.financial-math.03",
+      "cash.dates"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Small instalments can add up to more than the cash price; compare every payment and when money is needed.",
+    "misconception": "A low instalment is the total price, or the cheaper total is automatically affordable today.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.purchase-decisions.09",
+        "context_id": "purchase-decisions-09-example-01",
+        "supports_from": [],
+        "reasoning": "Multiply instalment amount by count, then add deposit and fees. Compare that total with cash price and check payment timing."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.purchase-decisions.09",
+        "context_id": "purchase-decisions-09-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The instalment plan costs more than the cash price."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.purchase-decisions.09",
+        "context_id": "purchase-decisions-09-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "One payment does not represent the complete instalment schedule."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.purchase-decisions.09",
+        "context_id": "purchase-decisions-09-practice-01",
+        "supports_from": [],
+        "reasoning": "Deposit and fee count alongside all instalments."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.purchase-decisions.09",
+        "context_id": "purchase-decisions-09-practice-02",
+        "supports_from": [],
+        "reasoning": "A lower total does not remove immediate payment constraints."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.purchase-decisions.09",
+        "context_id": "purchase-decisions-09-practice-03",
+        "supports_from": [],
+        "reasoning": "No stated interest does not remove separate mandatory fees."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.purchase-decisions.09",
+        "context_id": "purchase-decisions-09-transfer-01",
+        "supports_from": [],
+        "reasoning": "The complete instalment schedule exceeds the cash price."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.purchase-decisions.09",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Small instalments can add up to more than the cash price; compare every payment and when money is needed."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Cuotas pequeñas pueden sumar más que precio de contado; compara cada pago y cuándo se necesita dinero."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Parcelas pequenas podem somar mais que preço à vista; compare cada pagamento e quando precisa do dinheiro."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Count the complete schedule",
+          "line": "Multiply instalment amount by count, then add deposit and fees. Compare that total with cash price and check payment timing."
+        },
+        "es-MX": {
+          "prompt": "Cuenta calendario completo",
+          "line": "Multiplica cuota por cantidad y suma enganche y cargos. Compara total con precio de contado y revisa fechas de pago."
+        },
+        "pt-BR": {
+          "prompt": "Conte calendário completo",
+          "line": "Multiplique parcela pela quantidade e some entrada e taxas. Compare total com preço à vista e confira datas de pagamento."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.09",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "step-1"
+          },
+          {
+            "id": "step-2"
+          },
+          {
+            "id": "step-3"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "step-2",
+          "step-3"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "step-2": "320",
+          "step-3": "40"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Instalments: 6 of 50 plus fee 20; cash price 280; no other charges. Compare total payments.",
+          "feedback": {
+            "met": "The instalment plan costs more than the cash price.",
+            "not_yet": "Add all instalments and fees before comparing."
+          },
+          "help": [
+            "Add all instalments and fees before comparing."
+          ],
+          "steps": [
+            {
+              "expression": "6 * 50",
+              "result": "300",
+              "spokenText": "Instalment subtotal"
+            },
+            {
+              "expression": "300 + 20",
+              "result": "320",
+              "spokenText": "Plan total"
+            },
+            {
+              "expression": "320 - 280",
+              "result": "40",
+              "spokenText": "Extra cost versus cash"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Cuotas: 6 de 50 más cargo 20; contado 280; sin otros cargos. Compara pagos totales.",
+          "feedback": {
+            "met": "Plan de cuotas cuesta más que contado.",
+            "not_yet": "Suma todas las cuotas y cargos antes de comparar."
+          },
+          "help": [
+            "Suma todas las cuotas y cargos antes de comparar."
+          ],
+          "steps": [
+            {
+              "expression": "6 * 50",
+              "result": "300",
+              "spokenText": "Subtotal de cuotas"
+            },
+            {
+              "expression": "300 + 20",
+              "result": "320",
+              "spokenText": "Total del plan"
+            },
+            {
+              "expression": "320 - 280",
+              "result": "40",
+              "spokenText": "Costo extra frente a contado"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Parcelas: 6 de 50 mais taxa 20; à vista 280; sem outros custos. Compare pagamentos totais.",
+          "feedback": {
+            "met": "Plano de parcelas custa mais que à vista.",
+            "not_yet": "Some todas as parcelas e taxas antes de comparar."
+          },
+          "help": [
+            "Some todas as parcelas e taxas antes de comparar."
+          ],
+          "steps": [
+            {
+              "expression": "6 * 50",
+              "result": "300",
+              "spokenText": "Subtotal das parcelas"
+            },
+            {
+              "expression": "300 + 20",
+              "result": "320",
+              "spokenText": "Total do plano"
+            },
+            {
+              "expression": "320 - 280",
+              "result": "40",
+              "spokenText": "Custo extra frente a à vista"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.09",
+      "copy": {
+        "en-US": {
+          "prompt": "What does comparison require?",
+          "scene": "An advertisement compares a single instalment with the full cash price.",
+          "options": [
+            {
+              "label": "Number of instalments and other charges"
+            },
+            {
+              "label": "Nothing because both are prices"
+            },
+            {
+              "label": "Only the first payment"
+            }
+          ],
+          "help": [
+            "Obtain every required payment before comparing totals."
+          ],
+          "feedback": {
+            "met": "One payment does not represent the complete instalment schedule.",
+            "not_yet": "Obtain every required payment before comparing totals."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué falta en comparación?",
+          "scene": "Anuncio compara una cuota con precio completo de contado.",
+          "options": [
+            {
+              "label": "Cantidad de cuotas y otros cargos"
+            },
+            {
+              "label": "Nada porque ambos son precios"
+            },
+            {
+              "label": "Solo el primer pago"
+            }
+          ],
+          "help": [
+            "Obtén cada pago requerido antes de comparar totales."
+          ],
+          "feedback": {
+            "met": "Un pago no representa calendario completo de cuotas.",
+            "not_yet": "Obtén cada pago requerido antes de comparar totales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que falta na comparação?",
+          "scene": "Anúncio compara uma parcela com preço completo à vista.",
+          "options": [
+            {
+              "label": "Quantidade de parcelas e outras taxas"
+            },
+            {
+              "label": "Nada pois ambos são preços"
+            },
+            {
+              "label": "Só o primeiro pagamento"
+            }
+          ],
+          "help": [
+            "Obtenha cada pagamento exigido antes de comparar totais."
+          ],
+          "feedback": {
+            "met": "Um pagamento não representa calendário completo de parcelas.",
+            "not_yet": "Obtenha cada pagamento exigido antes de comparar totais."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.09",
+      "copy": {
+        "en-US": {
+          "prompt": "What is the complete plan total?",
+          "scene": "Deposit: 100; Instalments: 8 of 40; Required fee: 10; No other payments.",
+          "options": [
+            {
+              "label": "320"
+            },
+            {
+              "label": "430"
+            },
+            {
+              "label": "420"
+            }
+          ],
+          "help": [
+            "Multiply the instalments, then add deposit and fee."
+          ],
+          "feedback": {
+            "met": "Deposit and fee count alongside all instalments.",
+            "not_yet": "Multiply the instalments, then add deposit and fee."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es total completo del plan?",
+          "scene": "Enganche: 100; Cuotas: 8 de 40; Cargo obligatorio: 10; Sin otros pagos.",
+          "options": [
+            {
+              "label": "320"
+            },
+            {
+              "label": "430"
+            },
+            {
+              "label": "420"
+            }
+          ],
+          "help": [
+            "Multiplica cuotas y suma enganche y cargo."
+          ],
+          "feedback": {
+            "met": "Enganche y cargo cuentan junto con todas las cuotas.",
+            "not_yet": "Multiplica cuotas y suma enganche y cargo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é total completo do plano?",
+          "scene": "Entrada: 100; Parcelas: 8 de 40; Taxa obrigatória: 10; Sem outros pagamentos.",
+          "options": [
+            {
+              "label": "320"
+            },
+            {
+              "label": "430"
+            },
+            {
+              "label": "420"
+            }
+          ],
+          "help": [
+            "Multiplique parcelas e some entrada e taxa."
+          ],
+          "feedback": {
+            "met": "Entrada e taxa contam junto com todas as parcelas.",
+            "not_yet": "Multiplique parcelas e some entrada e taxa."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          100,
+          8,
+          40,
+          10
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "op": "add",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "op": "multiply",
+                  "args": [
+                    {
+                      "input": 1
+                    },
+                    {
+                      "input": 2
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "input": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.09",
+      "copy": {
+        "en-US": {
+          "prompt": "What else matters when cash is cheaper?",
+          "scene": "Paying cash would use money needed for tomorrow’s essential bill.",
+          "options": [
+            {
+              "label": "Only the advertisement’s advice"
+            },
+            {
+              "label": "Current cash-flow feasibility"
+            },
+            {
+              "label": "Only the lower total"
+            }
+          ],
+          "help": [
+            "Check essential obligations before deciding payment timing."
+          ],
+          "feedback": {
+            "met": "A lower total does not remove immediate payment constraints.",
+            "not_yet": "Check essential obligations before deciding payment timing."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué más importa si contado es barato?",
+          "scene": "Pagar contado usaría dinero para cuenta esencial de mañana.",
+          "options": [
+            {
+              "label": "Solo consejo del anuncio"
+            },
+            {
+              "label": "Viabilidad del flujo de efectivo actual"
+            },
+            {
+              "label": "Solo total menor"
+            }
+          ],
+          "help": [
+            "Revisa obligaciones esenciales antes de decidir fechas de pago."
+          ],
+          "feedback": {
+            "met": "Total menor no elimina restricciones inmediatas de pago.",
+            "not_yet": "Revisa obligaciones esenciales antes de decidir fechas de pago."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que mais importa se à vista é barato?",
+          "scene": "Pagar à vista usaria dinheiro da conta essencial de amanhã.",
+          "options": [
+            {
+              "label": "Só conselho do anúncio"
+            },
+            {
+              "label": "Viabilidade do dinheiro disponível"
+            },
+            {
+              "label": "Só total menor"
+            }
+          ],
+          "help": [
+            "Confira deveres essenciais antes de decidir datas de pagamento."
+          ],
+          "feedback": {
+            "met": "Total menor não elimina limites imediatos de pagamento.",
+            "not_yet": "Confira deveres essenciais antes de decidir datas de pagamento."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.09",
+      "copy": {
+        "en-US": {
+          "prompt": "What should “no interest” still prompt?",
+          "scene": "The offer has a separate required setup fee.",
+          "options": [
+            {
+              "label": "Ignore every fee"
+            },
+            {
+              "label": "Check the complete payable total"
+            },
+            {
+              "label": "Assume no extra cost"
+            }
+          ],
+          "help": [
+            "Include fees when comparing the full payment schedules."
+          ],
+          "feedback": {
+            "met": "No stated interest does not remove separate mandatory fees.",
+            "not_yet": "Include fees when comparing the full payment schedules."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué revisar aun con «sin intereses»?",
+          "scene": "Oferta tiene cargo obligatorio separado de apertura.",
+          "options": [
+            {
+              "label": "Ignorar todo cargo"
+            },
+            {
+              "label": "Revisar total completo pagadero"
+            },
+            {
+              "label": "Suponer ningún costo extra"
+            }
+          ],
+          "help": [
+            "Incluye cargos al comparar calendarios completos de pago."
+          ],
+          "feedback": {
+            "met": "Sin interés indicado no elimina cargos obligatorios separados.",
+            "not_yet": "Incluye cargos al comparar calendarios completos de pago."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que conferir mesmo com “sem juros”?",
+          "scene": "Oferta tem taxa obrigatória separada de abertura.",
+          "options": [
+            {
+              "label": "Ignorar toda taxa"
+            },
+            {
+              "label": "Conferir total completo devido"
+            },
+            {
+              "label": "Supor nenhum custo extra"
+            }
+          ],
+          "help": [
+            "Inclua taxas ao comparar calendários completos de pagamento."
+          ],
+          "feedback": {
+            "met": "Sem juros dados não elimina taxas obrigatórias separadas.",
+            "not_yet": "Inclua taxas ao comparar calendários completos de pagamento."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.purchase-decisions.09",
+      "copy": {
+        "en-US": {
+          "prompt": "How much extra versus cash?",
+          "scene": "Instalments: 5 of 70; Cash price: 300; No deposits, fees or other payments.",
+          "options": [
+            {
+              "label": "50"
+            },
+            {
+              "label": "230"
+            },
+            {
+              "label": "350"
+            }
+          ],
+          "help": [
+            "Multiply all instalments and subtract the cash price."
+          ],
+          "feedback": {
+            "met": "The complete instalment schedule exceeds the cash price.",
+            "not_yet": "Multiply all instalments and subtract the cash price."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto extra frente a contado?",
+          "scene": "Cuotas: 5 de 70; Contado: 300; Sin enganche, cargos ni otros pagos.",
+          "options": [
+            {
+              "label": "50"
+            },
+            {
+              "label": "230"
+            },
+            {
+              "label": "350"
+            }
+          ],
+          "help": [
+            "Multiplica todas las cuotas y resta precio de contado."
+          ],
+          "feedback": {
+            "met": "Calendario completo de cuotas supera precio de contado.",
+            "not_yet": "Multiplica todas las cuotas y resta precio de contado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto extra frente a à vista?",
+          "scene": "Parcelas: 5 de 70; À vista: 300; Sem entrada, taxas ou outros pagamentos.",
+          "options": [
+            {
+              "label": "50"
+            },
+            {
+              "label": "230"
+            },
+            {
+              "label": "350"
+            }
+          ],
+          "help": [
+            "Multiplique todas as parcelas e subtraia preço à vista."
+          ],
+          "feedback": {
+            "met": "Calendário completo de parcelas supera preço à vista.",
+            "not_yet": "Multiplique todas as parcelas e subtraia preço à vista."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          5,
+          70,
+          300
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

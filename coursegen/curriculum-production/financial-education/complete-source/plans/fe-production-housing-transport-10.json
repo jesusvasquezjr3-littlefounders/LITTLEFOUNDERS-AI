@@ -1,0 +1,780 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-housing-transport-part-2",
+  "lesson_id": "fe-production-housing-transport-10",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.housing-transport.10"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Compare a lease with a purchase using mileage, return conditions and total stated costs.",
+  "title": {
+    "en-US": "Vehicle Leasing",
+    "es-MX": "Arrendamiento y propiedad",
+    "pt-BR": "Arrendamento e posse"
+  },
+  "new_concepts": [
+    "finance.prod.housing-transport.10"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Vehicle Leasing\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Arrendamiento y propiedad\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Arrendamento e posse\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.housing-transport.10",
+      "observable_action": "Compare a lease with a purchase using mileage, return conditions and total stated costs.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.housing-transport.08",
+      "prod.housing-transport.09",
+      "prod.purchase-decisions.08"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A vehicle lease can limit use and require return; read the fictional contract before comparing it with ownership.",
+    "misconception": "All vehicle payments lead to ownership or a lease’s monthly charge includes every possible end cost.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.housing-transport.10",
+        "context_id": "housing-transport-10-example-01",
+        "supports_from": [],
+        "reasoning": "A lease pays for stated use; this contract requires return. Mileage, condition and purchase-option terms can change costs."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.housing-transport.10",
+        "context_id": "housing-transport-10-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The stated lease grants use and requires return."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.housing-transport.10",
+        "context_id": "housing-transport-10-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Distance limits can create additional charges for heavier use."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.housing-transport.10",
+        "context_id": "housing-transport-10-practice-01",
+        "supports_from": [],
+        "reasoning": "Return conditions can create costs beyond regular payments."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.housing-transport.10",
+        "context_id": "housing-transport-10-practice-02",
+        "supports_from": [],
+        "reasoning": "A purchase option is not included ownership."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.housing-transport.10",
+        "context_id": "housing-transport-10-practice-03",
+        "supports_from": [],
+        "reasoning": "Ownership and return produce different ending positions."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.housing-transport.10",
+        "context_id": "housing-transport-10-transfer-01",
+        "supports_from": [],
+        "reasoning": "Conflicting distance terms change the expected cost."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.housing-transport.10",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A vehicle lease can limit use and require return; read the fictional contract before comparing it with ownership."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Arrendar vehículo puede limitar uso y exigir devolución; lee el contrato ficticio antes de compararlo con propiedad."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Arrendar um veículo pode limitar uso e exigir devolução; leia o contrato fictício antes de comparar com a posse."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Read the ending first",
+          "line": "A lease pays for stated use; this contract requires return. Mileage, condition and purchase-option terms can change costs."
+        },
+        "es-MX": {
+          "prompt": "Lee primero el final",
+          "line": "Arrendar paga el uso indicado; este contrato exige devolución. Kilometraje, estado y opción de compra pueden cambiar costos."
+        },
+        "pt-BR": {
+          "prompt": "Leia primeiro o final",
+          "line": "Arrendar paga o uso dado; este contrato exige devolução. Quilometragem, estado e opção de compra podem mudar custos."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.10",
+      "copy": {
+        "en-US": {
+          "prompt": "What happens at the end here?",
+          "scene": "Fictional lease: return the vehicle; ownership is not included.",
+          "options": [
+            {
+              "label": "Sell it as owner"
+            },
+            {
+              "label": "Return the vehicle"
+            },
+            {
+              "label": "Keep it automatically"
+            }
+          ],
+          "help": [
+            "Use the contract’s ending, not an assumption about payments."
+          ],
+          "feedback": {
+            "met": "The stated lease grants use and requires return.",
+            "not_yet": "Use the contract’s ending, not an assumption about payments."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué ocurre al final aquí?",
+          "scene": "Arrendamiento ficticio: devolver vehículo; no incluye propiedad.",
+          "options": [
+            {
+              "label": "Venderlo como propietario"
+            },
+            {
+              "label": "Devolver el vehículo"
+            },
+            {
+              "label": "Conservarlo automáticamente"
+            }
+          ],
+          "help": [
+            "Usa el final indicado, no supuestos sobre pagos."
+          ],
+          "feedback": {
+            "met": "El contrato concede uso y exige devolución.",
+            "not_yet": "Usa el final indicado, no supuestos sobre pagos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que ocorre no final aqui?",
+          "scene": "Arrendamento fictício: devolver veículo; não inclui posse definitiva.",
+          "options": [
+            {
+              "label": "Vendê-lo como dono"
+            },
+            {
+              "label": "Devolver o veículo"
+            },
+            {
+              "label": "Ficar com ele automaticamente"
+            }
+          ],
+          "help": [
+            "Use o final dado, não hipóteses sobre pagamentos."
+          ],
+          "feedback": {
+            "met": "O contrato concede uso e exige devolução.",
+            "not_yet": "Use o final dado, não hipóteses sobre pagamentos."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Which usage detail matters?",
+          "scene": "Fictional lease charges extra above its included distance.",
+          "options": [
+            {
+              "label": "The vehicle’s resale value"
+            },
+            {
+              "label": "Expected driving distance"
+            },
+            {
+              "label": "The original purchase price"
+            }
+          ],
+          "help": [
+            "Compare expected use with the contract’s included distance."
+          ],
+          "feedback": {
+            "met": "Distance limits can create additional charges for heavier use.",
+            "not_yet": "Compare expected use with the contract’s included distance."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué detalle de uso importa?",
+          "scene": "Contrato ficticio cobra extra al superar distancia incluida.",
+          "options": [
+            {
+              "label": "El valor de reventa"
+            },
+            {
+              "label": "Distancia prevista de manejo"
+            },
+            {
+              "label": "El precio de compra original"
+            }
+          ],
+          "help": [
+            "Compara uso previsto con distancia incluida en contrato."
+          ],
+          "feedback": {
+            "met": "Límites de distancia pueden causar cargos por mayor uso.",
+            "not_yet": "Compara uso previsto con distancia incluida en contrato."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que detalhe de uso importa?",
+          "scene": "Contrato fictício cobra extra acima da distância incluída.",
+          "options": [
+            {
+              "label": "O valor de revenda"
+            },
+            {
+              "label": "Distância prevista ao dirigir"
+            },
+            {
+              "label": "O preço original de compra"
+            }
+          ],
+          "help": [
+            "Compare uso previsto com distância incluída no contrato."
+          ],
+          "feedback": {
+            "met": "Limites de distância podem gerar cobranças por maior uso.",
+            "not_yet": "Compare uso previsto com distância incluída no contrato."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Which condition needs inspection?",
+          "scene": "Return charges apply for damage beyond the fictional contract’s stated allowance.",
+          "options": [
+            {
+              "label": "Only original advertisement"
+            },
+            {
+              "label": "Only monthly rent amount"
+            },
+            {
+              "label": "Damage allowance and evidence"
+            }
+          ],
+          "help": [
+            "Read the allowance and document the vehicle’s condition."
+          ],
+          "feedback": {
+            "met": "Return conditions can create costs beyond regular payments.",
+            "not_yet": "Read the allowance and document the vehicle’s condition."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué condición debe revisarse?",
+          "scene": "Hay cargos al devolver por daños fuera de tolerancia indicada en contrato ficticio.",
+          "options": [
+            {
+              "label": "Solo anuncio original"
+            },
+            {
+              "label": "Solo cuota mensual"
+            },
+            {
+              "label": "Tolerancia y evidencia de daños"
+            }
+          ],
+          "help": [
+            "Lee la tolerancia y documenta el estado del vehículo."
+          ],
+          "feedback": {
+            "met": "Condiciones de devolución pueden crear costos adicionales.",
+            "not_yet": "Lee la tolerancia y documenta el estado del vehículo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que condição deve ser conferida?",
+          "scene": "Há cobranças na devolução por danos além da tolerância dada no contrato fictício.",
+          "options": [
+            {
+              "label": "Só anúncio original"
+            },
+            {
+              "label": "Só parcela mensal"
+            },
+            {
+              "label": "Tolerância e registro de danos"
+            }
+          ],
+          "help": [
+            "Leia a tolerância e registre o estado do veículo."
+          ],
+          "feedback": {
+            "met": "Condições de devolução podem gerar custos extras.",
+            "not_yet": "Leia a tolerância e registre o estado do veículo."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.10",
+      "copy": {
+        "en-US": {
+          "prompt": "What does this option mean?",
+          "scene": "Fictional contract permits purchase for a separate stated end price.",
+          "options": [
+            {
+              "label": "Return is forbidden"
+            },
+            {
+              "label": "Ownership requires that extra purchase"
+            },
+            {
+              "label": "Ownership is already paid"
+            }
+          ],
+          "help": [
+            "Distinguish the option from the payment required to exercise it."
+          ],
+          "feedback": {
+            "met": "A purchase option is not included ownership.",
+            "not_yet": "Distinguish the option from the payment required to exercise it."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué significa esta opción?",
+          "scene": "Contrato ficticio permite comprar por otro precio indicado al final.",
+          "options": [
+            {
+              "label": "Está prohibido devolver"
+            },
+            {
+              "label": "Propiedad exige esa compra adicional"
+            },
+            {
+              "label": "Propiedad ya está pagada"
+            }
+          ],
+          "help": [
+            "Distingue la opción del pago necesario para ejercerla."
+          ],
+          "feedback": {
+            "met": "Opción de compra no equivale a propiedad incluida.",
+            "not_yet": "Distingue la opción del pago necesario para ejercerla."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que significa esta opção?",
+          "scene": "Contrato fictício permite comprar por outro preço dado no final.",
+          "options": [
+            {
+              "label": "É proibido devolver"
+            },
+            {
+              "label": "Posse exige essa compra extra"
+            },
+            {
+              "label": "Posse já está paga"
+            }
+          ],
+          "help": [
+            "Separe a opção do pagamento exigido para usá-la."
+          ],
+          "feedback": {
+            "met": "Opção de compra não equivale a posse incluída.",
+            "not_yet": "Separe a opção do pagamento exigido para usá-la."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.10",
+      "copy": {
+        "en-US": {
+          "prompt": "How should these options be compared?",
+          "scene": "Buying leaves a resale asset; leasing requires return after the same period.",
+          "options": [
+            {
+              "label": "Assume both leave an asset"
+            },
+            {
+              "label": "Include the different ending values"
+            },
+            {
+              "label": "Compare instalments alone"
+            }
+          ],
+          "help": [
+            "Account for resale value or return obligations explicitly."
+          ],
+          "feedback": {
+            "met": "Ownership and return produce different ending positions.",
+            "not_yet": "Account for resale value or return obligations explicitly."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cómo comparar estas opciones?",
+          "scene": "Comprar deja activo vendible; arrendar exige devolución tras el mismo periodo.",
+          "options": [
+            {
+              "label": "Suponer ambos dejan activo"
+            },
+            {
+              "label": "Incluir distintos valores finales"
+            },
+            {
+              "label": "Comparar solo cuotas"
+            }
+          ],
+          "help": [
+            "Considera explícitamente reventa u obligaciones de devolución."
+          ],
+          "feedback": {
+            "met": "Propiedad y devolución producen posiciones finales distintas.",
+            "not_yet": "Considera explícitamente reventa u obligaciones de devolución."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Como comparar estas opções?",
+          "scene": "Comprar deixa bem vendável; arrendar exige devolução após o mesmo período.",
+          "options": [
+            {
+              "label": "Supor que ambos deixam bem"
+            },
+            {
+              "label": "Incluir valores finais distintos"
+            },
+            {
+              "label": "Comparar só parcelas"
+            }
+          ],
+          "help": [
+            "Considere claramente revenda ou deveres de devolução."
+          ],
+          "feedback": {
+            "met": "Posse e devolução geram posições finais distintas.",
+            "not_yet": "Considere claramente revenda ou deveres de devolução."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.housing-transport.10",
+      "copy": {
+        "en-US": {
+          "prompt": "What needs checking before signing?",
+          "scene": "A low-payment lease advertises unlimited use, but its draft lists distance penalties.",
+          "options": [
+            {
+              "label": "Ignore end charges"
+            },
+            {
+              "label": "Trust the ad alone"
+            },
+            {
+              "label": "Resolve the conflicting use terms"
+            }
+          ],
+          "help": [
+            "Get clear agreed use limits and charges before signing."
+          ],
+          "feedback": {
+            "met": "Conflicting distance terms change the expected cost.",
+            "not_yet": "Get clear agreed use limits and charges before signing."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué revisar antes de firmar?",
+          "scene": "Arrendamiento barato anuncia uso ilimitado, pero borrador cobra por distancia.",
+          "options": [
+            {
+              "label": "Ignorar cargos finales"
+            },
+            {
+              "label": "Confiar solo en anuncio"
+            },
+            {
+              "label": "Resolver condiciones de uso contradictorias"
+            }
+          ],
+          "help": [
+            "Obtén límites y cargos claros acordados antes de firmar."
+          ],
+          "feedback": {
+            "met": "Condiciones de distancia contradictorias cambian el costo previsto.",
+            "not_yet": "Obtén límites y cargos claros acordados antes de firmar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que conferir antes de assinar?",
+          "scene": "Arrendamento barato anuncia uso livre, mas texto cobra por distância.",
+          "options": [
+            {
+              "label": "Ignorar custos finais"
+            },
+            {
+              "label": "Confiar só no anúncio"
+            },
+            {
+              "label": "Resolver termos de uso conflitantes"
+            }
+          ],
+          "help": [
+            "Obtenha limites e custos claros acordados antes de assinar."
+          ],
+          "feedback": {
+            "met": "Termos de distância em conflito mudam o custo previsto.",
+            "not_yet": "Obtenha limites e custos claros acordados antes de assinar."
+          }
+        }
+      }
+    }
+  ]
+}

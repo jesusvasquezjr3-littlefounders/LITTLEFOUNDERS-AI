@@ -1,0 +1,779 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-insurance-risk-part-1",
+  "lesson_id": "fe-production-insurance-risk-01",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.insurance-risk.01"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Distinguish a frequent manageable loss from a less frequent financially severe loss.",
+  "title": {
+    "en-US": "Loss Severity",
+    "es-MX": "Frecuencia e impacto financiero",
+    "pt-BR": "Frequência e impacto financeiro"
+  },
+  "new_concepts": [
+    "finance.prod.insurance-risk.01"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Loss Severity\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Frecuencia e impacto financiero\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Frequência e impacto financeiro\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.insurance-risk.01",
+      "observable_action": "Distinguish a frequent manageable loss from a less frequent financially severe loss.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.saving-resilience.02",
+      "prod.goals-tradeoffs.02"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A rare event can threaten essentials while a frequent small loss fits your budget; compare both likelihood and impact.",
+    "misconception": "The most frequent loss is automatically the most financially severe.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.insurance-risk.01",
+        "context_id": "insurance-risk-01-example-01",
+        "supports_from": [],
+        "reasoning": "Ask how often a loss might occur and whether you could absorb its cost. These answer different questions."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.insurance-risk.01",
+        "context_id": "insurance-risk-01-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The fire exceeds available resources despite being less frequent."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.insurance-risk.01",
+        "context_id": "insurance-risk-01-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "A rare disruption can still exceed the household’s financial buffer."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.insurance-risk.01",
+        "context_id": "insurance-risk-01-practice-01",
+        "supports_from": [],
+        "reasoning": "Frequency alone does not show which losses threaten essentials."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.insurance-risk.01",
+        "context_id": "insurance-risk-01-practice-02",
+        "supports_from": [],
+        "reasoning": "The stated repair fits resources already set aside."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.insurance-risk.01",
+        "context_id": "insurance-risk-01-practice-03",
+        "supports_from": [],
+        "reasoning": "The same cost can create different financial strain."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.insurance-risk.01",
+        "context_id": "insurance-risk-01-transfer-01",
+        "supports_from": [],
+        "reasoning": "Equipment destruction threatens essential income despite its lower frequency."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.insurance-risk.01",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A rare event can threaten essentials while a frequent small loss fits your budget; compare both likelihood and impact."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un evento raro puede amenazar esenciales mientras pérdida pequeña frecuente cabe en presupuesto; compara frecuencia e impacto."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Um evento raro pode ameaçar essenciais enquanto perda pequena frequente cabe no orçamento; compare frequência e impacto."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Two questions about each risk",
+          "line": "Ask how often a loss might occur and whether you could absorb its cost. These answer different questions."
+        },
+        "es-MX": {
+          "prompt": "Dos preguntas sobre cada riesgo",
+          "line": "Pregunta con qué frecuencia podría ocurrir una pérdida y si podrías cubrir su costo. Son preguntas distintas."
+        },
+        "pt-BR": {
+          "prompt": "Duas perguntas sobre cada risco",
+          "line": "Pergunte com que frequência uma perda poderia ocorrer e se poderia cobrir seu custo. São perguntas distintas."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Which loss threatens essentials?",
+          "scene": "Small breakages fit savings; a rare major fire would exceed all available resources.",
+          "options": [
+            {
+              "label": "The major fire"
+            },
+            {
+              "label": "The small breakages"
+            },
+            {
+              "label": "Both have equal impact"
+            }
+          ],
+          "help": [
+            "Separate likelihood from the household’s ability to absorb loss."
+          ],
+          "feedback": {
+            "met": "The fire exceeds available resources despite being less frequent.",
+            "not_yet": "Separate likelihood from the household’s ability to absorb loss."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué pérdida amenaza esenciales?",
+          "scene": "Roturas pequeñas caben en ahorro; incendio mayor raro superaría todos los recursos disponibles.",
+          "options": [
+            {
+              "label": "Incendio mayor"
+            },
+            {
+              "label": "Roturas pequeñas"
+            },
+            {
+              "label": "Ambos tienen igual impacto"
+            }
+          ],
+          "help": [
+            "Separa frecuencia de capacidad del hogar para cubrir pérdida."
+          ],
+          "feedback": {
+            "met": "Incendio supera recursos disponibles aunque ocurra menos.",
+            "not_yet": "Separa frecuencia de capacidad del hogar para cubrir pérdida."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que perda ameaça essenciais?",
+          "scene": "Quebras pequenas cabem na poupança; incêndio grande raro superaria todos os recursos disponíveis.",
+          "options": [
+            {
+              "label": "Incêndio grande"
+            },
+            {
+              "label": "Quebras pequenas"
+            },
+            {
+              "label": "Ambos têm igual impacto"
+            }
+          ],
+          "help": [
+            "Separe frequência da capacidade da família de cobrir perda."
+          ],
+          "feedback": {
+            "met": "Incêndio supera recursos disponíveis mesmo sendo menos comum.",
+            "not_yet": "Separe frequência da capacidade da família de cobrir perda."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Does rare mean affordable?",
+          "scene": "A rare covered disruption could stop income longer than the household’s reserve lasts.",
+          "options": [
+            {
+              "label": "No"
+            },
+            {
+              "label": "Yes"
+            },
+            {
+              "label": "Only frequency matters"
+            }
+          ],
+          "help": [
+            "Check the size and duration of the resulting gap."
+          ],
+          "feedback": {
+            "met": "A rare disruption can still exceed the household’s financial buffer.",
+            "not_yet": "Check the size and duration of the resulting gap."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Raro significa costeable?",
+          "scene": "Contratiempo raro podría detener ingresos más tiempo de lo que dura reserva del hogar.",
+          "options": [
+            {
+              "label": "No"
+            },
+            {
+              "label": "Sí"
+            },
+            {
+              "label": "Solo importa frecuencia"
+            }
+          ],
+          "help": [
+            "Revisa tamaño y duración del faltante que provoca."
+          ],
+          "feedback": {
+            "met": "Contratiempo raro puede superar colchón financiero del hogar.",
+            "not_yet": "Revisa tamaño y duración del faltante que provoca."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Raro significa que cabe?",
+          "scene": "Contratempo raro poderia parar renda por mais tempo que dura reserva da família.",
+          "options": [
+            {
+              "label": "Não"
+            },
+            {
+              "label": "Sim"
+            },
+            {
+              "label": "Só importa frequência"
+            }
+          ],
+          "help": [
+            "Veja tamanho e duração da falta que causa."
+          ],
+          "feedback": {
+            "met": "Contratempo raro pode superar reserva financeira da família.",
+            "not_yet": "Veja tamanho e duração da falta que causa."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What is missing from this assessment?",
+          "scene": "A list ranks risks only by how often they occur.",
+          "options": [
+            {
+              "label": "Financial impact"
+            },
+            {
+              "label": "Only the risk count"
+            },
+            {
+              "label": "Only the most recent event"
+            }
+          ],
+          "help": [
+            "Add the cost and available resources for each risk."
+          ],
+          "feedback": {
+            "met": "Frequency alone does not show which losses threaten essentials.",
+            "not_yet": "Add the cost and available resources for each risk."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué falta en esta evaluación?",
+          "scene": "Lista ordena riesgos solo por frecuencia.",
+          "options": [
+            {
+              "label": "Impacto financiero"
+            },
+            {
+              "label": "Solo cantidad de riesgos"
+            },
+            {
+              "label": "Solo evento más reciente"
+            }
+          ],
+          "help": [
+            "Agrega costo y recursos disponibles para cada riesgo."
+          ],
+          "feedback": {
+            "met": "Frecuencia sola no muestra qué pérdidas amenazan esenciales.",
+            "not_yet": "Agrega costo y recursos disponibles para cada riesgo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que falta nesta análise?",
+          "scene": "Lista ordena riscos só por frequência.",
+          "options": [
+            {
+              "label": "Impacto financeiro"
+            },
+            {
+              "label": "Só quantidade de riscos"
+            },
+            {
+              "label": "Só evento mais recente"
+            }
+          ],
+          "help": [
+            "Some custo e recursos disponíveis para cada risco."
+          ],
+          "feedback": {
+            "met": "Frequência só não mostra que perdas ameaçam essenciais.",
+            "not_yet": "Some custo e recursos disponíveis para cada risco."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Which is manageable as stated?",
+          "scene": "A recurring repair fits the planned repair fund without reducing essentials.",
+          "options": [
+            {
+              "label": "Every loss with insurance advertising"
+            },
+            {
+              "label": "Every rare loss"
+            },
+            {
+              "label": "That recurring repair"
+            }
+          ],
+          "help": [
+            "Use the given cost and capacity, not marketing or rarity."
+          ],
+          "feedback": {
+            "met": "The stated repair fits resources already set aside.",
+            "not_yet": "Use the given cost and capacity, not marketing or rarity."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es manejable según datos?",
+          "scene": "Arreglo recurrente cabe en fondo previsto de reparación sin reducir esenciales.",
+          "options": [
+            {
+              "label": "Toda pérdida con anuncio de seguro"
+            },
+            {
+              "label": "Toda pérdida rara"
+            },
+            {
+              "label": "Ese arreglo recurrente"
+            }
+          ],
+          "help": [
+            "Usa costo y capacidad dados, no anuncios ni rareza."
+          ],
+          "feedback": {
+            "met": "Arreglo indicado cabe en recursos ya apartados.",
+            "not_yet": "Usa costo y capacidad dados, no anuncios ni rareza."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é manejável pelos dados?",
+          "scene": "Conserto recorrente cabe no fundo previsto de reparo sem reduzir essenciais.",
+          "options": [
+            {
+              "label": "Toda perda com anúncio de seguro"
+            },
+            {
+              "label": "Toda perda rara"
+            },
+            {
+              "label": "Esse conserto recorrente"
+            }
+          ],
+          "help": [
+            "Use custo e capacidade dados, não anúncios ou raridade."
+          ],
+          "feedback": {
+            "met": "Conserto dado cabe nos recursos já separados.",
+            "not_yet": "Use custo e capacidade dados, não anúncios ou raridade."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Can losses affect households differently?",
+          "scene": "The same repair fits one household’s reserve but exceeds another’s available money.",
+          "options": [
+            {
+              "label": "No, frequency fixes the impact"
+            },
+            {
+              "label": "Yes, capacity differs"
+            },
+            {
+              "label": "No, equal price means equal strain"
+            }
+          ],
+          "help": [
+            "Compare the loss with each household’s available resources."
+          ],
+          "feedback": {
+            "met": "The same cost can create different financial strain.",
+            "not_yet": "Compare the loss with each household’s available resources."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Pérdida igual afecta distinto a hogares?",
+          "scene": "Mismo arreglo cabe en reserva de un hogar, pero supera dinero disponible de otro.",
+          "options": [
+            {
+              "label": "No, frecuencia fija impacto"
+            },
+            {
+              "label": "Sí, capacidad difiere"
+            },
+            {
+              "label": "No, precio igual significa presión igual"
+            }
+          ],
+          "help": [
+            "Compara pérdida con recursos disponibles de cada hogar."
+          ],
+          "feedback": {
+            "met": "Mismo costo puede crear presión financiera distinta.",
+            "not_yet": "Compara pérdida con recursos disponibles de cada hogar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Perda igual afeta famílias de modo distinto?",
+          "scene": "Mesmo conserto cabe na reserva de uma família, mas supera dinheiro disponível de outra.",
+          "options": [
+            {
+              "label": "Não, frequência fixa impacto"
+            },
+            {
+              "label": "Sim, capacidade difere"
+            },
+            {
+              "label": "Não, preço igual significa pressão igual"
+            }
+          ],
+          "help": [
+            "Compare perda com recursos disponíveis de cada família."
+          ],
+          "feedback": {
+            "met": "Mesmo custo pode criar pressão financeira distinta.",
+            "not_yet": "Compare perda com recursos disponíveis de cada família."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.insurance-risk.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Which risk needs severe-loss planning?",
+          "scene": "Frequent small delivery delays fit the budget; rare equipment destruction would end essential income.",
+          "options": [
+            {
+              "label": "Equipment destruction"
+            },
+            {
+              "label": "Only the delays"
+            },
+            {
+              "label": "Neither because destruction is rare"
+            }
+          ],
+          "help": [
+            "Assess consequences as well as how often losses occur."
+          ],
+          "feedback": {
+            "met": "Equipment destruction threatens essential income despite its lower frequency.",
+            "not_yet": "Assess consequences as well as how often losses occur."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué riesgo requiere plan de pérdida grave?",
+          "scene": "Demoras pequeñas frecuentes caben en presupuesto; destrucción rara de equipo acabaría ingreso esencial.",
+          "options": [
+            {
+              "label": "Destrucción del equipo"
+            },
+            {
+              "label": "Solo demoras"
+            },
+            {
+              "label": "Ninguno porque destrucción es rara"
+            }
+          ],
+          "help": [
+            "Evalúa consecuencias además de frecuencia de pérdidas."
+          ],
+          "feedback": {
+            "met": "Destrucción del equipo amenaza ingreso esencial aunque sea menos frecuente.",
+            "not_yet": "Evalúa consecuencias además de frecuencia de pérdidas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que risco exige plano de perda grave?",
+          "scene": "Atrasos pequenos frequentes cabem no orçamento; destruição rara de equipamento acabaria renda essencial.",
+          "options": [
+            {
+              "label": "Destruição do equipamento"
+            },
+            {
+              "label": "Só atrasos"
+            },
+            {
+              "label": "Nenhum pois destruição é rara"
+            }
+          ],
+          "help": [
+            "Avalie consequências além da frequência das perdas."
+          ],
+          "feedback": {
+            "met": "Destruição do equipamento ameaça renda essencial mesmo sendo menos comum.",
+            "not_yet": "Avalie consequências além da frequência das perdas."
+          }
+        }
+      }
+    }
+  ]
+}

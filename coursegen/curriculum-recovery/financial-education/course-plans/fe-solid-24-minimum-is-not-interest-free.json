@@ -1,0 +1,954 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-solid-05-understand-borrowing",
+  "lesson_id": "fe-solid-24-minimum-is-not-interest-free",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.debt.minimum"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Distinguish a minimum required payment from paying off the balance, and calculate the remaining debt under explicitly stated charges.",
+  "title": {
+    "en-US": "Minimum is not interest-free",
+    "es-MX": "El mínimo no elimina intereses",
+    "pt-BR": "O mínimo não elimina juros"
+  },
+  "new_concepts": [
+    "finance.debt.minimum"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Minimum is not interest-free\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"El mínimo no elimina intereses\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"O mínimo não elimina juros\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "debt.minimum",
+      "observable_action": "Distinguish a minimum required payment from paying off the balance, and calculate the remaining debt under explicitly stated charges.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "debt.interest",
+      "debt.total-cost",
+      "plan.revise"
+    ],
+    "retrieval_skills": [],
+    "relevance": "The minimum payment is the smallest amount the agreement requires. It does not automatically clear the balance or eliminate interest.",
+    "misconception": "Believing that making the minimum automatically erases interest or clears the debt.",
+    "numeracy_support": "Apply the earlier debt-update rule: starting debt plus stated charge minus payment; examples have no unstated fees or new purchases.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "debt.minimum",
+        "context_id": "minimum-is-not-interest-free-example-01",
+        "supports_from": [],
+        "reasoning": "This fictional statement starts at 100, adds interest of 10 and requires at least 20. Paying 20 leaves 90 owed."
+      },
+      {
+        "segment_id": "example-02",
+        "skill_id": "debt.minimum",
+        "context_id": "minimum-is-not-interest-free-example-02",
+        "supports_from": [],
+        "reasoning": "Meeting the required minimum and clearing the full debt are different. Check the remaining balance and the stated interest conditions."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "debt.minimum",
+        "context_id": "minimum-is-not-interest-free-guided-01",
+        "supports_from": [
+          "example-02"
+        ],
+        "reasoning": "The minimum payment does not erase the separately stated interest charge."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "debt.minimum",
+        "context_id": "minimum-is-not-interest-free-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Meeting the floor does not prove that no debt or interest remains."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "debt.minimum",
+        "context_id": "minimum-is-not-interest-free-practice-01",
+        "supports_from": [],
+        "reasoning": "Under the same charges, the larger payment reduces more debt."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "debt.minimum",
+        "context_id": "minimum-is-not-interest-free-practice-02",
+        "supports_from": [],
+        "reasoning": "The payment covers the charge without reducing the original debt."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "debt.minimum",
+        "context_id": "minimum-is-not-interest-free-practice-03",
+        "supports_from": [],
+        "reasoning": "The minimum amount alone does not establish interest treatment."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "debt.minimum",
+        "context_id": "minimum-is-not-interest-free-transfer-01",
+        "supports_from": [],
+        "reasoning": "The larger payment still leaves debt after the stated charge is included."
+      },
+      {
+        "segment_id": "example-mentor-recovery",
+        "skill_id": "debt.minimum",
+        "context_id": "minimum-payment-mentor-correction",
+        "supports_from": [],
+        "reasoning": "I checked the statement: debt and interest remain. Meeting the minimum does not remove them."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "debt.minimum",
+      "fresh_context": "Apply this skill in a later integrated decision with a different constraint."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "The minimum payment is the smallest amount the agreement requires. It does not automatically clear the balance or eliminate interest."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "El pago mínimo es el menor monto que exige el acuerdo. No liquida automáticamente el saldo ni elimina los intereses."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "O pagamento mínimo é o menor valor exigido pelo acordo. Não quita automaticamente o saldo nem elimina os juros."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Read what the minimum means",
+          "line": "This fictional statement starts at 100, adds interest of 10 and requires at least 20. Paying 20 leaves 90 owed."
+        },
+        "es-MX": {
+          "prompt": "Lee qué significa el mínimo",
+          "line": "Este estado ficticio empieza en 100, añade 10 de interés y exige al menos 20. Pagar 20 deja 90 de deuda."
+        },
+        "pt-BR": {
+          "prompt": "Leia o que significa o mínimo",
+          "line": "Este extrato fictício começa em 100, soma 10 de juros e exige pelo menos 20. Pagar 20 deixa 90 de dívida."
+        }
+      }
+    },
+    {
+      "id": "example-mentor-recovery",
+      "type": "voice.mentor-episode.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {},
+      "copy": {
+        "en-US": {
+          "prompt": "Rho checks an assumption",
+          "setup": "I paid the minimum on time.",
+          "misjudgment": "I thought that stopped interest.",
+          "recovery": "I checked the statement: debt and interest remain. Meeting the minimum does not remove them."
+        },
+        "es-MX": {
+          "prompt": "Rho revisa una suposición",
+          "setup": "Pagué el mínimo a tiempo.",
+          "misjudgment": "Pensé que eso evitaba intereses.",
+          "recovery": "Revisé el estado: quedan deuda e intereses. Pagar el mínimo no los elimina."
+        },
+        "pt-BR": {
+          "prompt": "Rho confere uma suposição",
+          "setup": "Paguei o mínimo no prazo.",
+          "misjudgment": "Pensei que isso evitava juros.",
+          "recovery": "Conferi o extrato: restam dívida e juros. Pagar o mínimo não os elimina."
+        }
+      }
+    },
+    {
+      "id": "example-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Separate two questions",
+          "line": "Meeting the required minimum and clearing the full debt are different. Check the remaining balance and the stated interest conditions."
+        },
+        "es-MX": {
+          "prompt": "Separa dos preguntas",
+          "line": "Cumplir el mínimo y liquidar toda la deuda son cosas distintas. Revisa el saldo restante y las condiciones de interés."
+        },
+        "pt-BR": {
+          "prompt": "Separe duas perguntas",
+          "line": "Cumprir o mínimo e quitar toda a dívida são coisas diferentes. Confira o saldo restante e as condições de juros."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.debt.minimum",
+      "copy": {
+        "en-US": {
+          "prompt": "What remains owed?",
+          "scene": "Starting debt is 100; interest adds 10; the minimum payment of 20 is paid. No other changes occur.",
+          "options": [
+            {
+              "label": "90"
+            },
+            {
+              "label": "80"
+            },
+            {
+              "label": "0"
+            }
+          ],
+          "help": [
+            "Include the charge before subtracting the payment."
+          ],
+          "feedback": {
+            "met": "The minimum payment does not erase the separately stated interest charge.",
+            "not_yet": "Include the charge before subtracting the payment.",
+            "choice_hints": {
+              "option-1": "This subtracts the payment but omits the added interest.",
+              "option-2": "Update debt with the charge, then subtract the payment.",
+              "option-3": "A minimum payment does not automatically clear all debt."
+            }
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto queda por pagar?",
+          "scene": "La deuda inicia en 100; se añaden 10 de interés y se paga el mínimo de 20. No hay otros cambios.",
+          "options": [
+            {
+              "label": "90"
+            },
+            {
+              "label": "80"
+            },
+            {
+              "label": "0"
+            }
+          ],
+          "help": [
+            "Incluye el cargo antes de restar el pago."
+          ],
+          "feedback": {
+            "met": "El pago mínimo no elimina el cargo de interés indicado.",
+            "not_yet": "Incluye el cargo antes de restar el pago.",
+            "choice_hints": {
+              "option-1": "Esto resta el pago, pero omite el interés añadido.",
+              "option-2": "Actualiza la deuda con el cargo y resta el pago.",
+              "option-3": "El pago mínimo no liquida automáticamente toda la deuda."
+            }
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto resta a pagar?",
+          "scene": "A dívida começa em 100; somam-se 10 de juros e paga-se o mínimo de 20. Não há outras mudanças.",
+          "options": [
+            {
+              "label": "90"
+            },
+            {
+              "label": "80"
+            },
+            {
+              "label": "0"
+            }
+          ],
+          "help": [
+            "Inclua a cobrança antes de subtrair o pagamento."
+          ],
+          "feedback": {
+            "met": "O pagamento mínimo não elimina a cobrança de juros informada.",
+            "not_yet": "Inclua a cobrança antes de subtrair o pagamento.",
+            "choice_hints": {
+              "option-1": "Isso subtrai o pagamento, mas omite os juros adicionados.",
+              "option-2": "Atualize a dívida com a cobrança e subtraia o pagamento.",
+              "option-3": "O pagamento mínimo não quita automaticamente toda a dívida."
+            }
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          100,
+          10,
+          20
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "add",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.debt.minimum",
+      "copy": {
+        "en-US": {
+          "prompt": "What has the minimum payment established?",
+          "scene": "The minimum was paid on time; debt and interest remain.",
+          "options": [
+            {
+              "label": "The entire debt is cleared"
+            },
+            {
+              "label": "The required minimum was met"
+            },
+            {
+              "label": "All interest disappears"
+            }
+          ],
+          "help": [
+            "Answer only what the payment and stated terms establish."
+          ],
+          "feedback": {
+            "met": "Meeting the floor does not prove that no debt or interest remains.",
+            "not_yet": "Answer only what the payment and stated terms establish."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué demuestra pagar el mínimo?",
+          "scene": "Se pagó a tiempo el mínimo acordado, pero quedan saldo e intereses según las condiciones indicadas.",
+          "options": [
+            {
+              "label": "Toda la deuda está liquidada"
+            },
+            {
+              "label": "Se cumplió el mínimo exigido"
+            },
+            {
+              "label": "Desaparecen todos los intereses"
+            }
+          ],
+          "help": [
+            "Responde solo lo que demuestran el pago y las condiciones."
+          ],
+          "feedback": {
+            "met": "Cumplir el piso no demuestra que no queden deuda ni intereses.",
+            "not_yet": "Responde solo lo que demuestran el pago y las condiciones."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que demonstra pagar o mínimo?",
+          "scene": "O mínimo combinado foi pago no prazo, mas restam saldo e juros conforme as condições dadas.",
+          "options": [
+            {
+              "label": "Toda a dívida está quitada"
+            },
+            {
+              "label": "O mínimo exigido foi cumprido"
+            },
+            {
+              "label": "Todos os juros desaparecem"
+            }
+          ],
+          "help": [
+            "Responda só o que o pagamento e as condições demonstram."
+          ],
+          "feedback": {
+            "met": "Cumprir o piso não prova que não restam dívida e juros.",
+            "not_yet": "Responda só o que o pagamento e as condições demonstram."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.debt.minimum",
+      "copy": {
+        "en-US": {
+          "prompt": "Which payment leaves less debt in this example?",
+          "scene": "Debt: 100, interest: 10, no other changes. Both payments are affordable.",
+          "options": [
+            {
+              "label": "Both leave the same debt"
+            },
+            {
+              "label": "Pay 40"
+            },
+            {
+              "label": "Pay 20"
+            }
+          ],
+          "help": [
+            "Keep the starting debt and charges equal when comparing payments."
+          ],
+          "feedback": {
+            "met": "Under the same charges, the larger payment reduces more debt.",
+            "not_yet": "Keep the starting debt and charges equal when comparing payments."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué pago deja menos deuda aquí?",
+          "scene": "Ambas opciones inician con deuda de 100 y añaden 10 de interés. No hay otros cambios; ambos pagos caben.",
+          "options": [
+            {
+              "label": "Ambos dejan la misma deuda"
+            },
+            {
+              "label": "Pagar 40"
+            },
+            {
+              "label": "Pagar 20"
+            }
+          ],
+          "help": [
+            "Mantén iguales la deuda inicial y los cargos al comparar pagos."
+          ],
+          "feedback": {
+            "met": "Con los mismos cargos, el pago mayor reduce más deuda.",
+            "not_yet": "Mantén iguales la deuda inicial y los cargos al comparar pagos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual pagamento deixa menos dívida aqui?",
+          "scene": "Ambas as opções começam com dívida de 100 e somam 10 de juros. Não há outras mudanças; ambos cabem.",
+          "options": [
+            {
+              "label": "Ambos deixam a mesma dívida"
+            },
+            {
+              "label": "Pagar 40"
+            },
+            {
+              "label": "Pagar 20"
+            }
+          ],
+          "help": [
+            "Mantenha iguais a dívida inicial e as cobranças ao comparar."
+          ],
+          "feedback": {
+            "met": "Com as mesmas cobranças, o pagamento maior reduz mais dívida.",
+            "not_yet": "Mantenha iguais a dívida inicial e as cobranças ao comparar."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.debt.minimum",
+      "copy": {
+        "en-US": {
+          "prompt": "How much debt remains after this payment?",
+          "scene": "Debt is 100, the period charge is 10 and the payment is 10. No other changes occur.",
+          "options": [
+            {
+              "label": "0"
+            },
+            {
+              "label": "100"
+            },
+            {
+              "label": "90"
+            }
+          ],
+          "help": [
+            "Compare the payment with the charge as well as the balance."
+          ],
+          "feedback": {
+            "met": "The payment covers the charge without reducing the original debt.",
+            "not_yet": "Compare the payment with the charge as well as the balance."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánta deuda queda después de este pago?",
+          "scene": "La deuda es 100, el cargo del periodo es 10 y el pago es 10. No hay otros cambios.",
+          "options": [
+            {
+              "label": "0"
+            },
+            {
+              "label": "100"
+            },
+            {
+              "label": "90"
+            }
+          ],
+          "help": [
+            "Compara el pago con el cargo y con el saldo."
+          ],
+          "feedback": {
+            "met": "El pago cubre el cargo sin reducir la deuda original.",
+            "not_yet": "Compara el pago con el cargo y con el saldo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanta dívida resta após este pagamento?",
+          "scene": "A dívida é 100, a cobrança do período é 10 e o pagamento é 10. Não há outras mudanças.",
+          "options": [
+            {
+              "label": "0"
+            },
+            {
+              "label": "100"
+            },
+            {
+              "label": "90"
+            }
+          ],
+          "help": [
+            "Compare o pagamento com a cobrança e com o saldo."
+          ],
+          "feedback": {
+            "met": "O pagamento cobre a cobrança sem reduzir a dívida original.",
+            "not_yet": "Compare o pagamento com a cobrança e com o saldo."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          100,
+          10,
+          10
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "add",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.debt.minimum",
+      "copy": {
+        "en-US": {
+          "prompt": "What must you check about interest?",
+          "scene": "An offer highlights minimum payments but omits interest conditions.",
+          "options": [
+            {
+              "label": "Interest and payment conditions"
+            },
+            {
+              "label": "Only whether the minimum looks small"
+            },
+            {
+              "label": "Only past minimum payments"
+            }
+          ],
+          "help": [
+            "Read the conditions for the balance and transaction involved."
+          ],
+          "feedback": {
+            "met": "The minimum amount alone does not establish interest treatment.",
+            "not_yet": "Read the conditions for the balance and transaction involved."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debes comprobar antes de suponer cero interés?",
+          "scene": "Una oferta destaca el pago mínimo, pero no explica cuándo se cobran intereses.",
+          "options": [
+            {
+              "label": "Las condiciones reales de interés y pago"
+            },
+            {
+              "label": "Solo si el mínimo parece pequeño"
+            },
+            {
+              "label": "Solo si pagaste los mínimos anteriores"
+            }
+          ],
+          "help": [
+            "Lee las condiciones del saldo y la operación correspondientes."
+          ],
+          "feedback": {
+            "met": "El monto mínimo por sí solo no establece cómo se cobra interés.",
+            "not_yet": "Lee las condiciones del saldo y la operación correspondientes."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que conferir antes de supor juros zero?",
+          "scene": "Uma oferta destaca o mínimo, mas omite as condições de juros.",
+          "options": [
+            {
+              "label": "As condições reais de juros e pagamento"
+            },
+            {
+              "label": "Só se o mínimo parece pequeno"
+            },
+            {
+              "label": "Só se pagou os mínimos anteriores"
+            }
+          ],
+          "help": [
+            "Leia as condições do saldo e da operação envolvidos."
+          ],
+          "feedback": {
+            "met": "O valor mínimo sozinho não define como os juros são cobrados.",
+            "not_yet": "Leia as condições do saldo e da operação envolvidos."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.debt.minimum",
+      "copy": {
+        "en-US": {
+          "prompt": "What remains after this statement payment?",
+          "scene": "Debt is 200; a charge adds 20; you pay an affordable 60. Nothing else changes.",
+          "options": [
+            {
+              "label": "220"
+            },
+            {
+              "label": "140"
+            },
+            {
+              "label": "160"
+            }
+          ],
+          "help": [
+            "Update the full debt before deciding whether it was cleared."
+          ],
+          "feedback": {
+            "met": "The larger payment still leaves debt after the stated charge is included.",
+            "not_yet": "Update the full debt before deciding whether it was cleared."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto queda tras este pago del estado?",
+          "scene": "La deuda inicial es 200, un cargo añade 20 y se paga un monto posible de 60. No hay compras nuevas ni otros cargos.",
+          "options": [
+            {
+              "label": "220"
+            },
+            {
+              "label": "140"
+            },
+            {
+              "label": "160"
+            }
+          ],
+          "help": [
+            "Actualiza toda la deuda antes de decidir si quedó liquidada."
+          ],
+          "feedback": {
+            "met": "El pago mayor aún deja deuda al incluir el cargo indicado.",
+            "not_yet": "Actualiza toda la deuda antes de decidir si quedó liquidada."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto resta após este pagamento do extrato?",
+          "scene": "A dívida inicial é 200, uma cobrança soma 20 e paga-se um valor possível de 60. Não há compras novas nem outras cobranças.",
+          "options": [
+            {
+              "label": "220"
+            },
+            {
+              "label": "140"
+            },
+            {
+              "label": "160"
+            }
+          ],
+          "help": [
+            "Atualize toda a dívida antes de decidir se foi quitada."
+          ],
+          "feedback": {
+            "met": "O pagamento maior ainda deixa dívida ao incluir a cobrança informada.",
+            "not_yet": "Atualize toda a dívida antes de decidir se foi quitada."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          200,
+          20,
+          60
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "add",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "mentor_misjudgment": {
+    "character": "rho",
+    "misjudgment": "I thought that stopped interest.",
+    "recovery": "I checked the statement: debt and interest remain. Meeting the minimum does not remove them."
+  }
+}

@@ -1,0 +1,721 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-integrated-decisions-part-2",
+  "lesson_id": "fe-production-integrated-decisions-07",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.debt-recovery.03",
+    "finance.prod.investing-foundations.03",
+    "finance.prod.saving-resilience.04"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Compare a debt repayment and a long-term investment contribution under stated risks and constraints.",
+  "title": {
+    "en-US": "Debt priorities",
+    "es-MX": "¿Deuda o inversión?",
+    "pt-BR": "Dívida ou investimento?"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Debt or investment?\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"¿Deuda o inversión?\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Dívida ou investimento?\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "capstone",
+    "objective": {
+      "skill_id": "prod.debt-recovery.03",
+      "observable_action": "Compare a debt repayment and a long-term investment contribution under stated risks and constraints.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.debt-recovery.01",
+      "prod.debt-recovery.02",
+      "prod.credit-mechanics.03",
+      "prod.cashflow-budget.11"
+    ],
+    "retrieval_skills": [
+      "prod.debt-recovery.03",
+      "prod.investing-foundations.03",
+      "prod.saving-resilience.04"
+    ],
+    "relevance": "Compare the same usable surplus while protecting near-term needs.",
+    "misconception": "Treating hoped-for returns as guaranteed or changing the available surplus when comparing repayment methods.",
+    "numeracy_support": "Use the explicitly stated totals, deadlines and constraints. Earlier financial arithmetic is retrieved; no current rate or legal entitlement is implied.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.debt-recovery.03",
+        "context_id": "integrated-decisions-7-practice-01",
+        "supports_from": [],
+        "reasoning": "Highest-rate-first directs extra payments to the higher-rate debt."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.investing-foundations.03",
+        "context_id": "integrated-decisions-7-practice-02",
+        "supports_from": [],
+        "reasoning": "Willingness does not fund essential bills after a loss."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.saving-resilience.04",
+        "context_id": "integrated-decisions-7-practice-03",
+        "supports_from": [],
+        "reasoning": "Immediate access preserves the reserve’s stated near-term purpose."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.debt-recovery.03",
+        "context_id": "integrated-decisions-7-practice-04",
+        "supports_from": [],
+        "reasoning": "Different extra amounts confound the comparison between repayment methods."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.investing-foundations.03",
+        "context_id": "integrated-decisions-7-practice-05",
+        "supports_from": [],
+        "reasoning": "Capacity depends on resources remaining after the loss."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.debt-recovery.03",
+        "context_id": "integrated-decisions-7-transfer-01",
+        "supports_from": [],
+        "reasoning": "Paying A follows the priority without assuming investment returns."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.debt-recovery.03",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Compare the same usable surplus while protecting near-term needs."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Compara el mismo sobrante utilizable y protege las necesidades próximas."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Compare a mesma sobra utilizável e preserve as necessidades próximas."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Highest-rate-first targets which debt?",
+          "scene": "Minimums are covered; the same extra amount is available. A has the higher rate; B the smaller balance.",
+          "options": [
+            {
+              "label": "Debt A"
+            },
+            {
+              "label": "Debt B"
+            }
+          ],
+          "help": [
+            "A smaller balance is the other method’s priority."
+          ],
+          "feedback": {
+            "met": "Highest-rate-first directs extra payments to the higher-rate debt.",
+            "not_yet": "A smaller balance is the other method’s priority."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál prioriza mayor tasa primero?",
+          "scene": "Mínimos cubiertos; mismo monto extra disponible. A tiene mayor tasa; B tiene menor saldo.",
+          "options": [
+            {
+              "label": "Deuda A"
+            },
+            {
+              "label": "Deuda B"
+            }
+          ],
+          "help": [
+            "El menor saldo es la prioridad del otro método."
+          ],
+          "feedback": {
+            "met": "Mayor tasa primero dirige el extra a la deuda más cara.",
+            "not_yet": "El menor saldo es la prioridad del otro método."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual prioriza maior taxa primeiro?",
+          "scene": "Mínimos cobertos; mesmo valor extra disponível. A tem maior taxa; B tem menor saldo.",
+          "options": [
+            {
+              "label": "Dívida A"
+            },
+            {
+              "label": "Dívida B"
+            }
+          ],
+          "help": [
+            "O menor saldo é a prioridade do outro método."
+          ],
+          "feedback": {
+            "met": "Maior taxa primeiro direciona o extra à dívida mais cara.",
+            "not_yet": "O menor saldo é a prioridade do outro método."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Can this person absorb the loss?",
+          "scene": "They welcome risk, but losing this money leaves next month’s essentials unpaid.",
+          "options": [
+            {
+              "label": "Yes, willingness ensures capacity"
+            },
+            {
+              "label": "No, financial capacity is limited"
+            }
+          ],
+          "help": [
+            "Distinguish feelings about risk from ability to bear its consequences."
+          ],
+          "feedback": {
+            "met": "Willingness does not fund essential bills after a loss.",
+            "not_yet": "Distinguish feelings about risk from ability to bear its consequences."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Puede absorber la pérdida?",
+          "scene": "Acepta el riesgo de invertir, pero perder este dinero dejaría sin pagar necesidades del próximo mes.",
+          "options": [
+            {
+              "label": "Sí, querer garantiza poder"
+            },
+            {
+              "label": "No, su capacidad financiera es limitada"
+            }
+          ],
+          "help": [
+            "Distingue actitud ante el riesgo y capacidad de asumir consecuencias."
+          ],
+          "feedback": {
+            "met": "Aceptar el riesgo no financia necesidades después de una pérdida.",
+            "not_yet": "Distingue actitud ante el riesgo y capacidad de asumir consecuencias."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Consegue absorver a perda?",
+          "scene": "Aceita o risco de investir, mas perder este dinheiro deixaria necessidades do próximo mês sem pagamento.",
+          "options": [
+            {
+              "label": "Sim, querer garante poder"
+            },
+            {
+              "label": "Não, a capacidade financeira é limitada"
+            }
+          ],
+          "help": [
+            "Distinga atitude diante do risco e capacidade de assumir consequências."
+          ],
+          "feedback": {
+            "met": "Aceitar risco não financia necessidades após uma perda.",
+            "not_yet": "Distinga atitude diante do risco e capacidade de assumir consequências."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Where keep next week’s reserve?",
+          "scene": "A: immediate access without fees; B: locked for a year. Both have the same stated safety.",
+          "options": [
+            {
+              "label": "Either; access is irrelevant"
+            },
+            {
+              "label": "Only B"
+            },
+            {
+              "label": "A meets the deadline"
+            }
+          ],
+          "help": [
+            "A later release cannot fund next week’s required payment."
+          ],
+          "feedback": {
+            "met": "Immediate access preserves the reserve’s stated near-term purpose.",
+            "not_yet": "A later release cannot fund next week’s required payment."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Dónde guardar la reserva próxima?",
+          "scene": "A: acceso inmediato sin comisión; B: bloqueo de un año. Ambas tienen igual seguridad indicada.",
+          "options": [
+            {
+              "label": "Cualquiera; el acceso no importa"
+            },
+            {
+              "label": "Solo B"
+            },
+            {
+              "label": "A cumple el plazo"
+            }
+          ],
+          "help": [
+            "Una liberación posterior no paga la obligación de la próxima semana."
+          ],
+          "feedback": {
+            "met": "El acceso inmediato conserva la finalidad próxima de la reserva.",
+            "not_yet": "Una liberación posterior no paga la obligación de la próxima semana."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Onde guardar a reserva próxima?",
+          "scene": "A: acesso imediato sem tarifa; B: bloqueio por um ano. Ambas têm a mesma segurança informada.",
+          "options": [
+            {
+              "label": "Qualquer uma; acesso não importa"
+            },
+            {
+              "label": "Só B"
+            },
+            {
+              "label": "A atende ao prazo"
+            }
+          ],
+          "help": [
+            "Uma liberação posterior não paga a obrigação da próxima semana."
+          ],
+          "feedback": {
+            "met": "O acesso imediato preserva a finalidade próxima da reserva.",
+            "not_yet": "Uma liberação posterior não paga a obrigação da próxima semana."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.03",
+      "copy": {
+        "en-US": {
+          "prompt": "What makes the comparison fair?",
+          "scene": "One repayment model uses extra money; the other none, with identical minimums.",
+          "options": [
+            {
+              "label": "Use the same feasible extra"
+            },
+            {
+              "label": "Declare the faster result superior"
+            },
+            {
+              "label": "Ignore the different budgets"
+            }
+          ],
+          "help": [
+            "Hold available surplus constant when comparing the two priorities."
+          ],
+          "feedback": {
+            "met": "Different extra amounts confound the comparison between repayment methods.",
+            "not_yet": "Hold available surplus constant when comparing the two priorities."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué vuelve justa la comparación?",
+          "scene": "Una simulación usa dinero extra; la otra ninguno. Los pagos mínimos son iguales.",
+          "options": [
+            {
+              "label": "Usar el mismo extra viable"
+            },
+            {
+              "label": "Declarar superior el resultado rápido"
+            },
+            {
+              "label": "Ignorar presupuestos diferentes"
+            }
+          ],
+          "help": [
+            "Mantén constante el sobrante disponible al comparar ambas prioridades."
+          ],
+          "feedback": {
+            "met": "Distintos extras distorsionan la comparación entre métodos de pago.",
+            "not_yet": "Mantén constante el sobrante disponible al comparar ambas prioridades."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que torna a comparação justa?",
+          "scene": "Uma simulação usa dinheiro extra; a outra nenhum. Os pagamentos mínimos são iguais.",
+          "options": [
+            {
+              "label": "Usar o mesmo extra viável"
+            },
+            {
+              "label": "Declarar superior o resultado rápido"
+            },
+            {
+              "label": "Ignorar os orçamentos diferentes"
+            }
+          ],
+          "help": [
+            "Mantenha constante a sobra disponível ao comparar as prioridades."
+          ],
+          "feedback": {
+            "met": "Extras diferentes distorcem a comparação entre métodos de pagamento.",
+            "not_yet": "Mantenha constante a sobra disponível ao comparar as prioridades."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.03",
+      "copy": {
+        "en-US": {
+          "prompt": "What establishes loss capacity?",
+          "scene": "An investor enjoys risk; essentials depend on this money and a bonus is unconfirmed.",
+          "options": [
+            {
+              "label": "An unconfirmed bonus"
+            },
+            {
+              "label": "Enjoying risk"
+            },
+            {
+              "label": "Funds covering needs after loss"
+            }
+          ],
+          "help": [
+            "Neither enthusiasm nor an unconfirmed payment protects essential needs."
+          ],
+          "feedback": {
+            "met": "Capacity depends on resources remaining after the loss.",
+            "not_yet": "Neither enthusiasm nor an unconfirmed payment protects essential needs."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué demuestra capacidad de pérdida?",
+          "scene": "Le gusta el riesgo y espera un bono; sus necesidades dependen del dinero que invertiría.",
+          "options": [
+            {
+              "label": "Un bono sin confirmar"
+            },
+            {
+              "label": "Disfrutar el riesgo"
+            },
+            {
+              "label": "Fondos para necesidades tras perder"
+            }
+          ],
+          "help": [
+            "Ni entusiasmo ni un pago sin confirmar protegen necesidades esenciales."
+          ],
+          "feedback": {
+            "met": "La capacidad depende de los recursos restantes tras perder.",
+            "not_yet": "Ni entusiasmo ni un pago sin confirmar protegen necesidades esenciales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que demonstra capacidade de perda?",
+          "scene": "Gosta de risco e espera um bônus; suas necessidades dependem do dinheiro que investiria.",
+          "options": [
+            {
+              "label": "Um bônus não confirmado"
+            },
+            {
+              "label": "Gostar de risco"
+            },
+            {
+              "label": "Recursos para necessidades após perder"
+            }
+          ],
+          "help": [
+            "Nem entusiasmo nem pagamento não confirmado protegem necessidades essenciais."
+          ],
+          "feedback": {
+            "met": "A capacidade depende dos recursos restantes após a perda.",
+            "not_yet": "Nem entusiasmo nem pagamento não confirmado protegem necessidades essenciais."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.debt-recovery.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Which follows that priority?",
+          "scene": "Reserve and minimums protected. Priority: highest-rate debt, A. Investment returns are uncertain.",
+          "options": [
+            {
+              "label": "Invest for a hoped-for return"
+            },
+            {
+              "label": "Extra payment to smaller debt B"
+            },
+            {
+              "label": "Extra payment to A"
+            }
+          ],
+          "help": [
+            "Use the stated priority and feasible surplus, not hoped-for returns."
+          ],
+          "feedback": {
+            "met": "Paying A follows the priority without assuming investment returns.",
+            "not_yet": "Use the stated priority and feasible surplus, not hoped-for returns."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué cumple la prioridad indicada?",
+          "scene": "Reserva y mínimos protegidos; prioridad: reducir deuda de mayor tasa. Rendimiento incierto; A tiene la mayor tasa.",
+          "options": [
+            {
+              "label": "Invertir por un rendimiento esperado"
+            },
+            {
+              "label": "Pago extra a la deuda menor B"
+            },
+            {
+              "label": "Pago extra a A"
+            }
+          ],
+          "help": [
+            "Usa la prioridad y sobrante viable, no rendimientos esperados."
+          ],
+          "feedback": {
+            "met": "Pagar A sigue la prioridad sin suponer rendimientos de inversión.",
+            "not_yet": "Usa la prioridad y sobrante viable, no rendimientos esperados."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que atende à prioridade?",
+          "scene": "Reserva e mínimos protegidos; prioridade: reduzir dívida de maior taxa. Retorno incerto; A tem a maior taxa.",
+          "options": [
+            {
+              "label": "Investir por um retorno esperado"
+            },
+            {
+              "label": "Pagamento extra à dívida menor B"
+            },
+            {
+              "label": "Pagamento extra a A"
+            }
+          ],
+          "help": [
+            "Use a prioridade e a sobra viável, não retornos esperados."
+          ],
+          "feedback": {
+            "met": "Pagar A segue a prioridade sem supor retornos de investimento.",
+            "not_yet": "Use a prioridade e a sobra viável, não retornos esperados."
+          }
+        }
+      }
+    }
+  ]
+}

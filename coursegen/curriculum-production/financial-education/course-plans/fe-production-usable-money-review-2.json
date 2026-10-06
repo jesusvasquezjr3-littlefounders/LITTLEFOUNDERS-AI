@@ -1,0 +1,771 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-usable-money",
+  "lesson_id": "fe-production-usable-money-review-2",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.plan.uncertain-income",
+    "finance.cash.dates",
+    "finance.debt.obligation",
+    "finance.cash.transfer"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Revise a spending decision using current accessible money, repayment commitments and the actual status of expected receipts.",
+  "title": {
+    "en-US": "Update the decision",
+    "es-MX": "Actualiza la decisión",
+    "pt-BR": "Atualize a decisão"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Update the decision\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Actualiza la decisión\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Atualize a decisão\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "consolidate",
+    "objective": {
+      "skill_id": "plan.uncertain-income",
+      "observable_action": "Revise a spending decision using current accessible money, repayment commitments and the actual status of expected receipts.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "cash.received",
+      "cash.reserved",
+      "cash.dates"
+    ],
+    "retrieval_skills": [
+      "cash.dates",
+      "debt.obligation",
+      "cash.transfer",
+      "plan.uncertain-income"
+    ],
+    "relevance": "Check timing, borrowing and transfers before changing a spending decision.",
+    "misconception": "Repeating a previous answer without checking the current person, payment status and commitments.",
+    "numeracy_support": "All amounts and conditions needed for the current decision remain visible. Arithmetic uses previously demonstrated receipt, payment and reservation relationships.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "cash.dates",
+        "context_id": "production-money-review-2-practice-01",
+        "supports_from": [],
+        "reasoning": "The receipt is large enough but arrives after the deadline."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "debt.obligation",
+        "context_id": "production-money-review-2-practice-02",
+        "supports_from": [],
+        "reasoning": "Spending the cash did not make a repayment."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "cash.transfer",
+        "context_id": "production-money-review-2-practice-03",
+        "supports_from": [],
+        "reasoning": "The same money moved between places where you keep it."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "plan.uncertain-income",
+        "context_id": "production-money-review-2-practice-04",
+        "supports_from": [],
+        "reasoning": "50 − 35 = 15. The delayed receipt is still excluded."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "cash.dates",
+        "context_id": "production-money-review-2-practice-05",
+        "supports_from": [],
+        "reasoning": "The available cash covers this bill before its deadline."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "plan.uncertain-income",
+        "context_id": "production-money-review-2-transfer-01",
+        "supports_from": [],
+        "reasoning": "30 − 20 = 10. Neither the transfer nor the canceled promise adds money."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "plan.uncertain-income",
+      "fresh_context": "Revisit these money decisions in the later budget and payment domains; this opening batch does not implement those domains."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Check timing, borrowing and transfers before changing a spending decision."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Revisa fechas, préstamos y transferencias antes de cambiar una decisión de gasto."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Confira datas, empréstimos e transferências antes de mudar uma decisão de gasto."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.dates",
+      "copy": {
+        "en-US": {
+          "prompt": "What prevents timely payment?",
+          "scene": "No money now. A bill is due Thursday; a sufficient receipt arrives Friday.",
+          "options": [
+            {
+              "label": "The arrival date"
+            },
+            {
+              "label": "The receipt amount"
+            }
+          ],
+          "help": [
+            "Compare the dates separately from the amounts."
+          ],
+          "feedback": {
+            "met": "The receipt is large enough but arrives after the deadline.",
+            "not_yet": "Compare the dates separately from the amounts."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué impide pagar a tiempo?",
+          "scene": "Sin dinero ahora. La cuenta vence el jueves; una entrada suficiente llega el viernes.",
+          "options": [
+            {
+              "label": "La fecha de llegada"
+            },
+            {
+              "label": "El monto de la entrada"
+            }
+          ],
+          "help": [
+            "Compara las fechas por separado de los montos."
+          ],
+          "feedback": {
+            "met": "La entrada alcanza, pero llega después del vencimiento.",
+            "not_yet": "Compara las fechas por separado de los montos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que impede pagar no prazo?",
+          "scene": "Sem dinheiro agora. A conta vence quinta; uma entrada suficiente chega sexta.",
+          "options": [
+            {
+              "label": "A data de chegada"
+            },
+            {
+              "label": "O valor da entrada"
+            }
+          ],
+          "help": [
+            "Compare as datas separadamente dos valores."
+          ],
+          "feedback": {
+            "met": "A entrada basta, mas chega depois do vencimento.",
+            "not_yet": "Compare as datas separadamente dos valores."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.debt.obligation",
+      "copy": {
+        "en-US": {
+          "prompt": "How much remains owed?",
+          "scene": "The agreement requires returning 25. You spent 15 but repaid nothing.",
+          "options": [
+            {
+              "label": "15"
+            },
+            {
+              "label": "25"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Track the amount returned to the lender, not the amount spent elsewhere."
+          ],
+          "feedback": {
+            "met": "Spending the cash did not make a repayment.",
+            "not_yet": "Track the amount returned to the lender, not the amount spent elsewhere."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto sigues debiendo?",
+          "scene": "El acuerdo exige devolver 25. Gastaste 15, pero no devolviste nada.",
+          "options": [
+            {
+              "label": "15"
+            },
+            {
+              "label": "25"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Sigue lo devuelto al prestamista, no lo gastado en otro lugar."
+          ],
+          "feedback": {
+            "met": "Gastar el efectivo no fue una devolución.",
+            "not_yet": "Sigue lo devuelto al prestamista, no lo gastado en otro lugar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto continua devendo?",
+          "scene": "O acordo exige devolver 25. Você gastou 15, mas não devolveu nada.",
+          "options": [
+            {
+              "label": "15"
+            },
+            {
+              "label": "25"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Acompanhe o valor devolvido ao credor, não o gasto em outro lugar."
+          ],
+          "feedback": {
+            "met": "Gastar o dinheiro não foi uma devolução.",
+            "not_yet": "Acompanhe o valor devolvido ao credor, não o gasto em outro lugar."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          25,
+          15
+        ],
+        "expression": {
+          "input": 0
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.transfer",
+      "copy": {
+        "en-US": {
+          "prompt": "Did your total grow?",
+          "scene": "You moved cash into your own savings envelope. Nothing else entered or left.",
+          "options": [
+            {
+              "label": "Yes, the envelope grew"
+            },
+            {
+              "label": "No, the location changed"
+            }
+          ],
+          "help": [
+            "Include the place the money came from as well as its destination."
+          ],
+          "feedback": {
+            "met": "The same money moved between places where you keep it.",
+            "not_yet": "Include the place the money came from as well as its destination."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Creció tu total?",
+          "scene": "Moviste efectivo a tu propio sobre de ahorro. No hubo otras entradas ni salidas.",
+          "options": [
+            {
+              "label": "Sí, aumentó el sobre"
+            },
+            {
+              "label": "No, cambió de lugar"
+            }
+          ],
+          "help": [
+            "Incluye tanto el lugar de origen como el destino del dinero."
+          ],
+          "feedback": {
+            "met": "El mismo dinero pasó entre lugares donde lo guardas.",
+            "not_yet": "Incluye tanto el lugar de origen como el destino del dinero."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Seu total cresceu?",
+          "scene": "Você moveu dinheiro para seu próprio envelope de poupança. Não houve outras entradas nem saídas.",
+          "options": [
+            {
+              "label": "Sim, o envelope cresceu"
+            },
+            {
+              "label": "Não, mudou de lugar"
+            }
+          ],
+          "help": [
+            "Inclua tanto a origem quanto o destino do dinheiro."
+          ],
+          "feedback": {
+            "met": "O mesmo dinheiro passou entre lugares onde você o guarda.",
+            "not_yet": "Inclua tanto a origem quanto o destino do dinheiro."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.plan.uncertain-income",
+      "copy": {
+        "en-US": {
+          "prompt": "What is free now?",
+          "scene": "You have 50 and protect 35. An expected 20 is delayed.",
+          "options": [
+            {
+              "label": "70"
+            },
+            {
+              "label": "35"
+            },
+            {
+              "label": "15"
+            }
+          ],
+          "help": [
+            "Use money already received and preserve the commitment."
+          ],
+          "feedback": {
+            "met": "50 − 35 = 15. The delayed receipt is still excluded.",
+            "not_yet": "Use money already received and preserve the commitment."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto está libre ahora?",
+          "scene": "Tienes 50 y proteges 35. Una entrada esperada de 20 se retrasa.",
+          "options": [
+            {
+              "label": "70"
+            },
+            {
+              "label": "35"
+            },
+            {
+              "label": "15"
+            }
+          ],
+          "help": [
+            "Usa dinero recibido y conserva el compromiso."
+          ],
+          "feedback": {
+            "met": "50 − 35 = 15. La entrada retrasada sigue fuera del cálculo.",
+            "not_yet": "Usa dinero recibido y conserva el compromiso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto está livre agora?",
+          "scene": "Você tem 50 e protege 35. Uma entrada esperada de 20 atrasa.",
+          "options": [
+            {
+              "label": "70"
+            },
+            {
+              "label": "35"
+            },
+            {
+              "label": "15"
+            }
+          ],
+          "help": [
+            "Use dinheiro recebido e preserve o compromisso."
+          ],
+          "feedback": {
+            "met": "50 − 35 = 15. A entrada atrasada continua fora do cálculo.",
+            "not_yet": "Use dinheiro recebido e preserve o compromisso."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          50,
+          35,
+          20
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.dates",
+      "copy": {
+        "en-US": {
+          "prompt": "Which money can pay on time?",
+          "scene": "Cash: 30 now; bill: 20 due Thursday. Separate funds stay locked until Friday.",
+          "options": [
+            {
+              "label": "Cash already available"
+            },
+            {
+              "label": "Wait for all funds"
+            },
+            {
+              "label": "Friday’s locked funds"
+            }
+          ],
+          "help": [
+            "Delayed access elsewhere does not prevent using sufficient cash already held."
+          ],
+          "feedback": {
+            "met": "The available cash covers this bill before its deadline.",
+            "not_yet": "Delayed access elsewhere does not prevent using sufficient cash already held."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué dinero paga a tiempo?",
+          "scene": "Efectivo: 30 ahora; cuenta: 20 para el jueves. Otros fondos se desbloquean el viernes.",
+          "options": [
+            {
+              "label": "El efectivo disponible"
+            },
+            {
+              "label": "Esperar todos los fondos"
+            },
+            {
+              "label": "Los fondos del viernes"
+            }
+          ],
+          "help": [
+            "El acceso posterior a otros fondos no impide usar el efectivo suficiente."
+          ],
+          "feedback": {
+            "met": "El efectivo disponible cubre esta cuenta antes del vencimiento.",
+            "not_yet": "El acceso posterior a otros fondos no impide usar el efectivo suficiente."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual dinheiro paga no prazo?",
+          "scene": "Dinheiro: 30 agora; conta: 20 até quinta. Outros recursos ficam bloqueados até sexta.",
+          "options": [
+            {
+              "label": "O dinheiro disponível"
+            },
+            {
+              "label": "Esperar todos os recursos"
+            },
+            {
+              "label": "Os recursos de sexta"
+            }
+          ],
+          "help": [
+            "O acesso posterior a outros recursos não impede usar o dinheiro suficiente."
+          ],
+          "feedback": {
+            "met": "O dinheiro disponível cobre esta conta antes do vencimento.",
+            "not_yet": "O acesso posterior a outros recursos não impede usar o dinheiro suficiente."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.plan.uncertain-income",
+      "copy": {
+        "en-US": {
+          "prompt": "How much is free?",
+          "scene": "You have 30 total after moving 10 between your accounts. A promised 40 is canceled; protect 20.",
+          "options": [
+            {
+              "label": "50"
+            },
+            {
+              "label": "20"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Start from the stated total; do not add existing or canceled money."
+          ],
+          "feedback": {
+            "met": "30 − 20 = 10. Neither the transfer nor the canceled promise adds money.",
+            "not_yet": "Start from the stated total; do not add existing or canceled money."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto queda libre?",
+          "scene": "Tienes 30 en total tras mover 10 entre tus cuentas. Se cancelaron 40 prometidos; protege 20.",
+          "options": [
+            {
+              "label": "50"
+            },
+            {
+              "label": "20"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Parte del total indicado; no agregues dinero existente ni cancelado."
+          ],
+          "feedback": {
+            "met": "30 − 20 = 10. Ni la transferencia ni la promesa cancelada agregan dinero.",
+            "not_yet": "Parte del total indicado; no agregues dinero existente ni cancelado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto fica livre?",
+          "scene": "Você tem 30 no total após mover 10 entre suas contas. Foram cancelados 40 prometidos; proteja 20.",
+          "options": [
+            {
+              "label": "50"
+            },
+            {
+              "label": "20"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Parta do total informado; não acrescente dinheiro existente nem cancelado."
+          ],
+          "feedback": {
+            "met": "30 − 20 = 10. Nem a transferência nem a promessa cancelada acrescentam dinheiro.",
+            "not_yet": "Parta do total informado; não acrescente dinheiro existente nem cancelado."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          30,
+          10,
+          40,
+          20
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 3
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

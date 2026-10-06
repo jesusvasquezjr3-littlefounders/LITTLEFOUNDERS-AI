@@ -288,7 +288,70 @@ try:
     assert run(f"SELECT count(*) FROM audit_logs WHERE action = 'content.lesson.demoted' AND subject = '{I['lesson2']}'") == '0'
     check('the service role cannot move a course or lesson status by PATCH; only the Forge upsert into review passes, and its demotion of a published lesson is recorded (content.lesson.demoted)')
 
+    # Replacement courses preserve archived rows and both generations of learner history.
+    service(f"SELECT code FROM set_course_status('{I['boss']}', '{I['course']}', 'draft')")
+    service(f"SELECT code FROM set_lesson_status('{I['boss']}', '{I['lesson2']}', 'archived')")
+    run(f"""INSERT INTO lesson_segment_attempts (user_id, lesson_id, segment_id, attempt_number, score)
+        VALUES ('{I['boss']}', '{I['lesson2']}', 'historical-segment', 1, 80);
+        INSERT INTO lesson_v2_runs (user_id, lesson_id, locale, document_version_id, expires_at)
+        VALUES ('{I['boss']}', '{I['lesson2']}', 'pt-BR', '{I['lesson2_version']}', now() + interval '1 hour');""")
+    stage3_pass('lesson')
+    verify()
+    assert release()[0:2] == ['f', 'VERIFICATION_REQUIRED']
+    check('mixed current/archived catalogs require the exact catalog fingerprint, not just a document watermark')
+
+    def verify_catalog():
+        verify()
+        run(f"""UPDATE course_release_verifications SET checks = (
+            SELECT jsonb_agg(CASE WHEN item ->> 'gate' = 'forge.release.lessons-complete'
+                THEN item || jsonb_build_object('catalog_fingerprint', forge_release_catalog_fingerprint('{I['course']}'))
+                ELSE item END) FROM jsonb_array_elements(checks) item
+            ) WHERE course_id = '{I['course']}'""")
+
+    verify_catalog()
+    fingerprint = run(f"SELECT forge_release_catalog_fingerprint('{I['course']}')")
+    pointer = run(f"SELECT row_to_json(p) FROM lesson_document_version_current p WHERE lesson_id = '{I['lesson2']}'")
+    assert release()[0:2] == ['t', 'RELEASED']
+    assert status('lessons', 'lesson2') == 'archived'
+    assert run(f"SELECT forge_release_catalog_fingerprint('{I['course']}')") == fingerprint
+    assert run(f"SELECT row_to_json(p) FROM lesson_document_version_current p WHERE lesson_id = '{I['lesson2']}'") == pointer
+    assert run(f"SELECT count(*) FROM lesson_segment_attempts WHERE lesson_id = '{I['lesson2']}'") == '1'
+    assert run(f"SELECT count(*) FROM lesson_v2_runs WHERE lesson_id = '{I['lesson2']}'") == '1'
+    assert release()[0:2] == ['t', 'RELEASED']
+    check('replacement release retains archived lessons, immutable version pointers and both learner histories; normal promotion preserves the fingerprint')
+
+    service(f"SELECT code FROM set_lesson_status('{I['boss']}', '{I['lesson2']}', 'review')")
+    assert release()[0:2] == ['f', 'VERIFICATION_REQUIRED']
+    assert service(f"SELECT code FROM release_lesson('{I['boss']}', '{I['lesson2']}')") == 'VERIFICATION_REQUIRED'
+    assert status('lessons', 'lesson2') == 'review'
+    service(f"SELECT code FROM set_lesson_status('{I['boss']}', '{I['lesson2']}', 'archived')")
+    check('restoring the last archived row cannot evade its pinned catalog fingerprint through whole-course or individual-lesson release')
+
+    # Moving a retained lesson changes no document timestamp, but invalidates catalog attestation.
+    retired_topic = str(uuid.uuid4())
+    run(f"INSERT INTO topics (id, saga_id, position, slug, status) VALUES ('{retired_topic}', '{I['saga']}', 2, 'retired-topic', 'archived')")
+    verify_catalog()
+    watermark = run(f"SELECT forge_release_content_watermark('{I['course']}')")
+    run(f"UPDATE lessons SET topic_id = '{retired_topic}' WHERE id = '{I['lesson2']}'")
+    assert run(f"SELECT forge_release_content_watermark('{I['course']}')") == watermark
+    assert release()[0:2] == ['f', 'VERIFICATION_REQUIRED']
+    verify_catalog()
+    assert release()[0:2] == ['t', 'RELEASED']
+    assert run(f"SELECT status FROM topics WHERE id = '{retired_topic}'") == 'archived'
+    check('moving an archived lesson invalidates the catalog despite an unchanged document watermark; retired parents stay archived')
+
+    run(f"UPDATE topics SET status = 'draft' WHERE id = '{retired_topic}'")
+    assert release()[0:2] == ['f', 'INCOMPLETE_HIERARCHY']
+    run(f"UPDATE topics SET status = 'archived' WHERE id = '{retired_topic}'")
+    service(f"SELECT code FROM set_lesson_status('{I['boss']}', '{I['lesson2']}', 'review')")
+    assert release()[0:2] == ['f', 'INCOMPLETE_HIERARCHY']
+    service(f"SELECT code FROM set_lesson_status('{I['boss']}', '{I['lesson2']}', 'archived')")
+    service(f"SELECT code FROM set_lesson_status('{I['boss']}', '{I['lesson']}', 'archived')")
+    assert release()[0:2] == ['f', 'INCOMPLETE_HIERARCHY']
+    check('empty active branches, active descendants under archived parents and wholly archived courses cannot release')
+
     for role in ('anon', 'authenticated'):
+        rejected(f"SET ROLE {role}; SELECT forge_release_catalog_fingerprint('{I['course']}');", 'permission denied')
         rejected(f"SET ROLE {role}; SELECT * FROM release_course('{I['boss']}', '{I['course']}');", 'permission denied')
         rejected(f"SET ROLE {role}; SELECT * FROM release_lesson('{I['boss']}', '{I['lesson']}');", 'permission denied')
         rejected(f"SET ROLE {role}; SELECT * FROM set_course_status('{I['boss']}', '{I['course']}', 'draft');", 'permission denied')

@@ -1,0 +1,761 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-usable-money-part-2",
+  "lesson_id": "fe-production-usable-money-review-1",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.cash.reserved",
+    "finance.cash.direction",
+    "finance.cash.received",
+    "finance.cash.balance",
+    "finance.cash.commitment"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Use completed payments, receipt status and protected commitments to calculate free-to-spend money in a new situation.",
+  "title": {
+    "en-US": "Follow the payments",
+    "es-MX": "Sigue los pagos",
+    "pt-BR": "Acompanhe os pagamentos"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Follow the payments\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Sigue los pagos\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Acompanhe os pagamentos\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "consolidate",
+    "objective": {
+      "skill_id": "cash.reserved",
+      "observable_action": "Use completed payments, receipt status and protected commitments to calculate free-to-spend money in a new situation.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "cash.received",
+      "cash.balance",
+      "cash.commitment"
+    ],
+    "retrieval_skills": [
+      "cash.direction",
+      "cash.received",
+      "cash.balance",
+      "cash.commitment",
+      "cash.reserved"
+    ],
+    "relevance": "Track payments in dollars, received money and commitments to check what remains usable.",
+    "misconception": "Repeating a previous answer without checking the current person, payment status and commitments.",
+    "numeracy_support": "All amounts and conditions needed for the current decision remain visible. Arithmetic uses previously demonstrated receipt, payment and reservation relationships.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "cash.direction",
+        "context_id": "production-money-review-1-practice-01",
+        "supports_from": [],
+        "reasoning": "The refund moves cash away from the shop."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "cash.received",
+        "context_id": "production-money-review-1-practice-02",
+        "supports_from": [],
+        "reasoning": "Only the money already received is available now."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "cash.balance",
+        "context_id": "production-money-review-1-practice-03",
+        "supports_from": [],
+        "reasoning": "The balance includes the starting money and both completed changes."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "cash.commitment",
+        "context_id": "production-money-review-1-practice-04",
+        "supports_from": [],
+        "reasoning": "The stated unpaid bill still needs protected money."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "cash.reserved",
+        "context_id": "production-money-review-1-practice-05",
+        "supports_from": [],
+        "reasoning": "90 − 40 = 50; 50 − 20 = 30 remains free."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "cash.reserved",
+        "context_id": "production-money-review-1-transfer-01",
+        "supports_from": [],
+        "reasoning": "80 − 50 = 30. The completed payment is already reflected in the balance."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "cash.reserved",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Track payments in dollars, received money and commitments to check what remains usable."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Revisa pagos en pesos, dinero recibido y compromisos para saber qué puedes usar."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Confira pagamentos em reais, dinheiro recebido e compromissos para saber o que pode usar."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.direction",
+      "copy": {
+        "en-US": {
+          "prompt": "What happens to the shop’s cash?",
+          "scene": "The shop gives Ana a cash refund.",
+          "options": [
+            {
+              "label": "It stays unchanged"
+            },
+            {
+              "label": "It decreases"
+            },
+            {
+              "label": "It increases"
+            }
+          ],
+          "help": [
+            "Track the named person or business, not only the word refund."
+          ],
+          "feedback": {
+            "met": "The refund moves cash away from the shop.",
+            "not_yet": "Track the named person or business, not only the word refund."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué pasa con el efectivo de la tienda?",
+          "scene": "La tienda entrega una devolución en efectivo a Ana.",
+          "options": [
+            {
+              "label": "Sigue igual"
+            },
+            {
+              "label": "Disminuye"
+            },
+            {
+              "label": "Aumenta"
+            }
+          ],
+          "help": [
+            "Sigue a la persona o negocio indicado, no solo la palabra devolución."
+          ],
+          "feedback": {
+            "met": "La devolución saca efectivo de la tienda.",
+            "not_yet": "Sigue a la persona o negocio indicado, no solo la palabra devolución."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que acontece com o dinheiro da loja?",
+          "scene": "A loja entrega um reembolso em dinheiro para Ana.",
+          "options": [
+            {
+              "label": "Fica igual"
+            },
+            {
+              "label": "Diminui"
+            },
+            {
+              "label": "Aumenta"
+            }
+          ],
+          "help": [
+            "Acompanhe a pessoa ou o negócio indicado, não só a palavra reembolso."
+          ],
+          "feedback": {
+            "met": "O reembolso tira dinheiro da loja.",
+            "not_yet": "Acompanhe a pessoa ou o negócio indicado, não só a palavra reembolso."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.received",
+      "copy": {
+        "en-US": {
+          "prompt": "How much is available now?",
+          "scene": "You hold 50. An approved refund of 30 has not arrived.",
+          "options": [
+            {
+              "label": "80"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "50"
+            }
+          ],
+          "help": [
+            "Approval is not the same as receipt."
+          ],
+          "feedback": {
+            "met": "Only the money already received is available now.",
+            "not_yet": "Approval is not the same as receipt."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto está disponible ahora?",
+          "scene": "Tienes 50. Una devolución aprobada de 30 no ha llegado.",
+          "options": [
+            {
+              "label": "80"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "50"
+            }
+          ],
+          "help": [
+            "Aprobación no significa recepción."
+          ],
+          "feedback": {
+            "met": "Solo el dinero recibido está disponible ahora.",
+            "not_yet": "Aprobación no significa recepción."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto está disponível agora?",
+          "scene": "Você tem 50. Um reembolso aprovado de 30 ainda não chegou.",
+          "options": [
+            {
+              "label": "80"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "50"
+            }
+          ],
+          "help": [
+            "Aprovação não significa recebimento."
+          ],
+          "feedback": {
+            "met": "Só o dinheiro recebido está disponível agora.",
+            "not_yet": "Aprovação não significa recebimento."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          50,
+          30
+        ],
+        "expression": {
+          "input": 0
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "money.running-ledger.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "balance-meter"
+      },
+      "payload": {
+        "initial": 60,
+        "sale": 20,
+        "cost": 15,
+        "maxEntries": 2,
+        "personal": true,
+        "currency": "local"
+      },
+      "rubric": {
+        "target_balance": 65
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.balance",
+      "copy": {
+        "en-US": {
+          "prompt": "Start with 60, receive 20 and pay 15. Record the movements and enter the final balance.",
+          "feedback": {
+            "met": "The balance includes the starting money and both completed changes.",
+            "not_yet": "Add the receipt to the start, then subtract the payment."
+          },
+          "help": [
+            "Add the receipt to the start, then subtract the payment."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Empieza con 60, recibe 20 y paga 15. Registra los movimientos y escribe el saldo final.",
+          "feedback": {
+            "met": "El saldo incluye el dinero inicial y ambos cambios realizados.",
+            "not_yet": "Suma la entrada al inicio y luego resta el pago."
+          },
+          "help": [
+            "Suma la entrada al inicio y luego resta el pago."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Comece com 60, receba 20 e pague 15. Registre os movimentos e digite o saldo final.",
+          "feedback": {
+            "met": "O saldo inclui o dinheiro inicial e as duas mudanças concluídas.",
+            "not_yet": "Some a entrada ao início e depois subtraia o pagamento."
+          },
+          "help": [
+            "Some a entrada ao início e depois subtraia o pagamento."
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.commitment",
+      "copy": {
+        "en-US": {
+          "prompt": "Which payment remains pending?",
+          "scene": "The appointment is paid. The required medicine bill is unpaid; an optional trip can wait.",
+          "options": [
+            {
+              "label": "The appointment"
+            },
+            {
+              "label": "The optional trip"
+            },
+            {
+              "label": "The medicine bill"
+            }
+          ],
+          "help": [
+            "Separate a completed payment from an unpaid obligation."
+          ],
+          "feedback": {
+            "met": "The stated unpaid bill still needs protected money.",
+            "not_yet": "Separate a completed payment from an unpaid obligation."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué pago sigue pendiente?",
+          "scene": "La cita está pagada. La cuenta necesaria de medicinas sigue pendiente; el viaje opcional puede esperar.",
+          "options": [
+            {
+              "label": "La cita"
+            },
+            {
+              "label": "El viaje opcional"
+            },
+            {
+              "label": "La cuenta de medicinas"
+            }
+          ],
+          "help": [
+            "Distingue un pago realizado de una obligación pendiente."
+          ],
+          "feedback": {
+            "met": "La cuenta pendiente indicada todavía necesita dinero protegido.",
+            "not_yet": "Distingue un pago realizado de una obligación pendiente."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual pagamento continua pendente?",
+          "scene": "A consulta está paga. A conta necessária de remédios está pendente; a viagem opcional pode esperar.",
+          "options": [
+            {
+              "label": "A consulta"
+            },
+            {
+              "label": "A viagem opcional"
+            },
+            {
+              "label": "A conta de remédios"
+            }
+          ],
+          "help": [
+            "Separe um pagamento concluído de uma obrigação pendente."
+          ],
+          "feedback": {
+            "met": "A conta pendente informada ainda precisa de dinheiro protegido.",
+            "not_yet": "Separe um pagamento concluído de uma obrigação pendente."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.reserved",
+      "copy": {
+        "en-US": {
+          "prompt": "How much is free?",
+          "scene": "You hold 90. Protect 40 for one bill and 20 for another.",
+          "options": [
+            {
+              "label": "60"
+            },
+            {
+              "label": "50"
+            },
+            {
+              "label": "30"
+            }
+          ],
+          "help": [
+            "Protect both unpaid bills before using the remainder."
+          ],
+          "feedback": {
+            "met": "90 − 40 = 50; 50 − 20 = 30 remains free.",
+            "not_yet": "Protect both unpaid bills before using the remainder."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto queda libre?",
+          "scene": "Tienes 90. Protege 40 para una cuenta y 20 para otra.",
+          "options": [
+            {
+              "label": "60"
+            },
+            {
+              "label": "50"
+            },
+            {
+              "label": "30"
+            }
+          ],
+          "help": [
+            "Protege ambas cuentas pendientes antes de usar el resto."
+          ],
+          "feedback": {
+            "met": "90 − 40 = 50; 50 − 20 = 30 libres.",
+            "not_yet": "Protege ambas cuentas pendientes antes de usar el resto."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto fica livre?",
+          "scene": "Você tem 90. Proteja 40 para uma conta e 20 para outra.",
+          "options": [
+            {
+              "label": "60"
+            },
+            {
+              "label": "50"
+            },
+            {
+              "label": "30"
+            }
+          ],
+          "help": [
+            "Proteja as duas contas pendentes antes de usar o restante."
+          ],
+          "feedback": {
+            "met": "90 − 40 = 50; 50 − 20 = 30 livres.",
+            "not_yet": "Proteja as duas contas pendentes antes de usar o restante."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          90,
+          40,
+          20
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.cash.reserved",
+      "copy": {
+        "en-US": {
+          "prompt": "How much can you use?",
+          "scene": "After paying 20, your balance is 80. Protect 50 for an unpaid bill.",
+          "options": [
+            {
+              "label": "10"
+            },
+            {
+              "label": "50"
+            },
+            {
+              "label": "30"
+            }
+          ],
+          "help": [
+            "Do not subtract a past payment again from the updated balance."
+          ],
+          "feedback": {
+            "met": "80 − 50 = 30. The completed payment is already reflected in the balance.",
+            "not_yet": "Do not subtract a past payment again from the updated balance."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto puedes usar?",
+          "scene": "Después de pagar 20, tu saldo es 80. Protege 50 para una cuenta pendiente.",
+          "options": [
+            {
+              "label": "10"
+            },
+            {
+              "label": "50"
+            },
+            {
+              "label": "30"
+            }
+          ],
+          "help": [
+            "No vuelvas a restar un pago anterior del saldo actualizado."
+          ],
+          "feedback": {
+            "met": "80 − 50 = 30. El pago realizado ya está reflejado en el saldo.",
+            "not_yet": "No vuelvas a restar un pago anterior del saldo actualizado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto pode usar?",
+          "scene": "Depois de pagar 20, seu saldo é 80. Proteja 50 para uma conta pendente.",
+          "options": [
+            {
+              "label": "10"
+            },
+            {
+              "label": "50"
+            },
+            {
+              "label": "30"
+            }
+          ],
+          "help": [
+            "Não subtraia de novo um pagamento anterior do saldo atualizado."
+          ],
+          "feedback": {
+            "met": "80 − 50 = 30. O pagamento concluído já está refletido no saldo.",
+            "not_yet": "Não subtraia de novo um pagamento anterior do saldo atualizado."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          20,
+          80,
+          50
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 1
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

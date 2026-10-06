@@ -1,0 +1,927 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-time-inflation-part-2",
+  "lesson_id": "fe-production-time-inflation-09",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.time-inflation.09"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Compare nominal growth with purchasing-power growth under explicit assumptions.",
+  "title": {
+    "en-US": "Purchasing power",
+    "es-MX": "Cuenta qué compra el saldo",
+    "pt-BR": "Conte o que o saldo compra"
+  },
+  "new_concepts": [
+    "finance.prod.time-inflation.09"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Count what the balance buys\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Cuenta qué compra el saldo\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Conte o que o saldo compra\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.time-inflation.09",
+      "observable_action": "Compare nominal growth with purchasing-power growth under explicit assumptions.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "time.compound",
+      "prod.time-inflation.06",
+      "prod.financial-math.09"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A balance can rise while its ability to buy the same goods stays unchanged or falls.",
+    "misconception": "Treating nominal account growth as the same thing as growth in purchasing power.",
+    "numeracy_support": "Every quantity and assumption needed to decide is visible in the current scenario. Examples explain the relationship before independent application.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.time-inflation.09",
+        "context_id": "fe-production-time-inflation-09-example-01",
+        "supports_from": [],
+        "reasoning": "Balance rises from 100 to 120; the same basket rises from 10 to 12. Both balances buy ten baskets."
+      },
+      {
+        "segment_id": "guided-worked-01",
+        "skill_id": "prod.time-inflation.09",
+        "context_id": "fe-production-time-inflation-09-guided-worked-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Compare what the money buys at each date."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.time-inflation.09",
+        "context_id": "fe-production-time-inflation-09-guided-01",
+        "supports_from": [
+          "guided-worked-01"
+        ],
+        "reasoning": "240 ÷ 20 = 12 baskets."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.time-inflation.09",
+        "context_id": "fe-production-time-inflation-09-practice-02",
+        "supports_from": [],
+        "reasoning": "220 ÷ 22 − 200 ÷ 20 = 0 change."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.time-inflation.09",
+        "context_id": "fe-production-time-inflation-09-practice-03",
+        "supports_from": [],
+        "reasoning": "144 ÷ 12 − 100 ÷ 10 = 2 additional baskets."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.time-inflation.09",
+        "context_id": "fe-production-time-inflation-09-practice-04",
+        "supports_from": [],
+        "reasoning": "The same goods can become less affordable despite nominal growth."
+      },
+      {
+        "segment_id": "transfer-05",
+        "skill_id": "prod.time-inflation.09",
+        "context_id": "fe-production-time-inflation-09-transfer-05",
+        "supports_from": [],
+        "reasoning": "600 ÷ 60 − 630 ÷ 70 = 1 fewer bundle."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.time-inflation.09",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A balance can rise while its ability to buy the same goods stays unchanged or falls."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un saldo puede subir mientras su capacidad de comprar los mismos bienes no cambia o baja."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Um saldo pode subir enquanto sua capacidade de comprar os mesmos bens não muda ou cai."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Follow the evidence",
+          "line": "Balance rises from 100 to 120; the same basket rises from 10 to 12. Both balances buy ten baskets."
+        },
+        "es-MX": {
+          "prompt": "Sigue las pruebas",
+          "line": "Saldo sube de 100 a 120; misma canasta sube de 10 a 12. Ambos saldos compran diez canastas."
+        },
+        "pt-BR": {
+          "prompt": "Siga as provas",
+          "line": "Saldo sobe de 100 para 120; mesma cesta sobe de 10 para 12. Ambos os saldos compram dez cestas."
+        }
+      }
+    },
+    {
+      "id": "guided-worked-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "step-1"
+          },
+          {
+            "id": "step-2"
+          },
+          {
+            "id": "step-3"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "step-2",
+          "step-3"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "step-2": "10",
+          "step-3": "0"
+        }
+      },
+      "item_role": "practice",
+      "copy": {
+        "en-US": {
+          "prompt": "Compare purchasing capacity at each date.",
+          "steps": [
+            {
+              "expression": "100 / 10",
+              "result": "10",
+              "spokenText": "Earlier balance buys ten baskets."
+            },
+            {
+              "expression": "120 / 12",
+              "result": "10",
+              "spokenText": "Later balance also buys ten."
+            },
+            {
+              "expression": "10 - 10",
+              "result": "0",
+              "spokenText": "No increase in basket purchasing capacity."
+            }
+          ],
+          "feedback": {
+            "met": "Compare what the money buys at each date.",
+            "not_yet": "Use the basket price matching each balance’s date."
+          },
+          "help": [
+            "Use the basket price matching each balance’s date."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Compara capacidad de compra en cada fecha.",
+          "steps": [
+            {
+              "expression": "100 / 10",
+              "result": "10",
+              "spokenText": "Saldo anterior compra diez canastas."
+            },
+            {
+              "expression": "120 / 12",
+              "result": "10",
+              "spokenText": "Saldo posterior también compra diez."
+            },
+            {
+              "expression": "10 - 10",
+              "result": "0",
+              "spokenText": "Sin aumento de capacidad de comprar canastas."
+            }
+          ],
+          "feedback": {
+            "met": "Compara qué compra el dinero en cada fecha.",
+            "not_yet": "Usa el precio de canasta correspondiente a cada fecha."
+          },
+          "help": [
+            "Usa el precio de canasta correspondiente a cada fecha."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Compare capacidade de compra em cada data.",
+          "steps": [
+            {
+              "expression": "100 / 10",
+              "result": "10",
+              "spokenText": "Saldo anterior compra dez cestas."
+            },
+            {
+              "expression": "120 / 12",
+              "result": "10",
+              "spokenText": "Saldo posterior também compra dez."
+            },
+            {
+              "expression": "10 - 10",
+              "result": "0",
+              "spokenText": "Sem aumento da capacidade de comprar cestas."
+            }
+          ],
+          "feedback": {
+            "met": "Compare o que o dinheiro compra em cada data.",
+            "not_yet": "Use o preço da cesta correspondente a cada data."
+          },
+          "help": [
+            "Use o preço da cesta correspondente a cada data."
+          ]
+        }
+      },
+      "knowledge_component_id": "finance.prod.time-inflation.09"
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.time-inflation.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Current baskets affordable?",
+          "scene": "Current balance 240; same basket currently costs 20; no other spending.",
+          "options": [
+            {
+              "label": "12"
+            },
+            {
+              "label": "20"
+            },
+            {
+              "label": "240"
+            }
+          ],
+          "help": [
+            "Divide current funds by the current basket price."
+          ],
+          "feedback": {
+            "met": "240 ÷ 20 = 12 baskets.",
+            "not_yet": "Divide current funds by the current basket price."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Canastas que puedes comprar ahora?",
+          "scene": "Saldo actual 240; misma canasta cuesta ahora 20; sin otros gastos.",
+          "options": [
+            {
+              "label": "12"
+            },
+            {
+              "label": "20"
+            },
+            {
+              "label": "240"
+            }
+          ],
+          "help": [
+            "Divide fondos actuales entre precio actual de canasta."
+          ],
+          "feedback": {
+            "met": "240 ÷ 20 = 12 canastas.",
+            "not_yet": "Divide fondos actuales entre precio actual de canasta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Cestas que pode comprar agora?",
+          "scene": "Saldo atual 240; mesma cesta custa agora 20; sem outros gastos.",
+          "options": [
+            {
+              "label": "12"
+            },
+            {
+              "label": "20"
+            },
+            {
+              "label": "240"
+            }
+          ],
+          "help": [
+            "Divida recursos atuais pelo preço atual da cesta."
+          ],
+          "feedback": {
+            "met": "240 ÷ 20 = 12 cestas.",
+            "not_yet": "Divida recursos atuais pelo preço atual da cesta."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          240,
+          20
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.time-inflation.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Change in affordable baskets?",
+          "scene": "Earlier balance 200, basket 20; later balance 220, same basket 22.",
+          "options": [
+            {
+              "label": "0"
+            },
+            {
+              "label": "20"
+            },
+            {
+              "label": "2"
+            }
+          ],
+          "help": [
+            "Compare basket counts, not the balances alone."
+          ],
+          "feedback": {
+            "met": "220 ÷ 22 − 200 ÷ 20 = 0 change.",
+            "not_yet": "Compare basket counts, not the balances alone."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cambio en canastas que puedes comprar?",
+          "scene": "Saldo anterior 200, canasta 20; saldo posterior 220, misma canasta 22.",
+          "options": [
+            {
+              "label": "0"
+            },
+            {
+              "label": "20"
+            },
+            {
+              "label": "2"
+            }
+          ],
+          "help": [
+            "Compara cantidades de canastas, no solo saldos."
+          ],
+          "feedback": {
+            "met": "220 ÷ 22 − 200 ÷ 20 = 0 de cambio.",
+            "not_yet": "Compara cantidades de canastas, no solo saldos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Mudança nas cestas que pode comprar?",
+          "scene": "Saldo anterior 200, cesta 20; saldo posterior 220, mesma cesta 22.",
+          "options": [
+            {
+              "label": "0"
+            },
+            {
+              "label": "20"
+            },
+            {
+              "label": "2"
+            }
+          ],
+          "help": [
+            "Compare quantidades de cestas, não só saldos."
+          ],
+          "feedback": {
+            "met": "220 ÷ 22 − 200 ÷ 20 = 0 de mudança.",
+            "not_yet": "Compare quantidades de cestas, não só saldos."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          200,
+          20,
+          220,
+          22
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "divide",
+              "args": [
+                {
+                  "input": 2
+                },
+                {
+                  "input": 3
+                }
+              ]
+            },
+            {
+              "op": "divide",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.time-inflation.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Additional baskets affordable?",
+          "scene": "Earlier balance 100, basket 10; later balance 144, same basket 12.",
+          "options": [
+            {
+              "label": "44"
+            },
+            {
+              "label": "2"
+            },
+            {
+              "label": "4"
+            }
+          ],
+          "help": [
+            "Find how many each balance buys at its date."
+          ],
+          "feedback": {
+            "met": "144 ÷ 12 − 100 ÷ 10 = 2 additional baskets.",
+            "not_yet": "Find how many each balance buys at its date."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Canastas adicionales que puedes comprar?",
+          "scene": "Saldo anterior 100, canasta 10; saldo posterior 144, misma canasta 12.",
+          "options": [
+            {
+              "label": "44"
+            },
+            {
+              "label": "2"
+            },
+            {
+              "label": "4"
+            }
+          ],
+          "help": [
+            "Halla cuántas compra cada saldo en su fecha."
+          ],
+          "feedback": {
+            "met": "144 ÷ 12 − 100 ÷ 10 = 2 canastas adicionales.",
+            "not_yet": "Halla cuántas compra cada saldo en su fecha."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Cestas extras que pode comprar?",
+          "scene": "Saldo anterior 100, cesta 10; saldo posterior 144, mesma cesta 12.",
+          "options": [
+            {
+              "label": "44"
+            },
+            {
+              "label": "2"
+            },
+            {
+              "label": "4"
+            }
+          ],
+          "help": [
+            "Ache quantas cada saldo compra na sua data."
+          ],
+          "feedback": {
+            "met": "144 ÷ 12 − 100 ÷ 10 = 2 cestas extras.",
+            "not_yet": "Ache quantas cada saldo compra na sua data."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          100,
+          10,
+          144,
+          12
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "divide",
+              "args": [
+                {
+                  "input": 2
+                },
+                {
+                  "input": 3
+                }
+              ]
+            },
+            {
+              "op": "divide",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.time-inflation.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Purchasing-power effect?",
+          "scene": "Money grows slowly while the same goods’ prices grow faster.",
+          "options": [
+            {
+              "label": "It can fall despite a higher balance"
+            },
+            {
+              "label": "It is unaffected by prices"
+            },
+            {
+              "label": "It must rise because money increased"
+            }
+          ],
+          "help": [
+            "Compare growth of money with growth of prices."
+          ],
+          "feedback": {
+            "met": "The same goods can become less affordable despite nominal growth.",
+            "not_yet": "Compare growth of money with growth of prices."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué puede pasar con poder de compra?",
+          "scene": "El dinero crece lentamente y precios de los mismos bienes crecen más.",
+          "options": [
+            {
+              "label": "Puede bajar aunque el saldo suba"
+            },
+            {
+              "label": "Los precios no lo afectan"
+            },
+            {
+              "label": "Debe subir porque aumentó dinero"
+            }
+          ],
+          "help": [
+            "Compara crecimiento del dinero y crecimiento de precios."
+          ],
+          "feedback": {
+            "met": "Mismos bienes pueden volverse menos accesibles pese al crecimiento nominal.",
+            "not_yet": "Compara crecimiento del dinero y crecimiento de precios."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que pode ocorrer com poder de compra?",
+          "scene": "Dinheiro cresce devagar e preços dos mesmos bens crescem mais.",
+          "options": [
+            {
+              "label": "Pode cair embora o saldo suba"
+            },
+            {
+              "label": "Preços não o afetam"
+            },
+            {
+              "label": "Deve subir porque o dinheiro aumentou"
+            }
+          ],
+          "help": [
+            "Compare crescimento do dinheiro e crescimento dos preços."
+          ],
+          "feedback": {
+            "met": "Mesmos bens podem ficar menos acessíveis apesar do crescimento nominal.",
+            "not_yet": "Compare crescimento do dinheiro e crescimento dos preços."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.time-inflation.09",
+      "copy": {
+        "en-US": {
+          "prompt": "How many fewer bundles?",
+          "scene": "Repair fund: earlier 600, fixed bundle 60; later 630, same bundle 70.",
+          "options": [
+            {
+              "label": "1"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "The balance rose, but compare its buying capacity."
+          ],
+          "feedback": {
+            "met": "600 ÷ 60 − 630 ÷ 70 = 1 fewer bundle.",
+            "not_yet": "The balance rose, but compare its buying capacity."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuántos paquetes menos?",
+          "scene": "Fondo de reparación: antes 600, paquete fijo 60; después 630, mismo paquete 70.",
+          "options": [
+            {
+              "label": "1"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "El saldo subió, pero compara su capacidad de compra."
+          ],
+          "feedback": {
+            "met": "600 ÷ 60 − 630 ÷ 70 = 1 paquete menos.",
+            "not_yet": "El saldo subió, pero compara su capacidad de compra."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quantos pacotes a menos?",
+          "scene": "Fundo de reparo: antes 600, pacote fixo 60; depois 630, mesmo pacote 70.",
+          "options": [
+            {
+              "label": "1"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "O saldo subiu, mas compare sua capacidade de compra."
+          ],
+          "feedback": {
+            "met": "600 ÷ 60 − 630 ÷ 70 = 1 pacote a menos.",
+            "not_yet": "O saldo subiu, mas compare sua capacidade de compra."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          600,
+          60,
+          630,
+          70
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "divide",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "op": "divide",
+              "args": [
+                {
+                  "input": 2
+                },
+                {
+                  "input": 3
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

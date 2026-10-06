@@ -1,0 +1,754 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-usable-money-part-1",
+  "lesson_id": "fe-production-usable-money-03",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.cash.commitment"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Identify which money is already committed to a stated upcoming obligation.",
+  "title": {
+    "en-US": "Already committed",
+    "es-MX": "Ya está comprometido",
+    "pt-BR": "Já está comprometido"
+  },
+  "new_concepts": [
+    "finance.cash.commitment"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Already committed\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Ya está comprometido\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Já está comprometido\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "cash.commitment",
+      "observable_action": "Identify which money is already committed to a stated upcoming obligation.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "cash.received"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Money can still be with you while it is needed for an upcoming payment.",
+    "misconception": "If a payment has not happened yet, all the visible money is uncommitted.",
+    "numeracy_support": "Identify the stated amount only; calculating what remains is the following lesson's objective.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "cash.commitment",
+        "context_id": "production-money-3-example-01",
+        "supports_from": [],
+        "reasoning": "You hold 70; tomorrow’s bill needs 40. Reserving that 40 protects the payment without spending the money yet."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "cash.commitment",
+        "context_id": "production-money-3-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The transport payment is still unpaid and must be protected."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "cash.commitment",
+        "context_id": "production-money-3-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Setting money aside is different from paying the bill."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "cash.commitment",
+        "context_id": "production-money-3-practice-01",
+        "supports_from": [],
+        "reasoning": "The scenario identifies the unpaid bill as the commitment."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "cash.commitment",
+        "context_id": "production-money-3-practice-02",
+        "supports_from": [],
+        "reasoning": "A completed payment is not an unpaid commitment."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "cash.commitment",
+        "context_id": "production-money-3-practice-03",
+        "supports_from": [],
+        "reasoning": "The label identifies the intended use of money still held."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "cash.commitment",
+        "context_id": "production-money-3-transfer-01",
+        "supports_from": [],
+        "reasoning": "Only the transport still requires a payment in this scenario."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "cash.commitment",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Money can still be with you while it is needed for an upcoming payment."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "El dinero puede seguir contigo aunque lo necesites para un pago próximo."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "O dinheiro pode continuar com você mesmo sendo necessário para um pagamento próximo."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Mark the commitment",
+          "line": "You hold 70; tomorrow’s bill needs 40. Reserving that 40 protects the payment without spending the money yet."
+        },
+        "es-MX": {
+          "prompt": "Señala el compromiso",
+          "line": "Tienes 70; la cuenta de mañana requiere 40. Apartar esos 40 protege el pago sin gastar todavía el dinero."
+        },
+        "pt-BR": {
+          "prompt": "Marque o compromisso",
+          "line": "Você tem 70; a conta de amanhã exige 40. Reservar esses 40 protege o pagamento sem gastar o dinheiro ainda."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.commitment",
+      "copy": {
+        "en-US": {
+          "prompt": "What is committed?",
+          "scene": "You hold 35. Protect 20 for tomorrow’s required transport payment.",
+          "options": [
+            {
+              "label": "Nothing until tomorrow"
+            },
+            {
+              "label": "The transport money"
+            },
+            {
+              "label": "All 35"
+            }
+          ],
+          "help": [
+            "Money can be committed before it leaves your hands."
+          ],
+          "feedback": {
+            "met": "The transport payment is still unpaid and must be protected.",
+            "not_yet": "Money can be committed before it leaves your hands."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué está comprometido?",
+          "scene": "Tienes 35. Protege 20 para el transporte necesario de mañana.",
+          "options": [
+            {
+              "label": "Nada hasta mañana"
+            },
+            {
+              "label": "El dinero del transporte"
+            },
+            {
+              "label": "Los 35 completos"
+            }
+          ],
+          "help": [
+            "El dinero puede estar comprometido antes de pagarlo."
+          ],
+          "feedback": {
+            "met": "El transporte sigue pendiente y debes proteger ese dinero.",
+            "not_yet": "El dinero puede estar comprometido antes de pagarlo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que está comprometido?",
+          "scene": "Você tem 35. Proteja 20 para o transporte necessário de amanhã.",
+          "options": [
+            {
+              "label": "Nada até amanhã"
+            },
+            {
+              "label": "O dinheiro do transporte"
+            },
+            {
+              "label": "Os 35 inteiros"
+            }
+          ],
+          "help": [
+            "O dinheiro pode estar comprometido antes de ser pago."
+          ],
+          "feedback": {
+            "met": "O transporte ainda não foi pago e esse dinheiro precisa ficar protegido.",
+            "not_yet": "O dinheiro pode estar comprometido antes de ser pago."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.commitment",
+      "copy": {
+        "en-US": {
+          "prompt": "Has the money left?",
+          "scene": "You set aside cash for an unpaid bill. You still hold it.",
+          "options": [
+            {
+              "label": "Yes, setting aside pays it"
+            },
+            {
+              "label": "Not yet"
+            }
+          ],
+          "help": [
+            "Check whether a payment actually happened."
+          ],
+          "feedback": {
+            "met": "Setting money aside is different from paying the bill.",
+            "not_yet": "Check whether a payment actually happened."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Ya salió el dinero?",
+          "scene": "Apartaste efectivo para una cuenta pendiente. Todavía lo tienes.",
+          "options": [
+            {
+              "label": "Sí, apartarlo la paga"
+            },
+            {
+              "label": "Todavía no"
+            }
+          ],
+          "help": [
+            "Revisa si realmente se hizo el pago."
+          ],
+          "feedback": {
+            "met": "Apartar dinero es distinto de pagar la cuenta.",
+            "not_yet": "Revisa si realmente se hizo el pago."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O dinheiro já saiu?",
+          "scene": "Você separou dinheiro para uma conta pendente. Ainda está com ele.",
+          "options": [
+            {
+              "label": "Sim, separar já paga"
+            },
+            {
+              "label": "Ainda não"
+            }
+          ],
+          "help": [
+            "Confira se o pagamento realmente aconteceu."
+          ],
+          "feedback": {
+            "met": "Separar dinheiro é diferente de pagar a conta.",
+            "not_yet": "Confira se o pagamento realmente aconteceu."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.commitment",
+      "copy": {
+        "en-US": {
+          "prompt": "Which amount needs protection?",
+          "scene": "A bill is still unpaid. An optional purchase can wait.",
+          "options": [
+            {
+              "label": "Neither amount"
+            },
+            {
+              "label": "Only the optional purchase"
+            },
+            {
+              "label": "The unpaid bill"
+            }
+          ],
+          "help": [
+            "Follow the stated obligation, not the purchase you prefer."
+          ],
+          "feedback": {
+            "met": "The scenario identifies the unpaid bill as the commitment.",
+            "not_yet": "Follow the stated obligation, not the purchase you prefer."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué dinero debes proteger?",
+          "scene": "Una cuenta sigue pendiente. Una compra opcional puede esperar.",
+          "options": [
+            {
+              "label": "Ningún monto"
+            },
+            {
+              "label": "Solo la compra opcional"
+            },
+            {
+              "label": "El de la cuenta pendiente"
+            }
+          ],
+          "help": [
+            "Sigue la obligación indicada, no la compra que prefieras."
+          ],
+          "feedback": {
+            "met": "La situación señala la cuenta pendiente como el compromiso.",
+            "not_yet": "Sigue la obligación indicada, no la compra que prefieras."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual dinheiro precisa de proteção?",
+          "scene": "Uma conta continua pendente. Uma compra opcional pode esperar.",
+          "options": [
+            {
+              "label": "Nenhum valor"
+            },
+            {
+              "label": "Só o da compra opcional"
+            },
+            {
+              "label": "O da conta pendente"
+            }
+          ],
+          "help": [
+            "Siga a obrigação informada, não a compra que você prefere."
+          ],
+          "feedback": {
+            "met": "A situação aponta a conta pendente como o compromisso.",
+            "not_yet": "Siga a obrigação informada, não a compra que você prefere."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.commitment",
+      "copy": {
+        "en-US": {
+          "prompt": "Reserve it again?",
+          "scene": "A bill was paid in full yesterday. No amount remains due.",
+          "options": [
+            {
+              "label": "No, it is already paid"
+            },
+            {
+              "label": "Yes, it was a bill"
+            }
+          ],
+          "help": [
+            "Look at whether anything is still owed."
+          ],
+          "feedback": {
+            "met": "A completed payment is not an unpaid commitment.",
+            "not_yet": "Look at whether anything is still owed."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Apartarlo otra vez?",
+          "scene": "La cuenta se pagó completa ayer. No queda nada pendiente.",
+          "options": [
+            {
+              "label": "No, ya está pagada"
+            },
+            {
+              "label": "Sí, era una cuenta"
+            }
+          ],
+          "help": [
+            "Revisa si todavía se debe algo."
+          ],
+          "feedback": {
+            "met": "Un pago terminado no es un compromiso pendiente.",
+            "not_yet": "Revisa si todavía se debe algo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Reservar de novo?",
+          "scene": "A conta foi paga integralmente ontem. Não resta nada a pagar.",
+          "options": [
+            {
+              "label": "Não, já está paga"
+            },
+            {
+              "label": "Sim, era uma conta"
+            }
+          ],
+          "help": [
+            "Veja se ainda existe algo a pagar."
+          ],
+          "feedback": {
+            "met": "Um pagamento concluído não é um compromisso pendente.",
+            "not_yet": "Veja se ainda existe algo a pagar."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.commitment",
+      "copy": {
+        "en-US": {
+          "prompt": "What does the label mean?",
+          "scene": "An envelope says “tomorrow’s bill.” The bill remains unpaid.",
+          "options": [
+            {
+              "label": "Money reserved for that bill"
+            },
+            {
+              "label": "A bill already paid"
+            },
+            {
+              "label": "New income tomorrow"
+            }
+          ],
+          "help": [
+            "A label neither pays a bill nor creates income."
+          ],
+          "feedback": {
+            "met": "The label identifies the intended use of money still held.",
+            "not_yet": "A label neither pays a bill nor creates income."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué significa la etiqueta?",
+          "scene": "Un sobre dice «cuenta de mañana». La cuenta sigue pendiente.",
+          "options": [
+            {
+              "label": "Dinero apartado para esa cuenta"
+            },
+            {
+              "label": "Una cuenta ya pagada"
+            },
+            {
+              "label": "Ingreso nuevo mañana"
+            }
+          ],
+          "help": [
+            "Una etiqueta no paga una cuenta ni crea ingresos."
+          ],
+          "feedback": {
+            "met": "La etiqueta indica el destino del dinero que aún tienes.",
+            "not_yet": "Una etiqueta no paga una cuenta ni crea ingresos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que significa a etiqueta?",
+          "scene": "Um envelope diz “conta de amanhã”. A conta continua pendente.",
+          "options": [
+            {
+              "label": "Dinheiro reservado para essa conta"
+            },
+            {
+              "label": "Uma conta já paga"
+            },
+            {
+              "label": "Renda nova amanhã"
+            }
+          ],
+          "help": [
+            "Uma etiqueta não paga uma conta nem cria renda."
+          ],
+          "feedback": {
+            "met": "A etiqueta indica o destino do dinheiro que você ainda tem.",
+            "not_yet": "Uma etiqueta não paga uma conta nem cria renda."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.cash.commitment",
+      "copy": {
+        "en-US": {
+          "prompt": "Which commitment remains?",
+          "scene": "The appointment is prepaid. Tomorrow’s required transport is still unpaid.",
+          "options": [
+            {
+              "label": "The appointment only"
+            },
+            {
+              "label": "Tomorrow’s transport"
+            },
+            {
+              "label": "Both were already paid"
+            }
+          ],
+          "help": [
+            "Separate a prepaid service from an unpaid obligation."
+          ],
+          "feedback": {
+            "met": "Only the transport still requires a payment in this scenario.",
+            "not_yet": "Separate a prepaid service from an unpaid obligation."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué compromiso queda?",
+          "scene": "La cita ya está pagada. El transporte necesario de mañana sigue pendiente.",
+          "options": [
+            {
+              "label": "Solo la cita"
+            },
+            {
+              "label": "El transporte de mañana"
+            },
+            {
+              "label": "Ambos ya están pagados"
+            }
+          ],
+          "help": [
+            "Distingue el servicio pagado de la obligación pendiente."
+          ],
+          "feedback": {
+            "met": "Solo el transporte todavía requiere un pago en esta situación.",
+            "not_yet": "Distingue el servicio pagado de la obligación pendiente."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual compromisso permanece?",
+          "scene": "A consulta já está paga. O transporte necessário de amanhã continua pendente.",
+          "options": [
+            {
+              "label": "Só a consulta"
+            },
+            {
+              "label": "O transporte de amanhã"
+            },
+            {
+              "label": "Ambos já estão pagos"
+            }
+          ],
+          "help": [
+            "Separe o serviço já pago da obrigação pendente."
+          ],
+          "feedback": {
+            "met": "Só o transporte ainda exige um pagamento nesta situação.",
+            "not_yet": "Separe o serviço já pago da obrigação pendente."
+          }
+        }
+      }
+    }
+  ]
+}

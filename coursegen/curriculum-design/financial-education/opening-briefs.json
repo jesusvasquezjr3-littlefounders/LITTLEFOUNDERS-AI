@@ -1,0 +1,334 @@
+{
+  "version": 1,
+  "status": "instructional-design-not-player-copy",
+  "publication_authorized": false,
+  "scope": "Nine opening teaching objectives including the explicit payment-direction bridge. Review scenarios and player copy remain separate outstanding work.",
+  "regional_assumptions": "All amounts are fictional whole currency units, not prices, income norms, current offers or legal rules. Localized player copy and notation must be authored separately. No salary, bank ownership or spare income is assumed.",
+  "learner_support": "Use adult situations and plain language. Explain the direction of a receipt or payment before requiring a balance update. Support counting and subtraction visibly; do not infer numeracy from age. Do not copy this private design text wholesale onto a mobile screen.",
+  "briefs": [
+    {
+      "lesson_id": "fe-production-usable-money-00",
+      "learner_problem": "A payment changes the payer and recipient in opposite directions; the question must name whose money is being tracked.",
+      "misconception": "A payment always means more money, regardless of who pays and who receives.",
+      "worked_example": {
+        "situation": "Ana hands a cash payment to a shop. Track only the cash Ana holds.",
+        "reasoning": "The money moves away from Ana and toward the shop. Her cash decreases; the shop receives it.",
+        "conclusion": "Identify the named person first, then follow the completed movement."
+      },
+      "guided_practice": {
+        "situation": "A completed payment moves from Luis to Ana, and the question asks about Ana.",
+        "support": "Show the sender, recipient and named person together, with a labeled direction rather than color alone.",
+        "expected_action": "Identify that Ana receives money and her cash increases."
+      },
+      "independent_practice": {
+        "situation": "Ana makes a completed cash payment to Luis; the question still asks about Ana.",
+        "expected_action": "Identify that her cash decreases, even though someone else receives it.",
+        "wrong_answer_reason": "The recipient gains cash, but the question is about the person paying."
+      },
+      "transfer": {
+        "situation": "A shop gives a cash refund to a buyer; the question asks about the shop.",
+        "expected_action": "Identify that the shop has paid money out and its cash decreases.",
+        "changed_constraint": "The shop is now the payer rather than the recipient. Follow the movement instead of assuming that shops always receive money."
+      },
+      "interaction": {
+        "type": "story.branch.v2",
+        "represents": "Selection of a completed payment direction for a named person.",
+        "scorer_limit": "This verifies direction only, not arithmetic or account reconciliation."
+      },
+      "numeracy_support": "No calculation is required. State payer, recipient and the person being tracked on every exercise.",
+      "kc_reconciliation": {
+        "candidate": "finance.cash.direction",
+        "status": "mapped-to-draft-shared-kc",
+        "issue": null
+      }
+    },
+    {
+      "lesson_id": "fe-production-usable-money-01",
+      "learner_problem": "A promise can make a purchase look affordable before the money is actually usable.",
+      "misconception": "Someone has agreed to pay, so that money is already available to spend.",
+      "worked_example": {
+        "situation": "You hold 20. Someone promises to repay 30 tomorrow. Nothing has arrived yet.",
+        "reasoning": "The 20 is already with you. The promised 30 is a future event, so it does not change what you hold now.",
+        "conclusion": "Only the 20 is available now. This does not claim that the promise will never be fulfilled."
+      },
+      "guided_practice": {
+        "situation": "A completed cash payment is beside you. A separate message says another payment will come later.",
+        "support": "Mark each item as already received or still expected before choosing.",
+        "expected_action": "Count the completed payment; leave the future payment out."
+      },
+      "independent_practice": {
+        "situation": "One customer has handed over the agreed payment. Another has only agreed to pay.",
+        "expected_action": "Identify the handed-over payment as currently usable.",
+        "wrong_answer_reason": "Agreement and actual receipt are different events; confidence in the payer does not erase the timing difference."
+      },
+      "transfer": {
+        "situation": "A shop approves a refund but explicitly says the money will be returned next week. You are deciding what you can pay today.",
+        "expected_action": "Keep the refund out of today's available money until it is actually received.",
+        "changed_constraint": "Apply the rule to an approved refund rather than an informal repayment; approval still does not establish receipt."
+      },
+      "interaction": {
+        "type": "story.branch.v2",
+        "represents": "The learner distinguishes completed and future money events.",
+        "scorer_limit": "The scorer checks the selected event or decision, not an unsubmitted explanation."
+      },
+      "numeracy_support": "No addition or percentage is required. Keep the received and promised amounts in visibly separate statements.",
+      "kc_reconciliation": {
+        "candidate": "finance.cash.received",
+        "status": "mapped-to-draft-shared-kc",
+        "issue": null
+      }
+    },
+    {
+      "lesson_id": "fe-production-usable-money-02",
+      "learner_problem": "A remembered balance becomes wrong when a receipt or payment is omitted.",
+      "misconception": "The starting amount remains the balance, or both incoming and outgoing amounts should be added.",
+      "worked_example": {
+        "situation": "Start with 40, receive 15 in cash, then pay 10.",
+        "reasoning": "The receipt increases 40 to 55. The payment removes 10, leaving 45. Show each change beside the event that caused it.",
+        "conclusion": "The resulting balance is 45, not 65 or the original 40."
+      },
+      "guided_practice": {
+        "situation": "Start with 12, receive 8, then pay 5.",
+        "support": "Show the intermediate balance of 20 and ask the learner to complete the payment step with a visible counting aid.",
+        "expected_action": "Reduce 20 by 5 to reach 15."
+      },
+      "independent_practice": {
+        "situation": "Start with 30, pay 10, then receive a completed repayment of 20.",
+        "expected_action": "Record one outgoing and one incoming event and identify a final balance of 40.",
+        "wrong_answer_reason": "The direction of each completed event determines whether money increases or decreases."
+      },
+      "transfer": {
+        "situation": "Start with 40, pay 12 for a purchase, then receive 5 back as a partial refund.",
+        "expected_action": "Identify the final balance of 33; the partial refund restores only the returned amount.",
+        "changed_constraint": "A return partly reverses a purchase instead of adding unrelated earnings. The full purchase must not be erased."
+      },
+      "interaction": {
+        "type": "money.running-ledger.v2",
+        "represents": "Incoming and outgoing events visibly change a personal balance.",
+        "scorer_limit": "The current scorer verifies the final balance, not the exact event order or a unique action history. Feedback may confirm the balance only. The transfer must not claim that the engine audited the refund record."
+      },
+      "numeracy_support": "Demonstrate addition and subtraction by visible balance changes before any independent calculation. Do not require a previously memorized arithmetic algorithm.",
+      "kc_reconciliation": {
+        "candidate": "finance.cash.balance",
+        "status": "mapped-to-draft-shared-kc",
+        "issue": null
+      }
+    },
+    {
+      "lesson_id": "fe-production-usable-money-03",
+      "learner_problem": "Money can still be visible while already needed for an agreed obligation.",
+      "misconception": "If a payment has not happened yet, all the visible money is uncommitted.",
+      "worked_example": {
+        "situation": "There is 70 available. A stated necessary payment of 40 is due tomorrow and has not been paid.",
+        "reasoning": "Mark the 40 as committed to that upcoming payment. It remains part of the balance until paid, but is not free for another use.",
+        "conclusion": "Committed money is not a second expense and must not disappear twice."
+      },
+      "guided_practice": {
+        "situation": "There is 35 available and a stated transport payment of 20 due tomorrow.",
+        "support": "Point to the amount attached to the unpaid commitment, rather than asking for the remaining balance yet.",
+        "expected_action": "Identify 20 as committed."
+      },
+      "independent_practice": {
+        "situation": "Two notes describe an optional purchase and an unpaid obligation that the scenario explicitly says must be protected.",
+        "expected_action": "Identify the obligation as the amount to reserve.",
+        "wrong_answer_reason": "The decision follows the stated commitment, not a universal claim that one spending category is always more worthy."
+      },
+      "transfer": {
+        "situation": "An appointment was already paid for. A separate payment is still due tomorrow; both statuses are visible.",
+        "expected_action": "Reserve money for the still-unpaid obligation, without reserving the already-paid charge again.",
+        "changed_constraint": "Distinguish a completed payment from an upcoming commitment, rather than treating every written bill as money still owed."
+      },
+      "interaction": {
+        "type": "story.branch.v2",
+        "represents": "Selection of the still-active commitment.",
+        "scorer_limit": "The scorer checks the identified commitment. It does not check a numerical free-to-spend balance in this lesson."
+      },
+      "numeracy_support": "Identify the stated amount only; calculating what remains is the following lesson's objective.",
+      "kc_reconciliation": {
+        "candidate": "finance.cash.commitment",
+        "status": "mapped-to-draft-shared-kc",
+        "issue": null
+      }
+    },
+    {
+      "lesson_id": "fe-production-usable-money-04",
+      "learner_problem": "A purchase can fit the displayed balance and still leave an upcoming obligation unpaid.",
+      "misconception": "Affordability means that the purchase price is below the whole current balance.",
+      "worked_example": {
+        "situation": "There is 70 available and 45 must be protected. A proposed purchase costs 20.",
+        "reasoning": "Separate the protected 45 from the 70. The remaining 25 covers the purchase of 20 and leaves the commitment intact.",
+        "conclusion": "The stated purchase fits; a purchase of 30 would not."
+      },
+      "guided_practice": {
+        "situation": "There is 40 available and 30 is committed. A purchase costs 10.",
+        "support": "Show 40 split into the protected 30 and remaining 10. Ask whether spending the remaining portion touches the commitment.",
+        "expected_action": "Identify that the purchase fits exactly under the stated conditions."
+      },
+      "independent_practice": {
+        "situation": "There is 50 available, 35 is committed and a proposed purchase costs 18.",
+        "expected_action": "Reject the purchase as unaffordable under these constraints because only 15 is free.",
+        "wrong_answer_reason": "Comparing 18 with 50 ignores the already-committed 35."
+      },
+      "transfer": {
+        "situation": "There is 60 available and 42 is protected. A sign advertises an item for 16, but the displayed total including its mandatory charge is 22.",
+        "expected_action": "Use the supplied total of 22 and identify that it does not fit the free 18.",
+        "changed_constraint": "The purchase presents both a headline amount and an explicit complete amount. No fee calculation or legal assumption is required."
+      },
+      "interaction": {
+        "type": "story.branch.v2",
+        "represents": "A purchase decision constrained by available and protected money.",
+        "scorer_limit": "The choice key verifies the feasible decision. Private arithmetic evidence must independently prove each free-to-spend amount and comparison."
+      },
+      "numeracy_support": "Use a visible split or count-down in the worked example. Repeat all amounts needed on each assessment screen.",
+      "kc_reconciliation": {
+        "candidate": "finance.cash.reserved",
+        "status": "mapped-to-draft-shared-kc",
+        "issue": null
+      }
+    },
+    {
+      "lesson_id": "fe-production-usable-money-05",
+      "learner_problem": "Enough money over a whole week does not guarantee enough before a payment deadline.",
+      "misconception": "The total expected income covers the bill, so the order of their dates is irrelevant.",
+      "worked_example": {
+        "situation": "No money is available now. A payment of 30 is due Thursday, while a receipt of 40 is expected Friday.",
+        "reasoning": "Place Thursday before Friday on a visible timeline. The later receipt cannot pay an earlier deadline on time.",
+        "conclusion": "There is a timing shortfall even though the expected receipt is larger."
+      },
+      "guided_practice": {
+        "situation": "A completed receipt occurs Tuesday and a smaller payment is due Wednesday.",
+        "support": "Keep both events visible in their order and point out which happens first.",
+        "expected_action": "Identify that the money arrives before this deadline."
+      },
+      "independent_practice": {
+        "situation": "A bill is due on day 3 and the only expected receipt is on day 5. There is no starting money.",
+        "expected_action": "Identify the shortfall on day 3 despite a sufficient later receipt.",
+        "wrong_answer_reason": "A positive final-week balance cannot retrospectively meet an earlier payment."
+      },
+      "transfer": {
+        "situation": "There is enough money in a container, but its stated withdrawal condition makes it accessible on day 5. The payment is due on day 3 and no other money is available.",
+        "expected_action": "Identify that the balance cannot be used by the stated deadline.",
+        "changed_constraint": "The money exists but access is delayed; this tests usable timing rather than only a promised income date."
+      },
+      "interaction": {
+        "type": "story.branch.v2",
+        "represents": "Selection based on the order of a deadline and actual access.",
+        "scorer_limit": "The branch verifies the decision. Do not claim the learner manipulated a timeline unless a supported timeline interaction is actually authored."
+      },
+      "numeracy_support": "Use ordered weekday labels or a small numbered timeline. Avoid calendar arithmetic, weekends or unstated banking settlement rules.",
+      "kc_reconciliation": {
+        "candidate": "finance.cash.dates",
+        "status": "mapped-to-draft-shared-kc",
+        "issue": null
+      }
+    },
+    {
+      "lesson_id": "fe-production-usable-money-06",
+      "learner_problem": "A loan increases money available today while creating a future obligation.",
+      "misconception": "All incoming money is earnings and can be treated as permanently available.",
+      "worked_example": {
+        "situation": "You have 25 and receive a loan of 15. The fictional agreement requires exactly 15 back tomorrow with no fees or interest.",
+        "reasoning": "Receiving the loan raises the current cash to 40, but a separate obligation of 15 remains. Neither amount erases the other.",
+        "conclusion": "There is 40 in cash and 15 owed; the loan is not 15 of earnings."
+      },
+      "guided_practice": {
+        "situation": "A received payment is explicitly labeled earnings. A separate received amount is explicitly labeled a loan to repay.",
+        "support": "Match each receipt to whether a repayment is required.",
+        "expected_action": "Identify the loan as received money with a future repayment obligation."
+      },
+      "independent_practice": {
+        "situation": "A person spends part of a loan. The agreement still requires the full stated principal back.",
+        "expected_action": "Recognize that spending the cash did not reduce the repayment obligation.",
+        "wrong_answer_reason": "The amount still held and the amount owed are separate records."
+      },
+      "transfer": {
+        "situation": "An expense is paid with an advance explicitly described as repayable next week. The payment has already left the person's cash.",
+        "expected_action": "Keep the advance's repayment in the upcoming commitments even though the borrowed cash has been spent.",
+        "changed_constraint": "Apply the same distinction after the money has left, instead of only at the instant a loan arrives."
+      },
+      "interaction": {
+        "type": "story.branch.v2",
+        "represents": "The distinction between current cash and an outstanding obligation.",
+        "scorer_limit": "This does not establish interest calculation, credit suitability or a complete debt repayment plan."
+      },
+      "numeracy_support": "Show cash and amount owed separately. Do not require negative numbers, interest or net-worth terminology.",
+      "kc_reconciliation": {
+        "candidate": "finance.debt.obligation",
+        "status": "mapped-to-draft-shared-kc",
+        "issue": null
+      }
+    },
+    {
+      "lesson_id": "fe-production-usable-money-07",
+      "learner_problem": "Moving your own money can appear as a receipt without increasing what you own.",
+      "misconception": "Every receipt shown in one container is new income.",
+      "worked_example": {
+        "situation": "There is 80 in your wallet and zero in your own box. Move 30 from the wallet to the box.",
+        "reasoning": "The wallet falls to 50 while the box rises to 30. Both belong to you, so the displayed total remains 80.",
+        "conclusion": "The location changed; there were no new earnings."
+      },
+      "guided_practice": {
+        "situation": "Two own containers show a matching outgoing and incoming transfer.",
+        "support": "Connect the two entries as the same movement and show their combined total before and after.",
+        "expected_action": "Identify the transfer as a change of location, not income."
+      },
+      "independent_practice": {
+        "situation": "A record contains an outside payment and a separate transfer between two places holding your money. Both are explicitly labeled.",
+        "expected_action": "Count only the outside payment as an increase in total money.",
+        "wrong_answer_reason": "Counting the receiving side of an own-money transfer alone double-counts money already included elsewhere."
+      },
+      "transfer": {
+        "situation": "A person withdraws cash from their own account with no fee. The screen shows the account decrease, cash increase and unchanged combined total.",
+        "expected_action": "Identify that the cash withdrawal created no new income.",
+        "changed_constraint": "Apply the two-container relationship to a withdrawal rather than a movement between physical containers. Account ownership and no fee are stated, not assumed."
+      },
+      "interaction": {
+        "type": "story.branch.v2",
+        "represents": "A decision about total money across two explicitly owned containers.",
+        "scorer_limit": "The single-balance running ledger cannot verify two-account conservation. Do not use it to claim that both sides were reconciled; choose a supported static comparison and branch or implement a separately verified two-container board."
+      },
+      "numeracy_support": "Display combined totals so the primary assessment tests double counting rather than an untaught multi-account addition algorithm.",
+      "kc_reconciliation": {
+        "candidate": "finance.cash.transfer",
+        "status": "mapped-to-draft-shared-kc",
+        "issue": null
+      }
+    },
+    {
+      "lesson_id": "fe-production-usable-money-08",
+      "learner_problem": "A plan that relied on a promised payment must change when the payment changes.",
+      "misconception": "An earlier spending decision remains affordable even when the expected receipt is delayed or smaller.",
+      "worked_example": {
+        "situation": "There is 60 available and 40 is committed. A purchase of 50 depended on a promised receipt of 40, which is now delayed.",
+        "reasoning": "Remove the unreceived 40 from today's plan. Only 20 is free after the existing commitment; the purchase of 50 no longer fits.",
+        "conclusion": "Revise the purchase plan without silently spending the protected amount."
+      },
+      "guided_practice": {
+        "situation": "There is 25 available, 20 is committed and an expected receipt has not arrived.",
+        "support": "Show that the available amount is still 25, then separate the committed 20.",
+        "expected_action": "Base the decision on the remaining 5, not the absent receipt."
+      },
+      "independent_practice": {
+        "situation": "An expected payment is canceled before a purchase has been made. All current funds and commitments are displayed.",
+        "expected_action": "Recalculate feasibility using only received money and choose a purchase that preserves the commitments, or postpone if none fits.",
+        "wrong_answer_reason": "Reusing the old plan keeps money that is no longer expected in the calculation."
+      },
+      "transfer": {
+        "situation": "Start with 10. Of a promised 30, only 15 actually arrives. A commitment of 20 remains and a proposed purchase costs 10.",
+        "expected_action": "Use the actual current 25; protect 20 and identify that the purchase of 10 does not fit the remaining 5.",
+        "changed_constraint": "The receipt is partial rather than fully delayed. The learner must include what arrived without counting the missing remainder."
+      },
+      "interaction": {
+        "type": "story.branch.v2",
+        "represents": "A revised purchase decision after new receipt information.",
+        "scorer_limit": "Private numeric evidence must prove the amount received and remaining capacity. A correct choice does not prove the learner independently wrote a whole budget."
+      },
+      "numeracy_support": "Teach the current-balance update and reservation as separate visible steps before removing support. All transfer facts remain on its screen.",
+      "kc_reconciliation": {
+        "candidate": "finance.plan.uncertain-income",
+        "status": "mapped-to-draft-shared-kc",
+        "issue": null
+      }
+    }
+  ]
+}

@@ -1,0 +1,707 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-credit-records-part-1",
+  "lesson_id": "fe-production-credit-records-03",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.credit-records.03"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Identify a factual error and assemble supporting evidence for a dispute.",
+  "title": {
+    "en-US": "Documented errors",
+    "es-MX": "Documenta un error",
+    "pt-BR": "Documente um erro"
+  },
+  "new_concepts": [
+    "finance.prod.credit-records.03"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Document an error\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Documenta un error\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Documente um erro\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.credit-records.03",
+      "observable_action": "Identify a factual error and assemble supporting evidence for a dispute.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.credit-records.02",
+      "prod.accounts-records.07"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A precise discrepancy is easier to investigate than a general complaint.",
+    "misconception": "Disliking an accurate entry is the same as identifying a factual reporting error.",
+    "numeracy_support": "Every quantity and assumption needed to decide is visible in the current scenario. Examples explain the relationship before independent application.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.credit-records.03",
+        "context_id": "fe-production-credit-records-03-example-01",
+        "supports_from": [],
+        "reasoning": "Report says unpaid; a matching receipt confirms payment before that reporting date. Preserve both and identify the conflicting entry."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.credit-records.03",
+        "context_id": "fe-production-credit-records-03-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The documents identify the payment and conflicting account entry."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.credit-records.03",
+        "context_id": "fe-production-credit-records-03-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The explanation identifies the specific disputed information."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.credit-records.03",
+        "context_id": "fe-production-credit-records-03-practice-03",
+        "supports_from": [],
+        "reasoning": "A dispute needs an inaccurate fact, not an unwanted outcome."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.credit-records.03",
+        "context_id": "fe-production-credit-records-03-practice-04",
+        "supports_from": [],
+        "reasoning": "Copies and references help track what was submitted."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.credit-records.03",
+        "context_id": "fe-production-credit-records-03-practice-05",
+        "supports_from": [],
+        "reasoning": "Different dates can explain a legitimate balance change."
+      },
+      {
+        "segment_id": "transfer-06",
+        "skill_id": "prod.credit-records.03",
+        "context_id": "fe-production-credit-records-03-transfer-06",
+        "supports_from": [],
+        "reasoning": "The packet connects the disputed status to its supporting record."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.credit-records.03",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A precise discrepancy is easier to investigate than a general complaint."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Una diferencia precisa se investiga mejor que una queja general."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Uma divergência específica é mais fácil de investigar que uma reclamação genérica."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Follow the evidence",
+          "line": "Report says unpaid; a matching receipt confirms payment before that reporting date. Preserve both and identify the conflicting entry."
+        },
+        "es-MX": {
+          "prompt": "Sigue las pruebas",
+          "line": "El reporte dice pendiente; un recibo coincidente confirma un pago anterior. Conserva ambos e identifica el registro contradictorio."
+        },
+        "pt-BR": {
+          "prompt": "Siga as provas",
+          "line": "O relatório diz pendente; um recibo da conta confirma pagamento anterior. Guarde ambos e identifique o registro contraditório."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-records.03",
+      "copy": {
+        "en-US": {
+          "prompt": "What supports the dispute?",
+          "scene": "An entry says unpaid. Your receipt matches the account and predates the reporting date.",
+          "options": [
+            {
+              "label": "The receipt and disputed entry"
+            },
+            {
+              "label": "Only your preferred score"
+            }
+          ],
+          "help": [
+            "Evidence must address the reported fact."
+          ],
+          "feedback": {
+            "met": "The documents identify the payment and conflicting account entry.",
+            "not_yet": "Evidence must address the reported fact."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué respalda la reclamación?",
+          "scene": "Un registro dice pendiente. Tu recibo coincide con la cuenta y es anterior al reporte.",
+          "options": [
+            {
+              "label": "El recibo y registro cuestionado"
+            },
+            {
+              "label": "Solo el puntaje deseado"
+            }
+          ],
+          "help": [
+            "La evidencia debe referirse al dato reportado."
+          ],
+          "feedback": {
+            "met": "Los documentos identifican el pago y el registro contradictorio.",
+            "not_yet": "La evidencia debe referirse al dato reportado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que sustenta a contestação?",
+          "scene": "Um registro diz pendente. Seu recibo corresponde à conta e é anterior ao relatório.",
+          "options": [
+            {
+              "label": "O recibo e registro contestado"
+            },
+            {
+              "label": "Só a pontuação desejada"
+            }
+          ],
+          "help": [
+            "A evidência deve tratar do fato informado."
+          ],
+          "feedback": {
+            "met": "Os documentos identificam o pagamento e o registro contraditório.",
+            "not_yet": "A evidência deve tratar do fato informado."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-records.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Which explanation is precise?",
+          "scene": "The wrong account appears under your name.",
+          "options": [
+            {
+              "label": "Identify the account you never opened"
+            },
+            {
+              "label": "Say every lender is unfair"
+            }
+          ],
+          "help": [
+            "Name the record and what you believe is wrong."
+          ],
+          "feedback": {
+            "met": "The explanation identifies the specific disputed information.",
+            "not_yet": "Name the record and what you believe is wrong."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué explicación es precisa?",
+          "scene": "Aparece una cuenta incorrecta a tu nombre.",
+          "options": [
+            {
+              "label": "Identificar la cuenta que no abriste"
+            },
+            {
+              "label": "Decir que toda entidad es injusta"
+            }
+          ],
+          "help": [
+            "Señala el registro y qué consideras incorrecto."
+          ],
+          "feedback": {
+            "met": "La explicación identifica el dato específico que cuestionas.",
+            "not_yet": "Señala el registro y qué consideras incorrecto."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual explicação é precisa?",
+          "scene": "Uma conta incorreta aparece em seu nome.",
+          "options": [
+            {
+              "label": "Identificar a conta que não abriu"
+            },
+            {
+              "label": "Dizer que toda entidade é injusta"
+            }
+          ],
+          "help": [
+            "Indique o registro e o que considera incorreto."
+          ],
+          "feedback": {
+            "met": "A explicação identifica a informação específica que você contesta.",
+            "not_yet": "Indique o registro e o que considera incorreto."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-records.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Is this a factual error?",
+          "scene": "Your own records confirm the payment was late. You dislike its effect.",
+          "options": [
+            {
+              "label": "Any unwanted entry is false"
+            },
+            {
+              "label": "Disliking it does not prove error"
+            }
+          ],
+          "help": [
+            "Compare the entry with evidence, not the desired score."
+          ],
+          "feedback": {
+            "met": "A dispute needs an inaccurate fact, not an unwanted outcome.",
+            "not_yet": "Compare the entry with evidence, not the desired score."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Es un error comprobado?",
+          "scene": "Tus registros confirman el atraso. No te gusta su efecto.",
+          "options": [
+            {
+              "label": "Todo registro molesto es falso"
+            },
+            {
+              "label": "El disgusto no demuestra error"
+            }
+          ],
+          "help": [
+            "Compara el registro con pruebas, no con el puntaje deseado."
+          ],
+          "feedback": {
+            "met": "La reclamación necesita un dato inexacto, no un resultado indeseado.",
+            "not_yet": "Compara el registro con pruebas, no con el puntaje deseado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "É um erro comprovado?",
+          "scene": "Seus registros confirmam o atraso. Você não gosta do efeito.",
+          "options": [
+            {
+              "label": "Todo registro incômodo é falso"
+            },
+            {
+              "label": "O incômodo não comprova erro"
+            }
+          ],
+          "help": [
+            "Compare o registro com provas, não com a pontuação desejada."
+          ],
+          "feedback": {
+            "met": "A contestação exige um dado incorreto, não um resultado indesejado.",
+            "not_yet": "Compare o registro com provas, não com a pontuação desejada."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-records.03",
+      "copy": {
+        "en-US": {
+          "prompt": "What should be preserved?",
+          "scene": "You sent supporting documents through the institution’s verified dispute channel.",
+          "options": [
+            {
+              "label": "Only the original advertisement"
+            },
+            {
+              "label": "Copies and the submission reference"
+            }
+          ],
+          "help": [
+            "Preserve the evidence and a record of the submission."
+          ],
+          "feedback": {
+            "met": "Copies and references help track what was submitted.",
+            "not_yet": "Preserve the evidence and a record of the submission."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué conviene conservar?",
+          "scene": "Enviaste documentos mediante el canal de reclamación verificado de la entidad.",
+          "options": [
+            {
+              "label": "Solo el anuncio original"
+            },
+            {
+              "label": "Copias y folio del envío"
+            }
+          ],
+          "help": [
+            "Conserva las pruebas y el registro de presentación."
+          ],
+          "feedback": {
+            "met": "Las copias y el folio permiten dar seguimiento al envío.",
+            "not_yet": "Conserva las pruebas y el registro de presentación."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que guardar?",
+          "scene": "Você enviou documentos pelo canal verificado de contestação da entidade.",
+          "options": [
+            {
+              "label": "Só o anúncio original"
+            },
+            {
+              "label": "Cópias e protocolo do envio"
+            }
+          ],
+          "help": [
+            "Guarde as provas e o registro da apresentação."
+          ],
+          "feedback": {
+            "met": "As cópias e o protocolo ajudam a acompanhar o envio.",
+            "not_yet": "Guarde as provas e o registro da apresentação."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-records.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Which evidence fits?",
+          "scene": "The reported balance is disputed. Two records cover different dates.",
+          "options": [
+            {
+              "label": "First align their reporting dates"
+            },
+            {
+              "label": "Treat every difference as an error"
+            }
+          ],
+          "help": [
+            "Establish comparable dates before claiming a balance error."
+          ],
+          "feedback": {
+            "met": "Different dates can explain a legitimate balance change.",
+            "not_yet": "Establish comparable dates before claiming a balance error."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué revisión falta?",
+          "scene": "Cuestionas un saldo. Los dos documentos corresponden a fechas distintas.",
+          "options": [
+            {
+              "label": "Primero comparar las fechas"
+            },
+            {
+              "label": "Declarar error por toda diferencia"
+            }
+          ],
+          "help": [
+            "Compara fechas equivalentes antes de afirmar que existe un error."
+          ],
+          "feedback": {
+            "met": "Las fechas distintas pueden explicar un cambio de saldo.",
+            "not_yet": "Compara fechas equivalentes antes de afirmar que existe un error."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual checagem falta?",
+          "scene": "Você contesta um saldo. Os dois documentos correspondem a datas diferentes.",
+          "options": [
+            {
+              "label": "Primeiro comparar as datas"
+            },
+            {
+              "label": "Declarar erro em toda diferença"
+            }
+          ],
+          "help": [
+            "Compare datas equivalentes antes de afirmar que existe erro."
+          ],
+          "feedback": {
+            "met": "Datas diferentes podem explicar uma mudança de saldo.",
+            "not_yet": "Compare datas equivalentes antes de afirmar que existe erro."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.credit-records.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Build the evidence packet.",
+          "scene": "A settled store loan remains marked unpaid for the same period. You have its settlement confirmation.",
+          "options": [
+            {
+              "label": "Entry, confirmation and account identifier"
+            },
+            {
+              "label": "An unrelated account’s good history"
+            }
+          ],
+          "help": [
+            "Use evidence about this account and reporting period."
+          ],
+          "feedback": {
+            "met": "The packet connects the disputed status to its supporting record.",
+            "not_yet": "Use evidence about this account and reporting period."
+          }
+        },
+        "es-MX": {
+          "prompt": "Reúne las pruebas.",
+          "scene": "Un préstamo liquidado figura pendiente en ese mismo periodo. Tienes la constancia de liquidación.",
+          "options": [
+            {
+              "label": "Registro, constancia e identificador"
+            },
+            {
+              "label": "Buen historial de otra cuenta"
+            }
+          ],
+          "help": [
+            "Usa documentos de esta cuenta y periodo."
+          ],
+          "feedback": {
+            "met": "Las pruebas vinculan el estado cuestionado con su respaldo.",
+            "not_yet": "Usa documentos de esta cuenta y periodo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Reúna as provas.",
+          "scene": "Um empréstimo quitado consta pendente no mesmo período. Você tem o comprovante de quitação.",
+          "options": [
+            {
+              "label": "Registro, comprovante e identificador"
+            },
+            {
+              "label": "Bom histórico de outra conta"
+            }
+          ],
+          "help": [
+            "Use documentos desta conta e deste período."
+          ],
+          "feedback": {
+            "met": "As provas ligam a situação contestada ao documento da conta.",
+            "not_yet": "Use documentos desta conta e deste período."
+          }
+        }
+      }
+    }
+  ]
+}

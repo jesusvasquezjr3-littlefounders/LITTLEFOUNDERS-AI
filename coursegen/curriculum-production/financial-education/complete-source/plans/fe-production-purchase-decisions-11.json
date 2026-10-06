@@ -1,0 +1,779 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-purchase-decisions-part-3",
+  "lesson_id": "fe-production-purchase-decisions-11",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.purchase-decisions.11"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Choose what missing information must be obtained before a defensible purchase comparison.",
+  "title": {
+    "en-US": "Missing Facts",
+    "es-MX": "Pide el dato faltante",
+    "pt-BR": "Peça o dado que falta"
+  },
+  "new_concepts": [
+    "finance.prod.purchase-decisions.11"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Missing Facts\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Pide el dato faltante\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Peça o dado que falta\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.purchase-decisions.11",
+      "observable_action": "Choose what missing information must be obtained before a defensible purchase comparison.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.purchase-decisions.02",
+      "prod.purchase-decisions.06"
+    ],
+    "retrieval_skills": [],
+    "relevance": "An incomplete quote cannot support a confident comparison; identify the missing fact that could change the decision.",
+    "misconception": "Unknown fees, lifespan or included services can be treated as zero, identical or favorable without evidence.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.purchase-decisions.11",
+        "context_id": "purchase-decisions-11-example-01",
+        "supports_from": [],
+        "reasoning": "Find which missing cost or condition could change the comparison. Obtain it instead of assuming zero or matching terms."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.purchase-decisions.11",
+        "context_id": "purchase-decisions-11-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "A mandatory missing charge can change the final price."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.purchase-decisions.11",
+        "context_id": "purchase-decisions-11-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Required supplies affect the cost of actually using the printer."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.purchase-decisions.11",
+        "context_id": "purchase-decisions-11-practice-01",
+        "supports_from": [],
+        "reasoning": "Missing information is not evidence of no cost."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.purchase-decisions.11",
+        "context_id": "purchase-decisions-11-practice-02",
+        "supports_from": [],
+        "reasoning": "Commitment length and exit costs can change total spending."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.purchase-decisions.11",
+        "context_id": "purchase-decisions-11-practice-03",
+        "supports_from": [],
+        "reasoning": "An unsupported slogan cannot establish useful lifespan."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.purchase-decisions.11",
+        "context_id": "purchase-decisions-11-transfer-01",
+        "supports_from": [],
+        "reasoning": "An essential connector changes usable cost and feasibility."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.purchase-decisions.11",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "An incomplete quote cannot support a confident comparison; identify the missing fact that could change the decision."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Cotización incompleta no permite comparación firme; identifica dato faltante que podría cambiar decisión."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Cotação incompleta não permite comparação firme; identifique dado ausente que pode mudar a decisão."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Unknown is not zero",
+          "line": "Find which missing cost or condition could change the comparison. Obtain it instead of assuming zero or matching terms."
+        },
+        "es-MX": {
+          "prompt": "Desconocido no es cero",
+          "line": "Ubica qué costo o condición faltante podría cambiar comparación. Obtén dato en lugar de suponer cero o términos iguales."
+        },
+        "pt-BR": {
+          "prompt": "Desconhecido não é zero",
+          "line": "Ache qual custo ou condição ausente pode mudar comparação. Obtenha dado em vez de supor zero ou termos iguais."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.11",
+      "copy": {
+        "en-US": {
+          "prompt": "Which missing fact matters first?",
+          "scene": "A delivery-only product shows a base price but omits its required delivery charge.",
+          "options": [
+            {
+              "label": "Last year’s base price"
+            },
+            {
+              "label": "Required delivery price"
+            },
+            {
+              "label": "Only the advertised discount"
+            }
+          ],
+          "help": [
+            "Request the missing unavoidable cost before comparing."
+          ],
+          "feedback": {
+            "met": "A mandatory missing charge can change the final price.",
+            "not_yet": "Request the missing unavoidable cost before comparing."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué dato faltante importa primero?",
+          "scene": "Producto solo por entrega muestra base pero omite cargo obligatorio de envío.",
+          "options": [
+            {
+              "label": "El precio base del año anterior"
+            },
+            {
+              "label": "Precio obligatorio de entrega"
+            },
+            {
+              "label": "Solo el descuento anunciado"
+            }
+          ],
+          "help": [
+            "Pide costo inevitable faltante antes de comparar."
+          ],
+          "feedback": {
+            "met": "Un cargo obligatorio faltante puede cambiar precio final.",
+            "not_yet": "Pide costo inevitable faltante antes de comparar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que dado ausente importa primeiro?",
+          "scene": "Produto só por entrega mostra base mas omite taxa obrigatória de envio.",
+          "options": [
+            {
+              "label": "O preço base do ano anterior"
+            },
+            {
+              "label": "Preço obrigatório da entrega"
+            },
+            {
+              "label": "Só o desconto anunciado"
+            }
+          ],
+          "help": [
+            "Peça custo inevitável ausente antes de comparar."
+          ],
+          "feedback": {
+            "met": "Uma taxa obrigatória ausente pode mudar preço final.",
+            "not_yet": "Peça custo inevitável ausente antes de comparar."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.11",
+      "copy": {
+        "en-US": {
+          "prompt": "What should be learned about the printer?",
+          "scene": "The purchase price is known, but required cartridge cost is not.",
+          "options": [
+            {
+              "label": "Cost of compatible cartridges"
+            },
+            {
+              "label": "Only the printer’s discount"
+            },
+            {
+              "label": "Only its purchase price"
+            }
+          ],
+          "help": [
+            "Ask for the operating cost omitted from the quote."
+          ],
+          "feedback": {
+            "met": "Required supplies affect the cost of actually using the printer.",
+            "not_yet": "Ask for the operating cost omitted from the quote."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe saberse de impresora?",
+          "scene": "Precio de compra conocido, pero costo de cartuchos necesarios no.",
+          "options": [
+            {
+              "label": "Costo de cartuchos compatibles"
+            },
+            {
+              "label": "Solo descuento de impresora"
+            },
+            {
+              "label": "Solo su precio de compra"
+            }
+          ],
+          "help": [
+            "Pregunta costo de uso omitido en cotización."
+          ],
+          "feedback": {
+            "met": "Materiales necesarios afectan costo de usar impresora.",
+            "not_yet": "Pregunta costo de uso omitido en cotización."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que saber da impressora?",
+          "scene": "Preço de compra conhecido, mas custo dos cartuchos necessários não.",
+          "options": [
+            {
+              "label": "Custo de cartuchos compatíveis"
+            },
+            {
+              "label": "Só desconto da impressora"
+            },
+            {
+              "label": "Só seu preço de compra"
+            }
+          ],
+          "help": [
+            "Pergunte custo de uso omitido na cotação."
+          ],
+          "feedback": {
+            "met": "Materiais necessários afetam custo de usar impressora.",
+            "not_yet": "Pergunte custo de uso omitido na cotação."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.11",
+      "copy": {
+        "en-US": {
+          "prompt": "Can unknown upkeep be entered as zero?",
+          "scene": "One seller gives no maintenance information.",
+          "options": [
+            {
+              "label": "No, obtain the missing estimate"
+            },
+            {
+              "label": "Yes, silence means free"
+            },
+            {
+              "label": "Yes, low purchase price proves it"
+            }
+          ],
+          "help": [
+            "Mark the uncertainty and request the relevant cost information."
+          ],
+          "feedback": {
+            "met": "Missing information is not evidence of no cost.",
+            "not_yet": "Mark the uncertainty and request the relevant cost information."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Puede cuidado desconocido ponerse en cero?",
+          "scene": "Un vendedor no da información de mantenimiento.",
+          "options": [
+            {
+              "label": "No, obtener estimación faltante"
+            },
+            {
+              "label": "Sí, silencio significa gratis"
+            },
+            {
+              "label": "Sí, precio bajo lo prueba"
+            }
+          ],
+          "help": [
+            "Marca incertidumbre y pide información pertinente del costo."
+          ],
+          "feedback": {
+            "met": "Información faltante no prueba ausencia de costo.",
+            "not_yet": "Marca incertidumbre y pide información pertinente del costo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Cuidado desconhecido pode entrar como zero?",
+          "scene": "Um vendedor não dá informação de manutenção.",
+          "options": [
+            {
+              "label": "Não, obter estimativa ausente"
+            },
+            {
+              "label": "Sim, silêncio significa grátis"
+            },
+            {
+              "label": "Sim, preço baixo prova isso"
+            }
+          ],
+          "help": [
+            "Marque incerteza e peça informação relevante do custo."
+          ],
+          "feedback": {
+            "met": "Informação ausente não prova ausência de custo.",
+            "not_yet": "Marque incerteza e peça informação relevante do custo."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.11",
+      "copy": {
+        "en-US": {
+          "prompt": "What does comparison need?",
+          "scene": "Both show monthly price; only one states contract length and exit fees.",
+          "options": [
+            {
+              "label": "Nothing because monthly prices exist"
+            },
+            {
+              "label": "The other contract’s length and exit terms"
+            },
+            {
+              "label": "First payment"
+            }
+          ],
+          "help": [
+            "Obtain comparable terms before choosing between contracts."
+          ],
+          "feedback": {
+            "met": "Commitment length and exit costs can change total spending.",
+            "not_yet": "Obtain comparable terms before choosing between contracts."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué falta al comparar suscripciones?",
+          "scene": "Ambas dan precio mensual; solo una indica plazo y cargos de salida.",
+          "options": [
+            {
+              "label": "Nada porque hay precios mensuales"
+            },
+            {
+              "label": "Plazo y salida del otro contrato"
+            },
+            {
+              "label": "Solo el primer pago"
+            }
+          ],
+          "help": [
+            "Obtén condiciones comparables antes de elegir contratos."
+          ],
+          "feedback": {
+            "met": "Plazo y salida pueden cambiar gasto total.",
+            "not_yet": "Obtén condiciones comparables antes de elegir contratos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que falta ao comparar assinaturas?",
+          "scene": "Ambas dão preço mensal; só uma indica prazo e taxas de saída.",
+          "options": [
+            {
+              "label": "Nada pois há preços mensais"
+            },
+            {
+              "label": "Prazo e saída do outro contrato"
+            },
+            {
+              "label": "Só o primeiro pagamento"
+            }
+          ],
+          "help": [
+            "Obtenha termos comparáveis antes de escolher contratos."
+          ],
+          "feedback": {
+            "met": "Prazo e saída podem mudar gasto total.",
+            "not_yet": "Obtenha termos comparáveis antes de escolher contratos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.11",
+      "copy": {
+        "en-US": {
+          "prompt": "What evidence supports a lifespan claim?",
+          "scene": "A seller says “lasts much longer” without comparable use conditions or data.",
+          "options": [
+            {
+              "label": "A larger price tag"
+            },
+            {
+              "label": "The slogan alone"
+            },
+            {
+              "label": "Comparable durability evidence"
+            }
+          ],
+          "help": [
+            "Ask what evidence and conditions support the claim."
+          ],
+          "feedback": {
+            "met": "An unsupported slogan cannot establish useful lifespan.",
+            "not_yet": "Ask what evidence and conditions support the claim."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué prueba respalda duración?",
+          "scene": "Vendedor dice «dura mucho más» sin condiciones de uso comparables ni datos.",
+          "options": [
+            {
+              "label": "Etiqueta de precio mayor"
+            },
+            {
+              "label": "Solo lema"
+            },
+            {
+              "label": "Pruebas comparables de duración"
+            }
+          ],
+          "help": [
+            "Pregunta qué pruebas y condiciones respaldan afirmación."
+          ],
+          "feedback": {
+            "met": "Lema sin respaldo no establece vida útil.",
+            "not_yet": "Pregunta qué pruebas y condiciones respaldan afirmación."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que prova apoia duração?",
+          "scene": "Vendedor diz “dura muito mais” sem condições de uso comparáveis nem dados.",
+          "options": [
+            {
+              "label": "Etiqueta de preço maior"
+            },
+            {
+              "label": "Só lema"
+            },
+            {
+              "label": "Provas comparáveis de duração"
+            }
+          ],
+          "help": [
+            "Pergunte que provas e condições apoiam alegação."
+          ],
+          "feedback": {
+            "met": "Lema sem apoio não define vida útil.",
+            "not_yet": "Pergunte que provas e condições apoiam alegação."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.purchase-decisions.11",
+      "copy": {
+        "en-US": {
+          "prompt": "What could reverse this choice?",
+          "scene": "Two devices meet the need; the cheaper one requires an unspecified paid connector.",
+          "options": [
+            {
+              "label": "Connector price and compatibility"
+            },
+            {
+              "label": "Only the base-price gap"
+            },
+            {
+              "label": "Only the advertised discount"
+            }
+          ],
+          "help": [
+            "Get its required cost and compatibility before comparing."
+          ],
+          "feedback": {
+            "met": "An essential connector changes usable cost and feasibility.",
+            "not_yet": "Get its required cost and compatibility before comparing."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué dato podría invertir elección?",
+          "scene": "Dos aparatos cumplen necesidad; barato exige conector pagado no especificado.",
+          "options": [
+            {
+              "label": "Precio y compatibilidad del conector"
+            },
+            {
+              "label": "Solo diferencia de precios base"
+            },
+            {
+              "label": "Solo el descuento anunciado"
+            }
+          ],
+          "help": [
+            "Obtén costo requerido y compatibilidad antes de comparar."
+          ],
+          "feedback": {
+            "met": "Conector esencial cambia costo utilizable y viabilidad.",
+            "not_yet": "Obtén costo requerido y compatibilidad antes de comparar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que dado pode inverter escolha?",
+          "scene": "Dois aparelhos atendem necessidade; barato exige conector pago não especificado.",
+          "options": [
+            {
+              "label": "Preço e compatibilidade do conector"
+            },
+            {
+              "label": "Só diferença dos preços base"
+            },
+            {
+              "label": "Só o desconto anunciado"
+            }
+          ],
+          "help": [
+            "Obtenha custo exigido e compatibilidade antes de comparar."
+          ],
+          "feedback": {
+            "met": "Conector essencial muda custo de uso e viabilidade.",
+            "not_yet": "Obtenha custo exigido e compatibilidade antes de comparar."
+          }
+        }
+      }
+    }
+  ]
+}

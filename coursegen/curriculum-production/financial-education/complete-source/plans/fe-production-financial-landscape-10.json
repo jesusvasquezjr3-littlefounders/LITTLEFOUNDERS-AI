@@ -1,0 +1,779 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-financial-landscape-part-2",
+  "lesson_id": "fe-production-financial-landscape-10",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.financial-landscape.10"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Check who receives financial data and how consent can be withdrawn before enabling a sharing service.",
+  "title": {
+    "en-US": "Data Consent",
+    "es-MX": "Lee consentimiento de datos financieros",
+    "pt-BR": "Leia consentimento de dados financeiros"
+  },
+  "new_concepts": [
+    "finance.prod.financial-landscape.10"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Data Consent\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Lee consentimiento de datos financieros\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Leia consentimento de dados financeiros\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.financial-landscape.10",
+      "observable_action": "Check who receives financial data and how consent can be withdrawn before enabling a sharing service.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.payments-digital.05",
+      "prod.accounts-records.10"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A sharing service needs more than a quick tap; inspect the recipient, data scope, purpose and withdrawal process.",
+    "misconception": "Installing an app explains all data sharing or withdrawing consent necessarily erases every previously shared record.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.financial-landscape.10",
+        "context_id": "financial-landscape-10-example-01",
+        "supports_from": [],
+        "reasoning": "Before consent, check recipient, data, purpose, duration and withdrawal steps. Do not assume withdrawal erases information already shared."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.financial-landscape.10",
+        "context_id": "financial-landscape-10-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "A consent decision needs an identified data recipient."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.financial-landscape.10",
+        "context_id": "financial-landscape-10-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Data scope and purpose define what consent would permit."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.financial-landscape.10",
+        "context_id": "financial-landscape-10-practice-01",
+        "supports_from": [],
+        "reasoning": "Stopping future sharing is part of understanding the permission."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.financial-landscape.10",
+        "context_id": "financial-landscape-10-practice-02",
+        "supports_from": [],
+        "reasoning": "Removing software does not establish the sharing permission’s status."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.financial-landscape.10",
+        "context_id": "financial-landscape-10-practice-03",
+        "supports_from": [],
+        "reasoning": "Stopping future access does not prove earlier records were erased."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.financial-landscape.10",
+        "context_id": "financial-landscape-10-transfer-01",
+        "supports_from": [],
+        "reasoning": "A clear purpose alone does not explain who receives data."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.financial-landscape.10",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A sharing service needs more than a quick tap; inspect the recipient, data scope, purpose and withdrawal process."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Compartir datos requiere más que un toque; revisa destinatario, alcance, propósito y proceso para retirar consentimiento."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Compartilhar dados exige mais que um toque; confira destinatário, alcance, finalidade e processo para retirar consentimento."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Know who receives what",
+          "line": "Before consent, check recipient, data, purpose, duration and withdrawal steps. Do not assume withdrawal erases information already shared."
+        },
+        "es-MX": {
+          "prompt": "Sabe quién recibe qué",
+          "line": "Antes de consentir, revisa destinatario, datos, propósito, duración y pasos de retiro. No supongas que retirar borra información ya compartida."
+        },
+        "pt-BR": {
+          "prompt": "Saiba quem recebe o quê",
+          "line": "Antes de consentir, confira destinatário, dados, finalidade, duração e passos de retirada. Não suponha que retirar apaga informação já enviada."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.10",
+      "copy": {
+        "en-US": {
+          "prompt": "What needs clarity before agreeing?",
+          "scene": "A budgeting app asks for transaction data but does not identify the receiving company.",
+          "options": [
+            {
+              "label": "The app’s monthly fee"
+            },
+            {
+              "label": "Who receives the data"
+            },
+            {
+              "label": "Only the estimated savings"
+            }
+          ],
+          "help": [
+            "Find the actual recipient before authorizing sharing."
+          ],
+          "feedback": {
+            "met": "A consent decision needs an identified data recipient.",
+            "not_yet": "Find the actual recipient before authorizing sharing."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué aclarar antes de aceptar?",
+          "scene": "App de presupuesto pide operaciones pero no identifica empresa receptora.",
+          "options": [
+            {
+              "label": "La comisión mensual"
+            },
+            {
+              "label": "Quién recibe los datos"
+            },
+            {
+              "label": "Solo el ahorro previsto"
+            }
+          ],
+          "help": [
+            "Ubica destinatario real antes de autorizar compartir."
+          ],
+          "feedback": {
+            "met": "Decidir consentimiento requiere identificar destinatario de datos.",
+            "not_yet": "Ubica destinatario real antes de autorizar compartir."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que esclarecer antes de aceitar?",
+          "scene": "App de orçamento pede transações mas não identifica empresa receptora.",
+          "options": [
+            {
+              "label": "A mensalidade"
+            },
+            {
+              "label": "Quem recebe os dados"
+            },
+            {
+              "label": "Só a economia prevista"
+            }
+          ],
+          "help": [
+            "Ache destinatário real antes de autorizar envio."
+          ],
+          "feedback": {
+            "met": "Decidir consentimento exige identificar destinatário dos dados.",
+            "not_yet": "Ache destinatário real antes de autorizar envio."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Which scope question matters?",
+          "scene": "The service requests balances and transaction history for an unclear purpose.",
+          "options": [
+            {
+              "label": "What is the monthly fee?"
+            },
+            {
+              "label": "What data and why?"
+            },
+            {
+              "label": "How accurate are its forecasts?"
+            }
+          ],
+          "help": [
+            "Read the requested data and its stated use."
+          ],
+          "feedback": {
+            "met": "Data scope and purpose define what consent would permit.",
+            "not_yet": "Read the requested data and its stated use."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué pregunta de alcance importa?",
+          "scene": "Servicio pide saldos e historial de operaciones con propósito poco claro.",
+          "options": [
+            {
+              "label": "¿Cuál es la comisión mensual?"
+            },
+            {
+              "label": "¿Qué datos y para qué?"
+            },
+            {
+              "label": "¿Qué precisión tienen sus previsiones?"
+            }
+          ],
+          "help": [
+            "Lee datos solicitados y uso indicado."
+          ],
+          "feedback": {
+            "met": "Alcance y propósito definen lo que permitiría consentimiento.",
+            "not_yet": "Lee datos solicitados y uso indicado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que pergunta de alcance importa?",
+          "scene": "Serviço pede saldos e histórico de transações com finalidade pouco clara.",
+          "options": [
+            {
+              "label": "Qual é a mensalidade?"
+            },
+            {
+              "label": "Que dados e para quê?"
+            },
+            {
+              "label": "Qual a precisão das previsões?"
+            }
+          ],
+          "help": [
+            "Leia dados pedidos e uso dado."
+          ],
+          "feedback": {
+            "met": "Alcance e finalidade definem o que consentimento permitiria.",
+            "not_yet": "Leia dados pedidos e uso dado."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.10",
+      "copy": {
+        "en-US": {
+          "prompt": "What should be found before enabling sharing?",
+          "scene": "The consent screen says nothing about how to stop future access.",
+          "options": [
+            {
+              "label": "Withdrawal process and access duration"
+            },
+            {
+              "label": "Only a promotional discount"
+            },
+            {
+              "label": "The data export button"
+            }
+          ],
+          "help": [
+            "Check how long access lasts and how to withdraw consent."
+          ],
+          "feedback": {
+            "met": "Stopping future sharing is part of understanding the permission.",
+            "not_yet": "Check how long access lasts and how to withdraw consent."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué buscar antes de compartir?",
+          "scene": "Pantalla no explica cómo detener acceso futuro.",
+          "options": [
+            {
+              "label": "Proceso de retiro y duración de acceso"
+            },
+            {
+              "label": "Solo descuento promocional"
+            },
+            {
+              "label": "El botón para exportar datos"
+            }
+          ],
+          "help": [
+            "Revisa cuánto dura acceso y cómo retirar consentimiento."
+          ],
+          "feedback": {
+            "met": "Detener futuros datos forma parte de entender el permiso.",
+            "not_yet": "Revisa cuánto dura acceso y cómo retirar consentimiento."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que buscar antes de compartilhar?",
+          "scene": "Tela não explica como parar acesso futuro.",
+          "options": [
+            {
+              "label": "Processo de retirada e duração do acesso"
+            },
+            {
+              "label": "Só desconto promocional"
+            },
+            {
+              "label": "O botão de exportar dados"
+            }
+          ],
+          "help": [
+            "Confira quanto dura acesso e como retirar consentimento."
+          ],
+          "feedback": {
+            "met": "Parar dados futuros faz parte de entender a permissão.",
+            "not_yet": "Confira quanto dura acesso e como retirar consentimento."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Does deleting the app prove sharing stopped?",
+          "scene": "No confirmation of withdrawn data permission has been obtained.",
+          "options": [
+            {
+              "label": "Yes, uninstalling erases every copy"
+            },
+            {
+              "label": "No, verify the consent status"
+            },
+            {
+              "label": "Yes, always"
+            }
+          ],
+          "help": [
+            "Use the stated withdrawal process and confirm the result."
+          ],
+          "feedback": {
+            "met": "Removing software does not establish the sharing permission’s status.",
+            "not_yet": "Use the stated withdrawal process and confirm the result."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Borrar app prueba que dejó de compartir?",
+          "scene": "No hay confirmación de retiro del permiso de datos.",
+          "options": [
+            {
+              "label": "Sí, desinstalar borra toda copia"
+            },
+            {
+              "label": "No, verificar estado del consentimiento"
+            },
+            {
+              "label": "Sí, siempre"
+            }
+          ],
+          "help": [
+            "Usa proceso indicado de retiro y confirma resultado."
+          ],
+          "feedback": {
+            "met": "Quitar software no establece estado del permiso de datos.",
+            "not_yet": "Usa proceso indicado de retiro y confirma resultado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Apagar app prova que parou de compartilhar?",
+          "scene": "Não há confirmação de retirada da permissão de dados.",
+          "options": [
+            {
+              "label": "Sim, desinstalar apaga toda cópia"
+            },
+            {
+              "label": "Não, conferir estado do consentimento"
+            },
+            {
+              "label": "Sim, sempre"
+            }
+          ],
+          "help": [
+            "Use processo dado de retirada e confirme resultado."
+          ],
+          "feedback": {
+            "met": "Remover software não define estado da permissão de dados.",
+            "not_yet": "Use processo dado de retirada e confirme resultado."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.10",
+      "copy": {
+        "en-US": {
+          "prompt": "What needs separate checking?",
+          "scene": "Future sharing is stopped, but previously shared data may be retained under stated rules.",
+          "options": [
+            {
+              "label": "Retention and deletion terms"
+            },
+            {
+              "label": "Assume withdrawal was impossible"
+            },
+            {
+              "label": "Assume all old data vanished"
+            }
+          ],
+          "help": [
+            "Read the applicable retention and deletion information."
+          ],
+          "feedback": {
+            "met": "Stopping future access does not prove earlier records were erased.",
+            "not_yet": "Read the applicable retention and deletion information."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué revisar por separado?",
+          "scene": "Compartir futuro se detiene, pero datos previos pueden conservarse según reglas indicadas.",
+          "options": [
+            {
+              "label": "Condiciones de conservación y borrado"
+            },
+            {
+              "label": "Suponer retiro era imposible"
+            },
+            {
+              "label": "Suponer datos anteriores desaparecieron"
+            }
+          ],
+          "help": [
+            "Lee información aplicable de conservación y eliminación."
+          ],
+          "feedback": {
+            "met": "Detener acceso futuro no prueba borrado de registros anteriores.",
+            "not_yet": "Lee información aplicable de conservación y eliminación."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que conferir em separado?",
+          "scene": "Envio futuro para, mas dados prévios podem ser guardados pelas regras dadas.",
+          "options": [
+            {
+              "label": "Termos de guarda e exclusão"
+            },
+            {
+              "label": "Supor retirada era impossível"
+            },
+            {
+              "label": "Supor dados antigos sumiram"
+            }
+          ],
+          "help": [
+            "Leia informação aplicável de guarda e exclusão."
+          ],
+          "feedback": {
+            "met": "Parar acesso futuro não prova exclusão de registros antigos.",
+            "not_yet": "Leia informação aplicável de guarda e exclusão."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.financial-landscape.10",
+      "copy": {
+        "en-US": {
+          "prompt": "What’s missing?",
+          "scene": "A new service explains data and purpose but hides the recipient and withdrawal process.",
+          "options": [
+            {
+              "label": "A shorter sign-up process"
+            },
+            {
+              "label": "Nothing because the purpose is clear"
+            },
+            {
+              "label": "Recipient identity and withdrawal steps"
+            }
+          ],
+          "help": [
+            "Complete the recipient and control checks before consenting."
+          ],
+          "feedback": {
+            "met": "A clear purpose alone does not explain who receives data.",
+            "not_yet": "Complete the recipient and control checks before consenting."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué falta para esta decisión?",
+          "scene": "Nuevo servicio explica datos y propósito pero oculta receptor y proceso de retiro.",
+          "options": [
+            {
+              "label": "Un registro más corto"
+            },
+            {
+              "label": "Nada porque propósito es claro"
+            },
+            {
+              "label": "Identidad receptora y pasos de retiro"
+            }
+          ],
+          "help": [
+            "Completa revisión de destinatario y control antes de consentir."
+          ],
+          "feedback": {
+            "met": "Un propósito claro solo no explica quién recibe datos.",
+            "not_yet": "Completa revisión de destinatario y control antes de consentir."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que falta para esta decisão?",
+          "scene": "Novo serviço explica dados e finalidade mas oculta receptor e processo de retirada.",
+          "options": [
+            {
+              "label": "Um cadastro mais curto"
+            },
+            {
+              "label": "Nada pois finalidade é clara"
+            },
+            {
+              "label": "Identidade receptora e passos de retirada"
+            }
+          ],
+          "help": [
+            "Complete conferência de destinatário e controle antes de consentir."
+          ],
+          "feedback": {
+            "met": "Uma finalidade clara só não explica quem recebe dados.",
+            "not_yet": "Complete conferência de destinatário e controle antes de consentir."
+          }
+        }
+      }
+    }
+  ]
+}

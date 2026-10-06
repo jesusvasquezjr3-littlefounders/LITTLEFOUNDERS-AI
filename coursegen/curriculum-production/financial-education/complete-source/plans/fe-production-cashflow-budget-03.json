@@ -1,0 +1,842 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-cashflow-budget-part-1",
+  "lesson_id": "fe-production-cashflow-budget-03",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.cashflow-budget.03"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Reserve money for unavoidable obligations before allocating the remainder.",
+  "title": {
+    "en-US": "Protected commitments",
+    "es-MX": "Reserva antes de asignar",
+    "pt-BR": "Reserve antes de destinar"
+  },
+  "new_concepts": [
+    "finance.prod.cashflow-budget.03"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Reserve before allocating\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Reserva antes de asignar\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Reserve antes de destinar\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.cashflow-budget.03",
+      "observable_action": "Reserve money for unavoidable obligations before allocating the remainder.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.cashflow-budget.01",
+      "cash.commitment"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Count unavoidable commitments before choosing a new use for the remainder.",
+    "misconception": "Treating the entire account balance as freely available even when known unavoidable bills remain unpaid.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.cashflow-budget.03",
+        "context_id": "fe-production-cashflow-budget-03-example-01",
+        "supports_from": [],
+        "reasoning": "Available: 100; unavoidable bill: 70. Reserving 70 leaves 30 to allocate, even before the bill is paid."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.cashflow-budget.03",
+        "context_id": "fe-production-cashflow-budget-03-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "90 − 55 = 35 remains to allocate."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.cashflow-budget.03",
+        "context_id": "fe-production-cashflow-budget-03-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "A visible balance can include money already committed."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.cashflow-budget.03",
+        "context_id": "fe-production-cashflow-budget-03-practice-01",
+        "supports_from": [],
+        "reasoning": "140 − 45 − 25 = 70 remains after both commitments."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.cashflow-budget.03",
+        "context_id": "fe-production-cashflow-budget-03-practice-02",
+        "supports_from": [],
+        "reasoning": "A shortage must stay visible rather than being allocated away."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.cashflow-budget.03",
+        "context_id": "fe-production-cashflow-budget-03-practice-03",
+        "supports_from": [],
+        "reasoning": "Reserving protects funds; only a completed payment settles the stated bill."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.cashflow-budget.03",
+        "context_id": "fe-production-cashflow-budget-03-transfer-01",
+        "supports_from": [],
+        "reasoning": "180 − 95 = 85 after the required reserve."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.cashflow-budget.03",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Count unavoidable commitments before choosing a new use for the remainder."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Cuenta compromisos inevitables antes de elegir un uso nuevo para el resto."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Conte compromissos inevitáveis antes de escolher um uso novo para o restante."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Separate the committed part",
+          "line": "Available: 100; unavoidable bill: 70. Reserving 70 leaves 30 to allocate, even before the bill is paid."
+        },
+        "es-MX": {
+          "prompt": "Separa la parte comprometida",
+          "line": "Disponible: 100; cuenta inevitable: 70. Reservar 70 deja 30 para asignar, aun antes de pagar la cuenta."
+        },
+        "pt-BR": {
+          "prompt": "Separe a parte comprometida",
+          "line": "Disponível: 100; conta inevitável: 70. Reservar 70 deixa 30 para destinar, mesmo antes de pagar a conta."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Remainder after reserving?",
+          "scene": "You hold 90 and must reserve 55 for a known unavoidable bill.",
+          "options": [
+            {
+              "label": "90"
+            },
+            {
+              "label": "35"
+            },
+            {
+              "label": "145"
+            }
+          ],
+          "help": [
+            "Remove the committed part from what is freely allocable."
+          ],
+          "feedback": {
+            "met": "90 − 55 = 35 remains to allocate.",
+            "not_yet": "Remove the committed part from what is freely allocable."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Resto tras reservar?",
+          "scene": "Tienes 90 y debes reservar 55 para una cuenta inevitable conocida.",
+          "options": [
+            {
+              "label": "90"
+            },
+            {
+              "label": "35"
+            },
+            {
+              "label": "145"
+            }
+          ],
+          "help": [
+            "Separa lo comprometido de lo que puedes asignar libremente."
+          ],
+          "feedback": {
+            "met": "90 − 55 = 35 queda para asignar.",
+            "not_yet": "Separa lo comprometido de lo que puedes asignar libremente."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Restante após reservar?",
+          "scene": "Tem 90 e deve reservar 55 para uma conta inevitável conhecida.",
+          "options": [
+            {
+              "label": "90"
+            },
+            {
+              "label": "35"
+            },
+            {
+              "label": "145"
+            }
+          ],
+          "help": [
+            "Separe o comprometido do que pode destinar livremente."
+          ],
+          "feedback": {
+            "met": "90 − 55 = 35 resta para destinar.",
+            "not_yet": "Separe o comprometido do que pode destinar livremente."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          90,
+          55
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Is it free for an optional purchase?",
+          "scene": "Money reserved for tomorrow’s bill remains in your account until payment.",
+          "options": [
+            {
+              "label": "Its commitment remains"
+            },
+            {
+              "label": "Reserving erased the bill"
+            },
+            {
+              "label": "Because it is visible"
+            }
+          ],
+          "help": [
+            "Reserving is not the same as paying or freeing the money."
+          ],
+          "feedback": {
+            "met": "A visible balance can include money already committed.",
+            "not_yet": "Reserving is not the same as paying or freeing the money."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Está libre para una compra opcional?",
+          "scene": "El dinero reservado para la cuenta de mañana sigue en tu cuenta hasta pagar.",
+          "options": [
+            {
+              "label": "No, sigue comprometido"
+            },
+            {
+              "label": "Sí, reservar eliminó la cuenta"
+            },
+            {
+              "label": "Sí, porque aparece en el saldo"
+            }
+          ],
+          "help": [
+            "Reservar no equivale a pagar ni liberar el dinero."
+          ],
+          "feedback": {
+            "met": "Un saldo visible puede incluir dinero ya comprometido.",
+            "not_yet": "Reservar no equivale a pagar ni liberar el dinero."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Está livre para uma compra opcional?",
+          "scene": "O dinheiro reservado para a conta de amanhã fica na sua conta até pagar.",
+          "options": [
+            {
+              "label": "Não, continua comprometido"
+            },
+            {
+              "label": "Sim, reservar eliminou a conta"
+            },
+            {
+              "label": "Sim, porque aparece no saldo"
+            }
+          ],
+          "help": [
+            "Reservar não equivale a pagar nem liberar o dinheiro."
+          ],
+          "feedback": {
+            "met": "Um saldo visível pode incluir dinheiro já comprometido.",
+            "not_yet": "Reservar não equivale a pagar nem liberar o dinheiro."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Remainder after both reserves?",
+          "scene": "Held: 140; required food: 45; required transport: 25.",
+          "options": [
+            {
+              "label": "95"
+            },
+            {
+              "label": "115"
+            },
+            {
+              "label": "70"
+            }
+          ],
+          "help": [
+            "Count every stated unavoidable obligation once."
+          ],
+          "feedback": {
+            "met": "140 − 45 − 25 = 70 remains after both commitments.",
+            "not_yet": "Count every stated unavoidable obligation once."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Resto tras ambas reservas?",
+          "scene": "Disponible: 140; comida necesaria: 45; transporte necesario: 25.",
+          "options": [
+            {
+              "label": "95"
+            },
+            {
+              "label": "115"
+            },
+            {
+              "label": "70"
+            }
+          ],
+          "help": [
+            "Cuenta cada obligación inevitable indicada una vez."
+          ],
+          "feedback": {
+            "met": "140 − 45 − 25 = 70 queda tras ambos compromisos.",
+            "not_yet": "Cuenta cada obligación inevitable indicada una vez."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Restante após ambas as reservas?",
+          "scene": "Disponível: 140; comida necessária: 45; transporte necessário: 25.",
+          "options": [
+            {
+              "label": "95"
+            },
+            {
+              "label": "115"
+            },
+            {
+              "label": "70"
+            }
+          ],
+          "help": [
+            "Conte cada obrigação inevitável informada uma vez."
+          ],
+          "feedback": {
+            "met": "140 − 45 − 25 = 70 resta após ambos os compromissos.",
+            "not_yet": "Conte cada obrigação inevitável informada uma vez."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          140,
+          45,
+          25
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.03",
+      "copy": {
+        "en-US": {
+          "prompt": "What should the plan show?",
+          "scene": "Known unavoidable bills exceed the money held.",
+          "options": [
+            {
+              "label": "Free money for a new purchase"
+            },
+            {
+              "label": "A completed payment of every bill"
+            },
+            {
+              "label": "An uncovered obligation to address"
+            }
+          ],
+          "help": [
+            "A plan cannot reserve money that is not available."
+          ],
+          "feedback": {
+            "met": "A shortage must stay visible rather than being allocated away.",
+            "not_yet": "A plan cannot reserve money that is not available."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe mostrar el plan?",
+          "scene": "Las cuentas inevitables conocidas superan el dinero disponible.",
+          "options": [
+            {
+              "label": "Dinero libre para otra compra"
+            },
+            {
+              "label": "Todas las cuentas ya pagadas"
+            },
+            {
+              "label": "Una obligación sin cubrir que atender"
+            }
+          ],
+          "help": [
+            "Un plan no puede reservar dinero inexistente."
+          ],
+          "feedback": {
+            "met": "El faltante debe seguir visible, no desaparecer por asignar.",
+            "not_yet": "Un plan no puede reservar dinero inexistente."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que o plano deve mostrar?",
+          "scene": "As contas inevitáveis conhecidas superam o dinheiro disponível.",
+          "options": [
+            {
+              "label": "Dinheiro livre para outra compra"
+            },
+            {
+              "label": "Todas as contas já pagas"
+            },
+            {
+              "label": "Uma obrigação sem cobertura a tratar"
+            }
+          ],
+          "help": [
+            "Um plano não pode reservar dinheiro inexistente."
+          ],
+          "feedback": {
+            "met": "A falta deve continuar visível, não desaparecer por destinar.",
+            "not_yet": "Um plano não pode reservar dinheiro inexistente."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Which status is accurate?",
+          "scene": "You set aside the exact amount for a bill but have not sent its payment.",
+          "options": [
+            {
+              "label": "Reserved, still unpaid"
+            },
+            {
+              "label": "No longer owed"
+            },
+            {
+              "label": "Paid and confirmed"
+            }
+          ],
+          "help": [
+            "Keep the reservation and payment records distinct."
+          ],
+          "feedback": {
+            "met": "Reserving protects funds; only a completed payment settles the stated bill.",
+            "not_yet": "Keep the reservation and payment records distinct."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué estado es correcto?",
+          "scene": "Separaste el monto exacto de una cuenta, pero aún no enviaste el pago.",
+          "options": [
+            {
+              "label": "Reservado, aún sin pagar"
+            },
+            {
+              "label": "Ya no se debe"
+            },
+            {
+              "label": "Pagado y confirmado"
+            }
+          ],
+          "help": [
+            "Distingue registro de reserva y de pago."
+          ],
+          "feedback": {
+            "met": "Reservar protege fondos; el pago realizado liquida la cuenta indicada.",
+            "not_yet": "Distingue registro de reserva y de pago."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual estado é correto?",
+          "scene": "Separou o valor exato de uma conta, mas ainda não enviou o pagamento.",
+          "options": [
+            {
+              "label": "Reservado, ainda não pago"
+            },
+            {
+              "label": "Já não é devido"
+            },
+            {
+              "label": "Pago e confirmado"
+            }
+          ],
+          "help": [
+            "Distinga registro de reserva e de pagamento."
+          ],
+          "feedback": {
+            "met": "Reservar protege recursos; o pagamento concluído quita a conta informada.",
+            "not_yet": "Distinga registro de reserva e de pagamento."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.cashflow-budget.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Remainder after protecting visits?",
+          "scene": "A care fund holds 180; required visits need 95 before any optional use.",
+          "options": [
+            {
+              "label": "180"
+            },
+            {
+              "label": "275"
+            },
+            {
+              "label": "85"
+            }
+          ],
+          "help": [
+            "Keep the required visit amount committed."
+          ],
+          "feedback": {
+            "met": "180 − 95 = 85 after the required reserve.",
+            "not_yet": "Keep the required visit amount committed."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Resto tras proteger visitas?",
+          "scene": "Un fondo de cuidados tiene 180; visitas necesarias requieren 95 antes de usos opcionales.",
+          "options": [
+            {
+              "label": "180"
+            },
+            {
+              "label": "275"
+            },
+            {
+              "label": "85"
+            }
+          ],
+          "help": [
+            "Conserva comprometido el monto de visitas necesarias."
+          ],
+          "feedback": {
+            "met": "180 − 95 = 85 tras la reserva necesaria.",
+            "not_yet": "Conserva comprometido el monto de visitas necesarias."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Restante após proteger visitas?",
+          "scene": "Um fundo de cuidados tem 180; visitas necessárias exigem 95 antes de usos opcionais.",
+          "options": [
+            {
+              "label": "180"
+            },
+            {
+              "label": "275"
+            },
+            {
+              "label": "85"
+            }
+          ],
+          "help": [
+            "Mantenha comprometido o valor das visitas necessárias."
+          ],
+          "feedback": {
+            "met": "180 − 95 = 85 após a reserva necessária.",
+            "not_yet": "Mantenha comprometido o valor das visitas necessárias."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          180,
+          95
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

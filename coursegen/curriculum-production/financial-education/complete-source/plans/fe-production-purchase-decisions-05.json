@@ -1,0 +1,828 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-purchase-decisions-part-1",
+  "lesson_id": "fe-production-purchase-decisions-05",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.purchase-decisions.05"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Check whether a promotion’s minimum spend makes the planned purchase more expensive.",
+  "title": {
+    "en-US": "Promotion Costs",
+    "es-MX": "¿La promoción cuesta más?",
+    "pt-BR": "A promoção custa mais?"
+  },
+  "new_concepts": [
+    "finance.prod.purchase-decisions.05"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Promotion Costs\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"¿La promoción cuesta más?\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"A promoção custa mais?\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.purchase-decisions.05",
+      "observable_action": "Check whether a promotion’s minimum spend makes the planned purchase more expensive.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.purchase-decisions.02",
+      "prod.purchase-decisions.03",
+      "cash.reserved"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Spending extra to unlock a discount may raise the final bill; compare the promotion with your original plan.",
+    "misconception": "Qualifying for a promotion always saves money even when unwanted extras raise spending above the original plan.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.purchase-decisions.05",
+        "context_id": "purchase-decisions-05-example-01",
+        "supports_from": [],
+        "reasoning": "Calculate the qualifying basket after its discount. Compare with the planned basket; a discount can still require more spending."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.purchase-decisions.05",
+        "context_id": "purchase-decisions-05-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The promotion costs more than the original plan."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.purchase-decisions.05",
+        "context_id": "purchase-decisions-05-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The original plan is the relevant comparison for actual spending."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.purchase-decisions.05",
+        "context_id": "purchase-decisions-05-practice-01",
+        "supports_from": [],
+        "reasoning": "The discounted basket still exceeds the original planned spending."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.purchase-decisions.05",
+        "context_id": "purchase-decisions-05-practice-02",
+        "supports_from": [],
+        "reasoning": "Unused extras can make a promotion poor value."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.purchase-decisions.05",
+        "context_id": "purchase-decisions-05-practice-03",
+        "supports_from": [],
+        "reasoning": "Excluded products may not help reach the required threshold."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.purchase-decisions.05",
+        "context_id": "purchase-decisions-05-transfer-01",
+        "supports_from": [],
+        "reasoning": "The promotion increases spending without meeting an additional stated need."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.purchase-decisions.05",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Spending extra to unlock a discount may raise the final bill; compare the promotion with your original plan."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Gastar más para activar descuento puede subir cuenta final; compara promoción con plan original."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Gastar mais para liberar desconto pode subir conta final; compare promoção com plano original."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Compare actual money leaving",
+          "line": "Calculate the qualifying basket after its discount. Compare with the planned basket; a discount can still require more spending."
+        },
+        "es-MX": {
+          "prompt": "Compara dinero que sale",
+          "line": "Calcula canasta que cumple mínimo después de descuento. Compara con canasta prevista; un descuento aún puede exigir más gasto."
+        },
+        "pt-BR": {
+          "prompt": "Compare dinheiro que sai",
+          "line": "Calcule cesta que cumpre mínimo após desconto. Compare com cesta prevista; um desconto ainda pode exigir mais gasto."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.05",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "step-1"
+          },
+          {
+            "id": "step-2"
+          },
+          {
+            "id": "step-3"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "step-2",
+          "step-3"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "step-2": "90",
+          "step-3": "20"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Planned basket 70; promotion requires basket 100 and removes 10; extras are unwanted, no other charges. Compare final spending.",
+          "feedback": {
+            "met": "The promotion costs more than the original plan.",
+            "not_yet": "Compare discounted qualifying spending with the planned purchase."
+          },
+          "help": [
+            "Compare discounted qualifying spending with the planned purchase."
+          ],
+          "steps": [
+            {
+              "expression": "100",
+              "result": "100",
+              "spokenText": "Qualifying basket"
+            },
+            {
+              "expression": "100 - 10",
+              "result": "90",
+              "spokenText": "After discount"
+            },
+            {
+              "expression": "90 - 70",
+              "result": "20",
+              "spokenText": "Extra spending versus plan"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Canasta prevista 70; promoción exige 100 y quita 10; extras no deseados, sin otros cargos. Compara gasto final.",
+          "feedback": {
+            "met": "Promoción cuesta más que plan original.",
+            "not_yet": "Compara gasto mínimo descontado con compra prevista."
+          },
+          "help": [
+            "Compara gasto mínimo descontado con compra prevista."
+          ],
+          "steps": [
+            {
+              "expression": "100",
+              "result": "100",
+              "spokenText": "Canasta mínima"
+            },
+            {
+              "expression": "100 - 10",
+              "result": "90",
+              "spokenText": "Tras descuento"
+            },
+            {
+              "expression": "90 - 70",
+              "result": "20",
+              "spokenText": "Gasto extra frente al plan"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Cesta prevista 70; promoção exige 100 e tira 10; extras indesejados, sem outros custos. Compare gasto final.",
+          "feedback": {
+            "met": "Promoção custa mais que plano original.",
+            "not_yet": "Compare gasto mínimo com desconto à compra prevista."
+          },
+          "help": [
+            "Compare gasto mínimo com desconto à compra prevista."
+          ],
+          "steps": [
+            {
+              "expression": "100",
+              "result": "100",
+              "spokenText": "Cesta mínima"
+            },
+            {
+              "expression": "100 - 10",
+              "result": "90",
+              "spokenText": "Após desconto"
+            },
+            {
+              "expression": "90 - 70",
+              "result": "20",
+              "spokenText": "Gasto extra frente ao plano"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Which comparison answers “did I save”?",
+          "scene": "The discount requires buying unwanted extras to reach its threshold.",
+          "options": [
+            {
+              "label": "Only the discount label"
+            },
+            {
+              "label": "Final spending versus planned spending"
+            },
+            {
+              "label": "Only the number of items"
+            }
+          ],
+          "help": [
+            "Include the extra purchases required to qualify."
+          ],
+          "feedback": {
+            "met": "The original plan is the relevant comparison for actual spending.",
+            "not_yet": "Include the extra purchases required to qualify."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué comparación responde «ahorré»?",
+          "scene": "Descuento exige comprar extras no deseados para alcanzar mínimo.",
+          "options": [
+            {
+              "label": "Solo etiqueta de descuento"
+            },
+            {
+              "label": "Gasto final frente a previsto"
+            },
+            {
+              "label": "Solo cantidad de artículos"
+            }
+          ],
+          "help": [
+            "Incluye compras extra exigidas para cumplir mínimo."
+          ],
+          "feedback": {
+            "met": "Plan original es comparación pertinente del gasto real.",
+            "not_yet": "Incluye compras extra exigidas para cumplir mínimo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que comparação responde “poupei”?",
+          "scene": "Desconto exige comprar extras indesejados para atingir mínimo.",
+          "options": [
+            {
+              "label": "Só rótulo do desconto"
+            },
+            {
+              "label": "Gasto final versus previsto"
+            },
+            {
+              "label": "Só número de itens"
+            }
+          ],
+          "help": [
+            "Inclua compras extras exigidas para atingir mínimo."
+          ],
+          "feedback": {
+            "met": "Plano original é comparação relevante do gasto real.",
+            "not_yet": "Inclua compras extras exigidas para atingir mínimo."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.05",
+      "copy": {
+        "en-US": {
+          "prompt": "How much more than planned?",
+          "scene": "Planned spending: 60; Required basket: 90; Discount: 15; Extras unwanted; no other charges.",
+          "options": [
+            {
+              "label": "30"
+            },
+            {
+              "label": "15"
+            },
+            {
+              "label": "45"
+            }
+          ],
+          "help": [
+            "Subtract discount from required basket, then compare with plan."
+          ],
+          "feedback": {
+            "met": "The discounted basket still exceeds the original planned spending.",
+            "not_yet": "Subtract discount from required basket, then compare with plan."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto más que lo previsto?",
+          "scene": "Gasto previsto: 60; Canasta mínima: 90; Descuento: 15; Extras no deseados; sin otros cargos.",
+          "options": [
+            {
+              "label": "30"
+            },
+            {
+              "label": "15"
+            },
+            {
+              "label": "45"
+            }
+          ],
+          "help": [
+            "Resta descuento al mínimo y compara con plan."
+          ],
+          "feedback": {
+            "met": "Canasta descontada aún supera gasto original previsto.",
+            "not_yet": "Resta descuento al mínimo y compara con plan."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto a mais que previsto?",
+          "scene": "Gasto previsto: 60; Cesta mínima: 90; Desconto: 15; Extras indesejados; sem outros custos.",
+          "options": [
+            {
+              "label": "30"
+            },
+            {
+              "label": "15"
+            },
+            {
+              "label": "45"
+            }
+          ],
+          "help": [
+            "Subtraia desconto do mínimo e compare com plano."
+          ],
+          "feedback": {
+            "met": "Cesta com desconto ainda supera gasto original previsto.",
+            "not_yet": "Subtraia desconto do mínimo e compare com plano."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          60,
+          90,
+          15
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 1
+                },
+                {
+                  "input": 2
+                }
+              ]
+            },
+            {
+              "input": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.05",
+      "copy": {
+        "en-US": {
+          "prompt": "What matters about extra items?",
+          "scene": "The threshold requires more products than the household planned.",
+          "options": [
+            {
+              "label": "Only the advertisement’s excitement"
+            },
+            {
+              "label": "Whether extras are useful and affordable"
+            },
+            {
+              "label": "Only how large the discount sounds"
+            }
+          ],
+          "help": [
+            "Check real need and total spending together."
+          ],
+          "feedback": {
+            "met": "Unused extras can make a promotion poor value.",
+            "not_yet": "Check real need and total spending together."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué detalle importa de extras?",
+          "scene": "El mínimo exige más productos de los previstos por el hogar.",
+          "options": [
+            {
+              "label": "Solo emoción del anuncio"
+            },
+            {
+              "label": "Si extras son útiles y asequibles"
+            },
+            {
+              "label": "Solo tamaño aparente del descuento"
+            }
+          ],
+          "help": [
+            "Revisa necesidad real y gasto total juntos."
+          ],
+          "feedback": {
+            "met": "Extras sin uso pueden dar poco valor a promoción.",
+            "not_yet": "Revisa necesidad real y gasto total juntos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que detalhe importa dos extras?",
+          "scene": "O mínimo exige mais produtos que os previstos pela família.",
+          "options": [
+            {
+              "label": "Só emoção do anúncio"
+            },
+            {
+              "label": "Se extras são úteis e acessíveis"
+            },
+            {
+              "label": "Só tamanho aparente do desconto"
+            }
+          ],
+          "help": [
+            "Confira necessidade real e gasto total juntos."
+          ],
+          "feedback": {
+            "met": "Extras sem uso podem dar pouco valor à promoção.",
+            "not_yet": "Confira necessidade real e gasto total juntos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.05",
+      "copy": {
+        "en-US": {
+          "prompt": "What must be checked before applying the offer?",
+          "scene": "The promotion excludes some products from its qualifying spend.",
+          "options": [
+            {
+              "label": "Which planned items count"
+            },
+            {
+              "label": "Only the headline discount"
+            },
+            {
+              "label": "Assume every item qualifies"
+            }
+          ],
+          "help": [
+            "Read eligibility conditions before calculating the discount."
+          ],
+          "feedback": {
+            "met": "Excluded products may not help reach the required threshold.",
+            "not_yet": "Read eligibility conditions before calculating the discount."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué revisar antes de aplicar oferta?",
+          "scene": "Promoción excluye productos del gasto que cuenta para mínimo.",
+          "options": [
+            {
+              "label": "Qué artículos previstos cuentan"
+            },
+            {
+              "label": "Solo descuento anunciado"
+            },
+            {
+              "label": "Suponer todo artículo califica"
+            }
+          ],
+          "help": [
+            "Lee condiciones antes de calcular descuento."
+          ],
+          "feedback": {
+            "met": "Productos excluidos pueden no ayudar a alcanzar mínimo requerido.",
+            "not_yet": "Lee condiciones antes de calcular descuento."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que conferir antes de aplicar oferta?",
+          "scene": "Promoção exclui produtos do gasto que conta para mínimo.",
+          "options": [
+            {
+              "label": "Quais itens previstos contam"
+            },
+            {
+              "label": "Só desconto anunciado"
+            },
+            {
+              "label": "Supor todo item se enquadra"
+            }
+          ],
+          "help": [
+            "Leia condições antes de calcular desconto."
+          ],
+          "feedback": {
+            "met": "Produtos excluídos podem não ajudar a atingir mínimo exigido.",
+            "not_yet": "Leia condições antes de calcular desconto."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.purchase-decisions.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Which basket avoids overspending?",
+          "scene": "Original essentials cost less than the discounted threshold basket; all added items are unwanted.",
+          "options": [
+            {
+              "label": "Add unwanted items"
+            },
+            {
+              "label": "Keep the original essentials basket"
+            },
+            {
+              "label": "Buy twice to “save” more"
+            }
+          ],
+          "help": [
+            "Compare the actual final costs and usable purchases."
+          ],
+          "feedback": {
+            "met": "The promotion increases spending without meeting an additional stated need.",
+            "not_yet": "Compare the actual final costs and usable purchases."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué canasta evita gasto innecesario aquí?",
+          "scene": "Esenciales originales cuestan menos que canasta mínima descontada; todo extra no se desea.",
+          "options": [
+            {
+              "label": "Agregar extras por el sello"
+            },
+            {
+              "label": "Conservar canasta original de esenciales"
+            },
+            {
+              "label": "Comprar doble para «ahorrar» más"
+            }
+          ],
+          "help": [
+            "Compara costos finales reales y compras utilizables."
+          ],
+          "feedback": {
+            "met": "Promoción aumenta gasto sin atender necesidad adicional indicada.",
+            "not_yet": "Compara costos finales reales y compras utilizables."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que cesta evita gasto desnecessário aqui?",
+          "scene": "Essenciais originais custam menos que cesta mínima com desconto; todos os extras são indesejados.",
+          "options": [
+            {
+              "label": "Adicionar extras pelo selo"
+            },
+            {
+              "label": "Manter cesta original de essenciais"
+            },
+            {
+              "label": "Comprar dobro para “poupar” mais"
+            }
+          ],
+          "help": [
+            "Compare custos finais reais e compras utilizáveis."
+          ],
+          "feedback": {
+            "met": "Promoção aumenta gasto sem atender necessidade extra dada.",
+            "not_yet": "Compare custos finais reais e compras utilizáveis."
+          }
+        }
+      }
+    }
+  ]
+}

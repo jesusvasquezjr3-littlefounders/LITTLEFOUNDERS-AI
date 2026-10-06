@@ -30,6 +30,7 @@ export interface V2ReleaseVerifyInput {
   topicTitles: readonly unknown[];
   orphansWithProgress: readonly string[];
   orphanCount: number;
+  hierarchyProblems?: readonly string[];
   corePassed: boolean;
   coreDetail: string;
 }
@@ -129,7 +130,10 @@ export function evaluateV2Release(input: V2ReleaseVerifyInput): ReleaseEvaluatio
 
   const plannedIds = new Set(input.plans.map((plan) => plan.lesson_id));
   const ready = input.vaultLessons.filter((lesson) => lesson.status === 'review' || lesson.status === 'published');
-  add('forge.release.lessons-complete', ready.length === input.plans.length && ready.every((lesson) => plannedIds.has(lesson.id)), `${ready.length}/${input.plans.length} planned lessons are release-ready`);
+  const hierarchyProblems = input.hierarchyProblems ?? [];
+  add('forge.release.lessons-complete', ready.length === input.plans.length && ready.length === input.vaultLessons.length
+    && ready.every((lesson) => plannedIds.has(lesson.id)) && input.orphanCount === 0 && hierarchyProblems.length === 0,
+  `${ready.length}/${input.plans.length} planned lessons are release-ready; ${input.orphanCount} unplanned active lessons${hierarchyProblems.length ? `; ${hierarchyProblems.join('; ')}` : ''}`);
   add('forge.release.locales-complete', input.current.length === input.plans.length * LOCALES.length && input.plans.every((plan) => LOCALES.every((locale) => currentByKey.has(`${plan.lesson_id}|${locale}`))), `${input.current.length}/${input.plans.length * LOCALES.length} current documents`);
 
   const expectedByKey = new Map(expected.map((row) => [`${row.lesson_id}|${row.locale}`, row]));

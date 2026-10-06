@@ -1,0 +1,719 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-investing-foundations-part-1",
+  "lesson_id": "fe-production-investing-foundations-04",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.investing-foundations.04"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Separate an investment’s income payments from changes in its sale value.",
+  "title": {
+    "en-US": "Investment Returns",
+    "es-MX": "Pagos y cambios de precio",
+    "pt-BR": "Pagamentos e mudanças de preço"
+  },
+  "new_concepts": [
+    "finance.prod.investing-foundations.04"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Investment Returns\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Pagos y cambios de precio\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Pagamentos e mudanças de preço\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.investing-foundations.04",
+      "observable_action": "Separate an investment’s income payments from changes in its sale value.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.time-inflation.02",
+      "prod.time-inflation.06"
+    ],
+    "retrieval_skills": [],
+    "relevance": "An investment can pay income while its sale value falls. Check both parts of the result.",
+    "misconception": "Receiving an income payment proves the investment gained overall.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.investing-foundations.04",
+        "context_id": "investing-foundations-04-example-01",
+        "supports_from": [],
+        "reasoning": "A holding pays cash but sells for less than before. The payment and the price loss are different result components."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.investing-foundations.04",
+        "context_id": "investing-foundations-04-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The payment is income received from holding the bond."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.investing-foundations.04",
+        "context_id": "investing-foundations-04-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "A higher offer changes value without creating a dividend."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.investing-foundations.04",
+        "context_id": "investing-foundations-04-practice-01",
+        "supports_from": [],
+        "reasoning": "A distribution alone cannot establish the overall result."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.investing-foundations.04",
+        "context_id": "investing-foundations-04-practice-02",
+        "supports_from": [],
+        "reasoning": "An unsold value increase is not cash already received."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.investing-foundations.04",
+        "context_id": "investing-foundations-04-practice-03",
+        "supports_from": [],
+        "reasoning": "An income payment does not fix the resale price."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.investing-foundations.04",
+        "context_id": "investing-foundations-04-transfer-01",
+        "supports_from": [],
+        "reasoning": "Both income and value change contribute to the result."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.investing-foundations.04",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "An investment can pay income while its sale value falls. Check both parts of the result."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Una inversión puede pagar ingresos mientras baja su valor de venta. Revisa ambas partes del resultado."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Um investimento pode pagar rendimentos enquanto seu valor de venda cai. Confira ambas as partes do resultado."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Two separate changes",
+          "line": "A holding pays cash but sells for less than before. The payment and the price loss are different result components."
+        },
+        "es-MX": {
+          "prompt": "Dos cambios distintos",
+          "line": "Una inversión paga efectivo, pero se vende por menos que antes. El pago y la pérdida de precio son componentes distintos."
+        },
+        "pt-BR": {
+          "prompt": "Duas mudanças diferentes",
+          "line": "Uma aplicação paga dinheiro, mas vale menos na venda. O pagamento e a perda no preço são componentes diferentes."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Which part is income?",
+          "scene": "A bond sends an interest payment. Its market price also changes.",
+          "options": [
+            {
+              "label": "Only its market price"
+            },
+            {
+              "label": "The interest payment"
+            }
+          ],
+          "help": [
+            "Separate cash paid out from a possible sale."
+          ],
+          "feedback": {
+            "met": "The payment is income received from holding the bond.",
+            "not_yet": "Separate cash paid out from a possible sale."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué parte es ingreso?",
+          "scene": "Un bono paga intereses. Su precio de mercado también cambia.",
+          "options": [
+            {
+              "label": "Solo su precio de mercado"
+            },
+            {
+              "label": "El pago de intereses"
+            }
+          ],
+          "help": [
+            "Distingue el efectivo recibido de una posible venta."
+          ],
+          "feedback": {
+            "met": "El pago es ingreso recibido por mantener el bono.",
+            "not_yet": "Distingue el efectivo recibido de una posible venta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual parte é rendimento?",
+          "scene": "Um título paga juros. Seu preço de mercado também muda.",
+          "options": [
+            {
+              "label": "Só seu preço de mercado"
+            },
+            {
+              "label": "O pagamento de juros"
+            }
+          ],
+          "help": [
+            "Separe o dinheiro recebido de uma possível venda."
+          ],
+          "feedback": {
+            "met": "O pagamento é rendimento recebido por manter o título.",
+            "not_yet": "Separe o dinheiro recebido de uma possível venda."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Which part changed?",
+          "scene": "A share paid no dividend. A buyer now offers more for it.",
+          "options": [
+            {
+              "label": "Its sale value"
+            },
+            {
+              "label": "Cash income already received"
+            }
+          ],
+          "help": [
+            "An offer is not an income payment."
+          ],
+          "feedback": {
+            "met": "A higher offer changes value without creating a dividend.",
+            "not_yet": "An offer is not an income payment."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué parte cambió?",
+          "scene": "Una acción no pagó dividendos. Ahora alguien ofrece más por ella.",
+          "options": [
+            {
+              "label": "Su valor de venta"
+            },
+            {
+              "label": "El ingreso ya recibido"
+            }
+          ],
+          "help": [
+            "Una oferta no es un pago de ingresos."
+          ],
+          "feedback": {
+            "met": "Una oferta mayor cambia el valor sin crear un dividendo.",
+            "not_yet": "Una oferta no es un pago de ingresos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual parte mudou?",
+          "scene": "Uma ação não pagou dividendos. Agora alguém oferece mais por ela.",
+          "options": [
+            {
+              "label": "Seu valor de venda"
+            },
+            {
+              "label": "O rendimento já recebido"
+            }
+          ],
+          "help": [
+            "Uma oferta não é um pagamento de rendimento."
+          ],
+          "feedback": {
+            "met": "Uma oferta maior muda o valor sem criar um dividendo.",
+            "not_yet": "Uma oferta não é um pagamento de rendimento."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Is the result known?",
+          "scene": "A statement shows a cash distribution but omits the holding’s change in value.",
+          "options": [
+            {
+              "label": "Yes, any distribution proves profit"
+            },
+            {
+              "label": "No, the value change is missing"
+            }
+          ],
+          "help": [
+            "Check both payments and changes in value."
+          ],
+          "feedback": {
+            "met": "A distribution alone cannot establish the overall result.",
+            "not_yet": "Check both payments and changes in value."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Conoces el resultado?",
+          "scene": "Un estado muestra un pago en efectivo, pero omite el cambio de valor de la inversión.",
+          "options": [
+            {
+              "label": "Sí, todo pago prueba ganancia"
+            },
+            {
+              "label": "No, falta el cambio de valor"
+            }
+          ],
+          "help": [
+            "Revisa pagos y cambios de valor."
+          ],
+          "feedback": {
+            "met": "Un pago aislado no establece el resultado total.",
+            "not_yet": "Revisa pagos y cambios de valor."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O resultado é conhecido?",
+          "scene": "Um extrato mostra uma distribuição em dinheiro, mas omite a mudança de valor da aplicação.",
+          "options": [
+            {
+              "label": "Sim, qualquer pagamento comprova lucro"
+            },
+            {
+              "label": "Não, falta a mudança de valor"
+            }
+          ],
+          "help": [
+            "Confira pagamentos e mudanças de valor."
+          ],
+          "feedback": {
+            "met": "Um pagamento isolado não estabelece o resultado total.",
+            "not_yet": "Confira pagamentos e mudanças de valor."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.04",
+      "copy": {
+        "en-US": {
+          "prompt": "What has become cash?",
+          "scene": "A holding’s displayed value rises. It pays nothing and remains unsold.",
+          "options": [
+            {
+              "label": "No sale proceeds or income yet"
+            },
+            {
+              "label": "The whole displayed gain"
+            }
+          ],
+          "help": [
+            "Check whether a payment or sale occurred."
+          ],
+          "feedback": {
+            "met": "An unsold value increase is not cash already received.",
+            "not_yet": "Check whether a payment or sale occurred."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué se volvió efectivo?",
+          "scene": "Sube el valor mostrado de una inversión. No paga nada y sigue sin venderse.",
+          "options": [
+            {
+              "label": "Aún no hay cobro ni venta"
+            },
+            {
+              "label": "Toda la ganancia mostrada"
+            }
+          ],
+          "help": [
+            "Revisa si hubo pago o venta."
+          ],
+          "feedback": {
+            "met": "Una subida sin vender no es efectivo ya recibido.",
+            "not_yet": "Revisa si hubo pago o venta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que virou dinheiro?",
+          "scene": "O valor exibido de uma aplicação sobe. Ela não paga nada e não foi vendida.",
+          "options": [
+            {
+              "label": "Ainda não houve recebimento ou venda"
+            },
+            {
+              "label": "Todo o ganho exibido"
+            }
+          ],
+          "help": [
+            "Confira se houve pagamento ou venda."
+          ],
+          "feedback": {
+            "met": "Uma alta sem venda não é dinheiro já recebido.",
+            "not_yet": "Confira se houve pagamento ou venda."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Can both happen?",
+          "scene": "A fund pays income this month while buyers offer less for its units.",
+          "options": [
+            {
+              "label": "Yes, payments and price can differ"
+            },
+            {
+              "label": "No, a payment fixes the price"
+            }
+          ],
+          "help": [
+            "Treat the payment and sale value separately."
+          ],
+          "feedback": {
+            "met": "An income payment does not fix the resale price.",
+            "not_yet": "Treat the payment and sale value separately."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Pueden ocurrir ambos?",
+          "scene": "Un fondo paga ingresos este mes y los compradores ofrecen menos por sus participaciones.",
+          "options": [
+            {
+              "label": "Sí, pago y precio pueden diferir"
+            },
+            {
+              "label": "No, pagar fija el precio"
+            }
+          ],
+          "help": [
+            "Trata por separado el pago y el valor de venta."
+          ],
+          "feedback": {
+            "met": "Un pago de ingresos no fija el precio de reventa.",
+            "not_yet": "Trata por separado el pago y el valor de venta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Ambos podem ocorrer?",
+          "scene": "Um fundo paga rendimentos neste mês e compradores oferecem menos por suas cotas.",
+          "options": [
+            {
+              "label": "Sim, pagamento e preço podem diferir"
+            },
+            {
+              "label": "Não, pagar fixa o preço"
+            }
+          ],
+          "help": [
+            "Separe o pagamento do valor de venda."
+          ],
+          "feedback": {
+            "met": "Um pagamento de rendimento não fixa o preço de revenda.",
+            "not_yet": "Separe o pagamento do valor de venda."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.investing-foundations.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Which records are needed?",
+          "scene": "A rental investment produces rent. The owner wants its overall result before costs.",
+          "options": [
+            {
+              "label": "Property value change alone"
+            },
+            {
+              "label": "Rent received alone"
+            },
+            {
+              "label": "Rent received and property value change"
+            }
+          ],
+          "help": [
+            "Do not substitute one component for the whole result."
+          ],
+          "feedback": {
+            "met": "Both income and value change contribute to the result.",
+            "not_yet": "Do not substitute one component for the whole result."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué registros necesitas?",
+          "scene": "Una propiedad de inversión genera renta. Buscan su resultado total antes de costos.",
+          "options": [
+            {
+              "label": "Solo cambio de valor del inmueble"
+            },
+            {
+              "label": "Solo las rentas recibidas"
+            },
+            {
+              "label": "Rentas recibidas y cambio de valor"
+            }
+          ],
+          "help": [
+            "No sustituyas el resultado completo por una parte."
+          ],
+          "feedback": {
+            "met": "Ingresos y cambio de valor contribuyen al resultado.",
+            "not_yet": "No sustituyas el resultado completo por una parte."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quais registros são necessários?",
+          "scene": "Um imóvel de investimento gera aluguel. Buscam seu resultado total antes dos custos.",
+          "options": [
+            {
+              "label": "Só mudança do valor do imóvel"
+            },
+            {
+              "label": "Só os aluguéis recebidos"
+            },
+            {
+              "label": "Aluguéis recebidos e mudança de valor"
+            }
+          ],
+          "help": [
+            "Não substitua o resultado completo por uma parte."
+          ],
+          "feedback": {
+            "met": "Rendimentos e mudança de valor contribuem para o resultado.",
+            "not_yet": "Não substitua o resultado completo por uma parte."
+          }
+        }
+      }
+    }
+  ]
+}

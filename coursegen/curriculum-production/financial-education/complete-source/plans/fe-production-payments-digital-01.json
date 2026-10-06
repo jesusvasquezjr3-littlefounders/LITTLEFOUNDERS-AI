@@ -1,0 +1,797 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-payments-digital-part-1",
+  "lesson_id": "fe-production-payments-digital-01",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.payments-digital.01"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Distinguish payment from your own balance from a payment that creates a debt.",
+  "title": {
+    "en-US": "Payment funding",
+    "es-MX": "¿Qué financia el pago?",
+    "pt-BR": "O que financia o pagamento?"
+  },
+  "new_concepts": [
+    "finance.prod.payments-digital.01"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"What funds the payment?\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"¿Qué financia el pago?\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"O que financia o pagamento?\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.payments-digital.01",
+      "observable_action": "Distinguish payment from your own balance from a payment that creates a debt.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "debt.obligation",
+      "prod.accounts-records.02"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Check whether a purchase uses money held or creates a repayment obligation.",
+    "misconception": "Treating every successful card or app payment as spending existing money, regardless of the selected funding source.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.payments-digital.01",
+        "context_id": "fe-production-payments-digital-01-example-01",
+        "supports_from": [],
+        "reasoning": "A payment can use your existing balance or borrowed funds. The interface alone does not tell you which one."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.payments-digital.01",
+        "context_id": "fe-production-payments-digital-01-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The stated source is existing money rather than borrowing."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.payments-digital.01",
+        "context_id": "fe-production-payments-digital-01-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "A credit-funded purchase creates an obligation even before repayment."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.payments-digital.01",
+        "context_id": "fe-production-payments-digital-01-practice-01",
+        "supports_from": [],
+        "reasoning": "85 − 30 = 55 of your own money remains."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.payments-digital.01",
+        "context_id": "fe-production-payments-digital-01-practice-02",
+        "supports_from": [],
+        "reasoning": "The funding choice determines whether repayment is owed."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.payments-digital.01",
+        "context_id": "fe-production-payments-digital-01-practice-03",
+        "supports_from": [],
+        "reasoning": "The explicit overdraft terms can create debt despite the label."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.payments-digital.01",
+        "context_id": "fe-production-payments-digital-01-transfer-01",
+        "supports_from": [],
+        "reasoning": "Delayed payment funded by borrowing remains a debt commitment."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.payments-digital.01",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Check whether a purchase uses money held or creates a repayment obligation."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Revisa si comprar usa dinero disponible o crea una obligación de devolver."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Confira se comprar usa dinheiro disponível ou cria uma obrigação de devolver."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Follow the funding source",
+          "line": "A payment can use your existing balance or borrowed funds. The interface alone does not tell you which one."
+        },
+        "es-MX": {
+          "prompt": "Sigue el origen del pago",
+          "line": "Un pago puede usar tu saldo o dinero prestado. La interfaz sola no indica cuál de los dos."
+        },
+        "pt-BR": {
+          "prompt": "Siga a origem do pagamento",
+          "line": "Um pagamento pode usar seu saldo ou dinheiro emprestado. A tela sozinha não diz qual dos dois."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What funds the purchase?",
+          "scene": "This fictional payment uses only your existing balance, with no borrowing facility.",
+          "options": [
+            {
+              "label": "Money already held"
+            },
+            {
+              "label": "A future wage not received"
+            },
+            {
+              "label": "A new loan from the payment screen"
+            }
+          ],
+          "help": [
+            "Use the explicitly stated funding source."
+          ],
+          "feedback": {
+            "met": "The stated source is existing money rather than borrowing.",
+            "not_yet": "Use the explicitly stated funding source."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué financia la compra?",
+          "scene": "Este pago ficticio usa solo tu saldo existente, sin crédito disponible.",
+          "options": [
+            {
+              "label": "Dinero que ya tienes"
+            },
+            {
+              "label": "Un salario futuro no recibido"
+            },
+            {
+              "label": "Un préstamo nuevo de la pantalla"
+            }
+          ],
+          "help": [
+            "Usa la fuente de fondos indicada."
+          ],
+          "feedback": {
+            "met": "La fuente indicada es dinero existente, no préstamo.",
+            "not_yet": "Usa la fuente de fondos indicada."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que financia a compra?",
+          "scene": "Este pagamento fictício usa só seu saldo existente, sem crédito disponível.",
+          "options": [
+            {
+              "label": "Dinheiro que já tem"
+            },
+            {
+              "label": "Um salário futuro não recebido"
+            },
+            {
+              "label": "Um empréstimo novo da tela"
+            }
+          ],
+          "help": [
+            "Use a fonte de recursos informada."
+          ],
+          "feedback": {
+            "met": "A fonte informada é dinheiro existente, não empréstimo.",
+            "not_yet": "Use a fonte de recursos informada."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What does completing the purchase create?",
+          "scene": "This fictional purchase uses a credit line; repayment is due later.",
+          "options": [
+            {
+              "label": "Proof that repayment is affordable"
+            },
+            {
+              "label": "A repayment obligation"
+            },
+            {
+              "label": "Additional earned income"
+            }
+          ],
+          "help": [
+            "Successful payment and affordable repayment are different questions."
+          ],
+          "feedback": {
+            "met": "A credit-funded purchase creates an obligation even before repayment.",
+            "not_yet": "Successful payment and affordable repayment are different questions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué crea completar la compra?",
+          "scene": "Esta compra ficticia usa una línea de crédito; debes devolver después.",
+          "options": [
+            {
+              "label": "Prueba de poder devolverlo"
+            },
+            {
+              "label": "Una obligación de devolver"
+            },
+            {
+              "label": "Ingreso ganado adicional"
+            }
+          ],
+          "help": [
+            "Pago exitoso y devolución viable son preguntas distintas."
+          ],
+          "feedback": {
+            "met": "Una compra con crédito crea obligación antes de devolver.",
+            "not_yet": "Pago exitoso y devolución viable son preguntas distintas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que concluir a compra cria?",
+          "scene": "Esta compra fictícia usa uma linha de crédito; deve devolver depois.",
+          "options": [
+            {
+              "label": "Prova de poder devolver"
+            },
+            {
+              "label": "Uma obrigação de devolver"
+            },
+            {
+              "label": "Renda ganha adicional"
+            }
+          ],
+          "help": [
+            "Pagamento bem-sucedido e devolução viável são perguntas diferentes."
+          ],
+          "feedback": {
+            "met": "Uma compra com crédito cria obrigação antes de devolver.",
+            "not_yet": "Pagamento bem-sucedido e devolução viável são perguntas diferentes."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Own money remaining?",
+          "scene": "Own balance: 85; purchase: 30; this method allows no borrowing.",
+          "options": [
+            {
+              "label": "55"
+            },
+            {
+              "label": "115"
+            },
+            {
+              "label": "85"
+            }
+          ],
+          "help": [
+            "Subtract the purchase from its actual funding source."
+          ],
+          "feedback": {
+            "met": "85 − 30 = 55 of your own money remains.",
+            "not_yet": "Subtract the purchase from its actual funding source."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Dinero propio restante?",
+          "scene": "Saldo propio: 85; compra: 30; este método no permite préstamo.",
+          "options": [
+            {
+              "label": "55"
+            },
+            {
+              "label": "115"
+            },
+            {
+              "label": "85"
+            }
+          ],
+          "help": [
+            "Resta la compra de su fuente real."
+          ],
+          "feedback": {
+            "met": "85 − 30 = 55 de dinero propio restante.",
+            "not_yet": "Resta la compra de su fuente real."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Dinheiro próprio restante?",
+          "scene": "Saldo próprio: 85; compra: 30; este método não permite empréstimo.",
+          "options": [
+            {
+              "label": "55"
+            },
+            {
+              "label": "115"
+            },
+            {
+              "label": "85"
+            }
+          ],
+          "help": [
+            "Subtraia a compra da sua fonte real."
+          ],
+          "feedback": {
+            "met": "85 − 30 = 55 de dinheiro próprio restante.",
+            "not_yet": "Subtraia a compra da sua fonte real."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          85,
+          30
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What determines whether debt is created?",
+          "scene": "An app offers your balance or borrowed funds for this purchase.",
+          "options": [
+            {
+              "label": "The fact that both show “pay”"
+            },
+            {
+              "label": "The selected funding source"
+            },
+            {
+              "label": "The purchase amount alone"
+            }
+          ],
+          "help": [
+            "Check the option selected before confirming."
+          ],
+          "feedback": {
+            "met": "The funding choice determines whether repayment is owed.",
+            "not_yet": "Check the option selected before confirming."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué determina si se crea deuda?",
+          "scene": "Una aplicación ofrece usar saldo propio o fondos prestados para la misma compra.",
+          "options": [
+            {
+              "label": "Que ambas opciones dicen «pagar»"
+            },
+            {
+              "label": "La fuente de fondos elegida"
+            },
+            {
+              "label": "Solo el monto de la compra"
+            }
+          ],
+          "help": [
+            "Revisa la opción elegida antes de confirmar."
+          ],
+          "feedback": {
+            "met": "Elegir fondos determina si debes devolver dinero.",
+            "not_yet": "Revisa la opción elegida antes de confirmar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que determina se cria dívida?",
+          "scene": "Um aplicativo oferece usar saldo próprio ou recursos emprestados para a mesma compra.",
+          "options": [
+            {
+              "label": "Ambas as opções dizerem «pagar»"
+            },
+            {
+              "label": "A fonte de recursos escolhida"
+            },
+            {
+              "label": "Só o valor da compra"
+            }
+          ],
+          "help": [
+            "Confira a opção escolhida antes de confirmar."
+          ],
+          "feedback": {
+            "met": "Escolher recursos determina se deve devolver dinheiro.",
+            "not_yet": "Confira a opção escolhida antes de confirmar."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.01",
+      "copy": {
+        "en-US": {
+          "prompt": "If funds are insufficient, check what?",
+          "scene": "This “debit” method permits borrowing a shortfall.",
+          "options": [
+            {
+              "label": "Assume the debit label excludes all debt"
+            },
+            {
+              "label": "Assume insufficient funds become income"
+            },
+            {
+              "label": "Whether borrowing and charges would apply"
+            }
+          ],
+          "help": [
+            "Read the actual funding terms, not just the label."
+          ],
+          "feedback": {
+            "met": "The explicit overdraft terms can create debt despite the label.",
+            "not_yet": "Read the actual funding terms, not just the label."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué revisar cuando no alcanza el saldo?",
+          "scene": "Un pago dice «débito», pero las condiciones permiten sobregiro que presta lo faltante.",
+          "options": [
+            {
+              "label": "Suponer que «débito» excluye toda deuda"
+            },
+            {
+              "label": "Suponer que el faltante se vuelve ingreso"
+            },
+            {
+              "label": "Si aplican préstamo y cobros"
+            }
+          ],
+          "help": [
+            "Lee condiciones reales de fondos, no solo etiqueta."
+          ],
+          "feedback": {
+            "met": "Las condiciones de sobregiro pueden crear deuda pese a la etiqueta.",
+            "not_yet": "Lee condiciones reales de fondos, no solo etiqueta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que conferir quando falta saldo?",
+          "scene": "Um pagamento diz «débito», mas as condições permitem crédito para cobrir o saldo insuficiente.",
+          "options": [
+            {
+              "label": "Supor que «débito» exclui toda dívida"
+            },
+            {
+              "label": "Supor que a falta vira renda"
+            },
+            {
+              "label": "Se valem empréstimo e cobranças"
+            }
+          ],
+          "help": [
+            "Leia condições reais de recursos, não só rótulo."
+          ],
+          "feedback": {
+            "met": "As condições de crédito podem criar dívida apesar do rótulo.",
+            "not_yet": "Leia condições reais de recursos, não só rótulo."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.payments-digital.01",
+      "copy": {
+        "en-US": {
+          "prompt": "How should you record it?",
+          "scene": "A lender funds a store’s delayed payment.",
+          "options": [
+            {
+              "label": "As a free purchase because payment is later"
+            },
+            {
+              "label": "As a future repayment obligation"
+            },
+            {
+              "label": "As new income from the store"
+            }
+          ],
+          "help": [
+            "Keep the obligation visible even before money leaves your balance."
+          ],
+          "feedback": {
+            "met": "Delayed payment funded by borrowing remains a debt commitment.",
+            "not_yet": "Keep the obligation visible even before money leaves your balance."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cómo registrarlo en el plan familiar?",
+          "scene": "Una tienda ofrece pagar después mediante prestamista, no tu saldo actual.",
+          "options": [
+            {
+              "label": "Como compra gratis porque pagas después"
+            },
+            {
+              "label": "Como obligación futura de devolver"
+            },
+            {
+              "label": "Como ingreso nuevo de la tienda"
+            }
+          ],
+          "help": [
+            "Conserva visible la obligación antes de que salga dinero del saldo."
+          ],
+          "feedback": {
+            "met": "Pagar después con préstamo sigue siendo compromiso de deuda.",
+            "not_yet": "Conserva visible la obligación antes de que salga dinero del saldo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Como registrá-lo no plano familiar?",
+          "scene": "Uma loja oferece pagar depois por meio de credor, não seu saldo atual.",
+          "options": [
+            {
+              "label": "Como compra grátis porque paga depois"
+            },
+            {
+              "label": "Como obrigação futura de devolver"
+            },
+            {
+              "label": "Como renda nova da loja"
+            }
+          ],
+          "help": [
+            "Mantenha visível a obrigação antes de sair dinheiro do saldo."
+          ],
+          "feedback": {
+            "met": "Pagar depois com empréstimo continua sendo compromisso de dívida.",
+            "not_yet": "Mantenha visível a obrigação antes de sair dinheiro do saldo."
+          }
+        }
+      }
+    }
+  ]
+}

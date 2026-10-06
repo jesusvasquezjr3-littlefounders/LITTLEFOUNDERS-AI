@@ -1,0 +1,779 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-financial-landscape-part-1",
+  "lesson_id": "fe-production-financial-landscape-05",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.financial-landscape.05"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Identify the official escalation route after a provider’s complaint response is unresolved.",
+  "title": {
+    "en-US": "Complaint Escalation",
+    "es-MX": "Ubica la siguiente vía de queja",
+    "pt-BR": "Ache a próxima via da queixa"
+  },
+  "new_concepts": [
+    "finance.prod.financial-landscape.05"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Complaint Escalation\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Ubica la siguiente vía de queja\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Ache a próxima via da queixa\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.financial-landscape.05",
+      "observable_action": "Identify the official escalation route after a provider’s complaint response is unresolved.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.financial-landscape.04",
+      "prod.financial-landscape.01"
+    ],
+    "retrieval_skills": [],
+    "relevance": "An unresolved provider reply is a reason to check the correct official route, keeping the original evidence and response.",
+    "misconception": "Every authority handles every product or escalation guarantees a refund without evidence or checking eligibility.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.financial-landscape.05",
+        "context_id": "financial-landscape-05-example-01",
+        "supports_from": [],
+        "reasoning": "Use an independently verified official route for that provider and issue. Check eligibility, required prior steps and supporting complaint records."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.financial-landscape.05",
+        "context_id": "financial-landscape-05-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The next route must match the provider and dispute."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.financial-landscape.05",
+        "context_id": "financial-landscape-05-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The complaint history shows what was raised and answered."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.financial-landscape.05",
+        "context_id": "financial-landscape-05-practice-01",
+        "supports_from": [],
+        "reasoning": "Authorities have defined responsibilities rather than universal coverage."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.financial-landscape.05",
+        "context_id": "financial-landscape-05-practice-02",
+        "supports_from": [],
+        "reasoning": "Required steps and records determine whether the route is usable."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.financial-landscape.05",
+        "context_id": "financial-landscape-05-practice-03",
+        "supports_from": [],
+        "reasoning": "A valid route does not predetermine the decision."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.financial-landscape.05",
+        "context_id": "financial-landscape-05-transfer-01",
+        "supports_from": [],
+        "reasoning": "The official assignment identifies the relevant next route."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.financial-landscape.05",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "An unresolved provider reply is a reason to check the correct official route, keeping the original evidence and response."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Una respuesta sin resolver exige revisar vía oficial correcta, conservando pruebas y respuesta originales."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Uma resposta sem solução pede conferir a via oficial correta, guardando provas e resposta originais."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Match the authority to the issue",
+          "line": "Use an independently verified official route for that provider and issue. Check eligibility, required prior steps and supporting complaint records."
+        },
+        "es-MX": {
+          "prompt": "Relaciona autoridad con problema",
+          "line": "Usa vía oficial verificada por tu cuenta para proveedor y problema. Revisa requisitos, pasos previos exigidos y registros de queja."
+        },
+        "pt-BR": {
+          "prompt": "Ligue autoridade ao problema",
+          "line": "Use via oficial verificada por conta própria para provedor e problema. Confira regras, passos prévios exigidos e registros da queixa."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.05",
+      "copy": {
+        "en-US": {
+          "prompt": "What should be checked next?",
+          "scene": "The provider’s final reply leaves a charge dispute unresolved.",
+          "options": [
+            {
+              "label": "Any random public forum"
+            },
+            {
+              "label": "Official escalation route for this issue"
+            },
+            {
+              "label": "A stranger promising guaranteed recovery"
+            }
+          ],
+          "help": [
+            "Consult independently verified official complaint guidance."
+          ],
+          "feedback": {
+            "met": "The next route must match the provider and dispute.",
+            "not_yet": "Consult independently verified official complaint guidance."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué revisar después?",
+          "scene": "Respuesta final del proveedor deja cargo disputado sin resolver.",
+          "options": [
+            {
+              "label": "Cualquier foro público"
+            },
+            {
+              "label": "Vía oficial para este problema"
+            },
+            {
+              "label": "Extraño que promete recuperar seguro"
+            }
+          ],
+          "help": [
+            "Consulta orientación oficial de quejas verificada por tu cuenta."
+          ],
+          "feedback": {
+            "met": "La vía siguiente debe coincidir con proveedor y disputa.",
+            "not_yet": "Consulta orientación oficial de quejas verificada por tu cuenta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que conferir depois?",
+          "scene": "Resposta final do provedor deixa cobrança contestada sem solução.",
+          "options": [
+            {
+              "label": "Qualquer fórum público"
+            },
+            {
+              "label": "Via oficial para este problema"
+            },
+            {
+              "label": "Estranho que promete recuperar sempre"
+            }
+          ],
+          "help": [
+            "Consulte orientação oficial de queixas verificada por conta própria."
+          ],
+          "feedback": {
+            "met": "A próxima via deve corresponder ao provedor e à disputa.",
+            "not_yet": "Consulte orientação oficial de queixas verificada por conta própria."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Which material supports escalation?",
+          "scene": "The original complaint has a reference and a written unresolved response.",
+          "options": [
+            {
+              "label": "Only the current balance"
+            },
+            {
+              "label": "Only the original payment receipt"
+            },
+            {
+              "label": "Complaint trail and supporting transactions"
+            }
+          ],
+          "help": [
+            "Preserve the original issue, evidence and provider response."
+          ],
+          "feedback": {
+            "met": "The complaint history shows what was raised and answered.",
+            "not_yet": "Preserve the original issue, evidence and provider response."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué material apoya escalar?",
+          "scene": "Queja original tiene folio y respuesta escrita sin solución.",
+          "options": [
+            {
+              "label": "Solo el saldo actual"
+            },
+            {
+              "label": "Solo el comprobante de pago original"
+            },
+            {
+              "label": "Historial de queja y operaciones pertinentes"
+            }
+          ],
+          "help": [
+            "Conserva problema original, pruebas y respuesta del proveedor."
+          ],
+          "feedback": {
+            "met": "El historial muestra lo planteado y respondido.",
+            "not_yet": "Conserva problema original, pruebas y respuesta del proveedor."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que material apoia recorrer?",
+          "scene": "Queixa original tem protocolo e resposta escrita sem solução.",
+          "options": [
+            {
+              "label": "Só o saldo atual"
+            },
+            {
+              "label": "Só o comprovante de pagamento original"
+            },
+            {
+              "label": "Histórico da queixa e transações do caso"
+            }
+          ],
+          "help": [
+            "Guarde problema original, provas e resposta do provedor."
+          ],
+          "feedback": {
+            "met": "O histórico mostra o que foi exposto e respondido.",
+            "not_yet": "Guarde problema original, provas e resposta do provedor."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.05",
+      "copy": {
+        "en-US": {
+          "prompt": "What must match the chosen authority?",
+          "scene": "A directory separates payment complaints from unrelated sectors.",
+          "options": [
+            {
+              "label": "Only the authority’s popularity"
+            },
+            {
+              "label": "The actual provider and issue"
+            },
+            {
+              "label": "Only the first search advertisement"
+            }
+          ],
+          "help": [
+            "Choose the official route relevant to this dispute."
+          ],
+          "feedback": {
+            "met": "Authorities have defined responsibilities rather than universal coverage.",
+            "not_yet": "Choose the official route relevant to this dispute."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe coincidir con autoridad elegida?",
+          "scene": "Directorio separa quejas de pagos de sectores ajenos.",
+          "options": [
+            {
+              "label": "Solo popularidad de autoridad"
+            },
+            {
+              "label": "Proveedor y problema reales"
+            },
+            {
+              "label": "Solo primer anuncio de búsqueda"
+            }
+          ],
+          "help": [
+            "Elige vía oficial pertinente a esta disputa."
+          ],
+          "feedback": {
+            "met": "Autoridades tienen funciones definidas, no cobertura universal.",
+            "not_yet": "Elige vía oficial pertinente a esta disputa."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que deve coincidir com autoridade escolhida?",
+          "scene": "Diretório separa queixas de pagamentos de setores alheios.",
+          "options": [
+            {
+              "label": "Só popularidade da autoridade"
+            },
+            {
+              "label": "Provedor e problema reais"
+            },
+            {
+              "label": "Só primeiro anúncio da busca"
+            }
+          ],
+          "help": [
+            "Escolha via oficial do caso para esta disputa."
+          ],
+          "feedback": {
+            "met": "Autoridades têm deveres definidos, não cobertura universal.",
+            "not_yet": "Escolha via oficial do caso para esta disputa."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.05",
+      "copy": {
+        "en-US": {
+          "prompt": "What should be verified before submitting?",
+          "scene": "Official guidance lists prior provider contact and required records.",
+          "options": [
+            {
+              "label": "Ignore every requirement"
+            },
+            {
+              "label": "Whether those steps are complete"
+            },
+            {
+              "label": "Invent a complaint reference"
+            }
+          ],
+          "help": [
+            "Follow the official process using accurate records."
+          ],
+          "feedback": {
+            "met": "Required steps and records determine whether the route is usable.",
+            "not_yet": "Follow the official process using accurate records."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué verificar antes de enviar?",
+          "scene": "Guía oficial enumera contacto previo con proveedor y registros requeridos.",
+          "options": [
+            {
+              "label": "Ignorar todo requisito"
+            },
+            {
+              "label": "Si esos pasos están completos"
+            },
+            {
+              "label": "Inventar folio de queja"
+            }
+          ],
+          "help": [
+            "Sigue proceso oficial con registros correctos."
+          ],
+          "feedback": {
+            "met": "Pasos y registros exigidos determinan si puede usarse la vía.",
+            "not_yet": "Sigue proceso oficial con registros correctos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que verificar antes de enviar?",
+          "scene": "Guia oficial lista contato prévio com provedor e registros exigidos.",
+          "options": [
+            {
+              "label": "Ignorar todo requisito"
+            },
+            {
+              "label": "Se esses passos estão completos"
+            },
+            {
+              "label": "Inventar protocolo da queixa"
+            }
+          ],
+          "help": [
+            "Siga processo oficial com registros corretos."
+          ],
+          "feedback": {
+            "met": "Passos e registros exigidos definem se a via pode ser usada.",
+            "not_yet": "Siga processo oficial com registros corretos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.05",
+      "copy": {
+        "en-US": {
+          "prompt": "What does escalation guarantee here?",
+          "scene": "Only the complaint submission route is verified; no outcome has been decided.",
+          "options": [
+            {
+              "label": "Automatic full refund"
+            },
+            {
+              "label": "Automatic provider closure"
+            },
+            {
+              "label": "No guaranteed remedy"
+            }
+          ],
+          "help": [
+            "Distinguish submitting evidence from receiving a confirmed outcome."
+          ],
+          "feedback": {
+            "met": "A valid route does not predetermine the decision.",
+            "not_yet": "Distinguish submitting evidence from receiving a confirmed outcome."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué garantiza escalar aquí?",
+          "scene": "Solo vía de queja está verificada; no hay resultado decidido.",
+          "options": [
+            {
+              "label": "Reembolso completo automático"
+            },
+            {
+              "label": "Cierre automático del proveedor"
+            },
+            {
+              "label": "Ninguna solución garantizada"
+            }
+          ],
+          "help": [
+            "Distingue presentar pruebas de recibir resultado confirmado."
+          ],
+          "feedback": {
+            "met": "Una vía válida no predetermina la decisión.",
+            "not_yet": "Distingue presentar pruebas de recibir resultado confirmado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que garante recorrer aqui?",
+          "scene": "Só via da queixa está verificada; não há resultado decidido.",
+          "options": [
+            {
+              "label": "Reembolso completo automático"
+            },
+            {
+              "label": "Fechamento automático do provedor"
+            },
+            {
+              "label": "Nenhuma solução garantida"
+            }
+          ],
+          "help": [
+            "Separe dar provas de receber resultado confirmado."
+          ],
+          "feedback": {
+            "met": "Uma via válida não define antes a decisão.",
+            "not_yet": "Separe dar provas de receber resultado confirmado."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.financial-landscape.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Which route fits?",
+          "scene": "Verified official guidance assigns this provider’s dispute to body B, not body A.",
+          "options": [
+            {
+              "label": "Unverified recovery agent"
+            },
+            {
+              "label": "Body A because it sounds known"
+            },
+            {
+              "label": "Body B with the complaint records"
+            }
+          ],
+          "help": [
+            "Follow verified responsibilities and keep the evidence trail."
+          ],
+          "feedback": {
+            "met": "The official assignment identifies the relevant next route.",
+            "not_yet": "Follow verified responsibilities and keep the evidence trail."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué vía corresponde al caso pendiente?",
+          "scene": "Guía oficial verificada asigna disputa de este proveedor a organismo B, no A.",
+          "options": [
+            {
+              "label": "Gestor no verificado de recuperación"
+            },
+            {
+              "label": "Organismo A porque suena conocido"
+            },
+            {
+              "label": "Organismo B con registros de queja"
+            }
+          ],
+          "help": [
+            "Sigue funciones verificadas y conserva historial de pruebas."
+          ],
+          "feedback": {
+            "met": "La asignación oficial identifica la vía siguiente pertinente.",
+            "not_yet": "Sigue funciones verificadas y conserva historial de pruebas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que via cabe ao caso pendente?",
+          "scene": "Guia oficial verificado atribui disputa deste provedor ao órgão B, não A.",
+          "options": [
+            {
+              "label": "Agente de recuperação não verificado"
+            },
+            {
+              "label": "Órgão A pois soa conhecido"
+            },
+            {
+              "label": "Órgão B com registros da queixa"
+            }
+          ],
+          "help": [
+            "Siga deveres verificados e guarde histórico de provas."
+          ],
+          "feedback": {
+            "met": "A atribuição oficial identifica a próxima via do caso.",
+            "not_yet": "Siga deveres verificados e guarde histórico de provas."
+          }
+        }
+      }
+    }
+  ]
+}

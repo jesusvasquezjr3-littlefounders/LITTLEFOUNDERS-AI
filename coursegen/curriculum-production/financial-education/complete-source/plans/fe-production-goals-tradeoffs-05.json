@@ -1,0 +1,860 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-goals-tradeoffs-part-1",
+  "lesson_id": "fe-production-goals-tradeoffs-05",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.goals-tradeoffs.05"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Break a goal’s remaining amount into feasible contributions over the time available.",
+  "title": {
+    "en-US": "Milestone amounts",
+    "es-MX": "Divide lo que falta",
+    "pt-BR": "Divida o que falta"
+  },
+  "new_concepts": [
+    "finance.prod.goals-tradeoffs.05"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Break down the gap\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Divide lo que falta\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Divida o que falta\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.goals-tradeoffs.05",
+      "observable_action": "Break a goal’s remaining amount into feasible contributions over the time available.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.goals-tradeoffs.01",
+      "prod.financial-math.06"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Convert a remaining goal into contributions you can compare with capacity.",
+    "misconception": "Divide the original goal without removing money already saved.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.goals-tradeoffs.05",
+        "context_id": "fe-production-goals-tradeoffs-05-example-01",
+        "supports_from": [],
+        "reasoning": "A goal needs 100 dollars; 40 is saved. The remaining 60 needs 20 across each of three periods; check affordability."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.goals-tradeoffs.05",
+        "context_id": "fe-production-goals-tradeoffs-05-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Only the remaining amount needs new contributions."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.goals-tradeoffs.05",
+        "context_id": "fe-production-goals-tradeoffs-05-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "A computed contribution still needs an affordability check."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.goals-tradeoffs.05",
+        "context_id": "fe-production-goals-tradeoffs-05-practice-01",
+        "supports_from": [],
+        "reasoning": "Spread the unfunded part across the remaining periods."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.goals-tradeoffs.05",
+        "context_id": "fe-production-goals-tradeoffs-05-practice-02",
+        "supports_from": [],
+        "reasoning": "Already funded money closes the stated gap."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.goals-tradeoffs.05",
+        "context_id": "fe-production-goals-tradeoffs-05-practice-03",
+        "supports_from": [],
+        "reasoning": "Passed opportunities cannot count as future deposits."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.goals-tradeoffs.05",
+        "context_id": "fe-production-goals-tradeoffs-05-transfer-01",
+        "supports_from": [],
+        "reasoning": "The group spreads only its remaining gap over future collections."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.goals-tradeoffs.05",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Convert a remaining goal into contributions you can compare with capacity."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Convierte lo faltante en aportaciones comparables con tu capacidad."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Converta o que falta em contribuições comparáveis com sua capacidade."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Remaining amount, remaining time",
+          "line": "A goal needs 100 dollars; 40 is saved. The remaining 60 needs 20 across each of three periods; check affordability."
+        },
+        "es-MX": {
+          "prompt": "Monto restante, tiempo restante",
+          "line": "Una meta requiere 100 pesos; hay 40 ahorrados. Los 60 restantes en tres periodos requieren 20 cada uno, si caben."
+        },
+        "pt-BR": {
+          "prompt": "Valor restante, tempo restante",
+          "line": "Uma meta exige 100 reais; há 40 guardados. Os 60 restantes em três períodos exigem 20 cada, se couberem."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Equal contribution?",
+          "scene": "Goal 90; already saved 30; 3 contributions remain. Subtract savings, then divide.",
+          "options": [
+            {
+              "label": "30"
+            },
+            {
+              "label": "20"
+            },
+            {
+              "label": "40"
+            }
+          ],
+          "help": [
+            "Do not fund the saved portion twice."
+          ],
+          "feedback": {
+            "met": "Only the remaining amount needs new contributions.",
+            "not_yet": "Do not fund the saved portion twice."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Aportación igual?",
+          "scene": "Meta 90; ahorrados 30; faltan 3 aportaciones. Resta ahorro y divide.",
+          "options": [
+            {
+              "label": "30"
+            },
+            {
+              "label": "20"
+            },
+            {
+              "label": "40"
+            }
+          ],
+          "help": [
+            "No financies dos veces la parte ahorrada."
+          ],
+          "feedback": {
+            "met": "Solo el monto restante necesita nuevas aportaciones.",
+            "not_yet": "No financies dos veces la parte ahorrada."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Contribuição igual?",
+          "scene": "Meta 90; guardados 30; faltam 3 contribuições. Subtraia o guardado e divida.",
+          "options": [
+            {
+              "label": "30"
+            },
+            {
+              "label": "20"
+            },
+            {
+              "label": "40"
+            }
+          ],
+          "help": [
+            "Não financie duas vezes a parte guardada."
+          ],
+          "feedback": {
+            "met": "Só o valor restante precisa de novas contribuições.",
+            "not_yet": "Não financie duas vezes a parte guardada."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          90,
+          30,
+          3
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Does the schedule fit?",
+          "scene": "The calculated contribution is 25; only 15 is safely available each period.",
+          "options": [
+            {
+              "label": "No, it exceeds capacity"
+            },
+            {
+              "label": "Yes, ignore obligations"
+            },
+            {
+              "label": "Yes, calculation creates capacity"
+            }
+          ],
+          "help": [
+            "Compare required contribution with the safe amount."
+          ],
+          "feedback": {
+            "met": "A computed contribution still needs an affordability check.",
+            "not_yet": "Compare required contribution with the safe amount."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿El calendario cabe?",
+          "scene": "La aportación calculada es 25; solo hay 15 disponibles de forma segura por periodo.",
+          "options": [
+            {
+              "label": "No, supera la capacidad"
+            },
+            {
+              "label": "Sí, ignora obligaciones"
+            },
+            {
+              "label": "Sí, calcular crea capacidad"
+            }
+          ],
+          "help": [
+            "Compara aportación requerida y monto seguro."
+          ],
+          "feedback": {
+            "met": "Una aportación calculada aún requiere revisar viabilidad.",
+            "not_yet": "Compara aportación requerida y monto seguro."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O calendário cabe?",
+          "scene": "A contribuição calculada é 25; só há 15 disponíveis com segurança por período.",
+          "options": [
+            {
+              "label": "Não, supera a capacidade"
+            },
+            {
+              "label": "Sim, ignore obrigações"
+            },
+            {
+              "label": "Sim, calcular cria capacidade"
+            }
+          ],
+          "help": [
+            "Compare contribuição exigida e valor seguro."
+          ],
+          "feedback": {
+            "met": "Uma contribuição calculada ainda exige conferir viabilidade.",
+            "not_yet": "Compare contribuição exigida e valor seguro."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Equal contribution?",
+          "scene": "A goal of 180 has 60 saved and 6 periods remaining.",
+          "options": [
+            {
+              "label": "40"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "20"
+            }
+          ],
+          "help": [
+            "Subtract existing savings before dividing."
+          ],
+          "feedback": {
+            "met": "Spread the unfunded part across the remaining periods.",
+            "not_yet": "Subtract existing savings before dividing."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Aportación igual?",
+          "scene": "Una meta de 180 tiene 60 ahorrados y 6 periodos restantes.",
+          "options": [
+            {
+              "label": "40"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "20"
+            }
+          ],
+          "help": [
+            "Resta ahorro existente antes de dividir."
+          ],
+          "feedback": {
+            "met": "Reparte la parte sin financiar entre periodos restantes.",
+            "not_yet": "Resta ahorro existente antes de dividir."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Contribuição igual?",
+          "scene": "Uma meta de 180 tem 60 guardados e 6 períodos restantes.",
+          "options": [
+            {
+              "label": "40"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "20"
+            }
+          ],
+          "help": [
+            "Subtraia a poupança existente antes de dividir."
+          ],
+          "feedback": {
+            "met": "Distribua a parte não financiada pelos períodos restantes.",
+            "not_yet": "Subtraia a poupança existente antes de dividir."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          180,
+          60,
+          6
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.05",
+      "copy": {
+        "en-US": {
+          "prompt": "What is the remaining funding gap?",
+          "scene": "A goal is fully funded before its deadline.",
+          "options": [
+            {
+              "label": "The original amount again"
+            },
+            {
+              "label": "Nothing for this stated goal"
+            },
+            {
+              "label": "Every future contribution"
+            }
+          ],
+          "help": [
+            "Check remaining need rather than the original target."
+          ],
+          "feedback": {
+            "met": "Already funded money closes the stated gap.",
+            "not_yet": "Check remaining need rather than the original target."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué falta financiar?",
+          "scene": "Una meta está totalmente financiada antes de su fecha.",
+          "options": [
+            {
+              "label": "Otra vez el monto original"
+            },
+            {
+              "label": "Nada para esta meta indicada"
+            },
+            {
+              "label": "Cada aportación futura"
+            }
+          ],
+          "help": [
+            "Revisa necesidad restante, no solo meta original."
+          ],
+          "feedback": {
+            "met": "El dinero ya reunido cierra lo faltante indicado.",
+            "not_yet": "Revisa necesidad restante, no solo meta original."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que falta financiar?",
+          "scene": "Uma meta está totalmente financiada antes do prazo.",
+          "options": [
+            {
+              "label": "O valor original novamente"
+            },
+            {
+              "label": "Nada para esta meta informada"
+            },
+            {
+              "label": "Cada contribuição futura"
+            }
+          ],
+          "help": [
+            "Confira necessidade restante, não só meta original."
+          ],
+          "feedback": {
+            "met": "O dinheiro já reunido fecha a falta informada.",
+            "not_yet": "Confira necessidade restante, não só meta original."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Which time count belongs in a new plan?",
+          "scene": "Two contribution dates have passed without deposits.",
+          "options": [
+            {
+              "label": "All original dates as if untouched"
+            },
+            {
+              "label": "Only remaining contribution dates"
+            },
+            {
+              "label": "No dates at all"
+            }
+          ],
+          "help": [
+            "Update both remaining money and remaining time."
+          ],
+          "feedback": {
+            "met": "Passed opportunities cannot count as future deposits.",
+            "not_yet": "Update both remaining money and remaining time."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué tiempo debe usar el nuevo plan?",
+          "scene": "Pasaron dos fechas de aportación sin depósitos.",
+          "options": [
+            {
+              "label": "Todas las fechas originales como intactas"
+            },
+            {
+              "label": "Solo fechas de aportación restantes"
+            },
+            {
+              "label": "Ninguna fecha"
+            }
+          ],
+          "help": [
+            "Actualiza dinero y tiempo restantes."
+          ],
+          "feedback": {
+            "met": "Las oportunidades pasadas no cuentan como depósitos futuros.",
+            "not_yet": "Actualiza dinero y tiempo restantes."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual tempo deve usar o novo plano?",
+          "scene": "Passaram duas datas de contribuição sem depósitos.",
+          "options": [
+            {
+              "label": "Todas as datas originais como intactas"
+            },
+            {
+              "label": "Só datas de contribuição restantes"
+            },
+            {
+              "label": "Nenhuma data"
+            }
+          ],
+          "help": [
+            "Atualize dinheiro e tempo restantes."
+          ],
+          "feedback": {
+            "met": "Oportunidades passadas não contam como depósitos futuros.",
+            "not_yet": "Atualize dinheiro e tempo restantes."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Equal amount per collection date?",
+          "scene": "A shared tool costs 240. The group has 120; 4 collection dates remain.",
+          "options": [
+            {
+              "label": "30"
+            },
+            {
+              "label": "60"
+            },
+            {
+              "label": "90"
+            }
+          ],
+          "help": [
+            "Do not confuse dates with the number of people."
+          ],
+          "feedback": {
+            "met": "The group spreads only its remaining gap over future collections.",
+            "not_yet": "Do not confuse dates with the number of people."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Monto igual por fecha de colecta?",
+          "scene": "Una herramienta compartida cuesta 240. Hay 120; quedan 4 fechas de colecta.",
+          "options": [
+            {
+              "label": "30"
+            },
+            {
+              "label": "60"
+            },
+            {
+              "label": "90"
+            }
+          ],
+          "help": [
+            "No confundas fechas con cantidad de personas."
+          ],
+          "feedback": {
+            "met": "El grupo reparte solo lo faltante entre colectas futuras.",
+            "not_yet": "No confundas fechas con cantidad de personas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Valor igual por data de coleta?",
+          "scene": "Uma ferramenta compartilhada custa 240. Há 120; restam 4 datas de coleta.",
+          "options": [
+            {
+              "label": "30"
+            },
+            {
+              "label": "60"
+            },
+            {
+              "label": "90"
+            }
+          ],
+          "help": [
+            "Não confunda datas com quantidade de pessoas."
+          ],
+          "feedback": {
+            "met": "O grupo divide só o que falta entre coletas futuras.",
+            "not_yet": "Não confunda datas com quantidade de pessoas."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          240,
+          120,
+          4
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

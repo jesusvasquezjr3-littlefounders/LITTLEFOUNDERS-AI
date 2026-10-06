@@ -1,0 +1,895 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-investment-comparison-part-2",
+  "lesson_id": "fe-production-investment-comparison-review-1",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.investment-comparison.01",
+    "finance.prod.investment-comparison.02",
+    "finance.prod.investment-comparison.03",
+    "finance.prod.investment-comparison.04",
+    "finance.prod.investment-comparison.05",
+    "finance.prod.investing-foundations.04"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Calculate net gains and identify mismatched periods, omitted losses and unsuitable investment exposure.",
+  "title": {
+    "en-US": "Investment Comparisons",
+    "es-MX": "Lee la comparación completa",
+    "pt-BR": "Leia a comparação completa"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Investment Comparisons\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Lee la comparación completa\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Leia a comparação completa\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "consolidate",
+    "objective": {
+      "skill_id": "prod.investment-comparison.01",
+      "observable_action": "Calculate net gains and identify mismatched periods, omitted losses and unsuitable investment exposure.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.investing-foundations.04",
+      "prod.financial-math.02"
+    ],
+    "retrieval_skills": [
+      "prod.investment-comparison.01",
+      "prod.investment-comparison.02",
+      "prod.investment-comparison.03",
+      "prod.investment-comparison.04",
+      "prod.investment-comparison.05",
+      "prod.investing-foundations.04"
+    ],
+    "relevance": "Check what the figures include before deciding what an investment comparison says.",
+    "misconception": "The biggest reported gain settles the comparison without considering costs, components or risk.",
+    "numeracy_support": "Use the current visible conditions; do not reuse a previous scenario’s answer.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.investment-comparison.01",
+        "context_id": "investment-comparison-review-1-practice-01",
+        "supports_from": [],
+        "reasoning": "Both fees reduce the gain kept."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.investment-comparison.02",
+        "context_id": "investment-comparison-review-1-practice-02",
+        "supports_from": [],
+        "reasoning": "The reports answer different time-and-income questions."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.investment-comparison.03",
+        "context_id": "investment-comparison-review-1-practice-03",
+        "supports_from": [],
+        "reasoning": "Selected success omits the range of results."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.investment-comparison.04",
+        "context_id": "investment-comparison-review-1-practice-04",
+        "supports_from": [],
+        "reasoning": "The holdings do not provide the requested broad exposure."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.investment-comparison.05",
+        "context_id": "investment-comparison-review-1-practice-05",
+        "supports_from": [],
+        "reasoning": "Tracking is a strategy, not a guarantee of gains."
+      },
+      {
+        "segment_id": "practice-06",
+        "skill_id": "prod.investing-foundations.04",
+        "context_id": "investment-comparison-review-1-practice-06",
+        "supports_from": [],
+        "reasoning": "Income and price changes are separate result components."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.investment-comparison.01",
+        "context_id": "investment-comparison-review-1-transfer-01",
+        "supports_from": [],
+        "reasoning": "Both exit costs reduce the gain available."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.investment-comparison.01",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Check what the figures include before deciding what an investment comparison says."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Revisa qué incluyen las cifras antes de interpretar una comparación de inversiones."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Confira o que os números incluem antes de interpretar uma comparação de investimentos."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What gain remains?",
+          "scene": "Gross gain: 60. Trading fee: 7; ongoing fee: 3.",
+          "options": [
+            {
+              "label": "57"
+            },
+            {
+              "label": "60"
+            },
+            {
+              "label": "50"
+            }
+          ],
+          "help": [
+            "Subtract each stated fee once."
+          ],
+          "feedback": {
+            "met": "Both fees reduce the gain kept.",
+            "not_yet": "Subtract each stated fee once."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué ganancia queda?",
+          "scene": "Ganancia bruta: 60. Comisión de operación: 7; mantenimiento: 3.",
+          "options": [
+            {
+              "label": "57"
+            },
+            {
+              "label": "60"
+            },
+            {
+              "label": "50"
+            }
+          ],
+          "help": [
+            "Resta una vez cada comisión indicada."
+          ],
+          "feedback": {
+            "met": "Ambas comisiones reducen la ganancia conservada.",
+            "not_yet": "Resta una vez cada comisión indicada."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual ganho sobra?",
+          "scene": "Ganho bruto: 60. Tarifa da operação: 7; manutenção: 3.",
+          "options": [
+            {
+              "label": "57"
+            },
+            {
+              "label": "60"
+            },
+            {
+              "label": "50"
+            }
+          ],
+          "help": [
+            "Subtraia uma vez cada tarifa dada."
+          ],
+          "feedback": {
+            "met": "Ambas as tarifas reduzem o ganho mantido.",
+            "not_yet": "Subtraia uma vez cada tarifa dada."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          60,
+          7,
+          3
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What prevents comparison?",
+          "scene": "A fund report shows one quarter’s price change. Another includes a year’s payouts and price changes.",
+          "options": [
+            {
+              "label": "Both period and components differ"
+            },
+            {
+              "label": "Only their starting prices"
+            },
+            {
+              "label": "Nothing needs checking"
+            }
+          ],
+          "help": [
+            "Align dates and included distributions."
+          ],
+          "feedback": {
+            "met": "The reports answer different time-and-income questions.",
+            "not_yet": "Align dates and included distributions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué impide comparar?",
+          "scene": "Un reporte muestra cambio de precio trimestral. Otro incluye pagos y precios de un año.",
+          "options": [
+            {
+              "label": "Difieren periodo y componentes"
+            },
+            {
+              "label": "Solo sus precios iniciales"
+            },
+            {
+              "label": "Nada requiere revisión"
+            }
+          ],
+          "help": [
+            "Alinea fechas y pagos incluidos."
+          ],
+          "feedback": {
+            "met": "Los reportes responden preguntas distintas de tiempo e ingresos.",
+            "not_yet": "Alinea fechas y pagos incluidos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que impede comparar?",
+          "scene": "Um relatório mostra preços de um trimestre. Outro inclui pagamentos e preços de um ano.",
+          "options": [
+            {
+              "label": "Período e partes diferem"
+            },
+            {
+              "label": "Só seus preços iniciais"
+            },
+            {
+              "label": "Nada exige revisão"
+            }
+          ],
+          "help": [
+            "Alinhe datas e pagamentos incluídos."
+          ],
+          "feedback": {
+            "met": "Os relatórios respondem perguntas distintas de tempo e renda.",
+            "not_yet": "Alinhe datas e pagamentos incluídos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.03",
+      "copy": {
+        "en-US": {
+          "prompt": "What evidence is missing?",
+          "scene": "A brochure highlights the best month while hiding the rest of the record.",
+          "options": [
+            {
+              "label": "More celebration of winners"
+            },
+            {
+              "label": "Other outcomes, including losses"
+            },
+            {
+              "label": "A brighter best-month chart"
+            }
+          ],
+          "help": [
+            "Ask which periods and outcomes were excluded."
+          ],
+          "feedback": {
+            "met": "Selected success omits the range of results.",
+            "not_yet": "Ask which periods and outcomes were excluded."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué evidencia falta?",
+          "scene": "Un folleto destaca el mejor mes y oculta el resto del historial.",
+          "options": [
+            {
+              "label": "Más celebración de ganadores"
+            },
+            {
+              "label": "Otros resultados, incluidas pérdidas"
+            },
+            {
+              "label": "Una gráfica más brillante"
+            }
+          ],
+          "help": [
+            "Pregunta qué periodos y resultados excluyeron."
+          ],
+          "feedback": {
+            "met": "El éxito seleccionado omite la variedad de resultados.",
+            "not_yet": "Pregunta qué periodos y resultados excluyeron."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual evidência falta?",
+          "scene": "Um folheto destaca o melhor mês e esconde o resto do histórico.",
+          "options": [
+            {
+              "label": "Mais festa dos vencedores"
+            },
+            {
+              "label": "Outros resultados, incluindo perdas"
+            },
+            {
+              "label": "Um gráfico mais brilhante"
+            }
+          ],
+          "help": [
+            "Pergunte quais períodos e resultados foram excluídos."
+          ],
+          "feedback": {
+            "met": "O sucesso escolhido omite a variedade de resultados.",
+            "not_yet": "Pergunte quais períodos e resultados foram excluídos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Does this fund fit?",
+          "scene": "A goal calls for broad company exposure. The fund holds shares in only one mining company.",
+          "options": [
+            {
+              "label": "Yes, the word fund guarantees breadth"
+            },
+            {
+              "label": "No, its holdings are narrow"
+            }
+          ],
+          "help": [
+            "Compare actual contents with the goal."
+          ],
+          "feedback": {
+            "met": "The holdings do not provide the requested broad exposure.",
+            "not_yet": "Compare actual contents with the goal."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Este fondo coincide?",
+          "scene": "La meta pide exposición amplia a empresas. El fondo tiene acciones de una sola minera.",
+          "options": [
+            {
+              "label": "Sí, la palabra fondo garantiza amplitud"
+            },
+            {
+              "label": "No, sus inversiones son estrechas"
+            }
+          ],
+          "help": [
+            "Compara contenido real con la meta."
+          ],
+          "feedback": {
+            "met": "Las inversiones no ofrecen la exposición amplia solicitada.",
+            "not_yet": "Compara contenido real con la meta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Esse fundo combina?",
+          "scene": "A meta pede variedade de empresas. O fundo tem ações de uma só mineradora.",
+          "options": [
+            {
+              "label": "Sim, a palavra fundo garante variedade"
+            },
+            {
+              "label": "Não, seus ativos são restritos"
+            }
+          ],
+          "help": [
+            "Compare conteúdo real com a meta."
+          ],
+          "feedback": {
+            "met": "Os ativos não oferecem a variedade pedida.",
+            "not_yet": "Compare conteúdo real com a meta."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.05",
+      "copy": {
+        "en-US": {
+          "prompt": "What does tracking promise?",
+          "scene": "An index fund aims to follow a basket that can fall.",
+          "options": [
+            {
+              "label": "Always beating the basket"
+            },
+            {
+              "label": "Guaranteed gains in every period"
+            },
+            {
+              "label": "An aim to follow, with possible differences"
+            }
+          ],
+          "help": [
+            "Separate the target from a promised outcome."
+          ],
+          "feedback": {
+            "met": "Tracking is a strategy, not a guarantee of gains.",
+            "not_yet": "Separate the target from a promised outcome."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué promete seguir?",
+          "scene": "Un fondo indexado intenta seguir una canasta que puede caer.",
+          "options": [
+            {
+              "label": "Superar siempre la canasta"
+            },
+            {
+              "label": "Obtener utilidad siempre"
+            },
+            {
+              "label": "Intento de seguir, con posibles diferencias"
+            }
+          ],
+          "help": [
+            "Distingue objetivo de resultado prometido."
+          ],
+          "feedback": {
+            "met": "Seguir es estrategia, no garantía de ganar.",
+            "not_yet": "Distingue objetivo de resultado prometido."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que seguir promete?",
+          "scene": "Um fundo de índice tenta seguir uma cesta que pode cair.",
+          "options": [
+            {
+              "label": "Sempre superar a cesta"
+            },
+            {
+              "label": "Ganhos garantidos sempre"
+            },
+            {
+              "label": "Tentar seguir, com possíveis diferenças"
+            }
+          ],
+          "help": [
+            "Separe meta de resultado prometido."
+          ],
+          "feedback": {
+            "met": "Seguir é estratégia, não garantia de ganhar.",
+            "not_yet": "Separe meta de resultado prometido."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Which parts determine the result?",
+          "scene": "An asset pays cash income but loses resale value during the same period.",
+          "options": [
+            {
+              "label": "Value alone"
+            },
+            {
+              "label": "Income alone"
+            },
+            {
+              "label": "Both income and value change"
+            }
+          ],
+          "help": [
+            "Include both before describing the overall result."
+          ],
+          "feedback": {
+            "met": "Income and price changes are separate result components.",
+            "not_yet": "Include both before describing the overall result."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué partes determinan el resultado?",
+          "scene": "Un activo paga ingreso en efectivo y pierde valor de venta en el mismo periodo.",
+          "options": [
+            {
+              "label": "Solo valor"
+            },
+            {
+              "label": "Solo ingresos"
+            },
+            {
+              "label": "Ingresos y cambio de valor"
+            }
+          ],
+          "help": [
+            "Incluye ambos antes de describir el resultado total."
+          ],
+          "feedback": {
+            "met": "Ingresos y cambios de precio son componentes distintos.",
+            "not_yet": "Incluye ambos antes de describir el resultado total."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quais partes definem o resultado?",
+          "scene": "Um ativo paga renda em dinheiro e perde valor de venda no mesmo período.",
+          "options": [
+            {
+              "label": "Só valor"
+            },
+            {
+              "label": "Só renda"
+            },
+            {
+              "label": "Renda e mudança de valor"
+            }
+          ],
+          "help": [
+            "Inclua ambas antes de descrever o resultado total."
+          ],
+          "feedback": {
+            "met": "Renda e mudanças de preço são partes distintas.",
+            "not_yet": "Inclua ambas antes de descrever o resultado total."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.investment-comparison.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What remains from this exit?",
+          "scene": "Sale gain before costs: 95. Mandatory exit charge: 10; settlement fee: 5.",
+          "options": [
+            {
+              "label": "95"
+            },
+            {
+              "label": "80"
+            },
+            {
+              "label": "85"
+            }
+          ],
+          "help": [
+            "Subtract both mandatory charges from the gain."
+          ],
+          "feedback": {
+            "met": "Both exit costs reduce the gain available.",
+            "not_yet": "Subtract both mandatory charges from the gain."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué queda de esta salida?",
+          "scene": "Ganancia de venta antes de costos: 95. Cargo de salida: 10; liquidación: 5.",
+          "options": [
+            {
+              "label": "95"
+            },
+            {
+              "label": "80"
+            },
+            {
+              "label": "85"
+            }
+          ],
+          "help": [
+            "Resta ambos cargos obligatorios de la ganancia."
+          ],
+          "feedback": {
+            "met": "Ambos costos de salida reducen la ganancia disponible.",
+            "not_yet": "Resta ambos cargos obligatorios de la ganancia."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que sobra dessa saída?",
+          "scene": "Ganho da venda antes dos custos: 95. Cobrança de saída: 10; liquidação: 5.",
+          "options": [
+            {
+              "label": "95"
+            },
+            {
+              "label": "80"
+            },
+            {
+              "label": "85"
+            }
+          ],
+          "help": [
+            "Subtraia ambas as cobranças obrigatórias do ganho."
+          ],
+          "feedback": {
+            "met": "Ambos os custos de saída reduzem o ganho disponível.",
+            "not_yet": "Subtraia ambas as cobranças obrigatórias do ganho."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          95,
+          10,
+          5
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

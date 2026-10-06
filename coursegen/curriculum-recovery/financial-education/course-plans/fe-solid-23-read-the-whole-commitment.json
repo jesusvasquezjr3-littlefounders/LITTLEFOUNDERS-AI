@@ -1,0 +1,798 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-solid-05-understand-borrowing",
+  "lesson_id": "fe-solid-23-read-the-whole-commitment",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.debt.total-cost",
+    "finance.save.access",
+    "finance.debt.obligation"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Check usable resources, future repayment obligations and complete financing totals together before evaluating a purchase plan.",
+  "title": {
+    "en-US": "Read the whole commitment",
+    "es-MX": "Revisa todo el compromiso",
+    "pt-BR": "Confira todo o compromisso"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Read the whole commitment\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Revisa todo el compromiso\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Confira todo o compromisso\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "consolidate",
+    "objective": {
+      "skill_id": "debt.total-cost",
+      "observable_action": "Check usable resources, future repayment obligations and complete financing totals together before evaluating a purchase plan.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "debt.obligation",
+      "price.final",
+      "cash.dates"
+    ],
+    "retrieval_skills": [
+      "save.access",
+      "debt.obligation",
+      "debt.total-cost"
+    ],
+    "relevance": "A usable balance, a credit limit and a repayment total answer different questions. Keep them separate in these decisions.",
+    "misconception": "Treating a displayed asset or credit limit as enough to pay an agreement whose dates and full cost are unknown.",
+    "numeracy_support": "Recall repeated additions and access dates; no new interest formula is introduced.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "save.access",
+        "context_id": "read-the-whole-commitment-practice-01",
+        "supports_from": [],
+        "reasoning": "The estimated sale value does not establish usable money today."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "debt.obligation",
+        "context_id": "read-the-whole-commitment-practice-02",
+        "supports_from": [],
+        "reasoning": "The later installments are obligations created by the agreement."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "debt.total-cost",
+        "context_id": "read-the-whole-commitment-practice-03",
+        "supports_from": [],
+        "reasoning": "The complete total includes every installment and the separate fee."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "save.access",
+        "context_id": "read-the-whole-commitment-practice-04",
+        "supports_from": [],
+        "reasoning": "The amount actually received must cover the stated payment."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "debt.obligation",
+        "context_id": "read-the-whole-commitment-practice-05",
+        "supports_from": [],
+        "reasoning": "The receipts have different repayment obligations despite both increasing cash."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "debt.total-cost",
+        "context_id": "read-the-whole-commitment-transfer-01",
+        "supports_from": [],
+        "reasoning": "The financed total exceeds the same appliance cash price by this amount."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "debt.total-cost",
+      "fresh_context": "Apply this skill in a later integrated decision with a different constraint."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A usable balance, a credit limit and a repayment total answer different questions. Keep them separate in these decisions."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un saldo utilizable, un límite de crédito y un total a devolver responden preguntas distintas. Sepáralos al decidir."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Um saldo utilizável, um limite de crédito e um total a devolver respondem a perguntas diferentes. Separe-os ao decidir."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.save.access",
+      "copy": {
+        "en-US": {
+          "prompt": "Can its value pay today?",
+          "scene": "Your unsold item is worth enough, but payment is due today.",
+          "options": [
+            {
+              "label": "No, usable proceeds are missing"
+            },
+            {
+              "label": "Yes, once advertised"
+            },
+            {
+              "label": "Yes, estimated value is cash"
+            }
+          ],
+          "help": [
+            "Check completed proceeds by the deadline."
+          ],
+          "feedback": {
+            "met": "The estimated sale value does not establish usable money today.",
+            "not_yet": "Check completed proceeds by the deadline."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿El valor de venta paga la cuota de hoy?",
+          "scene": "Tu objeto vale más que la cuota, pero nadie pagó; debes pagar hoy.",
+          "options": [
+            {
+              "label": "No, falta dinero utilizable recibido"
+            },
+            {
+              "label": "Sí, si publicas un anuncio"
+            },
+            {
+              "label": "Sí, el valor estimado es efectivo"
+            }
+          ],
+          "help": [
+            "Comprueba lo realmente recibido para el vencimiento."
+          ],
+          "feedback": {
+            "met": "El valor estimado no demuestra dinero utilizable hoy.",
+            "not_yet": "Comprueba lo realmente recibido para el vencimiento."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O valor de venda paga a parcela de hoje?",
+          "scene": "Você tem um objeto avaliado acima da parcela, mas nenhum comprador pagou. A parcela vence hoje.",
+          "options": [
+            {
+              "label": "Não, falta dinheiro utilizável recebido"
+            },
+            {
+              "label": "Sim, se publicar um anúncio"
+            },
+            {
+              "label": "Sim, o valor estimado é dinheiro"
+            }
+          ],
+          "help": [
+            "Confira o que foi realmente recebido até o vencimento."
+          ],
+          "feedback": {
+            "met": "O valor estimado não demonstra dinheiro utilizável hoje.",
+            "not_yet": "Confira o que foi realmente recebido até o vencimento."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.debt.obligation",
+      "copy": {
+        "en-US": {
+          "prompt": "What does this checkout plan create?",
+          "scene": "A device can be taken now in exchange for agreed future installments.",
+          "options": [
+            {
+              "label": "Earned income"
+            },
+            {
+              "label": "Future payment obligations"
+            },
+            {
+              "label": "A gift with no repayment"
+            }
+          ],
+          "help": [
+            "Receiving an item now does not make future payments disappear."
+          ],
+          "feedback": {
+            "met": "The later installments are obligations created by the agreement.",
+            "not_yet": "Receiving an item now does not make future payments disappear."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué crea este plan de compra?",
+          "scene": "Puedes llevar un aparato hoy a cambio de cuotas futuras acordadas.",
+          "options": [
+            {
+              "label": "Ingreso ganado"
+            },
+            {
+              "label": "Obligaciones futuras de pago"
+            },
+            {
+              "label": "Un regalo sin devolución"
+            }
+          ],
+          "help": [
+            "Recibir un aparato hoy no elimina los pagos futuros."
+          ],
+          "feedback": {
+            "met": "Las cuotas posteriores son obligaciones creadas por el acuerdo.",
+            "not_yet": "Recibir un aparato hoy no elimina los pagos futuros."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que este plano de compra cria?",
+          "scene": "Pode levar um aparelho agora em troca de parcelas futuras combinadas.",
+          "options": [
+            {
+              "label": "Renda ganha"
+            },
+            {
+              "label": "Obrigações futuras de pagamento"
+            },
+            {
+              "label": "Um presente sem devolução"
+            }
+          ],
+          "help": [
+            "Receber um aparelho agora não elimina os pagamentos futuros."
+          ],
+          "feedback": {
+            "met": "As parcelas posteriores são obrigações criadas pelo acordo.",
+            "not_yet": "Receber um aparelho agora não elimina os pagamentos futuros."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.debt.total-cost",
+      "copy": {
+        "en-US": {
+          "prompt": "What is the required total?",
+          "scene": "3 installments of 50 are required, plus a separate fee of 10.",
+          "options": [
+            {
+              "label": "160"
+            },
+            {
+              "label": "60"
+            },
+            {
+              "label": "150"
+            }
+          ],
+          "help": [
+            "Count the full schedule before adding the extra charge."
+          ],
+          "feedback": {
+            "met": "The complete total includes every installment and the separate fee.",
+            "not_yet": "Count the full schedule before adding the extra charge."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es el total obligatorio?",
+          "scene": "Se exigen 3 cuotas de 50 más un cargo separado de 10.",
+          "options": [
+            {
+              "label": "160"
+            },
+            {
+              "label": "60"
+            },
+            {
+              "label": "150"
+            }
+          ],
+          "help": [
+            "Cuenta todo el calendario antes de sumar el cargo extra."
+          ],
+          "feedback": {
+            "met": "El total completo incluye cada cuota y el cargo separado.",
+            "not_yet": "Cuenta todo el calendario antes de sumar el cargo extra."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é o total obrigatório?",
+          "scene": "São exigidas 3 parcelas de 50 mais uma cobrança separada de 10.",
+          "options": [
+            {
+              "label": "160"
+            },
+            {
+              "label": "60"
+            },
+            {
+              "label": "150"
+            }
+          ],
+          "help": [
+            "Conte todo o calendário antes de somar a cobrança extra."
+          ],
+          "feedback": {
+            "met": "O total completo inclui cada parcela e a cobrança separada.",
+            "not_yet": "Conte todo o calendário antes de somar a cobrança extra."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          3,
+          50,
+          10
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.save.access",
+      "copy": {
+        "en-US": {
+          "prompt": "What must you check?",
+          "scene": "Early withdrawal has a deduction; payment is due tomorrow.",
+          "options": [
+            {
+              "label": "The usable amount after the deduction"
+            },
+            {
+              "label": "Only the displayed balance"
+            },
+            {
+              "label": "Only the advertised return"
+            }
+          ],
+          "help": [
+            "Access time and net usable money both matter."
+          ],
+          "feedback": {
+            "met": "The amount actually received must cover the stated payment.",
+            "not_yet": "Access time and net usable money both matter."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debes comprobar sobre este retiro?",
+          "scene": "Una cuenta permite acceso anticipado con deducción; necesitas el monto completo de un pago mañana.",
+          "options": [
+            {
+              "label": "El monto utilizable tras la deducción"
+            },
+            {
+              "label": "Solo el saldo mostrado"
+            },
+            {
+              "label": "Solo el rendimiento anunciado"
+            }
+          ],
+          "help": [
+            "Importan el plazo y el dinero neto utilizable."
+          ],
+          "feedback": {
+            "met": "El monto realmente recibido debe cubrir el pago indicado.",
+            "not_yet": "Importan el plazo y el dinero neto utilizable."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que conferir sobre esta retirada?",
+          "scene": "Uma conta permite acesso antecipado com dedução; precisa do valor completo de um pagamento amanhã.",
+          "options": [
+            {
+              "label": "O valor utilizável após a dedução"
+            },
+            {
+              "label": "Só o saldo mostrado"
+            },
+            {
+              "label": "Só o retorno anunciado"
+            }
+          ],
+          "help": [
+            "Importam o prazo e o dinheiro líquido utilizável."
+          ],
+          "feedback": {
+            "met": "O valor realmente recebido deve cobrir o pagamento informado.",
+            "not_yet": "Importam o prazo e o dinheiro líquido utilizável."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.debt.obligation",
+      "copy": {
+        "en-US": {
+          "prompt": "What should the income record show?",
+          "scene": "You receive a loan and payment for completed work.",
+          "options": [
+            {
+              "label": "Both as gifts"
+            },
+            {
+              "label": "Both as income with no obligation"
+            },
+            {
+              "label": "Work income separately from borrowed money"
+            }
+          ],
+          "help": [
+            "Keep the source and terms of each receipt visible."
+          ],
+          "feedback": {
+            "met": "The receipts have different repayment obligations despite both increasing cash.",
+            "not_yet": "Keep the source and terms of each receipt visible."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe mostrar el registro de ingresos?",
+          "scene": "Llegan un depósito de préstamo y un pago por trabajo realizado.",
+          "options": [
+            {
+              "label": "Ambos como regalos"
+            },
+            {
+              "label": "Ambos como ingreso sin obligación"
+            },
+            {
+              "label": "Ingreso de trabajo separado del préstamo"
+            }
+          ],
+          "help": [
+            "Conserva visibles el origen y las condiciones de cada entrada."
+          ],
+          "feedback": {
+            "met": "Las entradas tienen obligaciones distintas aunque ambas aumenten el dinero.",
+            "not_yet": "Conserva visibles el origen y las condiciones de cada entrada."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que o registro de renda deve mostrar?",
+          "scene": "Chegam um depósito de empréstimo e um pagamento por trabalho feito.",
+          "options": [
+            {
+              "label": "Ambos como presentes"
+            },
+            {
+              "label": "Ambos como renda sem obrigação"
+            },
+            {
+              "label": "Renda de trabalho separada do empréstimo"
+            }
+          ],
+          "help": [
+            "Mantenha visíveis a origem e as condições de cada entrada."
+          ],
+          "feedback": {
+            "met": "As entradas têm obrigações diferentes embora ambas aumentem o dinheiro.",
+            "not_yet": "Mantenha visíveis a origem e as condições de cada entrada."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.debt.total-cost",
+      "copy": {
+        "en-US": {
+          "prompt": "What is the extra financing cost?",
+          "scene": "The same appliance is 300 paid now. Financing requires 6 payments of 60 and no extra fees.",
+          "options": [
+            {
+              "label": "300"
+            },
+            {
+              "label": "360"
+            },
+            {
+              "label": "60"
+            }
+          ],
+          "help": [
+            "Sum the installments, then subtract the stated cash price."
+          ],
+          "feedback": {
+            "met": "The financed total exceeds the same appliance cash price by this amount.",
+            "not_yet": "Sum the installments, then subtract the stated cash price."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es el costo extra de financiar?",
+          "scene": "El mismo aparato cuesta 300 al contado. Financiar exige 6 pagos de 60 y ningún cargo extra.",
+          "options": [
+            {
+              "label": "300"
+            },
+            {
+              "label": "360"
+            },
+            {
+              "label": "60"
+            }
+          ],
+          "help": [
+            "Suma las cuotas y resta el precio al contado indicado."
+          ],
+          "feedback": {
+            "met": "El total financiado supera en este monto el precio al contado.",
+            "not_yet": "Suma las cuotas y resta el precio al contado indicado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é o custo extra de financiar?",
+          "scene": "O mesmo aparelho custa 300 à vista. Financiar exige 6 pagamentos de 60 e nenhuma cobrança extra.",
+          "options": [
+            {
+              "label": "300"
+            },
+            {
+              "label": "360"
+            },
+            {
+              "label": "60"
+            }
+          ],
+          "help": [
+            "Some as parcelas e subtraia o preço à vista informado."
+          ],
+          "feedback": {
+            "met": "O total financiado supera neste valor o preço à vista.",
+            "not_yet": "Some as parcelas e subtraia o preço à vista informado."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          300,
+          6,
+          60
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "input": 1
+                },
+                {
+                  "input": 2
+                }
+              ]
+            },
+            {
+              "input": 0
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

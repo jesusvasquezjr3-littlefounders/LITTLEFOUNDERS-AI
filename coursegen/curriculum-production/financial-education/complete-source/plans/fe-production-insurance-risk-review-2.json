@@ -1,0 +1,988 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-insurance-risk-part-3",
+  "lesson_id": "fe-production-insurance-risk-review-2",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.insurance-risk.07",
+    "finance.prod.insurance-risk.08",
+    "finance.prod.insurance-risk.09",
+    "finance.prod.insurance-risk.10",
+    "finance.prod.insurance-risk.11",
+    "finance.prod.insurance-risk.12",
+    "finance.prod.saving-resilience.02"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Compare relevant protection, apply timing and claim rules, reassess overlap and needs, and distinguish projections from benefits.",
+  "title": {
+    "en-US": "Protection Checks",
+    "es-MX": "Revisa protección antes de usarla",
+    "pt-BR": "Confira proteção antes de contar nela"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Protection Checks\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Revisa protección antes de usarla\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Confira proteção antes de contar nela\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "consolidate",
+    "objective": {
+      "skill_id": "prod.insurance-risk.07",
+      "observable_action": "Compare relevant protection, apply timing and claim rules, reassess overlap and needs, and distinguish projections from benefits.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.insurance-risk.04",
+      "prod.insurance-risk.05",
+      "prod.insurance-risk.06",
+      "prod.purchase-decisions.06"
+    ],
+    "retrieval_skills": [
+      "prod.insurance-risk.07",
+      "prod.insurance-risk.08",
+      "prod.insurance-risk.09",
+      "prod.insurance-risk.10",
+      "prod.insurance-risk.11",
+      "prod.insurance-risk.12",
+      "prod.saving-resilience.02"
+    ],
+    "relevance": "Retrieve comparable terms, waiting rules, claim evidence, overlap and changing needs.",
+    "misconception": "Price settles equivalence, reporting changes the event date, overlap is always waste, and projections are contractual benefits.",
+    "numeracy_support": "Use the current visible conditions; do not reuse a previous scenario’s answer.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.insurance-risk.07",
+        "context_id": "insurance-risk-review-2-practice-01",
+        "supports_from": [],
+        "reasoning": "Equal prices do not make different coverage equivalent."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.insurance-risk.08",
+        "context_id": "insurance-risk-review-2-practice-02",
+        "supports_from": [],
+        "reasoning": "The event happened before the first covered day."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.insurance-risk.09",
+        "context_id": "insurance-risk-review-2-practice-03",
+        "supports_from": [],
+        "reasoning": "These records preserve the loss evidence and submission trail."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.insurance-risk.10",
+        "context_id": "insurance-risk-review-2-practice-04",
+        "supports_from": [],
+        "reasoning": "The added benefit and coordination terms may change the combined value."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.insurance-risk.11",
+        "context_id": "insurance-risk-review-2-practice-05",
+        "supports_from": [],
+        "reasoning": "Both the obligation and available protection changed."
+      },
+      {
+        "segment_id": "practice-06",
+        "skill_id": "prod.insurance-risk.12",
+        "context_id": "insurance-risk-review-2-practice-06",
+        "supports_from": [],
+        "reasoning": "Projected growth depends on assumptions about future returns."
+      },
+      {
+        "segment_id": "practice-07",
+        "skill_id": "prod.saving-resilience.02",
+        "context_id": "insurance-risk-review-2-practice-07",
+        "supports_from": [],
+        "reasoning": "The essential period total exceeds confirmed resources by eleven hundred."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.insurance-risk.07",
+        "context_id": "insurance-risk-review-2-transfer-01",
+        "supports_from": [],
+        "reasoning": "Missing deductible and limit terms prevent confirming equivalent protection."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.insurance-risk.07",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Retrieve comparable terms, waiting rules, claim evidence, overlap and changing needs."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Recupera términos comparables, espera, evidencia de reclamos, solapamiento y necesidades cambiantes."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Retome termos comparáveis, carência, provas de pedidos, sobreposição e necessidades que mudam."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Are these protections equivalent as shown?",
+          "scene": "Premiums match, but A excludes the relevant event while B covers it.",
+          "options": [
+            {
+              "label": "No, covered events differ"
+            },
+            {
+              "label": "Yes, ignore the event"
+            },
+            {
+              "label": "Yes, equal price proves it"
+            }
+          ],
+          "help": [
+            "Compare the actual protection before comparing price."
+          ],
+          "feedback": {
+            "met": "Equal prices do not make different coverage equivalent.",
+            "not_yet": "Compare the actual protection before comparing price."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Protecciones son equivalentes según datos?",
+          "scene": "Primas coinciden, pero A excluye evento relevante y B lo cubre.",
+          "options": [
+            {
+              "label": "No, eventos cubiertos difieren"
+            },
+            {
+              "label": "Sí, ignorar evento"
+            },
+            {
+              "label": "Sí, precio igual lo prueba"
+            }
+          ],
+          "help": [
+            "Compara protección real antes de comparar precio."
+          ],
+          "feedback": {
+            "met": "Precios iguales no vuelven equivalentes coberturas distintas.",
+            "not_yet": "Compara protección real antes de comparar precio."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Proteções são iguais pelos dados?",
+          "scene": "Prêmios coincidem, mas A exclui evento relevante e B o cobre.",
+          "options": [
+            {
+              "label": "Não, eventos cobertos diferem"
+            },
+            {
+              "label": "Sim, ignorar evento"
+            },
+            {
+              "label": "Sim, preço igual prova isso"
+            }
+          ],
+          "help": [
+            "Compare proteção real antes de comparar preço."
+          ],
+          "feedback": {
+            "met": "Preços iguais não tornam iguais coberturas distintas.",
+            "not_yet": "Compare proteção real antes de comparar preço."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Does this event pass the waiting rule?",
+          "scene": "Fictional terms cover events from day 15 inclusive; event occurs day 14; report day 16.",
+          "options": [
+            {
+              "label": "No"
+            },
+            {
+              "label": "Yes, report is later"
+            },
+            {
+              "label": "Yes, payment was earlier"
+            }
+          ],
+          "help": [
+            "Use the event date, not the reporting date."
+          ],
+          "feedback": {
+            "met": "The event happened before the first covered day.",
+            "not_yet": "Use the event date, not the reporting date."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Evento supera regla de espera?",
+          "scene": "Términos ficticios cubren eventos desde día 15 inclusive; evento ocurre día 14 y se reporta día 16.",
+          "options": [
+            {
+              "label": "No"
+            },
+            {
+              "label": "Sí, reporte es posterior"
+            },
+            {
+              "label": "Sí, pago fue anterior"
+            }
+          ],
+          "help": [
+            "Usa fecha del evento, no fecha del reporte."
+          ],
+          "feedback": {
+            "met": "Evento ocurrió antes del primer día cubierto.",
+            "not_yet": "Usa fecha del evento, no fecha del reporte."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Evento passa regra de carência?",
+          "scene": "Termos fictícios cobrem eventos desde dia 15 inclusive; evento ocorre dia 14 e é informado dia 16.",
+          "options": [
+            {
+              "label": "Não"
+            },
+            {
+              "label": "Sim, aviso é depois"
+            },
+            {
+              "label": "Sim, pagamento foi antes"
+            }
+          ],
+          "help": [
+            "Use data do evento, não data do aviso."
+          ],
+          "feedback": {
+            "met": "Evento ocorreu antes do primeiro dia coberto.",
+            "not_yet": "Use data do evento, não data do aviso."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Which records preserve submission?",
+          "scene": "Fictional instructions require loss photos and invoice; the portal supplies a receipt reference.",
+          "options": [
+            {
+              "label": "Photos, invoice, submitted copy and reference"
+            },
+            {
+              "label": "Only an advertisement"
+            },
+            {
+              "label": "Only memory of the call"
+            }
+          ],
+          "help": [
+            "Keep both supporting evidence and proof of submission."
+          ],
+          "feedback": {
+            "met": "These records preserve the loss evidence and submission trail.",
+            "not_yet": "Keep both supporting evidence and proof of submission."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué registros preservan entrega?",
+          "scene": "Instrucciones ficticias piden fotos de pérdida y factura; portal entrega folio de recepción.",
+          "options": [
+            {
+              "label": "Fotos, factura, copia entregada y folio"
+            },
+            {
+              "label": "Solo anuncio"
+            },
+            {
+              "label": "Solo recuerdo de llamada"
+            }
+          ],
+          "help": [
+            "Guarda evidencia de respaldo y prueba de entrega."
+          ],
+          "feedback": {
+            "met": "Registros preservan evidencia de pérdida y entrega.",
+            "not_yet": "Guarda evidencia de respaldo y prueba de entrega."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que registros preservam envio?",
+          "scene": "Instruções fictícias pedem fotos da perda e nota; portal fornece protocolo de recebimento.",
+          "options": [
+            {
+              "label": "Fotos, nota, cópia enviada e protocolo"
+            },
+            {
+              "label": "Só anúncio"
+            },
+            {
+              "label": "Só memória da ligação"
+            }
+          ],
+          "help": [
+            "Guarde provas de apoio e prova de envio."
+          ],
+          "feedback": {
+            "met": "Registros preservam prova da perda e do envio.",
+            "not_yet": "Guarde provas de apoio e prova de envio."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Can overlap be dismissed?",
+          "scene": "A pays covered repairs; B overlaps repairs but adds transport benefits under different limits.",
+          "options": [
+            {
+              "label": "Yes, all overlap is useless"
+            },
+            {
+              "label": "No, compare combined terms"
+            },
+            {
+              "label": "Yes, every claim doubles"
+            }
+          ],
+          "help": [
+            "Compare actual benefits and payment rules rather than labels."
+          ],
+          "feedback": {
+            "met": "The added benefit and coordination terms may change the combined value.",
+            "not_yet": "Compare actual benefits and payment rules rather than labels."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Puede descartarse solapamiento automáticamente?",
+          "scene": "A paga arreglos cubiertos; B solapa arreglos pero agrega transporte bajo límites distintos.",
+          "options": [
+            {
+              "label": "Sí, todo solapamiento es inútil"
+            },
+            {
+              "label": "No, comparar términos combinados"
+            },
+            {
+              "label": "Sí, todo reclamo se duplica"
+            }
+          ],
+          "help": [
+            "Compara beneficios reales y reglas de pago, no etiquetas."
+          ],
+          "feedback": {
+            "met": "Beneficio extra y coordinación pueden cambiar valor combinado.",
+            "not_yet": "Compara beneficios reales y reglas de pago, no etiquetas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Pode descartar sobreposição automaticamente?",
+          "scene": "A paga reparos cobertos; B sobrepõe reparos mas soma transporte sob limites distintos.",
+          "options": [
+            {
+              "label": "Sim, toda sobreposição é inútil"
+            },
+            {
+              "label": "Não, comparar termos combinados"
+            },
+            {
+              "label": "Sim, todo pedido dobra"
+            }
+          ],
+          "help": [
+            "Compare benefícios reais e regras de pagamento, não nomes."
+          ],
+          "feedback": {
+            "met": "Benefício extra e coordenação podem mudar valor combinado.",
+            "not_yet": "Compare benefícios reais e regras de pagamento, não nomes."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.11",
+      "copy": {
+        "en-US": {
+          "prompt": "What should be reassessed?",
+          "scene": "A care obligation ends while employment-linked coverage also ends.",
+          "options": [
+            {
+              "label": "Needs, resources and remaining protection"
+            },
+            {
+              "label": "Assume no protection is needed"
+            },
+            {
+              "label": "Only the old premium"
+            }
+          ],
+          "help": [
+            "Recalculate the current gap instead of keeping old assumptions."
+          ],
+          "feedback": {
+            "met": "Both the obligation and available protection changed.",
+            "not_yet": "Recalculate the current gap instead of keeping old assumptions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe reevaluarse?",
+          "scene": "Obligación de cuidados termina mientras también termina cobertura laboral.",
+          "options": [
+            {
+              "label": "Necesidades, recursos y protección restante"
+            },
+            {
+              "label": "Suponer que no hace falta protección"
+            },
+            {
+              "label": "Solo prima anterior"
+            }
+          ],
+          "help": [
+            "Recalcula faltante actual sin conservar supuestos anteriores."
+          ],
+          "feedback": {
+            "met": "Cambiaron obligación y protección disponible.",
+            "not_yet": "Recalcula faltante actual sin conservar supuestos anteriores."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que deve ser reavaliado?",
+          "scene": "Dever de cuidado acaba enquanto cobertura do emprego também acaba.",
+          "options": [
+            {
+              "label": "Necessidades, recursos e proteção restante"
+            },
+            {
+              "label": "Supor que não precisa de proteção"
+            },
+            {
+              "label": "Só prêmio antigo"
+            }
+          ],
+          "help": [
+            "Recalcule falta atual sem manter suposições antigas."
+          ],
+          "feedback": {
+            "met": "Mudaram dever e proteção disponível.",
+            "not_yet": "Recalcule falta atual sem manter suposições antigas."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.12",
+      "copy": {
+        "en-US": {
+          "prompt": "Which number remains assumption-dependent?",
+          "scene": "Fictional offer separates defined death cover from account growth projected using future returns.",
+          "options": [
+            {
+              "label": "Projected account growth"
+            },
+            {
+              "label": "The named covered event"
+            },
+            {
+              "label": "Every stated condition"
+            }
+          ],
+          "help": [
+            "Separate investment estimates from the contractual protection terms."
+          ],
+          "feedback": {
+            "met": "Projected growth depends on assumptions about future returns.",
+            "not_yet": "Separate investment estimates from the contractual protection terms."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué cifra sigue dependiendo de supuestos?",
+          "scene": "Oferta ficticia separa cobertura definida por fallecimiento de crecimiento de cuenta proyectado usando rendimientos futuros.",
+          "options": [
+            {
+              "label": "Crecimiento proyectado de cuenta"
+            },
+            {
+              "label": "Evento cubierto nombrado"
+            },
+            {
+              "label": "Toda condición indicada"
+            }
+          ],
+          "help": [
+            "Separa estimaciones de inversión de términos contractuales de protección."
+          ],
+          "feedback": {
+            "met": "Crecimiento proyectado depende de supuestos de rendimiento futuro.",
+            "not_yet": "Separa estimaciones de inversión de términos contractuales de protección."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que valor segue dependendo de hipóteses?",
+          "scene": "Oferta fictícia separa cobertura definida por morte de crescimento da conta projetado usando rendimentos futuros.",
+          "options": [
+            {
+              "label": "Crescimento projetado da conta"
+            },
+            {
+              "label": "Evento coberto nomeado"
+            },
+            {
+              "label": "Toda condição dada"
+            }
+          ],
+          "help": [
+            "Separe estimativas de investimento de termos contratuais da proteção."
+          ],
+          "feedback": {
+            "met": "Crescimento projetado depende de hipóteses de rendimento futuro.",
+            "not_yet": "Separe estimativas de investimento de termos contratuais da proteção."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-07",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What interruption funding is missing?",
+          "scene": "Monthly essentials 700; interruption 2 months; confirmed total resources 300; no other resources.",
+          "options": [
+            {
+              "label": "1100"
+            },
+            {
+              "label": "400"
+            },
+            {
+              "label": "1400"
+            }
+          ],
+          "help": [
+            "Multiply monthly essentials by duration, then subtract total resources."
+          ],
+          "feedback": {
+            "met": "The essential period total exceeds confirmed resources by eleven hundred.",
+            "not_yet": "Multiply monthly essentials by duration, then subtract total resources."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué fondos faltan para pausa?",
+          "scene": "Esenciales mensuales 700; pausa 2 meses; recursos totales confirmados 300; sin otros recursos.",
+          "options": [
+            {
+              "label": "1100"
+            },
+            {
+              "label": "400"
+            },
+            {
+              "label": "1400"
+            }
+          ],
+          "help": [
+            "Multiplica esenciales mensuales por duración y resta recursos totales."
+          ],
+          "feedback": {
+            "met": "Total esencial del periodo supera recursos confirmados por mil cien.",
+            "not_yet": "Multiplica esenciales mensuales por duración y resta recursos totales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que verba falta para pausa?",
+          "scene": "Essenciais mensais 700; pausa 2 meses; recursos totais confirmados 300; sem outros recursos.",
+          "options": [
+            {
+              "label": "1100"
+            },
+            {
+              "label": "400"
+            },
+            {
+              "label": "1400"
+            }
+          ],
+          "help": [
+            "Multiplique essenciais mensais pela duração e subtraia recursos totais."
+          ],
+          "feedback": {
+            "met": "Total essencial do período supera recursos confirmados em mil e cem.",
+            "not_yet": "Multiplique essenciais mensais pela duração e subtraia recursos totais."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          700,
+          2,
+          300
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.insurance-risk.07",
+      "copy": {
+        "en-US": {
+          "prompt": "What blocks a fair premium comparison?",
+          "scene": "Two quotes match events and period, but one omits its deductible and limit.",
+          "options": [
+            {
+              "label": "Missing retained-cost and limit terms"
+            },
+            {
+              "label": "Nothing because periods match"
+            },
+            {
+              "label": "Only different names"
+            }
+          ],
+          "help": [
+            "Align all relevant terms before judging the price difference."
+          ],
+          "feedback": {
+            "met": "Missing deductible and limit terms prevent confirming equivalent protection.",
+            "not_yet": "Align all relevant terms before judging the price difference."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué impide comparar primas justamente?",
+          "scene": "Cotizaciones igualan eventos y periodo, pero una omite deducible y límite.",
+          "options": [
+            {
+              "label": "Faltan costo propio y límite"
+            },
+            {
+              "label": "Nada porque periodos coinciden"
+            },
+            {
+              "label": "Solo nombres distintos"
+            }
+          ],
+          "help": [
+            "Alinea términos relevantes antes de juzgar diferencia de precio."
+          ],
+          "feedback": {
+            "met": "Faltan deducible y límite para confirmar protección equivalente.",
+            "not_yet": "Alinea términos relevantes antes de juzgar diferencia de precio."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que impede comparar prêmios de modo justo?",
+          "scene": "Cotações igualam eventos e período, mas uma omite franquia e limite.",
+          "options": [
+            {
+              "label": "Faltam custo próprio e limite"
+            },
+            {
+              "label": "Nada pois períodos coincidem"
+            },
+            {
+              "label": "Só nomes distintos"
+            }
+          ],
+          "help": [
+            "Alinhe termos relevantes antes de julgar diferença de preço."
+          ],
+          "feedback": {
+            "met": "Faltam franquia e limite para confirmar proteção igual.",
+            "not_yet": "Alinhe termos relevantes antes de julgar diferença de preço."
+          }
+        }
+      }
+    }
+  ]
+}
