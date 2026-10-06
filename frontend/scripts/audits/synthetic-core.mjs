@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { LANES, LANE_SCENARIOS } from './lanes/index.mjs';
 
 /*
@@ -82,6 +83,15 @@ export async function loadLessonFixtures(page, locales, { compiled = false, orig
   })()`);
 }
 
+/*
+ * The game origin the host allows for local development (src/games/kartrush/origins.ts) and the page that stands in for
+ * KartRush there: a development fixture that speaks the host side of kr.v1 (see its header). A scenario that opens the
+ * game host gets its iframe answered from this file, so the host, the bridge and the pit stop are measured end to end with
+ * no game, no network and no second server. Nothing else is ever answered on that origin.
+ */
+export const GAME_STUB_ORIGIN = 'http://localhost:4010';
+const GAME_STUB_PAGE = new URL('../../src/games/kartrush/__fixtures__/game-stub.html', import.meta.url);
+
 /** The register policy version Core and the UI share (rebuild/design/learnerRegisterPolicy.generated.ts). */
 const REGISTER_POLICY_VERSION = '2026-09-24.1';
 
@@ -105,13 +115,17 @@ export const SCENARIOS = LANE_SCENARIOS;
  * through untouched (the preview entry and session-less routes).
  */
 export async function installSyntheticCore(page, origin, { unknownRequests, answerRequest }) {
-  await page.send('Fetch.enable', { patterns: [{ urlPattern: '*/api/v1/*' }] });
+  await page.send('Fetch.enable', { patterns: [{ urlPattern: '*/api/v1/*' }, { urlPattern: `${GAME_STUB_ORIGIN}/*` }] });
   page.ws.addEventListener('message', async ({ data }) => {
     const message = JSON.parse(data);
     if (message.method !== 'Fetch.requestPaused' || message.sessionId !== page.sessionId) return;
     const { requestId, request } = message.params;
     const core = page.core;
     try {
+      if (request.url.startsWith(`${GAME_STUB_ORIGIN}/`)) {
+        return void await page.send('Fetch.fulfillRequest', { requestId, responseCode: 200, responseHeaders: [{ name: 'Content-Type', value: 'text/html; charset=utf-8' }],
+          body: readFileSync(GAME_STUB_PAGE).toString('base64') });
+      }
       if (!core) return void await page.send('Fetch.continueRequest', { requestId });
       const url = new URL(request.url);
       const reply = (status, body) => page.send('Fetch.fulfillRequest', { requestId, responseCode: status, responseHeaders: [
