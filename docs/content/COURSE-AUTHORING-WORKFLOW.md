@@ -73,7 +73,7 @@ From `frontend/`, run `npm run review:course` to inspect the compiled reference 
 
 The source modules are an editable representation of authored storyboards, not a template farm or an alternative runtime. `build-source.mjs` writes source plans and draft KC seed definitions; `course:build` performs offline compilation without a model, network or database. The review packet includes unresolved regional/register review findings. The SQL output ends with `ROLLBACK` and is not a publication script to run blindly.
 
-For another subject, write a new blueprint, use appropriate existing or reviewed draft KCs, supply course metadata, and author its own scenarios. Reuse the contract and checks, not the financial examples. Hundreds of lessons require distinct outcomes and evidence; adding names or numbers to a copied lesson is explicitly rejected.
+For another subject, write a new blueprint, use appropriate existing or reviewed draft KCs, supply course metadata, and author its own scenarios. Reuse the contract and checks, not the financial examples. Hundreds of lessons require distinct outcomes and evidence. The automatic duplicate check rejects identical type/copy sequences and variants that change only numbers. Name-only variants and semantic repetition still require editorial review; neither is acceptable course authorship.
 
 ## Release and measurement
 
