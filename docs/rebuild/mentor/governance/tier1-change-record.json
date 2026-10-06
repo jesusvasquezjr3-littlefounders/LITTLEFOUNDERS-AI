@@ -549,8 +549,8 @@
       "date": "2026-10-06",
       "change": "Enforce existing adult chapter age eligibility in Mentor planning, map and direct content paths before activating the financial curriculum.",
       "origin": "human",
-      "pedagogicalReviewer": "pending",
-      "safetyTrustLead": "pending"
+      "pedagogicalReviewer": "Astralino",
+      "safetyTrustLead": "Claudio"
     },
     {
       "component": "governance.model",
@@ -559,8 +559,8 @@
       "date": "2026-10-06",
       "change": "Enforce existing adult chapter age eligibility in Mentor planning, map and direct content paths before activating the financial curriculum.",
       "origin": "human",
-      "pedagogicalReviewer": "pending",
-      "safetyTrustLead": "pending"
+      "pedagogicalReviewer": "Astralino",
+      "safetyTrustLead": "Claudio"
     }
   ]
 }
