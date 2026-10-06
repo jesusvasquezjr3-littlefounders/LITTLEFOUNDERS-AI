@@ -153,3 +153,33 @@ Keys are typed from en-US; es-MX and pt-BR must have identical key sets (existin
 Every string carries a `data-copy-role`; the Copy Budget applies (action ≤ 3 words, body ≤ 12 words,
 age 6-9 register, glossary rules: no "Tutor", "bot", "assistant", "lives", "freeze", no em dash).
 Mentor voices follow `oracle/src/tutor/prompt.ts` `CHARACTER_VOICES`.
+
+## 8. As built (6 October 2026)
+
+What the first release does where the sections above left room. These facts are covered by tests in
+Core, the SPA and the game.
+
+- **Save revision.** `PUT /save` takes the revision the client last saw; the server stores that plus one and
+  returns it. A mismatch is `409 SAVE_CONFLICT` with the current revision in `data.revision` (and
+  `error.revision`). The game's own `kr.save.revision` counter is not the server revision: the SPA ignores
+  it, keeps its own `serverRevision` (from the session response and every PUT answer) and retries once on a
+  conflict.
+- **Sessions are reused, not counted twice.** A session start reopens the learner's latest session (same
+  `sessionId`, no new daily slot, allowed even at the cap) when it is still open or was closed as `left`, its
+  last heartbeat is under 10 minutes old, it has active time left and it has not been expired for more than
+  10 minutes. Sessions closed as `soft`, `hard` or `idle` are never reopened. A reopened session takes the
+  lower of its old minutes and the guardian's current limit and gets the remaining active budget plus 60 s.
+- **Status codes.** A new session or run answers 201; a repeated `runKey` answers 200 with the stored run.
+  A migrated child without the Tutor's consent to `game_play_records` gets `GAME_DISABLED`.
+- **Leaving.** The SPA sends `end {reason: 'left'}` on unmount, Exit, `kr.exitRequested` and "Ask {Mentor}";
+  `soft` on a soft stop; and a keepalive `end` on `pagehide`.
+- **Pit stop action.** "Ask {Mentor}" (three words), not "Talk to {Mentor}" (four, over the action budget).
+- **Finish moment.** The game has no finish replay today: it holds the finish pose for 3.5 s, then sends
+  `kr.runEnded` and tears the race down (frees the GPU between races).
+- **Run report.** `lens.driftReleases` values are clamped to 0..200 in the game and accepted up to the contract
+  range by Core; `rank` is the live rank of the player's kart at the line.
+- **Where the AI line lives.** Oracle `POST /api/v1/game/line`, behind `GAME_AI_DEBRIEF=on` in both Core and
+  Oracle (default off). Its input schema and flag live in `oracle/src/game/` on purpose: the Mentor
+  governance gate protects `oracle/src/context/**` and `oracle/src/env.ts` (Tier 1), and no human sign-off
+  may be bypassed.
+- **Retention.** The sweep is held out of this release as a contract migration; see `docs/games/deferred/`.
