@@ -3826,8 +3826,39 @@ export function tutorRouter(): Router {
       return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read the transcript');
     }
 
+    /*
+     * The learner's own closing summary. Reuses the SAME deterministic
+     * builder the guardian view uses (`buildSessionNarrative`): `kc_attempt`
+     * names the topics practised and whether each was missed, and
+     * `tutor_sessions.summary` carries the graded fraction — no model call, no
+     * new table, no new field reaching a model, no new consent. Titles resolve
+     * in the CALLER's own locale: here the learner reads their own session.
+     */
+    const narrativeLocale = normalizeLocale((await profileOf(user.accessToken, user.id))?.locale);
+    const attemptRows = (await getKcAttemptsForSessions([session.id])) ?? [];
+    const kcIds = [...new Set(attemptRows.map((a) => a.kc_id))];
+    const kcTitleRows = kcIds.length > 0 ? ((await getKcTitlesByIds(kcIds)) ?? []) : [];
+    const titleById = new Map<string, string>();
+    for (const row of kcTitleRows) {
+      const title = pickTitle(row.title, narrativeLocale);
+      if (title) titleById.set(row.id, title);
+    }
+    const attempts = attemptRows.flatMap((row) => {
+      const kcTitle = titleById.get(row.kc_id);
+      return kcTitle ? [{ kcId: row.kc_id, kcTitle, correct: row.correct, createdAt: row.created_at }] : [];
+    });
+    const topicId = session.summary?.topicId ?? null;
+    const topicTitle = topicId ? pickTitle((await getTopicTitlesByIds([topicId])).get(topicId) ?? {}, narrativeLocale) : null;
+    const narrative = buildSessionNarrative({
+      attempts,
+      fallbackTopic: topicTitle ?? session.summary?.topic ?? null,
+      gradedCorrect: session.summary?.gradedCorrect ?? null,
+      gradedTotal: session.summary?.gradedTotal ?? null,
+    });
+
     return ok(res, {
       session: summarizeSession(session),
+      narrative,
       turns,
       // stripCandidate, not the raw row: `tutor_segments.answer` is
       // service-role-only and must not reach a client even on a replay.

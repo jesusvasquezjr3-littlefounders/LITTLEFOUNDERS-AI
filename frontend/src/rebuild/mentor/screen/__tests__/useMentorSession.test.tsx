@@ -12,6 +12,7 @@ import { RECAP_ANSWER_WAIT_MS, startOfLocalDayIso, useMentorSession } from '../u
 const api = vi.hoisted(() => ({
   getPreferences: vi.fn(), getOffers: vi.fn(), getAgeCalibration: vi.fn(), saveAgeCalibration: vi.fn(),
   startSession: vi.fn(), resumeSession: vi.fn(), savePreferences: vi.fn(), keepBoard: vi.fn(), gradeSegment: vi.fn(),
+  getTranscript: vi.fn(async () => ({ data: null })),
 }));
 vi.mock('../../session/tutorApi', () => api);
 const core = vi.hoisted(() => ({ api: vi.fn() }));
@@ -207,7 +208,7 @@ describe('how a session ends (C.16)', () => {
       closingSummary: { script: 'completed', effort: 'recovered', topic: 'Saving' } };
     rerender();
     await waitFor(() => expect(result.current.phase).toBe('closing'));
-    expect(result.current.closing).toEqual({ sessionId: 's1', script: 'completed', effort: 'recovered', topic: 'Saving' });
+    expect(result.current.closing).toEqual({ sessionId: 's1', script: 'completed', effort: 'recovered', topic: 'Saving', summary: null, xp: null });
     expect(result.current.history).toEqual(history);
     expect(sessionStorage.getItem(`lf.tutor.activeSession.${USER}`)).toBeNull();
   });

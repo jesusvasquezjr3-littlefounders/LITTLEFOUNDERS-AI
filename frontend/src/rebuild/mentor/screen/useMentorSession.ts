@@ -7,10 +7,10 @@ import { api } from '../session/coreApi';
 import { micBlockedForOffers, micBlockedReason, narrowBlockedReason, primaryOpening } from '../session/mic';
 import type { MicBlockedReason } from '../session/micForPhase';
 import {
-  getAgeCalibration, getOffers, getPreferences, gradeSegment, keepBoard as keepBoardRequest, resumeSession, saveAgeCalibration, savePreferences, startSession,
+  getAgeCalibration, getOffers, getPreferences, getTranscript, gradeSegment, keepBoard as keepBoardRequest, resumeSession, saveAgeCalibration, savePreferences, startSession,
   type AgeCalibration, type StartSessionInput,
 } from '../session/tutorApi';
-import type { ClosingScript, EffortAct, StartedSession, TutorCatalog, TutorOffers, TutorPreferences } from '../session/types';
+import type { ClosingScript, EffortAct, SessionNarrative, StartedSession, TutorCatalog, TutorOffers, TutorPreferences } from '../session/types';
 import { MENTOR_STAGE_LIGHTS, type MentorStageLight } from '../MentorStage';
 import { coreMentorData } from './mentorData';
 import { plainText } from './liveActivityModel';
@@ -63,6 +63,10 @@ export interface MentorClosing {
   script: ClosingScript;
   effort: EffortAct | null;
   topic: string | null;
+  /** the learner's own closing summary, read once the session has closed. */
+  summary: SessionNarrative | null;
+  /** the XP this session earned, so the close can name it. */
+  xp: number | null;
 }
 
 export interface MentorMic {
@@ -290,7 +294,7 @@ export function useMentorSession({ getToken, userId, reviewSkill }: MentorSessio
         setResuming(false);
         if (sessionRef.current?.sessionId === target) {
           if (userRef.current) write('session', ACTIVE_SESSION + userRef.current, null);
-          setClosing({ sessionId: target, script: 'interrupted', effort: null, topic: socket.lesson?.topic ?? null });
+          setClosing({ sessionId: target, script: 'interrupted', effort: null, topic: socket.lesson?.topic ?? null, summary: null, xp: null });
           setClosedHistory(socket.history);
           setPhase('closing');
         }
@@ -303,13 +307,34 @@ export function useMentorSession({ getToken, userId, reviewSkill }: MentorSessio
     const script: ClosingScript = summary?.script
       ?? (socket.closedReason === 'safety_stop' ? 'safety_stop' : ending ? 'learner_left' : 'interrupted');
     setClosing({ sessionId: session?.sessionId ?? null, script, effort: summary?.effort ?? null,
-      topic: script === 'safety_stop' ? null : summary?.topic ?? socket.lesson?.topic ?? null });
+      topic: script === 'safety_stop' ? null : summary?.topic ?? socket.lesson?.topic ?? null, summary: null, xp: null });
     setClosedHistory(socket.history);
     setEnding(false);
     setPhase('closing');
   }, [phase, socket.closedReason, socket.connection, socket.error, socket.history, socket.closingSummary, socket.lesson, resuming, session, token, ending]);
 
   useEffect(() => { if (resuming && socket.connection === 'open') setResuming(false); }, [resuming, socket.connection]);
+
+  /*
+   * the closing summary. One read of the learner's own session, so the
+   * end screen can say what they worked on, what was tricky and how much XP —
+   * not just a goodbye line. Never for a safety stop (no topic, no numbers).
+   */
+  const summaryRequested = useRef<string | null>(null);
+  useEffect(() => {
+    if (phase !== 'closing' || !closing || closing.script === 'safety_stop') return;
+    const id = closing.sessionId;
+    if (!id || summaryRequested.current === id) return;
+    summaryRequested.current = id;
+    void (async () => {
+      const auth = token ?? await getToken();
+      if (!auth) return;
+      const result = await getTranscript(auth, id);
+      if (!result.data) return;
+      setClosing((prev) => prev && prev.sessionId === id
+        ? { ...prev, summary: result.data!.narrative, xp: result.data!.session.xpAwarded } : prev);
+    })();
+  }, [phase, closing, token, getToken]);
 
   /*
    * The learner ends it (OD-28, M-04): the first press asks the Mentor's recap
@@ -337,7 +362,7 @@ export function useMentorSession({ getToken, userId, reviewSkill }: MentorSessio
     if (!ending || phase !== 'conversing') return undefined;
     const timer = window.setTimeout(() => {
       if (userRef.current) write('session', ACTIVE_SESSION + userRef.current, null);
-      setClosing({ sessionId: sessionRef.current?.sessionId ?? null, script: 'learner_left', effort: null, topic: null });
+      setClosing({ sessionId: sessionRef.current?.sessionId ?? null, script: 'learner_left', effort: null, topic: null, summary: null, xp: null });
       setClosedHistory(socket.history);
       setEnding(false);
       setPhase('closing');
