@@ -213,8 +213,8 @@ describe('a minor never depends on adult chapters', () => {
 
 describe('an adult never has to traverse childhood chapters', () => {
   it.each([['adult', ADULT], ['verified-parent Tutor learning for themselves', TUTOR]])('%s: the adult chapter is the pathway, placed and completed with no child or teen lesson', async (_label, user) => {
-    // No placement yet: the adult stage needs its own entry placement (P6).
-    expect((await get(user, `/learn/lessons/${built.lesson.a1}`)).body.error.code).toBe('PLACEMENT_REQUIRED');
+    // No placement yet: the adult starts at the beginning of the adult path — the entry placement is an offer, never a wall.
+    expect((await get(user, `/learn/lessons/${built.lesson.a1}`)).status).toBe(200);
     const commit = await post(user, '/placement/money/commit', { startFromBeginning: true });
     expect(commit.status).toBe(201);
     expect(built.db.course_pathway_placements).toContainEqual(expect.objectContaining({ user_id: user, course_id: COURSE.money, pathway_stage: 'adult' }));
