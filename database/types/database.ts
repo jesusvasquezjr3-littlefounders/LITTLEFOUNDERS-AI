@@ -2513,6 +2513,292 @@ export type Database = {
           },
         ]
       }
+      game_catalog: {
+        Row: {
+          content_pack_version: number
+          game_id: string
+          min_band: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          content_pack_version?: number
+          game_id: string
+          min_band?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          content_pack_version?: number
+          game_id?: string
+          min_band?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      game_progress: {
+        Row: {
+          best_finish_ms: number
+          best_lap_ms: number
+          character: string
+          game_id: string
+          last_played_at: string
+          runs: number
+          speed_class: string
+          track_id: string
+          user_id: string
+        }
+        Insert: {
+          best_finish_ms: number
+          best_lap_ms: number
+          character: string
+          game_id: string
+          last_played_at?: string
+          runs?: number
+          speed_class: string
+          track_id: string
+          user_id: string
+        }
+        Update: {
+          best_finish_ms?: number
+          best_lap_ms?: number
+          character?: string
+          game_id?: string
+          last_played_at?: string
+          runs?: number
+          speed_class?: string
+          track_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "game_progress_game_id_fkey"
+            columns: ["game_id"]
+            isOneToOne: false
+            referencedRelation: "game_catalog"
+            referencedColumns: ["game_id"]
+          },
+          {
+            foreignKeyName: "game_progress_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      game_runs: {
+        Row: {
+          ai_cost_usd: number
+          ai_line_at: string | null
+          best_lap_ms: number
+          character: string
+          created_at: string
+          finish_ms: number
+          game_id: string
+          id: string
+          kart_body: string
+          lap_ms: number[]
+          lens: string
+          metrics: Json
+          mode: string
+          new_best: boolean
+          rank: number
+          reflection: string | null
+          run_key: string
+          session_id: string
+          speed_class: string
+          track_id: string
+          user_id: string
+          verification: string
+        }
+        Insert: {
+          ai_cost_usd?: number
+          ai_line_at?: string | null
+          best_lap_ms: number
+          character: string
+          created_at?: string
+          finish_ms: number
+          game_id: string
+          id?: string
+          kart_body: string
+          lap_ms: number[]
+          lens: string
+          metrics?: Json
+          mode: string
+          new_best?: boolean
+          rank: number
+          reflection?: string | null
+          run_key: string
+          session_id: string
+          speed_class: string
+          track_id: string
+          user_id: string
+          verification?: string
+        }
+        Update: {
+          ai_cost_usd?: number
+          ai_line_at?: string | null
+          best_lap_ms?: number
+          character?: string
+          created_at?: string
+          finish_ms?: number
+          game_id?: string
+          id?: string
+          kart_body?: string
+          lap_ms?: number[]
+          lens?: string
+          metrics?: Json
+          mode?: string
+          new_best?: boolean
+          rank?: number
+          reflection?: string | null
+          run_key?: string
+          session_id?: string
+          speed_class?: string
+          track_id?: string
+          user_id?: string
+          verification?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "game_runs_game_id_fkey"
+            columns: ["game_id"]
+            isOneToOne: false
+            referencedRelation: "game_catalog"
+            referencedColumns: ["game_id"]
+          },
+          {
+            foreignKeyName: "game_runs_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "game_sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "game_runs_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      game_saves: {
+        Row: {
+          game_id: string
+          revision: number
+          save: Json
+          schema_version: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          game_id: string
+          revision?: number
+          save: Json
+          schema_version?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          game_id?: string
+          revision?: number
+          save?: Json
+          schema_version?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "game_saves_game_id_fkey"
+            columns: ["game_id"]
+            isOneToOne: false
+            referencedRelation: "game_catalog"
+            referencedColumns: ["game_id"]
+          },
+          {
+            foreignKeyName: "game_saves_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      game_sessions: {
+        Row: {
+          active_seconds: number
+          band: string
+          client_build: string | null
+          close_reason: string | null
+          ended_at: string | null
+          expires_at: string
+          game_id: string
+          id: string
+          last_active_at: string
+          last_heartbeat_at: string
+          locale: string
+          max_minutes: number
+          mentor: string | null
+          session_ref: string
+          started_at: string
+          user_id: string
+        }
+        Insert: {
+          active_seconds?: number
+          band: string
+          client_build?: string | null
+          close_reason?: string | null
+          ended_at?: string | null
+          expires_at: string
+          game_id: string
+          id?: string
+          last_active_at?: string
+          last_heartbeat_at?: string
+          locale: string
+          max_minutes?: number
+          mentor?: string | null
+          session_ref: string
+          started_at?: string
+          user_id: string
+        }
+        Update: {
+          active_seconds?: number
+          band?: string
+          client_build?: string | null
+          close_reason?: string | null
+          ended_at?: string | null
+          expires_at?: string
+          game_id?: string
+          id?: string
+          last_active_at?: string
+          last_heartbeat_at?: string
+          locale?: string
+          max_minutes?: number
+          mentor?: string | null
+          session_ref?: string
+          started_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "game_sessions_game_id_fkey"
+            columns: ["game_id"]
+            isOneToOne: false
+            referencedRelation: "game_catalog"
+            referencedColumns: ["game_id"]
+          },
+          {
+            foreignKeyName: "game_sessions_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
       gate_effectiveness_reviews: {
         Row: {
           escape_id: string
@@ -3737,6 +4023,45 @@ export type Database = {
             foreignKeyName: "learner_misconception_user_id_fkey"
             columns: ["user_id"]
             isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      learner_play_limits: {
+        Row: {
+          max_session_minutes: number
+          max_sessions_per_day: number
+          set_by: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          max_session_minutes?: number
+          max_sessions_per_day?: number
+          set_by?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          max_session_minutes?: number
+          max_sessions_per_day?: number
+          set_by?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "learner_play_limits_set_by_fkey"
+            columns: ["set_by"]
+            isOneToOne: false
+            referencedRelation: "dataintel_users_sync"
+            referencedColumns: ["user_id"]
+          },
+          {
+            foreignKeyName: "learner_play_limits_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: true
             referencedRelation: "dataintel_users_sync"
             referencedColumns: ["user_id"]
           },
@@ -9915,6 +10240,15 @@ export type Database = {
           isSetofReturn: false
         }
       }
+      claim_game_ai_line: {
+        Args: {
+          p_cap: number
+          p_run_id: string
+          p_since: string
+          p_user_id: string
+        }
+        Returns: boolean
+      }
       clear_learner_memory: {
         Args: {
           p_actor: string
@@ -10098,6 +10432,15 @@ export type Database = {
         }
         Returns: string
       }
+      credit_game_session: {
+        Args: {
+          p_credit: boolean
+          p_max_credit_seconds: number
+          p_session_id: string
+          p_user_id: string
+        }
+        Returns: Json
+      }
       data_practice_applies: {
         Args: { p_practice: string; p_subject: string }
         Returns: boolean
@@ -10185,6 +10528,10 @@ export type Database = {
       end_coop_goal_membership: {
         Args: { p_actor: string; p_goal: string; p_member: string }
         Returns: string
+      }
+      end_game_session: {
+        Args: { p_reason: string; p_session_id: string; p_user_id: string }
+        Returns: boolean
       }
       end_revoked_tutor_powers: {
         Args: { p_actor: string; p_user: string }
@@ -10590,6 +10937,20 @@ export type Database = {
       fulfill_redemption: {
         Args: { p_actor: string; p_redemption_id: string }
         Returns: boolean
+      }
+      game_metrics_valid: { Args: { p: Json }; Returns: boolean }
+      game_play_limits_read: {
+        Args: { p_guardian: string; p_kid: string }
+        Returns: Json
+      }
+      game_play_limits_write: {
+        Args: {
+          p_guardian: string
+          p_kid: string
+          p_minutes: number
+          p_sessions: number
+        }
+        Returns: Json
       }
       gate_effectiveness_reviews_open: {
         Args: { p_now?: string }
@@ -11250,6 +11611,26 @@ export type Database = {
         }
         Returns: number
       }
+      record_game_run: {
+        Args: {
+          p_best_lap_ms: number
+          p_character: string
+          p_finish_ms: number
+          p_game_id: string
+          p_kart_body: string
+          p_lap_ms: number[]
+          p_lens: string
+          p_metrics: Json
+          p_mode: string
+          p_rank: number
+          p_run_key: string
+          p_session_id: string
+          p_speed_class: string
+          p_track_id: string
+          p_user_id: string
+        }
+        Returns: Json
+      }
       record_learner_decisions: {
         Args: {
           p_course_id: string
@@ -11604,6 +11985,15 @@ export type Database = {
         Returns: number
       }
       run_social_graph_retention: { Args: { p_limit?: number }; Returns: Json }
+      save_game_snapshot: {
+        Args: {
+          p_data: Json
+          p_game_id: string
+          p_revision: number
+          p_user_id: string
+        }
+        Returns: Json
+      }
       savings_bonus_comprehension: {
         Args: { p_since: string }
         Returns: {
@@ -11835,6 +12225,45 @@ export type Database = {
           item: string
           item_position: number
         }[]
+      }
+      start_game_session_checked: {
+        Args: {
+          p_band: string
+          p_cap: number
+          p_client_build: string
+          p_expires_at: string
+          p_game_id: string
+          p_locale: string
+          p_max_minutes: number
+          p_mentor: string
+          p_session_ref: string
+          p_since: string
+          p_user_id: string
+        }
+        Returns: {
+          active_seconds: number
+          band: string
+          client_build: string | null
+          close_reason: string | null
+          ended_at: string | null
+          expires_at: string
+          game_id: string
+          id: string
+          last_active_at: string
+          last_heartbeat_at: string
+          locale: string
+          max_minutes: number
+          mentor: string | null
+          session_ref: string
+          started_at: string
+          user_id: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "game_sessions"
+          isOneToOne: false
+          isSetofReturn: true
+        }
       }
       start_tutor_session_checked: {
         Args: {

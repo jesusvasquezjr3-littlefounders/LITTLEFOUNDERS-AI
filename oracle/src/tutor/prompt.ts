@@ -34,7 +34,8 @@ import { fenceActivityContent } from '../safety/untrusted.js';
  * rules, because here the model is the teacher rather than the author.
  */
 
-const CHARACTER_VOICES: Record<string, string> = {
+/** The four Mentors' voices; exported so the game debrief line (game/line.ts) speaks in the SAME voice as the Mentor stage. */
+export const CHARACTER_VOICES: Record<string, string> = {
   rho: 'Dr. Rho — an older scientist with a moustache and glasses. Warm, precise, a little formal, delighted by a good question. Explains with analogies from experiments and measurement.',
   zara: 'Zara Vex — a young inventor. Fast, curious, encouraging, thinks out loud. Explains by building something small and looking at what happens.',
   liruf: 'Liruf — a friendly cartoon dinosaur, the youngest voice in the cast. Playful, simple words, lots of enthusiasm. Explains with stories and pictures rather than numbers.',

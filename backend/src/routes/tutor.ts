@@ -2,6 +2,7 @@ import { requireAgeScreen } from '../middleware/ageScreen.js';
 import { readAgeScreen, type AgeScreenState } from '../services/ageScreen.js';
 import { knownMentorAgeTier, MentorAgeTier, readMentorAgeCalibration, recordMentorAgeCalibration, resolveInternalMentorAge } from '../services/mentorAgeCalibration.js';
 import { Router } from 'express';
+import { startOfLocalDayIso } from '../lib/localDay.js';
 import { z } from 'zod';
 import { getConfig } from '../config.js';
 import { authedUser, requireAuth, requireInternalKey } from '../middleware/auth.js';
@@ -261,88 +262,8 @@ export function isStaffRoles(roles: readonly string[]): boolean {
 /** Without a cap the tutor is the cheapest XP per minute and courses become optional (§8). */
 const MAX_TUTOR_XP_PER_DAY = 120;
 const PASS_THRESHOLD = 70;
-
-/**
- * Start of "today" in the calendar day the LEARNER experiences, not the
- * server's UTC day.
- *
- * Found by adversarial review, round 34 (2026-08-30, MEDIUM-HIGH,
- * systematic — not a rare boundary case). This used to be a plain
- * `Date.UTC(...)` midnight, and UTC midnight falls in the afternoon or
- * evening local time for all three of this platform's locales (roughly
- * 13:00-21:00 depending on locale and DST). So an entirely ordinary
- * morning session and evening session, both on the SAME local calendar
- * day, were treated as two different cap windows — letting a third or
- * fourth session through on what is, for that learner, still today. This
- * was reachable through completely ordinary use, every day, for the large
- * majority of the real user base, not an edge case near a boundary.
- *
- * There is no stored per-user timezone (a bigger feature than this fix
- * adds), so the locale maps to one representative IANA zone — an
- * approximation for `en-US`, which spans several US timezones, but still
- * strictly more correct than a UTC boundary for the other two locales, and
- * no worse than UTC was for the one it cannot represent precisely.
- */
-const LOCALE_TIMEZONE: Record<'en-US' | 'es-MX' | 'pt-BR', string> = {
-  'es-MX': 'America/Mexico_City',
-  'pt-BR': 'America/Sao_Paulo',
-  'en-US': 'America/New_York',
-};
-
-/**
- * `daysAhead` (default 0, "today") lets the SAME offset-derivation serve the
- * daily cap's own reset instant: `daysAhead: 1` is "tomorrow's local
- * midnight" — the exact moment `MAX_SESSIONS_PER_DAY` allows another session,
- * because `sinceIso` above is this same function's `daysAhead: 0`. `Date.UTC`
- * accepts an out-of-range day and rolls the month/year forward correctly, so
- * a request on the last day of the month needs no special case.
- *
- * Reuses `now`'s own UTC offset for the target day rather than recomputing
- * it for that day specifically — the same approximation this function's own
- * header comment already accepts for `daysAhead: 0` (no DST-transition-day
- * correction). A SESSION_LIMIT reset estimate off by an hour on the handful
- * of nights a locale's clocks change is a UI approximation, not a cap
- * enforcement bug — the cap itself is still enforced against the real
- * boundary computed fresh on the request that matters.
- */
-export function startOfLocalDayIso(
-  locale: 'en-US' | 'es-MX' | 'pt-BR',
-  now: Date = new Date(),
-  daysAhead = 0,
-): string {
-  const timeZone = LOCALE_TIMEZONE[locale];
-  const parts = Object.fromEntries(
-    new Intl.DateTimeFormat('en-US', {
-      timeZone,
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false,
-    })
-      .formatToParts(now)
-      .map((p) => [p.type, p.value]),
-  ) as Record<string, string>;
-  // The clock reading `now` HAS in `timeZone`, reinterpreted as if it were
-  // UTC, reveals that zone's current UTC offset — derived from `now` itself
-  // rather than a fixed table, so it is correct across a DST transition.
-  // `% 24` guards against `Intl`'s documented midnight-as-"24" quirk under
-  // `hour12: false`.
-  const asIfUtcMs = Date.UTC(
-    Number(parts.year),
-    Number(parts.month) - 1,
-    Number(parts.day),
-    Number(parts.hour) % 24,
-    Number(parts.minute),
-    Number(parts.second),
-  );
-  const offsetMs = asIfUtcMs - now.getTime();
-  const localMidnightUtcMs =
-    Date.UTC(Number(parts.year), Number(parts.month) - 1, Number(parts.day) + daysAhead, 0, 0, 0) - offsetMs;
-  return new Date(localMidnightUtcMs).toISOString();
-}
+// The learner-local day boundary lives in lib/localDay.ts (shared with the games' daily cap); re-exported so existing callers are unchanged.
+export { startOfLocalDayIso } from '../lib/localDay.js';
 
 /**
  * The wire shape of the SESSION_LIMIT refusal's one extra field (§1.9

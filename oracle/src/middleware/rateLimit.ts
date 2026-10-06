@@ -89,7 +89,7 @@ export const globalRateLimiter = rateLimit({
    * defends against nobody. What the limiter still guards is everything
    * unauthenticated, which is where a real flood would arrive.
    */
-  skip: (req) => req.path.startsWith('/api/v1/tutor'),
+  skip: (req) => req.path.startsWith('/api/v1/tutor') || req.path.startsWith('/api/v1/game'),
   message: {
     data: null,
     error: { code: 'RATE_LIMITED', message: 'Too many requests, please try again later.' },

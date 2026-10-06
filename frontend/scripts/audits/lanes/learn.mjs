@@ -193,6 +193,56 @@ states.push(
   preview('together-closed@13-17', { screen: 'together', together: 'closed', age: '13-17' }),
 );
 
+/*
+ * A game inside /learn (KartRush, KRV1-CONTRACT §6) on its real route, signed in and answered by the synthetic Core, with the
+ * game itself stood in for by the fixture page (src/games/kartrush/__fixtures__/game-stub.html, which the driver serves for
+ * the game origin http://localhost:4010 and which speaks kr.v1 exactly as the game does): the Garage, the loading wait, the
+ * game's Start gate, a race, the pit stop after a finished one (Core's lens in), the closed card when no session is left today
+ * or a guardian turned games off, and the error cards (a device without WebGL, a connection that is gone). The soft break and
+ * the pause menu answer to Core's 30 second heartbeat and to the game's own pause key, so they are audited on the preview
+ * entry (`?screen=play&phase=`), together with every other phase and each Mentor's pit-stop line.
+ */
+const PLAY = '/learn/play/kartrush';
+const play = (id, scenario, ready, extra = {}) => app(`/learn/play/:game@${id}`, PLAY, scenario, ready, extra);
+const GO = '[data-screen="play-garage"] .lf-play-go .lf-button';
+states.push(
+  play('garage', 'play-garage', '[data-screen="play-garage"] .lf-play-go'),
+  play('garage-teen', 'play-garage-teen', '[data-screen="play-garage"] .lf-play-go'),
+  play('loading', 'play-loading', '[data-screen="play-garage"] .lf-play-go', { open: [GO], openReady: '[data-screen="play-loading"]' }),
+  play('gate', 'play-gate', '[data-screen="play-garage"] .lf-play-go', { open: [GO], openReady: '[data-play-phase="gate"] .lf-play-hint' }),
+  play('racing', 'play-racing', '[data-screen="play-garage"] .lf-play-go', { open: [GO], openReady: '[data-play-phase="racing"] .lf-play-frame iframe' }),
+  play('pitstop', 'play-pitstop', '[data-screen="play-garage"] .lf-play-go', { open: [GO], openReady: '[data-screen="play-pitstop"] .lf-play-replies' }),
+  play('closed-limit', 'play-limit', '[data-screen="play-closed"][data-closed="limit"]'),
+  play('closed-disabled', 'play-disabled', '[data-screen="play-closed"][data-closed="disabled"]'),
+  play('error-webgl', 'play-webgl', '[data-screen="play-garage"] .lf-play-go', { open: [GO], openReady: '[data-screen="play-error"][data-error="webgl"]' }),
+  play('error-offline', 'play-offline', '[data-screen="play-garage"] .lf-play-go', { open: [GO], openReady: '[data-screen="play-error"][data-error="offline"]' }),
+  // The Learn home's game card (a child whose Core lists the game as enabled), beside the goals-together card.
+  learner('/learn@home-play-card', '/learn', 'learn-home-play', '[data-screen="learn-home"][data-state="ready"] .lf-learn-play'),
+);
+
+/* The game host on the preview entry: every phase, a pit stop per lens and Mentor, and each closed and error card, in the young band the game serves first. */
+const playPreview = (id, query, extra = {}) => preview(`play-${id}`, { screen: 'play', ...query }, { firstView: false, ...extra });
+states.push(
+  ...['garage', 'loading', 'gate', 'racing', 'paused', 'pitstop', 'soft'].map((phase) => playPreview(`${phase}@6-9`, { phase, age: '6-9' })),
+  playPreview('garage-teen@13-17', { phase: 'garage', age: '13-17', mentor: 'dina', driver: 'dina' }),
+  playPreview('garage-adult@adult', { phase: 'garage', age: 'adult', mentor: 'rho' }),
+  ...['item_hold', 'drift_patient', 'drift_early', 'steady', 'swingy', 'neutral'].map((lens, index) =>
+    playPreview(`pitstop-${lens}@6-9`, { phase: 'pitstop', lens, mentor: ['rho', 'zara', 'liruf', 'dina'][index % 4], age: '6-9' })),
+  // Each Mentor's voice at least once more, on a lens the line above did not pair it with (the driver refuses two states that render alike).
+  ...[['rho', 'drift_early'], ['zara', 'item_hold'], ['liruf', 'item_hold'], ['dina', 'drift_early']].map(([mentor, lens]) => playPreview(`pitstop-${mentor}@6-9`, { phase: 'pitstop', lens, mentor, age: '6-9' })),
+  playPreview('pitstop-replied@6-9', { phase: 'pitstop', lens: 'item_hold', reply: 'unsure', age: '6-9' }),
+  playPreview('pitstop-ai@10-12', { phase: 'pitstop', lens: 'drift_patient', ai: '1', age: '10-12' }),
+  playPreview('pitstop-pending@6-9', { phase: 'pitstop', outcome: 'pending', age: '6-9' }),
+  playPreview('pitstop-practice@6-9', { phase: 'pitstop', outcome: 'none', age: '6-9' }),
+  // The break line in the other three Mentors' voices (the plain `play-soft` state above is Zara's).
+  ...['rho', 'liruf', 'dina'].map((mentor) => playPreview(`soft-${mentor}@6-9`, { phase: 'soft', mentor, age: '6-9' })),
+  ...['limit', 'ended', 'disabled'].map((closed) => playPreview(`closed-${closed}@6-9`, { phase: 'closed', closed, age: '6-9' })),
+  ...['webgl', 'offline', 'unavailable'].map((error) => playPreview(`error-${error}@6-9`, { phase: 'error', error, age: '6-9' })),
+  // The rotate card is a full-bleed colour screen with centred words, as the lesson result is (CENTRED).
+  playPreview('rotate@6-9', { phase: 'racing', rotate: '1', age: '6-9' }, CENTRED),
+  preview('learnhome-play@6-9', { screen: 'learnhome', play: '1', age: '6-9' }),
+);
+
 export const scenarios = {
   'lesson-goal': { population: 'parent-created child 6-9', guest: false, ageBand: '6-9', lesson: 'goal' },
   'lesson-allocation': { population: 'adult', guest: false, ageBand: 'adult', lesson: 'allocation', graded: true, mentorStage: { character: 'zara', scene: 'diorama-a' } },
@@ -223,6 +273,20 @@ export const scenarios = {
     mentor: 'dina', shelf: 'teen', engine: 'pathway', register: 'teen', together: 'invited' },
   'learn-together-closed': { population: 'parent-created child 6-9, goals together closed', guest: false, ageBand: '6-9', roles: ['kid'], mentor: 'liruf', shelf: 'young',
     engine: 'pathway', register: 'young', together: 'closed' },
+  // A game inside /learn (KRV1-CONTRACT §3). `play` is what GET /learn/games and the session endpoints answer: `list`
+  // (enabled | limit | disabled | absent), `script` (what the game stub does after init: gate | racing | pitstop | webgl),
+  // `lens` (Core's pit-stop lens), `session` (ok | hold | offline).
+  'play-garage': { population: 'parent-created child 6-9', guest: false, ageBand: '6-9', roles: ['kid'], mentor: 'zara', play: { list: 'enabled', script: 'gate' } },
+  'play-garage-teen': { population: 'independent teen 13-17', guest: false, ageBand: '13-17', roles: ['universal'], wallet: { holder: 'teen', familyChild: false }, mentor: 'dina', play: { list: 'enabled', script: 'gate' } },
+  'play-loading': { population: 'parent-created child 6-9', guest: false, ageBand: '6-9', roles: ['kid'], mentor: 'rho', play: { list: 'enabled', script: 'gate', session: 'hold' } },
+  'play-gate': { population: 'parent-created child 6-9', guest: false, ageBand: '6-9', roles: ['kid'], mentor: 'liruf', play: { list: 'enabled', script: 'gate' } },
+  'play-racing': { population: 'parent-created child 6-9', guest: false, ageBand: '6-9', roles: ['kid'], mentor: 'zara', play: { list: 'enabled', script: 'racing' } },
+  'play-pitstop': { population: 'parent-created child 6-9', guest: false, ageBand: '6-9', roles: ['kid'], mentor: 'dina', play: { list: 'enabled', script: 'pitstop', lens: 'drift_patient' } },
+  'play-limit': { population: 'parent-created child 6-9', guest: false, ageBand: '6-9', roles: ['kid'], mentor: 'zara', play: { list: 'limit', script: 'gate' } },
+  'play-disabled': { population: 'parent-created child 10-12, games turned off by a Tutor', guest: false, ageBand: '10-12', roles: ['kid'], mentor: 'rho', play: { list: 'disabled', script: 'gate' } },
+  'play-webgl': { population: 'parent-created child 6-9', guest: false, ageBand: '6-9', roles: ['kid'], mentor: 'liruf', play: { list: 'enabled', script: 'webgl' } },
+  'play-offline': { population: 'parent-created child 6-9', guest: false, ageBand: '6-9', roles: ['kid'], mentor: 'zara', play: { list: 'enabled', script: 'gate', session: 'offline' } },
+  'learn-home-play': { population: 'parent-created child 6-9', guest: false, ageBand: '6-9', roles: ['kid'], mentor: 'zara', shelf: 'child', engine: 'linear', register: 'young', play: { list: 'enabled' } },
   // GAP-FIX-R4: goals together. `together` is what GET /coop-goals answers.
   'together-ready': { population: 'independent teen 13-17', guest: false, ageBand: '13-17', roles: ['universal'], wallet: { holder: 'teen', familyChild: false }, mentor: 'dina', together: 'ready' },
   'together-empty': { population: 'independent teen 13-17', guest: false, ageBand: '13-17', roles: ['universal'], wallet: { holder: 'teen', familyChild: false }, mentor: 'dina', together: 'empty' },
@@ -429,8 +493,43 @@ function respondPlacement({ spec, locale, kind, request, ok }) {
   return { status: 201, body: { data: PLACED, error: null } };
 }
 
+/*
+ * GET /learn/games and the KartRush session endpoints (KRV1-CONTRACT §3), shaped as Core answers them
+ * (src/games/kartrush/api.ts parses every one). The game address is the stub's origin, which the driver serves.
+ */
+const GAME_SESSION_ID = 'dddddddd-dddd-4ddd-8ddd-000000000001';
+const GAME_RUN_ID = 'eeeeeeee-eeee-4eee-8eee-000000000001';
+function respondGames({ spec, path, request, ok }) {
+  const play = spec.play;
+  // Every learner scenario answers the list (a scenario that sets no game lists none, so its Learn home shows no card).
+  if (path === '/learn/games' && request.method === 'GET' && (play || spec.shelf)) {
+    const list = play?.list ?? 'absent';
+    return ok({ games: list === 'absent' ? [] : [{ gameId: 'kartrush', status: 'live', sessionsRemainingToday: list === 'limit' ? 0 : 2, enabled: list !== 'disabled' }] });
+  }
+  if (!play) return undefined;
+  const sessions = path.match(/^\/learn\/games\/kartrush\/sessions(?:\/[^/]+\/(heartbeat|runs|save|end)|\/[^/]+\/runs\/[^/]+\/(reflection|debrief))?$/);
+  if (!sessions) return undefined;
+  const body = request.postData ? JSON.parse(request.postData) : {};
+  if (path.endsWith('/sessions')) {
+    if (play.session === 'hold') return 'hold';
+    if (play.session === 'offline') return { fail: 'InternetDisconnected' };
+    return ok({
+      sessionId: GAME_SESSION_ID, sessionRef: 'ref_audit_session', game: { url: `http://localhost:4010/?embed=1&script=${play.script ?? 'gate'}`, build: 'stub-1' },
+      mentor: spec.mentor ?? null, band: spec.ageBand, caps: { softMs: 900000, hardMs: 1500000, idleMs: 600000 }, save: { revision: 0, data: null },
+      bests: [], sessionsRemainingToday: 1,
+    });
+  }
+  if (sessions[1] === 'heartbeat') return ok({ activeSeconds: 30, state: 'ok' });
+  if (sessions[1] === 'runs') return ok({ runId: GAME_RUN_ID, lens: play.lens ?? 'steady', newBest: false, bests: [], aiAvailable: false });
+  if (sessions[1] === 'save') return ok({ revision: (body.revision ?? 0) + 1 });
+  if (sessions[1] === 'end' || sessions[2] === 'reflection') return ok({ ok: true });
+  return ok({ source: 'authored', text: null });
+}
+
 /** The lesson document and its server-graded run, from the product's own pilot fixtures. */
 export function respond({ spec, scenario, locale, fixtures, path, request, ok }) {
+  const games = respondGames({ spec, path, request, ok });
+  if (games !== undefined) return games;
   // GAP-FIX-R4: a scenario that sets `together` answers goals together whether or not it reads the learner pages.
   if (spec.together && path === '/coop-goals' && request.method === 'GET') return ok(togetherAnswer(spec.together));
   if (spec.together && path === '/coop-goals/candidates' && request.method === 'GET') return togetherCandidates(spec.together, ok);

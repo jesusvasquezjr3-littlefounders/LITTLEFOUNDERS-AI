@@ -42,6 +42,8 @@ interface ApiOptions {
   body?: unknown;
   formData?: FormData;
   token?: string | null;
+  /** Lets the request outlive the page (a `pagehide` flush, like the insights beacon). Only for small, idempotent calls. */
+  keepalive?: boolean;
 }
 
 export async function api<T>(path: string, options: ApiOptions = {}): Promise<ApiResult<T>> {
@@ -55,6 +57,7 @@ export async function api<T>(path: string, options: ApiOptions = {}): Promise<Ap
       method: options.method ?? (options.body !== undefined || options.formData ? 'POST' : 'GET'),
       headers,
       body: options.formData ?? (options.body !== undefined ? JSON.stringify(options.body) : undefined),
+      ...(options.keepalive ? { keepalive: true } : {}),
     });
   } catch {
     return { data: null, error: { code: 'INTERNAL', message: 'Network error' } };

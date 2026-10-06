@@ -1,0 +1,157 @@
+/*
+ * The game host (/learn/play/:gameId): a full-screen layer with a slim bar and
+ * the stage. Tokens only; separation by fill or a soft elevation, never an
+ * outline (02 §4.4). Layout changes by container width (02 §7 rule 9). Text is
+ * never clipped: the stage scrolls, it does not hide.
+ */
+
+.lf-rebuild .lf-play {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
+  inline-size: 100%;
+  block-size: 100dvh;
+  min-block-size: 0;
+  background: var(--base);
+  color: var(--content);
+}
+
+/* The bar: the way out and the page's one heading, always in view, never over the game. */
+.lf-rebuild .lf-play-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3) var(--spacing-4);
+  min-block-size: var(--target-lg);
+  padding-block: var(--spacing-2);
+  padding-inline: max(var(--spacing-3), env(safe-area-inset-left)) max(var(--spacing-3), env(safe-area-inset-right));
+}
+.lf-rebuild .lf-play-bar > h1 { min-inline-size: 0; font: var(--type-headline); letter-spacing: var(--type-headline-tracking); overflow-wrap: break-word; }
+
+.lf-rebuild .lf-play-stage { position: relative; display: block; min-block-size: 0; overflow-y: auto; outline: none; }
+.lf-rebuild .lf-play-stage[tabindex='-1']:focus { outline: none; }
+
+/* The game's frame fills the stage; between races (the Garage) it stays alive but invisible. */
+.lf-rebuild .lf-play-frame { position: absolute; inset: 0; background: var(--sunken); }
+.lf-rebuild .lf-play-frame[data-hidden='true'] { visibility: hidden; }
+.lf-rebuild .lf-play-frame > iframe { display: block; inline-size: 100%; block-size: 100%; border: 0; background: var(--sunken); }
+
+/* The preview's stand-in for the game (no iframe there): a plain stage. */
+.lf-rebuild .lf-play-fixture { inline-size: 100%; block-size: 100%; background: var(--sunken); }
+
+/* A calm centred card on the stage: loading, closed, error. */
+.lf-rebuild .lf-play-center {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: var(--spacing-4);
+  overflow-y: auto;
+}
+.lf-rebuild .lf-play-center > * { max-inline-size: min(100%, 32rem); }
+.lf-rebuild .lf-play-center .lf-loading { inline-size: min(100%, 20rem); }
+
+/* The hint over the scene at the game's own Start gate: small, bottom, never a button. */
+.lf-rebuild .lf-play-hint {
+  position: absolute;
+  inset-inline: var(--spacing-4);
+  inset-block-end: max(var(--spacing-4), env(safe-area-inset-bottom));
+  inline-size: fit-content;
+  max-inline-size: calc(100% - var(--spacing-8));
+  margin-inline: auto;
+  padding: var(--spacing-2) var(--spacing-4);
+  border-radius: var(--rounded-full);
+  background: var(--surface);
+  color: var(--content);
+  box-shadow: var(--elevation-float);
+  font: var(--type-label);
+  text-align: center;
+  pointer-events: none;
+}
+.lf-rebuild[data-theme='dark'] .lf-play-hint { background: var(--raised); }
+
+/* The rotate card covers the stage: a race held upright cannot be played. */
+.lf-rebuild .lf-play-rotate {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: var(--spacing-3);
+  padding: var(--spacing-6);
+  background: var(--primary);
+  color: var(--on-primary);
+  text-align: center;
+}
+.lf-rebuild .lf-play-rotate h2 { font: var(--type-headline); overflow-wrap: break-word; }
+.lf-rebuild .lf-play-rotate p { font: var(--type-body); }
+
+/* ---- The Garage ---- */
+.lf-rebuild .lf-play-garage {
+  display: grid;
+  align-content: start;
+  gap: var(--spacing-5);
+  inline-size: min(100%, 44rem);
+  margin-inline: auto;
+  padding-block: var(--spacing-2) 0;
+  padding-inline: max(var(--spacing-4), env(safe-area-inset-left)) max(var(--spacing-4), env(safe-area-inset-right));
+}
+.lf-rebuild .lf-play-garage > * { min-inline-size: 0; }
+/* The two groups of choices: one column on a phone, side by side from a tablet up, so the whole Garage is in view. */
+.lf-rebuild .lf-play-column { display: grid; align-content: start; gap: var(--spacing-5); min-inline-size: 0; }
+
+.lf-rebuild .lf-play-mentor {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4);
+  padding: var(--spacing-4);
+  border-radius: var(--rounded-lg);
+  background: var(--primary-soft);
+  color: var(--content);
+}
+.lf-rebuild .lf-play-mentor > p { flex: 1 1 0; min-inline-size: 0; font: var(--type-body); overflow-wrap: break-word; }
+
+/* Circuits: two to a row; a name wraps inside its button, never past it. */
+.lf-rebuild .lf-play-circuits .lf-picture-options { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 9rem), 1fr)); gap: var(--spacing-2); }
+.lf-rebuild .lf-play-circuits .lf-picture-option { min-inline-size: 0; padding: var(--spacing-2) var(--spacing-3); }
+.lf-rebuild .lf-play-name { font: var(--type-label); text-align: center; overflow-wrap: break-word; hyphens: auto; }
+
+/* Drivers: the four Mentors, a real render over a name. */
+.lf-rebuild .lf-play-drivers .lf-picture-options { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 5.5rem), 1fr)); gap: var(--spacing-2); }
+.lf-rebuild .lf-play-drivers .lf-picture-option { min-inline-size: 0; padding: var(--spacing-2); }
+.lf-rebuild .lf-play-driver { display: grid; justify-items: center; gap: var(--spacing-1); min-inline-size: 0; }
+
+/* Go: the one call to action, docked to the bottom edge so it is never below the fold. */
+.lf-rebuild .lf-play-go {
+  position: sticky;
+  inset-block-end: 0;
+  display: flex;
+  padding-block: var(--spacing-3) max(var(--spacing-3), env(safe-area-inset-bottom));
+  background: var(--base);
+}
+.lf-rebuild .lf-play-go > .lf-button { flex: 1 1 auto; }
+
+/* ---- Cards ---- */
+.lf-rebuild .lf-play-card-mentor { display: grid; justify-items: center; }
+
+/* The pit stop: the Mentor and their one line, then one question with three taps. */
+.lf-rebuild .lf-play-pit { display: grid; gap: var(--spacing-4); min-inline-size: 0; }
+.lf-rebuild .lf-play-pit-mentor { display: flex; align-items: center; gap: var(--spacing-4); min-inline-size: 0; }
+.lf-rebuild .lf-play-pit-mentor > p { flex: 1 1 0; min-inline-size: 0; font: var(--type-body-lg); overflow-wrap: break-word; }
+.lf-rebuild .lf-play-pit-question { display: grid; gap: var(--spacing-3); }
+.lf-rebuild .lf-play-pit-question > p { font: var(--type-label); }
+.lf-rebuild .lf-play-replies { display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
+.lf-rebuild .lf-play-replies > .lf-button { flex: 1 1 auto; }
+.lf-rebuild .lf-play-replied { font: var(--type-label); color: var(--content-muted); }
+
+@container app (min-width: 640px) {
+  .lf-rebuild .lf-play-garage { gap: var(--spacing-6); }
+}
+@container app (min-width: 840px) {
+  .lf-rebuild .lf-play-garage { grid-template-columns: repeat(2, minmax(0, 1fr)); inline-size: min(100%, 64rem); column-gap: var(--spacing-8); }
+  .lf-rebuild .lf-play-garage > :is(.lf-play-mentor, .lf-play-go) { grid-column: 1 / -1; }
+}
+
+@media (orientation: landscape) and (pointer: coarse) {
+  /* A phone or tablet on its side (a short screen): the bar gives the game every spare pixel. */
+  .lf-rebuild .lf-play-bar { min-block-size: var(--target-base); padding-block: var(--spacing-1); }
+  .lf-rebuild .lf-play-bar > h1 { font: var(--type-title); }
+}

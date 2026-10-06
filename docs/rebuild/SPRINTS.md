@@ -494,3 +494,5 @@ Rehearsal correction: the workflow now snapshots the source OD-9 findings count 
 
 
 On 2026-10-06 the owner supplied Claudio for Safety/Trust and Astralino for Pedagogy in response to the release sign-off request. Those names are recorded only on the two current pending controlled-component versions, preserving historical records. The release governance check and its 28 tests pass. This does not fill lesson/market findings or appoint a distinct Content Author; both remain pending, and Docker still prevents the full Supabase reset gates. No production publication occurred.
+
+Emergency follow-up, 6 October 2026: the owner named Raul (author), Astralino (Pedagogy) and Claudio (Safety/Trust), then explicitly authorized emergency publication with reviews and Docker resets still outstanding. Integration preserves current main's Games changes; the local-only archived-catalog migration is renumbered to 0261. The current recovery record separates new verification from historical evidence and records the GitHub billing block preventing frontend deployment. No replacement lesson is published.

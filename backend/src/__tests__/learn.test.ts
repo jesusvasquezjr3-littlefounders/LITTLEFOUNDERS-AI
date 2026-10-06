@@ -551,9 +551,25 @@ describe('GET /api/v1/learn/lessons/:id', () => {
 
     const document = db.lesson_documents[0]!.document as Record<string, unknown>;
     db.lesson_documents[0]!.document = { ...document, schema_version: 2, eligibility: { minimum_age: 7, maximum_age: 10 } };
+    db.account_age_declarations = [{ user_id: userId, declared_age_band: 'under_13' }];
     const unknownAge = await auth(request(createApp()).get(`/api/v1/learn/lessons/${LESSON_1_ID}`));
     expect(unknownAge.status).toBe(403);
     expect(unknownAge.body.error.code).toBe('LESSON_AGE_ELIGIBILITY_REQUIRED');
+  });
+
+  it('settles a v2 lesson from the declared band when no birth date is stored (age-screen accounts keep only a band)', async () => {
+    db.lesson_documents[0]!.schema_version = 2;
+    db.lesson_documents[0]!.document = { ...v2AllocationDocument(), eligibility: { minimum_age: 13, maximum_age: 17 } };
+    db.lesson_documents[0]!.answer_keys = v2AllocationKeys;
+    db.profiles[0]!.birth_date = null;
+
+    const inside = await auth(request(createApp()).get(`/api/v1/learn/lessons/${LESSON_1_ID}`));
+    expect(inside.status).toBe(200);
+
+    db.lesson_documents[0]!.document = { ...v2AllocationDocument(), eligibility: { minimum_age: 7, maximum_age: 10 } };
+    const outside = await auth(request(createApp()).get(`/api/v1/learn/lessons/${LESSON_1_ID}`));
+    expect(outside.status).toBe(403);
+    expect(outside.body.error.code).toBe('LESSON_AGE_RESTRICTED');
   });
 
   function activateMutableV2AllocationWithStage(stage: unknown): void {

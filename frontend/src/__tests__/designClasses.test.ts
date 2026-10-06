@@ -113,6 +113,13 @@ const NOT_CLASSES = new Set([
   'lf-allocation', // local checkpoint contract identifier, not a CSS class
   'lf-mentor-loading-main', // standalone loading main id and SkipLink target, not a class
   'lf-mentor-route-main', // standalone Mentor main id and SkipLink target, not a class
+  // Element ids and radio-group names of the games host (rebuild/games), referenced by aria-labelledby and fieldsets, not classes.
+  'lf-play-title',
+  'lf-play-circuit',
+  'lf-play-mode',
+  'lf-play-speed',
+  'lf-play-question',
+  'lf-play-rotate-heading',
   // Keyframe names of the orchestrated motion patterns (rebuild/design/motion.tsx ORCHESTRATED_MOTION), not classes.
   'lf-route-enter',
   'lf-sequence-in',

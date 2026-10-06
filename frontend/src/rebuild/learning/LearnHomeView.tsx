@@ -13,6 +13,7 @@ import { nextStep, type CourseState, type NextStep } from './course';
 import { SelfBridgeList } from './DecisionJournalView';
 import { learningRhythmCopy } from './LearningRhythmView';
 import { fill, learnCopy, linkTo, plural, type LearnLinks, type LearnNavigate } from './learnCopy';
+import { fillName, gamesCopy } from '../games/gamesCopy';
 import { courseIdentity, featuredCourse, isClosedByAge, isDone, isStarted, shelfOrder, type ShelfCourse, type ShelfState } from './learnHome';
 import type { RhythmState } from './motivation';
 import type { BridgeAnswer, SelfBridge } from './narrative';
@@ -59,6 +60,8 @@ export interface LearnHomeProps {
   bridges: SelfBridge[];
   /** L-04 (OD-27 (1)): goals together, shown only when Core says this learner may take part. */
   together?: { eligible: boolean; asked: boolean } | null;
+  /** A game on offer (Core's GET /learn/games, enabled for this learner): the "Play with {Mentor}" card. Null while unknown or on a failed read. */
+  play?: { enabled: boolean } | null;
   /** The one-time register graduation card (B.23), when Core says one is owed. */
   graduation?: ReactNode;
   links: LearnLinks;
@@ -96,6 +99,7 @@ export function LearnHomeView(props: LearnHomeProps) {
         <SelfBridgeList bridges={props.bridges} locale={locale} onBridge={props.onBridge} onOpenWallet={props.onOpenWallet} />
         <StoryCard {...props} />
         <TogetherCard {...props} />
+        <PlayCard {...props} />
       </>} />
   </div>;
 }
@@ -270,5 +274,21 @@ function TogetherCard({ locale, links, together, onNavigate }: LearnHomeProps) {
     <h2 id={headingId} data-copy-role="heading">{t.togetherTitle}</h2>
     {together.asked ? <p data-copy-role="body">{t.togetherAsked}</p> : null}
     <div className="lf-learn-card-action"><ButtonLink {...linkTo(links.together, onNavigate)}>{t.together}</ButtonLink></div>
+  </section>;
+}
+
+/**
+ * A game on offer (KRV1-CONTRACT §6): "Play with {Mentor}", one link, never a nag. It is the same card shape as goals
+ * together and sits after it, outside every lesson moment (B.24: no game prompt inside a celebration). It names the
+ * learner's own Mentor from Core's rhythm payload; without it (loading, a failed read) there is no card rather than a
+ * guessed character, and a game Core does not offer (or a guardian turned off) shows nothing at all.
+ */
+function PlayCard({ locale, rhythm, links, play, onNavigate }: LearnHomeProps) {
+  const headingId = useId();
+  if (!play?.enabled || !links.play || rhythm.status !== 'ready') return null;
+  const t = gamesCopy[locale].gameHome;
+  return <section className="lf-learn-story lf-learn-play" aria-labelledby={headingId}>
+    <h2 id={headingId} data-copy-role="heading">{fillName(t.heading, MENTOR_NAMES[rhythm.rhythm.mentor.character])}</h2>
+    <div className="lf-learn-card-action"><ButtonLink {...linkTo(links.play, onNavigate)}>{t.play}</ButtonLink></div>
   </section>;
 }

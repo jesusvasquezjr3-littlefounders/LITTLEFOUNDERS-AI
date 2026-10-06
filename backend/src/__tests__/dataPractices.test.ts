@@ -210,6 +210,7 @@ describe('the enforcement migration covers every registered practice', () => {
     coop_goal_members: 'sharing.cooperative_goals',
     coop_goal_guardian_consents: 'sharing.cooperative_goals',
     account_deletion_guardian_notices: { exempt: 'the owner-mandated D-14 (b) notice to an already verified Tutor of a linked teen\'s own deletion: ids only, read only by that Tutor, gone with the account; a safeguard, not a sharing surface' },
+    learner_play_limits: { exempt: 'the verified Tutor\'s lowering of a child\'s own play limits (the child and the guardian who set it, set_by cleared when that adult leaves): a safeguard that only restricts, read by Core to cap the child\'s sessions, never shown to or shared with another account' },
     lesson_pedagogical_reviews: { exempt: 'the Appendix C Part 3 Stage 3 staff review record (the reviewing staff member and the Content Author, kept distinct by CHECK); service role only behind manage_content, it shares nothing between accounts' },
   };
   /*

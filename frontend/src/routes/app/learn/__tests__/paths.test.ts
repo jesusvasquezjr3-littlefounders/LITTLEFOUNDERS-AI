@@ -6,10 +6,12 @@ import {
   COURSE_ROUTE_PATH,
   LESSON_ROUTE_PATH,
   PLACEMENT_ROUTE_PATH,
+  PLAY_ROUTE_PATH,
   TERRITORY_ROUTE_PATH,
   coursePath,
   lessonPath,
   placementPath,
+  playPath,
   territoryPath,
   guidedReviewPath,
   guidedReviewSkillFrom,
@@ -89,5 +91,22 @@ describe('guidedReviewPath (S05.3f, B.26)', () => {
     for (const search of ['', '?review=', '?review=../admin', '?review=a/b/c', '?review=ABC/def', '?review=%3Cscript%3E/x']) {
       expect(guidedReviewSkillFrom(search), search).toBeNull();
     }
+  });
+});
+
+describe('playPath (a game inside /learn)', () => {
+  it('is matched by its own route, with the game id as the parameter', () => {
+    const href = playPath('kartrush');
+    expect(href).toBe('/learn/play/kartrush');
+    expect(matchPath(`/${PLAY_ROUTE_PATH}`, href)?.params.gameId).toBe('kartrush');
+  });
+
+  it('is not the course route: a static play segment, so a game id is never read as a course slug', () => {
+    expect(matchPath(`/${COURSE_ROUTE_PATH}`, playPath('kartrush'))).toBeNull();
+    expect(matchPath(`/${PLACEMENT_ROUTE_PATH}`, playPath('kartrush'))).toBeNull();
+  });
+
+  it('encodes the id so it cannot add a path segment', () => {
+    expect(playPath('a/b')).toBe('/learn/play/a%2Fb');
   });
 });

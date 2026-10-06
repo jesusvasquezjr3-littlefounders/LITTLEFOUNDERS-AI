@@ -1,0 +1,189 @@
+{
+  "gamePlay": {
+    "pageTitle": "Carrera",
+    "exit": "Salir",
+    "loading": "Preparando tu kart.",
+    "gateHint": "Toca el juego para empezar.",
+    "frameTitle": "Juego de carreras KartRush",
+    "startLabel": "Toca para empezar",
+    "sound": "Sonido",
+    "soundOn": "Sí",
+    "soundOff": "No",
+    "racingHint": "Presiona Escape para pausar."
+  },
+  "gameGarage": {
+    "heading": "Garaje",
+    "greeting": {
+      "rho": "Elige tu circuito. Yo observo y tomo notas.",
+      "zara": "¡Elige un circuito! ¿Qué encontraremos hoy?",
+      "liruf": "A correr. ¡Elige tu circuito y tu piloto!",
+      "dina": "Con calma. Elige un circuito cuando quieras."
+    },
+    "circuitLegend": "Circuito",
+    "modeLegend": "Modo",
+    "driverLegend": "Piloto",
+    "speedLegend": "Velocidad",
+    "circuits": {
+      "jungleNeck": "Cuello de la Selva",
+      "boulevard": "Bulevar de los Trajes",
+      "fossilFire": "Fuego Fósil",
+      "factory": "Circuito Fábrica",
+      "saltBay": "Bahía de Sal",
+      "glacier": "Circuito Glaciar"
+    },
+    "modes": {
+      "single": "Carrera",
+      "timeTrial": "Contrarreloj",
+      "practice": "Vuelta de práctica"
+    },
+    "speeds": {
+      "100cc": "100cc",
+      "150cc": "150cc"
+    },
+    "go": "Vamos"
+  },
+  "gamePaused": {
+    "heading": "En pausa",
+    "resume": "Seguir",
+    "restart": "Reiniciar",
+    "leave": "Salir",
+    "body": "Tu carrera te espera."
+  },
+  "gamePitstop": {
+    "heading": "Parada en boxes",
+    "observation": {
+      "item_hold": {
+        "rho": "Lo medí. Guardaste tu objeto y pasaste de largo las cajas.",
+        "zara": "Mmm, guardaste tu objeto y pasaste de largo las cajas.",
+        "liruf": "Guardaste tu objeto y pasaste volando las cajas. ¡Guau!",
+        "dina": "Guardaste tu objeto mientras pasabas las cajas."
+      },
+      "drift_patient": {
+        "rho": "Lo cronometré. Esperaste el gran impulso.",
+        "zara": "¡Uy, esperaste y esperaste el gran impulso!",
+        "liruf": "Esperaste el gran impulso. ¡Fiuuum!",
+        "dina": "Te tomaste tu tiempo y esperaste el gran impulso."
+      },
+      "drift_early": {
+        "rho": "Conté. Soltaste el impulso temprano, una y otra vez.",
+        "zara": "Mmm, soltaste el impulso temprano, una y otra vez.",
+        "liruf": "Soltaste el impulso temprano, una y otra vez. ¡Zip!",
+        "dina": "Soltaste el impulso temprano, una y otra vez. Sin prisa."
+      },
+      "steady": {
+        "rho": "Comparé tus vueltas. Quedaron muy parecidas.",
+        "zara": "¡Mira, tus vueltas quedaron todas muy parecidas!",
+        "liruf": "Tus vueltas fueron todas parecidas. ¡Zum, zum, zum!",
+        "dina": "Tus vueltas fueron parecidas. Tranquilas y parejas."
+      },
+      "swingy": {
+        "rho": "Comparé tus vueltas. Cambiaron mucho.",
+        "zara": "Qué interesante, tus vueltas cambiaron mucho de una a otra.",
+        "liruf": "Tus vueltas cambiaron mucho. ¡Rápida, lenta, rápida!",
+        "dina": "Tus vueltas cambiaron mucho. Pensemos por qué, sin prisa."
+      },
+      "neutral": {
+        "rho": "Carrera lista. Anoté tus vueltas.",
+        "zara": "¡Carrera lista! Ya tengo ideas para la próxima.",
+        "liruf": "Corriste. ¡Qué divertido fue verte!",
+        "dina": "Terminaste la carrera. Respira un momento."
+      }
+    },
+    "question": {
+      "item_hold": "¿Por qué guardaste el objeto?",
+      "drift_patient": "¿Cómo se sintió esperar?",
+      "drift_early": "¿Por qué soltaste temprano?",
+      "steady": "¿Qué te ayudó a ir parejo?",
+      "swingy": "¿Qué cambió entre vueltas?",
+      "neutral": "¿Qué probarás ahora?"
+    },
+    "replies": {
+      "item_hold": {
+        "a": "Lo estaba guardando",
+        "b": "No me di cuenta",
+        "unsure": "No sé"
+      },
+      "drift_patient": {
+        "a": "El impulso fue grande",
+        "b": "Quería ir más rápido",
+        "unsure": "No sé"
+      },
+      "drift_early": {
+        "a": "Quería velocidad ya",
+        "b": "La curva llegó rápido",
+        "unsure": "No sé"
+      },
+      "steady": {
+        "a": "Conocía la pista",
+        "b": "Fui más despacio",
+        "unsure": "No sé"
+      },
+      "swingy": {
+        "a": "Probé cosas nuevas",
+        "b": "Algunas curvas eran difíciles",
+        "unsure": "No sé"
+      },
+      "neutral": {
+        "a": "Ir más rápido",
+        "b": "Manejar más suave",
+        "unsure": "No sé"
+      }
+    },
+    "replied": "Anotado.",
+    "pending": "Revisando tu carrera.",
+    "again": "Correr otra vez",
+    "change": "Cambiar kart",
+    "ask": "Pregunta a {name}",
+    "close": "Cerrar"
+  },
+  "gameSoft": {
+    "heading": "¿Un descanso?",
+    "line": {
+      "rho": "Corrimos un buen rato. Descansar ayuda a pensar.",
+      "zara": "Nuestros cerebros trabajaron mucho. ¡Descansemos un poco!",
+      "liruf": "¡Hora de merendar y estirarse!",
+      "dina": "Llevas un rato corriendo. ¿Descansamos un poco?"
+    },
+    "stop": "Hacer una pausa",
+    "keep": "Seguir corriendo"
+  },
+  "gameClosed": {
+    "limit": {
+      "heading": "Listo por hoy",
+      "body": "Vuelve mañana para correr más."
+    },
+    "ended": {
+      "heading": "Se acabó el tiempo de carrera",
+      "body": "Hora de descansar. Hasta pronto."
+    },
+    "disabled": {
+      "heading": "Las carreras están apagadas",
+      "body": "Un adulto apagó los juegos."
+    },
+    "home": "Volver a Aprender"
+  },
+  "gameError": {
+    "webgl": {
+      "heading": "No podemos mostrar el juego",
+      "body": "Prueba otro dispositivo o navegador."
+    },
+    "offline": {
+      "heading": "Sin conexión",
+      "body": "Revisa tu internet y prueba de nuevo."
+    },
+    "unavailable": {
+      "heading": "El juego no arrancó",
+      "body": "Prueba de nuevo en un momento."
+    },
+    "retry": "Reintentar",
+    "home": "Volver a Aprender"
+  },
+  "gameRotate": {
+    "heading": "Gira tu dispositivo",
+    "body": "Sostenlo de lado para correr."
+  },
+  "gameHome": {
+    "heading": "Juega con {name}",
+    "play": "A correr"
+  }
+}

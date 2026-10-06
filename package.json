@@ -28,6 +28,7 @@
     "session-end:check": "node agent/tools/check-session-end-parity.mjs",
     "telemetry:check": "node agent/tools/check-behavioral-telemetry-parity.mjs",
     "alliance:check": "node agent/tools/check-alliance-parity.mjs",
+    "games:parity": "node agent/tools/check-game-protocol-parity.mjs",
     "review-calibration:check": "node agent/tools/check-review-calibration-parity.mjs",
     "live-content:check": "node agent/tools/check-live-content-parity.mjs",
     "evaluation-loop:check": "node agent/tools/check-evaluation-loop-parity.mjs",

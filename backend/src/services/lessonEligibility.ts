@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import type { AgeBand } from './ageScreen.js';
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 const eligibilitySchema = z.object({ minimum_age: z.number().int().min(0).max(119), maximum_age: z.number().int().min(0).max(119) }).strict()
@@ -31,4 +32,24 @@ export function lessonEligibilityForBirthDate(document: unknown, birthDate: stri
   const age = ageOn(birthDate, now);
   if (age === null) return 'unknown-age';
   return age >= policy.minimum_age && age <= policy.maximum_age ? 'eligible' : 'outside-range';
+}
+
+/** The whole-year ages a declared band can hold. The declaration keeps a band, never the date it came from. */
+const BAND_AGES: Record<AgeBand, readonly [number, number]> = { under_13: [0, 12], '13_to_17': [13, 17], adult: [18, 119] };
+
+/**
+ * The exact birth date decides when Core holds one. Accounts made through the
+ * age screen keep only a band (the date is deliberately not stored, and a
+ * browser identity cannot write `profiles.birth_date`), so without a date the
+ * band decides when it settles the policy: wholly inside the range is
+ * eligible, wholly outside is refused, and a band that straddles an edge
+ * still needs the exact date and fails closed.
+ */
+export function lessonEligibilityFor(document: unknown, birthDate: string | null | undefined, band: AgeBand | null | undefined, now = new Date()): EligibilityResult {
+  const exact = lessonEligibilityForBirthDate(document, birthDate, now);
+  const policy = readLessonEligibility(document);
+  if (exact !== 'unknown-age' || !policy || !band) return exact;
+  const [low, high] = BAND_AGES[band];
+  if (high < policy.minimum_age || low > policy.maximum_age) return 'outside-range';
+  return low >= policy.minimum_age && high <= policy.maximum_age ? 'eligible' : 'unknown-age';
 }
