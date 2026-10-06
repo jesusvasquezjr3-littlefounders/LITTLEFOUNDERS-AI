@@ -27,7 +27,7 @@
  * without the guardian's consent and a per-learner daily cap.
  */
 
-import { sealGameLine, type GameLineInput } from '../context/schema.js';
+import { sealGameLine, type GameLineInput } from './schema.js';
 import { complete, ModelUnavailableError } from '../model/provider.js';
 import { moderateTutorOutput } from '../safety/moderation.js';
 import { spendGuard } from '../session/spend-guard.js';

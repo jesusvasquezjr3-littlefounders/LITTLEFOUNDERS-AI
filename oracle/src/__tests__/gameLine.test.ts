@@ -1,12 +1,13 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import request from 'supertest';
 import { readFileSync } from 'node:fs';
-import { GameLineInputSchema, sealGameLine, TutorContextSchema, type GameLineInput } from '../context/schema.js';
+import { TutorContextSchema } from '../context/schema.js';
+import { gameAiDebriefEnabled } from '../game/config.js';
+import { GameLineInputSchema, sealGameLine, type GameLineInput } from '../game/schema.js';
 import { lineViolation, LENS_FACTS, runGameLine, GAME_LINE_MAX_TOKENS } from '../game/line.js';
 import { ModelUnavailableError } from '../model/provider.js';
 import { spendGuard } from '../session/spend-guard.js';
 import { createApp } from '../app.js';
-import { resetConfigCache } from '../env.js';
 
 /*
  * The sealed one-line game debrief (game/line.ts, routes/game.ts). Fake provider
@@ -45,12 +46,22 @@ beforeEach(() => {
   vi.mocked(moderateTutorOutput).mockReset();
   vi.mocked(moderateTutorOutput).mockResolvedValue({ allowed: true });
   process.env.GAME_AI_DEBRIEF = 'on';
-  resetConfigCache();
 });
 
 afterEach(() => {
   delete process.env.GAME_AI_DEBRIEF;
-  resetConfigCache();
+});
+
+describe('GAME_AI_DEBRIEF — only the literal "on" enables, read at call time', () => {
+  it.each([['on', true], ['off', false], ['ON', false], ['true', false], ['1', false], ['', false], [' on', false], [undefined, false]])('%j -> %s', (value, expected) => {
+    expect(gameAiDebriefEnabled({ GAME_AI_DEBRIEF: value } as NodeJS.ProcessEnv)).toBe(expected);
+  });
+  it('follows process.env without any cache', () => {
+    process.env.GAME_AI_DEBRIEF = 'off';
+    expect(gameAiDebriefEnabled()).toBe(false);
+    process.env.GAME_AI_DEBRIEF = 'on';
+    expect(gameAiDebriefEnabled()).toBe(true);
+  });
 });
 
 describe('GameLineInputSchema — four closed values, nothing else can travel', () => {
@@ -207,19 +218,16 @@ describe('POST /api/v1/game/line', () => {
 
   it('is a 204 with nothing sent to any model while the switch is off, or no model is configured', async () => {
     process.env.GAME_AI_DEBRIEF = 'off';
-    resetConfigCache();
-    expect((await post(INPUT)).status).toBe(204);
+      expect((await post(INPUT)).status).toBe(204);
     process.env.GAME_AI_DEBRIEF = 'on';
-    resetConfigCache();
-    vi.mocked(modelConfigured).mockReturnValue(false);
+      vi.mocked(modelConfigured).mockReturnValue(false);
     expect((await post(INPUT)).status).toBe(204);
     expect(complete).not.toHaveBeenCalled();
   });
 
   it('is off by default: an unset switch is off', async () => {
     delete process.env.GAME_AI_DEBRIEF;
-    resetConfigCache();
-    expect((await post(INPUT)).status).toBe(204);
+      expect((await post(INPUT)).status).toBe(204);
     expect(complete).not.toHaveBeenCalled();
   });
 
@@ -242,7 +250,7 @@ describe('POST /api/v1/game/line', () => {
 
 describe('the contract and the parity gate read this service', () => {
   it('spells the lens keys and bands the same way as Core (the parity gate pins it too)', () => {
-    const source = readFileSync(new URL('../context/schema.ts', import.meta.url), 'utf8');
+    const source = readFileSync(new URL('../game/schema.ts', import.meta.url), 'utf8');
     expect(source).toContain("export const GAME_LENS_KEYS = ['item_hold', 'drift_patient', 'drift_early', 'steady', 'swingy', 'neutral'] as const;");
     expect(source).toContain("export const GAME_BANDS = ['6-9', '10-12', '13-17', 'adult'] as const;");
   });

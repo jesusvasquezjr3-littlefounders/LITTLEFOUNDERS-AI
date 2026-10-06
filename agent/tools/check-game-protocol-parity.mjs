@@ -12,7 +12,8 @@
  *                                                       closed vocabularies (`KR_*`)
  *   Core      backend/src/games/runReport.ts   `RUN_REPORT_FIELDS`, `LENS_FIELDS`, `DRIFT_FIELDS`, the
  *                                              zod shapes behind them, and the same vocabularies
- *   Oracle    oracle/src/context/schema.ts     `GAME_LENS_KEYS`, `GAME_BANDS` (the sealed debrief input)
+ *   Oracle    oracle/src/game/schema.ts        `GAME_LENS_KEYS`, `GAME_BANDS` (the sealed debrief input);
+ *             oracle/src/context/schema.ts     `CHARACTER_IDS` (the Mentors)
  *
  * The game's own copy lives in the KartRush repository and is pinned there to
  * the same manifest; this repo cannot read it, so it is pinned here through the
@@ -36,6 +37,7 @@ export const FILES = {
   spa: 'frontend/src/games/kartrush/protocol.ts',
   core: 'backend/src/games/runReport.ts',
   oracle: 'oracle/src/context/schema.ts',
+  oracleGame: 'oracle/src/game/schema.ts',
 };
 
 const quoted = (text) => [...text.matchAll(/'([^'\n]+)'/g)].map((m) => m[1]);
@@ -169,9 +171,9 @@ export function checkGameProtocolParity(read) {
   vocab('speed classes', core('SPEED_CLASSES'), [[`${FILES.spa} KR_SPEED_CLASSES`, constArray(src.spa, 'KR_SPEED_CLASSES')]]);
   vocab('lens keys', core('LENS_KEYS'), [
     [`${FILES.spa} KR_LENSES`, constArray(src.spa, 'KR_LENSES')],
-    [`${FILES.oracle} GAME_LENS_KEYS`, constArray(src.oracle, 'GAME_LENS_KEYS')],
+    [`${FILES.oracleGame} GAME_LENS_KEYS`, constArray(src.oracleGame, 'GAME_LENS_KEYS')],
   ]);
-  vocab('age bands', core('BANDS'), [[`${FILES.oracle} GAME_BANDS`, constArray(src.oracle, 'GAME_BANDS')]]);
+  vocab('age bands', core('BANDS'), [[`${FILES.oracleGame} GAME_BANDS`, constArray(src.oracleGame, 'GAME_BANDS')]]);
   // A practice lap is never reported, so Core's modes are the game's minus practice.
   const spaModes = constArray(src.spa, 'KR_MODES');
   const coreModes = core('RUN_MODES');

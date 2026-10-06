@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import { getConfig } from '../env.js';
 import { fail, ok } from '../lib/http.js';
-import { GameLineInputSchema } from '../context/schema.js';
+import { gameAiDebriefEnabled } from '../game/config.js';
+import { GameLineInputSchema } from '../game/schema.js';
 import { runGameLine } from '../game/line.js';
 import { modelConfigured } from '../model/provider.js';
 
@@ -26,7 +26,7 @@ export function gameRouter(): Router {
     if (!parsed.success) {
       return fail(res, 400, 'VALIDATION_ERROR', parsed.error.issues[0]?.message ?? 'Invalid body');
     }
-    if (getConfig().GAME_AI_DEBRIEF !== 'on' || !modelConfigured()) return res.status(204).end();
+    if (!gameAiDebriefEnabled() || !modelConfigured()) return res.status(204).end();
     try {
       const line = await runGameLine(parsed.data);
       return line ? ok(res, { text: line.text, costUsd: line.costUsd }) : res.status(204).end();

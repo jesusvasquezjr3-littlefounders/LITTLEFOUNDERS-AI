@@ -26,7 +26,7 @@ test('the parsers actually read the real values (a vacuous pass is a failure)', 
   assert.deepEqual(constArray(real[FILES.core], 'DRIFT_FIELDS'), ['t0', 't1', 't2', 't3']);
   assert.deepEqual(constArray(real[FILES.core], 'BANDS'), ['6-9', '10-12', '13-17', 'adult']);
   assert.equal(constArray(real[FILES.core], 'LENS_KEYS').length, 6);
-  assert.equal(constArray(real[FILES.oracle], 'GAME_LENS_KEYS').length, 6);
+  assert.equal(constArray(real[FILES.oracleGame], 'GAME_LENS_KEYS').length, 6);
   assert.ok(zodFields(real[FILES.core], 'export const RunReport =').includes('kartBody'));
   assert.deepEqual(zodFields(real[FILES.core], 'export const Lens ='), ['itemHoldMs', 'boxesPassedWhileHolding', 'itemsUsed', 'driftReleases', 'recoveries']);
   assert.deepEqual(zodFields(real[FILES.core], 'export const DriftReleases ='), ['t0', 't1', 't2', 't3']);
@@ -83,8 +83,8 @@ test('RED when a vocabulary drifts between Core, the SPA and Oracle', () => {
 });
 
 test('RED when Oracle\'s sealed debrief input drifts from Core (the AI line would silently never appear)', () => {
-  assert.ok(checkGameProtocolParity(patched(FILES.oracle, "'drift_early', 'steady', 'swingy', 'neutral'] as const;\n", "'drift_early', 'steady', 'neutral'] as const;\n")).some((p) => p.includes('GAME_LENS_KEYS')));
-  assert.ok(checkGameProtocolParity(patched(FILES.oracle, "GAME_BANDS = ['6-9', '10-12', '13-17', 'adult']", "GAME_BANDS = ['6-9', '10-12', '13-17']")).some((p) => p.includes('age bands')));
+  assert.ok(checkGameProtocolParity(patched(FILES.oracleGame, "'drift_early', 'steady', 'swingy', 'neutral'] as const;\n", "'drift_early', 'steady', 'neutral'] as const;\n")).some((p) => p.includes('GAME_LENS_KEYS')));
+  assert.ok(checkGameProtocolParity(patched(FILES.oracleGame, "GAME_BANDS = ['6-9', '10-12', '13-17', 'adult']", "GAME_BANDS = ['6-9', '10-12', '13-17']")).some((p) => p.includes('age bands')));
 });
 
 test('RED when practice stops being the one mode Core never records', () => {
