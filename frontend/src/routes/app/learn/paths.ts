@@ -99,12 +99,19 @@ export function playPath(gameId: string): string {
  * when the learner accepts the offer. The Mentor starts a weak-skill session
  * for that course/topic key (TutorExperience reads `review`).
  */
-export function guidedReviewPath(skillKey: string): string {
-  return `/tutor?review=${encodeURIComponent(skillKey)}`;
+export function guidedReviewPath(skillKey: string, lessonId?: string | null): string {
+  const review = `/tutor?review=${encodeURIComponent(skillKey)}`;
+  return lessonId ? `${review}&lesson=${encodeURIComponent(lessonId)}` : review;
 }
 
 /** The skill key a guided-review link carries, or null when it is not one. */
 export function guidedReviewSkillFrom(search: string): string | null {
   const value = new URLSearchParams(search).get('review');
   return value !== null && /^[a-z0-9-]+\/[a-z0-9-]+$/.test(value) ? value : null;
+}
+
+/** OD-43: the lesson a guided review was opened from, or null. */
+export function guidedReviewLessonFrom(search: string): string | null {
+  const value = new URLSearchParams(search).get('lesson');
+  return value !== null && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value) ? value : null;
 }

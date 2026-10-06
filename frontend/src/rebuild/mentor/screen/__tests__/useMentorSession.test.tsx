@@ -156,7 +156,7 @@ describe('the daily limit and starting a session', () => {
     await waitFor(() => expect(result.current.phase).toBe('conversing'));
     rerender();
     expect(api.startSession).toHaveBeenCalledTimes(1);
-    expect(api.startSession).toHaveBeenCalledWith('token', { intent: 'weak_skill', skillKey: 'money/change', wantsVoice: false });
+    expect(api.startSession).toHaveBeenCalledWith('token', { intent: 'weak_skill', skillKey: 'money/change', lessonId: null, wantsVoice: false });
   });
 
   it('resumes the conversation of this tab after a reload', async () => {

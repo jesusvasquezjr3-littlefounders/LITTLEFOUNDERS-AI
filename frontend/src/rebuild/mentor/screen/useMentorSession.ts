@@ -84,6 +84,8 @@ export interface MentorSessionOptions {
   userId: string | null;
   /** A guided review accepted in a lesson (`/tutor?review=<skill>`), already validated by the route. */
   reviewSkill: string | null;
+  /** OD-43: the lesson a guided review was opened from, or null. */
+  reviewLessonId?: string | null;
 }
 
 const ACTIVE_SESSION = 'lf.tutor.activeSession.';
@@ -127,7 +129,7 @@ export function startOfLocalDayIso(locale: string, now: Date = new Date()): stri
 
 const isCharacter = (value: unknown): value is MentorCharacter => (MENTOR_CHARACTERS as readonly unknown[]).includes(value);
 
-export function useMentorSession({ getToken, userId, reviewSkill }: MentorSessionOptions) {
+export function useMentorSession({ getToken, userId, reviewSkill, reviewLessonId = null }: MentorSessionOptions) {
   const [phase, setPhase] = useState<MentorPhase>('loading');
   const [attempt, setAttempt] = useState(0);
   const [token, setToken] = useState<string | null>(null);
@@ -261,8 +263,8 @@ export function useMentorSession({ getToken, userId, reviewSkill }: MentorSessio
   useEffect(() => {
     if (!reviewSkill || reviewStarted.current || session || phase !== 'openings' || !offers?.canStart || startError === 'SESSION_LIMIT') return;
     reviewStarted.current = true;
-    begin({ intent: 'weak_skill', skillKey: reviewSkill, wantsVoice: false });
-  }, [reviewSkill, session, phase, offers, startError, begin]);
+    begin({ intent: 'weak_skill', skillKey: reviewSkill, lessonId: reviewLessonId, wantsVoice: false });
+  }, [reviewSkill, reviewLessonId, session, phase, offers, startError, begin]);
 
   /* The question typed on the openings goes out once the Mentor has greeted. */
   useEffect(() => {

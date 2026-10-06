@@ -18,7 +18,7 @@ export function mentorCopy(locale: Locale): MentorCopy {
  * signed-in account, its language and mode, whether a guardian link exists,
  * the guided-review link, navigation) so nothing here reaches the legacy app.
  */
-export function MentorRoute({ header, getToken, userId, locale, theme, guardianLink, reviewSkill, onLeave, onPath, initialSheet = null }: {
+export function MentorRoute({ header, getToken, userId, locale, theme, guardianLink, reviewSkill, reviewLessonId = null, onLeave, onPath, initialSheet = null }: {
   header?: ReactNode;
   getToken: () => Promise<string | null>;
   userId: string | null;
@@ -26,12 +26,14 @@ export function MentorRoute({ header, getToken, userId, locale, theme, guardianL
   theme: 'light' | 'dark';
   guardianLink: boolean;
   reviewSkill: string | null;
+  /** OD-43: the lesson a guided review was opened from, or null. */
+  reviewLessonId?: string | null;
   onLeave: () => void;
   onPath: () => void;
   /** Bible 08 §8 (GAP-FIX-R1): the profile's "Change" opens the screen with the chooser sheet up. */
   initialSheet?: MentorSheet | null;
 }) {
-  const session = useMentorSession({ getToken, userId, reviewSkill });
+  const session = useMentorSession({ getToken, userId, reviewSkill, reviewLessonId });
   const copy = mentorCopy(locale);
   // The title is the character's name once Core has said which one (08 §2); "Mentor" before that.
   const title = session.known ? MENTOR_NAMES[session.character] : copy.mentorScreen.documentTitle;

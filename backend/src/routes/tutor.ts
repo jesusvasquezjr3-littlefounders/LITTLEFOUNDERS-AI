@@ -14,6 +14,7 @@ import {
   getFullOwnProfile,
   getVerifiedKidLinks,
   getVerifiedGuardiansOfKid,
+  getLessonById,
   insertAuditLog,
   serviceRest,
   type FullProfileRow,
@@ -3211,6 +3212,22 @@ async function resolveCurrentLesson(userId: string, topicId: string, locale: str
   return { lessonId: ordered[at]!.id, lessonTitle, step: at + 1, total: ordered.length };
 }
 
+/**
+ * OD-43: the course a topic belongs to (topics → sagas → adventures →
+ * course_id). Used only to anchor a lesson-opened review to its course so the
+ * Mentor can name it; a failed read degrades to a topic-only anchor.
+ */
+async function courseIdForTopic(topicId: string): Promise<string | null> {
+  const rows = await serviceRest<Array<{ sagas: unknown }>>(
+    `/topics?id=eq.${encodeURIComponent(topicId)}&select=sagas!inner(adventures!inner(course_id))&limit=1`,
+  );
+  const saga = Array.isArray(rows?.[0]?.sagas) ? (rows![0]!.sagas as unknown[])[0] : rows?.[0]?.sagas;
+  const adventure = saga && typeof saga === 'object' ? (saga as { adventures?: unknown }).adventures : null;
+  const adv = Array.isArray(adventure) ? adventure[0] : adventure;
+  const courseId = adv && typeof adv === 'object' ? (adv as { course_id?: string }).course_id : null;
+  return courseId ?? null;
+}
+
 /** A friendly word, not a name, for a learner who has not chosen a nickname. */
 function neutralNickname(locale: string): string {
   if (locale === 'en-US') return 'Explorer';
@@ -3553,6 +3570,8 @@ export function tutorRouter(): Router {
       intent: z.enum(['course_topic', 'weak_skill', 'faq', 'open', 'diagnostic']),
       courseId: z.string().uuid().nullish(),
       topicId: z.string().uuid().nullish(),
+      /** OD-43: a guided review opened FROM a lesson carries its id; Core resolves the topic/course from it. */
+      lessonId: z.string().uuid().nullish(),
       skillKey: z.string().min(1).max(128).nullish(),
       wantsVoice: z.boolean().default(false),
     })
@@ -3630,7 +3649,19 @@ export function tutorRouter(): Router {
         return fail(res, 400, VALIDATION, 'skillKey does not name a real skill');
       }
     }
-    const requestedSkills = [parsed.data.skillKey, parsed.data.topicId ? `topic:${parsed.data.topicId}` : null].filter((key): key is string => Boolean(key));
+    // OD-43: a guided review opened FROM a lesson carries the lesson id; resolve
+    // its topic and course so the Mentor can complement the course. No migration:
+    // the topic and course travel in the columns the session already stores.
+    let courseId = parsed.data.courseId ?? null;
+    let topicId = parsed.data.topicId ?? null;
+    if (parsed.data.intent === 'weak_skill' && !topicId && parsed.data.lessonId) {
+      const lesson = await getLessonById(user.accessToken, parsed.data.lessonId);
+      if (lesson) {
+        topicId = lesson.topic_id;
+        if (!courseId) courseId = await courseIdForTopic(lesson.topic_id);
+      }
+    }
+    const requestedSkills = [parsed.data.skillKey, topicId ? `topic:${topicId}` : null].filter((key): key is string => Boolean(key));
     const allowedSkills = await eligibleMentorSkills(user.id, requestedSkills);
     if (allowedSkills === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve content eligibility');
     if (requestedSkills.some(key => !allowedSkills.has(key))) return fail(res, 403, 'CONTENT_AGE_RESTRICTED', 'This content is not available for this learner');
@@ -3686,8 +3717,8 @@ export function tutorRouter(): Router {
       companion: prefs.companion,
       diorama: prefs.diorama,
       intent: parsed.data.intent,
-      courseId: parsed.data.courseId ?? null,
-      topicId: parsed.data.topicId ?? null,
+      courseId,
+      topicId,
       skillKey: parsed.data.skillKey ?? null,
       voiceUsed: wantsVoice && runtime.microphoneAvailable,
       consentId: consent?.id ?? null,
