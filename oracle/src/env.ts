@@ -106,6 +106,15 @@ const Env = z.object({
     .default('false')
     .transform((v) => v === 'true'),
 
+  /**
+   * The one-line AI debrief after a KartRush race (game/line.ts). OFF unless an
+   * operator turns it on, and Core carries the same switch: BOTH must be on, and
+   * Core also needs the guardian's consent and a per-learner daily cap before it
+   * ever calls. Off means 204 here, with nothing sent to any model. Turn it on
+   * only after the cost per line has been measured (docs/games, section 4.2).
+   */
+  GAME_AI_DEBRIEF: z.enum(['off', 'on']).default('off'),
+
   VOICE_PROVIDER: z.enum(['inworld', 'none']).default('none'),
   INWORLD_API_BASE: z.url().default('https://api.inworld.ai'),
   /** Inworld issues this ALREADY base64-encoded (`keyId:secret`). Do not re-encode. */
