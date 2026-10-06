@@ -42,6 +42,8 @@ export const globalRateLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   passOnStoreError: true,
+  // Games meter themselves (gamesRateLimiter): a child playing must not drain the pool lessons depend on.
+  skip: (req) => req.path.startsWith('/api/v1/learn/games'),
   message: { data: null, error: { code: 'RATE_LIMITED', message: 'Too many requests, please try again later.' } },
   store: getStore(),
 });
@@ -58,6 +60,20 @@ export const eventsRateLimiter = rateLimit({
   legacyHeaders: false,
   passOnStoreError: true,
   message: { data: null, error: { code: 'RATE_LIMITED', message: 'Too many telemetry batches, slow down.' } },
+  store: getStore(),
+});
+
+// Games in /learn: one heartbeat every 30-60 s per playing child, plus a handful of
+// run, save and session calls. Sized for several children behind one household or
+// classroom NAT (about 40 calls per child per 25-minute session), and fail-open like
+// the others: a limiter outage must never stop a lesson or a race.
+export const gamesRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 600,
+  standardHeaders: true,
+  legacyHeaders: false,
+  passOnStoreError: true,
+  message: { data: null, error: { code: 'RATE_LIMITED', message: 'Too many requests, please slow down.' } },
   store: getStore(),
 });
 

@@ -44,6 +44,7 @@ import { guidedReviewFor, localizedTitle, recentV2Outcomes, withLearnerMentor, t
 import { offerBridgeAfterCompletion, recordV2GradedDecisions, resurfaceForLesson } from '../services/narrative/learnerNarrative.js';
 import { learnNarrativeRouter } from './learnNarrative.js';
 import { learnMotivationRouter } from './learnMotivation.js';
+import { gamesRouter } from './games.js';
 import { badgeEarnedNow, completionCelebrations, courseCompletedNow, type CelebrationMilestone } from '../services/celebrationBudget.js';
 import { pathChoice, paceStatus, type PaceStatus } from '../services/autonomy.js';
 import { topicTeaches } from '../services/narrative/narrativeData.js';
@@ -611,6 +612,8 @@ export function learnRouter(): Router {
   router.use(learnMotivationRouter());
   // B.23 (S05.3f): the learner's age register and its one-time graduation moment.
   router.use(learnRegisterRouter());
+  // Games embedded in /learn (docs/games/KRV1-CONTRACT.md): records, play limits, the optional AI line.
+  router.use('/games', gamesRouter());
 
   // Future Tutor-ready boundary. It returns only the caller's derived skill
   // state, never raw events, answers, or another learner's data.
