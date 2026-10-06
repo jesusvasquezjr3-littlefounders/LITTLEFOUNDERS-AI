@@ -21,7 +21,7 @@ export const KARTRUSH_ALLOWED_ORIGINS: readonly string[] = [
 ];
 
 export interface AcceptedGameUrl {
-  /** The URL as Core gave it, normalised by the URL parser. */
+  /** The URL as Core gave it, normalised by the URL parser, with `embed=1` forced on. */
   readonly href: string;
   /** The origin the handshake posts to; always an entry of the allow-list. */
   readonly origin: string;
@@ -43,5 +43,10 @@ export function acceptGameUrl(candidate: unknown, allowed: readonly string[] = K
   }
   if (url.protocol !== 'https:' && url.protocol !== 'http:') return null;
   if (url.username !== '' || url.password !== '') return null;
-  return allowed.includes(url.origin) ? { href: url.href, origin: url.origin } : null;
+  if (!allowed.includes(url.origin)) return null;
+  // Embed mode is the host's decision, not configuration's: without `?embed=1` the game boots its standalone
+  // title screen and never listens for the handshake, so a Core whose KARTRUSH_URL is the bare origin
+  // would turn every visit into the error card. Forced here so no value Core sends can omit it.
+  url.searchParams.set('embed', '1');
+  return { href: url.href, origin: url.origin };
 }

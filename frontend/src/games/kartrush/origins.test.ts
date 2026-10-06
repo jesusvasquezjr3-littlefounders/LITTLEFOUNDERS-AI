@@ -52,6 +52,12 @@ describe('the game origin allow-list', () => {
   });
 
   it('returns the parser-normalised URL, not the raw string', () => {
-    expect(acceptGameUrl('https://GAME-B2C.littlefounders.ai:443/x')?.href).toBe('https://game-b2c.littlefounders.ai/x');
+    expect(acceptGameUrl('https://GAME-B2C.littlefounders.ai:443/x')?.href).toBe('https://game-b2c.littlefounders.ai/x?embed=1');
+  });
+
+  it('forces embed mode on: a bare origin, a missing flag or a conflicting flag all load the game as an embed', () => {
+    expect(acceptGameUrl('https://kartrush-production.up.railway.app')?.href).toBe('https://kartrush-production.up.railway.app/?embed=1');
+    expect(acceptGameUrl('https://kartrush-production.up.railway.app/?embed=0')?.href).toBe('https://kartrush-production.up.railway.app/?embed=1');
+    expect(acceptGameUrl('https://kartrush-production.up.railway.app/?a=1&embed=1')?.href).toBe('https://kartrush-production.up.railway.app/?a=1&embed=1');
   });
 });
