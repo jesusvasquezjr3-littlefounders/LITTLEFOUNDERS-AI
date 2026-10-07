@@ -107,7 +107,7 @@ states.push(
   learner('/learn@home-error', '/learn', 'learn-home-error', '[data-screen="learn-home"] .lf-state--error'),
   learner('/learn/:course@linear-child', '/learn/financial-education', 'learn-home-child', '[data-screen="course-path"][data-engine="linear"] .lf-course-path-chapter-toggle'),
   learner('/learn/:course@pathway-adult', '/learn/financial-education', 'learn-course-adult', '[data-screen="course-path"][data-engine="pathway"]'),
-  learner('/learn/:course@placement-teen', '/learn/entrepreneurship', 'learn-home-teen', '[data-screen="course-path"] [data-step="placement"]'),
+  learner('/learn/:course@placement-teen', '/learn/entrepreneurship', 'learn-home-teen', '[data-screen="course-path"] [data-step="lesson"]'),
   learner('/learn/:course@prerequisite', '/learn/investing', 'learn-home-child', '[data-screen="course-path-prerequisite"] .lf-list-row'),
   learner('/learn/:course@age-restricted', '/learn/investing', 'learn-home-young', '[data-screen="course-path-age-restricted"]'),
   learner('/learn/journal@teen', '/learn/journal', 'learn-home-teen', '[data-screen="journal"]'),
@@ -405,7 +405,8 @@ const coursePathAnswer = (slug, stage, placementRequired = false) => {
       chapter('ch-teens', loc('Budgets that work', 'Presupuestos que funcionan', 'Orçamentos que funcionam'), 2, 'teen', access('teen'), stage === 'teen' ? 3 : 0, 9),
       chapter('ch-adults', loc('Household money', 'El dinero del hogar', 'O dinheiro da casa'), 3, 'adult', access('adult'), stage === 'adult' ? 3 : 0, 9),
     ],
-    items: placementRequired ? [] : [
+    // The entry placement is offered, never a wall (OD-43/B.15): a not-placed learner still gets the frontier.
+    items: [
       item('l-1', loc('Plan a monthly budget', 'Planea un presupuesto mensual', 'Planeje um orçamento mensal'), 'ch-teens', 'next', 'pathway', true),
       item('l-2', loc('Needs and wants', 'Necesidades y deseos', 'Necessidades e desejos'), 'ch-teens', 'next', 'pathway'),
       item('l-3', loc('Counting coins', 'Contar monedas', 'Contar moedas'), 'ch-kids', 'review-due', 'optional'),
