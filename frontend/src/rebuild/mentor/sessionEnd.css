@@ -36,6 +36,15 @@
   border-radius: var(--rounded-md);
   padding: var(--spacing-3) var(--spacing-4);
 }
+/* OD-43 closing summary: the topics, the tricky one and the XP, one quiet stack. */
+.lf-session-closing-summary {
+  display: grid;
+  gap: var(--spacing-2);
+  background: var(--sunken);
+  border-radius: var(--rounded-md);
+  padding: var(--spacing-3) var(--spacing-4);
+}
+.lf-session-closing-summary p { margin: 0; overflow-wrap: anywhere; }
 .lf-session-closing > .lf-button { justify-self: start; }
 /* Full width in a narrow panel (an `app` container), never by the viewport (02 §6, 03 §3.2). */
 @container app (max-width: 33rem) {

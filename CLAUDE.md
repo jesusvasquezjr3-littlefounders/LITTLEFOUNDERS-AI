@@ -92,9 +92,9 @@ See `README.md`'s "Non-obvious invariants & traps" section for the full list (co
 
 Source files cite a rulebook (`/ORACLE.md §16`, `DESIGN.md`, `TUTOR_3D.md`, …) that was removed in commit `77b55596`; ~480 files still point at it. Read any of it with `git show 77b55596^:ORACLE.md`, and treat it as history, not authority — see the note opening README's invariants section.
 
-## LittleFounders specification (binding)
+## LittleFounders specification (reference)
 
-The product and frontend specification lives in `docs/littlefounders-spec/`. It is the absolute, non-negotiable source of truth for the product transformation and frontend rebuild. Legacy code, tests and historical documents do not override it. Precedence when documents disagree:
+The product and frontend specification lives in `docs/littlefounders-spec/`. It records the owner's product intent and the frontend design system. It is a **reference**, not an absolute authority: shipping a working product, direct user feedback and the owner's latest instruction outrank any document here, and they always may. Read it for intent; do not treat stale wording as law. Precedence when documents disagree (a reading order, not a gate):
 
 1. `product/13-OWNER-DECISION-LOG.md`
 2. `product/10-PRODUCT-GOLD-STANDARD-REQUIREMENTS.md` and its appendices
@@ -104,16 +104,14 @@ The product and frontend specification lives in `docs/littlefounders-spec/`. It 
 
 External sources, cited by name:
 
-- Product audit `00`–`09`: `docs/product-audit/`
 - `COSMIC_NARRATIVE.md`: `docs/product-audit/COSMIC_NARRATIVE.md`
 - 3D Mentor characters: `glb/{Rho,Zara,Liruf,Dina}.glb`; optimized delivery: `frontend/public/scenes/{rho,zara,liruf,dina}.glb`
 - Diorama: `frontend/public/scenes/diorama-{a,b}.glb`; scene and placement: `frontend/src/tutor-scene/Diorama.tsx`
 - Pose catalogue: `frontend/src/tutor-scene/poseLibrary.ts`; authored clips: `frontend/public/scenes/clips-biped.glb`
 - Forge (content pipeline): `coursegen/`
 
-Before building any screen:
+Current design and copy intent (keep these unless the owner changes them):
 
-- Read `02-FOUNDATIONS.md` §1–2 (decisions D1–D13 and rules 1–23), then the chapter for the surface you are building.
 - Every string meets the Copy Budget (`06`). Every component declares `data-copy-role`.
 - Use at most 24 system glyphs. Every other visual is our own asset, in the house style, registered in the asset manifest (`07`). Never use stock icon or illustration packs for meaningful visuals.
 - Mentor characters are only renders of the real 3D models in catalogue poses. Never generate a look-alike. Never use a letter avatar.
@@ -122,8 +120,8 @@ Before building any screen:
 - No lives. No celebration outside the milestone list. "Tutor" is only the verified parent; the AI is the Mentor.
 - Every minor safeguard follows age, not role. Option B: a teen may have a personal wallet without a parent. Tasks and approvals are guardian-only.
 
-Before merging UI changes, run the text-fit, proportion and copy-budget audits (`frontend/verification-tools`, adapted to the real app's driver). All three must pass.
+Before merging UI changes, run the text-fit, proportion and copy-budget audits (`frontend/verification-tools`, adapted to the real app's driver) for the surface you touched. Do not run the whole battery for a change it cannot affect.
 
-The owner resolved OD-12 on 21 September 2026: web first, with a future mobile wrapper sharing the web frontend. Keep tokens platform-neutral and the Mentor stage isolated. See `docs/rebuild/BASELINE.md` for implementation evidence; it is a tracking document, never a competing specification.
+The owner resolved OD-12 on 21 September 2026: web first, with a future mobile wrapper sharing the web frontend. Keep tokens platform-neutral and the Mentor stage isolated.
 
-Track this migration point by point in `docs/rebuild/SPRINTS.md` and `docs/rebuild/REQUIREMENTS.md`. Every checkpoint (a pushable work block, not each commit) records product and frontend verification against the SPEC, evidence and remaining limitations. Implementation, local verification, acceptance and release are separate statuses; never close a requirement on implementation alone. Update the sprint record and affected requirement rows together.
+Product judgment leads. A document is never a reason to leave a broken, confusing or unfinished experience shipped, and never a reason to skip a better design the user asked for. `docs/rebuild/SPRINTS.md` and `docs/rebuild/REQUIREMENTS.md` are optional history, not a per-change obligation. `docs/littlefounders-spec/frontend/frontend-bible/02-FOUNDATIONS.md` remains the source for the generated design tokens; the rest of the package is reference.

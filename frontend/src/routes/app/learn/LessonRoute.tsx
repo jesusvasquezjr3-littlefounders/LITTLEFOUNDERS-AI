@@ -345,7 +345,7 @@ function LessonRouteSession() {
 
   const offer = guidedReview ? <GuidedReviewOffer offer={guidedReview} register={registerOf(register)}
     locale={appLocale} dark={isDark} onDecline={() => setGuidedReview(null)}
-    onReview={(skillKey) => navigate(guidedReviewPath(skillKey))} /> : null;
+    onReview={(skillKey) => navigate(guidedReviewPath(skillKey, lessonId))} /> : null;
   const lessonTitle = learnCopy[appLocale].lesson.pageTitle;
   // Bible 06 §7 (GAP-FIX-R4): every lesson screen carries a band. A lesson document declares its own audience; the
   // opening, recall and refusal screens read in the learner's register (the youngest until Core answers).

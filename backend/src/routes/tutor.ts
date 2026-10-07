@@ -14,6 +14,7 @@ import {
   getFullOwnProfile,
   getVerifiedKidLinks,
   getVerifiedGuardiansOfKid,
+  getLessonById,
   insertAuditLog,
   serviceRest,
   type FullProfileRow,
@@ -490,7 +491,7 @@ function internalRouter(): Router {
     const states = await getOwnLearnerIntelligence(session.user_id);
     const intelDegraded = states === null;
 
-    let courseContext =
+    let courseContext: CourseContextWire | null =
       session.course_id || session.topic_id
         ? await resolveCourseContext(session.course_id, session.topic_id, session.locale)
         : null;
@@ -531,6 +532,12 @@ function internalRouter(): Router {
       // `buildPlan` rather than refusing an already-running session — a
       // failed or missing lookup here costs a less-readable objective, never
       // the session itself.
+    }
+
+    // OD-43: the current lesson in the topic, so the Mentor can complement the course.
+    if (courseContext?.topicId) {
+      const lesson = await resolveCurrentLesson(session.user_id, courseContext.topicId, session.locale);
+      if (lesson) courseContext = { ...courseContext, lesson };
     }
 
     /*
@@ -3160,6 +3167,67 @@ async function resolveCourseContext(
   };
 }
 
+/** OD-43: the learner's place in the course topic, as the Mentor may see it. */
+interface CourseLessonRef {
+  lessonId: string;
+  lessonTitle: string;
+  step: number;
+  total: number;
+}
+
+type CourseContextWire = {
+  courseId: string | null;
+  courseTitle: string | null;
+  topicId: string | null;
+  topicTitle: string | null;
+  lesson?: CourseLessonRef | null;
+};
+
+/**
+ * OD-43 (owner sign-off, 2026-10-06): the Mentor as a complement to the
+ * course. The learner's CURRENT lesson in a topic — the first published,
+ * non-enrichment lesson they have not passed, in position order — with its
+ * place, so the Mentor can ground its talk in the real lesson and where it
+ * sits. Server-role reads on the session's OWN learner, the same class of
+ * course structure `resolveCourseContext` already reads; it carries OUR
+ * catalog title and a position, never anything the learner typed. Null when
+ * the lesson cannot be resolved, which simply leaves the Mentor topic-level.
+ */
+async function resolveCurrentLesson(userId: string, topicId: string, locale: string): Promise<CourseLessonRef | null> {
+  const lessons = await serviceRest<Array<{ id: string; position: number; title: Record<string, string>; optional_enrichment: boolean | null }>>(
+    `/lessons?topic_id=eq.${encodeURIComponent(topicId)}&status=eq.published&select=id,position,title,optional_enrichment&order=position.asc,id.asc`,
+  );
+  if (!lessons) return null;
+  const ordered = lessons.filter((lesson) => !lesson.optional_enrichment);
+  if (ordered.length === 0) return null;
+  const ids = ordered.map((lesson) => lesson.id);
+  const progress = await serviceRest<Array<{ lesson_id: string; passed: boolean }>>(
+    `/lesson_progress?user_id=eq.${encodeURIComponent(userId)}&lesson_id=in.(${ids.join(',')})&select=lesson_id,passed`,
+  );
+  const passed = new Set((progress ?? []).filter((row) => row.passed).map((row) => row.lesson_id));
+  const index = ordered.findIndex((lesson) => !passed.has(lesson.id));
+  const at = index === -1 ? ordered.length - 1 : index;
+  const lessonTitle = pickTitle(ordered[at]!.title, normalizeLocale(locale));
+  if (!lessonTitle) return null;
+  return { lessonId: ordered[at]!.id, lessonTitle, step: at + 1, total: ordered.length };
+}
+
+/**
+ * OD-43: the course a topic belongs to (topics → sagas → adventures →
+ * course_id). Used only to anchor a lesson-opened review to its course so the
+ * Mentor can name it; a failed read degrades to a topic-only anchor.
+ */
+async function courseIdForTopic(topicId: string): Promise<string | null> {
+  const rows = await serviceRest<Array<{ sagas: unknown }>>(
+    `/topics?id=eq.${encodeURIComponent(topicId)}&select=sagas!inner(adventures!inner(course_id))&limit=1`,
+  );
+  const saga = Array.isArray(rows?.[0]?.sagas) ? (rows![0]!.sagas as unknown[])[0] : rows?.[0]?.sagas;
+  const adventure = saga && typeof saga === 'object' ? (saga as { adventures?: unknown }).adventures : null;
+  const adv = Array.isArray(adventure) ? adventure[0] : adventure;
+  const courseId = adv && typeof adv === 'object' ? (adv as { course_id?: string }).course_id : null;
+  return courseId ?? null;
+}
+
 /** A friendly word, not a name, for a learner who has not chosen a nickname. */
 function neutralNickname(locale: string): string {
   if (locale === 'en-US') return 'Explorer';
@@ -3502,6 +3570,8 @@ export function tutorRouter(): Router {
       intent: z.enum(['course_topic', 'weak_skill', 'faq', 'open', 'diagnostic']),
       courseId: z.string().uuid().nullish(),
       topicId: z.string().uuid().nullish(),
+      /** OD-43: a guided review opened FROM a lesson carries its id; Core resolves the topic/course from it. */
+      lessonId: z.string().uuid().nullish(),
       skillKey: z.string().min(1).max(128).nullish(),
       wantsVoice: z.boolean().default(false),
     })
@@ -3579,7 +3649,19 @@ export function tutorRouter(): Router {
         return fail(res, 400, VALIDATION, 'skillKey does not name a real skill');
       }
     }
-    const requestedSkills = [parsed.data.skillKey, parsed.data.topicId ? `topic:${parsed.data.topicId}` : null].filter((key): key is string => Boolean(key));
+    // OD-43: a guided review opened FROM a lesson carries the lesson id; resolve
+    // its topic and course so the Mentor can complement the course. No migration:
+    // the topic and course travel in the columns the session already stores.
+    let courseId = parsed.data.courseId ?? null;
+    let topicId = parsed.data.topicId ?? null;
+    if (parsed.data.intent === 'weak_skill' && !topicId && parsed.data.lessonId) {
+      const lesson = await getLessonById(user.accessToken, parsed.data.lessonId);
+      if (lesson) {
+        topicId = lesson.topic_id;
+        if (!courseId) courseId = await courseIdForTopic(lesson.topic_id);
+      }
+    }
+    const requestedSkills = [parsed.data.skillKey, topicId ? `topic:${topicId}` : null].filter((key): key is string => Boolean(key));
     const allowedSkills = await eligibleMentorSkills(user.id, requestedSkills);
     if (allowedSkills === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve content eligibility');
     if (requestedSkills.some(key => !allowedSkills.has(key))) return fail(res, 403, 'CONTENT_AGE_RESTRICTED', 'This content is not available for this learner');
@@ -3635,8 +3717,8 @@ export function tutorRouter(): Router {
       companion: prefs.companion,
       diorama: prefs.diorama,
       intent: parsed.data.intent,
-      courseId: parsed.data.courseId ?? null,
-      topicId: parsed.data.topicId ?? null,
+      courseId,
+      topicId,
       skillKey: parsed.data.skillKey ?? null,
       voiceUsed: wantsVoice && runtime.microphoneAvailable,
       consentId: consent?.id ?? null,
@@ -3826,8 +3908,39 @@ export function tutorRouter(): Router {
       return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read the transcript');
     }
 
+    /*
+     * The learner's own closing summary. Reuses the SAME deterministic
+     * builder the guardian view uses (`buildSessionNarrative`): `kc_attempt`
+     * names the topics practised and whether each was missed, and
+     * `tutor_sessions.summary` carries the graded fraction — no model call, no
+     * new table, no new field reaching a model, no new consent. Titles resolve
+     * in the CALLER's own locale: here the learner reads their own session.
+     */
+    const narrativeLocale = normalizeLocale((await profileOf(user.accessToken, user.id))?.locale);
+    const attemptRows = (await getKcAttemptsForSessions([session.id])) ?? [];
+    const kcIds = [...new Set(attemptRows.map((a) => a.kc_id))];
+    const kcTitleRows = kcIds.length > 0 ? ((await getKcTitlesByIds(kcIds)) ?? []) : [];
+    const titleById = new Map<string, string>();
+    for (const row of kcTitleRows) {
+      const title = pickTitle(row.title, narrativeLocale);
+      if (title) titleById.set(row.id, title);
+    }
+    const attempts = attemptRows.flatMap((row) => {
+      const kcTitle = titleById.get(row.kc_id);
+      return kcTitle ? [{ kcId: row.kc_id, kcTitle, correct: row.correct, createdAt: row.created_at }] : [];
+    });
+    const topicId = session.summary?.topicId ?? null;
+    const topicTitle = topicId ? pickTitle((await getTopicTitlesByIds([topicId])).get(topicId) ?? {}, narrativeLocale) : null;
+    const narrative = buildSessionNarrative({
+      attempts,
+      fallbackTopic: topicTitle ?? session.summary?.topic ?? null,
+      gradedCorrect: session.summary?.gradedCorrect ?? null,
+      gradedTotal: session.summary?.gradedTotal ?? null,
+    });
+
     return ok(res, {
       session: summarizeSession(session),
+      narrative,
       turns,
       // stripCandidate, not the raw row: `tutor_segments.answer` is
       // service-role-only and must not reach a client even on a replay.

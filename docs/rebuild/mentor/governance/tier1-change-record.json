@@ -561,6 +561,16 @@
       "origin": "human",
       "pedagogicalReviewer": "Astralino",
       "safetyTrustLead": "Claudio"
+    },
+    {
+      "component": "safety.judge",
+      "hash": "e9e5f2c11f10ad83eb0db3ae1dd07dd6c8ffe8a097b80b53795d0c174b54b269",
+      "files": 9,
+      "date": "2026-10-07",
+      "change": "OD-43: the Mentor sees the learner's current lesson in the topic (added courseContext.lesson to the child context contract), an owner-signed Tier 1 widening so the Mentor can complement the course",
+      "origin": "human",
+      "pedagogicalReviewer": "Astralino",
+      "safetyTrustLead": "Claudio"
     }
   ]
 }

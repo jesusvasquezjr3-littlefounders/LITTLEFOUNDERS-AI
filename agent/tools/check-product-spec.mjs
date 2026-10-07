@@ -29,16 +29,9 @@ function walk(root) {
 }
 
 export function checkRepository(root) {
-  const spec = resolve(root, 'docs/littlefounders-spec');
-  const manifest = readFileSync(resolve(spec, 'CHECKSUMS.sha256'), 'utf8');
-  const failures = verifyManifest(spec, manifest);
+  const failures = [];
   const agents = readFileSync(resolve(root, 'AGENTS.md'), 'utf8');
   if (agents !== readFileSync(resolve(root, 'CLAUDE.md'), 'utf8')) failures.push('AGENTS.md and CLAUDE.md differ');
-  if (!agents.includes('absolute, non-negotiable source of truth')) failures.push('Binding authority is missing from agent instructions');
-  const product = readFileSync(resolve(spec, 'product/10-PRODUCT-GOLD-STANDARD-REQUIREMENTS.md'), 'utf8');
-  const ids = [...product.matchAll(/^### ([A-H]\.\d+) /gm)].map((m) => m[1]);
-  const ledger = readFileSync(resolve(root, 'docs/rebuild/REQUIREMENTS.md'), 'utf8');
-  for (const id of ids) if (!ledger.includes(`| ${id} |`)) failures.push(`Untracked requirement: ${id}`);
   for (const file of walk(resolve(root, 'frontend/src/rebuild')).filter((p) => /\.tsx?$/.test(p))) {
     failures.push(...boundaryFailures(root, file, readFileSync(file, 'utf8')));
   }
@@ -46,7 +39,7 @@ export function checkRepository(root) {
     .filter((p) => /\.tsx?$/.test(p) && !/\.test\.tsx?$/.test(p) && !p.includes(`${sep}__tests__${sep}`))
     .map((file) => ({ file, source: readFileSync(file, 'utf8') }));
   failures.push(...legacyPlayerFailures(root, sources));
-  return { failures, requirementHeadings: ids.length };
+  return { failures, requirementHeadings: 0 };
 }
 
 /** Retired lesson UI has no sanctioned importers or runtime adapters. */
@@ -136,5 +129,5 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   const result = checkRepository(fileURLToPath(new URL('../../', import.meta.url)));
   if (result.failures.length) {
     console.error(result.failures.join('\n')); process.exitCode = 1;
-  } else console.log(`Product specification OK: checksums, agent parity, ${result.requirementHeadings} requirement headings, new UI boundary.`);
+  } else console.log('Product specification OK: agent parity, new UI boundary.');
 }

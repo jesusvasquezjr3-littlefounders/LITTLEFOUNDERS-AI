@@ -122,7 +122,7 @@ export function MentorScreenPreview({ locale, theme, ageBand, params }: { locale
     history: [{ speaker: 'tutor', text: TURNS[locale].ask, seq: 1 }, { speaker: 'learner', text: locale === 'en-US' ? 'Save them' : locale === 'es-MX' ? 'Ahorrarlas' : 'Poupar', seq: 2 }, { speaker: 'tutor', text, seq: 3 }],
     // GAP-FIX-R5 (08 §10 item 5): the recap's one 'Finish now' chip, so the Copy Budget and Text Fit audits measure it.
     recapOpen: params.get('recap') === '1' && phase === 'conversing',
-    closing: phase === 'closing' ? { sessionId: 'preview', script: state === 'closing-safety' ? 'safety_stop' : 'completed', effort: 'recovered', topic: state === 'closing-safety' ? null : (copy.mentorSessionEnd as { previewTopic?: string }).previewTopic ?? null } : null,
+    closing: phase === 'closing' ? { sessionId: 'preview', script: state === 'closing-safety' ? 'safety_stop' : 'completed', effort: 'recovered', topic: state === 'closing-safety' ? null : (copy.mentorSessionEnd as { previewTopic?: string }).previewTopic ?? null, summary: null, xp: null } : null,
     mic: { present: mic === 'on' && (phase === 'openings' || phase === 'conversing'), blockedBy: mic === 'consent' ? 'CONSENT_REQUIRED' : mic === 'policy' ? 'POLICY_BLOCKED' : mic === 'off' ? 'VOICE_UNAVAILABLE' : null,
       denied: false, recording, microphone: { subscribe: (listener) => { listener(0.6); return noop; } } },
     retry: noop, chooseCalibration: noop, start: noop, sendText: noop, pressMic: noop, endSession: noop, restart: noop, editLast: noop,

@@ -57,6 +57,7 @@ export function transcriptFixture(locale: Locale, character: SessionSummary['cha
   });
   return {
     session: { ...sessionsFixture()[0]!, character },
+    narrative: null,
     turns: [
       turn(1, 'tutor', w(locale, 'Hi! Shall we plan how to save for the bike?', '¡Hola! ¿Planeamos cómo ahorrar para la bici?', 'Oi! Vamos planejar como poupar para a bicicleta?'), 0),
       turn(2, 'learner', w(locale, 'Yes!', '¡Sí!', 'Sim!'), 1),
@@ -89,6 +90,6 @@ export function fixtureData(locale: Locale, mode: 'ready' | 'empty' | 'failed' |
     notebook: () => answer(notebookFixture(locale), { plan: null, entries: [], recap: null }),
     sessions: () => answer(sessionsFixture(), []),
     transcript: (id) => answer(transcriptFixture(locale, sessionsFixture().find((s) => s.id === id)?.character ?? 'dina'),
-      { session: sessionsFixture()[0]!, turns: [], segments: [] }),
+      { session: sessionsFixture()[0]!, narrative: null, turns: [], segments: [] }),
   };
 }

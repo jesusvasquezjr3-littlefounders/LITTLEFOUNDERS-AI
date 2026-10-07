@@ -32,6 +32,10 @@
     "safetyBody": "Habla con una persona adulta de confianza.",
     "nextLabel": "La próxima vez:",
     "backToPath": "Volver al camino",
+    "summaryTopicsLabel": "Hoy trabajaste en:",
+    "summaryWorkedThrough": "Lo resolviste:",
+    "summaryStillTricky": "Todavía cuesta:",
+    "summaryXp": "Ganaste {n} XP.",
     "previewTopic": "Ahorrar para una meta"
   },
   "mentorCheckIn": {

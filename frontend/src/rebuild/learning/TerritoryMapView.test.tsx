@@ -71,7 +71,7 @@ describe('course world (L3)', () => {
     expect(within(island).getByRole('button', { name: /Counting coins/ }).textContent).toContain('Review');
   });
 
-  it('offers the placement first and opens no lesson until it is taken', () => {
+  it('offers the placement but still opens the lessons a learner can enter (B.15)', () => {
     const { onNavigate } = renderMap({ status: 'ready', map: territoryFixture(true) });
     const start = screen.getByRole('link', { name: 'Start' });
     expect(start.getAttribute('href')).toBe('/learn/financial-education/placement');
@@ -79,8 +79,9 @@ describe('course world (L3)', () => {
     expect(onNavigate).toHaveBeenCalledWith('/learn/financial-education/placement', undefined);
     const forest = worldOf('The needs forest');
     fireEvent.click(within(forest).getByRole('button', { name: 'Topics' }));
-    expect(within(forest).queryAllByRole('button').filter((button) => button.classList.contains('lf-list-row--pressable'))).toHaveLength(0);
-    expect(screen.queryByText('1 topic to review')).toBeNull();
+    expect(within(forest).queryAllByRole('button').filter((button) => button.classList.contains('lf-list-row--pressable')).length).toBeGreaterThan(0);
+    // Reviews are no longer hidden behind the placement.
+    expect(screen.getByText('1 topic to review')).toBeTruthy();
   });
 
   it('under the pathway engine: a younger chapter is an extra, a chapter closed by age is counted and never listed (OD-16)', () => {

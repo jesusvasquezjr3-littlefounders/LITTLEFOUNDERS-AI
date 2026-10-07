@@ -90,6 +90,25 @@ describe('SessionClosing — the closing state matches how the session ended', (
       expect(node.parentElement?.closest('[data-copy-role]'), node.textContent).not.toBeNull();
     }
   });
+
+  it('shows the session summary — the topics, the tricky one and the XP (closing summary)', () => {
+    render(<SessionClosing copy={en.mentorSessionEnd} locale="en-US" dark={false} script="completed" effort="recovered"
+      topic="Saving for a goal"
+      summary={{ topics: ['Needs and wants', 'Saving'], struggledTopic: 'Needs and wants', struggleResolved: true, gradedCorrect: 3, gradedTotal: 4 }}
+      xp={30} onBack={vi.fn()} />);
+    expect(screen.getByText('Needs and wants, Saving')).toHaveAttribute('data-copy-role', 'data');
+    expect(screen.getByText(en.mentorSessionEnd.summaryWorkedThrough)).toHaveAttribute('data-copy-role', 'body');
+    expect(screen.getByText(/You earned 30 XP\./)).toHaveAttribute('data-copy-role', 'body');
+  });
+
+  it('shows no summary after a safety stop, even when one is provided', () => {
+    render(<SessionClosing copy={en.mentorSessionEnd} locale="en-US" dark={false} script="safety_stop" effort={null}
+      topic={null} summary={{ topics: ['Needs and wants'], struggledTopic: null, struggleResolved: false, gradedCorrect: 1, gradedTotal: 1 }}
+      xp={10} onBack={vi.fn()} />);
+    expect(screen.queryByText(en.mentorSessionEnd.summaryTopicsLabel, { exact: false })).toBeNull();
+    expect(screen.queryByText('Needs and wants')).toBeNull();
+    expect(screen.queryByText(/XP/)).toBeNull();
+  });
 });
 
 describe('the copy fits the budget for ages 6–9 in every locale (Bible 06)', () => {

@@ -212,7 +212,7 @@ function PathwaySections({ path, slug, locale, t, links, onNavigate, onOpenEarly
   return <>
     {pathway.badge.contentGap && pathway.basis !== 'unavailable' ? <p className="lf-course-path-note" data-copy-role="body">{t.contentGap}</p> : null}
     {offers.map((offer) => <OfferCard key={offer.key} offer={offer} t={t} locale={locale} onAnswer={() => keep(offer)} />)}
-    {!pathway.placementRequired && others.length > 0 ? <section className="lf-course-path-section" aria-labelledby={`${ids}-more`}>
+    {others.length > 0 ? <section className="lf-course-path-section" aria-labelledby={`${ids}-more`}>
       {/* GAP-FIX-R5 (Block B autonomy, 6-9): Core offers a simple binary pick, so the second step is the one alternative. */}
       <h2 id={`${ids}-more`} data-copy-role="heading">{moreTitle}</h2>
       <div className="lf-course-path-items"><List label={moreTitle}>
@@ -223,7 +223,7 @@ function PathwaySections({ path, slug, locale, t, links, onNavigate, onOpenEarly
     </section> : null}
 
     {/* GAP-FIX-R5 (Block B autonomy, 13-17 and adults; B.24): optional depth lessons, never counted toward progress or badges. */}
-    {!pathway.placementRequired && path.autonomy.enrichment && path.enrichment.length > 0 ? <section className="lf-course-path-section" aria-labelledby={`${ids}-explore`} data-lever="enrichment">
+    {path.autonomy.enrichment && path.enrichment.length > 0 ? <section className="lf-course-path-section" aria-labelledby={`${ids}-explore`} data-lever="enrichment">
       <h2 id={`${ids}-explore`} data-copy-role="heading">{t.exploreTitle}</h2>
       <p className="lf-course-path-note" data-copy-role="body">{t.exploreNote}</p>
       <div className="lf-course-path-items"><List label={t.exploreTitle}>
@@ -243,7 +243,7 @@ function PathwaySections({ path, slug, locale, t, links, onNavigate, onOpenEarly
       </ol>
       {/* Chapters the age safeguard closes are counted, never offered and never listed as lessons (OD-16). */}
       {closedCount > 0 ? <p className="lf-course-path-note" data-copy-role="body">{plural(locale, closedCount, t.closedOne, t.closedOther)}</p> : null}
-      {!pathway.placementRequired && path.blocked.length > 0 ? <p className="lf-course-path-note" data-copy-role="body">{fill(t.waiting, { n: path.blocked.length })}</p> : null}
+      {path.blocked.length > 0 ? <p className="lf-course-path-note" data-copy-role="body">{fill(t.waiting, { n: path.blocked.length })}</p> : null}
     </section>
 
     {path.skills.length > 0 ? <section className="lf-course-path-section" aria-labelledby={`${ids}-skills`}>
@@ -348,7 +348,7 @@ function LinearChapters({ tree, slug, locale, t, links, onNavigate }: { tree: Co
     <h2 id={`${ids}-chapters`} data-copy-role="heading">{t.chaptersTitle}</h2>
     <ol className="lf-course-path-chapters">
       {tree.adventures.map((adventure) => <LinearChapter key={adventure.id} adventure={adventure} slug={slug} locale={locale} t={t} links={links} onNavigate={onNavigate}
-        nextLessonId={tree.nextLessonId} expandable={!tree.course.placementRequired && adventure.state !== 'locked'} open={open === adventure.id}
+        nextLessonId={tree.nextLessonId} expandable={adventure.state !== 'locked'} open={open === adventure.id}
         onToggle={() => setOpen(open === adventure.id ? null : adventure.id)} />)}
     </ol>
   </section>;

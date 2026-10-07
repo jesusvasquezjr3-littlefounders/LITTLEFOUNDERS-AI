@@ -7,7 +7,7 @@ import { APP_HOME } from '@/app-shell/home';
 import { ShellRoot, useShellCopy, useShellLocale } from '@/app-shell/ShellRoot';
 import { StandaloneState } from '@/app-shell/StandaloneState';
 import { useWalletAccess } from '@/routes/app/wallet/useWalletAccess';
-import { guidedReviewSkillFrom } from '@/routes/app/learn/paths';
+import { guidedReviewSkillFrom, guidedReviewLessonFrom } from '@/routes/app/learn/paths';
 import { ButtonLink, SkipLink } from '@/rebuild/design/controls';
 import { ConnectedStandaloneHeader } from '@/app-shell/StandaloneHeader';
 import { MentorRoute, mentorCopy } from '@/rebuild/mentor/screen/MentorRoute';
@@ -58,6 +58,8 @@ export default function TutorPage() {
   const wallet = useWalletAccess();
   const navigate = useNavigate();
   const reviewSkill = useMemo(() => guidedReviewSkillFrom(window.location.search), []);
+  // OD-43: the lesson a guided review was opened from, so the Mentor can complement the course.
+  const reviewLesson = useMemo(() => guidedReviewLessonFrom(window.location.search), []);
   // Bible 08 §8 (GAP-FIX-R1): /tutor?sheet=chooser (the profile's "Change") opens with the Mentor chooser.
   const initialSheet = useMemo(() => new URLSearchParams(window.location.search).get('sheet') === 'chooser' ? 'chooser' as const : null, []);
   const opened = useRef(false);
@@ -72,7 +74,7 @@ export default function TutorPage() {
   return <MentorBoundary fallback={<MentorFailure />}>
     <ShellRoot>
       <MentorRoute header={<><SkipLink label={shellCopy.skip} target="lf-mentor-route-main" /><ConnectedStandaloneHeader /></>} getToken={getToken} userId={session?.user?.id ?? null} locale={locale} theme={isDark ? 'dark' : 'light'}
-        guardianLink={wallet.familyChild} reviewSkill={reviewSkill} onLeave={leave} onPath={path} initialSheet={initialSheet} />
+        guardianLink={wallet.familyChild} reviewSkill={reviewSkill} reviewLessonId={reviewLesson} onLeave={leave} onPath={path} initialSheet={initialSheet} />
     </ShellRoot>
   </MentorBoundary>;
 }

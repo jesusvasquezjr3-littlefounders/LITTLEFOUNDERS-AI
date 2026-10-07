@@ -426,28 +426,22 @@ describe('placement is decided by the graph, not by age', () => {
   });
 });
 
-describe('PLACEMENT_REQUIRED gates the 3 lesson-access endpoints in learn.ts', () => {
-  it('blocks GET /learn/lessons/:id, POST .../grade, and POST .../complete until placement is done, then unblocks after', async () => {
+describe('the entry placement is offered, never a wall (learn.ts)', () => {
+  it('does not refuse lesson access before placement, reports placementRequired until it is done, then clears it', async () => {
     const app = createApp();
 
+    // Before placing: a lesson is not refused by the placement, and the course still reports it as offered.
     const getRes = await auth(request(app).get(`/api/v1/learn/lessons/${L1}`));
-    expect(getRes.status).toBe(403);
-    expect(getRes.body.error.code).toBe('PLACEMENT_REQUIRED');
+    expect(getRes.body.error?.code).not.toBe('PLACEMENT_REQUIRED');
 
-    const gradeRes = await auth(request(app).post(`/api/v1/learn/lessons/${L1}/grade`)).send({
-      segment_id: 'x', answer: {}, run_id: 'aaaaaaaa-0000-4000-8000-000000000001', attempt_token: 'invalid-token',
-    });
-    expect(gradeRes.status).toBe(403);
-    expect(gradeRes.body.error.code).toBe('PLACEMENT_REQUIRED');
-
-    const completeRes = await auth(request(app).post(`/api/v1/learn/lessons/${L1}/complete`)).send({ seconds_spent: 30 });
-    expect(completeRes.status).toBe(403);
-    expect(completeRes.body.error.code).toBe('PLACEMENT_REQUIRED');
+    const before = await auth(request(app).get(`/api/v1/learn/courses/${COURSE_SLUG}/tree`));
+    expect(before.status).toBe(200);
+    expect(before.body.data.course.placementRequired).toBe(true);
 
     await commit({ signals: {}, answers: [], startFromBeginning: true });
 
-    const treeRes = await auth(request(app).get(`/api/v1/learn/courses/${COURSE_SLUG}/tree`));
-    expect(treeRes.status).toBe(200);
-    expect(treeRes.body.data.course.placementRequired).toBe(false);
+    const after = await auth(request(app).get(`/api/v1/learn/courses/${COURSE_SLUG}/tree`));
+    expect(after.status).toBe(200);
+    expect(after.body.data.course.placementRequired).toBe(false);
   });
 });

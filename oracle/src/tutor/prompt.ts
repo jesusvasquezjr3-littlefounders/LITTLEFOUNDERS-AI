@@ -2603,10 +2603,19 @@ export function buildContextMessage(context: TutorContext): string {
 
   if (context.courseContext?.courseTitle) {
     const topic = context.courseContext.topicTitle;
+    const lesson = context.courseContext.lesson;
     lines.push(
       '',
       `They are working through "${context.courseContext.courseTitle}"${topic ? `, currently on "${topic}"` : ''}.`,
     );
+    /*
+     * OD-43: the Mentor as a complement to the course. When Core resolved the
+     * learner's current lesson in this topic, the Mentor may ground its talk
+     * in that real lesson and its place — never invent a lesson.
+     */
+    if (lesson) {
+      lines.push(`In that topic they are on the lesson "${lesson.lessonTitle}" (lesson ${lesson.step} of ${lesson.total}).`);
+    }
   }
 
   lines.push('', `Why they are here: ${INTENT_INSTRUCTIONS[context.intent]}`);

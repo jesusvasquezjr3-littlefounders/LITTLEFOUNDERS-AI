@@ -128,9 +128,9 @@ function ReadyMap({ map, slug, locale, t, links, onNavigate }: TerritoryMapViewP
           value={progress.pct} max={100} valueText={`${progress.passed}/${progress.total}`} />
         <span data-copy-role="data">{progress.passed}/{progress.total}</span>
       </div>
-      {due > 0 && !placementRequired ? <Pill tone="sky">{plural(locale, due, t.reviewsOne, t.reviewsOther)}</Pill> : null}
+      {due > 0 ? <Pill tone="sky">{plural(locale, due, t.reviewsOne, t.reviewsOther)}</Pill> : null}
     </div>
-    {/* The entry placement first (B.15: finding a start, not a test); lessons stay closed by Core until it is taken. */}
+    {/* The entry placement is an OFFER (B.15: finding a start, not a test): it is never a wall, so lessons stay open. */}
     {placementRequired ? <section className="lf-course-path-hero" aria-labelledby={placementId} data-step="placement">
       <h2 id={placementId} data-copy-role="heading">{t.placementTitle}</h2>
       <div className="lf-course-path-hero-action">
@@ -182,14 +182,14 @@ function World({ world, here, map, slug, locale, t, links, onNavigate }: {
 function TopicRow({ topic, map, slug, locale, t, links, onNavigate }: {
   topic: TerritoryTopic; map: Territory; slug: string; locale: Locale; t: Copy; links: LearnLinks; onNavigate: LearnNavigate;
 }) {
-  const lessonId = topicLesson(topic, map.course.placementRequired);
+  const lessonId = topicLesson(topic, false);
   const next = map.nextLessonId !== null && topic.lessons.some((lesson) => lesson.id === map.nextLessonId);
   const passed = topic.lessons.filter((lesson) => lesson.state === 'passed').length;
   // The topic's state in a word (never colour alone): next, review due, done, started; a closed topic says when it opens.
-  const label = !map.course.placementRequired && next ? { text: t.topic.next, tone: 'pathway' }
+  const label = next ? { text: t.topic.next, tone: 'pathway' }
     : topic.state === 'review-due' ? { text: t.topic['review-due'], tone: 'review-due' }
       : topic.state === 'completed' ? { text: t.topic.completed, tone: 'known' }
-        : lessonId === null && !map.course.placementRequired ? { text: t.topic.locked, tone: 'closed' }
+        : lessonId === null ? { text: t.topic.locked, tone: 'closed' }
           : topic.state === 'in-progress' ? { text: t.topic['in-progress'], tone: 'pathway' } : null;
   return <ListRow title={localizedText(topic.title, locale) || topic.slug} titleRole="option"
     leading={topic.state === 'completed' ? <span className="lf-course-path-mark"><StatusMark correct /></span> : undefined}

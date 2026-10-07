@@ -151,7 +151,6 @@ export function flatLessons(tree: CourseTree): { lesson: TreeLesson; topic: z.in
 export function nextStep(detail: CourseDetail): NextStep {
   if (detail.engine === 'pathway') {
     const { pathway, items } = detail.path;
-    if (pathway.placementRequired) return { kind: 'placement' };
     if (pathway.progress.complete) return { kind: 'done' };
     const recommended = items.find((item) => item.recommended);
     return recommended
@@ -159,7 +158,6 @@ export function nextStep(detail: CourseDetail): NextStep {
       : { kind: 'none' };
   }
   const { tree } = detail;
-  if (tree.course.placementRequired) return { kind: 'placement' };
   const next = tree.nextLessonId ? flatLessons(tree).find(({ lesson }) => lesson.id === tree.nextLessonId) : undefined;
   if (next) return { kind: 'lesson', lessonId: next.lesson.id, title: next.topic.title, minutes: next.lesson.estimated_minutes ?? null };
   const { passed, total } = tree.course.progress;
