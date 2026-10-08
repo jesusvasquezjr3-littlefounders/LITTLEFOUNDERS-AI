@@ -152,7 +152,7 @@ jobs:
           run_sql 'SELECT removed FROM insights_maintenance_log ORDER BY id DESC LIMIT 1;' 'pruned_rows'
           run_sql 'SELECT count(*) FROM insights_daily_activity;' 'rollup_rows'
           # S05.3c (B.13): closed family-bridge prompts leave after the same 400-day window.
-          run_sql 'SELECT public.purge_closed_learning_bridge_prompts(400);' 'bridge_prompts_purged'
+          run_sql "DO $bridge$ BEGIN IF to_regprocedure('public.purge_closed_learning_bridge_prompts(integer)') IS NOT NULL THEN PERFORM public.purge_closed_learning_bridge_prompts(400); END IF; END $bridge$;" 'bridge_prompts_purged'
 
       # H.4 (GAP-FIX-R6): leave the run in Core's audit trail
       # (scripts/ops-heartbeat.sh); ops-job-watch.yml notifies a human when
