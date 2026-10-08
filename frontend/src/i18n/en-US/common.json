@@ -16,13 +16,5 @@
     "liruf": {
       "default_greeting": "Hi! I'm Liruf!"
     }
-  },
-  "family": {
-    "badge": {
-      "share": "Share achievement",
-      "shareGoal": "Share \"{{title}}\"",
-      "disclosure": "You get a picture with their first name. No link is made.",
-      "disclosureKeep": "Anyone you send it to can keep it. It shows LittleFounders."
-    }
   }
 }

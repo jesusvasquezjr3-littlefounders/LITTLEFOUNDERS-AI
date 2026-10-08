@@ -9,13 +9,7 @@
  */
 export const NAV_MARKS = {
   learn: 'nav.icon.learn',
-  tasks: 'nav.icon.tasks',
-  wallet: 'nav.icon.wallet',
-  familyCoins: 'nav.icon.family-coins',
-  coins: 'nav.icon.coins',
-  family: 'nav.icon.family',
   profile: 'nav.icon.profile',
-  becomeTutor: 'nav.icon.become-tutor',
   staff: 'nav.icon.staff',
   backToApp: 'nav.icon.back-to-app',
   overview: 'nav.icon.overview',

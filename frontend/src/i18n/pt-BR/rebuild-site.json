@@ -31,7 +31,6 @@
     "continue": "Continuar",
     "login": "Entrar",
     "becomeTutor": "Seja o Tutor do seu filho",
-    "openFamily": "Abrir sua família",
     "openApp": "Abrir o app",
     "pickOne": "Escolha uma para ver o que muda.",
     "mentorsLabel": "Os quatro Mentores"
@@ -198,7 +197,6 @@
     "home": "Ir para o início",
     "alreadyTitle": "Você já é Tutor",
     "alreadyBody": "Abra sua família para adicionar seu filho.",
-    "openFamily": "Abrir família",
     "successTitle": "Agora você é Tutor",
     "successBody": "Você já pode adicionar seu filho e passar tarefas.",
     "verified": "Tutor verificado",
@@ -231,8 +229,7 @@
     "retryHint": "Tente uma foto mais nítida ou outro documento.",
     "helpBody": "Uma pessoa pode conferir para você.",
     "writeToUs": "Escreva para nós",
-    "supportEmail": "informame@littlefounders.ai",
-    "openInvite": "Abrir o convite"
+    "supportEmail": "informame@littlefounders.ai"
   },
   "onboardingFlow": {
     "title": "Primeiros passos",

@@ -14,7 +14,7 @@ import { OWNER_ROLES, type MentorQualityDashboardData, type OwnerRole } from '..
  * Staff surfaces over Core's programme reads:
  *
  *   Trust (Analytics & Health, view_analytics)  the Appendix J/L social,
- *     deletion and achievement-sharing metrics, and Appendix M's identity
+ *     and deletion metrics, and Appendix M's identity
  *     metrics.
  *   Support tools (Reports, manage_support)    the Mentor retention sweep's
  *     health and the operations watchdog.

@@ -10,13 +10,11 @@ import './learnerPage.css';
 import './learnHome.css';
 import { localizedText } from './coursePath';
 import { nextStep, type CourseState, type NextStep } from './course';
-import { SelfBridgeList } from './DecisionJournalView';
 import { learningRhythmCopy } from './LearningRhythmView';
 import { fill, learnCopy, linkTo, plural, type LearnLinks, type LearnNavigate } from './learnCopy';
 import { fillName, gamesCopy } from '../games/gamesCopy';
 import { courseIdentity, featuredCourse, isClosedByAge, isDone, isStarted, shelfOrder, type ShelfCourse, type ShelfState } from './learnHome';
 import type { RhythmState } from './motivation';
-import type { BridgeAnswer, SelfBridge } from './narrative';
 
 /*
  * W2L.1 — L1, the learner home at /learn, inside the learner shell.
@@ -32,9 +30,8 @@ import type { BridgeAnswer, SelfBridge } from './narrative';
  *              closes is listed and never offered (OD-16). B.3: a featured
  *              course that could not load is said, never silently dropped.
  *   secondary  the habit streak with its rest days and the learner's own pace
- *              (B.21, B.24), then the learner's story (B.9: the decision
- *              journal; B.13: an independent teen's "try it for real" prompts), and
- *              for a 13-to-17 participant, goals together (L-04, OD-27 (1)).
+ *              (B.21, B.24), the learner's Mentor, and for a 13-to-17
+ *              participant, goals together (L-04, OD-27 (1)).
  *
  * Presentation only: the host (routes/app/learn/LearnHomeRoute.tsx, or the
  * preview) owns transport and navigation. Nothing here decides a lock or sees
@@ -57,7 +54,6 @@ export interface LearnHomeProps {
    */
   featured: { slug: string; state: CourseState } | null;
   rhythm: RhythmState;
-  bridges: SelfBridge[];
   /** L-04 (OD-27 (1)): goals together, shown only when Core says this learner may take part. */
   together?: { eligible: boolean; asked: boolean } | null;
   /** A game on offer (Core's GET /learn/games, enabled for this learner): the "Play with {Mentor}" card. Null while unknown or on a failed read. */
@@ -68,9 +64,6 @@ export interface LearnHomeProps {
   onNavigate: LearnNavigate;
   onRetry: () => void;
   retrying?: boolean;
-  onBridge: BridgeAnswer;
-  /** W3L.1 (L-12): the teen's Wallet, after a goal was created there. */
-  onOpenWallet?: () => void;
   fixture?: boolean;
 }
 
@@ -96,7 +89,6 @@ export function LearnHomeView(props: LearnHomeProps) {
       secondary={<>
         <StreakCard {...props} />
         <MentorCard {...props} />
-        <SelfBridgeList bridges={props.bridges} locale={locale} onBridge={props.onBridge} onOpenWallet={props.onOpenWallet} />
         <TogetherCard {...props} />
         <PlayCard {...props} />
       </>} />

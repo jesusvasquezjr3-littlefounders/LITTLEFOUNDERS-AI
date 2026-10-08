@@ -93,12 +93,6 @@ export const TRUST_METRICS: readonly MetricSpec[] = [
       f('byGuardian', 'count', ['requested', 'byInitiator', 'guardian']), f('bySuspension', 'count', ['requested', 'byInitiator', 'suspension_expiry']),
       f('cancelled', 'count'), f('completed', 'count'), f('openPending', 'count', ['open', 'pending']), f('openProcessing', 'count', ['open', 'processing']),
       f('openHeld', 'count', ['open', 'held']), f('openOverdue', 'count', ['open', 'overdue']), f('slaHours', 'hours')] },
-  { id: 'achievementSharing', path: withDays('/admin/analytics/achievement-sharing'), headline: f('persistentPublicUrls', 'count'), target: 'zero',
-    facts: [f('persistentPublicUrlRate', 'rate'), f('sharesStarted', 'count', ['initiated', 'total']), f('shareSheet', 'count', ['initiated', 'shareSheet']),
-      f('download', 'count', ['initiated', 'download']), f('kindBadge', 'count', ['initiated', 'byKind', 'course_badge']),
-      f('kindStreak', 'count', ['initiated', 'byKind', 'streak']), f('kindGoal', 'count', ['initiated', 'byKind', 'goal_reached']),
-      f('legacyTotal', 'count', ['legacyLinks', 'total']), f('legacyLive', 'count', ['legacyLinks', 'live']), f('legacyRevoked', 'count', ['legacyLinks', 'revoked']),
-      f('legacyRetired', 'flag', ['legacyLinks', 'retired']), f('legacyRetires', 'date', ['legacyLinks', 'routeRetiresAt'])] },
 ];
 
 /* ---- Reading a described metric -------------------------------------------- */

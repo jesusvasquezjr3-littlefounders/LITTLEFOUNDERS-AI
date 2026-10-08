@@ -19,8 +19,8 @@ import { MentorRoute, mentorCopy } from '@/rebuild/mentor/screen/MentorRoute';
  *   - the signed-in account and its token (Core is the only data source; the
  *     Oracle socket URL still comes from Core's session start);
  *   - the language and mode the learner chose;
- *   - whether a guardian link exists (a child in a family, Core's
- *     `/wallet/access` answer): only then does the menu say what the grown-up
+ *   - whether a guardian link exists (the account has the `kid` role):
+ *     only then does the menu say what the grown-up
  *     sees (08 §4); a teen without a parent and an adult never see that line;
  *   - the guided review a lesson offered (`?review=<skill>`), validated here;
  *   - navigation: close goes back to the learner's home, the closing state's

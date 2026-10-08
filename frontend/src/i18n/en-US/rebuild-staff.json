@@ -211,7 +211,6 @@
         "time_to_mastery": "Attempts to master a skill",
         "transfer_success": "Success in new contexts",
         "judgment_quality": "Judgment beyond right answers",
-        "bridge_conversion": "Lessons turned into real tasks",
         "decision_journal": "Story choices kept and brought back"
       },
       "engagement": {
@@ -1521,8 +1520,7 @@
         "socialDiscovery": "Child profile exposure",
         "socialEscalation": "Reports and escalation",
         "socialAudit": "Social audit trail",
-        "accountDeletions": "Account deletions",
-        "achievementSharing": "Achievement sharing"
+        "accountDeletions": "Account deletions"
       },
       "body": {
         "socialSafety": "Tiers and teen consent.",
@@ -1531,7 +1529,6 @@
         "socialEscalation": "Repeat-report patterns sent to staff. Target: all.",
         "socialAudit": "Follows, blocks and reports with an audit row. Target: all.",
         "accountDeletions": "Deletion requests, timelines and the open queue.",
-        "achievementSharing": "Shares by kind and any new public links. Target: none.",
         "never": "Never",
         "noData": "No data yet",
         "hours": "{n} h"
@@ -1623,20 +1620,7 @@
         "openProcessing": "Processing",
         "openHeld": "Held",
         "openOverdue": "Overdue",
-        "slaHours": "Deadline",
-        "persistentPublicUrls": "New public links",
-        "persistentPublicUrlRate": "Public link rate",
-        "sharesStarted": "Shares started",
-        "shareSheet": "Share sheet",
-        "download": "Downloaded",
-        "kindBadge": "Course badges",
-        "kindStreak": "Streaks",
-        "kindGoal": "Goals reached",
-        "legacyTotal": "Old links",
-        "legacyLive": "Old links live",
-        "legacyRevoked": "Old links revoked",
-        "legacyRetired": "Old route retired",
-        "legacyRetires": "Old route retires"
+        "slaHours": "Deadline"
       }
     },
     "support": {

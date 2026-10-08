@@ -5,8 +5,7 @@ import LanguageDetector from 'i18next-browser-languagedetector';
 /*
  * Locale resources are fragmented per route area (frontend/AGENTS.md §i18n):
  * <locale>/common.json    — spread at the root: the not-found fallback, the
- *                           theme labels, the legacy 2D characters' greeting
- *                           and the family.badge share copy
+ *                           theme labels and the legacy 2D characters' greeting
  * <locale>/tutor.json    — the Mentor stage's scene and microphone strings
  * The legacy namespaces no screen reads any more (errors, auth, dashboard,
  * profile, learn, admin, onboarding, placement) left with the legacy UI in
@@ -15,7 +14,7 @@ import LanguageDetector from 'i18next-browser-languagedetector';
  *
  * The REBUILT UI's copy is deliberately not loaded here: it is one
  * `<locale>/rebuild-<namespace>.json` per wave-2 lane (core, site, learn,
- * mentor, family, profile, staff), imported as typed JSON by the surface that
+ * mentor, profile, staff), imported as typed JSON by the surface that
  * owns it, or merged by `./rebuild.ts` (REBUILD_NAMESPACES). A rebuilt string
  * missing from its namespace is then a type error, never a raw key on screen.
  */

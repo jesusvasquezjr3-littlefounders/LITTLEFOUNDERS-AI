@@ -8,12 +8,12 @@ import { NAV_MARKS } from '../design/navMarks';
 import type { GalleryCopy, SystemCopy } from './OverlayGallery';
 import './gallery.css';
 
-export type ShellKind = 'learner' | 'teen' | 'tutor' | 'staff' | 'staff-limited' | 'site' | 'auth' | 'single' | 'table';
-export const SHELL_KINDS: readonly ShellKind[] = ['learner', 'teen', 'tutor', 'staff', 'staff-limited', 'site', 'auth', 'single', 'table'];
+export type ShellKind = 'learner' | 'tutor' | 'staff' | 'staff-limited' | 'site' | 'auth' | 'single' | 'table';
+export const SHELL_KINDS: readonly ShellKind[] = ['learner', 'tutor', 'staff', 'staff-limited', 'site', 'auth', 'single', 'table'];
 
 const APP = 'LittleFounders';
 const PREVIEW_MARKS: Record<string, string> = {
-  learn: NAV_MARKS.learn, tasks: NAV_MARKS.tasks, wallet: NAV_MARKS.wallet, profile: NAV_MARKS.profile, family: NAV_MARKS.family,
+  learn: NAV_MARKS.learn, profile: NAV_MARKS.profile,
   progress: NAV_MARKS.learn, settings: NAV_MARKS.profile, overview: NAV_MARKS.overview, users: NAV_MARKS.users, content: NAV_MARKS.content,
   insights: NAV_MARKS.intel, reports: NAV_MARKS.reports, audit: NAV_MARKS.audit, emails: NAV_MARKS.emails,
 };
@@ -31,8 +31,8 @@ const members = [
 export function ShellGallery({ kind, t, s, locale, onGallery }: {
   kind: ShellKind; t: GalleryCopy; s: SystemCopy; locale: Locale; onGallery: () => void;
 }) {
-  const initial: Record<ShellKind, string> = { learner: 'learn', teen: 'learn', tutor: 'family', staff: 'overview', 'staff-limited': 'overview',
-    site: 'home', auth: 'login', single: 'pick', table: 'family' };
+  const initial: Record<ShellKind, string> = { learner: 'learn', tutor: 'progress', staff: 'overview', 'staff-limited': 'overview',
+    site: 'home', auth: 'login', single: 'pick', table: 'progress' };
   const [page, setPage] = useState(initial[kind]);
   const navigate = (href: string) => {
     const next = new URL(href, location.href).searchParams.get('page') ?? initial[kind];
@@ -47,11 +47,9 @@ export function ShellGallery({ kind, t, s, locale, onGallery }: {
   const common = { appName: APP, routeKey: `${kind}:${page}`, locale, onNavigate: navigate };
   const back = <Button size="sm" onClick={onGallery}>{t.allComponents}</Button>;
 
-  if (kind === 'learner' || kind === 'teen') {
-    const items = kind === 'learner'
-      ? [item('learn', t.learn), item('tasks', t.tasks), item('wallet', t.wallet), item('profile', t.profile)]
-      : [item('learn', t.learn), item('wallet', t.wallet), item('profile', t.profile)];
-    const character = kind === 'learner' ? 'dina' as const : 'zara' as const;
+  if (kind === 'learner') {
+    const items = [item('learn', t.learn), item('profile', t.profile)];
+    const character = 'dina' as const;
     const title = page === 'mentor' ? MENTOR_NAMES[character] : items.find((entry) => entry.id === page)?.label ?? t.learn;
     return <LearnerShell {...common} pageTitle={title} labels={labels} items={items} current={page}
       mentor={{ href: href('mentor'), name: t.mentorWord, character }}>
@@ -60,13 +58,13 @@ export function ShellGallery({ kind, t, s, locale, onGallery }: {
   }
 
   if (kind === 'tutor' || kind === 'table') {
-    const items = [item('family', t.family), item('tasks', t.tasks), item('progress', t.progress), item('settings', t.settings)];
-    const title = items.find((entry) => entry.id === page)?.label ?? t.family;
+    const items = [item('progress', t.progress), item('settings', t.settings)];
+    const title = items.find((entry) => entry.id === page)?.label ?? t.progress;
     return <TutorShell {...common} pageTitle={title} roleLabel={t.tutorRole} items={items} current={page}
       labels={{ ...labels, menu: s.menu, close: s.close }}>
       <h1 data-copy-role="heading">{title}</h1>
       <p data-copy-role="body">{t.pageBody}</p>
-      <DashboardLayout primary={kind === 'table' || page === 'family' ? <DataTable caption={t.tableCaption} rowKey={(row) => row.name} rows={members} columns={[
+      <DashboardLayout primary={kind === 'table' ? <DataTable caption={t.tableCaption} rowKey={(row) => row.name} rows={members} columns={[
         { key: 'name', label: t.colName, value: (row) => row.name, ugc: true },
         { key: 'role', label: t.colRole, value: (row) => row.role === 'tutor' ? t.tutorRole : t.roleLearner },
         { key: 'status', label: t.colStatus, value: (row) => row.status === 'active' ? t.statusActive : t.statusInvited },
@@ -167,7 +165,7 @@ function Filler({ t }: { t: GalleryCopy }) {
 /** The gallery's index: one link per catalogue and per shell state, for audits and owner review. */
 export function GalleryIndex({ t, onOpen }: { t: GalleryCopy; onOpen: (screen: string, shell?: ShellKind, extra?: Record<string, string>) => void }) {
   const shells: [ShellKind, string, Record<string, string>?][] = [
-    ['learner', t.shellLearner], ['teen', t.shellTeen], ['tutor', t.shellTutor], ['staff', t.shellStaff], ['staff-limited', t.shellStaffLimited],
+    ['learner', t.shellLearner], ['tutor', t.shellTutor], ['staff', t.shellStaff], ['staff-limited', t.shellStaffLimited],
     ['site', t.shellSite], ['auth', t.shellAuth], ['single', t.shellSingle], ['table', t.shellTable],
   ];
   return <main className="lf-preview lf-preview--gallery" data-surface="app" data-screen="gallery">

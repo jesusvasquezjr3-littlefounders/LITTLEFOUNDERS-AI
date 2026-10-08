@@ -211,7 +211,6 @@
         "time_to_mastery": "Intentos hasta dominar una habilidad",
         "transfer_success": "Aciertos en contextos nuevos",
         "judgment_quality": "Criterio más allá del acierto",
-        "bridge_conversion": "Lecciones convertidas en tareas reales",
         "decision_journal": "Decisiones guardadas y retomadas"
       },
       "engagement": {
@@ -1521,8 +1520,7 @@
         "socialDiscovery": "Exposición de perfiles infantiles",
         "socialEscalation": "Reportes y escalamiento",
         "socialAudit": "Registro de auditoría social",
-        "accountDeletions": "Eliminación de cuentas",
-        "achievementSharing": "Compartir logros"
+        "accountDeletions": "Eliminación de cuentas"
       },
       "body": {
         "socialSafety": "Niveles, revisiones y consentimiento adolescente.",
@@ -1531,7 +1529,6 @@
         "socialEscalation": "Patrones de reportes enviados al equipo. Meta: todos.",
         "socialAudit": "Seguimientos, bloqueos y reportes con registro. Meta: todos.",
         "accountDeletions": "Solicitudes de eliminación, plazos y la cola abierta.",
-        "achievementSharing": "Logros compartidos por tipo y enlaces públicos nuevos. Meta: ninguno.",
         "never": "Nunca",
         "noData": "Sin datos todavía",
         "hours": "{n} h"
@@ -1623,20 +1620,7 @@
         "openProcessing": "En proceso",
         "openHeld": "Retenidas",
         "openOverdue": "Vencidas",
-        "slaHours": "Plazo",
-        "persistentPublicUrls": "Enlaces públicos nuevos",
-        "persistentPublicUrlRate": "Tasa de enlaces públicos",
-        "sharesStarted": "Compartidos iniciados",
-        "shareSheet": "Hoja de compartir",
-        "download": "Descargados",
-        "kindBadge": "Insignias de curso",
-        "kindStreak": "Rachas",
-        "kindGoal": "Metas logradas",
-        "legacyTotal": "Enlaces antiguos",
-        "legacyLive": "Enlaces antiguos activos",
-        "legacyRevoked": "Enlaces antiguos revocados",
-        "legacyRetired": "Ruta antigua retirada",
-        "legacyRetires": "Retiro de la ruta antigua"
+        "slaHours": "Plazo"
       }
     },
     "support": {

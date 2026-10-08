@@ -56,7 +56,7 @@ function identityScreen(context: PreviewContext) {
   const view = params.get('view') ?? 'login-google';
   const google = { available: view === 'login-google', pending: false, failed: view === 'login-google', onStart: noop };
   const signup = (signupView: SignupView) => <SignupScreen locale={locale} google={google} view={signupView} initialParentIntent={false} onSubmit={noop} onStartGuest={noop} />;
-  const verify = (verifyView: VerifyView) => <VerifyParentScreen locale={locale} view={verifyView} homeHref="#" familyHref="#"
+  const verify = (verifyView: VerifyView) => <VerifyParentScreen locale={locale} view={verifyView} homeHref="#"
     onRetryStatus={noop} onStart={noop} onSubmit={noop} />;
   const failedChecks: readonly VerificationCheck[] = ['nameMatch', 'notExpired'];
   const screens: Record<(typeof IDENTITY_PREVIEW_VIEWS)[number], ReactNode> = {

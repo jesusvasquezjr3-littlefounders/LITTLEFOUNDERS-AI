@@ -16,13 +16,5 @@
     "liruf": {
       "default_greeting": "¡Hola! ¡Soy Liruf!"
     }
-  },
-  "family": {
-    "badge": {
-      "share": "Compartir logro",
-      "shareGoal": "Compartir \"{{title}}\"",
-      "disclosure": "Recibes una imagen con su nombre de pila. No se crea ningún enlace.",
-      "disclosureKeep": "Quien la reciba puede conservarla. Muestra el nombre LittleFounders."
-    }
   }
 }

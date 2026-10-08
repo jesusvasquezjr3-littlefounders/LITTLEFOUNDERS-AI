@@ -2034,20 +2034,6 @@
         "stale": false
       },
       {
-        "id": "learning.bridge_conversion",
-        "category": "learning_outcome",
-        "ownerRole": "pedagogical_lead",
-        "instrumented": "not_instrumented",
-        "requirement": "C.24",
-        "threshold": {
-          "kind": "diagnostic",
-          "value": null
-        },
-        "pending": null,
-        "reading": null,
-        "stale": false
-      },
-      {
         "id": "learning.decision_journal",
         "category": "learning_outcome",
         "ownerRole": "pedagogical_lead",

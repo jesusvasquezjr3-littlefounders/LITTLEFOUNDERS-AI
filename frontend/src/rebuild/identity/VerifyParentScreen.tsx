@@ -47,10 +47,8 @@ export type VerifyView =
   | { kind: 'form'; pending: boolean; errorCode: string | null; failedChecks: readonly VerificationCheck[] | null }
   | { kind: 'success' };
 
-export function VerifyParentScreen({ locale, view, homeHref, familyHref, inviteWaiting = false, settingsHref = '/profile/settings', onRetryStatus, onStart, onSubmit, onNavigate }: {
-  locale: Locale; view: VerifyView; homeHref: string; familyHref: string;
-  /** GAP-FIX-R5: a Tutor invite waits at `familyHref`; the way on names it. */
-  inviteWaiting?: boolean; settingsHref?: string;
+export function VerifyParentScreen({ locale, view, homeHref, settingsHref = '/profile/settings', onRetryStatus, onStart, onSubmit, onNavigate }: {
+  locale: Locale; view: VerifyView; homeHref: string; settingsHref?: string;
   onRetryStatus: () => void; onStart: () => void; onSubmit: (values: VerifyValues) => void; onNavigate?: Navigate;
 }) {
   const copy = identityCopy(locale);
@@ -91,7 +89,7 @@ export function VerifyParentScreen({ locale, view, homeHref, familyHref, inviteW
       return <AuthOutcome screen={done ? 'verify-success' : 'verify-already'} title={done ? v.successTitle : v.alreadyTitle} focusOnMount={done}
         lead={<p className="lf-auth-lead" data-copy-role="body">{done ? v.successBody : v.alreadyBody}</p>}>
         <p className="lf-auth-chip"><Chip tone="success" glyph="check">{v.verified}</Chip></p>
-        <ButtonLink variant="accent" size="lg" href={familyHref} onClick={follow(familyHref, onNavigate)} data-auth="family">{inviteWaiting ? v.openInvite : v.openFamily}</ButtonLink>
+        <ButtonLink variant="accent" size="lg" href={homeHref} onClick={follow(homeHref, onNavigate)} data-auth="home">{copy.site.openApp}</ButtonLink>
       </AuthOutcome>;
     }
     case 'intro':

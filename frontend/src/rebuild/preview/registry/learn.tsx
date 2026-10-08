@@ -44,9 +44,7 @@ import { togetherCandidatesFixture, togetherPreviewStates } from '../../learning
 import enProfile from '../../../i18n/en-US/rebuild-profile.json';
 import esProfile from '../../../i18n/es-MX/rebuild-profile.json';
 import ptProfile from '../../../i18n/pt-BR/rebuild-profile.json';
-import { LearnerNarrativeShortcut } from '../../learning/LearnerNarrativeShortcut';
-import { childDecisionsFixture, journalPreviewStates, recallFixture, selfBridgesFixture } from '../../learning/narrativeFixtures';
-import { ChildDecisionsView } from '../../learning/ChildDecisionsPanel';
+import { journalPreviewStates, recallFixture } from '../../learning/narrativeFixtures';
 import type { LessonMentorStage } from '../../learning/lessonDocument';
 import { LearningRhythmView } from '../../learning/LearningRhythmView';
 import { milestoneReceipt, rhythmPreviewStates } from '../../learning/motivationFixtures';
@@ -249,7 +247,7 @@ export const learnPreviewScreens: PreviewRegistry = {
     slug="financial-education" state={coursePreviewStates[params.get('course') ?? 'linear'] ?? coursePreviewStates.linear!} inProgress={params.get('building') === '1'}
     courseTitles={Object.fromEntries(Object.entries(SHELF_TITLES).map(([slug, title]) => [slug, title[locale]]))}
     links={previewLinks} onNavigate={previewNavigate(go)} onRetry={() => go('course')} /></LearnPreviewHost>),
-  // W2L.1 (L1): the learner home in every state (`?home=`, `?rhythm=`, `?bridges=1`, `?graduation=1`).
+  // W2L.1 (L1): the learner home in every state (`?home=`, `?rhythm=`, `?graduation=1`).
   learnhome: framed(({ locale, theme, ageBand, params, go }) => {
     const home = params.get('home') ?? 'child';
     const shelf = homePreviewShelf(home);
@@ -258,10 +256,10 @@ export const learnPreviewScreens: PreviewRegistry = {
       : { status: 'ready' as const, detail: { engine: 'linear' as const, tree: childTree(params.get('placement') === '1') } } };
     return <LearnPreviewHost><LearnHomeView key={`learnhome:${locale}:${home}`} fixture locale={locale} dark={theme === 'dark'} ageBand={ageBand} name={params.get('name') === '0' ? null : 'Sofía'}
       shelf={shelf} featured={featured} rhythm={rhythmPreviewStates[params.get('rhythm') ?? 'open'] ?? rhythmPreviewStates.open!}
-      bridges={params.get('bridges') === '1' ? selfBridgesFixture() : []} links={previewLinks} onNavigate={previewNavigate(go)}
+      links={previewLinks} onNavigate={previewNavigate(go)}
       together={params.get('together') === '1' ? { eligible: true, asked: true } : null}
       play={params.get('play') === '1' ? { enabled: true } : null}
-      onRetry={() => go('learnhome')} onBridge={async (_id, _answer, goal) => (goal ? 'goal' : 'done')} onOpenWallet={() => go('home')}
+      onRetry={() => go('learnhome')}
       graduation={params.get('graduation') === '1' ? <RegisterGraduationView fixture locale={locale} dark={theme === 'dark'} into="transition" onAcknowledge={async () => true} /> : null} /></LearnPreviewHost>;
   }),
   recall: framed(({ locale, theme, params, go }) => <NarrativeRecallView key={`recall:${locale}`} fixture locale={locale} dark={theme === 'dark'}
@@ -269,23 +267,13 @@ export const learnPreviewScreens: PreviewRegistry = {
   journal: framed(({ locale, theme, ageBand, params, go }) => <LearnPreviewHost><DecisionJournalView key={`journal:${locale}:${params.get('journal')}`} fixture locale={locale} dark={theme === 'dark'} ageBand={ageBand}
     state={journalPreviewStates(locale)[params.get('journal') ?? 'list'] ?? journalPreviewStates(locale).list!}
     onBack={() => go('home')} onRetry={() => go('journal')} onMore={() => {}}
-    onClear={async () => true} onBridge={async (_id, _answer, goal) => (goal ? 'goal' : 'done')} onOpenWallet={() => go('home')} /></LearnPreviewHost>),
+    onClear={async () => true} /></LearnPreviewHost>),
   // L-04 (OD-27 (1)): goals together in every state (`?together=ready|empty|reached|closed|loading|error|offline`).
   together: framed(({ locale, theme, params, go }) => <LearnPreviewHost><TogetherView key={`together:${locale}:${params.get('together')}`} fixture locale={locale}
     dark={theme === 'dark'} state={togetherPreviewStates[params.get('together') ?? 'ready'] ?? togetherPreviewStates.ready!} candidates={togetherCandidatesFixture}
     reportCopy={REPORT_COPY[locale]} onBack={() => go('learnhome')} onRetry={() => go('together')} onLoadCandidates={() => {}}
     onStart={async () => 'done'} onAsk={async () => 'done'} onAnswer={async () => 'done'} onLeave={async () => 'done'} onRemove={async () => 'done'}
     onReport={async () => 'done'} /></LearnPreviewHost>),
-  // OD-27 (3): the Tutor's view of an under-13 child's story choices, as the Family Hub mounts it (open, one page).
-  childdecisions: framed(({ locale, theme }) => <main className="lf-family-preview" data-surface="app" data-screen="child-decisions-host">
-    <ChildDecisionsView key={`childdecisions:${locale}`} fixture locale={locale} dark={theme === 'dark'} state={childDecisionsFixture(locale)} open
-      onToggle={() => {}} onRetry={() => {}} />
-  </main>),
-  learnershortcut: framed(({ locale, theme, params, go }) => <main className="lf-family-preview" data-surface="app" data-screen="learner-shortcut-host">
-    <LearnerNarrativeShortcut key={`shortcut:${locale}:${params.get('bridges')}`} fixture locale={locale} dark={theme === 'dark'}
-      bridges={params.get('bridges') === '1' ? selfBridgesFixture() : []}
-      onOpenJournal={() => go('journal')} onOpenRhythm={() => go('rhythm')} onBridge={async (_id, _answer, goal) => (goal ? 'goal' : 'done')} onOpenWallet={() => go('home')} />
-  </main>),
   reasoning: framed(({ locale, ageBand, go }) => <LessonDocumentView key={`reasoning:${locale}:${ageBand}`} raw={decideJustifyPilotDocument(locale, ageBand)}
     locale={locale} ageBand={ageBand} onBack={() => go('home')} onGradeReasoning={(answer) => {
       // Preview only: the private rubric stays in Core for real lessons.

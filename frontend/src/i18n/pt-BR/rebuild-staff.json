@@ -211,7 +211,6 @@
         "time_to_mastery": "Tentativas até dominar uma habilidade",
         "transfer_success": "Acertos em contextos novos",
         "judgment_quality": "Julgamento além do acerto",
-        "bridge_conversion": "Lições que viram tarefas reais",
         "decision_journal": "Escolhas guardadas e retomadas"
       },
       "engagement": {
@@ -1521,8 +1520,7 @@
         "socialDiscovery": "Exposição de perfis infantis",
         "socialEscalation": "Denúncias e escalonamento",
         "socialAudit": "Registro de auditoria social",
-        "accountDeletions": "Exclusão de contas",
-        "achievementSharing": "Compartilhar conquistas"
+        "accountDeletions": "Exclusão de contas"
       },
       "body": {
         "socialSafety": "Níveis, revisões e consentimento adolescente.",
@@ -1531,7 +1529,6 @@
         "socialEscalation": "Padrões de denúncias enviados à equipe. Meta: todos.",
         "socialAudit": "Seguidas, bloqueios e denúncias com registro. Meta: todos.",
         "accountDeletions": "Pedidos de exclusão, prazos e a fila aberta.",
-        "achievementSharing": "Compartilhamentos por tipo e novos links públicos. Meta: nenhum.",
         "never": "Nunca",
         "noData": "Sem dados ainda",
         "hours": "{n} h"
@@ -1623,20 +1620,7 @@
         "openProcessing": "Em processamento",
         "openHeld": "Retidas",
         "openOverdue": "Vencidas",
-        "slaHours": "Prazo",
-        "persistentPublicUrls": "Novos links públicos",
-        "persistentPublicUrlRate": "Taxa de links públicos",
-        "sharesStarted": "Compartilhamentos iniciados",
-        "shareSheet": "Folha de compartilhar",
-        "download": "Baixados",
-        "kindBadge": "Insígnias de curso",
-        "kindStreak": "Sequências",
-        "kindGoal": "Metas alcançadas",
-        "legacyTotal": "Links antigos",
-        "legacyLive": "Links antigos ativos",
-        "legacyRevoked": "Links antigos revogados",
-        "legacyRetired": "Rota antiga desativada",
-        "legacyRetires": "Desativação da rota antiga"
+        "slaHours": "Prazo"
       }
     },
     "support": {

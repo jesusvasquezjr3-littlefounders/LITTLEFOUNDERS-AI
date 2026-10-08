@@ -121,7 +121,6 @@
     "controls": "Controls",
     "overlays": "Overlays",
     "shellLearner": "Learner app",
-    "shellTeen": "Independent teen",
     "shellTutor": "Tutor console",
     "shellStaff": "Staff console",
     "shellStaffLimited": "Analytics staff",
@@ -169,12 +168,9 @@
     "skip": "Skip to content",
     "navigation": "Main",
     "learn": "Learn",
-    "tasks": "Tasks",
-    "wallet": "Wallet",
     "profile": "Profile",
     "mentorWord": "Mentor",
     "pageBody": "Pick up where you left off.",
-    "family": "Family",
     "progress": "Progress",
     "settings": "Settings",
     "tutorRole": "Tutor",
@@ -218,13 +214,7 @@
     "staffRole": "Staff",
     "nav": {
       "learn": "Learn",
-      "tasks": "Tasks",
-      "wallet": "Wallet",
-      "familyCoins": "Family wallet",
-      "coins": "Wallet",
       "profile": "Profile",
-      "family": "Family",
-      "becomeTutor": "Become a Tutor",
       "staff": "Staff",
       "backToApp": "Back to app"
     },
@@ -268,8 +258,7 @@
       "resetPassword": "Choose a new password",
       "verifyParent": "Become a Tutor",
       "callback": "Signing you in",
-      "upgradeAccount": "Save your progress",
-      "joinInvite": "Family invite"
+      "upgradeAccount": "Save your progress"
     }
   },
   "notFound": {

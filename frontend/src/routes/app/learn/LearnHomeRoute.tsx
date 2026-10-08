@@ -7,7 +7,6 @@ import { featuredCourse, fetchShelf, type ShelfState } from '@/rebuild/learning/
 import { LearnHomeView } from '@/rebuild/learning/LearnHomeView';
 import { acknowledgeGraduation } from '@/rebuild/learning/learnerRegister';
 import { fetchRhythm, type RhythmState } from '@/rebuild/learning/motivation';
-import { answerSelfBridge, fetchSelfBridges, type SelfBridge } from '@/rebuild/learning/narrative';
 import { RegisterGraduationView } from '@/rebuild/learning/RegisterGraduationView';
 import { fetchTogetherTeaser } from '@/rebuild/learning/together';
 import { readCoursesCache, writeCoursesCache } from './coursesCache';
@@ -17,8 +16,7 @@ import { bandOf, useLearnerRegister, useLearnHost } from './learnHost';
  * /learn — the host of the rebuilt learner home (W2L.1, L1), inside the
  * learner shell. It reads, each on its own so one failure never blanks the
  * rest: the shelf (GET /learn/courses), the featured course's own entry (its
- * next step: the B.6 path or the tree), the learner's rhythm (B.21/B.24), an
- * independent teen's self prompts (B.13; Core sends none to anyone else), whether
+ * next step: the B.6 path or the tree), the learner's rhythm (B.21/B.24), whether
  * goals together are open to this learner (L-04, OD-27 (1)), whether a game is on
  * offer (GET /learn/games: the "Play with {Mentor}" card) and
  * the register (B.23: the Copy Budget band and a graduation owed).
@@ -42,7 +40,6 @@ export function LearnHomeRoute() {
   const [retrying, setRetrying] = useState(false);
   const [featured, setFeatured] = useState<{ slug: string; state: CourseState } | null>(null);
   const [rhythm, setRhythm] = useState<RhythmState>({ status: 'loading' });
-  const [bridges, setBridges] = useState<SelfBridge[]>([]);
   const [together, setTogether] = useState<{ eligible: boolean; asked: boolean } | null>(null);
   // The game card is optional: painted from what the learner last saw, confirmed by a fresh read, hidden when the read fails.
   const games = useMemo(() => createGamesClient(transport), [transport]);
@@ -83,7 +80,6 @@ export function LearnHomeRoute() {
   useEffect(() => {
     let active = true;
     void fetchRhythm(transport).then((next) => { if (active) setRhythm(next); });
-    void fetchSelfBridges(transport).then((next) => { if (active) setBridges(next); });
     // L-04: quiet; a failure hides the card.
     void fetchTogetherTeaser(transport).then((next) => { if (active) setTogether(next); });
     return () => { active = false; };
@@ -104,11 +100,8 @@ export function LearnHomeRoute() {
   const firstName = (profile?.display_name ?? '').trim().split(/\s+/)[0] || null;
   const graduation = register.status === 'ready' ? register.value.graduation : null;
   return <LearnHomeView locale={locale} dark={dark} ageBand={bandOf(register)} name={firstName} shelf={shelf} featured={featured}
-    rhythm={rhythm} bridges={bridges} together={together} play={play} links={links} onNavigate={onNavigate} retrying={retrying}
+    rhythm={rhythm} together={together} play={play} links={links} onNavigate={onNavigate} retrying={retrying}
     onRetry={() => { setRetrying(true); setRevision((n) => n + 1); }}
-    onBridge={(id, answer, goal) => answerSelfBridge(transport, id, answer, goal)}
-    // W3L.1 (L-12): after a goal is created, the teen's own Wallet is one press away.
-    onOpenWallet={() => onNavigate('/wallet')}
     graduation={graduation && register.status === 'ready' ? <RegisterGraduationView into={graduation.to} locale={locale} dark={dark}
       onAcknowledge={async () => {
         const saved = await acknowledgeGraduation(transport, graduation.to);

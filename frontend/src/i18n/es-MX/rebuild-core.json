@@ -121,7 +121,6 @@
     "controls": "Controles",
     "overlays": "Capas",
     "shellLearner": "App del estudiante",
-    "shellTeen": "Adolescente independiente",
     "shellTutor": "Consola del Tutor",
     "shellStaff": "Consola del equipo",
     "shellStaffLimited": "Equipo de análisis",
@@ -169,12 +168,9 @@
     "skip": "Ir al contenido",
     "navigation": "Principal",
     "learn": "Aprender",
-    "tasks": "Tareas",
-    "wallet": "Cartera",
     "profile": "Perfil",
     "mentorWord": "Mentor",
     "pageBody": "Sigue donde te quedaste.",
-    "family": "Familia",
     "progress": "Progreso",
     "settings": "Ajustes",
     "tutorRole": "Tutor",
@@ -218,13 +214,7 @@
     "staffRole": "Equipo",
     "nav": {
       "learn": "Aprender",
-      "tasks": "Tareas",
-      "wallet": "Cartera",
-      "familyCoins": "Cartera familiar",
-      "coins": "Cartera",
       "profile": "Perfil",
-      "family": "Familia",
-      "becomeTutor": "Hazte Tutor",
       "staff": "Equipo",
       "backToApp": "Volver a la app"
     },
@@ -268,8 +258,7 @@
       "resetPassword": "Elige una contraseña nueva",
       "verifyParent": "Hazte Tutor",
       "callback": "Iniciando sesión",
-      "upgradeAccount": "Guarda tu progreso",
-      "joinInvite": "Invitación a la familia"
+      "upgradeAccount": "Guarda tu progreso"
     }
   },
   "notFound": {
