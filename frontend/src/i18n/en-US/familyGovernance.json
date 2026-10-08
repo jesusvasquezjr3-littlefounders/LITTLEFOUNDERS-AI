@@ -9,13 +9,13 @@
   "tips": {
     "contribution-vs-bonus": {
       "title": "Everyday help is family work",
-      "body": "Keep daily help unpaid. Pay coins for extra tasks only.",
+      "body": "Keep daily help unpaid. Pay seeds for extra tasks only.",
       "why": "Paying for everything can crowd out wanting to help."
     },
     "price-by-effort": {
       "title": "Price bonus tasks by effort",
       "body": "Pay more for longer, harder tasks. Keep prices steady.",
-      "why": "Steady prices give coins a value your child can plan with."
+      "why": "Steady prices give seeds a value your child can plan with."
     },
     "keep-promises": {
       "title": "Keep reward promises on time",
@@ -54,12 +54,12 @@
     },
     "spending-is-not-failing": {
       "title": "Spending is a choice too",
-      "body": "When coins go fast, ask what your child learned.",
+      "body": "When seeds go fast, ask what your child learned.",
       "why": "Spending now can be sensible when waiting has not paid off."
     },
     "share-for-real": {
       "title": "Make sharing real",
-      "body": "Choose together where Share coins go, then do it.",
+      "body": "Choose together where Share seeds go, then do it.",
       "why": "Giving feels real when it reaches a real place."
     },
     "bonus-is-not-interest": {
@@ -79,7 +79,7 @@
   "pricing": {
     "open": "Pricing tips",
     "close": "Hide tips",
-    "contribution": "Everyday family help: unpaid, or a coin or two.",
+    "contribution": "Everyday family help: unpaid, or a seed or two.",
     "bonus": "Bonus tasks: pay by effort and time. Keep prices steady.",
     "promise": "Pay what you promised, when you promised it."
   },
@@ -90,12 +90,12 @@
   },
   "scope": {
     "heading": "What this practice covers",
-    "intro": "Practice with coins that stay in the app. No real money moves.",
+    "intro": "Practice with seeds that stay in the app. No real money moves.",
     "open": "Show",
     "close": "Hide",
     "teachesHeading": "It practises",
-    "earning": "Earning coins for tasks, and helping at home.",
-    "splitting": "Splitting coins into save, spend and share.",
+    "earning": "Earning seeds for tasks, and helping at home.",
+    "splitting": "Splitting seeds into save, spend and share.",
     "goals": "Saving toward goals and waiting for them.",
     "asking": "Asking for rewards and hearing the reason.",
     "notHeading": "It does not teach",
@@ -112,7 +112,7 @@
     "close": "Hide",
     "photos": "Chore photos: {days} days after your decision.",
     "records": "Chores, rewards, decisions and notes: {days} days.",
-    "coins": "Coins, goals and rules: while the account exists.",
+    "coins": "Seeds, goals and rules: while the account exists.",
     "insights": "Usage insights: {days} days, only with your consent.",
     "research": "Research: only if you say yes, up to {days} days.",
     "erasure": "Deleting an account deletes all of it.",
@@ -142,7 +142,7 @@
   },
   "myResearch": {
     "heading": "Research",
-    "body": "Your Tutor lets us learn from your coin totals.",
+    "body": "Your Tutor lets us learn from your seed totals.",
     "stop": "You can stop it any time.",
     "button": "Stop it",
     "confirm": "Stop it and delete it?",
@@ -163,7 +163,7 @@
     "first_pay2": "Try your usual split on it.",
     "first_pay3": "Keep the pay slip.",
     "first_account1": "Ask about fees before you open it.",
-    "first_account2": "Check it every week, like your coins.",
+    "first_account2": "Check it every week, like your seeds.",
     "first_account3": "Never share your PIN or password.",
     "first_budget1": "List what you must pay each month.",
     "first_budget2": "Save first, then spend.",

@@ -94,7 +94,6 @@ export function LearnHomeView(props: LearnHomeProps) {
         <StreakCard {...props} />
         <MentorCard {...props} />
         <SelfBridgeList bridges={props.bridges} locale={locale} onBridge={props.onBridge} onOpenWallet={props.onOpenWallet} />
-        <StoryCard {...props} />
         <TogetherCard {...props} />
       </>} />
   </div>;
@@ -248,16 +247,6 @@ function MentorCard({ locale, rhythm, dark, links, onNavigate }: LearnHomeProps)
       <p data-copy-role="body">{name}</p>
     </div>
     <div className="lf-learn-card-action"><ButtonLink {...linkTo(links.mentor, onNavigate)}>{fill(t.askMentor, { name })}</ButtonLink></div>
-  </section>;
-}
-
-/** B.9: the learner's own story, private to them. */
-function StoryCard({ locale, links, onNavigate }: LearnHomeProps) {
-  const t = learnCopy[locale].home;
-  const headingId = useId();
-  return <section className="lf-learn-story" aria-labelledby={headingId}>
-    <h2 id={headingId} data-copy-role="heading">{t.storyTitle}</h2>
-    <div className="lf-learn-card-action"><ButtonLink {...linkTo(links.journal, onNavigate)}>{t.journal}</ButtonLink></div>
   </section>;
 }
 

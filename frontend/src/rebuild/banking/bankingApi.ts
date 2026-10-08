@@ -23,7 +23,7 @@ export type SpendLimit =
   | { configured: false }
   | { configured: true; period: 'weekly' | 'monthly'; remaining: number; cap?: number; used?: number; usedPercent?: number };
 
-export interface MonthLine { id: number; bucket: 'save' | 'spend' | 'share'; amount: number; reason: string; createdAt: string }
+export interface MonthLine { id: number; bucket: 'save' | 'spend' | 'share'; amount: number; reason: string; /** The chore, reward, goal or place it was for. */ title?: string | null; createdAt: string }
 export interface Month { month: string; earned: number; spent: number; saved: number; given?: number; adjusted?: number; lines?: MonthLine[] }
 
 export interface CoinAccountView {
@@ -77,7 +77,7 @@ export function isMonth(value: unknown, register: MoneyRegister): value is Month
   if (register === 'transition') return keysAre(value, ['month', 'earned', 'spent', 'saved', 'given', 'adjusted']);
   return keysAre(value, ['month', 'earned', 'spent', 'saved', 'given', 'adjusted', 'lines']) && Array.isArray(value.lines) && value.lines.length <= 8
     && value.lines.every((l) => isObject(l) && isInt(l.id) && ['save', 'spend', 'share'].includes(l.bucket as string) && isInt(l.amount)
-      && typeof l.reason === 'string' && isInstant(l.createdAt));
+      && typeof l.reason === 'string' && (l.title === undefined || l.title === null || typeof l.title === 'string') && isInstant(l.createdAt));
 }
 
 export function isCoinAccountView(value: unknown): value is CoinAccountView {

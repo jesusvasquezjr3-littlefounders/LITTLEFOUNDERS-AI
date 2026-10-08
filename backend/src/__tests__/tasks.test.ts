@@ -20,6 +20,7 @@ const KID_ID = randomUUID();
 const OTHER_KID_ID = randomUUID();
 const TASK_ID = randomUUID();
 const GOAL_ID = randomUUID();
+const MOVE_ID = randomUUID();
 const CATALOG_ID = randomUUID();
 const REDEMPTION_ID = randomUUID();
 
@@ -31,6 +32,8 @@ const REAL_JPEG = Buffer.from([0xff, 0xd8, 0xff, 0xdb, 0x00, 0x43, 0x00]);
 afterEach(() => vi.unstubAllGlobals());
 
 interface StubOptions {
+  /** wallet_moves: the coins wallet_goal_archive hands back to plain Save. */
+  goalReturned?: number;
   bankingFrozen?: boolean | null;
   roles?: string[];
   /** kid ids this parent has a VERIFIED guardian_links row for. */
@@ -92,6 +95,10 @@ function stub(opts: StubOptions = {}) {
         return Promise.resolve(jsonResponse(400, { code: 'P0001', message: opts.refusals[rpcName], details: null, hint: null }));
       }
       const rpcBody = rpcName && init?.body ? (JSON.parse(String(init.body)) as Record<string, unknown>) : {};
+      // wallet_moves: the holder's own moves, goal edits and removals are database functions.
+      if (rpcName === 'wallet_goal_archive') return Promise.resolve(jsonResponse(200, opts.goalReturned ?? 0));
+      if (rpcName === 'wallet_goal_edit') return Promise.resolve(jsonResponse(200, true));
+      if (rpcName === 'wallet_move_pocket' || rpcName === 'wallet_move_goal') return Promise.resolve(jsonResponse(200, MOVE_ID));
       if (rpcName === 'family_task_mark_done') {
         const self = opts.selfLogs === true;
         task = task && { ...task, status: self ? 'approved' : 'done', completed_on: rpcBody.p_completed_on, child_note: rpcBody.p_note };
@@ -670,6 +677,77 @@ describe('PATCH /api/v1/tasks/goals/:id (kid archives)', () => {
     const res = await request(createApp()).patch(`/api/v1/tasks/goals/${GOAL_ID}`).set('Authorization', `Bearer ${mintToken({ sub: KID_ID })}`).send({});
     expect(res.status).toBe(200);
     expect(res.body.data.goal.status).toBe('archived');
+    expect(res.body.data.returned).toBe(0);
+  });
+
+  it('says how many coins went back to Save when it removes a funded goal', async () => {
+    stub({ goal: defaultGoal(), roles: ['kid'], ledgerRows: [], goalReturned: 12 });
+    const res = await request(createApp()).patch(`/api/v1/tasks/goals/${GOAL_ID}`).set('Authorization', `Bearer ${mintToken({ sub: KID_ID })}`).send({});
+    expect(res.status).toBe(200);
+    expect(res.body.data.returned).toBe(12);
+  });
+
+  it('edits an own goal when the body names it', async () => {
+    stub({ goal: defaultGoal(), roles: ['kid'], ledgerRows: [] });
+    const res = await request(createApp()).patch(`/api/v1/tasks/goals/${GOAL_ID}`).set('Authorization', `Bearer ${mintToken({ sub: KID_ID })}`).send({ title: 'A red bike', target: 60, icon: 'bike' });
+    expect(res.status).toBe(200);
+    expect(res.body.data.returned).toBe(0);
+  });
+
+  it('refuses an edit with an unknown picture or a zero target', async () => {
+    stub({ goal: defaultGoal(), roles: ['kid'], ledgerRows: [] });
+    const bad = await request(createApp()).patch(`/api/v1/tasks/goals/${GOAL_ID}`).set('Authorization', `Bearer ${mintToken({ sub: KID_ID })}`).send({ title: 'x', target: 0, icon: 'bike' });
+    expect(bad.status).toBe(400);
+    const icon = await request(createApp()).patch(`/api/v1/tasks/goals/${GOAL_ID}`).set('Authorization', `Bearer ${mintToken({ sub: KID_ID })}`).send({ title: 'x', target: 5, icon: 'house' });
+    expect(icon.status).toBe(400);
+  });
+});
+
+describe('POST /api/v1/tasks/wallet/moves and /goals/:id/moves (the holder moves their own coins)', () => {
+  const as = () => ({ Authorization: `Bearer ${mintToken({ sub: KID_ID })}` });
+
+  it('moves coins between two pockets', async () => {
+    stub({ roles: ['kid'] });
+    const res = await request(createApp()).post('/api/v1/tasks/wallet/moves').set(as()).send({ from: 'spend', to: 'save', amount: 5 });
+    expect(res.status).toBe(201);
+    expect(res.body.data.moveId).toBe(MOVE_ID);
+  });
+
+  it('refuses the same pocket twice, zero coins and an unknown pocket', async () => {
+    stub({ roles: ['kid'] });
+    for (const body of [{ from: 'save', to: 'save', amount: 1 }, { from: 'spend', to: 'save', amount: 0 }, { from: 'bank', to: 'save', amount: 1 }, { from: 'spend', to: 'save', amount: 1, extra: true }]) {
+      const res = await request(createApp()).post('/api/v1/tasks/wallet/moves').set(as()).send(body);
+      expect(res.status).toBe(400);
+    }
+  });
+
+  it('tells a child in plain words when the pocket does not hold that many coins', async () => {
+    stub({ roles: ['kid'], refusals: { wallet_move_pocket: 'INSUFFICIENT_BALANCE' } });
+    const res = await request(createApp()).post('/api/v1/tasks/wallet/moves').set(as()).send({ from: 'spend', to: 'save', amount: 500 });
+    expect(res.status).toBe(409);
+    expect(res.body.error.code).toBe('INSUFFICIENT_BALANCE');
+  });
+
+  it('moves plain Save into a goal, and a goal back to Save', async () => {
+    stub({ goal: defaultGoal(), roles: ['kid'], ledgerRows: [] });
+    for (const direction of ['in', 'out']) {
+      const res = await request(createApp()).post(`/api/v1/tasks/goals/${GOAL_ID}/moves`).set(as()).send({ direction, amount: 3 });
+      expect(res.status).toBe(201);
+      expect(res.body.data.goal.id).toBe(GOAL_ID);
+    }
+  });
+
+  it('says why coins tied to a goal do not move out of Save', async () => {
+    stub({ roles: ['kid'], refusals: { wallet_move_pocket: 'GOAL_SAVINGS_PROTECTED' } });
+    const res = await request(createApp()).post('/api/v1/tasks/wallet/moves').set(as()).send({ from: 'save', to: 'spend', amount: 5 });
+    expect(res.status).toBe(409);
+    expect(res.body.error.code).toBe('GOAL_SAVINGS_PROTECTED');
+  });
+
+  it('refuses a body with a direction that is not in or out', async () => {
+    stub({ goal: defaultGoal(), roles: ['kid'], ledgerRows: [] });
+    const res = await request(createApp()).post(`/api/v1/tasks/goals/${GOAL_ID}/moves`).set(as()).send({ direction: 'sideways', amount: 3 });
+    expect(res.status).toBe(400);
   });
 });
 

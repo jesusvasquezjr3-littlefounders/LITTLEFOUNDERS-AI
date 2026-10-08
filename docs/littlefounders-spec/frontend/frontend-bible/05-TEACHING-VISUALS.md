@@ -31,7 +31,7 @@ viz:
   series-overflow: { color: "{colors.content-muted}", pattern: crosshatch, labels: direct }       # a fourth or later series: neutral marks with direct labels, one series highlighted at a time
   handle:       { visual: 32px, hit: "{target.lg}" }                                              # 64 px hit area: a handle is an answer surface (02 §8)
   snap-tick:    { length: 12px, active-color: "{colors.primary-strong}" }
-  label:        "{typography.caption}"                                                            # 14 px floor; numerals in Nunito (fixed-width digits)
+  label:        "{typography.caption}"                                                            # 14 px floor; numerals in Plus Jakarta Sans (use tabular-nums)
   value-label:  "{typography.label}"
   state:
     correct:    { color: "{colors.success-strong}", mark: check }

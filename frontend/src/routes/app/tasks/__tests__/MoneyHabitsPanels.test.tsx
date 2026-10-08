@@ -114,7 +114,7 @@ describe('ShareGivingPanel (D.14)', () => {
       'POST /tasks/share/gifts': { giftId: GIFT },
     });
     render(<ShareGivingPanel token="t" refreshKey={0} onChanged={onChanged} />);
-    expect(await screen.findByText('6 coins in Share')).toBeVisible();
+    expect(await screen.findByText('6 seeds in Share')).toBeVisible();
     fireEvent.click(screen.getByRole('button', { name: 'Food bank' }));
     fireEvent.change(screen.getByLabelText(en.share.amount), { target: { value: '4' } });
     fireEvent.click(screen.getByRole('button', { name: en.share.give }));

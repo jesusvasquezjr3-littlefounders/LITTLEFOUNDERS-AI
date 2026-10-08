@@ -11,7 +11,7 @@ Companion files: `01-RESEARCH-FOUNDATION.md` (evidence), `03-PROPORTIONS-AND-COM
 |---|---|---|
 | D1 | Text never truncates, clips or ends in an ellipsis. Space must be used well. | Non-negotiable. Contract in section 7. |
 | D2 | Light and dark are both first-class, defined from the start. | Section 5. |
-| D3 | Typeface: more character and roundness, close to the references. | **Fredoka** (display, buttons, numbers in headings) + **Nunito** (text, labels, numerals). |
+| D3 | Typeface: warm, modern and easy to read at every age (revised by OD-37, 6 October 2026: the earlier Fredoka + Nunito pair read as heavy and childish). | **Plus Jakarta Sans**, one family for display, headings, buttons, text, labels and numerals. |
 | D4 | Primary indigo becomes `#5c55fd` (was `#4f46e5`). | One value works in both modes. |
 | D5 | Identity colours are reinforced by icon, shape and label. | Colour is never the only channel. Section 4.3. |
 | D6 | **Gamification is HIGH in feel, buttons included:** press feedback, state transitions, the scene's own elements moving. | Section 9. Fixed rule, not a variable. Revised in v2 (OD-7): "high" never means celebrating every action. |
@@ -181,22 +181,22 @@ colors:
   dark-warning-strong: "{colors.dark-reward-strong}"
   dark-warning-soft: "{colors.dark-reward-soft}"
 typography:                                          # fixed sizes, stepped by the `app` container width (<640 / 640-1119 / >=1120 px), never fluid clamp(); see 03 §3.2
-  display-2xl: { fontFamily: Fredoka, fontSize: 48px,     fontWeight: 700, lineHeight: 1.04, letterSpacing: -0.015em }  # marketing H1; 56px at >=640, 72px at >=1120
-  display-xl: { fontFamily: Fredoka, fontSize: 36px,      fontWeight: 700, lineHeight: 1.08, letterSpacing: -0.01em }   # 40px at >=640
-  display-lg: { fontFamily: Fredoka, fontSize: 28px,      fontWeight: 700, lineHeight: 1.12, letterSpacing: -0.005em }  # in-app H1; 32px at >=640
-  headline:   { fontFamily: Fredoka, fontSize: 1.5rem,    fontWeight: 600, lineHeight: 1.25 }
-  title:      { fontFamily: Fredoka, fontSize: 1.25rem,   fontWeight: 600, lineHeight: 1.28 }
-  button:     { fontFamily: Fredoka, fontSize: 1rem,      fontWeight: 600, lineHeight: 1.2, letterSpacing: 0.008em }
-  button-lg:  { fontFamily: Fredoka, fontSize: 1.125rem,  fontWeight: 600, lineHeight: 1.2, letterSpacing: 0.008em }
-  question:   { fontFamily: Nunito,  fontSize: 1.75rem,   fontWeight: 700, lineHeight: 1.35 }   # lesson question on the full-bleed lesson screen
-  answer:     { fontFamily: Nunito,  fontSize: 1.125rem,  fontWeight: 800, lineHeight: 1.3 }    # answer rows and choice controls
-  body-lg:    { fontFamily: Nunito,  fontSize: 1.125rem,  fontWeight: 500, lineHeight: 1.6 }
-  body:       { fontFamily: Nunito,  fontSize: 1rem,      fontWeight: 500, lineHeight: 1.55, letterSpacing: 0.008em }
-  label:      { fontFamily: Nunito,  fontSize: 1rem,      fontWeight: 800, lineHeight: 1.25 }
-  caption:    { fontFamily: Nunito,  fontSize: 0.875rem,  fontWeight: 700, lineHeight: 1.35 }   # 14 px is the floor for ANY text
-  chip:       { fontFamily: Nunito,  fontSize: 0.875rem,  fontWeight: 800, lineHeight: 1.25 }
-  numeral-xl: { fontFamily: Nunito,  fontSize: 40px,      fontWeight: 900, lineHeight: 1, letterSpacing: -0.01em }      # 56px at >=640; digits are fixed-width by default in Nunito
-  numeral:    { fontFamily: Nunito,  fontSize: 1.5rem,    fontWeight: 800, lineHeight: 1.1 }
+  display-2xl: { fontFamily: "'Plus Jakarta Sans'", fontSize: 48px,     fontWeight: 800, lineHeight: 1.04, letterSpacing: -0.025em }  # marketing H1; 56px at >=640, 72px at >=1120
+  display-xl: { fontFamily: "'Plus Jakarta Sans'", fontSize: 36px,      fontWeight: 800, lineHeight: 1.08, letterSpacing: -0.02em }   # 40px at >=640
+  display-lg: { fontFamily: "'Plus Jakarta Sans'", fontSize: 28px,      fontWeight: 800, lineHeight: 1.12, letterSpacing: -0.015em }  # in-app H1; 32px at >=640
+  headline:   { fontFamily: "'Plus Jakarta Sans'", fontSize: 1.5rem,    fontWeight: 700, lineHeight: 1.25 }
+  title:      { fontFamily: "'Plus Jakarta Sans'", fontSize: 1.25rem,   fontWeight: 700, lineHeight: 1.28 }
+  button:     { fontFamily: "'Plus Jakarta Sans'", fontSize: 1rem,      fontWeight: 700, lineHeight: 1.2, letterSpacing: 0.008em }
+  button-lg:  { fontFamily: "'Plus Jakarta Sans'", fontSize: 1.125rem,  fontWeight: 700, lineHeight: 1.2, letterSpacing: 0.008em }
+  question:   { fontFamily: "'Plus Jakarta Sans'",  fontSize: 1.75rem,   fontWeight: 700, lineHeight: 1.35 }   # lesson question on the full-bleed lesson screen
+  answer:     { fontFamily: "'Plus Jakarta Sans'",  fontSize: 1.125rem,  fontWeight: 800, lineHeight: 1.3 }    # answer rows and choice controls
+  body-lg:    { fontFamily: "'Plus Jakarta Sans'",  fontSize: 1.125rem,  fontWeight: 500, lineHeight: 1.6 }
+  body:       { fontFamily: "'Plus Jakarta Sans'",  fontSize: 1rem,      fontWeight: 500, lineHeight: 1.55, letterSpacing: 0.008em }
+  label:      { fontFamily: "'Plus Jakarta Sans'",  fontSize: 1rem,      fontWeight: 800, lineHeight: 1.25 }
+  caption:    { fontFamily: "'Plus Jakarta Sans'",  fontSize: 0.875rem,  fontWeight: 700, lineHeight: 1.35 }   # 14 px is the floor for ANY text
+  chip:       { fontFamily: "'Plus Jakarta Sans'",  fontSize: 0.875rem,  fontWeight: 800, lineHeight: 1.25 }
+  numeral-xl: { fontFamily: "'Plus Jakarta Sans'",  fontSize: 40px,      fontWeight: 800, lineHeight: 1, letterSpacing: -0.01em }      # 56px at >=640; the family's top weight
+  numeral:    { fontFamily: "'Plus Jakarta Sans'",  fontSize: 1.5rem,    fontWeight: 800, lineHeight: 1.1 }
 rounded: { sm: 12px, md: 20px, lg: 28px, xl: 36px, full: 9999px }
 spacing: { 1: 4px, 2: 8px, 3: 12px, 4: 16px, 5: 20px, 6: 24px, 8: 32px, 10: 40px, 12: 48px, 14: 56px, 16: 64px, 20: 80px, 24: 96px, 32: 128px }   # = the mockup's --s-1 ... --s-32; nothing off this scale (03 §3.1)
 target: { min: 48px, base: 56px, lg: 64px }        # extension: touch-target floors, by function (never by audience)
@@ -362,10 +362,9 @@ The owner's reference set uses full-bleed colour for entire screens at specific 
 
 ## 6. Typography
 
-- **Fredoka** (display, headings, button labels): rounded, character, and measured about 2% narrower than Nunito at weight 700, so a button label is not wider for being playful.
-- **Nunito** (text, labels, numerals): the readable workhorse. Digits are fixed-width by default, so counters do not jitter while animating (Fredoka's digits are proportional).
-- Both are OFL. Self-host the Latin subset as variable woff2 (about 29 KB and 38 KB). Latin covers every Spanish and Portuguese glyph checked (`¿¡ñáéíóúüãõâêôç`).
-- Not chosen: Baloo 2 (cap height 14% smaller, reads as 14 px at 16 px), Poppins (about 13% wider than Nunito at weight 700, more clipping risk). Baloo 2 stays wired as a switch in the prototype.
+- **Plus Jakarta Sans** (everything): warm, modern and open, with a generous x-height that holds up at 14 px. One family replaces the earlier Fredoka + Nunito pair (OD-37, 6 October 2026, after the owner compared four pairings set with the real landing headline: Fredoka + Nunito felt heavy and childish at display sizes). Display steps use 800 with tightened tracking, headings and buttons 700, text 500.
+- OFL. Self-host the Latin subset as a variable woff2 (weights 200-800, about 27 KB). Latin covers every Spanish and Portuguese glyph checked (`¿¡ñáéíóúüãõâêôç`). Digits are proportional, so a counter that animates should use `font-variant-numeric: tabular-nums`.
+- Compared and not chosen: Fredoka + Nunito (the previous pair), Lexend + Nunito, Outfit + DM Sans.
 - Evidence note: I found no strong evidence that a display typeface improves children's reading. What is supported is size, spacing and avoiding italics and all caps. The choice rests on character and measured width, not on a legibility claim.
 - Sizes are **fixed steps, not fluid `clamp()`**: display and numeral sizes change at two `app` container widths (640 and 1120 px), so the type responds to the component's width, not the window, and every size belongs to the named scale (values in the section 3 YAML; rationale in `03` §3.2). v1 said "fluid `clamp`"; the mockup never used `clamp()`.
 
@@ -422,7 +421,7 @@ Grade: the evidence says misses fall as targets grow for young children; it does
 Gamification is high in feel (D6) and celebration is budgeted (D7). It is implemented through **colour, shape and feedback motion** — never through simulated depth, and never through celebrating every action. **This is a revision from the first version of this document**, corrected against the owner's reference material: the earlier system gave every pressable a 6px ridge, a gloss highlight and a periodic shine sweep, which read as heavier and more "3D" than the flat-tactile references call for. That treatment is now reserved for characters only (the owner's direction: "only characters are 3D, nothing else is"). Buttons, cards, tiles and badges are flat.
 
 ### 9.1 The flat button
-- **Colour fill only, no border of any kind** (revised this pass, see 4.4) — the fill is the boundary. Pill radius, label in Fredoka 600. No gloss gradient, no shine sweep, no drop-shadow ridge, no inset outline.
+- **Colour fill only, no border of any kind** (revised this pass, see 4.4) — the fill is the boundary. Pill radius, label in Plus Jakarta Sans 700. No gloss gradient, no shine sweep, no drop-shadow ridge, no inset outline.
 - **Press:** the button scales to 0.97 over `--dur-instant` (80 ms) and returns over `--dur-micro` (150 ms), both with `--ease-standard`: no overshoot (D7). A soft ring ripples from the touch point. Haptic tick where supported. (The mockup presses in over a hard-coded 60 ms and releases with the spring curve; that is a known deviation.)
 - **Armed:** when a disabled button becomes usable it bumps once (scale .97 → 1.02 → 1, `--dur-component`, `--ease-standard`).
 - **Pulsing CTA:** the one emphasised CTA per screen gets a slow (2.6s) breathing glow around its edge — a soft outward halo in its own colour, not a moving highlight — so there is still exactly one thing drawing the eye without adding visual weight to the object itself.

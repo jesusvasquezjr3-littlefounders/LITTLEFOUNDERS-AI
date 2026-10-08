@@ -64,7 +64,7 @@ describe('TutorTasks (F4-P)', () => {
     expect(within(waiting).getByText('Sofía')).toBeInTheDocument();
     expect(within(waiting).getByText(en.statusDone)).toBeInTheDocument();
     expect(within(waiting).getByText(en.bonus)).toBeInTheDocument();
-    expect(within(waiting).getByText('20 coins')).toBeInTheDocument();
+    expect(within(waiting).getByText('20 seeds')).toBeInTheDocument();
     expect(within(waiting).getByText(en.weekly)).toBeInTheDocument();
     expect(within(waiting).getByText('I did the wheels too')).toBeInTheDocument();
     // The list decides nothing (D.18: every decision goes through the queue's reasons).

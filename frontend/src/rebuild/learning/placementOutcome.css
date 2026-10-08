@@ -5,7 +5,7 @@
 .lf-rebuild.lf-placement-outcome h1 { font-size: 2rem; }
 .lf-placement-outcome-card { display: grid; gap: var(--spacing-3); padding: var(--spacing-5); border-radius: var(--rounded-lg); background: var(--surface); color: var(--content); }
 .lf-placement-outcome-card p { font-size: 1.125rem; font-weight: 700; line-height: 1.4; }
-.lf-placement-outcome-card p:first-child { font-family: Fredoka, sans-serif; font-weight: 600; font-size: 1.25rem; }
+.lf-placement-outcome-card p:first-child { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600; font-size: 1.25rem; }
 .lf-placement-outcome .lf-actions { max-inline-size: 420px; }
 .lf-placement-outcome .lf-button { min-block-size: var(--target-lg); font-size: 1.125rem; }
 .lf-placement-outcome :is(button):focus-visible { outline-color: var(--on-sky); }

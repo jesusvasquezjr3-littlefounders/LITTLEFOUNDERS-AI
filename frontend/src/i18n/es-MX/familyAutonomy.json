@@ -6,15 +6,15 @@
     "label": "Nivel {count}: {name}",
     "unlock1": "Tu Tutor aprueba cada tarea y cada premio.",
     "unlock2": "Las tareas de familia cuentan ya.",
-    "unlock3": "Las tareas de hasta {count} monedas cuentan al momento.",
-    "preapproved": "Los premios de hasta {count} monedas no necesitan permiso.",
+    "unlock3": "Las tareas de hasta {count} semillas cuentan al momento.",
+    "preapproved": "Los premios de hasta {count} semillas no necesitan permiso.",
     "always": "Tu límite de gasto sigue igual."
   },
   "levelsTutor": {
     "unlock1": "Tú apruebas cada tarea y cada premio.",
     "unlock2": "Las tareas de familia cuentan al momento. Tú revisas después.",
-    "unlock3": "Las tareas de hasta {count} monedas cuentan al momento. Tú revisas después.",
-    "preapproved": "Los premios de hasta {count} monedas no necesitan tu aprobación.",
+    "unlock3": "Las tareas de hasta {count} semillas cuentan al momento. Tú revisas después.",
+    "preapproved": "Los premios de hasta {count} semillas no necesitan tu aprobación.",
     "always": "Tu límite de gasto y la pausa siempre aplican."
   },
   "myLevel": {
@@ -136,7 +136,7 @@
     "other": "Otra razón",
     "photo": "Foto adjunta",
     "needsPhoto": "Esperando la foto.",
-    "cost": "{count} monedas",
+    "cost": "{count} semillas",
     "approve": "Aprobar",
     "sendBack": "Regresar",
     "remove": "Quitar",
@@ -168,7 +168,7 @@
     "heading": "Nivel de {name}",
     "body": "Cada nivel necesita menos aprobaciones tuyas.",
     "limit": "Premios aprobados sin tu toque, hasta",
-    "limitValue": "{count} monedas",
+    "limitValue": "{count} semillas",
     "limitCap": "Máximo {count} en este nivel.",
     "more": "Más",
     "less": "Menos",

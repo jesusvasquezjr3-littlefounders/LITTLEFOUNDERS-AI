@@ -22,7 +22,7 @@
   font-weight: 800;
 }
 .lf-teen-wallet-balance { display: grid; gap: var(--spacing-4); padding: var(--spacing-6); border-radius: var(--rounded-lg); background: var(--surface); }
-.lf-teen-wallet-total { font: 700 2rem/1.1 Fredoka, sans-serif; }
+.lf-teen-wallet-total { font: 700 2rem/1.1 'Plus Jakarta Sans', sans-serif; }
 .lf-teen-wallet-pockets, .lf-teen-wallet-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--spacing-3); }
 .lf-teen-wallet-pockets li {
   display: flex;
@@ -38,7 +38,7 @@
 [data-pocket='save'] { --pocket: var(--mint); --pocket-soft: var(--mint-soft); }
 [data-pocket='spend'] { --pocket: var(--sky); --pocket-soft: var(--sky-soft); }
 [data-pocket='share'] { --pocket: var(--berry); --pocket-soft: var(--berry-soft); }
-.lf-teen-wallet-amount { font-family: Fredoka, sans-serif; font-weight: 600; white-space: nowrap; }
+.lf-teen-wallet-amount { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600; white-space: nowrap; }
 .lf-teen-wallet-amount--credit { color: var(--success-strong); }
 .lf-teen-wallet-muted { color: var(--content-muted); }
 .lf-teen-wallet-tabs { display: flex; flex-wrap: wrap; gap: var(--spacing-3); }

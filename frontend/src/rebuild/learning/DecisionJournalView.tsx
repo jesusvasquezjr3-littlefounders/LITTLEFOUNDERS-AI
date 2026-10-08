@@ -1,7 +1,7 @@
 import { ApplicationArt } from '../design/ApplicationArt';
 import { useId, useState } from 'react';
 import type { AgeBand, Locale } from '../design/copyBudget';
-import { Button, IconButton, InlineNotice } from '../design/controls';
+import { Art, Button, InlineNotice } from '../design/controls';
 import { TextField } from '../design/fields';
 import '../design/tokens.css';
 import '../design/system.css';
@@ -33,8 +33,8 @@ import type { BridgeAnswer, JournalEntry, JournalState, SelfBridge } from './nar
 
 type Copy = {
   title: string; back: string; loading: string; retry: string; errorTitle: string; errorBody: string;
-  emptyTitle: string; emptyBody: string; chose: string; happened: string; hide: string; first: string; more: string;
-  clear: string; clearBody: string; clearYes: string; clearNo: string; cleared: string; clearFailed: string;
+  emptyTitle: string; emptyBody: string; chose: string; happened: string; first: string; more: string; lead: string; echoOne: string; echoMany: string; emptyAction: string;
+  changed: string; clear: string; clearBody: string; clearYes: string; clearNo: string; cleared: string; clearFailed: string;
   bridgeTitle: string; learned: string; bridge: Record<SelfBridge['action'], string>; tryIt: string; notNow: string;
   planned: string; bridgeClosed: string; bridgeFailed: string;
   /** OD-28 (L-12): the teen's own savings goal from a savings prompt. */
@@ -48,32 +48,35 @@ type Copy = {
 export const decisionJournalCopy: Record<Locale, Copy> = {
   'en-US': {
     title: 'My decisions', back: 'Go back', loading: 'Loading your decisions', retry: 'Try again', errorTitle: 'Journal unavailable', errorBody: 'We could not load it. Try again.',
-    emptyTitle: 'No decisions yet', emptyBody: 'Story choices you make show up here.', chose: 'You chose', happened: 'What happened', hide: 'Hide it', first: 'The first time', more: 'Show more',
+    emptyTitle: 'No decisions yet', emptyBody: 'Story choices you make show up here.', chose: 'You chose', happened: 'What happened', first: 'The first time', more: 'Show more',
+    changed: 'You changed your mind', lead: 'What you chose in the stories, and what happened next.', echoOne: 'It came back in the story', echoMany: 'It came back {n} times', emptyAction: 'Go and learn',
     clear: 'Clear journal', clearBody: 'This removes your saved choices. Your progress stays.', clearYes: 'Yes, clear', clearNo: 'Keep it', cleared: 'Your journal is empty now.', clearFailed: 'Could not clear it. Try again.',
     bridgeTitle: 'Try it for real', learned: 'You learned', bridge: { savings_goal: 'Pick something real to save for this month.', earning_task: 'Keep track of what you earn this week.' },
     tryIt: 'I will try', notNow: 'Not now', planned: 'Saved as your plan.', bridgeClosed: 'This idea has closed.', bridgeFailed: 'Could not save it. Try again.',
-    goalName: 'What will you save for?', goalTarget: 'Coins to save', createGoal: 'Create goal', planOnly: 'Just a plan',
-    goalCreated: 'Goal added to your Wallet.', noWallet: 'Your Wallet is not open.', goalCoins: '{n} coins to save', openWallet: 'See my Wallet',
+    goalName: 'What will you save for?', goalTarget: 'Seeds to save', createGoal: 'Create goal', planOnly: 'Just a plan',
+    goalCreated: 'Goal added to your Wallet.', noWallet: 'Your Wallet is not open.', goalCoins: '{n} seeds to save', openWallet: 'See my Wallet',
     tutorSees: 'Your Tutor sees your choices.',
   },
   'es-MX': {
     title: 'Mis decisiones', back: 'Volver', loading: 'Cargando tus decisiones', retry: 'Reintentar', errorTitle: 'Diario no disponible', errorBody: 'No pudimos cargarlo. Inténtalo de nuevo.',
-    emptyTitle: 'Aún no hay decisiones', emptyBody: 'Aquí aparecen tus elecciones en las historias.', chose: 'Elegiste', happened: 'Qué pasó', hide: 'Ocultar', first: 'La primera vez', more: 'Ver más',
+    emptyTitle: 'Aún no hay decisiones', emptyBody: 'Aquí aparecen tus elecciones en las historias.', chose: 'Elegiste', happened: 'Qué pasó', first: 'La primera vez', more: 'Ver más',
+    changed: 'Cambiaste de idea', lead: 'Lo que elegiste en las historias y lo que pasó después.', echoOne: 'Volvió a aparecer en la historia', echoMany: 'Volvió a aparecer {n} veces', emptyAction: 'Ir a aprender',
     clear: 'Borrar diario', clearBody: 'Esto borra tus elecciones guardadas. Tu progreso se queda.', clearYes: 'Sí, borrar', clearNo: 'Conservarlo', cleared: 'Tu diario está vacío.', clearFailed: 'No se pudo borrar. Inténtalo de nuevo.',
     bridgeTitle: 'Pruébalo de verdad', learned: 'Aprendiste', bridge: { savings_goal: 'Elige algo real para ahorrar este mes.', earning_task: 'Anota lo que ganes esta semana.' },
     tryIt: 'Lo intentaré', notNow: 'Ahora no', planned: 'Guardado como tu plan.', bridgeClosed: 'Esta idea ya cerró.', bridgeFailed: 'No se pudo guardar. Inténtalo de nuevo.',
-    goalName: '¿Para qué vas a ahorrar?', goalTarget: 'Monedas por ahorrar', createGoal: 'Crear meta', planOnly: 'Solo un plan',
-    goalCreated: 'Meta agregada a tu Cartera.', noWallet: 'Tu Cartera no está abierta.', goalCoins: '{n} monedas por ahorrar', openWallet: 'Ver mi Cartera',
+    goalName: '¿Para qué vas a ahorrar?', goalTarget: 'Semillas por ahorrar', createGoal: 'Crear meta', planOnly: 'Solo un plan',
+    goalCreated: 'Meta agregada a tu Cartera.', noWallet: 'Tu Cartera no está abierta.', goalCoins: '{n} semillas por ahorrar', openWallet: 'Ver mi Cartera',
     tutorSees: 'Tu Tutor ve tus elecciones.',
   },
   'pt-BR': {
     title: 'Minhas decisões', back: 'Voltar', loading: 'Carregando suas decisões', retry: 'Tentar de novo', errorTitle: 'Diário indisponível', errorBody: 'Não foi possível carregar. Tente de novo.',
-    emptyTitle: 'Nenhuma decisão ainda', emptyBody: 'Suas escolhas nas histórias aparecem aqui.', chose: 'Você escolheu', happened: 'O que aconteceu', hide: 'Ocultar', first: 'Na primeira vez', more: 'Ver mais',
+    emptyTitle: 'Nenhuma decisão ainda', emptyBody: 'Suas escolhas nas histórias aparecem aqui.', chose: 'Você escolheu', happened: 'O que aconteceu', first: 'Na primeira vez', more: 'Ver mais',
+    changed: 'Você mudou de ideia', lead: 'O que você escolheu nas histórias e o que aconteceu depois.', echoOne: 'Voltou a aparecer na história', echoMany: 'Voltou a aparecer {n} vezes', emptyAction: 'Ir aprender',
     clear: 'Apagar diário', clearBody: 'Isso apaga suas escolhas salvas. Seu progresso fica.', clearYes: 'Sim, apagar', clearNo: 'Manter', cleared: 'Seu diário está vazio.', clearFailed: 'Não foi possível apagar. Tente de novo.',
     bridgeTitle: 'Tente de verdade', learned: 'Você aprendeu', bridge: { savings_goal: 'Escolha algo real para poupar este mês.', earning_task: 'Anote o que você ganhar nesta semana.' },
     tryIt: 'Vou tentar', notNow: 'Agora não', planned: 'Salvo como seu plano.', bridgeClosed: 'Esta ideia já fechou.', bridgeFailed: 'Não foi possível salvar. Tente de novo.',
-    goalName: 'Para que você vai poupar?', goalTarget: 'Moedas para poupar', createGoal: 'Criar meta', planOnly: 'Só um plano',
-    goalCreated: 'Meta adicionada à sua Carteira.', noWallet: 'Sua Carteira não está aberta.', goalCoins: '{n} moedas para poupar', openWallet: 'Ver minha Carteira',
+    goalName: 'Para que você vai poupar?', goalTarget: 'Sementes para poupar', createGoal: 'Criar meta', planOnly: 'Só um plano',
+    goalCreated: 'Meta adicionada à sua Carteira.', noWallet: 'Sua Carteira não está aberta.', goalCoins: '{n} sementes para poupar', openWallet: 'Ver minha Carteira',
     tutorSees: 'Seu Tutor vê suas escolhas.',
   },
 };
@@ -205,10 +208,11 @@ export function DecisionJournalView({ state, locale, dark, ageBand, onBack, onRe
       <div className="lf-journal-top">
         <Button onClick={onBack}>{t.back}</Button>
       </div>
-      <header className="lf-illustrated-header"><div className="lf-illustrated-heading"><h1 data-copy-role="heading">{state.status === 'loading' ? t.loading : state.status === 'error' ? t.errorTitle : t.title}</h1></div><ApplicationArt scene="learning" /></header>
+      <header className="lf-illustrated-header"><div className="lf-illustrated-heading"><h1 data-copy-role="heading">{state.status === 'loading' ? t.loading : state.status === 'error' ? t.errorTitle : t.title}</h1>
+        {state.status === 'ready' ? <p className="lf-journal-lead" data-copy-role="body">{t.lead}</p> : null}</div><ApplicationArt scene="learning" /></header>
       {state.status === 'ready'
         ? <ReadyJournal key={state.entries.length === 0 ? 'empty' : 'list'} state={state} locale={locale} t={t}
-          onMore={onMore} onClear={onClear} onBridge={onBridge} onOpenWallet={onOpenWallet} loadingMore={loadingMore} />
+          onBack={onBack} onMore={onMore} onClear={onClear} onBridge={onBridge} onOpenWallet={onOpenWallet} loadingMore={loadingMore} />
         : state.status === 'error' ? <>
           <p data-copy-role="body">{t.errorBody}</p>
           {onRetry ? <div className="lf-actions"><Button variant="accent" onClick={onRetry}>{t.retry}</Button></div> : null}
@@ -217,8 +221,8 @@ export function DecisionJournalView({ state, locale, dark, ageBand, onBack, onRe
   </div>;
 }
 
-function ReadyJournal({ state, locale, t, onMore, onClear, onBridge, onOpenWallet, loadingMore }: {
-  state: Extract<JournalState, { status: 'ready' }>; locale: Locale; t: Copy; onMore?: () => void; onClear: () => Promise<boolean>;
+function ReadyJournal({ state, locale, t, onBack, onMore, onClear, onBridge, onOpenWallet, loadingMore }: {
+  state: Extract<JournalState, { status: 'ready' }>; locale: Locale; t: Copy; onBack: () => void; onMore?: () => void; onClear: () => Promise<boolean>;
   onBridge: BridgeAnswer; onOpenWallet?: () => void; loadingMore: boolean;
 }) {
   const emptyId = useId();
@@ -241,13 +245,20 @@ function ReadyJournal({ state, locale, t, onMore, onClear, onBridge, onOpenWalle
       {state.sharedWithTutor ? <p className="lf-journal-shared" data-copy-role="body">{t.tutorSees}</p> : null}
       <SelfBridgeList bridges={state.bridges} locale={locale} onBridge={onBridge} onOpenWallet={onOpenWallet} />
 
-      {entries.length === 0 ? <section className="lf-journal-section" aria-labelledby={emptyId}>
+      {entries.length === 0 ? <section className="lf-journal-section lf-journal-empty" aria-labelledby={emptyId}>
+        <Art assetId="badge.journal.choice" size="lg" />
         <h2 id={emptyId} data-copy-role="heading">{t.emptyTitle}</h2>
         <p data-copy-role="body">{clearNotice === 'cleared' ? t.cleared : t.emptyBody}</p>
+        <Button variant="accent" onClick={onBack}>{t.emptyAction}</Button>
       </section> : <section className="lf-journal-section" aria-label={t.title}>
-        <ol className="lf-journal-list">
-          {entries.map((entry) => <JournalCard key={entry.id} entry={entry} locale={locale} t={t} />)}
-        </ol>
+        <div className="lf-journal-days">
+          {dayGroups(entries, locale).map((group) => <section key={group.key} className="lf-journal-day">
+            <h2 className="lf-journal-day-label" data-copy-role="body">{group.label}</h2>
+            <ol className="lf-journal-list">
+              {group.entries.map((entry) => <JournalCard key={entry.id} entry={entry} locale={locale} t={t} />)}
+            </ol>
+          </section>)}
+        </div>
         {state.hasMore && onMore ? <Button pending={loadingMore} onClick={onMore}>{t.more}</Button> : null}
       </section>}
 
@@ -264,23 +275,40 @@ function ReadyJournal({ state, locale, t, onMore, onClear, onBridge, onOpenWalle
   </>;
 }
 
+/** Entries grouped by the day they were decided, newest first as Core serves them; the day reads "Today", "Yesterday" or the date (from `Intl`). */
+function dayGroups(entries: JournalEntry[], locale: Locale): { key: string; label: string; entries: JournalEntry[] }[] {
+  const relative = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' });
+  const dated = new Intl.DateTimeFormat(locale, { weekday: 'long', day: 'numeric', month: 'long' });
+  const midnight = (value: Date) => new Date(value.getFullYear(), value.getMonth(), value.getDate()).getTime();
+  const groups: { key: string; label: string; entries: JournalEntry[] }[] = [];
+  for (const entry of entries) {
+    const date = new Date(entry.recordedAt);
+    const key = `${date.getFullYear()}-${date.getMonth()}-${date.getDate()}`;
+    const last = groups[groups.length - 1];
+    if (last && last.key === key) { last.entries.push(entry); continue; }
+    const days = Math.round((midnight(new Date()) - midnight(date)) / 86_400_000);
+    const label = days >= 0 && days <= 1 ? relative.format(-days, 'day') : dated.format(date);
+    groups.push({ key, label: label.charAt(0).toLocaleUpperCase(locale) + label.slice(1), entries: [entry] });
+  }
+  return groups;
+}
+
+/**
+ * One decision told as a short story, all of it in view: the question the story asked, what the learner chose, what happened
+ * next, and, when the story gave a second chance, what they chose the first time. A mark at the foot says when the story
+ * brought the choice back in a later lesson, which is what the journal is for.
+ */
 function JournalCard({ entry, locale, t }: { entry: JournalEntry; locale: Locale; t: Copy }) {
-  const [open, setOpen] = useState(false);
-  const detailsId = `lf-journal-details-${entry.id}`;
+  const echo = entry.resurfaced > 0 ? (entry.resurfaced === 1 ? t.echoOne : t.echoMany.replace('{n}', new Intl.NumberFormat(locale).format(entry.resurfaced))) : null;
   return <li className="lf-journal-entry">
-    <p className="lf-journal-meta"><span data-copy-role="data">{localizedText(entry.course.title, locale)}</span><span data-copy-role="data">{localizedText(entry.lesson.title, locale)}</span></p>
+    <p className="lf-journal-meta"><Art assetId="badge.journal.choice" /><span data-copy-role="data">{localizedText(entry.course.title, locale)}</span><span data-copy-role="data">{localizedText(entry.lesson.title, locale)}</span></p>
+    <p className="lf-journal-situation" data-copy-role="narrative">{entry.situation}</p>
     <p className="lf-journal-choice">
       <span data-copy-role="body">{t.chose}</span>
       <span data-copy-role="narrative">{entry.choice}</span>
     </p>
-    {/* Layering (Bible 06): the situation, what happened and a changed mind open with one tap. A named icon
-        button, so the first view carries no extra words per entry. */}
-    <IconButton glyph="chevron" label={open ? t.hide : t.happened} className="lf-journal-toggle" aria-expanded={open} aria-controls={detailsId}
-      onClick={() => setOpen(!open)} />
-    {open ? <div id={detailsId} className="lf-journal-details">
-      <p className="lf-journal-situation" data-copy-role="narrative">{entry.situation}</p>
-      {entry.outcome ? <p className="lf-journal-outcome"><span data-copy-role="body">{t.happened}</span>{' '}<span data-copy-role="narrative">{entry.outcome}</span></p> : null}
-      {entry.firstChoice ? <p className="lf-journal-first"><span data-copy-role="body">{t.first}</span>{' '}<span data-copy-role="narrative">{entry.firstChoice}</span></p> : null}
-    </div> : null}
+    {entry.outcome ? <p className="lf-journal-outcome"><span data-copy-role="body">{t.happened}</span><span data-copy-role="narrative">{entry.outcome}</span></p> : null}
+    {entry.firstChoice ? <p className="lf-journal-changed"><span data-copy-role="body">{t.changed}</span><span data-copy-role="body">{t.first}: <del className="ugc">{entry.firstChoice}</del></span></p> : null}
+    {echo ? <p className="lf-journal-echo"><Art assetId="badge.journal.echo" /><span data-copy-role="body">{echo}</span></p> : null}
   </li>;
 }

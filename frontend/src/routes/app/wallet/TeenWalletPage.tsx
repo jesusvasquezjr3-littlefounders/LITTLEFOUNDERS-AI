@@ -47,7 +47,7 @@ export function TeenWalletPage() {
   // by age), and the database gives every such teen the 'teen' register.
   // S07.7 (D.19, D.20, D.22): "Beyond the app" from 15, what the practice covers, and a research no.
   // W2F.2: the design system's page states (offline, refused, failed), and the page's companions beside the wallet.
-  return <TeenWallet copy={copy} habits={moneyHabitsInRegister(locale, 'teen')} locale={locale} dark={isDark} session={session} tasksHref="/tasks"
+  return <TeenWallet copy={copy} habits={moneyHabitsInRegister(locale, 'teen')} shared={{ home: family.childCoins.home, move: family.childCoins.move }} locale={locale} dark={isDark} session={session} tasksHref="/tasks"
     onOpenTasks={() => navigate('/tasks')} onAccessChanged={invalidateWalletAccess}
     inviteLinkFor={(token) => `${window.location.origin}${joinPath(token)}`}
     copyText={async (text) => {

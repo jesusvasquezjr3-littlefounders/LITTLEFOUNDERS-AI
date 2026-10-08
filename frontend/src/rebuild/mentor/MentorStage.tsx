@@ -188,7 +188,7 @@ export interface MentorStageProps {
   backdrop?: ReactNode;
 }
 
-function readEnvironment(override?: Partial<StageEnvironment>): StageEnvironment {
+export function readEnvironment(override?: Partial<StageEnvironment>): StageEnvironment {
   const probe = getDeviceProbe();
   const connection = (navigator as Navigator & { connection?: { saveData?: boolean } }).connection;
   return {

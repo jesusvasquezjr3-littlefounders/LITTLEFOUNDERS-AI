@@ -30,7 +30,7 @@ const ROLE: Record<string, Record<string, CopyRole>> = {
     open: 'action', close: 'action', heading: 'heading', body: 'body', tenths: 'data', suggested: 'action', submit: 'action', saving: 'action',
     saved: 'body', mustBe10: 'body', failed: 'body', loading: 'body', retry: 'action',
   },
-  goalProgress: { of: 'data', own: 'data', bonus: 'data', family: 'data', allOwn: 'data', label: 'data' },
+  goalProgress: { of: 'data', own: 'data', bonus: 'data', family: 'data', allOwn: 'data', label: 'data', togo: 'data' },
   goalProgressTutor: { of: 'data', own: 'data', bonus: 'data', family: 'data', allOwn: 'data', label: 'data' },
   nextGoal: {
     milestone: 'heading', reached: 'heading', prompt: 'prompt', name: 'body', target: 'body', start: 'action', starting: 'action', notNow: 'action',
@@ -38,12 +38,14 @@ const ROLE: Record<string, Record<string, CopyRole>> = {
   },
   goals: {
     heading: 'heading', empty: 'body', name: 'body', target: 'body', create: 'action', creating: 'action', created: 'body', invalid: 'body',
-    archive: 'action', archiveConfirm: 'body', keep: 'action', archived: 'body', reached: 'option', loading: 'body', failed: 'body', retry: 'action',
+    archive: 'action', archiveHeading: 'heading', archiveConfirm: 'body', keep: 'action', archived: 'body', reached: 'option', loading: 'body', failed: 'body', retry: 'action',
+    add: 'action', putIn: 'action', takeOut: 'action', edit: 'action', editTitle: 'heading', editSave: 'action', editName: 'body', editTarget: 'body',
+    edited: 'body', editFailed: 'body', editReached: 'body', archivedBack: 'body', more: 'action',
   },
   share: {
     heading: 'heading', body: 'body', honest: 'body', available: 'data', where: 'body', amount: 'body', give: 'action', giving: 'action', pledged: 'body',
     empty: 'body', historyHeading: 'heading', waiting: 'option', given: 'option', returned: 'option', note: 'data', takeBack: 'action', takenBack: 'body',
-    notEnough: 'body', invalid: 'body', loading: 'body', failed: 'body', retry: 'action', charity: 'option', gift: 'option', community: 'option', frozen: 'body', coins: 'data',
+    notEnough: 'body', invalid: 'body', loading: 'body', failed: 'body', retry: 'action', charity: 'option', gift: 'option', community: 'option', frozen: 'body', coins: 'data', more: 'action',
   },
   shareTeen: {
     body: 'body', honest: 'body', empty: 'body', addHeading: 'heading', placeName: 'body', kind: 'body', add: 'action', added: 'body', limit: 'body',
@@ -90,7 +92,7 @@ describe('Money-habit copy (S07.4)', () => {
       expect(all).not.toMatch(/%|percent|porcentaje|porcentagem/i);
     });
 
-    it(`never promises that coins leave the app, in ${locale} (D.7)`, () => {
+    it(`never promises that seeds leave the app, in ${locale} (D.7)`, () => {
       expect(file.share.honest).toMatch(/app/);
       expect(file.shareTeen.honest).toMatch(/app/);
       expect(file.destinations.honest).toMatch(/never|nunca/i);
@@ -109,9 +111,9 @@ describe('Money-habit copy (S07.4)', () => {
     });
   }
 
-  it('names coins in every locale where a quantity is shown', () => {
-    expect(en.share.available).toContain('coins');
-    expect(es.share.available).toContain('monedas');
-    expect(pt.share.available).toContain('moedas');
+  it('names seeds in every locale where a quantity is shown', () => {
+    expect(en.share.available).toContain('seeds');
+    expect(es.share.available).toContain('semillas');
+    expect(pt.share.available).toContain('sementes');
   });
 });

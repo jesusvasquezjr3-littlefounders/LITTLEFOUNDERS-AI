@@ -1,17 +1,22 @@
 import { ApplicationArt } from '../../design/ApplicationArt';
-import { useCallback, useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from 'react';
-import { Button, ButtonGroup, DashboardLayout, Dialog, EmptyState, InlineNotice } from '../../design/controls';
+import { useCallback, useEffect, useRef, useState, type FormEvent, type ReactNode } from 'react';
+import { Button, Dialog, EmptyState, InlineNotice, SegmentedControl, TileButton } from '../../design/controls';
+import type { WalletActions, WalletPart } from '../CoinAccount';
 import type { ConsoleTransport } from '../../family/console/consoleApi';
 import { ConsoleLink, FailureState, PageLoading, type ConsoleLocale, type PageFailure } from '../../family/console/consoleParts';
 import { DEFAULT_REGISTER, REGISTER_BAND, type MoneyRegister } from '../../family/moneyRegister';
 import { fetchRegister } from '../../family/tasks/tasksApi';
 import type { ChildCoinsCopy, CoinCardCopy } from '../../family/tasks/taskParts';
 import { CardFields } from './cardParts';
-import { CARD_NAME_MAX, fetchOwnCoins, updateOwnCard, type Card as CoinCard, type OwnCoins, type PendingCredit } from './coinsApi';
+import { AllowanceAsk } from './AllowanceAsk';
+import { CARD_NAME_MAX, fetchOwnAllowance, fetchOwnAllowanceRequest, fetchOwnCoins, fetchOwnGoals, fetchOwnPockets, updateOwnCard, type Allowance, type AllowanceRequest, type Card as CoinCard, type OwnCoins, type OwnGoal, type PendingCredit, type Pocket } from './coinsApi';
+import { MoveCoins, type Places } from './MoveCoins';
+import type { Locale } from '../../design/copyBudget';
 import '../../design/tokens.css';
 import '../../design/system.css';
 import '../../family/console/console.css';
 import '../../family/tasks/money.css';
+import '../wallet.css';
 
 /*
  * F5-K, the child's wallet (W2F.2): a parent-created child's coin card, or the
@@ -34,8 +39,16 @@ import '../../family/tasks/money.css';
  * youngest band's budget and declare the register Core returned (D.12).
  */
 
+/**
+ * The wallet is one screen of four tabs: Home (what you have and what you can do), Goals, Activity and Card. Share is not a tab:
+ * it is a pocket, reached from the pocket and from the Share action. (Owner review, 7 October 2026.)
+ */
+export type WalletTab = 'overview' | 'goals' | 'share' | 'card' | 'activity';
+const TABS: readonly WalletTab[] = ['overview', 'goals', 'activity', 'card'];
+
 export interface ChildCoinsSlots {
-  account: (version: number) => ReactNode;
+  /** `part` is the slice of the account a tab shows; `actions` are the quick actions that belong to this screen (restyling the card, starting a goal). */
+  account: (version: number, part: WalletPart, actions: WalletActions) => ReactNode;
   /**
    * `frozen`: a freeze holds the split (D.1), and the split surface says so before the child tries. `settled` takes the
    * written result of a confirmed split: this board keeps it in view and re-reads (the allowance then leaves).
@@ -43,7 +56,10 @@ export interface ChildCoinsSlots {
   split: (credit: PendingCredit, frozen: boolean, settled: (result: string) => void) => ReactNode;
   usualSplit: ReactNode;
   bonus: ReactNode;
-  goals: (version: number) => ReactNode;
+  /** The Share pocket's real destination: where coins go, what was given, taking one back (D.14). */
+  share?: ReactNode;
+  /** `compact`: the home tab's glance at the goals (no form, no putting away); the goals tab gets the whole section, with the new-goal form open when `adding`. */
+  goals: (version: number, options: { compact: boolean; adding: boolean; /** "Add coins" or "Take out" on a goal opens the move dialog already pointed at it. */ onMove: (goalId: string, direction: 'in' | 'out') => void; /** The home glance's "See all goals", at the end of its heading row. */ headingAction?: ReactNode }) => ReactNode;
   history: ReactNode;
   bridge: ReactNode;
   research: ReactNode;
@@ -73,6 +89,18 @@ export function ChildCoins({ copy, colours, locale, dark, transport, onNavigate,
   const [version, setVersion] = useState(0);
   // Bible 02 §9.2 / K18: the last confirmed split's result, held here because the allowance's own slot leaves on the re-read.
   const [splitResult, setSplitResult] = useState<string | null>(null);
+  const [tab, setTab] = useState<WalletTab>('overview');
+  const [lookOpen, setLookOpen] = useState(false);
+  const [lookSaved, setLookSaved] = useState(false);
+  const [addingGoal, setAddingGoal] = useState(false);
+  // What the home tab needs besides the account: the pockets, the goals they hold, the allowance, and the move dialog.
+  const [pockets, setPockets] = useState<Record<Pocket, number> | null>(null);
+  const [goals, setGoals] = useState<OwnGoal[]>([]);
+  const [allowance, setAllowance] = useState<Allowance | null>(null);
+  const [askRequest, setAskRequest] = useState<AllowanceRequest | null>(null);
+  const [moveOpen, setMoveOpen] = useState(false);
+  const [movePreset, setMovePreset] = useState<{ from?: string; to?: string } | null>(null);
+  const [movedNotice, setMovedNotice] = useState<string | null>(null);
   const generation = useRef(0);
 
   const read = useCallback(async () => {
@@ -98,6 +126,18 @@ export function ChildCoins({ copy, colours, locale, dark, transport, onNavigate,
     return () => { live = false; };
   }, [transport]);
 
+  useEffect(() => {
+    let live = true;
+    void Promise.all([fetchOwnPockets(transport), fetchOwnGoals(transport), fetchOwnAllowance(transport), fetchOwnAllowanceRequest(transport)]).then(([p, g, a, r]) => {
+      if (!live) return;
+      if (p.ok) setPockets(p.data);
+      if (g.ok) setGoals(g.data);
+      setAllowance(a.ok ? a.data : null);
+      setAskRequest(r.ok ? r.data : null);
+    });
+    return () => { live = false; };
+  }, [transport, version, refreshKey]);
+
   const changed = useCallback(() => setVersion((value) => value + 1), []);
   const settled = useCallback((result: string) => { setSplitResult(result); setVersion((value) => value + 1); }, []);
 
@@ -117,41 +157,101 @@ export function ChildCoins({ copy, colours, locale, dark, transport, onNavigate,
   }
 
   const { coins } = load;
-  return root(<DashboardLayout
-    primary={<>
-      <div className="lf-money-slot" data-family-part="account">{slots.account(version)}</div>
-      {/* A status, never a celebration (a split is not an OD-7 milestone): it outlives the allowance it confirms. */}
-      {splitResult ? <div className="lf-money-slot" data-family-part="split-result"><InlineNotice tone="success" live>{splitResult}</InlineNotice></div> : null}
-      {/* Each waiting allowance says how many coins wait: the group is named, not titled, to keep the first view short (06 §3.1). */}
-      {coins.credits.length > 0 ? <section className="lf-console-group" data-family-part="payouts" aria-label={copy.payoutsTitle}>
+  const tabs = copy.tabs;
+  const home = copy.home;
+  const number = new Intl.NumberFormat(locale);
+  const names: Record<Pocket, string> = { save: home.nameSave, spend: home.nameSpend, share: home.nameShare };
+  // Plain Save is what is not tied to a goal: only that can move.
+  const heldInGoals = goals.reduce((sum, goal) => sum + goal.saved, 0);
+  const places: Places = { save: Math.max(0, (pockets?.save ?? 0) - heldInGoals), spend: pockets?.spend ?? 0, share: pockets?.share ?? 0 };
+  const nextDate = allowance?.active && Date.parse(allowance.nextRunAt) > Date.now()
+    ? new Intl.DateTimeFormat(locale, { weekday: 'long', day: 'numeric', month: 'short' }).format(new Date(allowance.nextRunAt)) : null;
+  const next = allowance && nextDate ? home.next.replace('{date}', nextDate).replace('{amount}', number.format(allowance.amount)) : null;
+  const openMove = (preset: { from?: string; to?: string } | null) => { setMovedNotice(null); setMovePreset(preset); setMoveOpen(true); };
+  const actions: WalletActions = {
+    home: { have: home.have, next, move: home.move, ask: home.ask, share: home.share, goal: home.goal, hintSave: heldInGoals > 0 ? home.inGoals.replace('{count}', number.format(heldInGoals)) : home.hintSave, hintSpend: home.hintSpend,
+      hintShare: home.hintShare, actions: home.actions, seeAll: home.seeAll },
+    onMove: () => openMove(null),
+    heroExtra: <AllowanceAsk copy={copy.ask} locale={locale} allowance={allowance} request={askRequest} transport={transport} onChanged={changed} />,
+    onShare: () => setTab('share'),
+    onSeeAll: () => setTab('activity'),
+    onCustomize: () => { setLookSaved(false); setLookOpen(true); },
+    onNewGoal: () => { setAddingGoal(true); setTab('goals'); },
+    onReward: () => onNavigate('/tasks'),
+    // Each pocket is a door to what you do with it: Save opens the goals, Share the giving, Spend the rewards.
+    onOpenPocket: (pocket) => { if (pocket === 'spend') onNavigate('/tasks'); else setTab(pocket === 'save' ? 'goals' : 'share'); },
+  };
+  const onGoalMove = (goalId: string, direction: 'in' | 'out') => openMove(direction === 'in' ? { from: 'save', to: `goal:${goalId}` } : { from: `goal:${goalId}`, to: 'save' });
+  const choose = (next: WalletTab) => { if (next !== 'goals') setAddingGoal(false); setTab(next); };
+  return root(<div className="lf-wallet-screen">
+    <SegmentedControl legend={tabs.label} legendHidden size="compact" name="wallet-tab" className="lf-wallet-tabs" value={tab === 'share' ? 'overview' : tab} onValueChange={choose}
+      options={TABS.map((value) => ({ value, label: tabs[value] }))} />
+    {lookSaved ? <InlineNotice tone="success" live>{copy.saved}</InlineNotice> : null}
+    {movedNotice ? <InlineNotice tone="success" live>{movedNotice}</InlineNotice> : null}
+    {splitResult ? <div className="lf-money-slot" data-family-part="split-result"><InlineNotice tone="success" live>{splitResult}</InlineNotice></div> : null}
+
+    {tab === 'overview' && <>
+      {/* The coins waiting to be split come first when there are any: the one thing to do. */}
+      {coins.credits.length > 0 ? <section className="lf-wallet-waiting" data-family-part="payouts" aria-label={copy.payoutsTitle}>
         {coins.credits.map((credit) => <div key={credit.id} className="lf-money-slot" data-credit-id={credit.id}>{slots.split(credit, coins.card?.frozen ?? false, settled)}</div>)}
       </section> : null}
+      <div className="lf-wallet-overview">
+        <div className="lf-wallet-col">
+          <div className="lf-money-slot" data-family-part="account">{slots.account(version, 'overview', actions)}</div>
+          {coins.card ? <TileButton className="lf-wallet-cardstrip" data-design={coins.card.design} data-frozen={coins.card.frozen} onClick={() => setTab('card')}>
+            <span className="lf-wallet-cardstrip-swatch" aria-hidden="true" />
+            <span className="lf-wallet-cardstrip-text"><span data-copy-role="heading">{home.card}</span><span data-copy-role="data">{coins.card.nickname}</span></span>
+            <span className="lf-wallet-cardstrip-state" data-copy-role="data">{coins.card.frozen ? home.cardFrozen : home.cardActive}</span>
+          </TileButton> : null}
+        </div>
+        <div className="lf-wallet-col">
+          <div className="lf-money-slot lf-wallet-glance" data-family-part="goals">
+            {slots.goals(version, { compact: true, adding: false, onMove: onGoalMove, headingAction: <Button size="sm" onClick={() => setTab('goals')}>{tabs.seeGoals}</Button> })}
+          </div>
+          <div className="lf-money-slot" data-family-part="recent">{slots.account(version, 'recent', actions)}</div>
+        </div>
+      </div>
+    </>}
+
+    {tab === 'goals' && <>
+      <div className="lf-money-slot" data-family-part="goals">{slots.goals(version, { compact: false, adding: addingGoal, onMove: onGoalMove })}</div>
       <div className="lf-money-slot">{slots.usualSplit}</div>
       <div className="lf-money-slot">{slots.bonus}</div>
-      <div className="lf-money-slot">{slots.goals(version)}</div>
     </>}
-    secondary={<>
-      {coins.card ? <CardLook card={coins.card} copy={copy} colours={colours} transport={transport} onSaved={changed} /> : null}
-      <div className="lf-money-slot">{slots.history}</div>
+
+    {tab === 'share' && <div className="lf-money-slot" data-family-part="share"><Button size="sm" onClick={() => setTab('overview')}>{tabs.overview}</Button>{slots.share}</div>}
+
+    {tab === 'card' && <>
+      <div className="lf-money-slot" data-family-part="account">{slots.account(version, 'card', actions)}</div>
       <div className="lf-money-slot">{slots.bridge}</div>
       <div className="lf-money-slot">{slots.research}</div>
       <div className="lf-money-link"><ConsoleLink href="/tasks" onNavigate={onNavigate}>{copy.tasksLink}</ConsoleLink></div>
-    </>} />);
+    </>}
+
+    {tab === 'activity' && <>
+      <div className="lf-money-slot" data-family-part="account">{slots.account(version, 'activity', actions)}</div>
+      <div className="lf-money-slot">{slots.history}</div>
+    </>}
+    <MoveCoins open={moveOpen} onOpenChange={setMoveOpen} locale={locale as Locale} copy={copy.move} names={names} places={places} goals={goals} preset={movePreset} transport={transport}
+      onMoved={(text) => { setMovedNotice(text); changed(); }} />
+    {coins.card ? <CardLook card={coins.card} copy={copy} colours={colours} transport={transport} open={lookOpen} onOpenChange={setLookOpen}
+      onSaved={() => { setLookSaved(true); changed(); }} /> : null}
+  </div>);
 }
 
-/** The child's own card name and colour, changed in a dialog; the account re-reads after a save. */
-function CardLook({ card, copy, colours, transport, onSaved }: {
-  card: CoinCard; copy: ChildCoinsCopy; colours: CoinCardCopy; transport: ConsoleTransport; onSaved: () => void;
+/** The child's own card name and colour, changed in a dialog with the card itself as the preview; the account re-reads after a save. */
+function CardLook({ card, copy, colours, transport, open, onOpenChange, onSaved }: {
+  card: CoinCard; copy: ChildCoinsCopy; colours: CoinCardCopy; transport: ConsoleTransport; open: boolean; onOpenChange: (open: boolean) => void; onSaved: () => void;
 }) {
-  const heading = useId();
-  const [open, setOpen] = useState(false);
   const [name, setName] = useState(card.nickname);
   const [design, setDesign] = useState(card.design);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [saved, setSaved] = useState(false);
 
-  function close() { if (busy) return; setOpen(false); setError(null); setName(card.nickname); setDesign(card.design); }
+  // Each opening starts from the card as Core holds it now.
+  useEffect(() => { if (open) { setName(card.nickname); setDesign(card.design); setError(null); } }, [open, card.nickname, card.design]);
+
+  function close() { if (busy) return; onOpenChange(false); setError(null); }
 
   async function submit(event?: FormEvent) {
     event?.preventDefault();
@@ -162,24 +262,22 @@ function CardLook({ card, copy, colours, transport, onSaved }: {
     const result = await updateOwnCard(transport, { nickname, cardDesign: design });
     setBusy(false);
     if (!result.ok) { setError(copy.failed); return; }
-    setOpen(false); setSaved(true);
+    onOpenChange(false);
     onSaved();
   }
 
-  return <section className="lf-console-group" data-family-part="card-look" aria-labelledby={heading}>
-    <h2 id={heading} data-copy-role="heading">{copy.lookTitle}</h2>
-    {saved ? <InlineNotice tone="success" live>{copy.saved}</InlineNotice> : null}
-    {/* The dialog opens on the card as Core holds it now (after a save the card re-reads; the notice stays). */}
-    <ButtonGroup><Button aria-haspopup="dialog" onClick={() => { setSaved(false); setName(card.nickname); setDesign(card.design); setOpen(true); }}>{copy.edit}</Button></ButtonGroup>
-    <Dialog open={open} onClose={busy ? undefined : close} heading={copy.lookTitle} description={copy.editBody}
-      actions={<>
-        <Button onClick={close} disabled={busy}>{copy.cancel}</Button>
-        <Button variant="success" pending={busy} pendingLabel={copy.saving} onClick={() => void submit()}>{copy.save}</Button>
-      </>}>
-      <form className="lf-money-dialog-form" noValidate onSubmit={(event) => void submit(event)}>
-        {error ? <InlineNotice tone="error" live>{error}</InlineNotice> : null}
-        <CardFields labels={copy} colours={colours} name={name} design={design} onName={setName} onDesign={setDesign} disabled={busy} />
-      </form>
-    </Dialog>
-  </section>;
+  return <Dialog open={open} onClose={busy ? undefined : close} heading={copy.lookTitle} description={copy.editBody}
+    actions={<>
+      <Button onClick={close} disabled={busy}>{copy.cancel}</Button>
+      <Button variant="success" pending={busy} pendingLabel={copy.saving} onClick={() => void submit()}>{copy.save}</Button>
+    </>}>
+    <form className="lf-money-dialog-form" noValidate onSubmit={(event) => void submit(event)}>
+      {/* The card itself is the preview: the name and the colour change on it as the child chooses. */}
+      <div className="lf-wallet-card lf-wallet-card--preview" data-design={design} data-frozen="false" aria-hidden="true">
+        <span className="lf-wallet-card-name" data-copy-role="data">{name.trim() || card.nickname}</span>
+      </div>
+      {error ? <InlineNotice tone="error" live>{error}</InlineNotice> : null}
+      <CardFields labels={copy} colours={colours} name={name} design={design} onName={setName} onDesign={setDesign} disabled={busy} />
+    </form>
+  </Dialog>;
 }

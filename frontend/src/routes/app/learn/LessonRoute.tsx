@@ -19,7 +19,7 @@ import { parseNarrativeRecall, type NarrativeRecall } from '@/rebuild/learning/n
 import type { AgeBand, Locale } from '@/rebuild/design/copyBudget';
 import { REGISTERS } from '@/rebuild/design/learnerRegisterPolicy.generated';
 import { learnCopy } from '@/rebuild/learning/learnCopy';
-import { loadLessonClientDocument, type LessonClientDocument } from '@/rebuild/learning/lessonDocument';
+import { loadLessonClientDocument, loadMentorStageProjection, type LessonClientDocument } from '@/rebuild/learning/lessonDocument';
 import { clientScorerVerdict } from '@/rebuild/learning/clientScorerVerdict';
 import { isSeededHorizonteType, loadHorizontePacksFor } from '@/rebuild/learning/horizonte/contract';
 import { isAttemptSeed } from '@/rebuild/learning/horizonte/seed/protocol.generated';
@@ -378,7 +378,7 @@ function LessonRouteSession() {
   }
 
   if (state.recall && !recallDone) {
-    return layer('recall', <NarrativeRecallView recall={state.recall} locale={appLocale} dark={isDark} onContinue={() => setRecallDone(true)} />);
+    return layer('recall', <NarrativeRecallView recall={state.recall} locale={appLocale} dark={isDark} mentor={loadMentorStageProjection(state.mentorStage)} onContinue={() => setRecallDone(true)} />);
   }
 
   if (v2Receipt) {
@@ -388,7 +388,7 @@ function LessonRouteSession() {
     const band = (state.document as { age_band?: unknown }).age_band;
     const resultRegister = band === '6-9' || band === '10-12' || band === '13-17' || band === 'adult' ? registerForBand(band) : registerOf(register);
     return layer('result', <LessonResultView rawReceipt={v2Receipt} locale={receiptLocale} dark={isDark} onContinue={goBack} register={resultRegister}
-      courseSlug={courseSlug} onNoticeShown={() => trackInsight('replay_notice_view', { lessonId, routeClass: 'learn' })} />,
+      courseSlug={courseSlug} mentor={loadMentorStageProjection(state.mentorStage)} onNoticeShown={() => trackInsight('replay_notice_view', { lessonId, routeClass: 'learn' })} />,
     { locale: receiptLocale, ageBand: REGISTERS[resultRegister].copyBand, pageTitle: learnCopy[receiptLocale].lesson.resultTitle });
   }
 

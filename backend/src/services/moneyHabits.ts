@@ -238,3 +238,29 @@ export function readShareCompletion(since: Date) {
     pledged: Int, given_in_window: Int, given_later: Int, returned: Int, waiting: Int, holders_with_share: Int, holders_without_destination: Int,
   }).strict()).length(1)).then((r) => (r ? r[0]! : null));
 }
+
+// ── The holder's own moves (wallet_moves): pockets, goals, editing ───────────
+
+export const POCKETS = ['save', 'spend', 'share'] as const;
+export type Pocket = (typeof POCKETS)[number];
+
+/** Coins from one pocket to another. Whole coins, the holder's own, nothing leaves the account. */
+export function movePocketCoins(holderId: string, from: Pocket, to: Pocket, amount: number) {
+  return rpc('wallet_move_pocket', { p_holder: UUID.parse(holderId), p_from: from, p_to: to, p_amount: amount }, UUID);
+}
+
+/** `in`: plain Save into an active goal. `out`: a goal's coins back to plain Save. */
+export function moveGoalCoins(holderId: string, goalId: string, direction: 'in' | 'out', amount: number) {
+  return rpc('wallet_move_goal', { p_holder: UUID.parse(holderId), p_goal: UUID.parse(goalId), p_direction: direction, p_amount: amount }, UUID);
+}
+
+export function editGoalDetails(holderId: string, goalId: string, input: { title: string; target: number; icon: string }) {
+  return rpc('wallet_goal_edit', {
+    p_holder: UUID.parse(holderId), p_goal: UUID.parse(goalId), p_title: input.title, p_target: input.target, p_icon: input.icon,
+  }, z.literal(true));
+}
+
+/** Removes a goal; whatever it held is back in plain Save in the same transaction. Resolves to the coins returned. */
+export function archiveGoalReturning(holderId: string, goalId: string) {
+  return rpc('wallet_goal_archive', { p_holder: UUID.parse(holderId), p_goal: UUID.parse(goalId) }, Count);
+}

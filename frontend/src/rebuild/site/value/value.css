@@ -1,0 +1,80 @@
+/*
+ * Landing section 2: an accordion beside a tablet. Tokens only. The tablet keeps
+ * its 4:3 screen at every width; Zara sits behind its frame, so only her head
+ * and shoulders show over the top edge.
+ */
+.lf-rebuild .lf-value {
+  display: grid;
+  gap: var(--spacing-10);
+  align-items: center;
+  padding-block: var(--spacing-8);
+}
+
+.lf-rebuild .lf-value-title { grid-column: 1 / -1; margin: 0; max-inline-size: 18em; }
+.lf-rebuild .lf-value-cards { display: grid; gap: var(--spacing-3); min-inline-size: 0; }
+.lf-rebuild .lf-value-card { background: var(--surface); border-radius: var(--rounded-xl); box-shadow: var(--elevation-card); overflow: clip; }
+.lf-rebuild .lf-value-card[data-active='true'] { background: var(--primary-soft); box-shadow: inset 0 0 0 2px var(--primary); }
+.lf-rebuild .lf-value-card h3 { margin: 0; font: var(--type-title); }
+.lf-rebuild .lf-value-card button {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4);
+  inline-size: 100%;
+  min-block-size: var(--target-lg);
+  padding: var(--spacing-3) var(--spacing-5);
+  border: 0;
+  background: transparent;
+  color: var(--content);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+.lf-rebuild .lf-value-card button:focus-visible { outline: var(--focus-width) solid var(--focus-color); outline-offset: calc(var(--focus-width) * -1); }
+.lf-rebuild .lf-value-number {
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  inline-size: var(--spacing-10);
+  block-size: var(--spacing-10);
+  border-radius: var(--rounded-full);
+  background: var(--primary-soft);
+  color: var(--primary-strong);
+  font: var(--type-label);
+}
+.lf-rebuild .lf-value-card[data-active='true'] .lf-value-number { background: var(--primary); color: var(--on-primary); }
+.lf-rebuild .lf-value-card [role='region'] { padding: 0 var(--spacing-5) var(--spacing-5) calc(var(--spacing-5) + var(--spacing-10) + var(--spacing-4)); }
+.lf-rebuild .lf-value-card p { margin: 0; color: var(--content); font: var(--type-body-lg); text-wrap: pretty; }
+
+/* The device: a tablet whose screen is the app, and a Mentor looking over its edge. */
+.lf-rebuild .lf-value-device { position: relative; isolation: isolate; min-inline-size: 0; padding-block-start: 26%; }
+.lf-rebuild .lf-value-peek {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-end: 9%;
+  z-index: 0;
+  inline-size: 32%;
+  block-size: auto;
+  pointer-events: none;
+}
+.lf-rebuild .lf-value-tablet {
+  position: relative;
+  z-index: 1;
+  padding: var(--spacing-3);
+  border-radius: calc(var(--rounded-xl) + var(--spacing-1));
+  background: var(--ink);
+  box-shadow: 0 0 0 2px var(--outline), var(--elevation-float);
+}
+.lf-rebuild .lf-value-screen { position: relative; aspect-ratio: 4 / 3; border-radius: var(--rounded-lg); overflow: clip; background: var(--base); }
+.lf-rebuild .lf-value-screen img { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; object-fit: cover; opacity: 0; }
+.lf-rebuild .lf-value-screen img[data-active='true'] { opacity: 1; }
+/* The clip of the open card plays over its still, and only shows once it is actually playing. */
+.lf-rebuild .lf-value-screen .lf-value-clip { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; object-fit: cover; opacity: 0; }
+.lf-rebuild .lf-value-screen .lf-value-clip[data-playing='true'] { opacity: 1; }
+@media (prefers-reduced-motion: no-preference) {
+  .lf-rebuild .lf-value-screen img { transition: opacity var(--dur-component) var(--ease-standard); }
+  .lf-rebuild .lf-value-card { transition: background-color var(--dur-micro) var(--ease-standard), box-shadow var(--dur-micro) var(--ease-standard); }
+}
+
+@container app (min-width: 840px) {
+  .lf-rebuild .lf-value { grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: var(--spacing-12); padding-block: var(--spacing-12); }
+}

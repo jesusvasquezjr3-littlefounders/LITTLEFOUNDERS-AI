@@ -8,6 +8,7 @@ import { useConsoleEnvironment, useConsoleTransport } from '../family/consoleSes
 import { LimitCoachingPanel, MoneyBridgePanel, MyResearchPanel, ScopeStatementPanel, tokenSession } from '../family/GovernancePanels';
 import { MyDataPracticesPanel } from '../family/DataPracticePanels';
 import { ShareDestinationsPanel } from '../family/ShareDestinationsPanel';
+import { ShareGivingPanel } from '../tasks/ShareGivingPanel';
 import { WalletCorrectionsPanel } from '../family/WalletCorrectionsPanel';
 import { AllocationPanel } from '../tasks/AllocationPanel';
 import { splitResultText } from '../family/moneyHabitsCopy';
@@ -16,6 +17,7 @@ import { SavingsGoalsPanel } from '../tasks/SavingsGoalsPanel';
 import { UsualSplitPanel } from '../tasks/UsualSplitPanel';
 import { WalletActivityPanel } from '../tasks/WalletActivityPanel';
 import { useWalletAccess } from '../wallet/useWalletAccess';
+import { familyAutonomyCopy } from '../family/familyAutonomyCopy';
 import { CoinAccountPanel } from './CoinAccountPanel';
 import { SavingsBonusPanel } from './SavingsBonusPanel';
 import { SavingsBonusSettingsPanel } from './SavingsBonusSettingsPanel';
@@ -80,7 +82,7 @@ function TutorCoinsRoute() {
     }, { replace: true });
   }, [setParams]);
 
-  return <TutorCoins copy={family.familyCoins} colours={family.coinCard} locale={locale} dark={dark} transport={transport}
+  return <TutorCoins copy={family.familyCoins} notYetCopy={familyAutonomyCopy(locale).notYet} colours={family.coinCard} locale={locale} dark={dark} transport={transport}
     selectedId={params.get('child')} onSelect={select} onNavigate={(href) => navigate(href)}
     childSlots={(child, changed) => {
       const name = childName(child);
@@ -119,7 +121,7 @@ function ChildCoinsRoute({ familyCoins }: { familyCoins: boolean }) {
     onNavigate={(href) => navigate(href)}
     slots={{
       // S07.6 (D.7, D.12): the practice card, the freeze, the pockets, the limit and this month, in the child's register.
-      account: (version) => <CoinAccountPanel token={token} refreshKey={version + moneyVersion} onChanged={() => setMoneyVersion((value) => value + 1)} />,
+      account: (version, part, actions) => <CoinAccountPanel token={token} refreshKey={version + moneyVersion} part={part} actions={actions} onChanged={() => setMoneyVersion((value) => value + 1)} />,
       // S07.4 (D.13): an allowance arrives pre-split by the child's own usual split; keeping it is one tap.
       // The board states the result (Bible 02 §9.2); a goal it reached celebrates on the goals panel, which re-reads (OD-7).
       split: (credit, frozen, settled) => <AllocationPanel token={token} kind="credit" id={credit.id} amount={credit.amount} frozen={frozen}
@@ -127,8 +129,11 @@ function ChildCoinsRoute({ familyCoins }: { familyCoins: boolean }) {
       usualSplit: <UsualSplitPanel token={token} />,
       // S07.3 (D.11): the child's own bonus, in the framing their age calls for.
       bonus: <SavingsBonusPanel token={token} />,
+      // S07.4 (D.14): where Share coins go, and what was given.
+      share: <ShareGivingPanel token={token} refreshKey={moneyVersion} onChanged={() => setMoneyVersion((value) => value + 1)} />,
       // S07.4 (D.15, D.16): goals with provenance and the next-goal prompt.
-      goals: (version) => <SavingsGoalsPanel token={token} refreshKey={version + moneyVersion} />,
+      goals: (version, options) => <SavingsGoalsPanel token={token} refreshKey={version + moneyVersion} compact={options.compact} adding={options.adding}
+        onMove={options.onMove} headingAction={options.headingAction} onChanged={() => setMoneyVersion((value) => value + 1)} />,
       // S07.1 (D.5, OD-21): the child's own history with every Tutor reason.
       history: <WalletActivityPanel token={token} />,
       // S07.7 (D.19, D.22): "Beyond the app" from 15, and the child's own research answer.

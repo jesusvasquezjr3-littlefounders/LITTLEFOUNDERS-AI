@@ -19,7 +19,7 @@ export interface WalletActivityCopy {
   /** S07.2: a linked teen's own entries. */
   logged: string; rewardUsed: string; goalMoved: string;
   /** S07.4 (D.14): coins shared to a destination, and a pledge that came back. */
-  shared: string; shareBack: string;
+  shared: string; shareBack: string; moved: string; goalCoins: string;
   rewardsHeading: string; requested: string; approved: string; denied: string; fulfilled: string; rewardUntitled: string;
   save: string; spend: string; share: string;
 }
@@ -36,7 +36,7 @@ export function WalletActivity({ copy, locale, dark, open, loading, failed, entr
     task_approved: copy.earned, allowance: copy.allowance, savings_bonus: copy.bonus, redemption: copy.spent,
     manual_adjustment: copy.correction, goal_withdrawal: copy.fromGoal,
     self_income: copy.logged, personal_reward: copy.rewardUsed, goal_release: copy.goalMoved,
-    share_gift: copy.shared, share_gift_returned: copy.shareBack,
+    share_gift: copy.shared, share_gift_returned: copy.shareBack, pocket_move: copy.moved, goal_move: copy.goalCoins,
   })[e.reason];
   const status = (s: RedemptionStatus) => ({ requested: copy.requested, approved: copy.approved, denied: copy.denied, fulfilled: copy.fulfilled })[s];
 
@@ -55,6 +55,7 @@ export function WalletActivity({ copy, locale, dark, open, loading, failed, entr
               {e.amount > 0 ? `+${e.amount}` : `−${Math.abs(e.amount)}`} {bucketLabel(e.bucket)}
             </span>
           </div>
+          {e.title ? <span data-copy-role="data" className="ugc">{e.title}</span> : null}
           {e.note && <span data-copy-role="data" className="ugc">{copy.note.replace('{note}', e.note)}</span>}
           <time data-copy-role="data" className="lf-family-hub-muted" dateTime={e.createdAt}>{date.format(new Date(e.createdAt))}</time>
         </li>)}</ul>}

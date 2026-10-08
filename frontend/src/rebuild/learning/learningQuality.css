@@ -2,7 +2,7 @@
 .lf-quality { display: grid; align-content: start; min-block-size: 0; gap: var(--spacing-5); padding: var(--spacing-4); border-radius: var(--rounded-lg); background: var(--base); color: var(--content); container-type: inline-size; }
 .lf-quality > *, .lf-quality-block > * { min-inline-size: 0; }
 .lf-quality h2 { font-size: 1.5rem; }
-.lf-quality h3 { font: 600 1.25rem/1.25 Fredoka, sans-serif; margin: 0; }
+.lf-quality h3 { font: 600 1.25rem/1.25 'Plus Jakarta Sans', sans-serif; margin: 0; }
 .lf-quality-head { display: grid; gap: var(--spacing-2); }
 .lf-quality-block { display: grid; gap: var(--spacing-3); padding: var(--spacing-4); border-radius: var(--rounded-lg); background: var(--surface); }
 .lf-quality-block-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--spacing-2); }

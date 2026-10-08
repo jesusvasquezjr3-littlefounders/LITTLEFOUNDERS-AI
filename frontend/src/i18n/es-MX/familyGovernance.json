@@ -9,13 +9,13 @@
   "tips": {
     "contribution-vs-bonus": {
       "title": "Ayudar en casa es cosa de familia",
-      "body": "No pagues la ayuda diaria. Da monedas solo por tareas extra.",
+      "body": "No pagues la ayuda diaria. Da semillas solo por tareas extra.",
       "why": "Pagar por todo puede quitar las ganas de ayudar."
     },
     "price-by-effort": {
       "title": "Paga las tareas extra por esfuerzo",
       "body": "Paga más por tareas largas o difíciles. Mantén los precios estables.",
-      "why": "Precios estables dan a las monedas un valor con el que planear."
+      "why": "Precios estables dan a las semillas un valor con el que planear."
     },
     "keep-promises": {
       "title": "Cumple a tiempo lo prometido",
@@ -54,12 +54,12 @@
     },
     "spending-is-not-failing": {
       "title": "Gastar también es una decisión",
-      "body": "Si las monedas se van rápido, pregunta qué aprendió tu hijo.",
+      "body": "Si las semillas se van rápido, pregunta qué aprendió tu hijo.",
       "why": "Gastar ya puede tener sentido si esperar no ha valido la pena."
     },
     "share-for-real": {
       "title": "Haz que compartir sea real",
-      "body": "Elijan juntos adónde van las monedas de Compartir y háganlo.",
+      "body": "Elijan juntos adónde van las semillas de Compartir y háganlo.",
       "why": "Dar se siente real cuando llega a un lugar real."
     },
     "bonus-is-not-interest": {
@@ -79,7 +79,7 @@
   "pricing": {
     "open": "Consejos de precio",
     "close": "Ocultar consejos",
-    "contribution": "Ayuda diaria en casa: sin pago, o una o dos monedas.",
+    "contribution": "Ayuda diaria en casa: sin pago, o una o dos semillas.",
     "bonus": "Tareas extra: paga según esfuerzo y tiempo. Mantén los precios estables.",
     "promise": "Paga lo que prometiste, cuando lo prometiste."
   },
@@ -90,12 +90,12 @@
   },
   "scope": {
     "heading": "Qué cubre esta práctica",
-    "intro": "Se practica con monedas que se quedan en la app. No se mueve dinero real.",
+    "intro": "Se practica con semillas que se quedan en la app. No se mueve dinero real.",
     "open": "Ver",
     "close": "Ocultar",
     "teachesHeading": "Se practica",
-    "earning": "Ganar monedas por tareas y ayudar en casa.",
-    "splitting": "Repartir monedas entre ahorrar, gastar y compartir.",
+    "earning": "Ganar semillas por tareas y ayudar en casa.",
+    "splitting": "Repartir semillas entre ahorrar, gastar y compartir.",
     "goals": "Ahorrar para metas y esperar a lograrlas.",
     "asking": "Pedir recompensas y escuchar la razón.",
     "notHeading": "No enseña",
@@ -112,7 +112,7 @@
     "close": "Ocultar",
     "photos": "Fotos de tareas: {days} días después de tu decisión.",
     "records": "Tareas, recompensas, decisiones y notas: {days} días.",
-    "coins": "Monedas, metas y reglas: mientras exista la cuenta.",
+    "coins": "Semillas, metas y reglas: mientras exista la cuenta.",
     "insights": "Datos de uso: {days} días, solo con tu permiso.",
     "research": "Investigación: solo si dices que sí, hasta {days} días.",
     "erasure": "Al borrar una cuenta se borra todo.",
@@ -142,7 +142,7 @@
   },
   "myResearch": {
     "heading": "Investigación",
-    "body": "Tu Tutor nos deja aprender de tus totales de monedas.",
+    "body": "Tu Tutor nos deja aprender de tus totales de semillas.",
     "stop": "Puedes detenerlo cuando quieras.",
     "button": "Detenerlo",
     "confirm": "¿Detenerlo y borrarlo?",
@@ -163,7 +163,7 @@
     "first_pay2": "Prueba tu reparto de siempre con él.",
     "first_pay3": "Guarda el recibo de pago.",
     "first_account1": "Pregunta por las comisiones antes de abrirla.",
-    "first_account2": "Revísala cada semana, como tus monedas.",
+    "first_account2": "Revísala cada semana, como tus semillas.",
     "first_account3": "Nunca compartas tu NIP ni tu contraseña.",
     "first_budget1": "Anota lo que debes pagar cada mes.",
     "first_budget2": "Ahorra primero y luego gasta.",

@@ -34,7 +34,8 @@ export function checkRepository(root) {
   const failures = verifyManifest(spec, manifest);
   const agents = readFileSync(resolve(root, 'AGENTS.md'), 'utf8');
   if (agents !== readFileSync(resolve(root, 'CLAUDE.md'), 'utf8')) failures.push('AGENTS.md and CLAUDE.md differ');
-  if (!agents.includes('absolute, non-negotiable source of truth')) failures.push('Binding authority is missing from agent instructions');
+  // Rule 7 (OD-38): the spec is binding and living; the instructions say so under this heading, and name how a deviation is recorded.
+  if (!agents.includes('## LittleFounders specification (binding)') || !agents.includes('record the deviation')) failures.push('Binding authority is missing from agent instructions');
   const product = readFileSync(resolve(spec, 'product/10-PRODUCT-GOLD-STANDARD-REQUIREMENTS.md'), 'utf8');
   const ids = [...product.matchAll(/^### ([A-H]\.\d+) /gm)].map((m) => m[1]);
   const ledger = readFileSync(resolve(root, 'docs/rebuild/REQUIREMENTS.md'), 'utf8');
@@ -94,6 +95,10 @@ export function legacyPlayerFailures(root, sources) {
 export const STAGE_BRIDGES = [
   'frontend/src/rebuild/learning/CompactMentorStage.tsx',
   'frontend/src/rebuild/mentor/MentorStage.tsx',
+  /* OD-42: the end-of-lesson screen's Mentor alone on the screen's colour (the one real character, no Diorama). */
+  'frontend/src/rebuild/mentor/ResultMentor.tsx',
+  /* OD-43: the landing's mini lesson stage: Dina and the lesson's objects in one live scene that follows the visitor's decisions. */
+  'frontend/src/rebuild/site/lesson/LessonStage.tsx',
 ];
 /*
  * OD-35: the Horizonte Visual's one lazy 3D solids viewer reuses the same
@@ -106,8 +111,17 @@ export const SOLIDS_BRIDGE_PREFIXES = [
 ];
 export const STAGE_BRIDGE_TARGETS = [
   'frontend/src/tutor-scene/TutorStage',
+  'frontend/src/tutor-scene/CharacterStage',
+  'frontend/src/tutor-scene/poseLibrary',
   'frontend/src/tutor-scene/quality',
   'frontend/src/theme/useTheme',
+];
+/* What the landing's lesson stage may reach, and no other bridge: the live scene's canvas, one real character, its ground and light. */
+export const LESSON_STAGE_TARGETS = [
+  'frontend/src/tutor-scene/SceneCanvas',
+  'frontend/src/tutor-scene/Character3D',
+  'frontend/src/tutor-scene/ground',
+  'frontend/src/tutor-scene/SceneLighting',
 ];
 /* The shared tutor-scene canvas: the solids folder only, never the Mentor bridges or any other horizonte folder. */
 export const SOLIDS_BRIDGE_TARGETS = [
@@ -115,11 +129,20 @@ export const SOLIDS_BRIDGE_TARGETS = [
 ];
 
 /** Imports of one rebuilt file that reach outside src/rebuild and src/i18n, except a stage bridge's named targets. */
+/*
+ * Development-only: the preview entry's screens and the landing hero's capture scene. They are reached from rebuild.html and from the capture
+ * scripts, never from the product's routes (the hero ships as a video), so they may use the app's theme and 3D modules to draw what the
+ * product shows. Nothing here may be imported by a product file; the product boundary below still applies to everything else.
+ */
+export const DEV_ONLY_PREFIXES = ['frontend/src/rebuild/preview/', 'frontend/src/rebuild/site/hero/'];
+
 export function boundaryFailures(root, file, source) {
   const failures = [];
+  if (DEV_ONLY_PREFIXES.some((prefix) => resolve(file).startsWith(resolve(root, prefix) + sep))) return failures;
   const solids = SOLIDS_BRIDGE_PREFIXES.some((prefix) => resolve(file).startsWith(resolve(root, prefix) + sep));
   const bridge = STAGE_BRIDGES.some((path) => resolve(root, path) === resolve(file)) || solids;
-  const targets = new Set([...STAGE_BRIDGE_TARGETS, ...(solids ? SOLIDS_BRIDGE_TARGETS : [])].map((path) => resolve(root, path)));
+  const lessonStage = resolve(root, 'frontend/src/rebuild/site/lesson/LessonStage.tsx') === resolve(file);
+  const targets = new Set([...STAGE_BRIDGE_TARGETS, ...(solids ? SOLIDS_BRIDGE_TARGETS : []), ...(lessonStage ? LESSON_STAGE_TARGETS : [])].map((path) => resolve(root, path)));
   for (const match of source.matchAll(/(?:from\s*|import\s*(?:\(\s*)?)['"]([^'"]+)['"]/g)) {
     const name = match[1];
     if (!name.startsWith('.') && !name.startsWith('@/')) continue;

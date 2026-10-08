@@ -10,6 +10,6 @@
 .lf-ledger-controls .lf-button:last-child { flex-basis: 100%; }
 .lf-ledger-foot { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--spacing-2); }
 .lf-ledger-foot p { font-weight: 800; }
-.lf-ledger-foot strong { font-family: Fredoka, sans-serif; font-size: 1.25rem; }
+.lf-ledger-foot strong { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.25rem; }
 .lf-ledger-replay { display: grid; gap: var(--spacing-2); }
 .lf-ledger-replay > .lf-button { justify-self: start; }

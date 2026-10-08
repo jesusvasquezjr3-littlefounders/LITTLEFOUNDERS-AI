@@ -1,7 +1,7 @@
 import { selectOption, optionLabels } from '../test/selectOption';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { act, fireEvent, render, screen } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import en from '../../i18n/en-US/moneyHabits.json';
 import { GoalNextStep } from './GoalNextStep';
@@ -47,7 +47,7 @@ const USUAL = { save: 50, spend: 40, share: 10 };
 const splitCopy = en.split;
 
 describe('splitCoins (D.13 parity with the database)', () => {
-  it('gives the same coins as wallet_split_coins() for every fixture case', () => {
+  it('gives the same seeds as wallet_split_coins() for every fixture case', () => {
     const fixture = JSON.parse(readFileSync(join(process.cwd(), '../database/scripts/fixtures/split-coins.json'), 'utf8')) as {
       cases: { amount: number; pct: typeof USUAL; coins: typeof USUAL }[];
     };
@@ -67,14 +67,14 @@ describe('SplitChooser (D.13)', () => {
     everyTextHasARole(view.container);
   });
 
-  it('lets the child change any pocket, refuses a split that does not place every coin, and accepts everything in one pocket', () => {
+  it('lets the child change any pocket, refuses a split that does not place every seed, and accepts everything in one pocket', () => {
     const onSubmit = vi.fn();
     render(<SplitChooser copy={splitCopy} locale="en-US" dark={false} amount={10} usual={USUAL} goals={[]} busy={false} notice={null} onSubmit={onSubmit} />);
     fireEvent.click(screen.getByRole('button', { name: splitCopy.change }));
     fireEvent.change(screen.getByLabelText('Save'), { target: { value: '0' } });
     expect(screen.getByText('5 left to place')).toBeVisible();
     fireEvent.click(screen.getByRole('button', { name: splitCopy.submit }));
-    expect(screen.getByRole('alert')).toHaveTextContent('Place all 10 coins first.');
+    expect(screen.getByRole('alert')).toHaveTextContent('Place all 10 seeds first.');
     expect(onSubmit).not.toHaveBeenCalled();
     fireEvent.change(screen.getByLabelText('Spend'), { target: { value: '9' } });
     fireEvent.click(screen.getByRole('button', { name: 'Take from Share' }));
@@ -124,14 +124,14 @@ describe('UsualSplit (D.13)', () => {
 });
 
 describe('GoalProgress (D.16)', () => {
-  it('says "all yours" when every coin is the child\'s own', () => {
+  it('says "all yours" when every seed is the child\'s own', () => {
     const view = render(<GoalProgress copy={en.goalProgress} title="Bike" target={50} progress={{ own: 20, bonus: 0, family: 0, total: 20 }} />);
     expect(screen.getByRole('img', { name: 'Bike: 20 of 50. All yours' })).toBeVisible();
     expect(view.container.querySelectorAll('.lf-goal-progress-part')).toHaveLength(1);
     everyTextHasARole(view.container);
   });
 
-  it('never folds bonus or Tutor coins into the child\'s own: separate segments, each named with its number', () => {
+  it('never folds bonus or Tutor seeds into the child\'s own: separate segments, each named with its number', () => {
     const view = render(<GoalProgress copy={en.goalProgress} title="Bike" target={50} progress={{ own: 30, bonus: 6, family: 4, total: 40 }} />);
     const parts = [...view.container.querySelectorAll('.lf-goal-progress-bar [data-part]')].map((p) => [p.getAttribute('data-part'), (p as HTMLElement).style.inlineSize]);
     expect(parts).toEqual([['own', '60%'], ['bonus', '12%'], ['family', '8%']]);
@@ -191,21 +191,32 @@ describe('SavingsGoals', () => {
     expect(view.container.querySelectorAll('[data-goal-progress]')).toHaveLength(3);
   });
 
-  it('asks before putting a goal away', () => {
+  it('asks before putting a goal away, and says its seeds go back to Save', async () => {
     const onArchive = vi.fn();
     render(<SavingsGoals {...props} onArchive={onArchive} goals={[goal()]} />);
+    (screen.getByText(en.goals.more).closest('details') as HTMLDetailsElement).open = true;
     fireEvent.click(screen.getByRole('button', { name: en.goals.archive }));
-    expect(screen.getByText(en.goals.archiveConfirm)).toBeVisible();
-    fireEvent.click(screen.getByRole('button', { name: en.goals.keep }));
+    const dialog = await screen.findByRole('alertdialog');
+    expect(within(dialog).getByText(en.goals.archiveHeading)).toBeVisible();
+    expect(within(dialog).getByText(en.goals.archiveConfirm)).toBeVisible();
+    fireEvent.click(within(dialog).getByRole('button', { name: en.goals.keep }));
     expect(onArchive).not.toHaveBeenCalled();
     fireEvent.click(screen.getByRole('button', { name: en.goals.archive }));
-    fireEvent.click(screen.getAllByRole('button', { name: en.goals.archive })[0]!);
-    expect(onArchive).toHaveBeenCalledWith(expect.objectContaining({ id: GOAL }));
+    fireEvent.click(within(await screen.findByRole('alertdialog')).getByRole('button', { name: en.goals.archive }));
+    await waitFor(() => expect(onArchive).toHaveBeenCalledWith(expect.objectContaining({ id: GOAL })));
   });
 });
 
 const tutorPlace: Destination = { id: DEST, title: 'Food bank', kind: 'charity', chosenBy: 'tutor', status: 'active', createdAt: T };
 const pledged: Gift = { id: GIFT, destinationId: DEST, amount: 4, status: 'pledged', pledgedAt: T, settledAt: null, settledBy: null, note: null };
+
+/** Explanations live behind one quiet "Learn more" line; a test that reads one opens it first, the way a child does. */
+function openMore(label: string) {
+  const details = screen.getByText(label).closest('details') as HTMLDetailsElement;
+  expect(details.open).toBe(false);
+  fireEvent.click(screen.getByText(label));
+  details.open = true;
+}
 
 describe('ShareGiving (D.14)', () => {
   const base = {
@@ -213,9 +224,10 @@ describe('ShareGiving (D.14)', () => {
     onRetry: vi.fn(), onPledge: vi.fn(), onTakeBack: vi.fn(), onAddPlace: vi.fn(), onRemovePlace: vi.fn(), onMarkGiven: vi.fn(),
   };
 
-  it('tells a child with no place yet to ask their Tutor, and says honestly that coins stay in the app', () => {
+  it('tells a child with no place yet to ask their Tutor, and says honestly that seeds stay in the app', () => {
     const view = render(<ShareGiving {...base} available={6} view={{ destinations: [], gifts: [] }} />);
     expect(screen.getByText(en.share.empty)).toBeVisible();
+    openMore(en.share.more);
     expect(screen.getByText(en.share.honest)).toBeVisible();
     expect(screen.queryByLabelText(en.shareTeen.placeName)).toBeNull();
     everyTextHasARole(view.container);
@@ -244,6 +256,7 @@ describe('ShareGiving (D.14)', () => {
     const onMarkGiven = vi.fn();
     const own: Destination = { ...tutorPlace, chosenBy: 'holder', title: 'Animal shelter' };
     render(<ShareGiving {...base} selfDirected available={3} view={{ destinations: [own], gifts: [pledged] }} onAddPlace={onAddPlace} onMarkGiven={onMarkGiven} />);
+    openMore(en.share.more);
     expect(screen.getByText(en.shareTeen.honest)).toBeVisible();
     fireEvent.click(screen.getByRole('button', { name: en.shareTeen.add }));
     expect(screen.getByRole('alert')).toHaveTextContent(en.shareTeen.invalidPlace);
@@ -270,7 +283,7 @@ describe('ShareDestinations (D.14, Tutor)', () => {
     const onSettle = vi.fn();
     const view = render(<ShareDestinations {...base} view={{ destinations: [tutorPlace], gifts: [pledged] }} onSettle={onSettle} />);
     expect(screen.getByText('Usual split, out of 10: 5 Save, 4 Spend, 1 Share')).toBeVisible();
-    expect(screen.getByText('4 coins for Food bank')).toBeVisible();
+    expect(screen.getByText('4 seeds for Food bank')).toBeVisible();
     fireEvent.click(screen.getByRole('button', { name: en.destinations.markGiven }));
     fireEvent.click(screen.getByRole('button', { name: en.destinations.confirm }));
     expect(screen.getByRole('alert')).toHaveTextContent(en.destinations.noteRequired);

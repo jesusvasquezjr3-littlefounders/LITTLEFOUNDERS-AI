@@ -1,0 +1,3107 @@
+{
+  "runId": "future-finance-draft",
+  "versionId": "forge-future-finance-draft",
+  "generatedAt": "2026-10-06T07:11:06.331Z",
+  "zeroSpend": {
+    "modelCalls": 0,
+    "imageCalls": 0,
+    "voiceCalls": 0,
+    "networkCalls": 0,
+    "vaultWrites": 0
+  },
+  "ok": true,
+  "plans": 138,
+  "lessonsEmitted": 138,
+  "documents": 414,
+  "planErrors": [],
+  "lessons": [
+    {
+      "lessonId": "fe-production-credit-products-01",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-credit-products/fe-production-credit-products-01: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "message": "title: \"extrato\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Leia extrato do cartão\"",
+          "locale": "pt-BR"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "hook-01",
+          "message": "payload.line: \"extrato\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Extrato separa saldo do período, mínimo e data de pagamento; cada dado responde uma pergu…\"",
+          "locale": "pt-BR"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "guided-01",
+          "message": "payload.scene: \"extrato\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Extrato fictício: saldo 600; mínimo 30; pagamento vence 18 de junho.\"",
+          "locale": "pt-BR"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "guided-02",
+          "message": "payload.scene: \"extrato\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Extrato fictício: saldo 600; mínimo 30; pagamento vence 18 de junho.\"",
+          "locale": "pt-BR"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "practice-01",
+          "message": "help[0]: \"extrato\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Não troque por outra data do extrato.\"",
+          "locale": "pt-BR"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "practice-01",
+          "message": "feedback.not_yet: \"extrato\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Não troque por outra data do extrato.\"",
+          "locale": "pt-BR"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "practice-01",
+          "message": "payload.scene: \"extrato\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Extrato fictício: fecha 2 de julho; pagamento vence 24 de julho.\"",
+          "locale": "pt-BR"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "practice-03",
+          "message": "payload.scene: \"extrato\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Extrato do cartão mostra dívida e crédito sem uso; não mostra dinheiro de conta de depósi…\"",
+          "locale": "pt-BR"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "transfer-01",
+          "message": "prompt: \"extrato\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Que resumo coincide com extrato?\"",
+          "locale": "pt-BR"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "transfer-01",
+          "message": "payload.scene: \"extrato\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Extrato fictício: saldo 900; mínimo 45; vence 9 de agosto.\"",
+          "locale": "pt-BR"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-credit-products-02",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-credit-products/fe-production-credit-products-02: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "example-01",
+          "message": "payload.line: \"extrato\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Fechamento marca fim do período do extrato. Vencimento indica quando pagamento deve chega…\"",
+          "locale": "pt-BR"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "guided-01",
+          "message": "payload.scene: \"extrato\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Extrato fictício fecha 3 de setembro; pagamento vence 25 de setembro.\"",
+          "locale": "pt-BR"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "guided-02",
+          "message": "payload.scene: \"extrato\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Extrato fictício fecha 4 de abril; pagamento deve chegar até 22 de abril.\"",
+          "locale": "pt-BR"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "practice-02",
+          "message": "help[0]: \"extrato\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Acompanhe extrato pendente e atividade nova em separado.\"",
+          "locale": "pt-BR"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "practice-02",
+          "message": "feedback.not_yet: \"extrato\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Acompanhe extrato pendente e atividade nova em separado.\"",
+          "locale": "pt-BR"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "practice-02",
+          "message": "payload.scene: \"extrato\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Abre novo período enquanto pagamento do extrato anterior segue pendente.\"",
+          "locale": "pt-BR"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "transfer-01",
+          "message": "payload.scene: \"extrato\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Extrato fictício fecha 1 de novembro; pagamento deve chegar até 19 de novembro.\"",
+          "locale": "pt-BR"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-credit-products-03",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-credit-products/fe-production-credit-products-03: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "guided-01",
+          "message": "payload.scene: \"extrato\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Regra fictícia: compras evitam juros só com pagamento total do extrato no prazo; chega só…\"",
+          "locale": "pt-BR"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-credit-products-04",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-credit-products/fe-production-credit-products-04: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-credit-products-05",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-credit-products/fe-production-credit-products-05: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-credit-products-06",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-credit-products/fe-production-credit-products-06: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-credit-products-07",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-credit-products/fe-production-credit-products-07: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "message": "title: \"overdraft\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Overdraft Borrowing\"",
+          "locale": "en-US"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "hook-01",
+          "message": "payload.line: \"overdraft\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"An overdraft limit extends borrowing capacity; it does not add money you own. Check how t…\"",
+          "locale": "en-US"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "example-01",
+          "message": "payload.line: \"overdraft\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Read the owned balance separately from overdraft capacity. Using the facility creates deb…\"",
+          "locale": "en-US"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "guided-01",
+          "message": "payload.options[0].label: \"overdraft\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Overdraft 200\"",
+          "locale": "en-US"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "guided-01",
+          "message": "payload.scene: \"overdraft\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Fictional display: own balance 80; unused overdraft 200; total available 280.\"",
+          "locale": "en-US"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "guided-02",
+          "message": "payload.scene: \"overdraft\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Fictional terms use own funds first; own balance 60; purchase 90; overdraft covers the ga…\"",
+          "locale": "en-US"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "practice-01",
+          "message": "payload.scene: \"overdraft\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Only the approved overdraft limit rises; no deposit or income arrives.\"",
+          "locale": "en-US"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "practice-02",
+          "message": "payload.scene: \"overdraft\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"The overdraft amount is shown, but its fees, interest and repayment terms are missing.\"",
+          "locale": "en-US"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "transfer-01",
+          "message": "payload.scene: \"overdraft\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Total available includes overdraft; the own-balance portion is not shown.\"",
+          "locale": "en-US"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "message": "title: \"sobregiro\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Sobregiro es dinero prestado\"",
+          "locale": "es-MX"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "hook-01",
+          "message": "payload.line: \"sobregiro\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Límite de sobregiro amplía capacidad de préstamo; no agrega dinero propio. Revisa cómo pa…\"",
+          "locale": "es-MX"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "example-01",
+          "message": "payload.line: \"sobregiro\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Lee saldo propio separado de capacidad de sobregiro. Usarla crea deuda bajo cargos e inte…\"",
+          "locale": "es-MX"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "guided-01",
+          "message": "payload.options[0].label: \"sobregiro\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Sobregiro 200\"",
+          "locale": "es-MX"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "guided-01",
+          "message": "payload.scene: \"sobregiro\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Pantalla ficticia: saldo propio 80; sobregiro sin usar 200; total disponible 280.\"",
+          "locale": "es-MX"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "guided-02",
+          "message": "payload.scene: \"sobregiro\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Términos ficticios usan fondos propios primero; saldo propio 60; compra 90; sobregiro cub…\"",
+          "locale": "es-MX"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "practice-01",
+          "message": "payload.scene: \"sobregiro\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Solo sube límite aprobado de sobregiro; no llega depósito ni ingreso.\"",
+          "locale": "es-MX"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "practice-02",
+          "message": "payload.scene: \"sobregiro\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Monto de sobregiro aparece, pero faltan cargos, intereses y términos de pago.\"",
+          "locale": "es-MX"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "transfer-01",
+          "message": "payload.scene: \"sobregiro\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Total disponible incluye sobregiro; no muestra parte de saldo propio.\"",
+          "locale": "es-MX"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "message": "title: \"cheque especial\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Cheque especial é dinheiro emprestado\"",
+          "locale": "pt-BR"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "hook-01",
+          "message": "payload.line: \"cheque especial\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Limite do cheque especial amplia capacidade de empréstimo; não soma dinheiro próprio. Vej…\"",
+          "locale": "pt-BR"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "example-01",
+          "message": "payload.line: \"cheque especial\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Leia saldo próprio separado do limite do cheque especial. Usá-lo cria dívida sob taxas e …\"",
+          "locale": "pt-BR"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "guided-01",
+          "message": "payload.options[0].label: \"cheque especial\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Cheque especial 200\"",
+          "locale": "pt-BR"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "guided-01",
+          "message": "payload.scene: \"cheque especial\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Tela fictícia: saldo próprio 80; cheque especial sem uso 200; total disponível 280.\"",
+          "locale": "pt-BR"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "guided-02",
+          "message": "payload.scene: \"cheque especial\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Termos fictícios usam fundos próprios primeiro; saldo próprio 60; compra 90; cheque espec…\"",
+          "locale": "pt-BR"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "practice-01",
+          "message": "payload.scene: \"cheque especial\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Só sobe limite aprovado do cheque especial; não chega depósito nem renda.\"",
+          "locale": "pt-BR"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "practice-02",
+          "message": "payload.scene: \"cheque especial\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Valor do cheque especial aparece, mas faltam taxas, juros e termos de pagamento.\"",
+          "locale": "pt-BR"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "transfer-01",
+          "message": "payload.scene: \"cheque especial\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Total disponível inclui cheque especial; não mostra parte de saldo próprio.\"",
+          "locale": "pt-BR"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-credit-products-08",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-credit-products/fe-production-credit-products-08: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-credit-products-09",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-credit-products/fe-production-credit-products-09: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-credit-products-10",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-credit-products/fe-production-credit-products-10: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-credit-products-review-1",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-credit-products/fe-production-credit-products-review-1: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "hook-01",
+          "message": "payload.line: \"extrato\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Retome nomes do extrato, datas, condições de juros e custos com termos fictícios dados.\"",
+          "locale": "pt-BR"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "practice-01",
+          "message": "payload.scene: \"extrato\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Extrato fictício: saldo 800; mínimo 40; vence 16 de maio.\"",
+          "locale": "pt-BR"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "practice-02",
+          "message": "payload.scene: \"extrato\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Extrato fictício fecha 2 de maio; pagamento deve chegar até 21 de maio.\"",
+          "locale": "pt-BR"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "transfer-01",
+          "message": "prompt: \"extrato\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Que resumo do extrato está certo?\"",
+          "locale": "pt-BR"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-credit-products-review-2",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-credit-products/fe-production-credit-products-review-2: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "practice-02",
+          "message": "feedback.met: \"overdraft\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"The overdraft portion is unused borrowing capacity, not owned funds.\"",
+          "locale": "en-US"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "practice-02",
+          "message": "payload.options[0].label: \"overdraft\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Overdraft 150\"",
+          "locale": "en-US"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "practice-02",
+          "message": "payload.scene: \"overdraft\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Fictional account display combines own balance 70 with unused overdraft 150.\"",
+          "locale": "en-US"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "practice-02",
+          "message": "feedback.met: \"sobregiro\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Parte de sobregiro es capacidad de préstamo, no fondos propios.\"",
+          "locale": "es-MX"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "practice-02",
+          "message": "payload.options[0].label: \"sobregiro\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Sobregiro 150\"",
+          "locale": "es-MX"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "practice-02",
+          "message": "payload.scene: \"sobregiro\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Pantalla ficticia combina saldo propio 70 y sobregiro sin usar 150.\"",
+          "locale": "es-MX"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "practice-02",
+          "message": "feedback.met: \"cheque especial\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Parte do cheque especial é capacidade de empréstimo, não fundos próprios.\"",
+          "locale": "pt-BR"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "practice-02",
+          "message": "payload.options[0].label: \"cheque especial\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Cheque especial 150\"",
+          "locale": "pt-BR"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "practice-02",
+          "message": "payload.scene: \"cheque especial\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Tela fictícia junta saldo próprio 70 e cheque especial sem uso 150.\"",
+          "locale": "pt-BR"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "practice-06",
+          "message": "payload.scene: \"extrato\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Extrato fictício de depósito: 3 de agosto; compra devolvida; crédito 24.\"",
+          "locale": "pt-BR"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-financial-landscape-01",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-financial-landscape/fe-production-financial-landscape-01: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-financial-landscape-02",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-financial-landscape/fe-production-financial-landscape-02: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-financial-landscape-03",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-financial-landscape/fe-production-financial-landscape-03: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-financial-landscape-04",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-financial-landscape/fe-production-financial-landscape-04: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "guided-01",
+          "message": "payload.scene: \"extrato\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Extrato mostra duas vezes mesma cobrança por uma compra.\"",
+          "locale": "pt-BR"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-financial-landscape-05",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-financial-landscape/fe-production-financial-landscape-05: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-financial-landscape-06",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-financial-landscape/fe-production-financial-landscape-06: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-financial-landscape-07",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-financial-landscape/fe-production-financial-landscape-07: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-financial-landscape-08",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-financial-landscape/fe-production-financial-landscape-08: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-financial-landscape-09",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-financial-landscape/fe-production-financial-landscape-09: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-financial-landscape-10",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-financial-landscape/fe-production-financial-landscape-10: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-financial-landscape-review-1",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-financial-landscape/fe-production-financial-landscape-review-1: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "practice-04",
+          "message": "payload.scene: \"extrato\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Cobrança duplicada sem explicação aparece no extrato.\"",
+          "locale": "pt-BR"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-financial-landscape-review-2",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-financial-landscape/fe-production-financial-landscape-review-2: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-housing-transport-01",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-housing-transport/fe-production-housing-transport-01: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-housing-transport-02",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-housing-transport/fe-production-housing-transport-02: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-housing-transport-03",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-housing-transport/fe-production-housing-transport-03: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-housing-transport-04",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-housing-transport/fe-production-housing-transport-04: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-housing-transport-05",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-housing-transport/fe-production-housing-transport-05: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-housing-transport-06",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-housing-transport/fe-production-housing-transport-06: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-housing-transport-07",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-housing-transport/fe-production-housing-transport-07: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-housing-transport-08",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-housing-transport/fe-production-housing-transport-08: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-housing-transport-09",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-housing-transport/fe-production-housing-transport-09: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-housing-transport-10",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-housing-transport/fe-production-housing-transport-10: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-housing-transport-11",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-housing-transport/fe-production-housing-transport-11: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-housing-transport-12",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-housing-transport/fe-production-housing-transport-12: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-housing-transport-review-1",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-housing-transport/fe-production-housing-transport-review-1: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-housing-transport-review-2",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-housing-transport/fe-production-housing-transport-review-2: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-insurance-risk-01",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-insurance-risk/fe-production-insurance-risk-01: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-insurance-risk-02",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-insurance-risk/fe-production-insurance-risk-02: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-insurance-risk-03",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-insurance-risk/fe-production-insurance-risk-03: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-insurance-risk-04",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-insurance-risk/fe-production-insurance-risk-04: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-insurance-risk-05",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-insurance-risk/fe-production-insurance-risk-05: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-insurance-risk-06",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-insurance-risk/fe-production-insurance-risk-06: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-insurance-risk-07",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-insurance-risk/fe-production-insurance-risk-07: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-insurance-risk-08",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-insurance-risk/fe-production-insurance-risk-08: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-insurance-risk-09",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-insurance-risk/fe-production-insurance-risk-09: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-insurance-risk-10",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-insurance-risk/fe-production-insurance-risk-10: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-insurance-risk-11",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-insurance-risk/fe-production-insurance-risk-11: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-insurance-risk-12",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-insurance-risk/fe-production-insurance-risk-12: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-insurance-risk-review-1",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-insurance-risk/fe-production-insurance-risk-review-1: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-insurance-risk-review-2",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-insurance-risk/fe-production-insurance-risk-review-2: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-investing-foundations-01",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-investing-foundations/fe-production-investing-foundations-01: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "practice-02",
+          "message": "help[0]: \"sin riesgo\" (hype-urgency) — Law 2: no hype, yield-chasing, FOMO or urgency — if the lesson is examining a scam or ad, quote the message or name it as a warning sign so a reviewer can confirm it is analysed, not voiced. Text: \"Poder invertir no significa hacerlo sin riesgo.\"",
+          "locale": "es-MX"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "practice-02",
+          "message": "feedback.not_yet: \"sin riesgo\" (hype-urgency) — Law 2: no hype, yield-chasing, FOMO or urgency — if the lesson is examining a scam or ad, quote the message or name it as a warning sign so a reviewer can confirm it is analysed, not voiced. Text: \"Poder invertir no significa hacerlo sin riesgo.\"",
+          "locale": "es-MX"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-investing-foundations-02",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-investing-foundations/fe-production-investing-foundations-02: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-investing-foundations-03",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-investing-foundations/fe-production-investing-foundations-03: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-investing-foundations-04",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-investing-foundations/fe-production-investing-foundations-04: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "practice-01",
+          "message": "payload.scene: \"extrato\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Um extrato mostra uma distribuição em dinheiro, mas omite a mudança de valor da aplicação.\"",
+          "locale": "pt-BR"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-investing-foundations-05",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-investing-foundations/fe-production-investing-foundations-05: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-investing-foundations-06",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-investing-foundations/fe-production-investing-foundations-06: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-investing-foundations-07",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-investing-foundations/fe-production-investing-foundations-07: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-investing-foundations-08",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-investing-foundations/fe-production-investing-foundations-08: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-investing-foundations-09",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-investing-foundations/fe-production-investing-foundations-09: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-investing-foundations-10",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-investing-foundations/fe-production-investing-foundations-10: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-investing-foundations-11",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-investing-foundations/fe-production-investing-foundations-11: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-investing-foundations-12",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-investing-foundations/fe-production-investing-foundations-12: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "practice-01",
+          "message": "payload.scene: \"guaranteed returns\" (hype-urgency) — Law 2: no hype, yield-chasing, FOMO or urgency — if the lesson is examining a scam or ad, quote the message or name it as a warning sign so a reviewer can confirm it is analysed, not voiced. Text: \"The custodian’s identity has been independently verified. An offer promises unusually hig…\"",
+          "locale": "en-US"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "practice-01",
+          "message": "payload.scene: \"rendimientos garantizados\" (hype-urgency) — Law 2: no hype, yield-chasing, FOMO or urgency — if the lesson is examining a scam or ad, quote the message or name it as a warning sign so a reviewer can confirm it is analysed, not voiced. Text: \"Verificaron independientemente al custodio. Una oferta promete rendimientos garantizados …\"",
+          "locale": "es-MX"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-investing-foundations-13",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-investing-foundations/fe-production-investing-foundations-13: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-investing-foundations-14",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-investing-foundations/fe-production-investing-foundations-14: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-investing-foundations-review-1",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-investing-foundations/fe-production-investing-foundations-review-1: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-investing-foundations-review-2",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-investing-foundations/fe-production-investing-foundations-review-2: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-investment-comparison-01",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-investment-comparison/fe-production-investment-comparison-01: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "practice-02",
+          "message": "payload.scene: \"extrato\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"O extrato mostra ganho após ambas as tarifas. Alguém subtrai essas mesmas tarifas de novo.\"",
+          "locale": "pt-BR"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-investment-comparison-02",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-investment-comparison/fe-production-investment-comparison-02: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-investment-comparison-03",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-investment-comparison/fe-production-investment-comparison-03: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-investment-comparison-04",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-investment-comparison/fe-production-investment-comparison-04: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-investment-comparison-05",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-investment-comparison/fe-production-investment-comparison-05: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-investment-comparison-06",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-investment-comparison/fe-production-investment-comparison-06: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-investment-comparison-07",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-investment-comparison/fe-production-investment-comparison-07: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-investment-comparison-08",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-investment-comparison/fe-production-investment-comparison-08: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-investment-comparison-09",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-investment-comparison/fe-production-investment-comparison-09: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-investment-comparison-10",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-investment-comparison/fe-production-investment-comparison-10: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "example-01",
+          "message": "payload.line: \"guaranteed returns\" (hype-urgency) — Law 2: no hype, yield-chasing, FOMO or urgency — if the lesson is examining a scam or ad, quote the message or name it as a warning sign so a reviewer can confirm it is analysed, not voiced. Text: \"An offer promises unusually high guaranteed returns. Pause payment and verify the provide…\"",
+          "locale": "en-US"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "practice-03",
+          "message": "payload.scene: \"guaranteed returns\" (hype-urgency) — Law 2: no hype, yield-chasing, FOMO or urgency — if the lesson is examining a scam or ad, quote the message or name it as a warning sign so a reviewer can confirm it is analysed, not voiced. Text: \"A firm exists, but its ad claims exceptional guaranteed returns without documented backin…\"",
+          "locale": "en-US"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "guided-01",
+          "message": "payload.scene: \"ganancias garantizadas\" (hype-urgency) — Law 2: no hype, yield-chasing, FOMO or urgency — if the lesson is examining a scam or ad, quote the message or name it as a warning sign so a reviewer can confirm it is analysed, not voiced. Text: \"Un mensaje de inversión promete enormes ganancias garantizadas y pide pagar mediante su e…\"",
+          "locale": "es-MX"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-investment-comparison-review-1",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-investment-comparison/fe-production-investment-comparison-review-1: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-investment-comparison-review-2",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-investment-comparison/fe-production-investment-comparison-review-2: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "practice-05",
+          "message": "payload.scene: \"guaranteed returns\" (hype-urgency) — Law 2: no hype, yield-chasing, FOMO or urgency — if the lesson is examining a scam or ad, quote the message or name it as a warning sign so a reviewer can confirm it is analysed, not voiced. Text: \"A stranger’s message promises huge guaranteed returns and provides its own verification n…\"",
+          "locale": "en-US"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "practice-05",
+          "message": "payload.scene: \"ganancias garantizadas\" (hype-urgency) — Law 2: no hype, yield-chasing, FOMO or urgency — if the lesson is examining a scam or ad, quote the message or name it as a warning sign so a reviewer can confirm it is analysed, not voiced. Text: \"Un desconocido promete enormes ganancias garantizadas y proporciona su propio número de v…\"",
+          "locale": "es-MX"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-purchase-decisions-01",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-purchase-decisions/fe-production-purchase-decisions-01: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-purchase-decisions-02",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-purchase-decisions/fe-production-purchase-decisions-02: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "guided-02",
+          "message": "payload.options[1].label: \"service fee\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Required service fee\"",
+          "locale": "en-US"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "guided-02",
+          "message": "payload.scene: \"service fee\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Purchase cannot be completed without the stated service fee.\"",
+          "locale": "en-US"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-purchase-decisions-03",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-purchase-decisions/fe-production-purchase-decisions-03: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-purchase-decisions-04",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-purchase-decisions/fe-production-purchase-decisions-04: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-purchase-decisions-05",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-purchase-decisions/fe-production-purchase-decisions-05: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-purchase-decisions-06",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-purchase-decisions/fe-production-purchase-decisions-06: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-purchase-decisions-07",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-purchase-decisions/fe-production-purchase-decisions-07: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-purchase-decisions-08",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-purchase-decisions/fe-production-purchase-decisions-08: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-purchase-decisions-09",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-purchase-decisions/fe-production-purchase-decisions-09: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-purchase-decisions-10",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-purchase-decisions/fe-production-purchase-decisions-10: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-purchase-decisions-11",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-purchase-decisions/fe-production-purchase-decisions-11: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-purchase-decisions-12",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-purchase-decisions/fe-production-purchase-decisions-12: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-purchase-decisions-review-1",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-purchase-decisions/fe-production-purchase-decisions-review-1: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-purchase-decisions-review-2",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-purchase-decisions/fe-production-purchase-decisions-review-2: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-retirement-future-01",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-retirement-future/fe-production-retirement-future-01: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "hook-01",
+          "message": "payload.line: \"account balance\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Knowing a future account balance is different from knowing what future living costs requi…\"",
+          "locale": "en-US"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "example-01",
+          "message": "payload.line: \"account balance\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"An account balance is one pool of money. Food, housing and care need repeated payments ov…\"",
+          "locale": "en-US"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "practice-01",
+          "message": "payload.options[1].label: \"account balance\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"The account balance itself\"",
+          "locale": "en-US"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "practice-01",
+          "message": "payload.scene: \"account balance\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"A plan lists an account balance and the expected recurring housing payment.\"",
+          "locale": "en-US"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "guided-01",
+          "message": "payload.scene: \"saldo da conta\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Uma projeção dá o saldo da conta numa data futura de aposentadoria.\"",
+          "locale": "pt-BR"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "practice-01",
+          "message": "payload.options[1].label: \"saldo da conta\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"O saldo da conta em si\"",
+          "locale": "pt-BR"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "practice-01",
+          "message": "payload.scene: \"saldo da conta\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Um plano lista saldo da conta e o pagamento recorrente esperado de moradia.\"",
+          "locale": "pt-BR"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-retirement-future-02",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-retirement-future/fe-production-retirement-future-02: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-retirement-future-03",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-retirement-future/fe-production-retirement-future-03: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "practice-01",
+          "message": "payload.options[2].label: \"extrato\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Só a cor do extrato\"",
+          "locale": "pt-BR"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-retirement-future-04",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-retirement-future/fe-production-retirement-future-04: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-retirement-future-05",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-retirement-future/fe-production-retirement-future-05: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "guided-02",
+          "message": "payload.options[1].label: \"extrato\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Só a aparência do extrato\"",
+          "locale": "pt-BR"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-retirement-future-06",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-retirement-future/fe-production-retirement-future-06: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-retirement-future-07",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-retirement-future/fe-production-retirement-future-07: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-retirement-future-08",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-retirement-future/fe-production-retirement-future-08: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-retirement-future-09",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-retirement-future/fe-production-retirement-future-09: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "practice-03",
+          "message": "payload.options[1].label: \"free money\" (hype-urgency) — Law 2: no hype, yield-chasing, FOMO or urgency — if the lesson is examining a scam or ad, quote the message or name it as a warning sign so a reviewer can confirm it is analysed, not voiced. Text: \"It creates free money\"",
+          "locale": "en-US"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "practice-03",
+          "message": "payload.options[1].label: \"dinero gratis\" (hype-urgency) — Law 2: no hype, yield-chasing, FOMO or urgency — if the lesson is examining a scam or ad, quote the message or name it as a warning sign so a reviewer can confirm it is analysed, not voiced. Text: \"Crea dinero gratis\"",
+          "locale": "es-MX"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "practice-03",
+          "message": "payload.options[1].label: \"dinheiro gratis\" (hype-urgency) — Law 2: no hype, yield-chasing, FOMO or urgency — if the lesson is examining a scam or ad, quote the message or name it as a warning sign so a reviewer can confirm it is analysed, not voiced. Text: \"Cria dinheiro grátis\"",
+          "locale": "pt-BR"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-retirement-future-10",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-retirement-future/fe-production-retirement-future-10: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-retirement-future-review-1",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-retirement-future/fe-production-retirement-future-review-1: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-retirement-future-review-2",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-retirement-future/fe-production-retirement-future-review-2: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-saving-resilience-01",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-saving-resilience/fe-production-saving-resilience-01: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        },
+        {
+          "gate": 18,
+          "severity": "review",
+          "segmentId": "transfer-01",
+          "message": "segments[7].payload.scene: time-pressure \"vence pronto\": the reviewer confirms the text teaches it and never applies it to the learner (B.25)",
+          "locale": "es-MX"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-saving-resilience-02",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-saving-resilience/fe-production-saving-resilience-02: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-saving-resilience-03",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-saving-resilience/fe-production-saving-resilience-03: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-saving-resilience-04",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-saving-resilience/fe-production-saving-resilience-04: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "guided-02",
+          "message": "payload.options[1].label: \"extrato\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Data conhecida do extrato\"",
+          "locale": "pt-BR"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-saving-resilience-05",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-saving-resilience/fe-production-saving-resilience-05: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-saving-resilience-06",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-saving-resilience/fe-production-saving-resilience-06: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-saving-resilience-07",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-saving-resilience/fe-production-saving-resilience-07: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "hook-01",
+          "message": "payload.line: \"saldo disponible\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Automatización sigue fecha, no tus necesidades; revisa saldo disponible y cuentas esencia…\"",
+          "locale": "es-MX"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "hook-01",
+          "message": "payload.line: \"saldo disponivel\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Automação segue data, não suas necessidades; confira saldo disponível e contas essenciais…\"",
+          "locale": "pt-BR"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-saving-resilience-08",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-saving-resilience/fe-production-saving-resilience-08: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-saving-resilience-09",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-saving-resilience/fe-production-saving-resilience-09: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-saving-resilience-10",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-saving-resilience/fe-production-saving-resilience-10: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "guided-02",
+          "message": "feedback.met: \"available balance\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Spent money cannot remain in the reserve’s available balance.\"",
+          "locale": "en-US"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-saving-resilience-review-1",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-saving-resilience/fe-production-saving-resilience-review-1: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-saving-resilience-review-2",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-saving-resilience/fe-production-saving-resilience-review-2: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-shared-finances-01",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-shared-finances/fe-production-shared-finances-01: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-shared-finances-02",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-shared-finances/fe-production-shared-finances-02: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-shared-finances-03",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-shared-finances/fe-production-shared-finances-03: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-shared-finances-04",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-shared-finances/fe-production-shared-finances-04: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-shared-finances-05",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-shared-finances/fe-production-shared-finances-05: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-shared-finances-06",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-shared-finances/fe-production-shared-finances-06: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-shared-finances-07",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-shared-finances/fe-production-shared-finances-07: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "practice-02",
+          "message": "payload.scene: \"extrato\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Pagamento conjunto contestado aparece num extrato.\"",
+          "locale": "pt-BR"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-shared-finances-08",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-shared-finances/fe-production-shared-finances-08: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "practice-02",
+          "message": "payload.scene: \"account holder\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"A helper previously had permission to act; the account holder has died.\"",
+          "locale": "en-US"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-shared-finances-review-1",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-shared-finances/fe-production-shared-finances-review-1: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-shared-finances-review-2",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-shared-finances/fe-production-shared-finances-review-2: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-tax-public-systems-01",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-tax-public-systems/fe-production-tax-public-systems-01: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "guided-01",
+          "message": "payload.options[1].label: \"service fee\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Specific service fee\"",
+          "locale": "en-US"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "guided-02",
+          "message": "payload.options[2].label: \"service fee\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Service fee\"",
+          "locale": "en-US"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "guided-02",
+          "message": "payload.scene: \"service fee\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"This fictional system calls payment for processing one document a “service fee.”\"",
+          "locale": "en-US"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "guided-02",
+          "message": "payload.options[2].label: \"tarifa de servico\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Tarifa de serviço\"",
+          "locale": "pt-BR"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "guided-02",
+          "message": "payload.scene: \"tarifa de servico\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Este sistema fictício chama de “tarifa de serviço” o pagamento para emitir um documento.\"",
+          "locale": "pt-BR"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "practice-01",
+          "message": "payload.scene: \"extrato\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Um extrato fictício chama de “contribuição social” um desconto para seu sistema de proteç…\"",
+          "locale": "pt-BR"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "practice-02",
+          "message": "payload.scene: \"extrato\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Um extrato diz só “desconto”, sem nome nem finalidade.\"",
+          "locale": "pt-BR"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-tax-public-systems-02",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-tax-public-systems/fe-production-tax-public-systems-02: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-tax-public-systems-03",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-tax-public-systems/fe-production-tax-public-systems-03: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-tax-public-systems-04",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-tax-public-systems/fe-production-tax-public-systems-04: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-tax-public-systems-05",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-tax-public-systems/fe-production-tax-public-systems-05: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-tax-public-systems-06",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-tax-public-systems/fe-production-tax-public-systems-06: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-tax-public-systems-07",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-tax-public-systems/fe-production-tax-public-systems-07: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-tax-public-systems-08",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 14,
+          "severity": "review",
+          "message": "leans on exercises, 4 independent exercise(s) against 3 demonstration step(s): Stage 3 checks the examples carry the teaching"
+        },
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-tax-public-systems/fe-production-tax-public-systems-08: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-tax-public-systems-review-1",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-tax-public-systems/fe-production-tax-public-systems-review-1: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "practice-01",
+          "message": "payload.options[2].label: \"service fee\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Account service fee\"",
+          "locale": "en-US"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "transfer-01",
+          "message": "help[0]: \"extrato\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Separe as finalidades nomeadas no mesmo extrato.\"",
+          "locale": "pt-BR"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "transfer-01",
+          "message": "feedback.not_yet: \"extrato\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Separe as finalidades nomeadas no mesmo extrato.\"",
+          "locale": "pt-BR"
+        },
+        {
+          "gate": 12,
+          "severity": "review",
+          "segmentId": "transfer-01",
+          "message": "payload.scene: \"extrato\" (banking-frame) — Law 2: speak like a mentor, never like a bank — describe what the learner earned, saved, chose or waited for, in concrete calm words, not account or transaction language. Text: \"Um extrato fictício separa imposto geral de tarifa para emitir uma licença.\"",
+          "locale": "pt-BR"
+        }
+      ],
+      "notApplicable": []
+    },
+    {
+      "lessonId": "fe-production-tax-public-systems-review-2",
+      "ok": true,
+      "problems": [],
+      "review": [
+        {
+          "gate": 16,
+          "severity": "review",
+          "message": "financial-education/financial-adult/fe-production-tax-public-systems/fe-production-tax-public-systems-review-2: per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)"
+        }
+      ],
+      "notApplicable": []
+    }
+  ]
+}

@@ -4,21 +4,21 @@ import { openCookiePreferences } from '@/components/CookieConsentBanner';
 import { AuthShell, Button, SiteShell, type ShellNavItem } from '@/rebuild/design/controls';
 import { APP_HOME } from './navigation';
 import { ShellRoot, useShellCopy, useShellLocale, useShellNavigate } from './ShellRoot';
+import { SiteTopbarControls } from './SiteTopbarControls';
 import { ShellPreferences } from './ShellPreferences';
 import { sitePageTitle } from './siteTitles';
 
 /*
  * The public site and the sign-in flow on real routes (W2 Lane 0), replacing
- * the legacy MarketingLayout and AuthLayout. The site header carries the
- * three public pages, "Log in" and one accent call to action (03 §3.4: it
- * docks at the bottom on phones after the first screen of the landing and
- * family pages). Shared header controls carry language and theme; the footer carries legal
- * links, cookie settings, contact and copyright.
+ * the legacy MarketingLayout and AuthLayout. Owner direction, 2026-10-06: the
+ * site topbar is the brand, a round theme toggle, a round language menu and a
+ * ghost "Log in"; there are no page links and no header call to action (the
+ * landing carries the calls to action). The footer carries legal links, cookie
+ * settings, contact and copyright.
  */
 
 const APP_NAME = 'LittleFounders';
 const CONTACT_EMAIL = 'informame@littlefounders.ai';
-const DOCKED_CTA = new Set(['/', '/families']);
 
 function SiteFooter() {
   const copy = useShellCopy().siteShell;
@@ -46,18 +46,12 @@ export function SiteLayout() {
   const navigate = useShellNavigate();
   const { pathname } = useLocation();
   const { session } = useAuth();
-  const links: ShellNavItem[] = [
-    { id: 'how-it-works', label: copy.howItWorks, href: '/how-it-works' },
-    { id: 'families', label: copy.families, href: '/families' },
-    { id: 'faq', label: copy.faq, href: '/faq' },
-  ];
-  // Signed-in visitors (a guest included) get "Open app" instead of "Sign up".
-  const primary = session ? { label: copy.openApp, href: APP_HOME } : { label: copy.signup, href: '/signup' };
+  const links: ShellNavItem[] = [];
+  // Signed-in visitors (a guest included) get "Open app" instead of "Log in".
+  const entry = session ? { label: copy.openApp, href: APP_HOME, variant: 'ghost' as const } : { label: copy.login, href: '/login', variant: 'ghost' as const };
   return <ShellRoot>
     <SiteShell appName={APP_NAME} pageTitle={sitePageTitle(pathname, locale)} routeKey={pathname} locale={locale} onNavigate={navigate}
-      utilities={<ShellPreferences />} homeHref="/" links={links} current={links.find((link) => link.href === pathname)?.id ?? ''}
-      secondaryAction={session ? undefined : { label: copy.login, href: '/login' }} primaryAction={primary}
-      stickyAction={DOCKED_CTA.has(pathname) ? primary : undefined}
+      utilities={<SiteTopbarControls />} homeHref="/" links={links} secondaryAction={entry}
       labels={{ skip: shell.skip, navigation: shell.navigation, menu: shell.menu, close: shell.close }} footer={<SiteFooter />}>
       {/* The public pages are rebuilt (W2 Lane 1): no legacy body wrapper. */}
       <Outlet />

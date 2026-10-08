@@ -15,6 +15,7 @@ const PARENT_ID = randomUUID();
 const KID_ID = randomUUID();
 const OTHER_KID_ID = randomUUID();
 const CREDIT_ID = randomUUID();
+const REQUEST_ID = randomUUID();
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -33,6 +34,16 @@ interface StubOptions {
   pendingCredit?: Record<string, unknown> | null;
   allocateResult?: boolean | null;
   scheduledCreditsResult?: number | null;
+  /** allowance_requests rows as the table holds them (newest first), and the database refusals per allowance_request_* function. */
+  allowanceRequests?: Record<string, unknown>[];
+  requestRefusals?: Record<string, string>;
+}
+
+function defaultRequest(): Record<string, unknown> {
+  return {
+    id: REQUEST_ID, kid_user_id: KID_ID, from_amount: 10, amount: 15, reason_kind: 'saving_goal', note: 'for a bike', status: 'requested',
+    created_at: new Date().toISOString(), decided_at: null, decision_code: null, decision_reason: null, revisit_on: null,
+  };
 }
 
 function defaultAccount(): Record<string, unknown> {
@@ -98,6 +109,19 @@ function stub(opts: StubOptions = {}) {
         return Promise.resolve(jsonResponse(200, rows));
       }
 
+      if (url.includes('/rest/v1/allowance_requests') && method === 'GET') {
+        const byId = url.includes('allowance_requests?id=eq.');
+        return Promise.resolve(jsonResponse(200, byId ? [opts.allowanceRequests?.[0] ?? defaultRequest()] : opts.allowanceRequests ?? []));
+      }
+      const requestRpc = url.match(/\/rest\/v1\/rpc\/(allowance_request_[a-z]+)/)?.[1];
+      if (requestRpc && method === 'POST') {
+        const refusal = opts.requestRefusals?.[requestRpc];
+        if (refusal) return Promise.resolve(jsonResponse(400, { code: 'P0001', message: refusal, details: null, hint: null }));
+        const body = init?.body ? (JSON.parse(String(init.body)) as Record<string, unknown>) : {};
+        if (requestRpc === 'allowance_request_create') return Promise.resolve(jsonResponse(200, REQUEST_ID));
+        if (requestRpc === 'allowance_request_withdraw') return Promise.resolve(jsonResponse(200, true));
+        return Promise.resolve(jsonResponse(200, body.p_approve ? 'approved' : 'denied'));
+      }
       if (url.includes('/rest/v1/allowance_rules?kid_user_id=eq.') && method === 'GET') {
         const rows = opts.allowanceRule === null ? [] : [opts.allowanceRule ?? null].filter(Boolean);
         return Promise.resolve(jsonResponse(200, rows));
@@ -601,4 +625,83 @@ it('D.1 does not advance scheduled allowances while the account is frozen', asyn
     .set('Authorization', `Bearer ${mintToken({ sub: KID_ID })}`);
   expect(response.status).toBe(200);
   expect(vi.mocked(fetch).mock.calls.some(([url]) => String(url).includes('/rpc/run_due_scheduled_credits'))).toBe(false);
+});
+
+describe('asking for a bigger allowance (allowance_requests)', () => {
+  const NOT_YET = { approve: false, reasonCode: 'later_date', reason: 'Save two more weeks and ask again', revisitOn: '2099-01-01' };
+
+  it('shows the child their latest request, or none', async () => {
+    stub({ roles: ['kid'], allowanceRequests: [] });
+    const first = await asKid('/api/v1/banking/allowance-request');
+    expect(first.body.data.request).toBeNull();
+    stub({ roles: ['kid'], allowanceRequests: [defaultRequest()] });
+    const res = await asKid('/api/v1/banking/allowance-request');
+    expect(res.status).toBe(200);
+    expect(res.body.data.request).toMatchObject({ id: REQUEST_ID, amount: 15, fromAmount: 10, reasonKind: 'saving_goal', status: 'requested' });
+    expect(res.body.data.request.kid_user_id).toBeUndefined();
+  });
+
+  it('lets a child ask, and refuses a malformed ask before the database sees it', async () => {
+    stub({ roles: ['kid'] });
+    const ok = await postAsKid('/api/v1/banking/allowance-request', { amount: 15, reasonKind: 'saving_goal', note: 'for a bike' });
+    expect(ok.status).toBe(201);
+    expect(ok.body.data.request.id).toBe(REQUEST_ID);
+    for (const body of [{ amount: 1, reasonKind: 'other' }, { amount: 15, reasonKind: 'because' }, { amount: 15, reasonKind: 'other', extra: true }, { amount: 15, reasonKind: 'other', note: 'x'.repeat(121) }]) {
+      expect((await postAsKid('/api/v1/banking/allowance-request', body)).status).toBe(400);
+    }
+  });
+
+  it('says in plain words why the database refused an ask', async () => {
+    stub({ roles: ['kid'], requestRefusals: { allowance_request_create: 'ALLOWANCE_REQUEST_OPEN' } });
+    const open = await postAsKid('/api/v1/banking/allowance-request', { amount: 15, reasonKind: 'other' });
+    expect(open.status).toBe(409);
+    expect(open.body.error.code).toBe('ALLOWANCE_REQUEST_OPEN');
+    stub({ roles: ['kid'], requestRefusals: { allowance_request_create: 'ALLOWANCE_NONE' } });
+    expect((await postAsKid('/api/v1/banking/allowance-request', { amount: 15, reasonKind: 'other' })).body.error.code).toBe('ALLOWANCE_NONE');
+  });
+
+  it('takes a waiting request back, and 404s when none is waiting', async () => {
+    stub({ roles: ['kid'], allowanceRequests: [defaultRequest()] });
+    const res = await postAsKid('/api/v1/banking/allowance-request/withdraw', {});
+    expect(res.status).toBe(200);
+    expect(res.body.data.withdrawn).toBe(true);
+    stub({ roles: ['kid'], allowanceRequests: [{ ...defaultRequest(), status: 'approved', decided_at: new Date().toISOString() }] });
+    expect((await postAsKid('/api/v1/banking/allowance-request/withdraw', {})).status).toBe(404);
+  });
+
+  it("shows a Tutor their own child's requests and 404s another family's", async () => {
+    stub({ allowanceRequests: [defaultRequest()] });
+    const res = await asParent(`/api/v1/banking/allowance-requests/${KID_ID}`);
+    expect(res.status).toBe(200);
+    expect(res.body.data.requests).toHaveLength(1);
+    stub({ allowanceRequests: [defaultRequest()], parentsKids: [OTHER_KID_ID] });
+    expect((await asParent(`/api/v1/banking/allowance-requests/${KID_ID}`)).status).toBe(404);
+  });
+
+  it('lets a Tutor say yes, and a "not yet" only with a code and an actionable reason', async () => {
+    stub();
+    const yes = await postAsParent(`/api/v1/banking/allowance-requests/${REQUEST_ID}/decide`, { approve: true });
+    expect(yes.status).toBe(200);
+    expect(yes.body.data.outcome).toBe('approved');
+    const no = await postAsParent(`/api/v1/banking/allowance-requests/${REQUEST_ID}/decide`, NOT_YET);
+    expect(no.body.data.outcome).toBe('denied');
+    for (const body of [{ approve: false }, { approve: false, reasonCode: 'save_more', reason: 'Save two more weeks and ask again' }, { approve: false, reasonCode: 'talk_first', reason: 'Not now' }]) {
+      expect((await postAsParent(`/api/v1/banking/allowance-requests/${REQUEST_ID}/decide`, body)).status).toBe(400);
+    }
+  });
+
+  it('maps a vague reason, a decided request and a stranger to plain refusals', async () => {
+    stub({ requestRefusals: { allowance_request_decide: 'DECISION_REASON_NOT_ACTIONABLE' } });
+    expect((await postAsParent(`/api/v1/banking/allowance-requests/${REQUEST_ID}/decide`, { ...NOT_YET, reason: 'Because I said so, really' })).body.error.code).toBe('DECISION_REASON_NOT_ACTIONABLE');
+    stub({ requestRefusals: { allowance_request_decide: 'ALLOWANCE_REQUEST_DECIDED' } });
+    expect((await postAsParent(`/api/v1/banking/allowance-requests/${REQUEST_ID}/decide`, { approve: true })).status).toBe(409);
+    stub({ parentsKids: [OTHER_KID_ID] });
+    expect((await postAsParent(`/api/v1/banking/allowance-requests/${REQUEST_ID}/decide`, { approve: true })).status).toBe(404);
+  });
+
+  it('keeps the Tutor routes closed to a child', async () => {
+    stub({ roles: ['kid'] });
+    expect((await postAsKid(`/api/v1/banking/allowance-requests/${REQUEST_ID}/decide`, { approve: true })).status).toBe(403);
+    expect((await asKid(`/api/v1/banking/allowance-requests/${KID_ID}`)).status).toBe(403);
+  });
 });

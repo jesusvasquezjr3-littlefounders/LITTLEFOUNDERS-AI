@@ -126,9 +126,16 @@ export function createHabitGoal(input: { title: string; target: number; followsG
     && (data.goal as HabitGoal).followsGoalId === input.followsGoalId, { method: 'POST', body: { title: input.title.trim(), target: input.target, followsGoalId: input.followsGoalId } });
 }
 
+/** Removing a goal gives its coins back to plain Save in the same step; `returned` says how many. */
 export function archiveHabitGoal(goalId: string, session: Session) {
-  return call(`/tasks/goals/${encodeURIComponent(goalId)}`, session, (data): data is { goal: HabitGoal } => isObject(data) && isHabitGoal(data.goal)
-    && (data.goal as HabitGoal).status === 'archived', { method: 'PATCH', body: {} });
+  return call(`/tasks/goals/${encodeURIComponent(goalId)}`, session, (data): data is { goal: HabitGoal; returned?: number } => isObject(data) && isHabitGoal(data.goal)
+    && (data.goal as HabitGoal).status === 'archived' && (data.returned === undefined || isCount(data.returned)), { method: 'PATCH', body: {} });
+}
+
+/** Rename a goal, change its picture or its target. A reached goal keeps its target; the server says so. */
+export function editHabitGoal(goalId: string, input: { title: string; target: number; icon: string }, session: Session) {
+  return call(`/tasks/goals/${encodeURIComponent(goalId)}`, session, (data): data is { goal: HabitGoal } => isObject(data) && isHabitGoal(data.goal),
+    { method: 'PATCH', body: { title: input.title.trim(), target: input.target, icon: input.icon } });
 }
 
 export function markNextStepSeen(goalId: string, session: Session) {

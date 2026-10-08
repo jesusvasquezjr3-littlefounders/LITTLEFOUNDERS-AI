@@ -91,8 +91,8 @@ describe('Family autonomy and decision copy (S07.5)', () => {
       expect(all).not.toMatch(/!/);
     });
 
-    it(`names coins wherever an amount is shown, in ${locale}`, () => {
-      const coin = { 'en-US': 'coins', 'es-MX': 'monedas', 'pt-BR': 'moedas' }[locale as Locale];
+    it(`names seeds wherever an amount is shown, in ${locale}`, () => {
+      const coin = { 'en-US': 'seeds', 'es-MX': 'semillas', 'pt-BR': 'sementes' }[locale as Locale];
       for (const text of [file.queue.cost, file.ladder.limitValue, file.levels.preapproved, file.levels.unlock3, file.levelsTutor.preapproved]) expect(text).toContain(coin);
     });
 

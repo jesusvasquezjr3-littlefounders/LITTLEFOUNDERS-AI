@@ -23,7 +23,7 @@ import { PocketMark } from './PocketMark';
 export interface ShareGivingCopy {
   heading: string; body: string; honest: string; available: string; where: string; amount: string; give: string; giving: string; pledged: string;
   empty: string; historyHeading: string; waiting: string; given: string; returned: string; note: string; takeBack: string; takenBack: string;
-  notEnough: string; invalid: string; loading: string; failed: string; retry: string; charity: string; gift: string; community: string; coins: string;
+  notEnough: string; invalid: string; loading: string; failed: string; retry: string; charity: string; gift: string; community: string; coins: string; more: string;
 }
 export interface ShareTeenCopy {
   body: string; honest: string; empty: string; addHeading: string; placeName: string; kind: string; add: string; added: string; limit: string;
@@ -100,8 +100,11 @@ export function ShareGiving({ copy, teenCopy, locale, dark, available, view, loa
   return <section className="lf-rebuild lf-family-hub lf-money-habits" data-money-habits="share-giving" data-theme={dark ? 'dark' : 'light'} lang={locale}
     aria-labelledby={ids.heading} data-pocket="share">
     <div className="lf-pocket-heading"><PocketMark pocket="share" /><h2 id={ids.heading} data-copy-role="heading">{copy.heading}</h2></div>
-    <Copy role="body">{selfDirected ? teenCopy.body : copy.body}</Copy>
-    <span className="lf-money-habits-chip" data-copy-role="body">{selfDirected ? teenCopy.honest : copy.honest}</span>
+    {/* What sharing is, and that the coins stay in the app, open from one quiet line (owner review: no paragraph in the first view). */}
+    <details className="lf-wallet-how"><summary data-copy-role="action">{copy.more}</summary><div className="lf-wallet-how-body">
+      <Copy role="body">{selfDirected ? teenCopy.body : copy.body}</Copy>
+      <span className="lf-money-habits-chip" data-copy-role="body">{selfDirected ? teenCopy.honest : copy.honest}</span>
+    </div></details>
     {failed ? <ErrorState heading={copy.failed} retryLabel={copy.retry} retryingLabel={copy.loading} onRetry={onRetry} />
       : loading || !view ? <LoadingState label={copy.loading} lines={2} /> : <>
       <p className="lf-money-habits-available" data-copy-role="data">{fill(copy.available, { count: available })}</p>

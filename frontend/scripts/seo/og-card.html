@@ -8,8 +8,8 @@
 
   It is built from assets we own and the rebuilt design system only (Frontend
   Bible 02 D3, D4 and D8: one system for marketing too; rules 2 and 21; 07 §1
-  and §3): a solid primary ground (tokens.css --primary #5c55fd), Fredoka and
-  Nunito self-hosted from public/fonts, the brand mark (manifest `brand.mark`)
+  and §3): a solid primary ground (tokens.css --primary #5c55fd), Plus Jakarta Sans
+  self-hosted from public/fonts, the brand mark (manifest `brand.mark`)
   beside the text wordmark, as in the site shell and the emails, and the four
   Mentors as their manifest-registered real-model renders
   (`mentor.<id>.avatar.light`, 07 §4). No gradient, no shadow, no stock art.
@@ -26,8 +26,7 @@
   `frontend/`, opens this file per locale and writes public/og/og-card-<en|es|pt>.jpg.
 -->
 <style>
-  @font-face { font-family: Fredoka; font-weight: 300 700; src: url('../../public/fonts/fredoka-latin-v1.woff2') format('woff2'); }
-  @font-face { font-family: Nunito; font-weight: 200 1000; src: url('../../public/fonts/nunito-latin-v1.woff2') format('woff2'); }
+  @font-face { font-family: 'Plus Jakarta Sans'; font-weight: 200 800; src: url('../../public/fonts/plus-jakarta-sans-latin-v1.woff2') format('woff2'); }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -35,7 +34,7 @@
 
   body {
     position: relative;
-    font-family: Nunito, sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     background: #5c55fd; /* --primary */
     color: #ffffff;      /* --on-primary */
   }
@@ -44,7 +43,7 @@
 
   .brand { display: flex; align-items: center; gap: 18px; }
   .brand img { width: 64px; height: 64px; display: block; }
-  .wordmark { font-family: Fredoka, sans-serif; font-weight: 700; font-size: 46px; letter-spacing: -0.01em; }
+  .wordmark { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 800; font-size: 46px; letter-spacing: -0.01em; }
 
   .kicker {
     margin-top: 44px;
@@ -56,7 +55,7 @@
   h1 {
     margin-top: 14px;
     max-width: 640px;
-    font-family: Fredoka, sans-serif;
+    font-family: 'Plus Jakarta Sans', sans-serif;
     font-weight: 600;
     font-size: 62px;
     line-height: 1.08;
@@ -125,8 +124,8 @@
   document.getElementById('line').textContent = CARD_LINE[locale] ?? CARD_LINE['en-US'];
   document.getElementById('kicker').textContent = CARD_KICKER[locale] ?? CARD_KICKER['en-US'];
   document.documentElement.lang = locale;
-  await document.fonts.load('600 62px Fredoka');
-  await document.fonts.load('800 26px Nunito');
+  await document.fonts.load('800 62px Plus Jakarta Sans');
+  await document.fonts.load('800 26px Plus Jakarta Sans');
   await Promise.all([...document.images].map((img) => img.decode().catch(() => {})));
   document.body.dataset.ready = 'true';
 </script>

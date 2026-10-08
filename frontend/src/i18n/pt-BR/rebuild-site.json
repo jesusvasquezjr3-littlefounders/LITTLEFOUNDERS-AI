@@ -58,11 +58,11 @@
     "title": "Da curiosidade à confiança financeira",
     "lead": "Não damos aulas. Damos decisões.",
     "demoTitle": "Experimente uma decisão",
-    "demoQuestion": "Você ganhou 10 moedas. O que você faz?",
+    "demoQuestion": "Você ganhou 10 sementes. O que você faz?",
     "optionCandy": "Comprar doces hoje",
     "optionBike": "Poupar para a bicicleta",
     "consequenceCandy": "Doce por 5 minutos, depois acabou. A bicicleta continua tão longe quanto antes.",
-    "consequenceBike": "Hoje sem doces. A bicicleta está 10 moedas mais perto.",
+    "consequenceBike": "Hoje sem doces. A bicicleta está 10 sementes mais perto.",
     "mentorsTitle": "Quatro Mentores que respondem",
     "mentorsBody": "Eles conduzem as lições. Seu filho pergunta e o Mentor responde.",
     "guestTitle": "Comece sem criar conta",
@@ -89,17 +89,17 @@
     "declined": "Não será lembrado.",
     "micNote": "O microfone do seu filho fica desligado por padrão. Só liga com o seu consentimento.",
     "choresTitle": "Tarefas com uma recompensa real",
-    "choresBody": "Você define a tarefa e as moedas, e aprova ou deixa as pequenas passarem no nível que escolher.",
-    "choresQuestion": "Você ganhou 10 moedas por uma tarefa. O que você faz?",
+    "choresBody": "Você define a tarefa e as sementes, e aprova ou deixa as pequenas passarem no nível que escolher.",
+    "choresQuestion": "Você ganhou 10 sementes por uma tarefa. O que você faz?",
     "save": "Poupar",
     "spend": "Gastar",
     "share": "Compartilhar",
-    "consequenceSave": "10 moedas vão para a sua meta. Seu Tutor também vê o seu avanço.",
+    "consequenceSave": "10 sementes vão para a sua meta. Seu Tutor também vê o seu avanço.",
     "consequenceSpend": "Você pede uma recompensa e diz por quê. Ela espera o sim do seu Tutor, a menos que caiba no seu nível.",
-    "consequenceShare": "Suas moedas de compartilhar vão para uma causa que seu Tutor escolheu. Você fica sabendo o que aconteceu de verdade.",
-    "simulation": "Simulação",
+    "consequenceShare": "Suas sementes de compartilhar vão para uma causa que seu Tutor escolheu. Você fica sabendo o que aconteceu de verdade.",
+    "simulation": "Não é dinheiro de verdade",
     "bankingTitle": "Uma Carteira de prática, não uma conta bancária",
-    "bankingBody": "Mesada, bônus de poupança e limites de gasto, tudo em moedas. Nada disso é dinheiro real.",
+    "bankingBody": "Mesada, bônus de poupança e limites de gasto, tudo em sementes. Nada disso é dinheiro real.",
     "mapTitle": "O mapa dele, à sua vista",
     "mapBody": "Veja o mapa que seu filho explora: lições concluídas, sequência e a última visita. Nunca comparado a outra criança.",
     "privacyTitle": "Privado desde o início",
@@ -125,7 +125,7 @@
       "start": "Primeiros passos",
       "family": "Tutor e família",
       "mentor": "O Mentor",
-      "money": "Moedas e recompensas",
+      "money": "Sementes e recompensas",
       "privacy": "Privacidade e segurança",
       "support": "Suporte"
     },
@@ -192,15 +192,15 @@
       },
       "realBank": {
         "question": "Isso é uma conta bancária de verdade?",
-        "answer": "Não. É prática em moedas, uma simulação que nunca usa dinheiro real."
+        "answer": "Não. Se pratica com sementes, nunca com dinheiro real."
       },
       "lfCoins": {
-        "question": "O que são as moedas?",
-        "answer": "A moeda de prática do app. Ganha-se com tarefas e lições para praticar poupar, gastar e compartilhar; não valem nada fora do app."
+        "question": "O que são as sementes?",
+        "answer": "A semente de prática do app. Ganha-se com tarefas e lições para praticar poupar, gastar e compartilhar; não valem nada fora do app."
       },
       "chores": {
         "question": "Como funcionam as tarefas e recompensas?",
-        "answer": "Você define uma tarefa e as moedas, e seu filho divide entre poupar, gastar e compartilhar. Você aprova cada uma ou deixa as pequenas passarem."
+        "answer": "Você define uma tarefa e as sementes, e seu filho divide entre poupar, gastar e compartilhar. Você aprova cada uma ou deixa as pequenas passarem."
       },
       "realMoney": {
         "question": "Meu filho pode gastar dinheiro de verdade?",
@@ -526,19 +526,41 @@
     "families": "Zara, da equipe de Mentores, cumprimentando"
   },
   "landingV2": {
-    "title": "Ajude seu filho a entender",
-    "titleAccent": "o valor do dinheiro.",
-    "lead": "Ajude a poupar, resolver problemas e criar ideias com desafios interativos e um Mentor de IA.",
+    "title": "O campo de treino para",
+    "titleAccent": "o futuro financeiro deles.",
+    "lead": "Preparando-os para o mundo real, uma decisão de cada vez.",
+    "heroParent": "Sou pai ou mãe",
+    "heroLearn": "Só quero aprender",
+    "heroSceneAlt": "O Dr. Rho e a Zara, dois Mentores, com uma chama, um livro, uma lâmpada, uma estrela, blocos de montar e sementes flutuando ao redor deles.",
+    "problemBig": "Aos 7 anos",
+    "problemTitle": "os hábitos com dinheiro já estão se formando.",
+    "problemLink": "E muitos chegam à vida adulta sem ter aprendido a lidar com ele:",
+    "problemFigure": "Cerca de 2 em cada 3",
+    "problemFact": "adultos no Brasil não entendem o básico de dinheiro.",
+    "problemLost": 7,
+    "problemBridge": "Por isso seu filho pode começar a praticar hoje, sem risco.",
+    "problemSources": "Fontes: Universidade de Cambridge, 2013 · S&P Global FinLit Survey, 2014",
+    "valueTitle": "Como eles praticam no LittleFounders",
+    "valueCards": [
+      { "title": "Metas claras", "body": "Aprendem a definir objetivos e traçar o caminho para alcançá-los, passo a passo.", "alt": "Tela da Carteira: a meta «Bicicleta nova» tem 60 de 100 sementes guardadas." },
+      { "title": "Decisões pensadas", "body": "Transforme o impulso em pausa. Eles entendem a diferença entre o que querem hoje e o que vão precisar amanhã.", "alt": "Uma lição começa perguntando “Lembra disso?”, com a escolha que a criança fez antes e o que aconteceu depois, e a Mentora pensando ao lado." },
+      { "title": "Experiência segura", "body": "Um ambiente onde vivem o resultado das suas decisões sem riscos financeiros reais.", "alt": "Tela de fim de lição com XP, acertos e sequência." }
+    ],
     "tryAction": "Testar um desafio",
     "note": "Grátis para começar. Aprenda no seu ritmo.",
-    "heroAlt": "Um pai e sua filha exploram formas e moedas juntos.",
+    "heroAlt": "Um pai e sua filha exploram formas e sementes juntos.",
     "learnTitle": "Aprendizado que vai além da tela.",
     "example": "Exemplo ilustrativo",
     "tryHint": "Escolha uma resposta e explore o motivo.",
-    "simulation": "Moedas simuladas. Apenas uma demonstração.",
-    "addCoin": "Poupar uma moeda",
-    "removeCoin": "Retirar uma moeda",
+    "simulation": "Sementes. Apenas uma demonstração.",
+    "addCoin": "Poupar uma semente",
+    "removeCoin": "Retirar uma semente",
     "saveHint": "Poupe um pouco hoje. Veja sua meta ficar mais perto.",
+    "lessonDemo": {"title": "Experimente: uma mini lição", "lead": "Responda, teste e veja o que acontece. No fim você vai saber algo novo.", "step": "Passo {n} de 4", "goal": "Bicicleta nova", "seeds": "sementes", "week": "Semana {n}", "weeksOption": "{n} semanas", "oneLine": "Sua bicicleta custa 100 sementes. Você já tem 60 e ganha 10 por semana.", "oneAsk": "Em quantas semanas você terá a bicicleta?", "twoLine": "Você disse {n} semanas. Agora confira: deixe as semanas passarem.", "twoPass": "Passar uma semana", "twoDone": "Você chegou em 4 semanas! Faltavam 40 e você ganha 10 por semana.", "threeLine": "Voltemos a hoje, com 60 sementes: um jogo está em promoção por 25. O que você faz?", "threeBuy": "Comprar o jogo", "threeKeep": "Não comprar", "threeRun": "Veja as semanas passarem…", "threeBuyDone": "Agora leva 7 semanas, 3 a mais que antes. O jogo atrasou sua bicicleta.", "threeKeepDone": "Continuam 4 semanas. Se tivesse comprado o jogo, seriam 7.", "fourLine": "Isso é poupar para uma meta!", "learnTitle": "O que você aprendeu", "learn": "O que você gasta hoje muda quando você chega à sua meta.", "cta": "Começar minha primeira lição", "ctaContinue": "Ir para minhas lições", "ctaNote": "Toda lição é assim: você testa, vê o que acontece e entende por quê.", "again": "Começar de novo", "next": "Continuar", "bridge": "E quando uma ideia é difícil de ver, a Dina desenha."},
+    "boardsTitle": "Ideias difíceis, feitas visuais.",
+    "boardsLead": "Um companheiro paciente que torna cada lição interativa.",
+    "boardsBridge": "E você pode ver tudo o que eles aprendem.",
+    "boardsTabs": [{"label": "Balança", "alt": "Tela do Mentor com o quadro aberto: uma balança compara um livro de $15 com um jogo de $25, com a Dina ao lado."}, {"label": "Divisões", "alt": "Tela do Mentor com o quadro aberto: 40 dividido em metades e em quartos, com a Dina ao lado."}, {"label": "Recibos", "alt": "Tela do Mentor com o quadro aberto: um recibo com cada compra e o total, com a Dina ao lado."}],
     "mentorTitle": "Quando trava, ajudam a pensar.",
     "mentorBody": "Dr. Rho, Zara, Liruf e Dina orientam com perguntas para cada pessoa encontrar seu próprio caminho.",
     "reasonLabel": "Teste uma pergunta",
@@ -548,7 +570,7 @@
     "familyStory": "Alex escolheu poupar para uma meta.",
     "familyReflection": "Por quê? Comprar depois era mais importante que gastar hoje.",
     "task": "Regar as plantas",
-    "taskReward": "10 moedas simuladas",
+    "taskReward": "10 sementes",
     "approve": "Aprovar",
     "approved": "Aprovado",
     "goal": "Meta de poupança",
@@ -606,7 +628,7 @@
       },
       {
         "label": "Só pela promoção",
-        "feedback": "Um desconto também é um gasto. O que mais faria com essas moedas?"
+        "feedback": "Um desconto também é um gasto. O que mais faria com essas sementes?"
       },
       {
         "label": "Quero pensar primeiro",
@@ -627,7 +649,7 @@
       {
         "range": "13–17",
         "title": "Decidir",
-        "body": "Explorar alternativas, metas pessoais e uma carteira simulada independente."
+        "body": "Explorar alternativas, metas pessoais e uma carteira própria."
       },
       {
         "range": "18+",
@@ -638,7 +660,7 @@
     "faq": [
       {
         "question": "É dinheiro real?",
-        "answer": "Não. Atividades e carteiras usam moedas simuladas."
+        "answer": "Não. Atividades e carteiras usam sementes."
       },
       {
         "question": "O que faz o Mentor?",
@@ -646,7 +668,7 @@
       },
       {
         "question": "Precisamos de uma conta familiar?",
-        "answer": "Você pode começar individualmente, com carteira simulada pessoal para adolescentes. Ferramentas familiares e aprovações exigem um responsável verificado."
+        "answer": "Você pode começar sozinho, com uma carteira própria para adolescentes. Ferramentas familiares e aprovações precisam de um responsável verificado."
       },
       {
         "question": "É grátis?",

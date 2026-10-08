@@ -11,7 +11,7 @@
 .lf-recall-card--quiet { background: transparent; padding-inline: 0; padding-block: 0; }
 .lf-recall-inner > .lf-button { justify-self: start; }
 .lf-recall-label { font-size: .875rem; font-weight: 800; }
-.lf-recall-choice { font-family: Fredoka, sans-serif; font-weight: 600; font-size: 1.5rem; line-height: 1.25; }
+.lf-recall-choice { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600; font-size: 1.5rem; line-height: 1.25; }
 .lf-recall-first { font-weight: 700; }
 .lf-recall-reflect { font-weight: 800; font-size: 1.125rem; }
 .lf-recall .lf-actions { max-inline-size: 420px; }
@@ -36,7 +36,7 @@
 .lf-journal-situation { font-weight: 700; }
 .lf-journal-choice { display: grid; gap: var(--spacing-1); margin-inline: var(--spacing-3); padding: var(--spacing-3) var(--spacing-4); border-radius: var(--rounded-md); background: var(--primary-soft); color: var(--content); }
 .lf-journal-choice > span:first-child { color: var(--primary-strong); font-weight: 800; font-size: .875rem; }
-.lf-journal-choice > span:nth-child(2) { font-family: Fredoka, sans-serif; font-weight: 600; font-size: 1.125rem; line-height: 1.3; overflow-wrap: break-word; }
+.lf-journal-choice > span:nth-child(2) { font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600; font-size: 1.125rem; line-height: 1.3; overflow-wrap: break-word; }
 .lf-journal-outcome { color: var(--content); }
 .lf-journal-outcome > span:first-child, .lf-journal-first > span:first-child { font-weight: 800; }
 .lf-journal-note { color: var(--content-muted); font-weight: 700; }
@@ -74,3 +74,46 @@
 .lf-child-decisions-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--spacing-2); }
 .lf-child-decisions .lf-journal-entry > * { grid-column: 1 / -1; }
 .lf-child-decisions .lf-journal-situation { padding-inline: var(--spacing-3); }
+
+/*
+ * The journal reads like a trail of stories: the day once, then each decision as a short story card hung on a rail, with the
+ * question, what was chosen, what happened and, when it applies, the change of mind and the story bringing it back.
+ */
+.lf-journal-lead { margin: 0; color: var(--content-muted); font: var(--type-body-lg); max-inline-size: 36ch; text-wrap: pretty; }
+.lf-journal-days { display: grid; gap: var(--spacing-6); position: relative; }
+.lf-journal-day { display: grid; gap: var(--spacing-3); position: relative; padding-inline-start: var(--spacing-8); }
+.lf-journal-day::before { content: ''; position: absolute; inset-block: var(--spacing-8) calc(var(--spacing-6) * -1); inset-inline-start: calc(var(--spacing-3) - 2px); inline-size: 4px; border-radius: var(--rounded-full); background: var(--primary-soft); }
+.lf-journal-day:last-child::before { inset-block-end: 0; }
+.lf-journal-section .lf-journal-day-label { position: relative; margin: 0; padding: 0; font: var(--type-title); color: var(--content); }
+.lf-journal-day-label::before { content: ''; position: absolute; inset-block-start: 50%; inset-inline-start: calc(var(--spacing-8) * -1 + var(--spacing-3) - 8px); inline-size: 20px; block-size: 20px; translate: 0 -50%; border-radius: var(--rounded-full); background: var(--primary); box-shadow: 0 0 0 4px var(--base); }
+.lf-journal-entry { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--spacing-3); padding: var(--spacing-4); border-radius: var(--rounded-xl); background: var(--surface); box-shadow: var(--elevation-card); }
+.lf-rebuild .lf-journal-entry > * { grid-column: 1 / -1; margin: 0; max-inline-size: none; }
+.lf-journal-meta { display: flex; align-items: center; flex-wrap: wrap; gap: var(--spacing-1) var(--spacing-3); padding: 0; color: var(--content-muted); font: var(--type-caption); font-weight: 800; }
+.lf-journal-meta .lf-art { inline-size: 28px; block-size: 28px; flex: none; }
+.lf-journal-situation { font: var(--type-title); line-height: 1.25; text-wrap: balance; }
+.lf-journal-choice { display: grid; gap: var(--spacing-1); margin-inline: 0; padding: var(--spacing-3) var(--spacing-4); border-radius: var(--rounded-lg); background: var(--primary-soft); }
+.lf-journal-outcome { position: relative; display: grid; gap: var(--spacing-1); margin-inline: 0; padding: var(--spacing-3) var(--spacing-4); border-radius: var(--rounded-lg); background: var(--mint-soft); }
+.lf-journal-outcome > span:first-child { color: var(--mint-strong); font-weight: 800; font-size: .875rem; }
+.lf-journal-changed { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-1) var(--spacing-3); padding: var(--spacing-2) var(--spacing-4); border-radius: var(--rounded-lg); background: var(--sky-soft); color: var(--sky-strong); font-weight: 800; }
+.lf-journal-changed del { color: var(--content); font-weight: 600; opacity: .8; }
+.lf-journal-echo { display: flex; align-items: center; gap: var(--spacing-2); color: var(--mint-strong); font-weight: 800; }
+.lf-journal-echo .lf-art { inline-size: 28px; block-size: 28px; flex: none; }
+.lf-journal-empty { justify-items: center; text-align: center; padding-block: var(--spacing-8); }
+.lf-journal-empty .lf-art { inline-size: 96px; block-size: 96px; }
+.lf-journal .lf-journal-section.lf-journal-empty > .lf-button { justify-self: center; }
+
+/* The recall: the memory is one card told in full; the learner's Mentor thinks beside it on a wide screen and above it on a narrow one. */
+.lf-recall-inner { align-content: center; }
+.lf-recall-body { display: grid; gap: var(--spacing-4); }
+.lf-recall-body > * { min-inline-size: 0; }
+.lf-recall .lf-result-mentor, .lf-recall .lf-recall-inner > .lf-result-mentor { justify-self: center; inline-size: min(100%, 220px); block-size: 180px; }
+.lf-recall-card { gap: var(--spacing-3); }
+.lf-recall-situation { font-size: 1.25rem; font-weight: 800; line-height: 1.3; text-wrap: balance; }
+.lf-recall-outcome { display: grid; gap: var(--spacing-1); padding: var(--spacing-3) var(--spacing-4); border-radius: var(--rounded-md); background: color-mix(in srgb, var(--on-primary) 14%, transparent); }
+.lf-recall-first { display: grid; gap: var(--spacing-1); }
+.lf-recall-first > span:first-child { font-weight: 800; }
+.lf-recall-first del { font-weight: 600; opacity: .85; }
+@container app (min-width: 720px) {
+  .lf-recall-inner { max-inline-size: 960px; grid-template-columns: minmax(220px, 1fr) minmax(0, 1.7fr); align-items: center; gap: var(--spacing-8); }
+  .lf-recall .lf-recall-inner > .lf-result-mentor { inline-size: 100%; block-size: 440px; }
+}

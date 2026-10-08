@@ -1,28 +1,28 @@
 {
   "usualSplit": {
     "young": {
-      "body": "De cada 10 monedas que recibes:",
+      "body": "De cada 10 semillas que recibes:",
       "tenths": "{count} de 10"
     },
     "transition": {
-      "body": "De cada 10 monedas que recibes:",
+      "body": "De cada 10 semillas que recibes:",
       "tenths": "{count} de 10",
       "scale": "o sea {pct} de 100"
     },
     "teen": {
-      "body": "Tu reparto de siempre para monedas nuevas:",
+      "body": "Tu reparto de siempre para semillas nuevas:",
       "tenths": "{pct}%"
     }
   },
   "goalProgress": {
     "young": {
-      "of": "{saved} de {target} monedas"
+      "of": "{saved} de {target} semillas"
     },
     "transition": {
-      "of": "{saved} de {target} monedas, faltan {left}"
+      "of": "{saved} de {target} semillas, faltan {left}"
     },
     "teen": {
-      "of": "{saved} de {target} monedas ({pct}%)"
+      "of": "{saved} de {target} semillas ({pct}%)"
     }
   },
   "bonus": {

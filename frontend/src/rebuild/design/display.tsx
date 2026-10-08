@@ -18,10 +18,15 @@ export function Chip({ tone, glyph, children, role = 'body' }: { tone: StatusTon
   return <span className={`lf-status-chip lf-status-chip--${tone}`} data-copy-role={role}><Glyph name={glyph} /><span>{children}</span></span>;
 }
 
-/** The coin mark (07 §1 class B `money.coin`, 02 §9.5): decorative, beside a number and the word "coins", only for money. */
+/** The coin art lesson boards teach money with (07 §1 class B `money.coin`). */
 export const COIN_ASSET_ID = 'money.coin';
+/**
+ * The platform's own unit is the seed (OD-41, 07 §1 class B `money.seed`): decorative, beside a number and the word "seeds",
+ * only for what a child earns, saves, spends and shares. It is not money, so nothing has to say "simulated".
+ */
+export const SEED_ASSET_ID = 'money.seed';
 function CoinMark() {
-  const asset = resolveManifestAsset(COIN_ASSET_ID);
+  const asset = resolveManifestAsset(SEED_ASSET_ID);
   return asset ? <img className="lf-coin-mark" src={asset.path} alt="" aria-hidden="true" data-asset-id={asset.id} /> : null;
 }
 

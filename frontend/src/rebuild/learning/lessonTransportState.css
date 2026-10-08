@@ -1,6 +1,6 @@
 .lf-transport-state-inner { min-block-size: calc(100dvh - var(--spacing-8)); display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: var(--spacing-8); }
 .lf-transport-state-content { display: grid; gap: var(--spacing-4); max-inline-size: 480px; }
-.lf-transport-state-content h1 { font-family: Fredoka, sans-serif; font-size: 2rem; line-height: 1.1; }
+.lf-transport-state-content h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 2rem; line-height: 1.1; }
 .lf-transport-state-content p { font-size: 1.125rem; font-weight: 700; line-height: 1.35; }
 .lf-transport-state-actions { display: flex; flex-wrap: wrap; gap: var(--spacing-3); inline-size: min(100%, 480px); }
 .lf-transport-state-actions .lf-button { min-inline-size: min(100%, 200px); }

@@ -161,17 +161,17 @@ export function fulfillRedemption(redemptionId: string, session: Session) {
 // a personal reward, coins moved out of their own goal) on the same history.
 // S07.4 (D.14): coins directed to a Share destination, and a pledge that came back.
 export type LedgerReason = 'task_approved' | 'redemption' | 'manual_adjustment' | 'goal_withdrawal' | 'allowance' | 'savings_bonus'
-  | 'self_income' | 'personal_reward' | 'goal_release' | 'share_gift' | 'share_gift_returned';
+  | 'self_income' | 'personal_reward' | 'goal_release' | 'share_gift' | 'share_gift_returned' | 'pocket_move' | 'goal_move';
 const LEDGER_REASONS: readonly LedgerReason[] = ['task_approved', 'redemption', 'manual_adjustment', 'goal_withdrawal', 'allowance', 'savings_bonus',
-  'self_income', 'personal_reward', 'goal_release', 'share_gift', 'share_gift_returned'];
+  'self_income', 'personal_reward', 'goal_release', 'share_gift', 'share_gift_returned', 'pocket_move', 'goal_move'];
 
-export interface LedgerEntry { id: number; bucket: Bucket; amount: number; reason: LedgerReason; note: string | null; createdAt: string }
+export interface LedgerEntry { id: number; bucket: Bucket; amount: number; reason: LedgerReason; note: string | null; /** The chore, reward, goal or place it was for. */ title?: string | null; createdAt: string }
 
 /** One history line as Core serves it; a guardian movement must carry its reason, or it is not shown as if explained. */
 export function isLedgerEntry(value: unknown): value is LedgerEntry {
   const e = value as LedgerEntry | null;
   return typeof e === 'object' && e !== null && isInt(e.id) && isBucket(e.bucket) && isInt(e.amount) && LEDGER_REASONS.includes(e.reason)
-    && isNullableString(e.note) && isInstant(e.createdAt)
+    && isNullableString(e.note) && (e.title === undefined || isNullableString(e.title)) && isInstant(e.createdAt)
     && ((e.reason !== 'manual_adjustment' && e.reason !== 'goal_withdrawal') || (typeof e.note === 'string' && e.note.length > 0));
 }
 

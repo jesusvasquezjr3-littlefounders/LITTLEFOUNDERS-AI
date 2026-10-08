@@ -1,4 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" fill="none" aria-hidden="true">
-  <path d="M44 86 17.5 59.8C9.5 51.9 9.5 39 17.5 31.1c7.8-7.8 20.4-7.8 26.5 1.3 6.1-9.1 18.7-9.1 26.5-1.3 8 7.9 8 20.8 0 28.7L44 86Z" fill="#CC2E72"/>
-  <path d="M74 30.5 66.3 23c-2.3-2.3-2.3-6 0-8.3 2.2-2.2 5.8-2.2 7.7.4 1.9-2.6 5.5-2.6 7.7-.4 2.3 2.3 2.3 6 0 8.3L74 30.5Z" fill="#A40C56"/>
+  <style>*{transform-box:fill-box}
+  .heart{transform-origin:50% 60%;animation:beat 6.2s cubic-bezier(.34,1.56,.64,1) infinite}
+  .small{transform-origin:50% 100%;animation:float 6.2s cubic-bezier(.34,1.56,.64,1) infinite}
+  @keyframes beat{0%{transform:scale(.88)}8%{transform:scale(1.14)}14%{transform:scale(1)}20%{transform:scale(1.08)}26%,100%{transform:scale(1)}}
+  @keyframes float{0%{transform:translate(-3px,6px) scale(.2)}12%{transform:translate(0,-4px) scale(1.2)}20%{transform:translate(0,0) scale(1)}26%,100%{transform:translate(0,0) scale(1)}}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important}}</style>
+  <path class="heart" d="M44 86 17.5 59.8C9.5 51.9 9.5 39 17.5 31.1c7.8-7.8 20.4-7.8 26.5 1.3 6.1-9.1 18.7-9.1 26.5-1.3 8 7.9 8 20.8 0 28.7L44 86Z" fill="#CC2E72"/>
+  <path class="small" d="M74 30.5 66.3 23c-2.3-2.3-2.3-6 0-8.3 2.2-2.2 5.8-2.2 7.7.4 1.9-2.6 5.5-2.6 7.7-.4 2.3 2.3 2.3 6 0 8.3L74 30.5Z" fill="#A40C56"/>
 </svg>

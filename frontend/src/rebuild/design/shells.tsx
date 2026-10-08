@@ -1,5 +1,5 @@
 import { useEffect, useId, useRef, useState, type MouseEvent, type ReactNode } from 'react';
-import { ButtonLink, IconButton } from './buttons';
+import { ButtonLink, IconButton, type ButtonVariant } from './buttons';
 import type { Locale } from './copyBudget';
 import { findMentorAvatar, MENTOR_NAMES, resolveManifestAsset, type MentorCharacter } from './assets';
 import { MentorAvatar, Pill } from './display';
@@ -7,6 +7,7 @@ import { useRebuildEnvironment } from './layers';
 import { Sheet } from './overlays';
 import { replayRouteEntrance } from './motion';
 import './shells.css';
+import './siteTopbar.css';
 import { rebuildNamespaceCopy } from '../../i18n/rebuild';
 import { EntryArt } from './EntryArt';
 
@@ -314,7 +315,7 @@ export function StaffShell({ items, grants, ...props }: Omit<ConsoleShellProps, 
  * Public site and sign-in
  * ------------------------------------------------------------------------- */
 
-export interface ShellLinkAction { label: string; href: string }
+export interface ShellLinkAction { label: string; href: string; variant?: ButtonVariant }
 
 export interface SiteShellProps extends ShellCommonProps {
   homeHref: string;
@@ -347,24 +348,26 @@ export function SiteShell({ homeHref, links, current = '', secondaryAction, prim
     return () => window.removeEventListener('scroll', update);
   }, [stickyAction]);
   const follow = (href: string) => linkHandler(href, onNavigate, () => setMenuOpen(false));
+  // A header with no page links is just the brand, the preferences and the actions: no menu to open.
+  const hasLinks = links.length > 0;
   return <div className="lf-shell lf-shell--site" data-shell="site" lang={frame.locale}>
     <SkipLink label={labels.skip} target={mainId} />
     <header className="lf-site-header"><div className="lf-site-header-inner">
       <BrandMark name={frame.appName} href={homeHref} onNavigate={onNavigate} />
-      <nav className="lf-site-links" aria-label={labels.navigation}><NavLinks items={links} current={current} variant="rail" onNavigate={onNavigate} /></nav>
+      {hasLinks ? <nav className="lf-site-links" aria-label={labels.navigation}><NavLinks items={links} current={current} variant="rail" onNavigate={onNavigate} /></nav> : null}
       {utilities}
       <div className="lf-site-actions">
-        {secondaryAction ? <ButtonLink size="sm" href={secondaryAction.href} onClick={follow(secondaryAction.href)}>{secondaryAction.label}</ButtonLink> : null}
+        {secondaryAction ? <ButtonLink size="sm" variant={secondaryAction.variant} href={secondaryAction.href} onClick={follow(secondaryAction.href)}>{secondaryAction.label}</ButtonLink> : null}
         {primaryAction ? <ButtonLink size="sm" variant="accent" href={primaryAction.href} onClick={follow(primaryAction.href)}>{primaryAction.label}</ButtonLink> : null}
       </div>
-      <IconButton glyph="menu" label={labels.menu} className="lf-site-menu" aria-expanded={menuOpen} aria-haspopup="dialog" onClick={() => setMenuOpen(true)} />
+      {hasLinks ? <IconButton glyph="menu" label={labels.menu} className="lf-site-menu" aria-expanded={menuOpen} aria-haspopup="dialog" onClick={() => setMenuOpen(true)} /> : null}
     </div></header>
     <main ref={main} id={mainId} tabIndex={-1} className="lf-shell-main">{children}</main>
     {footer ? <footer className="lf-site-footer">{footer}</footer> : null}
     {stickyAction ? <div className="lf-sticky-action" data-visible={docked} data-dock={docked ? '' : undefined}>
       <ButtonLink size="lg" variant="accent" href={stickyAction.href} onClick={follow(stickyAction.href)}>{stickyAction.label}</ButtonLink>
     </div> : null}
-    <Sheet open={menuOpen} onClose={() => setMenuOpen(false)} heading={labels.navigation} closeLabel={labels.close} placement="full"
+    {hasLinks ? <Sheet open={menuOpen} onClose={() => setMenuOpen(false)} heading={labels.navigation} closeLabel={labels.close} placement="full"
       headingHidden headerStart={<BrandMark name={frame.appName} />}
       footer={primaryAction || secondaryAction ? <div className="lf-sheet-actions">
         {primaryAction ? <ButtonLink size="lg" variant="accent" href={primaryAction.href} onClick={follow(primaryAction.href)}>{primaryAction.label}</ButtonLink> : null}
@@ -373,7 +376,7 @@ export function SiteShell({ homeHref, links, current = '', secondaryAction, prim
       <nav aria-label={labels.navigation}>
         <NavLinks items={links} current={current} variant="sheet" onNavigate={onNavigate} onFollow={() => setMenuOpen(false)} />
       </nav>
-    </Sheet>
+    </Sheet> : null}
   </div>;
 }
 

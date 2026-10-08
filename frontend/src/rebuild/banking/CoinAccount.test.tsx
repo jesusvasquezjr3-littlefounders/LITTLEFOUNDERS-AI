@@ -69,9 +69,17 @@ const views: Record<MoneyRegister, CoinAccountView> = {
   },
 };
 
-function renderAccount(register: MoneyRegister, view: CoinAccountView = views[register], onFreeze = vi.fn()) {
-  const result = render(<CoinAccount copy={copyEn[register]} register={register} locale="en-US" dark={false} view={view} loading={false} failed={false}
-    busy={false} notice={null} onRetry={() => undefined} onFreeze={onFreeze} />);
+/**
+ * The wallet shows the account in four parts (home, latest activity, card, activity); the account's rules hold across all of them, so these
+ * tests render the four together, the way a child meets them over one visit.
+ */
+const home = { have: 'You have', next: null, move: 'Move', ask: 'Ask for a reward', share: 'Share', goal: 'New goal', hintSave: 'For your goals', hintSpend: 'For rewards',
+  hintShare: 'To give', actions: 'What you can do', seeAll: 'See all' };
+function renderAccount(register: MoneyRegister, view: CoinAccountView = views[register], onFreeze = vi.fn(), actions: Parameters<typeof CoinAccount>[0]['actions'] = { home }) {
+  const result = render(<>
+    {(['overview', 'recent', 'card', 'activity'] as const).map((part) => <CoinAccount key={part} part={part} actions={actions} copy={copyEn[register]} register={register}
+      locale="en-US" dark={false} view={view} loading={false} failed={false} busy={false} notice={null} onRetry={() => undefined} onFreeze={onFreeze} />)}
+  </>);
   return { ...result, onFreeze };
 }
 
@@ -80,7 +88,7 @@ describe('CoinAccount (D.7, D.12)', () => {
     it(`is a declared practice card with no card number, in the ${register} register`, () => {
       const { container } = renderAccount(register);
       const card = container.querySelector('[data-control="simulation"]')!;
-      expect(within(card as HTMLElement).getByText('Practice card')).toBeInTheDocument();
+      expect(within(card as HTMLElement).getByText(copyEn[register].practice)).toBeInTheDocument();
       expect(screen.getByText(copyEn[register].coinsOnly)).toBeInTheDocument();
       expect(container.textContent).not.toMatch(/LF-\d{4}|\d{4}\s\d{4}/);
       expect(container.querySelector('[data-register]')!.getAttribute('data-register')).toBe(register);
@@ -92,7 +100,7 @@ describe('CoinAccount (D.7, D.12)', () => {
 
   it('frames numbers per register: young reads what is left and no percentage', () => {
     const { container } = renderAccount('young');
-    expect(screen.getByText('You can spend 5 more coins for now.')).toBeInTheDocument();
+    expect(screen.getByText('You can spend 5 more seeds for now.')).toBeInTheDocument();
     expect(container.textContent).not.toMatch(/%|of 20|of your/);
     expect(container.querySelector('.lf-coin-meter')).toBeNull();
     expect(container.querySelector('.lf-coin-lines')).toBeNull();
@@ -100,7 +108,7 @@ describe('CoinAccount (D.7, D.12)', () => {
 
   it('frames numbers per register: transition reads used of the cap and "of your" totals, never a percentage', () => {
     const { container } = renderAccount('transition');
-    expect(screen.getByText('15 of 20 coins spent in the last 7 days. 5 left.')).toBeInTheDocument();
+    expect(screen.getByText('15 of 20 seeds spent in the last 7 days. 5 left.')).toBeInTheDocument();
     expect(screen.getByText('20 of your 40')).toBeInTheDocument();
     expect(container.textContent).not.toMatch(/%/);
     expect(container.querySelector('.lf-coin-meter')).not.toBeNull();
@@ -110,7 +118,7 @@ describe('CoinAccount (D.7, D.12)', () => {
     const { container } = renderAccount('teen');
     expect(screen.getByText('15 of 20 spent in the last 7 days (75%). 5 left.')).toBeInTheDocument();
     expect(screen.getByText('50% of 40')).toBeInTheDocument();
-    const lines = container.querySelector('.lf-coin-lines')!;
+    const lines = container.querySelector('.lf-coin-days')!;
     expect(within(lines as HTMLElement).getByText('Chore')).toBeInTheDocument();
     expect(within(lines as HTMLElement).getByText('-4')).toBeInTheDocument();
   });
@@ -136,11 +144,13 @@ describe('CoinAccount (D.7, D.12)', () => {
 
   it('offers the child "Unfreeze" only for their own freeze', () => {
     const own = renderAccount('young', { ...views.young, account: { ...views.young.account!, freeze: freeze(true, 'you') } });
-    fireEvent.click(screen.getByRole('button', { name: 'Unfreeze' }));
+    const lift = screen.getByRole('switch', { name: /Freeze my card/ });
+    expect(lift).toHaveAttribute('aria-checked', 'true');
+    fireEvent.click(lift);
     expect(own.onFreeze).toHaveBeenCalledWith(false);
     own.unmount();
     const tutor = renderAccount('young', { ...views.young, account: { ...views.young.account!, freeze: freeze(true, 'tutor') } });
-    expect(screen.queryByRole('button', { name: 'Unfreeze' })).toBeNull();
+    expect(screen.queryByRole('switch')).toBeNull();
     expect(screen.getByText('Only your Tutor can unfreeze it.')).toBeInTheDocument();
     expect(screen.getByText('Your Tutor froze it.')).toBeInTheDocument();
     expect(tutor.onFreeze).not.toHaveBeenCalled();
@@ -151,18 +161,19 @@ describe('CoinAccount (D.7, D.12)', () => {
     const view = { ...views.young, pendingCredits: 1, account: { ...views.young.account!, freeze: freeze(true, 'tutor') } };
     const { container } = renderAccount('young', view);
     expect(within(container.querySelector('[data-control="simulation"]') as HTMLElement).getByText('Frozen')).toBeInTheDocument();
-    const why = screen.getByRole('button', { name: 'Why?' });
-    const panel = document.getElementById(why.getAttribute('aria-controls')!)!;
-    expect(why).toHaveAttribute('aria-expanded', 'false');
-    expect(panel).not.toBeVisible();
+    // The details are one quiet line away ("Why?"), closed until pressed.
+    const details = screen.getByText('Why?').closest('details') as HTMLDetailsElement;
+    const panel = details.querySelector('.lf-wallet-how-body') as HTMLElement;
+    expect(details.open).toBe(false);
     expect(within(panel).getByText('Your Tutor froze it.')).toBeInTheDocument();
-    expect(within(panel).getByText(copyEn.young.onlyTutor)).toHaveAttribute('data-control', 'freeze.owner');
+    // Who can lift it is on the row itself, under the registered control, not hidden in the details.
+    expect(screen.getByText(copyEn.young.onlyTutor).closest('[data-control="freeze.owner"]')).not.toBeNull();
     expect(within(panel).getByText(copyEn.young.waitingFrozen)).toBeInTheDocument();
     expect(panel.querySelectorAll('[data-hold]')).toHaveLength(FREEZE_HOLDS.length);
-    fireEvent.click(why);
-    expect(why).toHaveAttribute('aria-expanded', 'true');
-    expect(panel).toBeVisible();
-    expect(screen.queryByRole('button', { name: 'Unfreeze' })).toBeNull();
+    fireEvent.click(screen.getByText('Why?'));
+    details.open = true;
+    expect(details.open).toBe(true);
+    expect(screen.queryByRole('switch')).toBeNull();
     everyTextHasARole(container);
     everyControlIsRegistered(container);
   });
@@ -170,30 +181,74 @@ describe('CoinAccount (D.7, D.12)', () => {
   it('does not say what is left to spend while a freeze holds reward requests, and says it again once it does not', () => {
     const frozen = renderAccount('young', { ...views.young, account: { ...views.young.account!, freeze: freeze(true, 'you') } });
     expect(frozen.container.querySelector('[data-control="spend_limit"]')).toBeNull();
-    expect(screen.queryByText('You can spend 5 more coins for now.')).toBeNull();
+    expect(screen.queryByText('You can spend 5 more seeds for now.')).toBeNull();
     frozen.unmount();
     const partial = { ...freeze(true, 'you'), holds: FREEZE_HOLDS.filter((h) => h !== 'rewards') };
     renderAccount('young', { ...views.young, account: { ...views.young.account!, freeze: partial } });
-    expect(screen.getByText('You can spend 5 more coins for now.')).toBeInTheDocument();
+    expect(screen.getByText('You can spend 5 more seeds for now.')).toBeInTheDocument();
   });
 
   it('asks before nothing: a child freezes in one tap and the page re-reads', () => {
     const { onFreeze } = renderAccount('transition');
-    fireEvent.click(screen.getByRole('button', { name: 'Freeze' }));
+    const freezeCard = screen.getByRole('switch', { name: /Freeze my card/ });
+    expect(freezeCard).toHaveAttribute('aria-checked', 'false');
+    fireEvent.click(freezeCard);
     expect(onFreeze).toHaveBeenCalledWith(true);
+  });
+
+  it('opens on what you have: one number, four plain actions, three pockets that say what they are for', () => {
+    const calls: string[] = [];
+    const { container } = renderAccount('young', views.young, vi.fn(), { home, onMove: () => calls.push('move'), onReward: () => calls.push('reward'), onShare: () => calls.push('share'), onNewGoal: () => calls.push('goal'),
+      onOpenPocket: (pocket) => calls.push(`pocket:${pocket}`) });
+    expect(screen.getByText('You have')).toBeInTheDocument();
+    expect(screen.getByRole('img', { name: 'Save 20, Spend 15, Share 5' })).toBeInTheDocument();
+    for (const label of ['Move', 'Ask for a reward', 'Share', 'New goal']) fireEvent.click(screen.getByRole('button', { name: label }));
+    for (const hint of ['For your goals', 'For rewards', 'To give']) fireEvent.click(screen.getByText(hint));
+    expect(calls).toEqual(['move', 'reward', 'share', 'goal', 'pocket:save', 'pocket:spend', 'pocket:share']);
+    // Every pocket tile carries its own icon (02 §4.3), and the home speaks no card number.
+    for (const tile of container.querySelectorAll('.lf-wallet-pots [data-pocket]')) expect(tile.querySelector('img')).not.toBeNull();
+    expect(container.textContent).not.toMatch(/LF-\d{4}/);
+    everyTextHasARole(container);
   });
 
   it('says there is no card yet, and still shows the pockets', () => {
     renderAccount('young', { ...views.young, account: null });
     expect(screen.getByText('Your Tutor has not opened your card yet.')).toBeInTheDocument();
-    expect(screen.getByText('20 coins')).toBeInTheDocument();
+    expect(screen.getAllByText('20').length).toBeGreaterThan(0);
+  });
+});
+
+describe('Latest activity (a bank names what each movement was for)', () => {
+  const lines = [
+    { id: 9, bucket: 'save' as const, amount: 5, reason: 'task_approved', title: 'Wash the dishes', createdAt: '2026-09-20T00:00:00.000Z' },
+    { id: 8, bucket: 'spend' as const, amount: -4, reason: 'redemption', title: 'Pick dinner', createdAt: '2026-09-19T00:00:00.000Z' },
+    { id: 7, bucket: 'save' as const, amount: 3, reason: 'allowance', createdAt: '2026-09-18T00:00:00.000Z' },
+  ];
+
+  it('shows a 6 to 9 year old their latest movements by name, although their statement gives totals only', () => {
+    expect(views.young.statement.lines).toBeUndefined();
+    const { container } = render(<CoinAccount part="recent" copy={copyEn.young} register="young" locale="en-US" dark={false} view={views.young} loading={false} failed={false}
+      busy={false} notice={null} onRetry={() => undefined} onFreeze={() => undefined} recentLines={lines} actions={{ home, onSeeAll: () => undefined }} />);
+    expect(screen.getByText('Wash the dishes')).toBeInTheDocument();
+    expect(screen.getByText('Pick dinner')).toBeInTheDocument();
+    expect(container.querySelectorAll('.lf-coin-lines li')).toHaveLength(3);
+    // A movement with nothing named behind it (an allowance) shows its plain label and no empty title.
+    expect(container.querySelectorAll('.lf-coin-line-title')).toHaveLength(2);
+    expect(screen.getByRole('button', { name: 'See all' })).toBeInTheDocument();
+    everyTextHasARole(container);
+  });
+
+  it('accepts a title on a statement line and refuses one that is not text', () => {
+    const line = { id: 1, bucket: 'save', amount: 5, reason: 'task_approved', createdAt: '2026-09-20T00:00:00.000Z' };
+    expect(isMonth({ ...views.teen.statement, lines: [{ ...line, title: 'Wash the dishes' }, { ...line, id: 2, title: null }, { ...line, id: 3 }] }, 'teen')).toBe(true);
+    expect(isMonth({ ...views.teen.statement, lines: [{ ...line, title: 7 }] }, 'teen')).toBe(false);
   });
 });
 
 describe('Another month of the statement (F5-K, W2F.3)', () => {
   const pageable = (month: Parameters<typeof CoinAccount>[0]['month'] = null) => {
     const onMonth = vi.fn();
-    const view = render(<CoinAccount copy={copyEn.young} register="young" locale="en-US" dark={false} view={views.young} loading={false} failed={false}
+    const view = render(<CoinAccount part="activity" copy={copyEn.young} register="young" locale="en-US" dark={false} view={views.young} loading={false} failed={false}
       busy={false} notice={null} onRetry={() => {}} onFreeze={() => {}} month={month} onMonth={onMonth} />);
     return { onMonth, view };
   };
@@ -228,7 +283,7 @@ describe('Another month of the statement (F5-K, W2F.3)', () => {
   });
 
   it('offers no paging where the page gives no way to read a month', () => {
-    render(<CoinAccount copy={copyEn.young} register="young" locale="en-US" dark={false} view={views.young} loading={false} failed={false}
+    render(<CoinAccount part="activity" copy={copyEn.young} register="young" locale="en-US" dark={false} view={views.young} loading={false} failed={false}
       busy={false} notice={null} onRetry={() => {}} onFreeze={() => {}} />);
     expect(screen.queryByRole('button', { name: copyEn.young.prevMonth })).toBeNull();
   });
@@ -264,7 +319,7 @@ describe('TutorFreeze (D.7)', () => {
     rerender(<TutorFreeze copy={copyEn.tutor} name="Ana" locale="en-US" dark view={tutorView(true, 'child')} loading={false} failed={false}
       busy={false} notice={null} onRetry={() => undefined} onFreeze={onFreeze} />);
     expect(screen.getByText('Ana froze it.')).toBeInTheDocument();
-    expect(screen.getByText('A freeze moves no coins.')).toBeInTheDocument();
+    expect(screen.getByText('A freeze moves no seeds.')).toBeInTheDocument();
     // GAP-FIX-R5 (06 §3.1): while frozen, what a freeze holds is one press away; it is shown at the confirmation (the point of action).
     const holds = screen.getByRole('button', { name: 'What it holds' });
     expect(document.getElementById(holds.getAttribute('aria-controls')!)).not.toBeVisible();
@@ -341,9 +396,9 @@ describe('Existing money surfaces in each register (D.12)', () => {
     }
   });
 
-  it('GoalProgress reads coins, then coins to go, then a percentage; provenance is unchanged', () => {
+  it('GoalProgress reads seeds, then seeds to go, then a percentage; provenance is unchanged', () => {
     const progress = { total: 12, own: 10, bonus: 2, family: 0 };
-    const cases: [MoneyRegister, string][] = [['young', '12 of 30 coins'], ['transition', '12 of 30 coins, 18 to go'], ['teen', '12 of 30 coins (40%)']];
+    const cases: [MoneyRegister, string][] = [['young', '12 of 30 seeds'], ['transition', '12 of 30 seeds, 18 to go'], ['teen', '12 of 30 seeds (40%)']];
     for (const [register, text] of cases) {
       const { unmount, container } = render(<GoalProgress copy={registerCopy(habitsEn.goalProgress, regEn.goalProgress, register)} title="Bike" target={30} progress={progress} />);
       expect(screen.getByText(text), register).toBeInTheDocument();

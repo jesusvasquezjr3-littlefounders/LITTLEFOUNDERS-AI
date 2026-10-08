@@ -220,7 +220,7 @@ describe('generated tokens', () => {
     expect(system).toMatch(/\.lf-rebuild\[data-theme='dark'\] \{ color-scheme: dark; --shadow-control: 0 1px 3px rgb\(6 7 19 \/ \.56\); \}/);
     // Captions and chips are the smallest type: never below the 14 px floor (02 rule 11).
     expect(tokens).toMatch(/--type-caption: 700 0\.875rem/);
-    expect(tokens).toMatch(/@container app \(min-width: 640px\)[\s\S]*--type-display-lg: 700 32px/);
+    expect(tokens).toMatch(/@container app \(min-width: 640px\)[\s\S]*--type-display-lg: 800 32px/);
   });
 });
 
@@ -400,6 +400,8 @@ describe('flat, token-only contract across every rebuilt stylesheet (02 rules 2,
     };
     const offences: string[] = [];
     for (const { file, css } of sheets) for (const match of css.matchAll(/(?:repeating-)?(?:linear|radial|conic)-gradient\(/g)) {
+      // A mask only carries alpha (a video's soft edge); it is not a fill and shades nothing.
+      if (/mask-image:\s*$/.test(css.slice(Math.max(0, match.index! - 32), match.index!))) continue;
       const stops = args(css, match.index!).filter((part) => /^(?:var\(|transparent\b|currentcolor\b)/i.test(part)).map((part) => {
         const colour = /^(var\([^)]*\)|\w+)/.exec(part)![1]!;
         const positions = [...part.slice(colour.length).matchAll(/(-?\d*\.?\d+)(px|%)/g)].map((p) => ({ n: Number(p[1]), unit: p[2] }));

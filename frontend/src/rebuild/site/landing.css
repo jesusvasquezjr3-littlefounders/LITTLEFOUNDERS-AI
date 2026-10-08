@@ -8,27 +8,11 @@
 .lf-rebuild .lf-landing-copy { display: grid; gap: var(--spacing-6); align-content: center; min-inline-size: 0; }
 .lf-rebuild .lf-landing-copy > :is(p,h2) { max-inline-size: 30em; }
 .lf-rebuild .lf-landing-copy > .lf-button { justify-self: start; }
-.lf-rebuild .lf-landing-hero { display: grid; gap: var(--spacing-8); align-items: center; padding-block: var(--spacing-4) 0; }
-.lf-rebuild .lf-landing-family-art { display: block; inline-size: 100%; block-size: auto; max-inline-size: 384px; margin-inline: auto; aspect-ratio: 4 / 5; border-radius: var(--rounded-xl); }
 .lf-rebuild .lf-landing :is(section[id]) { scroll-margin-block-start: calc(var(--target-lg) + var(--spacing-12)); }
-.lf-rebuild .lf-landing-learning { display: grid; gap: var(--spacing-8); padding-block: 0; }
-.lf-rebuild .lf-landing-learning-layout { display: grid; gap: var(--spacing-6); }
-.lf-rebuild .lf-landing-topics { display: grid; gap: var(--spacing-3); align-content: start; }
-.lf-rebuild .lf-landing-topic { display: flex; gap: var(--spacing-5); align-items: center; text-align: start; padding: var(--spacing-6); min-block-size: 96px; background: var(--surface); color: var(--content); border: 0; border-radius: var(--rounded-lg); cursor: pointer; }
-.lf-rebuild .lf-landing-topic > span + span { display: grid; gap: var(--spacing-2); }
-.lf-rebuild .lf-landing-topic strong { font: var(--type-title); }
-.lf-rebuild .lf-landing-number { font: var(--type-display-xl); }
-.lf-rebuild .lf-landing :is(.lf-landing-topic,.lf-landing-ages button)[aria-pressed='true'] { background: var(--primary); color: var(--on-primary); }
-.lf-rebuild .lf-landing :is(.lf-landing-topic,.lf-landing-ages button):active { transform: scale(.98); }
+.lf-rebuild .lf-landing .lf-landing-ages button[aria-pressed='true'] { background: var(--primary); color: var(--on-primary); }
+.lf-rebuild .lf-landing .lf-landing-ages button:active { transform: scale(.98); }
 .lf-rebuild .lf-landing :is(button,a,summary):focus-visible { outline: 3px solid var(--primary-strong); outline-offset: 4px; }
-.lf-rebuild .lf-landing-demo { display: grid; gap: var(--spacing-5); align-content: center; padding: var(--spacing-6); background: var(--primary-soft); border-radius: var(--rounded-xl); min-inline-size: 0; }
 .lf-rebuild .lf-landing-example { font: var(--type-chip); padding: var(--spacing-2) var(--spacing-3); background: var(--surface); color: var(--content-muted); border-radius: var(--rounded-full); justify-self: start; }
-.lf-rebuild .lf-landing-savings { display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-4); flex-wrap: wrap; }
-.lf-rebuild .lf-landing-stepper { display: flex; align-items: center; gap: var(--spacing-3); }
-.lf-rebuild .lf-landing-stepper output { font: var(--type-title); }
-.lf-rebuild .lf-landing-demo-art { max-inline-size: 100%; }
-.lf-rebuild .lf-landing-sequence { font: var(--type-display-xl); }
-.lf-rebuild .lf-landing-answers { display: flex; flex-wrap: wrap; gap: var(--spacing-3); }
 .lf-rebuild .lf-landing progress { appearance: none; inline-size: 100%; block-size: 12px; border: 0; border-radius: var(--rounded-full); background: var(--surface); color: var(--primary); }
 .lf-rebuild .lf-landing progress::-webkit-progress-bar { background: var(--surface); border-radius: var(--rounded-full); }
 .lf-rebuild .lf-landing progress::-webkit-progress-value { background: var(--primary); border-radius: var(--rounded-full); }
@@ -65,9 +49,6 @@
 .lf-rebuild .lf-landing-closing h2 { max-inline-size: 18em; }
 @container app (min-width: 840px) {
   .lf-rebuild .lf-landing { gap: var(--spacing-16); }
-  .lf-rebuild .lf-landing-hero { grid-template-columns: minmax(0,7fr) minmax(0,5fr); gap: var(--spacing-10); }
-  .lf-rebuild .lf-landing-learning-layout { grid-template-columns: minmax(0,5fr) minmax(0,7fr); gap: var(--spacing-8); }
-  .lf-rebuild .lf-landing-demo { padding: var(--spacing-10); min-block-size: 360px; }
   .lf-rebuild .lf-landing-mentor { grid-template-columns: minmax(0,7fr) minmax(0,5fr); padding: var(--spacing-10); gap: var(--spacing-10); }
   .lf-rebuild .lf-landing-mentor .lf-site-cast { grid-template-columns: repeat(4,minmax(0,1fr)); gap: var(--spacing-2); }
   .lf-rebuild .lf-landing-family { grid-template-columns: minmax(0,5fr) minmax(0,7fr); gap: var(--spacing-10); padding-block: 0; }
@@ -77,9 +58,7 @@
   .lf-rebuild .lf-landing-faq { grid-template-columns: minmax(0,5fr) minmax(0,7fr); gap: var(--spacing-10); }
 }
 @container app (max-width: 399px) {
-  .lf-rebuild .lf-landing-hero .lf-site-cta-row > .lf-button { inline-size: 100%; }
-  .lf-rebuild .lf-landing-family-art { max-block-size: 300px; }
-  .lf-rebuild .lf-landing :is(.lf-landing-demo,.lf-landing-reasoning,.lf-landing-family-preview,.lf-landing-path) { padding: var(--spacing-5); }
+  .lf-rebuild .lf-landing :is(.lf-landing-reasoning,.lf-landing-family-preview,.lf-landing-path) { padding: var(--spacing-5); }
 }
 
 .lf-rebuild .lf-landing-mentor-visual { display: grid; gap: var(--spacing-5); align-content: center; min-inline-size: 0; }
@@ -89,9 +68,7 @@
 @container app (max-width: 639px) {
   .lf-rebuild .lf-landing-copy { gap: var(--spacing-5); }
   .lf-rebuild .lf-landing-mentor { padding: var(--spacing-6) var(--spacing-4); gap: var(--spacing-6); }
-  .lf-rebuild .lf-landing-family-art { max-inline-size: 240px; }
   .lf-rebuild .lf-landing-mentor .lf-marketing-art { max-inline-size: 240px; }
-  .lf-rebuild .lf-landing-topic { min-block-size: 88px; padding: var(--spacing-5); }
   .lf-rebuild .lf-landing-ages button { min-block-size: 96px; gap: var(--spacing-3); }
   .lf-rebuild .lf-landing-faq summary { padding: var(--spacing-4); }
   .lf-rebuild .lf-landing-faq details p { padding-inline: var(--spacing-4); }

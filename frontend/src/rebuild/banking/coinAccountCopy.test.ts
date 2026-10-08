@@ -31,7 +31,8 @@ const ROLE: Record<string, CopyRole> = {
   earned: 'body', spent: 'body', saved: 'body', given: 'body', adjusted: 'body', waiting: 'body', waitingFrozen: 'body', noAccount: 'body',
   loading: 'body', failed: 'body', retry: 'action', frozenNotice: 'body', unfrozenNotice: 'body', changeFailed: 'body', lineTask: 'body',
   lineReward: 'body', lineAllowance: 'body', lineBonus: 'body', lineShared: 'body', lineReturned: 'body', lineFixed: 'body', lineGoal: 'body',
-  lineOther: 'body', confirmFreeze: 'prompt', confirm: 'action', cancel: 'action', view: 'body', bandYoung: 'data', bandTransition: 'data', bandTeen: 'data',
+  lineOther: 'body', lineMoved: 'body', lineGoalCoins: 'body', total: 'body', freezeCard: 'body', customize: 'action', newGoal: 'action', quick: 'heading', limitHow: 'action',
+  cardTitle: 'heading', cardDesign: 'body', controls: 'heading', more: 'action', reward: 'action', recent: 'heading', confirmFreeze: 'prompt', confirm: 'action', cancel: 'action', view: 'body', bandYoung: 'data', bandTransition: 'data', bandTeen: 'data',
 };
 const files = { 'en-US': en, 'es-MX': es, 'pt-BR': pt } as const;
 const overlays = { 'en-US': regEn, 'es-MX': regEs, 'pt-BR': regPt } as const;
@@ -39,7 +40,7 @@ const sample = (text: string) => text.replace(/\{count\}/g, '7').replace(/\{tota
   .replace(/\{band\}/g, 'ages 10-12').replace(/\{(remaining|used|cap|left|saved|target)\}/g, '12');
 const strings = (file: typeof en, group: Group) => Object.entries(file[group] as Record<string, string>);
 
-describe('Coin account copy (S07.6)', () => {
+describe('Seed account copy (S07.6)', () => {
   it('has identical key sets in every locale, each key with a declared role', () => {
     const keys = (file: typeof en) => (['young', 'transition', 'teen', 'tutor'] as Group[]).flatMap((g) => Object.keys(file[g]).map((k) => `${g}.${k}`)).sort();
     expect(keys(es as typeof en)).toEqual(keys(en));
@@ -85,7 +86,7 @@ describe('Coin account copy (S07.6)', () => {
 
     it(`gives each register its own tone in ${locale} (D.12)`, () => {
       const differs = (key: keyof typeof en.young) => new Set([file.young[key], file.transition[key], file.teen[key]]).size;
-      expect(differs('coinsOnly')).toBe(3);
+      // The one line that says the seeds stay in the app is the same in every register: it is already as plain as it gets.
       expect(differs('limitWeekly')).toBe(3);
       expect(file.transition.limitWeekly).toMatch(/7/);
       expect(file.transition.limitMonthly).toMatch(/30/);

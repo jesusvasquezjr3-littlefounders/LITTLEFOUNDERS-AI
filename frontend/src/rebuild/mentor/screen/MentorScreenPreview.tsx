@@ -34,26 +34,33 @@ const SHEETS: Record<string, MentorSheet> = {
 
 /** Likely answers for the preview's question turn: what a learner would say (Oracle's `replies`). */
 const REPLIES: Record<Locale, string[]> = {
-  'en-US': ['About 20 coins', "I don't know"],
-  'es-MX': ['Unas 20 monedas', 'No lo sé'],
-  'pt-BR': ['Umas 20 moedas', 'Não sei'],
+  'en-US': ['About 20 seeds', "I don't know"],
+  'es-MX': ['Unas 20 semillas', 'No lo sé'],
+  'pt-BR': ['Umas 20 sementes', 'Não sei'],
+};
+
+/** What the Mentor says as each of the three boards the landing shows opens (a short turn, one question). */
+const BOARD_LINES: Record<Locale, Record<string, string>> = {
+  'en-US': { scale: 'Which is heavier, the book or the game? Look at the scale.', partition: 'Share 40 in halves or in quarters. What does each piece hold?', receipt: 'Here is the receipt. How much did you pay in all?' },
+  'es-MX': { scale: '¿Cuál pesa más, el libro o el juego? Mira la balanza.', partition: 'Reparte 40 en mitades o en cuartos. ¿Cuánto vale cada parte?', receipt: 'Aquí está el ticket. ¿Cuánto pagaste en total?' },
+  'pt-BR': { scale: 'Qual pesa mais, o livro ou o jogo? Olhe a balança.', partition: 'Divida 40 em metades ou em quartos. Quanto vale cada parte?', receipt: 'Aqui está o recibo. Quanto você pagou no total?' },
 };
 
 const TURNS: Record<Locale, { short: string; long: string; ask: string }> = {
   'en-US': {
     short: 'Nice thinking. How much is left to save for the bike?',
-    long: 'You saved ten coins the first week. Then you added five coins each week after that, so the jar kept growing. Look at the board: every bar is one more week. Can you tell me what the jar will hold in week four, and how you worked it out?',
-    ask: 'What would you do with the ten coins?',
+    long: 'You saved ten seeds the first week. Then you added five seeds each week after that, so the jar kept growing. Look at the board: every bar is one more week. Can you tell me what the jar will hold in week four, and how you worked it out?',
+    ask: 'What would you do with the ten seeds?',
   },
   'es-MX': {
     short: 'Bien pensado. ¿Cuánto falta ahorrar para la bici?',
-    long: 'Ahorraste diez monedas la primera semana. Después agregaste cinco monedas cada semana, así que el frasco siguió creciendo. Mira el pizarrón: cada barra es una semana más. ¿Me dices cuánto tendrá el frasco en la semana cuatro y cómo lo pensaste?',
-    ask: '¿Qué harías con las diez monedas?',
+    long: 'Ahorraste diez semillas la primera semana. Después agregaste cinco semillas cada semana, así que el frasco siguió creciendo. Mira el pizarrón: cada barra es una semana más. ¿Me dices cuánto tendrá el frasco en la semana cuatro y cómo lo pensaste?',
+    ask: '¿Qué harías con las diez semillas?',
   },
   'pt-BR': {
     short: 'Bem pensado. Quanto falta poupar para a bicicleta?',
-    long: 'Você poupou dez moedas na primeira semana. Depois colocou cinco moedas a cada semana, então o pote continuou crescendo. Olhe o quadro: cada barra é mais uma semana. Pode me dizer quanto o pote terá na semana quatro e como pensou?',
-    ask: 'O que você faria com as dez moedas?',
+    long: 'Você poupou dez sementes na primeira semana. Depois colocou cinco sementes a cada semana, então o pote continuou crescendo. Olhe o quadro: cada barra é mais uma semana. Pode me dizer quanto o pote terá na semana quatro e como pensou?',
+    ask: 'O que você faria com as dez sementes?',
   },
 };
 
@@ -88,7 +95,7 @@ export function MentorScreenPreview({ locale, theme, ageBand, params }: { locale
   const phase: MentorPhase = state === 'loading' || state === 'unavailable' || state === 'calibration' ? state
     : state === 'openings' || state === 'limit' || state === 'replay' || state === 'first-visit' ? 'openings'
       : state.startsWith('closing') ? 'closing' : 'conversing';
-  const text = state === 'long' || board ? TURNS[locale].long : state === 'adaptation' || state === 'session-end' || state === 'goal' || state === 'check-in' ? TURNS[locale].ask : TURNS[locale].short;
+  const text = boardKind && BOARD_LINES[locale][boardKind] ? BOARD_LINES[locale][boardKind]! : state === 'long' || board ? TURNS[locale].long : state === 'adaptation' || state === 'session-end' || state === 'goal' || state === 'check-in' ? TURNS[locale].ask : TURNS[locale].short;
   const turn: TutorTurnState | null = phase === 'conversing' && state !== 'thinking' ? {
     seq: 3, text, emotion: state === 'error' ? 'encouraging' : 'happy', action: board ? 'point' : 'idle', audioUrl: null, audioPending: false, wordTimings: null,
     next: 'ask', policy: null, demonstrate: null, whiteboard: board, roleplayScene: state === 'roleplay' ? 'lemonade_change' : null, pointAt: null,

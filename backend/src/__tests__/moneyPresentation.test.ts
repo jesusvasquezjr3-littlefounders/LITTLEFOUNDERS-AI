@@ -176,7 +176,7 @@ describe('S07.6 thresholds and pure shaping', () => {
     expect(Object.keys(presentStatement('transition', s)).sort()).toEqual(['adjusted', 'earned', 'given', 'month', 'saved', 'spent']);
     const teen = presentStatement('teen', s) as { lines: Record<string, unknown>[] };
     expect(teen.lines).toHaveLength(TEEN_STATEMENT_LINES);
-    expect(Object.keys(teen.lines[0]!).sort()).toEqual(['amount', 'bucket', 'createdAt', 'id', 'reason']);
+    expect(Object.keys(teen.lines[0]!).sort()).toEqual(['amount', 'bucket', 'createdAt', 'id', 'reason', 'title']);
   });
 
   it('attributes a freeze relative to the reader; an unattributed freeze is a Tutor\'s', () => {

@@ -151,7 +151,13 @@ export function structuralFindings(path, text) {
     // celebration, not content that plays on or advances; every autoplay there must be `autoplay loop={false}`.
     const oneShotCelebration = path.replace(/\\/g, '/').endsWith('src/rebuild/design/MotionAsset.tsx')
       && (code.match(/\bautoplay\b/g) ?? []).length === (code.match(/\bautoplay loop=\{false\}/g) ?? []).length && !/\bautoPlay\b/.test(code);
-    if (/\bautoPlay\b|\bautoplay\b/.test(code) && !oneShotCelebration) findings.push({ item: 'DP-03', where: path, message: 'autoplay in rebuilt UI' });
+    // The second exception, by exact file (owner direction 2026-10-06): the landing hero's decorative loop. It is a muted, hidden-from-assistive-tech
+    // video that never plays for a visitor who asked for reduced motion or less data (a still poster instead), pauses when it is off screen, and
+    // advances into nothing. Any of those guards missing, and it is a finding again.
+    const decorativeHeroLoop = path.replace(/\\/g, '/').endsWith('src/rebuild/site/hero/HeroVideo.tsx')
+      && /\bmuted\b/.test(code) && /aria-hidden="true"/.test(code) && /prefers-reduced-motion: reduce/.test(code) && /prefers-reduced-data: reduce/.test(code)
+      && /IntersectionObserver/.test(code) && /\.pause\(\)/.test(code);
+    if (/\bautoPlay\b|\bautoplay\b/.test(code) && !oneShotCelebration && !decorativeHeroLoop) findings.push({ item: 'DP-03', where: path, message: 'autoplay in rebuilt UI' });
     // A timed move to another screen or lesson. A representation stage inside
     // one activity advancing after the learner's own answer is not "more content".
     if (/setTimeout\([^;]*?\b(navigate|onContinue|onNext|location\.assign|location\.href)\b/s.test(code)) {

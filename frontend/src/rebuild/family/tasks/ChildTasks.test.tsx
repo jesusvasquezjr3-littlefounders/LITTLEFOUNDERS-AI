@@ -40,7 +40,7 @@ function setup(routes: Record<string, Answer> = {}, { locale = 'en-US' as Consol
 }
 
 describe('ChildTasks (F4-K)', () => {
-  it('orders what to do first: coins to split, chores, rewards; then the pockets and the wave-1 surfaces', async () => {
+  it('orders what to do first: seeds to split, chores, rewards; then the pockets and the wave-1 surfaces', async () => {
     const { view, split, done } = setup();
     await screen.findByRole('heading', { level: 2, name: en.choresTitle });
     const parts = [...view.container.querySelectorAll('[data-family-part]')].map((e) => e.getAttribute('data-family-part'));
@@ -53,13 +53,13 @@ describe('ChildTasks (F4-K)', () => {
     expect(done.mock.calls.map(([task]) => task.id)).toEqual([TASK_OPEN]);
     const open = view.container.querySelector(`[data-task-id="${TASK_OPEN}"]`) as HTMLElement;
     expect(within(open).getByText(en.contribution)).toBeInTheDocument();
-    expect(within(open).queryByText(/coins?$/)).toBeNull();
+    expect(within(open).queryByText(/seeds?$/)).toBeNull();
     const waiting = view.container.querySelector(`[data-task-id="${TASK_DONE}"]`) as HTMLElement;
     expect(within(waiting).getByText(en.statusDone)).toBeInTheDocument();
     expect(within(waiting).getByRole('button', { name: en.newPhoto })).toBeInTheDocument();
     const pockets = view.container.querySelector('[data-family-part="pockets"]') as HTMLElement;
-    expect(within(pockets).getByText('20 coins')).toBeInTheDocument();
-    expect(pockets.querySelectorAll('img[data-asset-id="money.coin"]').length).toBe(3);
+    expect(within(pockets).getByText('20 seeds')).toBeInTheDocument();
+    expect(pockets.querySelectorAll('img[data-asset-id="money.seed"]').length).toBe(3);
     expect(pockets.querySelectorAll('img[data-asset-id^="pocket."]').length).toBe(3);
     for (const name of ['streak', 'level', 'notes', 'usual', 'goals', 'share', 'history']) expect(view.container.querySelector(`[data-slot="${name}"]`)).not.toBeNull();
   });

@@ -6,15 +6,15 @@
     "label": "Level {count}: {name}",
     "unlock1": "Your Tutor approves each chore and reward.",
     "unlock2": "Family chores count now.",
-    "unlock3": "Chores up to {count} coins count right away.",
-    "preapproved": "Rewards up to {count} coins need no asking.",
+    "unlock3": "Chores up to {count} seeds count right away.",
+    "preapproved": "Rewards up to {count} seeds need no asking.",
     "always": "Your spending limit still applies."
   },
   "levelsTutor": {
     "unlock1": "You approve every chore and reward.",
     "unlock2": "Family chores count at once. You look later.",
-    "unlock3": "Chores up to {count} coins count at once. You look later.",
-    "preapproved": "Rewards up to {count} coins need no tap.",
+    "unlock3": "Chores up to {count} seeds count at once. You look later.",
+    "preapproved": "Rewards up to {count} seeds need no tap.",
     "always": "Your spending limit and hold always apply."
   },
   "myLevel": {
@@ -136,7 +136,7 @@
     "other": "Another reason",
     "photo": "Photo attached",
     "needsPhoto": "Waiting for the photo.",
-    "cost": "{count} coins",
+    "cost": "{count} seeds",
     "approve": "Approve",
     "sendBack": "Send back",
     "remove": "Remove",
@@ -168,7 +168,7 @@
     "heading": "{name}'s level",
     "body": "Each level needs fewer taps from you.",
     "limit": "Rewards approved without a tap, up to",
-    "limitValue": "{count} coins",
+    "limitValue": "{count} seeds",
     "limitCap": "At most {count} on this level.",
     "more": "More",
     "less": "Less",

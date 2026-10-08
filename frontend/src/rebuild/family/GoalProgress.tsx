@@ -23,11 +23,11 @@ import './moneyHabits.css';
  * {saved}, {target}, {left} (coins still to go) and {pct} (percent reached,
  * the teen register only). The provenance segments never change with age.
  */
-export interface GoalProgressCopy { of: string; own: string; bonus: string; family: string; allOwn: string; label: string }
+export interface GoalProgressCopy { of: string; own: string; bonus: string; family: string; allOwn: string; label: string; /** `{n}` coins still to go; the jar view says it plainly. */ togo?: string }
 
 const fill = (text: string, values: Record<string, string | number>) => text.replace(/\{(\w+)\}/g, (_, key: string) => String(values[key] ?? ''));
 
-export function GoalProgress({ copy, title, target, progress }: { copy: GoalProgressCopy; title: string; target: number; progress: GoalProgressParts }) {
+export function GoalProgress({ copy, title, target, progress, ring = false, compact = false }: { copy: GoalProgressCopy; title: string; target: number; progress: GoalProgressParts; ring?: boolean; compact?: boolean }) {
   const scale = Math.max(target, progress.total, 1);
   const width = (n: number) => `${Math.round((n / scale) * 1000) / 10}%`;
   const parts = [
@@ -38,11 +38,13 @@ export function GoalProgress({ copy, title, target, progress }: { copy: GoalProg
   const named = parts.filter((p) => p.n > 0);
   const summary = [fill(copy.label, { title, saved: progress.total, target }), ...(named.length === 1 && named[0]!.key === 'own' ? [copy.allOwn] : named.map((p) => p.text))].join('. ');
 
-  return <div className="lf-goal-progress" data-goal-progress="provenance" data-own={progress.own} data-bonus={progress.bonus} data-family={progress.family}>
+  const left = Math.max(0, target - progress.total);
+  const percent = target > 0 ? Math.min(100, Math.round((progress.total * 100) / target)) : 0;
+  const body = <div className="lf-goal-progress" data-goal-progress="provenance" data-own={progress.own} data-bonus={progress.bonus} data-family={progress.family}>
     <div className="lf-goal-progress-bar" role="img" aria-label={summary}>
       {parts.map((p) => p.n > 0 && <span key={p.key} className="lf-goal-progress-part" data-part={p.key} style={{ inlineSize: width(p.n) }} />)}
     </div>
-    <div className="lf-goal-progress-legend">
+    <div className="lf-goal-progress-legend" data-compact={compact || undefined}>
       <CoinAmount className="lf-goal-progress-total">{fill(copy.of, {
         saved: progress.total, target, left: Math.max(0, target - progress.total), pct: target > 0 ? Math.min(100, Math.floor((progress.total * 100) / target)) : 0,
       })}</CoinAmount>
@@ -51,5 +53,14 @@ export function GoalProgress({ copy, title, target, progress }: { copy: GoalProg
         : named.map((p) => <span key={p.key} data-copy-role="data" data-legend={p.key}>
           <span className="lf-goal-progress-key" data-part={p.key} aria-hidden="true" />{p.text}</span>))}
     </div>
+  </div>;
+  if (!ring) return body;
+  // The ring fills with the goal. It repeats what the bar already says, so it is decorative; the bar and its legend carry provenance.
+  return <div className="lf-goal-ringwrap" data-goal-percent={percent} data-reached={progress.total >= target}>
+    <div className="lf-goal-ring-row">
+      <div className="lf-goal-ring" aria-hidden="true" style={{ ['--pct' as string]: percent }}><span data-copy-role="data">{percent}%</span></div>
+      {copy.togo && left > 0 && <span className="lf-goal-togo" data-copy-role="data">{fill(copy.togo, { n: left })}</span>}
+    </div>
+    {body}
   </div>;
 }

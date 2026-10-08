@@ -21,6 +21,8 @@ Items marked *automated* are enforced on every `npm run spec:check` by `agent/to
 | DP-01 | Fabricated time pressure | automated | No countdown, timer, expiry-urgency or hurry copy on any learner or parent surface. An honest expiry notice ("the link expires in 30 days") is a disclosure, not pressure. |
 | DP-02 | Parasocial relationship pressure | automated | The Mentor never pleads, misses the learner, or is sad or disappointed about them leaving. |
 | DP-03 | Navigation constraints and forced continuity | automated | Every rebuilt dialog closes (Escape and a close control); nothing autoplays or advances into another screen or lesson on a timer. |
+
+DP-03 has two exemptions, each by exact file and each pinned by the gate: the one-shot celebration motion asset (`MotionAsset.tsx`) and the landing hero's decorative loop (`site/hero/HeroVideo.tsx`: muted, hidden from assistive technology, a still poster for reduced motion or reduced data, paused off screen, advancing into nothing). A guard removed from either file is a finding again. The landing tablet's demo clips (`site/value/TabletVideo.tsx`) carry the same guards without the `autoplay` attribute: muted, hidden from assistive technology, a still for reduced motion or reduced data, started and paused by visibility, and nothing advances on its own.
 | DP-04 | Lures to purchase or to watch advertising | automated | No purchase, upgrade, premium, unlock-now or watch-an-ad lure (OD-5: no paywall exists). |
 | DP-05 | Social pressure and comparison | automated | No comparison with other people, no leaderboard or rank for a learner; comparison only with their own history. |
 | DP-06 | Randomized rewards | automated | No variable-ratio or mystery reward (B.22: `npm run rewards:check`, Forge gate 17). |

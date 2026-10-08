@@ -2,9 +2,6 @@ import { Route } from 'react-router-dom';
 import { RequireAuth } from '@/auth/RequireAuth';
 import { RequireGuest } from '@/auth/RequireGuest';
 import { Landing } from '@/routes/marketing/Landing';
-import { HowItWorks } from '@/routes/marketing/HowItWorks';
-import { Families } from '@/routes/marketing/Families';
-import { FAQ } from '@/routes/marketing/FAQ';
 import { LegalPage } from '@/routes/marketing/LegalPage';
 import { BadgeLandingPage } from '@/routes/marketing/BadgeLandingPage';
 import { LoginPage } from '@/routes/auth/LoginPage';
@@ -27,9 +24,6 @@ import { OnboardingPage } from '@/routes/onboarding/OnboardingPage';
 export const sitePageRoutes = (
   <>
     <Route index element={<Landing />} />
-    <Route path="how-it-works" element={<HowItWorks />} />
-    <Route path="families" element={<Families />} />
-    <Route path="faq" element={<FAQ />} />
     <Route path="legal/terms" element={<LegalPage doc="terms" />} />
     <Route path="legal/privacy" element={<LegalPage doc="privacy" />} />
   </>

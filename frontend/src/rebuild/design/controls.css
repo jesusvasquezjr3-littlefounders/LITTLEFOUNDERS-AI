@@ -21,6 +21,9 @@
 .lf-rebuild .lf-button--berry:not(:disabled) { background: var(--berry); color: var(--on-berry); box-shadow: none; }
 .lf-rebuild .lf-button--danger:not(:disabled) { background: var(--error); color: var(--on-error); box-shadow: none; }
 .lf-rebuild .lf-button--inverse:not(:disabled) { background: var(--surface); color: var(--content); box-shadow: none; }
+/* Ghost: text only, a soft wash on hover; for quiet navigation such as the topbar's "Log in". */
+.lf-rebuild .lf-button--ghost:not(:disabled) { background: transparent; color: var(--content); box-shadow: none; }
+.lf-rebuild .lf-button--ghost:not(:disabled):hover { background: var(--primary-soft); }
 .lf-rebuild .lf-button--sm { min-block-size: var(--target-min); padding: var(--spacing-2) var(--spacing-5); }
 .lf-rebuild .lf-button--lg { min-block-size: var(--target-lg); padding: var(--spacing-3) var(--spacing-8); font: var(--type-button-lg); }
 .lf-rebuild .lf-button--pending { cursor: progress; }
@@ -501,3 +504,8 @@
 .lf-rebuild [data-compact] .lf-select { min-block-size: var(--target-min); }
 
 .lf-rebuild .lf-visually-hidden { position: absolute; inline-size: var(--spacing-1); block-size: var(--spacing-1); padding: 0; margin: 0; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
+/* A pressable tile (TileButton): borderless, the wrapped tile owns its look; focus and disabled are the system's. */
+.lf-tile-button { appearance: none; margin: 0; padding: 0; border: 0; background: none; color: inherit; font: inherit; text-align: inherit; cursor: pointer; }
+.lf-tile-button:focus-visible { outline: var(--focus-width) solid var(--focus-color); outline-offset: var(--focus-offset); border-radius: var(--rounded-lg); }
+.lf-tile-button:disabled { cursor: default; opacity: 0.7; }

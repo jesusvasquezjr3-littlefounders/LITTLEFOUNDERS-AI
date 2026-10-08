@@ -53,7 +53,7 @@ async function navigate(locale, theme) {
     await new Promise((done) => setTimeout(done, 50));
   }
   await page.evaluate('document.fonts.ready');
-  if (!await page.evaluate("document.fonts.check('600 16px Fredoka') && document.fonts.check('500 16px Nunito')")) throw Error('Fonts did not load');
+  if (!await page.evaluate("document.fonts.check('700 16px Plus Jakarta Sans') && document.fonts.check('500 16px Plus Jakarta Sans')")) throw Error('Fonts did not load');
   await page.evaluate(`Promise.all([...document.images].map(i => i.complete ? 0 : new Promise(r => { i.onload = i.onerror = r; })))`);
   // The catalogue's milestone demonstration celebrates on each visit; measure its settled frame (it settles within 1.2 s by contract).
   for (let n = 0; n < 60 && await page.evaluate("!!document.querySelector('[data-celebration=\"playing\"]')"); n++) await new Promise((done) => setTimeout(done, 50));

@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { MemoryRouter, Route, Routes, useLocation } from 'react-router-dom';
 import i18n from '@/i18n';
+import { rebuildNamespaceCopy } from '@/i18n/rebuild';
 import { BankingPage } from '../BankingPage';
 import { resetMoneyRegisterCache } from '../../family/useMoneyRegister';
 
@@ -88,7 +89,7 @@ describe('the Tutor (F5-P)', () => {
     await waitFor(() => expect(screen.getByText('You froze it.')).toBeInTheDocument());
     expect(screen.getByRole('button', { name: 'Unfreeze' })).toBeEnabled();
     expect(screen.getByText('corrections:Child A')).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: "Child A's coins" })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: "Child A's seeds" })).toBeInTheDocument();
   });
 
   it('does not apply a pending freeze response to another child, and writes the child in view to the address', async () => {
@@ -106,6 +107,10 @@ describe('the Tutor (F5-P)', () => {
     expect(screen.getByRole('button', { name: 'Freeze' })).toBeEnabled();
   });
 });
+
+/** The wallet keeps each part on its own tab (Home, Goals, Activity, Card): a test goes where the child goes. */
+const TABS = rebuildNamespaceCopy['en-US'].family.childCoins.tabs;
+const openTab = async (name: string) => fireEvent.click(await screen.findByRole('radio', { name }));
 
 describe('the child (F5-K)', () => {
   function fixture(owner: 'kid' | 'parent' = 'parent', failure = false) {
@@ -137,33 +142,41 @@ describe('the child (F5-K)', () => {
 
   it('preserves the pending credit and explains the hold, and offers no way to lift a Tutor freeze', async () => {
     fixture();
+    // Home: the coins waiting stay waiting, and the split cannot be pressed.
+    expect(await screen.findByRole('button', { name: 'Split' })).toBeDisabled();
+    // Card: who froze it, what pauses, and no way for the child to lift a Tutor's freeze.
+    await openTab(TABS.card);
     expect(await screen.findByText('Your Tutor froze it.')).toBeInTheDocument();
     expect(screen.getByText('Only your Tutor can unfreeze it.')).toBeInTheDocument();
     expect(screen.getByText('They wait until the freeze ends.')).toBeInTheDocument();
-    for (const hold of ['Rewards', 'Splitting coins', 'New coins', 'Share gifts']) expect(screen.getByText(hold)).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Unfreeze' })).toBeNull();
-    expect(await screen.findByRole('button', { name: 'Split' })).toBeDisabled();
+    for (const hold of ['Rewards', 'Splitting seeds', 'New seeds', 'Share gifts']) expect(screen.getByText(hold)).toBeInTheDocument();
+    expect(screen.queryByRole('switch')).toBeNull();
     expect(mocks.api.mock.calls.some(([path]) => String(path).endsWith('/freeze'))).toBe(false);
   });
 
   it("resumes the split only after the child's own freeze is lifted and re-read", async () => {
     fixture('kid');
-    fireEvent.click(await screen.findByRole('button', { name: 'Unfreeze' }));
-    await waitFor(() => expect(screen.getByText('Active')).toBeInTheDocument());
+    await openTab(TABS.card);
+    fireEvent.click(await screen.findByRole('switch', { name: /Freeze my card/ }));
+    await waitFor(() => expect(screen.getAllByText('Active').length).toBeGreaterThan(0));
     expect(mocks.api).toHaveBeenCalledWith('/banking/account/freeze', expect.objectContaining({ method: 'POST', body: { frozen: false } }));
+    await openTab(TABS.overview);
     await waitFor(() => expect(screen.getByRole('button', { name: 'Split' })).toBeEnabled());
   });
 
   it('shows a failed unfreeze and keeps the confirmed frozen state and credits', async () => {
     fixture('kid', true);
-    fireEvent.click(await screen.findByRole('button', { name: 'Unfreeze' }));
+    await openTab(TABS.card);
+    fireEvent.click(await screen.findByRole('switch', { name: /Freeze my card/ }));
     expect(await screen.findByRole('alert')).toHaveTextContent('That did not change. Try again.');
     expect(screen.getAllByText('Frozen').length).toBeGreaterThan(0);
+    await openTab(TABS.overview);
     expect(screen.getByRole('button', { name: 'Split' })).toBeDisabled();
   });
 
   it("reads the month before from Core in the child's register and comes back to this month (F5-K, W2F.3)", async () => {
     fixture();
+    await openTab(TABS.activity);
     fireEvent.click(await screen.findByRole('button', { name: 'Month before' }));
     expect(await screen.findByRole('heading', { name: 'August 2026' })).toBeInTheDocument();
     expect(mocks.api).toHaveBeenCalledWith('/banking/overview/month?month=2026-08', expect.anything());

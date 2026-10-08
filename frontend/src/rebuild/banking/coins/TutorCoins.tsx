@@ -8,6 +8,8 @@ import { childName, fetchChildren, type Child, type ConsoleTransport } from '../
 import { ConsoleLink, FailureState, fill, PageLoading, type ConsoleLocale, type PageFailure } from '../../family/console/consoleParts';
 import type { CoinCardCopy, TutorCoinsCopy } from '../../family/tasks/taskParts';
 import { CardFields } from './cardParts';
+import { AllowanceRequests } from './AllowanceRequests';
+import type { NotYetCopy } from '../../family/NotYetForm';
 import { ChildCoinActivity } from './ChildCoinActivity';
 import {
   ALLOWANCE_MAX, CARD_NAME_MAX, fetchSetup, openCard, saveAllowance, saveLimit, validAllowance, type Allowance, type CardDesign, type ChildCoinsSetup,
@@ -58,8 +60,10 @@ export interface TutorCoinsSlots {
 
 type Load = { status: 'loading' } | { status: 'failed'; failure: PageFailure } | { status: 'ready'; children: Child[] };
 
-export function TutorCoins({ copy, colours, locale, dark, transport, selectedId, onSelect, onNavigate, childSlots, aside, verifyHref = '/verify-parent' }: {
+export function TutorCoins({ copy, colours, locale, dark, transport, selectedId, onSelect, onNavigate, childSlots, aside, notYetCopy, verifyHref = '/verify-parent' }: {
   copy: TutorCoinsCopy;
+  /** The words of every "not yet" in the family (D.18): a reason code, a reason, a date when it is "later". */
+  notYetCopy: NotYetCopy;
   colours: CoinCardCopy;
   locale: ConsoleLocale;
   dark: boolean;
@@ -121,15 +125,15 @@ export function TutorCoins({ copy, colours, locale, dark, transport, selectedId,
         </ChipGroup>
       </nav> : null}
       {/* Keyed by child: a response for one child never lands on another. */}
-      <ChildSetup key={child.userId} child={child} copy={copy} colours={colours} locale={locale} transport={transport} slots={childSlots} />
+      <ChildSetup key={child.userId} child={child} copy={copy} colours={colours} locale={locale} transport={transport} slots={childSlots} notYetCopy={notYetCopy} />
     </>}
     secondary={aside} />);
 }
 
 type Setup = { status: 'loading' } | { status: 'failed'; failure: PageFailure } | { status: 'ready'; setup: ChildCoinsSetup };
 
-function ChildSetup({ child, copy, colours, locale, transport, slots }: {
-  child: Child; copy: TutorCoinsCopy; colours: CoinCardCopy; locale: ConsoleLocale; transport: ConsoleTransport;
+function ChildSetup({ child, copy, colours, locale, transport, slots, notYetCopy }: {
+  child: Child; copy: TutorCoinsCopy; colours: CoinCardCopy; locale: ConsoleLocale; transport: ConsoleTransport; notYetCopy: NotYetCopy;
   slots: (child: Child, changed: () => void) => TutorCoinsSlots;
 }) {
   const [state, setState] = useState<Setup>({ status: 'loading' });
@@ -175,6 +179,8 @@ function ChildSetup({ child, copy, colours, locale, transport, slots }: {
     {coins}
     <AllowanceForm child={child} copy={copy} locale={locale} transport={transport} rule={setup.allowance}
       onSaved={(allowance) => setState({ status: 'ready', setup: { ...setup, allowance } })} />
+    {setup.allowance?.active ? <AllowanceRequests copy={copy.requests} notYetCopy={notYetCopy} kidId={child.userId} kidName={childName(child)} locale={locale} frequency={setup.allowance.frequency}
+      transport={transport} onAnswered={() => void read()} /> : null}
     <LimitForm child={child} copy={copy} transport={transport} limit={setup.limit}
       coaching={parts.coaching} onSaved={(limit) => setState({ status: 'ready', setup: { ...setup, limit } })} />
     <div className="lf-money-slot" data-family-part="bonus">{parts.bonus}</div>

@@ -16,6 +16,7 @@ import { rebuildNamespaceCopy } from '@/i18n/rebuild';
  * declares its copy role; no celebration is rendered.
  */
 
+const home = rebuildNamespaceCopy['en-US'].family.childCoins.home;
 const GOAL = '11111111-1111-4111-8111-111111111111';
 const REWARD = '22222222-2222-4222-8222-222222222222';
 const ACTION = '33333333-3333-4333-8333-333333333333';
@@ -40,6 +41,8 @@ function fakeSession(overrides: Record<string, Answer> = {}) {
     ] }, error: null },
     'GET /wallet/guardians': { data: { guardians: [] }, error: null },
     'POST /wallet/income': { data: { actionId: ACTION, goal: null }, error: null },
+    'POST /tasks/wallet/moves': { data: { moveId: ACTION }, error: null },
+    'POST /tasks/goals/11111111-1111-4111-8111-111111111111/moves': { data: { moveId: ACTION, goal: null }, error: null },
   };
   const answers = { ...base, ...overrides };
   const session: Session = {
@@ -57,7 +60,7 @@ function fakeSession(overrides: Record<string, Answer> = {}) {
 
 function renderWallet(session: Session, extra: Partial<Parameters<typeof TeenWallet>[0]> = {}) {
   const props = {
-    copy: en, habits, locale: 'en-US', dark: false, session, tasksHref: '/tasks', onOpenTasks: vi.fn(),
+    copy: en, habits, shared: { home: rebuildNamespaceCopy['en-US'].family.childCoins.home, move: rebuildNamespaceCopy['en-US'].family.childCoins.move }, locale: 'en-US', dark: false, session, tasksHref: '/tasks', onOpenTasks: vi.fn(),
     inviteLinkFor: (token: string) => `https://app.test/family?join=${token}`, copyText: vi.fn(async () => true), onAccessChanged: vi.fn(), ...extra,
   };
   return { props, view: render(<TeenWallet {...props} />) };
@@ -72,11 +75,11 @@ function everyTextHasARole(container: HTMLElement) {
 }
 
 async function ready() {
-  await screen.findByText('20 coins');
+  await screen.findByText('20');
 }
 
 describe('TeenWallet', () => {
-  it('shows the server\'s balances with one simulation chip and keeps every section closed', async () => {
+  it('opens on a home: what you have, what you can do, your pockets, and no form open', async () => {
     const { session } = fakeSession();
     const { view } = renderWallet(session);
     await ready();
@@ -84,9 +87,13 @@ describe('TeenWallet', () => {
     expect(screen.getAllByText(en.page.simulation)).toHaveLength(1);
     const save = view.container.querySelector('[data-pocket="save"]') as HTMLElement;
     // The balance is a coin quantity: the coin mark, the number and the word (02 §9.5).
-    expect(within(save).getByText('10 coins')).toBeVisible();
-    expect(save.querySelector('img[data-asset-id="money.coin"]')).not.toBeNull();
-    expect(screen.queryByRole('heading', { level: 2 })).toBeNull();
+    expect(within(save).getByText('10')).toBeVisible();
+    expect(save.querySelector('img[data-asset-id="money.seed"]')).not.toBeNull();
+    // The balance leads, one bar splits it over the three pockets, and the four things to do are plain verbs.
+    expect(screen.getByText(home.have)).toBeVisible();
+    expect(screen.getByRole('img', { name: 'Save 10, Spend 6, Share 4' })).toBeVisible();
+    for (const label of [en.income.open, home.move, en.rewards.open, home.share]) expect(screen.getByRole('button', { name: label })).toBeVisible();
+    expect(screen.queryByLabelText(en.income.amount)).toBeNull();
     expect(view.container.querySelector('[data-age-band="13-17"]')).not.toBeNull();
     everyTextHasARole(view.container);
   });
@@ -95,7 +102,7 @@ describe('TeenWallet', () => {
     const { session } = fakeSession({ 'GET /wallet/access': { data: { holder: null, familyChild: false }, error: null } });
     renderWallet(session);
     expect(await screen.findByText(en.page.failed)).toBeVisible();
-    expect(screen.queryByText('20 coins')).toBeNull();
+    expect(screen.queryByText('20 seeds')).toBeNull();
   });
 
   it('logs income and its split in ONE request, naming no holder, with no approval step', async () => {
@@ -116,7 +123,7 @@ describe('TeenWallet', () => {
     const posts = calls.filter((c) => c.method === 'POST');
     expect(posts).toEqual([{ path: '/wallet/income', method: 'POST', body: { source: 'gift', save: 6, spend: 4, share: 2, goalId: GOAL } }]);
     // Bible 02 §9.2 / K18 (GAP-FIX-R4): the confirmation names where every coin went, as a status only (no celebration).
-    expect(await screen.findByText('Added 12 coins: 6 to Save, 4 to Spend, 2 to Share.')).toBeVisible();
+    expect(await screen.findByText('Added 12 seeds: 6 to Save, 4 to Spend, 2 to Share.')).toBeVisible();
     expect(document.querySelector('[data-celebration]')).toBeNull();
   });
 
@@ -137,7 +144,7 @@ describe('TeenWallet', () => {
     }
   });
 
-  it('asks to split every coin before sending anything, and validates the amount', async () => {
+  it('asks to split every seed before sending anything, and validates the amount', async () => {
     const { session, calls } = fakeSession();
     renderWallet(session);
     await ready();
@@ -148,16 +155,16 @@ describe('TeenWallet', () => {
     expect(screen.getByLabelText(en.page.spend)).toHaveValue(5);
     expect(screen.getByLabelText(en.page.share)).toHaveValue(1);
     fireEvent.change(screen.getByLabelText(en.page.save), { target: { value: '2' } });
-    expect(screen.getByText('4 coins left to split')).toBeVisible();
+    expect(screen.getByText('4 seeds left to split')).toBeVisible();
     fireEvent.click(screen.getByRole('button', { name: en.income.submit }));
-    expect(screen.getByRole('alert')).toHaveTextContent('Split all 12 coins first.');
+    expect(screen.getByRole('alert')).toHaveTextContent('Split all 12 seeds first.');
     fireEvent.change(screen.getByLabelText(en.income.amount), { target: { value: '1001' } });
     fireEvent.click(screen.getByRole('button', { name: en.income.submit }));
     expect(screen.getByRole('alert')).toHaveTextContent(en.income.invalidAmount);
     expect(calls.filter((c) => c.method === 'POST')).toHaveLength(0);
   });
 
-  it('shows a freeze a linked parent placed as a refusal, never as added coins', async () => {
+  it('shows a freeze a linked parent placed as a refusal, never as added seeds', async () => {
     const { session } = fakeSession({ 'POST /wallet/income': { data: null, error: { code: 'ACCOUNT_FROZEN' } } });
     renderWallet(session);
     await ready();
@@ -165,7 +172,7 @@ describe('TeenWallet', () => {
     fireEvent.change(screen.getByLabelText(en.income.amount), { target: { value: '3' } });
     await act(async () => { fireEvent.click(screen.getByRole('button', { name: en.income.submit })); });
     expect(screen.getByRole('alert')).toHaveTextContent(en.income.frozen);
-    expect(screen.queryByText(/^Added 3 coins/)).toBeNull();
+    expect(screen.queryByText(/^Added 3 seeds/)).toBeNull();
   });
 
   it('announces a goal the income reached in the income notice (the celebration belongs to the goal, once)', async () => {
@@ -183,7 +190,7 @@ describe('TeenWallet', () => {
     expect(view.container.querySelector('[data-celebration], canvas')).toBeNull();
   });
 
-  it('uses a personal reward at once and shows "not enough coins" when the database refuses', async () => {
+  it('uses a personal reward at once and shows "not enough seeds" when the database refuses', async () => {
     const { session, calls } = fakeSession({
       [`POST /wallet/rewards/${REWARD}/claim`]: { data: null, error: { code: 'INSUFFICIENT_BALANCE' } },
     });
@@ -210,17 +217,17 @@ describe('TeenWallet', () => {
     expect(calls.filter((c) => c.method === 'POST')).toEqual([{ path: '/wallet/rewards', method: 'POST', body: { title: 'Concert', cost: 40 } }]);
   });
 
-  it('moves coins out of the teen\'s own goal, and never more than it holds', async () => {
+  it('moves seeds out of the teen\'s own goal, and never more than it holds', async () => {
     const { session, calls } = fakeSession({ [`POST /wallet/goals/${GOAL}/release`]: { data: { actionId: ACTION }, error: null } });
     renderWallet(session);
     await ready();
-    fireEvent.click(screen.getByRole('button', { name: en.goals.open }));
+    fireEvent.click(within(screen.getByRole('region', { name: en.goals.heading })).getByRole('button', { name: home.seeAll }));
     // S07.4 (D.16): the bar names its provenance.
     expect(screen.getByRole('img', { name: 'Headphones: 10 of 20. All yours' })).toBeVisible();
     fireEvent.click(screen.getByRole('button', { name: en.goals.move }));
     fireEvent.change(screen.getByLabelText(en.goals.moveAmount), { target: { value: '11' } });
     fireEvent.click(screen.getByRole('button', { name: en.goals.confirmMove }));
-    expect(screen.getByRole('alert')).toHaveTextContent('This goal holds 10 coins.');
+    expect(screen.getByRole('alert')).toHaveTextContent('This goal holds 10 seeds.');
     fireEvent.change(screen.getByLabelText(en.goals.moveAmount), { target: { value: '4' } });
     await act(async () => { fireEvent.click(screen.getByRole('button', { name: en.goals.confirmMove })); });
     expect(calls.filter((c) => c.method === 'POST')).toEqual([{ path: `/wallet/goals/${GOAL}/release`, method: 'POST', body: { amount: 4, destination: 'spend' } }]);
@@ -230,7 +237,7 @@ describe('TeenWallet', () => {
     const { session } = fakeSession();
     const { view } = renderWallet(session);
     await ready();
-    fireEvent.click(screen.getByRole('button', { name: en.history.open }));
+    fireEvent.click(within(screen.getByRole('region', { name: en.history.heading })).getByRole('button', { name: home.seeAll }));
     const reward = view.container.querySelector('[data-ledger-reason="personal_reward"]') as HTMLElement;
     expect(within(reward).getByText(en.history.reward)).toBeVisible();
     expect(within(reward).getByText('Movie night')).toBeVisible();
@@ -278,6 +285,48 @@ describe('TeenWallet', () => {
     fireEvent.click(screen.getByRole('button', { name: en.parents.open }));
     fireEvent.click(screen.getByRole('link', { name: en.parents.openTasks }));
     expect(props.onOpenTasks).toHaveBeenCalledOnce();
+  });
+
+  it('moves seeds between pockets from the home, with the one body Core reads, and says what moved', async () => {
+    const { session, calls } = fakeSession();
+    renderWallet(session);
+    await ready();
+    fireEvent.click(screen.getByRole('button', { name: home.move }));
+    const dialog = await screen.findByRole('dialog');
+    // Plain Save is what is not tied to a goal: 10 saved, 10 of them in the goal, so Save cannot move yet; Spend can.
+    expect(within(within(dialog).getByRole('group', { name: 'From' })).queryByRole('button', { name: /^Save/ })).toBeNull();
+    fireEvent.click(within(dialog).getByRole('button', { name: /^Spend/ }));
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Share' }));
+    fireEvent.click(within(dialog).getByRole('button', { name: 'All' }));
+    await act(async () => { fireEvent.click(within(dialog).getByRole('button', { name: /^Move 6 seeds$/ })); });
+    expect(calls.filter((c) => c.method === 'POST')).toEqual([{ path: '/tasks/wallet/moves', method: 'POST', body: { from: 'spend', to: 'share', amount: 6 } }]);
+    expect(await screen.findByText(/Done: 6 seeds, from Spend to Share/)).toBeVisible();
+  });
+
+  it('says a goal holds the seeds that are tied to it, and puts seeds into a goal from plain Save', async () => {
+    const { session, calls } = fakeSession({ 'GET /tasks/wallet': { data: { balances: { save: 30, spend: 6, share: 4 } }, error: null } });
+    renderWallet(session);
+    await screen.findByText('40');
+    expect(screen.getByText('10 in goals')).toBeVisible();
+    fireEvent.click(within(screen.getByRole('region', { name: en.goals.heading })).getByRole('button', { name: home.putIn }));
+    const dialog = await screen.findByRole('dialog');
+    expect(within(dialog).getByRole('button', { name: /^Save · no goal · 20$/ })).toHaveAttribute('aria-pressed', 'true');
+    expect(within(dialog).getByRole('button', { name: /^Goal: Headphones$/ })).toHaveAttribute('aria-pressed', 'true');
+    fireEvent.click(within(dialog).getByRole('button', { name: 'Half' }));
+    await act(async () => { fireEvent.click(within(dialog).getByRole('button', { name: /^Move 10 seeds$/ })); });
+    expect(calls.filter((c) => c.method === 'POST')).toEqual([{ path: `/tasks/goals/${GOAL}/moves`, method: 'POST', body: { direction: 'in', amount: 10 } }]);
+  });
+
+  it('has a way back from every section, and never leaves the home behind a form', async () => {
+    const { session } = fakeSession();
+    renderWallet(session);
+    await ready();
+    fireEvent.click(screen.getByRole('button', { name: en.income.open }));
+    expect(screen.getByLabelText(en.income.amount)).toBeVisible();
+    expect(screen.queryByRole('button', { name: home.move })).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: home.back }));
+    expect(screen.queryByLabelText(en.income.amount)).toBeNull();
+    expect(screen.getByRole('button', { name: home.move })).toBeVisible();
   });
 
   it('renders in the dark theme with the same structure', async () => {

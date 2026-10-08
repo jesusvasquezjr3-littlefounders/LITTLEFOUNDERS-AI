@@ -1,0 +1,30 @@
+/*
+ * Landing section 4: the Pizarrón in three tabs. A centered header, a row of tabs, and one wide tablet beneath: the opposite
+ * rhythm to the section before it (cards beside a tablet). Tokens only. The tablet frame is the value section's own.
+ */
+.lf-rebuild .lf-boards { display: grid; gap: var(--spacing-8); justify-items: center; padding-block: var(--spacing-8); }
+.lf-rebuild .lf-boards-head { display: grid; gap: var(--spacing-3); justify-items: center; text-align: center; }
+.lf-rebuild .lf-boards-head h2 { margin: 0; max-inline-size: 18em; }
+.lf-rebuild .lf-boards-head p { margin: 0; max-inline-size: 30em; font: var(--type-body-lg); color: var(--content-muted); text-wrap: balance; }
+.lf-rebuild .lf-boards-tabs { display: inline-flex; gap: var(--spacing-1); padding: var(--spacing-1); border-radius: var(--rounded-full); background: var(--sunken); max-inline-size: 100%; overflow-x: auto; }
+.lf-rebuild .lf-boards-tabs button {
+  min-block-size: var(--target-md);
+  padding-inline: var(--spacing-5);
+  border: 0;
+  border-radius: var(--rounded-full);
+  background: transparent;
+  color: var(--content);
+  font: var(--type-button);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.lf-rebuild .lf-boards-tabs button[aria-selected='true'] { background: var(--primary); color: var(--on-primary); }
+.lf-rebuild .lf-boards-tabs button:focus-visible { outline: var(--focus-width) solid var(--focus-color); outline-offset: 2px; }
+.lf-rebuild .lf-landing .lf-boards-bridge { margin: 0; max-inline-size: 28em; text-align: center; font: var(--type-headline); color: var(--primary-strong); text-wrap: balance; }
+.lf-rebuild .lf-boards-device { inline-size: min(100%, 52rem); min-inline-size: 0; }
+@media (prefers-reduced-motion: no-preference) {
+  .lf-rebuild .lf-boards-tabs button { transition: background-color var(--dur-micro) var(--ease-standard), color var(--dur-micro) var(--ease-standard); }
+}
+@container app (min-width: 840px) {
+  .lf-rebuild .lf-boards { padding-block: var(--spacing-12); gap: var(--spacing-10); }
+}

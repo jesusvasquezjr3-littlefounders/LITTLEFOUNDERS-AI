@@ -1987,10 +1987,12 @@ export interface WalletLedgerRow {
   guardian_action_id: string | null;
   /** S07.2: set on self_income / personal_reward / goal_release rows — the teen's own wallet_self_actions row. */
   self_action_id: string | null;
+  /** D.14: set on share_gift / share_gift_returned rows — the gift, and through it the place it went to. */
+  share_gift_id?: string | null;
   created_at: string;
 }
 
-const WALLET_LEDGER_FIELDS = 'id,kid_user_id,bucket,amount,reason,task_id,goal_id,redemption_id,guardian_action_id,self_action_id,created_at';
+const WALLET_LEDGER_FIELDS = 'id,kid_user_id,bucket,amount,reason,task_id,goal_id,redemption_id,guardian_action_id,self_action_id,share_gift_id,created_at';
 
 export function getWalletLedger(kidId: string, limit: number): Promise<WalletLedgerRow[] | null> {
   return serviceRest<WalletLedgerRow[]>(

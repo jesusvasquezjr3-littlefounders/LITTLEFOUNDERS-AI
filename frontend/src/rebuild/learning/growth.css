@@ -8,5 +8,5 @@
 .lf-growth-control { gap: var(--spacing-1); }
 .lf-growth-foot { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--spacing-4); }
 .lf-growth-outcome { display: grid; gap: var(--spacing-1); }
-.lf-growth-outcome > strong { font-family: Fredoka, sans-serif; font-size: 1.5rem; line-height: 1.2; }
+.lf-growth-outcome > strong { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.5rem; line-height: 1.2; }
 .lf-growth-foot .lf-button { flex: none; }

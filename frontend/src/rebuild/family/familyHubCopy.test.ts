@@ -58,11 +58,11 @@ describe('Family Hub lifecycle copy', () => {
     });
   }
 
-  it('names coins in every locale where a quantity is shown', () => {
+  it('names seeds in every locale where a quantity is shown', () => {
     // S07.4 (D.16): goal progress is drawn by <GoalProgress> (moneyHabits.json); the
     // correction form still names coins wherever it shows a quantity.
-    expect(en.walletCorrections.amount).toMatch(/coins/i);
-    expect(es.walletCorrections.amount).toMatch(/monedas/i);
-    expect(pt.walletCorrections.amount).toMatch(/moedas/i);
+    expect(en.walletCorrections.amount).toMatch(/seeds/i);
+    expect(es.walletCorrections.amount).toMatch(/semillas/i);
+    expect(pt.walletCorrections.amount).toMatch(/sementes/i);
   });
 });

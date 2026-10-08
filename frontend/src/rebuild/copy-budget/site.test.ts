@@ -35,7 +35,8 @@ const SITE_GROUPS: Record<string, Rule> = {
   landingV2: (key) => ['title', 'titleAccent'].includes(key) ? 'brand'
     : key === 'reasonQuestion' ? 'prompt'
       : key.endsWith('Title') || key === 'familyPreview' || /\.(?:question|title)$/.test(key) ? 'heading'
-        : ['tryAction', 'addCoin', 'removeCoin', 'approve', 'approved', 'familyAction'].includes(key) || key.endsWith('.label') ? 'action'
+        : key === 'heroLearn' ? 'option' // one of two ways in ("I'm a Parent" / "I just want to learn"): the owner's own words
+          : ['tryAction', 'heroParent', 'addCoin', 'removeCoin', 'approve', 'approved', 'familyAction'].includes(key) || key.endsWith('.label') ? 'action'
           : key.includes('.options.') ? 'option' : key.endsWith('.range') ? 'data' : 'body',
   // The accessible names of the marketing scenes: read aloud as the page's images, on the site body budget.
   marketingArt: () => 'body',

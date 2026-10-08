@@ -9,7 +9,7 @@ import { checkCopy, type CopyRole, type Locale } from './copyBudget';
  * `scripts/build-rebuild-emails.mjs` generates the five GoTrue templates from
  * the Bible tokens and `src/i18n/<locale>/emails.json`; this reads the real
  * artefacts in `public/email-templates/` and holds them to the rules a
- * rebuilt screen is held to: token colours only, the two brand typefaces, no
+ * rebuilt screen is held to: token colours only, the brand typeface, no
  * glow, gradient or raster art, a 14 px text floor, a 56 px call to action,
  * a declared copy role and the copy budget for every string in all three
  * locales, and AA contrast for every text colour on its background.
@@ -47,13 +47,13 @@ describe('account emails on the one design system (OD-4, 02 D8)', () => {
   for (const file of FILES) describe(file, () => {
     const source = html[file]!;
 
-    it('uses only light- and dark-mode token colours, the two brand typefaces, and no glow, gradient, image or legacy face', () => {
+    it('uses only light- and dark-mode token colours, the brand typeface, and no glow, gradient, image or legacy face', () => {
       const tokenValues = new Set([...Object.values(light), ...Object.values(dark)]);
       expect((source.match(/#[0-9a-f]{3,8}\b/gi) ?? []).map((value) => value.toLowerCase()).filter((value) => !tokenValues.has(value))).toEqual([]);
       expect(source).not.toMatch(/rgba?\(|hsla?\(|box-shadow|gradient|<img|Figtree|background-image/i);
       const families = [...source.matchAll(/font-family:\s*([^;"]+)/g)].map(([, value]) => value!.split(',')[0]!.replace(/'/g, '').trim());
-      expect([...new Set(families)].sort()).toEqual(['Arial', 'Fredoka', 'Nunito']); // Arial only inside Outlook's VML button
-      expect(source).toMatch(/fonts\.googleapis\.com\/css2\?family=Fredoka[^"]*family=Nunito/);
+      expect([...new Set(families)].sort()).toEqual(['Arial', 'Plus Jakarta Sans']); // Arial only inside Outlook's VML button
+      expect(source).toMatch(/fonts\.googleapis\.com\/css2\?family=Plus\+Jakarta\+Sans/);
     });
 
     it('keeps visible text at 14 px or more and the call to action at a 56 px target (02 rule 11, §8)', () => {

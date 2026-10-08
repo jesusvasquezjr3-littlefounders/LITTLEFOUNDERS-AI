@@ -20,7 +20,7 @@
 .lf-chart-tag[data-fit='no'] { visibility: hidden; }
 /* SVG text is numerals and single symbols only. */
 .lf-chart-label { font-size: 11px; font-weight: 700; fill: var(--content); }
-.lf-chart-stat { font-family: Fredoka, sans-serif; font-size: 36px; fill: var(--content); }
+.lf-chart-stat { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 36px; fill: var(--content); }
 .lf-chart-axis { stroke: var(--outline); stroke-width: 1; }
 .lf-chart-line { fill: none; stroke-width: 2.5; stroke-linejoin: round; }
 .lf-chart-area { stroke-width: 2; }

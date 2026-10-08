@@ -54,9 +54,9 @@ export function fetchBalances(session: Session) {
 
 // S07.4 (D.14): coins directed to a Share destination, and a pledge that came back.
 export type LedgerReason = 'task_approved' | 'redemption' | 'manual_adjustment' | 'goal_withdrawal' | 'allowance' | 'savings_bonus'
-  | 'self_income' | 'personal_reward' | 'goal_release' | 'share_gift' | 'share_gift_returned';
+  | 'self_income' | 'personal_reward' | 'goal_release' | 'share_gift' | 'share_gift_returned' | 'pocket_move' | 'goal_move';
 export const LEDGER_REASONS: readonly LedgerReason[] = ['task_approved', 'redemption', 'manual_adjustment', 'goal_withdrawal', 'allowance', 'savings_bonus',
-  'self_income', 'personal_reward', 'goal_release', 'share_gift', 'share_gift_returned'];
+  'self_income', 'personal_reward', 'goal_release', 'share_gift', 'share_gift_returned', 'pocket_move', 'goal_move'];
 export type IncomeSource = 'allowance' | 'gift' | 'earned';
 export const INCOME_SOURCES: readonly IncomeSource[] = ['allowance', 'gift', 'earned'];
 
@@ -65,6 +65,8 @@ export interface WalletEntry {
   bucket: Bucket;
   amount: number;
   reason: LedgerReason;
+  /** The chore, reward, goal or place it was for. */
+  title?: string | null;
   note: string | null;
   source: IncomeSource | null;
   rewardTitle: string | null;
@@ -78,7 +80,7 @@ function isEntry(value: unknown): value is WalletEntry {
   const rewardTitle = e.rewardTitle ?? null;
   return isInt(e.id) && isBucket(e.bucket) && isInt(e.amount) && LEDGER_REASONS.includes(e.reason as LedgerReason)
     && (e.note === null || typeof e.note === 'string') && (source === null || INCOME_SOURCES.includes(source as IncomeSource))
-    && (rewardTitle === null || typeof rewardTitle === 'string') && isInstant(e.createdAt)
+    && (rewardTitle === null || typeof rewardTitle === 'string') && (e.title === undefined || e.title === null || typeof e.title === 'string') && isInstant(e.createdAt)
     // A Tutor movement must carry its reason; logged income must say where it came from.
     && ((e.reason !== 'manual_adjustment' && e.reason !== 'goal_withdrawal') || (typeof e.note === 'string' && e.note.length > 0))
     && (e.reason !== 'self_income' || source !== null);

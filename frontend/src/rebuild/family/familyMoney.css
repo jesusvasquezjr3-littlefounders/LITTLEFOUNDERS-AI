@@ -12,12 +12,12 @@
   color: var(--content);
 }
 .lf-family-money-kind[data-chosen='true'] { background: var(--primary-soft); }
-.lf-family-money-kind dt { font: 600 1.125rem/1.3 Fredoka, sans-serif; }
+.lf-family-money-kind dt { font: 600 1.125rem/1.3 'Plus Jakarta Sans', sans-serif; }
 .lf-family-money-kind dd { margin: 0; }
 .lf-family-money-checks { display: grid; gap: var(--spacing-2); }
 .lf-family-money-row { display: flex; flex-wrap: wrap; gap: var(--spacing-3); align-items: flex-end; }
 .lf-family-money-row > .lf-input-field { flex: 1 1 12rem; }
-.lf-family-money-number { font: 700 2.5rem/1 Fredoka, sans-serif; }
+.lf-family-money-number { font: 700 2.5rem/1 'Plus Jakarta Sans', sans-serif; }
 .lf-family-money-streak { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--spacing-3); }
 .lf-family-hub .lf-family-money-facts { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: var(--spacing-2); }
 .lf-family-hub .lf-family-money-facts li {

@@ -160,7 +160,7 @@ async function load(page, state, locale, theme, width) {
   // A hidden page gets no animation frames: every measurement after this would be of a frozen page.
   if (await page.evaluate('document.visibilityState') !== 'visible') throw new Error(`${state.id}: the audit page is hidden`);
   await page.evaluate('document.fonts.ready');
-  if (!await page.evaluate("document.fonts.check('600 16px Fredoka') && document.fonts.check('500 16px Nunito')")) throw new Error(`${state.id}: fonts did not load`);
+  if (!await page.evaluate("document.fonts.check('700 16px Plus Jakarta Sans') && document.fonts.check('500 16px Plus Jakarta Sans')")) throw new Error(`${state.id}: fonts did not load`);
   // The rebuilt root must carry the locale and theme asked for, or the matrix is measuring something else.
   const applied = await page.evaluate(`(() => { const r = document.querySelector('.lf-rebuild'); return { lang: r.getAttribute('lang') || document.documentElement.lang, theme: r.dataset.theme || (document.documentElement.classList.contains('dark') ? 'dark' : 'light') }; })()`);
   if (applied.lang !== locale || applied.theme !== theme) throw new Error(`${state.id}: asked for ${locale}/${theme}, the page shows ${applied.lang}/${applied.theme}`);

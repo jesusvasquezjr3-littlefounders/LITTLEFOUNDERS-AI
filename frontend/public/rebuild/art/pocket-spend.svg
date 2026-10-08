@@ -1,5 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" fill="none" aria-hidden="true">
-  <path d="M34 36v-8a14 14 0 0 1 28 0v8" stroke="#3476D4" stroke-width="6" stroke-linecap="round"/>
-  <path d="M19.5 40.4C19.2 36.9 22 34 25.5 34h45c3.5 0 6.3 2.9 6 6.4l-3.6 40.2c-.4 4.2-3.9 7.4-8.1 7.4H31.2c-4.2 0-7.7-3.2-8.1-7.4L19.5 40.4Z" fill="#4B94FF"/>
-  <rect x="31" y="50" width="34" height="8" rx="4" fill="#E8F1FE"/>
+  <style>*{transform-box:fill-box}
+  .bag{transform-origin:50% 0;animation:swing 5.4s cubic-bezier(.34,1.56,.64,1) infinite}
+  .handle{animation:lift 5.4s cubic-bezier(.34,1.56,.64,1) infinite}
+  @keyframes swing{0%{transform:rotate(-7deg)}8%{transform:rotate(5deg)}14%{transform:rotate(-2deg)}20%,100%{transform:rotate(0)}}
+  @keyframes lift{0%{transform:translateY(5px)}9%{transform:translateY(-3px)}16%,100%{transform:translateY(0)}}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important}}</style>
+  <g class="bag">
+    <path class="handle" d="M34 36v-8a14 14 0 0 1 28 0v8" stroke="#3476D4" stroke-width="6" stroke-linecap="round"/>
+    <path d="M19.5 40.4C19.2 36.9 22 34 25.5 34h45c3.5 0 6.3 2.9 6 6.4l-3.6 40.2c-.4 4.2-3.9 7.4-8.1 7.4H31.2c-4.2 0-7.7-3.2-8.1-7.4L19.5 40.4Z" fill="#4B94FF"/>
+    <rect x="31" y="50" width="34" height="8" rx="4" fill="#E8F1FE"/>
+  </g>
 </svg>

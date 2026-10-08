@@ -56,6 +56,14 @@ test('structure red team: timers, autoplay, timed navigation, unclosable dialogs
   assert.deepEqual(motion('<DotLottieReact src={src} autoplay loop />'), ['DP-03']);
   assert.deepEqual(motion('<video autoPlay loop={false} />'), ['DP-03']);
   assert.deepEqual(tsx('<DotLottieReact src={src} autoplay loop={false} />'), ['DP-03']);
+  // The landing hero's decorative loop: allowed only with every guard (muted, hidden, still for reduced motion and data, paused off screen).
+  const hero = (code) => structuralFindings('frontend/src/rebuild/site/hero/HeroVideo.tsx', code).map((finding) => finding.item);
+  const guarded = '<video autoPlay muted loop aria-hidden="true" /> matchMedia("(prefers-reduced-motion: reduce)") matchMedia("(prefers-reduced-data: reduce)") new IntersectionObserver(() => {}); element.pause();';
+  assert.deepEqual(hero(guarded), []);
+  assert.deepEqual(hero(guarded.replace(' muted', '')), ['DP-03']);
+  assert.deepEqual(hero(guarded.replace('element.pause();', '')), ['DP-03']);
+  assert.deepEqual(hero(guarded.replace('(prefers-reduced-data: reduce)', '')), ['DP-03']);
+  assert.deepEqual(tsx(guarded), ['DP-03']);
   assert.deepEqual(tsx('useEffect(() => { setTimeout(() => navigate("/learn/next"), 3000); }, []);'), ['DP-03']);
   assert.deepEqual(tsx('setTimeout(sequence.onAdvance, 650);'), []);
   assert.deepEqual(tsx('<section role="dialog" aria-modal="true"><p>Stay</p></section>'), ['DP-03']);

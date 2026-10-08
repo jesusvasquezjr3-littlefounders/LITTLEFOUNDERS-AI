@@ -150,8 +150,8 @@ describe('boot veil — motion on the 04 §2 tokens only', () => {
 });
 
 describe('the document ground and typefaces (02 D3, D4; OD-12)', () => {
-  it('paints the body in the token --base and --content, in both modes, in Nunito', () => {
-    expect(DOCUMENT).toMatch(new RegExp(`body \\{[^}]*background-color: ${token('--base')};[^}]*color: ${token('--content')};[^}]*Nunito`));
+  it('paints the body in the token --base and --content, in both modes, in Plus Jakarta Sans', () => {
+    expect(DOCUMENT).toMatch(new RegExp(`body \\{[^}]*background-color: ${token('--base')};[^}]*color: ${token('--content')};[^}]*Plus Jakarta Sans`));
     expect(DOCUMENT).toContain(`html.dark body { background-color: ${token('--base', true)}; color: ${token('--content', true)}; }`);
     expect(MAIN).toContain("import '@/rebuild/design/document.css';");
   });
@@ -160,19 +160,17 @@ describe('the document ground and typefaces (02 D3, D4; OD-12)', () => {
     expect(MAIN).not.toMatch(/import '@\/index\.css'/);
   });
 
-  it('requests no third-party font and preloads the two self-hosted faces, not the icon font', () => {
+  it('requests no third-party font and preloads the self-hosted face, not the icon font', () => {
     expect(HTML).not.toMatch(/fonts\.googleapis\.com|fonts\.gstatic\.com|material-symbols/);
-    expect(HTML).toContain('href="/fonts/fredoka-latin-v1.woff2" crossorigin');
-    expect(HTML).toContain('href="/fonts/nunito-latin-v1.woff2" crossorigin');
+    expect(HTML).toContain('href="/fonts/plus-jakarta-sans-latin-v1.woff2" crossorigin');
   });
-  it('keeps the global design sheet on self-hosted Fredoka and Nunito, with no third-party font', () => {
+  it('keeps the global design sheet on self-hosted Plus Jakarta Sans, with no third-party font', () => {
     const ISLAND = readFileSync(resolve(FRONTEND, 'src/rebuild/design/system.css'), 'utf8');
     const TAILWIND = readFileSync(resolve(FRONTEND, 'tailwind.config.js'), 'utf8');
     // No remote sheet or remote face: the only host named is in a comment explaining the Material Symbols move.
     expect(ISLAND).not.toMatch(/@import\s+url\(['"]?https?:|src:\s*url\(['"]?https?:/);
     expect(ISLAND).not.toMatch(/font-family:\s*'?(Inter|Sora)\b/);
-    expect(ISLAND).toContain("src: url('/fonts/fredoka-latin-v1.woff2')");
-    expect(ISLAND).toContain("src: url('/fonts/nunito-latin-v1.woff2')");
+    expect(ISLAND).toContain("src: url('/fonts/plus-jakarta-sans-latin-v1.woff2')");
     expect(TAILWIND).not.toMatch(/'(Inter|Sora)'/);
   });
 });

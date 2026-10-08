@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { render } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import { CoinAmount, COIN_ASSET_ID, RewardChip } from './controls';
+import { CoinAmount, RewardChip, SEED_ASSET_ID } from './controls';
 import { resolveManifestAsset } from './assets';
 
 /*
@@ -11,10 +11,12 @@ import { resolveManifestAsset } from './assets';
  */
 const frontend = resolve(__dirname, '../../..');
 
-describe('the coin asset and CoinAmount (07 §1, 02 §9.5)', () => {
+describe('the seed asset and CoinAmount (07 §1, 02 §9.5, OD-41)', () => {
   it('is a registered, in-house, text-free class B SVG in the coins family, in both modes, under 6 KB', () => {
-    const asset = resolveManifestAsset(COIN_ASSET_ID);
-    expect(asset).toMatchObject({ class: 'B', type: 'svg', slot: 'money.coin', modes: 'both', reviewFamily: 'coins', reviewStatus: 'approved', altKey: 'decorative' });
+    const asset = resolveManifestAsset(SEED_ASSET_ID);
+    // A draft until the owner reviews its style (OD-14); the release gate refuses a draft, so it cannot ship unreviewed.
+    expect(asset).toMatchObject({ class: 'B', type: 'svg', slot: 'money.seed', modes: 'both', reviewFamily: 'coins', altKey: 'decorative' });
+    expect(['draft', 'approved']).toContain(asset!.reviewStatus);
     const svg = readFileSync(resolve(frontend, `public${asset!.path}`), 'utf8');
     expect(svg.length).toBeLessThan(6 * 1024);
     expect(svg).not.toMatch(/<text|<image|gradient|filter/i);
@@ -31,13 +33,13 @@ describe('the coin asset and CoinAmount (07 §1, 02 §9.5)', () => {
     const img = amount.querySelector('img')!;
     expect(img).toHaveAttribute('aria-hidden', 'true');
     expect(img).toHaveAttribute('alt', '');
-    expect(img.getAttribute('src')).toBe('/rebuild/art/coin.svg');
+    expect(img.getAttribute('src')).toBe('/rebuild/art/seed.svg');
     expect(amount.textContent).toBe('12 coins');
   });
 
   it('marks a coin reward chip with the coin, and never an XP or streak chip', () => {
     const { container, rerender } = render(<RewardChip coin>40 coins</RewardChip>);
-    expect(container.querySelector('.lf-status-chip--reward img[data-asset-id="money.coin"]')).not.toBeNull();
+    expect(container.querySelector('.lf-status-chip--reward img[data-asset-id="money.seed"]')).not.toBeNull();
     rerender(<RewardChip>7 days</RewardChip>);
     expect(container.querySelector('img')).toBeNull();
   });

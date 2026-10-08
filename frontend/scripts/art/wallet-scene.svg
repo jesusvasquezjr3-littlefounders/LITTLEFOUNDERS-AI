@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 320" fill="none">
+  <defs>
+    <!-- One seed, drawn once: the same pip as the unit's mark. -->
+    <g id="seed">
+      <path d="M0 -17C11 -10 17 3 13 13C10 20 -10 20 -13 13C-17 3 -11 -10 0 -17Z" fill="#a88205"/>
+      <path d="M0 -12.5C8 -7 12.5 3 9.5 10.5C7 16 -7 16 -9.5 10.5C-12.5 3 -8 -7 0 -12.5Z" fill="#ebb806"/>
+      <path d="M0 -8C3.2 -3 4 3.5 1.8 8" stroke="#a88205" stroke-width="2" stroke-linecap="round"/>
+    </g>
+  </defs>
+
+  <!-- the book, behind everything, leaning right -->
+  <g transform="rotate(8 395 190)">
+    <rect x="338" y="92" width="112" height="152" rx="10" fill="#4438cf"/>
+    <rect x="330" y="84" width="112" height="152" rx="10" fill="#5c55fd"/>
+    <rect x="344" y="98" width="84" height="8" rx="4" fill="#eceffe"/>
+    <rect x="344" y="114" width="60" height="8" rx="4" fill="#eceffe"/>
+    <rect x="344" y="196" width="84" height="6" rx="3" fill="#4438cf"/>
+    <path d="M410 84V132L418 124L426 132V84Z" fill="#ebb806"/>
+  </g>
+
+  <!-- left bowl: Save (mint) -->
+  <g>
+    <path d="M52 168H152C152 214 128 240 102 240C76 240 52 214 52 168Z" fill="#018675"/>
+    <path d="M52 168H152C152 208 130 232 102 232C74 232 52 208 52 168Z" fill="#05a893"/>
+    <ellipse cx="102" cy="168" rx="50" ry="12" fill="#07796a"/>
+    <use href="#seed" transform="translate(76 166) rotate(-24)"/>
+    <use href="#seed" transform="translate(128 167) rotate(14)"/>
+    <path d="M102 168C102 146 101 126 98 106" stroke="#07796a" stroke-width="7" stroke-linecap="round"/>
+    <path d="M98 108C84 96 66 98 58 108C70 120 88 120 98 108Z" fill="#05a893"/>
+    <path d="M99 102C112 88 132 90 140 100C128 114 108 114 99 102Z" fill="#c7fef1"/>
+  </g>
+
+  <!-- middle bowl, in front: Spend (sky) -->
+  <g>
+    <path d="M150 204H270C270 256 244 286 210 286C176 286 150 256 150 204Z" fill="#3476d4"/>
+    <path d="M150 204H270C270 250 246 278 210 278C174 278 150 250 150 204Z" fill="#4b94ff"/>
+    <ellipse cx="210" cy="204" rx="60" ry="14" fill="#1d68ce"/>
+    <use href="#seed" transform="translate(188 197) rotate(20)"/>
+    <use href="#seed" transform="translate(212 193) rotate(-14)"/>
+    <use href="#seed" transform="translate(236 199) rotate(10)"/>
+    <use href="#seed" transform="translate(200 186) rotate(-30)"/>
+  </g>
+
+  <!-- right bowl: Share (berry) -->
+  <g>
+    <path d="M254 156H344C344 198 322 222 299 222C276 222 254 198 254 156Z" fill="#a40c56"/>
+    <path d="M254 156H344C344 194 324 214 299 214C274 214 254 194 254 156Z" fill="#cc2e72"/>
+    <ellipse cx="299" cy="156" rx="45" ry="11" fill="#c6266d"/>
+    <use href="#seed" transform="translate(284 151) rotate(14)"/>
+    <use href="#seed" transform="translate(306 148) rotate(-20)"/>
+  </g>
+</svg>

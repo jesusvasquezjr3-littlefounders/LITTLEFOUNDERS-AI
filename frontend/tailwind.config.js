@@ -52,8 +52,8 @@ export default {
       'on-error': 'rgb(var(--lf-on-error) / <alpha-value>)',
     },
     fontFamily: {
-      display: ['Fredoka', 'Nunito', 'system-ui', 'sans-serif'],
-      body: ['Nunito', 'system-ui', 'sans-serif'],
+      display: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
+      body: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
       code: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Consolas', 'monospace'],
     },
     borderRadius: {

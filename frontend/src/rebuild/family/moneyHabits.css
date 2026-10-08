@@ -15,7 +15,7 @@
   color: var(--content);
 }
 .lf-money-habits-pocket-name { flex: 1 1 6rem; font-weight: 800; }
-.lf-money-habits-count { min-inline-size: 3ch; text-align: center; font: 700 1.5rem/1 Fredoka, sans-serif; font-variant-numeric: tabular-nums; }
+.lf-money-habits-count { min-inline-size: 3ch; text-align: center; font: 700 1.5rem/1 'Plus Jakarta Sans', sans-serif; font-variant-numeric: tabular-nums; }
 /* D.13 pocket rows: the shared Stepper (usual split) or a typed count with −/+ (a payout) takes the rest of the row. */
 .lf-money-habits-stepper, .lf-money-habits-pocket-count { flex: 1 1 12rem; min-inline-size: 0; }
 /* On the pocket's own tint, a field and a step button keep a boundary by fill (02 §4.4). */
@@ -32,7 +32,7 @@
   font-weight: 800;
 }
 .lf-family-hub li .lf-money-habits-chip { background: var(--surface); }
-.lf-money-habits-available { font: 700 1.5rem/1.2 Fredoka, sans-serif; }
+.lf-money-habits-available { font: 700 1.5rem/1.2 'Plus Jakarta Sans', sans-serif; }
 /* A secondary control on a list row gets its own fill, so it never reads as plain text in dark mode. */
 .lf-money-habits li .lf-button--secondary { background: var(--sunken); }
 /* A gift line (the place, the amount and the family's note) keeps the 75-character measure on a wide panel (03 §3). */
@@ -55,7 +55,7 @@
 .lf-goal-progress-part { block-size: 100%; }
 .lf-goal-progress-legend { display: flex; flex-wrap: wrap; gap: var(--spacing-2) var(--spacing-4); align-items: center; }
 .lf-goal-progress-legend > span { display: inline-flex; gap: var(--spacing-2); align-items: center; font-weight: 700; }
-.lf-goal-progress-total { font-family: Fredoka, sans-serif; }
+.lf-goal-progress-total { font-family: 'Plus Jakarta Sans', sans-serif; }
 .lf-goal-progress-key { inline-size: 16px; block-size: 16px; border-radius: var(--rounded-sm); flex-shrink: 0; }
 .lf-goal-progress [data-part='own'] { background: var(--mint-strong); }
 .lf-goal-progress [data-part='bonus'] { background: repeating-linear-gradient(135deg, var(--reward-strong) 0 4px, var(--reward-soft) 4px 8px); }
@@ -73,3 +73,25 @@
 .lf-split-bar-part[data-split-segment='share'] { background: var(--berry); }
 .lf-split-bar-part[data-split-segment='left'] { background: var(--sunken); }
 @media (prefers-reduced-motion: no-preference) { .lf-split-bar-part { transition: flex-grow var(--dur-micro) var(--ease-standard); } }
+
+/* The goal ring (owner review, 6 October 2026): the goal reads as something filling up. Decorative: the bar beside it carries provenance (D.16). */
+.lf-goal-ringwrap { display: grid; gap: var(--spacing-4); min-inline-size: 0; }
+.lf-goal-ring-row { display: flex; align-items: center; gap: var(--spacing-4); min-inline-size: 0; }
+.lf-goal-ring {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: none;
+  inline-size: calc(var(--spacing-16) + var(--spacing-4));
+  aspect-ratio: 1;
+  border-radius: var(--rounded-full);
+  background: conic-gradient(var(--mint-strong) calc(var(--pct, 0) * 1%), var(--sunken) 0%);
+}
+.lf-goal-ring::before { content: ''; position: absolute; inset: var(--spacing-2); border-radius: var(--rounded-full); background: var(--surface); }
+.lf-goal-ring > span { position: relative; font: var(--type-numeral); }
+.lf-goal-ringwrap[data-reached='true'] .lf-goal-ring { background: conic-gradient(var(--reward-strong) 100%, var(--sunken) 100%); }
+.lf-goal-ringwrap[data-reached='true'] .lf-goal-ring::before { background: var(--reward-soft); }
+.lf-goal-togo { font: var(--type-headline); color: var(--content); }
+
+/* The goals section: its heading row, its cards and its forms stack with one rhythm. */
+.lf-goals-section { display: grid; gap: var(--spacing-4); min-inline-size: 0; }

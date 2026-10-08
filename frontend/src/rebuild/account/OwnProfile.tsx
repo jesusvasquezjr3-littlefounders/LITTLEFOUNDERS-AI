@@ -39,7 +39,7 @@ import './account.css';
 
 export interface OwnProfileCopy {
   title: string; loading: string; failedTitle: string; failedBody: string; offlineTitle: string; offlineBody: string; retry: string; retrying: string;
-  memberSince: string; chooseUsername: string; tutor: string; editLook: string; settings: string;
+  memberSince: string; chooseUsername: string; tutor: string; editLook: string; settings: string; decisions: string;
   progressTitle: string; streak: string; lessons: string; xp: string; minutes: string;
   badgesTitle: string; badgeEarned: string; badgeEarnedUndated: string; badgesEmpty: string;
   peopleTitle: string; followers: string; following: string; peopleManaged: string;
@@ -206,6 +206,7 @@ function Ready({ copy, locale, dark, data, origin, invite, safetyNotice, connect
         <div className="lf-account-actions lf-profile-actions">
           <AppLink href="/profile/avatar" onNavigate={onNavigate}>{copy.editLook}</AppLink>
           {data.username ? null : <AppLink href="/profile/settings" onNavigate={onNavigate}>{copy.chooseUsername}</AppLink>}
+          {data.tutor ? null : <AppLink href="/learn/journal" onNavigate={onNavigate}>{copy.decisions}</AppLink>}
           <AppLink href="/profile/settings" onNavigate={onNavigate}>{copy.settings}</AppLink>
         </div>
       </div>

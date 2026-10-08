@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/theme/useTheme';
-import { CoinAccount } from '@/rebuild/banking/CoinAccount';
-import { fetchCoinAccount, fetchCoinMonth, setOwnFreeze, type CoinAccountView, type Month } from '@/rebuild/banking/bankingApi';
+import { CoinAccount, type WalletActions, type WalletPart } from '@/rebuild/banking/CoinAccount';
+import { fetchCoinAccount, fetchCoinMonth, setOwnFreeze, type CoinAccountView, type Month, type MonthLine } from '@/rebuild/banking/bankingApi';
+import { fetchOwnLedger } from '@/rebuild/family/familyHubApi';
 import { DEFAULT_REGISTER } from '@/rebuild/family/moneyRegister';
 import { hubSession } from '../family/familyHubSession';
 import { coinAccountCopy } from '../family/coinAccountCopy';
@@ -15,7 +16,7 @@ import { coinAccountCopy } from '../family/coinAccountCopy';
  * `onChanged` lets the page refresh what a freeze holds. Another month of the
  * statement (F5-K, W2F.3) is read on demand in the same register.
  */
-export function CoinAccountPanel({ token, refreshKey = 0, onChanged }: { token: string | null; refreshKey?: number; onChanged?: () => void }) {
+export function CoinAccountPanel({ token, refreshKey = 0, onChanged, part = 'overview', actions }: { token: string | null; refreshKey?: number; onChanged?: () => void; part?: WalletPart; actions?: WalletActions }) {
   const { i18n } = useTranslation();
   const { isDark } = useTheme();
   const locale = i18n.resolvedLanguage ?? 'en-US';
@@ -25,6 +26,7 @@ export function CoinAccountPanel({ token, refreshKey = 0, onChanged }: { token: 
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState<{ text: string; error: boolean } | null>(null);
   const [month, setMonth] = useState<{ statement: Month | null; loading: boolean; failed: boolean } | null>(null);
+  const [recentLines, setRecentLines] = useState<MonthLine[] | null>(null);
   const generation = useRef(0);
   const monthGeneration = useRef(0);
   useEffect(() => () => { generation.current++; monthGeneration.current++; }, []);
@@ -39,7 +41,13 @@ export function CoinAccountPanel({ token, refreshKey = 0, onChanged }: { token: 
     setLoading(false);
     if (!res.ok) { setFailed(true); return; }
     setView(res.data);
-  }, [token]);
+    // The home's latest activity reads the whole history, whatever the age (the statement gives a young child totals only).
+    if (part === 'recent') {
+      const ledger = await fetchOwnLedger(hubSession(token));
+      if (current !== generation.current) return;
+      setRecentLines(ledger.ok ? ledger.data.entries.slice(0, 4).map((e) => ({ id: e.id, bucket: e.bucket, amount: e.amount, reason: e.reason, title: e.title ?? null, createdAt: e.createdAt })) : null);
+    }
+  }, [token, part]);
 
   useEffect(() => { if (token) void load(); }, [load, token, refreshKey]);
 
@@ -64,5 +72,5 @@ export function CoinAccountPanel({ token, refreshKey = 0, onChanged }: { token: 
   }
 
   return <CoinAccount copy={copy} register={register} locale={locale} dark={isDark} view={view} loading={loading} failed={failed} busy={busy} notice={notice}
-    onRetry={() => { setLoading(true); void load(); }} onFreeze={(frozen) => void freeze(frozen)} month={month} onMonth={(next) => void showMonth(next)} />;
+    onRetry={() => { setLoading(true); void load(); }} onFreeze={(frozen) => void freeze(frozen)} month={month} onMonth={(next) => void showMonth(next)} part={part} actions={actions} recentLines={recentLines} />;
 }

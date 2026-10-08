@@ -13,7 +13,7 @@ body {
   margin: 0;
   background-color: #f4f5fd;
   color: #11132a;
-  font: 500 1rem/1.55 Nunito, sans-serif;
+  font: 500 1rem/1.55 'Plus Jakarta Sans', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

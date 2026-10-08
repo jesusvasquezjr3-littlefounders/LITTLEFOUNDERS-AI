@@ -4,6 +4,8 @@ import type { Locale } from '../design/copyBudget';
 import { Button, Celebration, celebrationPart, CountUp, InlineNotice, MotionAsset } from '../design/controls';
 import { mayCelebrate, streakMilestone } from '../design/milestones';
 import { REGISTERS, type LearnerRegister } from '../design/learnerRegisterPolicy.generated';
+import { ResultMentor } from '../mentor/ResultMentor';
+import type { LessonMentorStage } from './lessonDocument';
 import { CourseBadge } from './CourseBadge';
 import { learnCopy } from './learnCopy';
 import './result.css';
@@ -61,27 +63,27 @@ export type LessonCompletionReceipt = z.infer<typeof lessonCompletionReceiptSche
 
 const copy: Record<Locale, { done: string; preview: string; score: (correct: number, total: number) => string; xp: string; accuracy: string;
   time: string; comparison: string; today: string; best: string; newBest: string; savedBest: (best: number) => string;
-  reasoned: string; continue: string; unavailable: string; figured: (skill: string) => string; streak: (days: number) => string; paceDone: string;
+  reasoned: string; plan: (done: number, goal: number) => string; continue: string; unavailable: string; figured: (skill: string) => string; streak: (days: number) => string; paceDone: string;
   /** B.23 (S05.3f): the heading and recognition line per register (the young register keeps `done` and `figured`). */
   plainDone: string; showed: (skill: string) => string; built: (skill: string) => string; skillOnly: (skill: string) => string }> = {
   'en-US': { done: 'Lesson complete!', preview: 'Sample result', score: (a, n) => `${a}/${n} on first try.`,
     xp: 'XP earned', accuracy: 'First-try accuracy', time: 'Time', comparison: 'Today vs your best', today: 'Today', best: 'Best',
     newBest: 'New best', savedBest: (best) => `Your saved best is still ${best}%. This was practice.`,
-    reasoned: 'Well-explained choices',
+    reasoned: 'Well-explained choices', plan: (done, goal) => `Today: ${Math.min(done, goal)} of ${goal} lessons`,
     continue: 'Continue', unavailable: 'Result unavailable',
     figured: (skill) => `You worked out: ${skill}.`, streak: (days) => `${days}-day streak`, paceDone: 'Today\'s plan is done.',
     plainDone: 'Lesson complete', showed: (skill) => `You showed: ${skill}.`, built: (skill) => `Skill built: ${skill}.`, skillOnly: (skill) => `Skill: ${skill}.` },
   'es-MX': { done: '¡Lección terminada!', preview: 'Resultado de ejemplo', score: (a, n) => `${a}/${n} al primer intento.`,
     xp: 'XP ganados', accuracy: 'Aciertos al primer intento', time: 'Tiempo', comparison: 'Hoy frente a tu mejor marca', today: 'Hoy', best: 'Mejor',
     newBest: 'Nueva mejor marca', savedBest: (best) => `Tu mejor marca sigue en ${best}%. Fue práctica.`,
-    reasoned: 'Decisiones bien explicadas',
+    reasoned: 'Decisiones bien explicadas', plan: (done, goal) => `Hoy: ${Math.min(done, goal)} de ${goal} lecciones`,
     continue: 'Continuar', unavailable: 'Resultado no disponible',
     figured: (skill) => `Resolviste: ${skill}.`, streak: (days) => `Racha de ${days} días`, paceDone: 'Tu plan de hoy está listo.',
     plainDone: 'Lección terminada', showed: (skill) => `Demostraste: ${skill}.`, built: (skill) => `Habilidad lograda: ${skill}.`, skillOnly: (skill) => `Habilidad: ${skill}.` },
   'pt-BR': { done: 'Lição concluída!', preview: 'Resultado de exemplo', score: (a, n) => `${a}/${n} na primeira tentativa.`,
     xp: 'XP ganhos', accuracy: 'Acertos na primeira tentativa', time: 'Tempo', comparison: 'Hoje e seu recorde', today: 'Hoje', best: 'Recorde',
     newBest: 'Novo recorde', savedBest: (best) => `Seu recorde salvo continua ${best}%. Foi prática.`,
-    reasoned: 'Escolhas bem explicadas',
+    reasoned: 'Escolhas bem explicadas', plan: (done, goal) => `Hoje: ${Math.min(done, goal)} de ${goal} lições`,
     continue: 'Continuar', unavailable: 'Resultado indisponível',
     figured: (skill) => `Você resolveu: ${skill}.`, streak: (days) => `Sequência de ${days} dias`, paceDone: 'Seu plano de hoje está feito.',
     plainDone: 'Lição concluída', showed: (skill) => `Você mostrou: ${skill}.`, built: (skill) => `Habilidade construída: ${skill}.`, skillOnly: (skill) => `Habilidade: ${skill}.` },
@@ -113,7 +115,9 @@ export const lessonResultCopy = copy;
  * "saved best is still X" notice is actually on screen (the numerator of
  * Appendix C's replay-notice display rate); a fixture never reports it.
  */
-export function LessonResultView({ rawReceipt, locale, onContinue, fixture = false, dark, onNoticeShown, register = 'young', courseSlug = null }: {
+export function LessonResultView({ rawReceipt, locale, onContinue, fixture = false, dark, onNoticeShown, register = 'young', courseSlug = null, mentor = null }: {
+  /** The learner's own Mentor (the same character and scene as their lesson). Absent: the screen shows the medal instead. */
+  mentor?: LessonMentorStage | null;
   rawReceipt: unknown; locale: Locale; onContinue: () => void; fixture?: boolean;
   /** W2L.3: the course the lesson was opened from, so an earned badge shows that course's own icon. */
   courseSlug?: string | null;
@@ -197,11 +201,21 @@ export function LessonResultView({ rawReceipt, locale, onContinue, fixture = fal
         {celebrateBadge ? <CourseBadge slug={courseSlug} size="sm" /> : null}
         {celebrateBadge ? lessonCopy.badgeEarned : lessonCopy.courseComplete}</p>
     </Celebration> : null;
+  // The streak and today's plan are information the learner returns for, so they are always shown; only a milestone moves (OD-7).
+  const streakStatic = !streakLine && receipt.streak && receipt.streak.days > 0
+    ? <p className="lf-result-streak" data-copy-role="body"><img src="/rebuild/art/streak-flame.svg" alt="" className="lf-result-streak-mark" />{t.streak(receipt.streak.days)}</p> : null;
+  const planPips = receipt.pace && !paceDone
+    ? <div className="lf-result-plan"><span className="lf-result-plan-pips" aria-hidden="true">
+      {Array.from({ length: receipt.pace.goal }, (_, index) => <i key={index} data-done={index < receipt.pace!.passed_today} />)}</span>
+      <span data-copy-role="body">{t.plan(receipt.pace.passed_today, receipt.pace.goal)}</span></div> : null;
   const inner = <div className="lf-result-inner">
       {fixture ? <p className="lf-result-preview-label" data-copy-role="body">{t.preview}</p> : null}
       <div className="lf-result-hero">
         {celebrateLesson ? <LessonConfetti medal={reward.medal} /> : null}
-        {reward.medal ? <img src="/rebuild/art/lesson-medal.svg" alt="" className={`lf-result-medal${pop.className ? ` ${pop.className}` : ''}`} {...(celebrateLesson ? { 'data-celebrate': 'lesson-complete' } : {})} /> : null}
+        {(() => {
+          const medal = reward.medal ? <img src="/rebuild/art/lesson-medal.svg" alt="" className={`lf-result-medal${pop.className ? ` ${pop.className}` : ''}`} {...(celebrateLesson ? { 'data-celebrate': 'lesson-complete' } : {})} /> : null;
+          return mentor ? <ResultMentor character={mentor.character} calm={REGISTERS[register].mentor.animation === 'calm'} fallback={medal} /> : medal;
+        })()}
         <h1 data-copy-role="heading">{heading}</h1>
         {/* B.20: the skill behind the XP leads; the first-try count lives in the accuracy tile. B.23: framed per register. */}
         {skill ? <p className="lf-result-figured" data-copy-role="body">{recognition(skill)}</p>
@@ -209,6 +223,7 @@ export function LessonResultView({ rawReceipt, locale, onContinue, fixture = fal
             : <p data-copy-role="body">{t.score(receipt.first_try_correct, receipt.graded_count)}</p>}
         {courseMoment}
         {streakLine}
+        {streakStatic}
       </div>
       <div className="lf-result-sheet">
         <div className="lf-result-stats" aria-label={heading}>{tiles}</div>
@@ -225,6 +240,7 @@ export function LessonResultView({ rawReceipt, locale, onContinue, fixture = fal
               <div className="lf-result-bar" role="progressbar" aria-label={label} aria-valuemin={0} aria-valuemax={100} aria-valuenow={value}>
                 <span className={fill.className || undefined} style={{ inlineSize: `${value}%` }} /></div><strong data-copy-role="data">{value}%</strong></div>)}
         </section> : null}
+        {planPips}
         {paceDone ? <div className="lf-result-pace"><InlineNotice tone="success" live>{t.paceDone}</InlineNotice></div> : null}
         <Button variant="accent" breathing onClick={onContinue}>{t.continue}</Button>
       </div>

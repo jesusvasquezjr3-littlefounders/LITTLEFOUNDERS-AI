@@ -7,6 +7,7 @@ import { authedUser, requireAuth, requireRole } from '../middleware/auth.js';
 import { evidenceUploadRateLimiter } from '../middleware/rateLimit.js';
 import { requireWalletAccess } from '../middleware/walletAccess.js';
 import { getSelfActionDetails } from '../services/teenWallet.js';
+import { getLedgerTitles } from '../services/ledgerTitles.js';
 import { recordReflection, REFLECTIONS, type Reflection } from '../services/parentCoaching.js';
 import { deleteEvidence, EVIDENCE_ALLOWED_MIME, fetchEvidenceBytes, sniffImageMime, uploadEvidence } from '../services/evidence.js';
 import { isCalendarDate } from '../services/streak.js';
@@ -47,10 +48,12 @@ import {
   type WalletLedgerRow,
 } from '../services/supabaseRest.js';
 import {
+  archiveGoalReturning,
   archiveShareDestination,
   createShareDestination,
   declineNextStep,
   DESTINATION_KINDS,
+  editGoalDetails,
   getGoalBreakdowns,
   getNextSteps,
   getShareDestination,
@@ -58,7 +61,10 @@ import {
   listShareDestinations,
   listShareGifts,
   markNextStepSeen,
+  moveGoalCoins,
+  movePocketCoins,
   pledgeShareGift,
+  POCKETS,
   readUsualSplit,
   RECOMMENDED_SPLIT,
   SHARE_GIFT_MAX_COINS,
@@ -264,6 +270,24 @@ const HABIT_REFUSALS: Record<string, { status: number; message: string }> = {
   GOAL_FOLLOWS_INVALID: { status: 409, message: 'A next goal can only follow a goal you reached' },
 };
 
+/** The holder's own moves (wallet_moves): what the database refused, in words a child can act on. */
+const MOVE_REFUSALS: Record<string, { status: number; message: string }> = {
+  WALLET_MOVE_INVALID: { status: 400, message: 'Check the amount and the two places' },
+  INSUFFICIENT_BALANCE: { status: 409, message: 'There are not that many coins there' },
+  GOAL_SAVINGS_PROTECTED: { status: 409, message: 'Those coins belong to a goal; take them out of the goal first' },
+  GOAL_BALANCE_INSUFFICIENT: { status: 409, message: 'The goal does not hold that many coins' },
+  GOAL_NOT_ACTIVE: { status: 409, message: 'That goal is not active' },
+  GOAL_NOT_FOUND: { status: 404, message: 'No such goal' },
+  GOAL_EDIT_INVALID: { status: 400, message: 'Check the goal name, the target and the picture' },
+  GOAL_EDIT_REACHED: { status: 409, message: 'A goal you reached keeps its target; you can still rename it' },
+  WALLET_HOLDER_REQUIRED: { status: 403, message: 'This account holds no wallet' },
+};
+
+function moveRefusal(res: Parameters<typeof fail>[0], refused: string) {
+  const mapped = MOVE_REFUSALS[refused];
+  return mapped ? fail(res, mapped.status, refused, mapped.message) : fail(res, 409, CONFLICT, 'The wallet refused this move');
+}
+
 function habitRefusal(res: Parameters<typeof fail>[0], refused: string, fallback: string) {
   const mapped = HABIT_REFUSALS[refused];
   return mapped ? fail(res, mapped.status, refused, mapped.message) : fail(res, 409, CONFLICT, fallback);
@@ -417,7 +441,7 @@ function notYetProblem(body: Record<string, unknown>, codes: readonly string[]) 
  */
 type SelfDetails = NonNullable<Awaited<ReturnType<typeof getSelfActionDetails>>>;
 
-function toWireLedgerEntry(e: WalletLedgerRow, actions?: Map<string, GuardianActionRow>, selfActions?: SelfDetails) {
+function toWireLedgerEntry(e: WalletLedgerRow, actions?: Map<string, GuardianActionRow>, selfActions?: SelfDetails, titles?: Map<number, string>) {
   const action = e.guardian_action_id ? actions?.get(e.guardian_action_id) : undefined;
   const self = e.self_action_id ? selfActions?.get(e.self_action_id) : undefined;
   return {
@@ -433,6 +457,8 @@ function toWireLedgerEntry(e: WalletLedgerRow, actions?: Map<string, GuardianAct
     // which of their personal rewards they marked; never free text.
     source: self?.source ?? null,
     rewardTitle: self?.reward_title ?? null,
+    // What it was for, by name: the chore, the reward, the goal or the place a gift went to (what a family typed).
+    title: titles?.get(e.id) ?? self?.reward_title ?? null,
     createdAt: e.created_at,
   };
 }
@@ -441,9 +467,10 @@ function toWireLedgerEntry(e: WalletLedgerRow, actions?: Map<string, GuardianAct
 async function ledgerWithNotes(entries: WalletLedgerRow[]) {
   const ids = entries.flatMap((e) => (e.guardian_action_id ? [e.guardian_action_id] : []));
   const selfIds = entries.flatMap((e) => (e.self_action_id ? [e.self_action_id] : []));
-  const [actions, selfActions] = await Promise.all([getGuardianActionsByIds(ids), getSelfActionDetails(selfIds)]);
+  const [actions, selfActions, titles] = await Promise.all([getGuardianActionsByIds(ids), getSelfActionDetails(selfIds), getLedgerTitles(entries)]);
   if (actions === null || selfActions === null) return null;
-  return entries.map((e) => toWireLedgerEntry(e, actions, selfActions));
+  // A name is a help, not a promise: if it cannot be read the movement still shows, just without it.
+  return entries.map((e) => toWireLedgerEntry(e, actions, selfActions, titles ?? undefined));
 }
 
 function toWireGuardianAction(a: GuardianActionRow, callerId: string) {
@@ -1347,17 +1374,75 @@ export function tasksRouter(): Router {
     return ok(res, { declined: result });
   });
 
+  /*
+   * Removing or editing a goal. No body removes it: whatever it held goes back to
+   * plain Save in the same transaction, so a goal can never strand coins (the
+   * database does it in one function). A body of {title, target, icon} edits it.
+   */
+  const EditGoal = z
+    .object({ title: z.string().trim().min(1).max(80), target: z.number().int().min(1).max(100000), icon: z.enum(GOAL_ICONS) })
+    .strict();
+
   router.patch('/goals/:id', walletHolder, async (req, res) => {
     const kid = authedUser(res);
     const id = z.string().uuid().safeParse(req.params.id);
     if (!id.success) return fail(res, 400, 'VALIDATION_ERROR', 'id must be a uuid');
     const goal = await getGoalById(id.data);
     if (!goal || goal.kid_user_id !== kid.id) return fail(res, 404, NOT_FOUND, 'No such goal');
-    const archived = await archiveGoal(id.data, kid.id);
-    if (!archived) return fail(res, 502, DATA_UNAVAILABLE, 'Could not archive the goal');
+    const editing = Object.keys(req.body ?? {}).length > 0;
+    if (editing) {
+      const parsed = EditGoal.safeParse(req.body);
+      if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'Check the goal name, the target and the picture');
+      const edited = await editGoalDetails(kid.id, id.data, parsed.data);
+      if (edited === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not change the goal');
+      if (isRefusal(edited)) return moveRefusal(res, edited.refused);
+      const fresh = await getGoalById(id.data);
+      const wire = fresh ? await oneGoalWithProgress(fresh) : null;
+      if (!wire) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load goal progress');
+      return ok(res, { goal: wire, returned: 0 });
+    }
+    const returned = await archiveGoalReturning(kid.id, id.data);
+    if (returned === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not remove the goal');
+    if (isRefusal(returned)) return moveRefusal(res, returned.refused);
     const wire = await oneGoalWithProgress({ ...goal, status: 'archived' });
     if (!wire) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load goal progress');
-    return ok(res, { goal: wire });
+    return ok(res, { goal: wire, returned });
+  });
+
+  // ── WALLET HOLDER: moving their own coins ────────────────────────────────
+  /*
+   * The holder's own moves, no approval and nothing leaves the account (D.7):
+   * from one pocket to another, from plain Save into a goal, and from a goal
+   * back to plain Save. Every move is two balanced ledger rows the database
+   * checks against the move that explains them (wallet_moves).
+   */
+  const Coins = z.number().int().min(1).max(100000);
+  const PocketMove = z.object({ from: z.enum(POCKETS), to: z.enum(POCKETS), amount: Coins }).strict()
+    .refine((v) => v.from !== v.to, 'Pick two different pockets');
+  const GoalMove = z.object({ direction: z.enum(['in', 'out']), amount: Coins }).strict();
+
+  router.post('/wallet/moves', walletHolder, async (req, res) => {
+    const kid = authedUser(res);
+    const parsed = PocketMove.safeParse(req.body);
+    if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'Check the amount and the two pockets');
+    const result = await movePocketCoins(kid.id, parsed.data.from, parsed.data.to, parsed.data.amount);
+    if (result === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not move the coins');
+    if (isRefusal(result)) return moveRefusal(res, result.refused);
+    return ok(res, { moveId: result }, 201);
+  });
+
+  router.post('/goals/:id/moves', walletHolder, async (req, res) => {
+    const kid = authedUser(res);
+    const id = z.string().uuid().safeParse(req.params.id);
+    const parsed = GoalMove.safeParse(req.body);
+    if (!id.success || !parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'Check the amount and the direction');
+    const result = await moveGoalCoins(kid.id, id.data, parsed.data.direction, parsed.data.amount);
+    if (result === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not move the coins');
+    if (isRefusal(result)) return moveRefusal(res, result.refused);
+    const goal = await getGoalById(id.data);
+    const wire = goal ? await oneGoalWithProgress(goal) : null;
+    if (!wire) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load goal progress');
+    return ok(res, { moveId: result, goal: wire }, 201);
   });
 
   // ── WALLET HOLDER: the usual split (D.13) ────────────────────────────────

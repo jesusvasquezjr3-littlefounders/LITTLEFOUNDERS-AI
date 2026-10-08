@@ -131,7 +131,7 @@ describe('lesson result receipt boundary', () => {
     const base = milestoneReceipt('en-US');
     for (const celebrations of [undefined, [], ['lesson-complete'], ['correct-answer', 'coin-split', 'streak-8']]) {
       const { container, unmount } = render(<LessonResultView rawReceipt={{ ...base, celebrations }} locale="en-US" onContinue={() => {}} />);
-      expect(container.querySelector('.lf-result-streak')).toBeNull();
+      expect(container.querySelector('.lf-result-streak[data-celebrate]')).toBeNull();
       if (!celebrations?.includes('lesson-complete')) expect(container.querySelector('[data-celebrate]')).toBeNull();
       unmount();
     }

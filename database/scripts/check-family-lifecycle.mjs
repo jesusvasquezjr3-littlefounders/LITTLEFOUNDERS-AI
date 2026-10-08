@@ -102,6 +102,9 @@ export const REGISTRY = {
     // S07.4 (D.14): coins directed to a Share destination, and a pledge that came back.
     share_gift: { producer: [E(SHARE_FLOWS, "'share', -p_amount, 'share_gift', p_holder, v_gift")], consumer: [E(ACTIVITY, 'share_gift: copy.shared'), E(TEEN_UI, 'share_gift: copy.history.shared'), E('backend/src/routes/banking.ts', "e.reason === 'share_gift'")] },
     share_gift_returned: { producer: [E(SHARE_FLOWS, "'share', v_gift.amount, 'share_gift_returned', p_actor, p_gift")], consumer: [E(ACTIVITY, 'share_gift_returned: copy.shareBack'), E(TEEN_UI, 'share_gift_returned: copy.history.shareBack')] },
+    // wallet_moves: the holder's own move between pockets, or into and out of a goal.
+    pocket_move: { producer: [E(SQL('_wallet_move_flows'), "'pocket_move', p_holder, v_move")], consumer: [E(ACTIVITY, 'pocket_move: copy.moved'), E(TEEN_UI, 'pocket_move: copy.history.moved'), E('backend/src/routes/banking.ts', "e.reason === 'pocket_move'")] },
+    goal_move: { producer: [E(SQL('_wallet_move_flows'), "'goal_move', p_holder, v_move")], consumer: [E(ACTIVITY, 'goal_move: copy.goalCoins'), E(TEEN_UI, 'goal_move: copy.history.goalCoins'), E('backend/src/routes/banking.ts', "e.reason === 'goal_move'")] },
   },
   // S07.4 (D.14): a family-chosen (or teen-chosen) place for Share coins.
   'share_destinations.status': {

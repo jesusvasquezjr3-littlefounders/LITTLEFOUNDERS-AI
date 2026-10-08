@@ -58,11 +58,11 @@
     "title": "From curiosity to financial confidence",
     "lead": "We do not give lessons. We give decisions.",
     "demoTitle": "Try one decision",
-    "demoQuestion": "You earned 10 coins. What do you do?",
+    "demoQuestion": "You earned 10 seeds. What do you do?",
     "optionCandy": "Buy candy today",
     "optionBike": "Save for the bike",
     "consequenceCandy": "Sweet for 5 minutes, then gone. The bike is just as far away.",
-    "consequenceBike": "No candy today. The bike is 10 coins closer.",
+    "consequenceBike": "No candy today. The bike is 10 seeds closer.",
     "mentorsTitle": "Four Mentors who answer back",
     "mentorsBody": "They guide the lessons. Your child asks, and the Mentor answers.",
     "guestTitle": "Start without an account",
@@ -89,17 +89,17 @@
     "declined": "Not remembered.",
     "micNote": "Your child's microphone is off by default. It turns on only with your consent.",
     "choresTitle": "Chores with a real reward",
-    "choresBody": "You set the chore and its coins, then approve it or let small ones through at the level you choose.",
-    "choresQuestion": "You earned 10 coins for a chore. What do you do?",
+    "choresBody": "You set the chore and its seeds, then approve it or let small ones through at the level you choose.",
+    "choresQuestion": "You earned 10 seeds for a chore. What do you do?",
     "save": "Save it",
     "spend": "Spend it",
     "share": "Share it",
-    "consequenceSave": "10 coins move toward your goal. Your Tutor sees your progress too.",
+    "consequenceSave": "10 seeds move toward your goal. Your Tutor sees your progress too.",
     "consequenceSpend": "You ask for a reward and say why. It waits for your Tutor's yes, unless it fits your level.",
-    "consequenceShare": "Your share coins go to a cause your Tutor chose. You hear what really happened.",
-    "simulation": "Simulation",
+    "consequenceShare": "Your share seeds go to a cause your Tutor chose. You hear what really happened.",
+    "simulation": "Not real money",
     "bankingTitle": "A practice Wallet, not a bank account",
-    "bankingBody": "Allowance, savings bonus and spending limits, all in coins. None of it is real money.",
+    "bankingBody": "Allowance, savings bonus and spending limits, all in seeds. None of it is real money.",
     "mapTitle": "Their own map, in your view",
     "mapBody": "See the map your child explores: lessons finished, streak and their last visit. Never compared to another child.",
     "privacyTitle": "Built private",
@@ -125,7 +125,7 @@
       "start": "Getting started",
       "family": "Tutor and family",
       "mentor": "The Mentor",
-      "money": "Coins and rewards",
+      "money": "Seeds and rewards",
       "privacy": "Privacy and safety",
       "support": "Support"
     },
@@ -192,15 +192,15 @@
       },
       "realBank": {
         "question": "Is this a real bank account?",
-        "answer": "No. It is practice in coins, a simulation that never uses real money."
+        "answer": "No. You practice with seeds, never with real money."
       },
       "lfCoins": {
-        "question": "What are the coins?",
+        "question": "What are the seeds?",
         "answer": "The app's practice currency. Kids earn them from tasks and lessons to practice saving, spending and sharing; they have no value outside the app."
       },
       "chores": {
         "question": "How do chores and rewards work?",
-        "answer": "You set a chore and its coins; your child splits them into save, spend and share. You approve each one, or let small ones through."
+        "answer": "You set a chore and its seeds; your child splits them into save, spend and share. You approve each one, or let small ones through."
       },
       "realMoney": {
         "question": "Can my child spend real money?",
@@ -526,19 +526,41 @@
     "families": "Zara, one of the Mentors, nodding hello"
   },
   "landingV2": {
-    "title": "Help your child understand",
-    "titleAccent": "the value of money.",
-    "lead": "Help them save, solve problems and develop ideas through interactive challenges and an AI Mentor.",
+    "title": "The practice field for",
+    "titleAccent": "their financial future.",
+    "lead": "Preparing them for the real world, one decision at a time.",
+    "heroParent": "I'm a Parent",
+    "heroLearn": "I just want to learn",
+    "heroSceneAlt": "Dr. Rho and Zara, two Mentors, with a flame, a book, a light bulb, a star, toy blocks and seeds floating around them.",
+    "problemBig": "By age 7,",
+    "problemTitle": "money habits are already forming.",
+    "problemLink": "Yet many reach adulthood without learning to manage money:",
+    "problemFigure": "More than 4 in 10",
+    "problemFact": "adults in the US don’t understand money basics.",
+    "problemLost": 4,
+    "problemBridge": "So your child can start practicing today, with no real risk.",
+    "problemSources": "Sources: University of Cambridge, 2013 · S&P Global FinLit Survey, 2014",
+    "valueTitle": "How they practice in LittleFounders",
+    "valueCards": [
+      { "title": "Clear goals", "body": "They learn to set goals and map the way to reach them, step by step.", "alt": "Wallet screen: the “New bike” goal is at 60 of 100 seeds saved." },
+      { "title": "Thoughtful decisions", "body": "Turn impulse into pause. They understand the difference between what they want today and what they will need tomorrow.", "alt": "A lesson opens by asking “Remember this?”, with the choice the child made before and what happened next, and the Mentor thinking beside it." },
+      { "title": "A safe experience", "body": "A place where they live the result of their decisions with no real financial risk.", "alt": "End-of-lesson screen with XP earned, accuracy and a streak." }
+    ],
     "tryAction": "Try a challenge",
     "note": "Free to start. Learn at your own pace.",
-    "heroAlt": "A father and daughter explore shapes and coins together.",
+    "heroAlt": "A father and daughter explore shapes and seeds together.",
     "learnTitle": "Learning that goes beyond the screen.",
     "example": "Example preview",
     "tryHint": "Choose an answer and explore why.",
-    "simulation": "Simulated coins. Demo only.",
-    "addCoin": "Save one coin",
-    "removeCoin": "Remove one coin",
+    "simulation": "Seeds. Demo only.",
+    "addCoin": "Save one seed",
+    "removeCoin": "Remove one seed",
     "saveHint": "Save a little today. See how your goal gets closer.",
+    "lessonDemo": {"title": "Try it: a mini lesson", "lead": "Answer, try it and see what happens. At the end you will know something new.", "step": "Step {n} of 4", "goal": "New bike", "seeds": "seeds", "week": "Week {n}", "weeksOption": "{n} weeks", "oneLine": "Your bike costs 100 seeds. You already have 60 and you earn 10 each week.", "oneAsk": "In how many weeks will you have it?", "twoLine": "You said {n} weeks. Now check it: let the weeks pass.", "twoPass": "Let a week pass", "twoDone": "You got there in 4 weeks! You needed 40 more and you earn 10 each week.", "threeLine": "Back to today, with 60 seeds: a game goes on sale for 25. What do you do?", "threeBuy": "Buy the game", "threeKeep": "Don’t buy it", "threeRun": "Watch the weeks pass…", "threeBuyDone": "Now it takes 7 weeks, 3 more than before. The game delayed your bike.", "threeKeepDone": "It is still 4 weeks. If you had bought the game, it would be 7.", "fourLine": "That is saving for a goal!", "learnTitle": "What you learned", "learn": "What you spend today changes when you reach your goal.", "cta": "Start my first lesson", "ctaContinue": "Go to my lessons", "ctaNote": "Every lesson is like this: you try it, see what happens and understand why.", "again": "Start over", "next": "Continue", "bridge": "And when an idea is hard to see, Dina draws it."},
+    "boardsTitle": "Hard ideas, made visual.",
+    "boardsLead": "A patient companion that makes every lesson interactive.",
+    "boardsBridge": "And you can see everything they learn.",
+    "boardsTabs": [{"label": "Scale", "alt": "The Mentor screen with its board open: a scale compares a $15 book with a $25 game, with Dina beside it."}, {"label": "Splits", "alt": "The Mentor screen with its board open: 40 shared in halves and in quarters, with Dina beside it."}, {"label": "Receipts", "alt": "The Mentor screen with its board open: a receipt listing each purchase and the total, with Dina beside it."}],
     "mentorTitle": "When they get stuck, help them think.",
     "mentorBody": "Dr. Rho, Zara, Liruf and Dina guide learners with questions, so they can find their own way forward.",
     "reasonLabel": "Try a question",
@@ -548,7 +570,7 @@
     "familyStory": "Alex chose to save for a goal.",
     "familyReflection": "Why? Buying it later mattered more than spending today.",
     "task": "Water the plants",
-    "taskReward": "10 simulated coins",
+    "taskReward": "10 seeds",
     "approve": "Approve",
     "approved": "Approved",
     "goal": "Savings goal",
@@ -606,7 +628,7 @@
       },
       {
         "label": "For the discount",
-        "feedback": "A lower price is still spending. What else could those coins do?"
+        "feedback": "A lower price is still spending. What else could those seeds do?"
       },
       {
         "label": "Think it through",
@@ -627,7 +649,7 @@
       {
         "range": "13–17",
         "title": "Decide",
-        "body": "Explore trade-offs, personal goals and an independent simulated wallet."
+        "body": "Explore trade-offs, personal goals and a wallet of their own."
       },
       {
         "range": "18+",
@@ -638,7 +660,7 @@
     "faq": [
       {
         "question": "Is this real money?",
-        "answer": "No. Learning activities and wallets use simulated coins."
+        "answer": "No. Learning activities and wallets use seeds."
       },
       {
         "question": "What does the Mentor do?",
@@ -646,7 +668,7 @@
       },
       {
         "question": "Do we need a family account?",
-        "answer": "Start individually, including a personal simulated wallet for teens. Family tools and task approvals require a verified parent."
+        "answer": "Start on their own, with a wallet of their own for teens. Family tools and task approvals need a verified parent."
       },
       {
         "question": "Is it free?",

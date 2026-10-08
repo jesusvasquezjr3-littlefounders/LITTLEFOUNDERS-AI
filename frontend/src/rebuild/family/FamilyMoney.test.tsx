@@ -84,7 +84,7 @@ describe('ChoreComposer (D.10)', () => {
     expect(screen.getByRole('status')).toHaveTextContent('Added: Set the table');
   });
 
-  it('never offers more than 2 token coins for a contribution, and bounds a bonus task to 1-500', async () => {
+  it('never offers more than 2 token seeds for a contribution, and bounds a bonus task to 1-500', async () => {
     const { transport } = open();
     fireEvent.change(screen.getByLabelText(en.choreComposer.title), { target: { value: 'Wash the car' } });
     fireEvent.click(screen.getByRole('radio', { name: en.choreComposer.contribution }));
@@ -208,8 +208,8 @@ describe('SavingsBonusSettings (D.11)', () => {
     const { onSave, view } = renderSettings(perTen);
     expect(screen.getByText(en.bonusSettings.perTenBody)).toBeVisible();
     expect(screen.queryByLabelText(en.bonusSettings.rate)).toBeNull();
-    expect(screen.getByText('Changed from 20% to 1 coin for every 10 saved.')).toBeVisible();
-    expect(screen.getByText('100 coins saved: 10 more next week')).toBeVisible();
+    expect(screen.getByText('Changed from 20% to 1 seed for every 10 saved.')).toBeVisible();
+    expect(screen.getByText('100 seeds saved: 10 more next week')).toBeVisible();
     fireEvent.click(screen.getByRole('button', { name: en.bonusSettings.save }));
     expect(onSave).toHaveBeenCalledWith({ active: true });
     everyTextHasARole(view.container);
@@ -224,7 +224,7 @@ describe('SavingsBonusSettings (D.11)', () => {
     const { onSave } = renderSettings(percent);
     const rate = screen.getByLabelText(en.bonusSettings.rate);
     expect(rate).toHaveValue(15);
-    expect(screen.getByText('100 coins saved: 15 more next week')).toBeVisible();
+    expect(screen.getByText('100 seeds saved: 15 more next week')).toBeVisible();
     fireEvent.change(rate, { target: { value: '25' } });
     fireEvent.click(screen.getByRole('button', { name: en.bonusSettings.save }));
     expect(screen.getByRole('alert')).toHaveTextContent(en.bonusSettings.invalidRate);
@@ -247,13 +247,13 @@ describe('SavingsBonusExplainer (D.11)', () => {
       onRetry={vi.fn()} onExampleShown={onExampleShown} onAnswer={onAnswer} />),
   });
 
-  it('shows a younger child their own coins in groups of ten, each earning one, and never a percent', () => {
+  it('shows a younger child their own seeds in groups of ten, each earning one, and never a percent', () => {
     const { view } = renderExplainer(young);
     expect(screen.getByText(en.bonusYoung.rule)).toBeVisible();
-    expect(screen.getByText('You have 57 coins saved.')).toBeVisible();
+    expect(screen.getByText('You have 57 seeds saved.')).toBeVisible();
     expect(view.container.querySelectorAll('[data-group="ten"]')).toHaveLength(5);
     expect(view.container.querySelector('[data-group="rest"]')).toHaveTextContent('7');
-    expect(screen.getByText('Next week: 5 more coins.')).toBeVisible();
+    expect(screen.getByText('Next week: 5 more seeds.')).toBeVisible();
     expect(view.container.textContent).not.toMatch(/%/);
     expect(screen.queryByRole('button')).toBeNull();
     everyTextHasARole(view.container);
@@ -268,12 +268,12 @@ describe('SavingsBonusExplainer (D.11)', () => {
     const onAnswer = vi.fn(async ({ answer }: { exampleSaved: number; answer: number }) => answer === 30);
     const { view, onExampleShown } = renderExplainer(teen, onAnswer);
     expect(screen.getByText('Your family adds 15% of your Save pocket each week.')).toBeVisible();
-    expect(screen.getByText('57 coins saved: 8 more next week')).toBeVisible();
+    expect(screen.getByText('57 seeds saved: 8 more next week')).toBeVisible();
     expect(screen.getByText(en.bonusTeen.compounding)).toBeVisible();
     expect(screen.getByText(en.bonusTeen.notInterest)).toBeVisible();
     fireEvent.click(screen.getByRole('button', { name: en.bonusTeen.open }));
     expect(onExampleShown).toHaveBeenCalledOnce();
-    expect(screen.getByText('With 200 coins saved at 15%, how many bonus coins would you get?')).toBeVisible();
+    expect(screen.getByText('With 200 seeds saved at 15%, how many bonus seeds would you get?')).toBeVisible();
     fireEvent.change(screen.getByLabelText(en.bonusTeen.answer), { target: { value: '20' } });
     await act(async () => { fireEvent.click(screen.getByRole('button', { name: en.bonusTeen.check })); });
     // A wrong answer is a "not yet" in the retry tone (announced as status), never the error hue (Bible 02 §4.2).
@@ -290,7 +290,7 @@ describe('SavingsBonusExplainer (D.11)', () => {
   it('never uses the teen\'s own balance as the example (the answer is already on screen)', () => {
     renderExplainer({ ...teen, saved: 200, nextBonus: 30 });
     fireEvent.click(screen.getByRole('button', { name: en.bonusTeen.open }));
-    expect(screen.getByText('With 300 coins saved at 15%, how many bonus coins would you get?')).toBeVisible();
+    expect(screen.getByText('With 300 seeds saved at 15%, how many bonus seeds would you get?')).toBeVisible();
   });
 
   it('computes previews with the credit\'s own arithmetic', () => {

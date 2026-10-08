@@ -9,7 +9,7 @@ import './controls.css';
  * Every rebuilt surface imports its controls from here and never from the
  * legacy application (02 rule 23).
  */
-export { Button, ButtonGroup, ButtonLink, IconButton, type ButtonProps, type ButtonSize, type ButtonVariant, type IconButtonVariant } from './buttons';
+export { Button, ButtonGroup, ButtonLink, IconButton, TileButton, type ButtonProps, type ButtonSize, type ButtonVariant, type IconButtonVariant } from './buttons';
 export { ConfirmDialog, DestructiveAction, Dialog, Menu, Popover, Sheet, Tooltip,
   type ConfirmDialogProps, type DialogProps, type MenuItem, type MenuTriggerProps, type PopoverTriggerProps, type SheetProps, type TooltipTriggerProps } from './overlays';
 export { RebuildProvider, useAnnounce, useToast, type Politeness, type ToastOptions, type ToastTone } from './feedback';
@@ -21,7 +21,7 @@ export { AuthShell, BrandMark, CONSOLE_TAB_LIMIT, ConsoleShell, DashboardLayout,
 export { Disclosure } from './disclosure';
 export { Checkbox, PictureChoice, RadioGroup, SegmentedControl, SelectField, Slider, Stepper, Switch, TextAreaField, TextField,
   type ChoiceOption, type PictureOption, type SelectOption, type StepLabels, type TextFieldProps } from './fields';
-export { Art, Banner, Card, Chip, ChipGroup, ChoiceChip, CoinAmount, COIN_ASSET_ID, EmptyState, ErrorState, InlineNotice, List, ListRow, LoadingState, MentorAvatar, Pill, ProgressBar, ReplyChip, RewardChip, Skeleton,
+export { Art, Banner, Card, Chip, ChipGroup, ChoiceChip, CoinAmount, COIN_ASSET_ID, SEED_ASSET_ID, EmptyState, ErrorState, InlineNotice, List, ListRow, LoadingState, MentorAvatar, Pill, ProgressBar, ReplyChip, RewardChip, Skeleton,
   type CardTone, type ChipDrag, type NoticeTone, type PillTone, type StatusTone } from './display';
 export { Glyph, GLYPH_BUDGET, GLYPH_FAMILIES, SYSTEM_GLYPHS, type GlyphName } from './glyphs';
 export { BarChart, niceMax, Sparkline, TrendChart, type VizBar, type VizLabels, type VizPoint, type VizSeries } from './charts';

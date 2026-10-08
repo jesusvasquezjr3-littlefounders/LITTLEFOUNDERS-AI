@@ -22,7 +22,7 @@ const ACTIONS = new Set(['open', 'close', 'submit', 'cancel', 'retry', 'save', '
 const HEADINGS = new Set(['heading', 'heading2', 'milestone', 'resting']);
 const OPTIONS: Record<string, Set<string>> = {
   choreComposer: new Set(['contribution', 'bonus', 'none', 'weekly', 'photo']),
-  choreKind: new Set(['contribution', 'bonus', 'noCoins', 'coins', 'oneCoin']),
+  choreKind: new Set(['contribution', 'bonus', 'noCoins', 'seeds', 'oneCoin']),
   bonusSettings: new Set(['on', 'off']),
 };
 const DATA = new Set(['added', 'days', 'oneDay', 'best', 'restLeft', 'paused', 'total', 'current', 'restingBest', 'running', 'upcoming', 'example', 'mine', 'correct']);
@@ -87,9 +87,9 @@ describe('Family Hub money copy (S07.3)', () => {
     });
   }
 
-  it('names coins in every locale where the kind line shows a quantity', () => {
-    expect(en.choreKind.coins).toContain('coins');
-    expect(es.choreKind.coins).toContain('monedas');
-    expect(pt.choreKind.coins).toContain('moedas');
+  it('names seeds in every locale where the kind line shows a quantity', () => {
+    expect(en.choreKind.coins).toContain('seeds');
+    expect(es.choreKind.coins).toContain('semillas');
+    expect(pt.choreKind.coins).toContain('sementes');
   });
 });

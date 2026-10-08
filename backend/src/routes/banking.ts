@@ -31,6 +31,17 @@ import {
   type WalletLedgerRow,
 } from '../services/supabaseRest.js';
 import { getGuardianActionsByIds, isRefusal, UNAVAILABLE, type GuardianActionRow } from '../services/familyLifecycle.js';
+import { getLedgerTitles } from '../services/ledgerTitles.js';
+import {
+  createAllowanceRequest,
+  decideAllowanceRequest,
+  getAllowanceRequest,
+  listAllowanceRequests,
+  REQUEST_DENIAL_CODES,
+  REQUEST_REASONS,
+  withdrawAllowanceRequest,
+  type AllowanceRequestRow,
+} from '../services/allowanceRequests.js';
 import {
   BONUS_PER_TEN_COINS,
   BONUS_PER_TEN_RATE_BP,
@@ -156,9 +167,9 @@ function toWirePendingCredit(c: PendingCreditRow) {
   return { id: c.id, amount: c.amount, source: c.source, createdAt: c.created_at };
 }
 
-function toWireLedgerEntry(e: WalletLedgerRow, actions: Map<string, GuardianActionRow>) {
+function toWireLedgerEntry(e: WalletLedgerRow, actions: Map<string, GuardianActionRow>, titles?: Map<number, string>) {
   const note = e.guardian_action_id ? actions.get(e.guardian_action_id)?.reason ?? null : null;
-  return { id: e.id, bucket: e.bucket, amount: e.amount, reason: e.reason, taskId: e.task_id, goalId: e.goal_id, note, createdAt: e.created_at };
+  return { id: e.id, bucket: e.bucket, amount: e.amount, reason: e.reason, taskId: e.task_id, goalId: e.goal_id, note, title: titles?.get(e.id) ?? null, createdAt: e.created_at };
 }
 
 async function spendLimitStatus(kidId: string, limit: SpendLimitRow | null) {
@@ -202,7 +213,7 @@ async function buildStatement(kidId: string, month?: string) {
   const { fromISO, toISO, label } = monthRange(month);
   const entries = await getWalletLedgerInRange(kidId, fromISO, toISO);
   if (entries === null) return null;
-  const actions = await getGuardianActionsByIds(entries.flatMap((e) => (e.guardian_action_id ? [e.guardian_action_id] : [])));
+  const [actions, titles] = await Promise.all([getGuardianActionsByIds(entries.flatMap((e) => (e.guardian_action_id ? [e.guardian_action_id] : []))), getLedgerTitles(entries)]);
   if (actions === null) return null;
   // S07.1: a goal withdrawal is a transfer between the child's own buckets,
   // never income or spending; a guardian correction is reported on its own
@@ -214,6 +225,8 @@ async function buildStatement(kidId: string, month?: string) {
   for (const e of entries) {
     // S07.2: a teen moving coins out of their own goal is a transfer too.
     if (e.reason === 'goal_withdrawal' || e.reason === 'goal_release') continue;
+    // wallet_moves: the holder's own move between pockets or a goal is a transfer, never income or spending.
+    if (e.reason === 'pocket_move' || e.reason === 'goal_move') continue;
     // S07.4 (D.14): coins directed to a Share destination are given, never
     // spent; a returned pledge cancels its gift on the same line.
     if (e.reason === 'share_gift' || e.reason === 'share_gift_returned') given -= e.amount;
@@ -222,7 +235,32 @@ async function buildStatement(kidId: string, month?: string) {
     else spent += -e.amount;
   }
   const saved = entries.filter((e) => e.bucket === 'save').reduce((sum, e) => sum + e.amount, 0);
-  return { month: label, earned, spent, adjusted, given, saved, entries: entries.map((e) => toWireLedgerEntry(e, actions)) };
+  return { month: label, earned, spent, adjusted, given, saved, entries: entries.map((e) => toWireLedgerEntry(e, actions, titles ?? undefined)) };
+}
+
+function toWireAllowanceRequest(r: AllowanceRequestRow) {
+  return {
+    id: r.id, kidUserId: r.kid_user_id, fromAmount: r.from_amount, amount: r.amount, reasonKind: r.reason_kind, note: r.note, status: r.status,
+    createdAt: r.created_at, decidedAt: r.decided_at, decisionCode: r.decision_code, decisionReason: r.decision_reason, revisitOn: r.revisit_on,
+  };
+}
+
+/** Database refusals from the allowance-request functions, in words the caller can act on. */
+const REQUEST_REFUSALS: Record<string, { status: number; message: string }> = {
+  ALLOWANCE_NONE: { status: 409, message: 'There is no allowance to ask more of yet' },
+  ALLOWANCE_REQUEST_INVALID: { status: 400, message: 'Ask for more than the allowance is now, up to 1,000 coins' },
+  ALLOWANCE_REQUEST_OPEN: { status: 409, message: 'One request is already waiting for an answer' },
+  ALLOWANCE_REQUEST_NOT_FOUND: { status: 404, message: 'No such request' },
+  ALLOWANCE_REQUEST_DECIDED: { status: 409, message: 'This request was already answered' },
+  DECISION_REASON_REQUIRED: { status: 400, message: 'A "not yet" needs a reason code and a reason' },
+  DECISION_REASON_NOT_ACTIONABLE: { status: 400, message: 'Say what they can do next, in a few words' },
+  DECISION_REVISIT_INVALID: { status: 400, message: 'Pick a date from tomorrow to 90 days ahead, only for "later"' },
+  WALLET_HOLDER_REQUIRED: { status: 403, message: 'This account has no family wallet' },
+};
+
+function requestRefusal(res: Parameters<typeof fail>[0], refused: string) {
+  const mapped = REQUEST_REFUSALS[refused];
+  return mapped ? fail(res, mapped.status, refused, mapped.message) : fail(res, 409, CONFLICT, 'The request was refused');
 }
 
 export function bankingRouter(): Router {
@@ -595,6 +633,86 @@ export function bankingRouter(): Router {
     const rule = await getAllowanceRule(kid.id);
     if (rule === undefined) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the allowance rule');
     return ok(res, { rule: rule ? toWireAllowanceRule(rule) : null });
+  });
+
+  // ── Asking for a bigger allowance (allowance_requests, 0261) ────────────────
+  const AskMore = z.object({
+    amount: z.number().int().min(2).max(1000),
+    reasonKind: z.enum(REQUEST_REASONS),
+    note: z.string().trim().min(1).max(120).optional(),
+  }).strict();
+
+  /** The child's latest request, so the screen can show "waiting", the answer, or nothing. */
+  router.get('/allowance-request', familyChild, async (req, res) => {
+    const kid = authedUser(res);
+    const list = await listAllowanceRequests(kid.id, 1);
+    if (list === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load your request');
+    return ok(res, { request: list[0] ? toWireAllowanceRequest(list[0]) : null });
+  });
+
+  router.post('/allowance-request', familyChild, async (req, res) => {
+    const kid = authedUser(res);
+    const parsed = AskMore.safeParse(req.body);
+    if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'Check the amount and the reason');
+    const id = await createAllowanceRequest(kid.id, { amount: parsed.data.amount, reasonKind: parsed.data.reasonKind, note: parsed.data.note ?? null });
+    if (id === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not send your request');
+    if (isRefusal(id)) return requestRefusal(res, id.refused);
+    const row = await getAllowanceRequest(id);
+    if (!row) return fail(res, 502, DATA_UNAVAILABLE, 'Could not read your request');
+    return ok(res, { request: toWireAllowanceRequest(row) }, 201);
+  });
+
+  router.post('/allowance-request/withdraw', familyChild, async (req, res) => {
+    const kid = authedUser(res);
+    if (Object.keys(req.body ?? {}).length > 0) return fail(res, 400, 'VALIDATION_ERROR', 'No body is accepted');
+    const list = await listAllowanceRequests(kid.id, 1);
+    if (list === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load your request');
+    const open = list[0];
+    if (!open || open.status !== 'requested') return fail(res, 404, NOT_FOUND, 'No request is waiting');
+    const result = await withdrawAllowanceRequest(kid.id, open.id);
+    if (result === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not take your request back');
+    if (isRefusal(result)) return requestRefusal(res, result.refused);
+    return ok(res, { withdrawn: true });
+  });
+
+  /** The Tutor's view of one child's requests: the open one first, then the latest answers. */
+  router.get('/allowance-requests/:kidId', requireRole(['parent']), async (req, res) => {
+    const parent = authedUser(res);
+    const kidId = z.string().uuid().safeParse(req.params.kidId);
+    if (!kidId.success) return fail(res, 400, 'VALIDATION_ERROR', 'kidId must be a uuid');
+    if (!(await guardParentOf(kidId.data, res, parent.id))) return;
+    const list = await listAllowanceRequests(kidId.data, 5);
+    if (list === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the requests');
+    return ok(res, { requests: list.map(toWireAllowanceRequest) });
+  });
+
+  const DecideRequest = z.union([
+    z.object({ approve: z.literal(true) }).strict(),
+    z.object({
+      approve: z.literal(false),
+      reasonCode: z.enum(REQUEST_DENIAL_CODES),
+      reason: z.string().trim().min(12).max(240),
+      revisitOn: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).nullable().optional(),
+    }).strict(),
+  ]);
+
+  router.post('/allowance-requests/:id/decide', requireRole(['parent']), async (req, res) => {
+    const parent = authedUser(res);
+    const id = z.string().uuid().safeParse(req.params.id);
+    const parsed = DecideRequest.safeParse(req.body);
+    if (!id.success || !parsed.success) return fail(res, 400, 'VALIDATION_ERROR', 'Check the answer: a "not yet" needs a code and a reason');
+    const row = await getAllowanceRequest(id.data);
+    if (row === undefined) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the request');
+    if (row === null) return fail(res, 404, NOT_FOUND, 'No such request');
+    if (!(await guardParentOf(row.kid_user_id, res, parent.id))) return;
+    const result = await decideAllowanceRequest({
+      requestId: id.data, actorId: parent.id, approve: parsed.data.approve,
+      reasonCode: parsed.data.approve ? null : parsed.data.reasonCode, reason: parsed.data.approve ? null : parsed.data.reason,
+      revisitOn: parsed.data.approve ? null : parsed.data.revisitOn ?? null,
+    });
+    if (result === UNAVAILABLE) return fail(res, 502, DATA_UNAVAILABLE, 'Could not save the answer');
+    if (isRefusal(result)) return requestRefusal(res, result.refused);
+    return ok(res, { outcome: result });
   });
 
   router.get('/spend-limit', familyChild, async (req, res) => {

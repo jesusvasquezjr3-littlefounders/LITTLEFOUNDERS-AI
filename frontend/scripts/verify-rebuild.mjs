@@ -30,7 +30,7 @@ async function navigate(query) {
     await new Promise((done) => setTimeout(done, 50));
   }
   await page.evaluate('document.fonts.ready');
-  if (!await page.evaluate("document.fonts.check('600 16px Fredoka') && document.fonts.check('500 16px Nunito')")) throw Error('Fonts did not load');
+  if (!await page.evaluate("document.fonts.check('700 16px Plus Jakarta Sans') && document.fonts.check('500 16px Plus Jakarta Sans')")) throw Error('Fonts did not load');
 }
 
 try {

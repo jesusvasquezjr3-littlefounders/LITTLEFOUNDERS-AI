@@ -60,10 +60,10 @@ function everyTextHasARole(container: HTMLElement) {
 describe('ChildCoinActivity (GAP-FIX-R6)', () => {
   it("shows the child's three pockets with their art and the split bar, and reads nothing else until asked", async () => {
     const { transport, view } = setup();
-    await screen.findByRole('heading', { name: "Sofía's coins" });
+    await screen.findByRole('heading', { name: "Sofía's seeds" });
     const pockets = view.container.querySelector('[data-family-part="pockets"]') as HTMLElement;
     expect([...pockets.querySelectorAll('li')].map((li) => [li.dataset.pocket, li.textContent])).toEqual([
-      ['save', 'Save12 coins'], ['spend', 'Spend20 coins'], ['share', 'Share3 coins'],
+      ['save', 'Save12 seeds'], ['spend', 'Spend20 seeds'], ['share', 'Share3 seeds'],
     ]);
     expect(pockets.querySelectorAll('[data-pocket-mark]')).toHaveLength(3);
     expect(pockets.querySelectorAll('[data-split-segment]')).toHaveLength(3);
@@ -127,7 +127,7 @@ describe('ChildCoinActivity (GAP-FIX-R6)', () => {
     await waitFor(() => expect(transport.calls.filter((c) => c.path === `/tasks/${KID_A}/wallet`)).toHaveLength(2));
   });
 
-  it('re-reads the pockets and the open parts after a coin movement elsewhere on the screen', async () => {
+  it('re-reads the pockets and the open parts after a seed movement elsewhere on the screen', async () => {
     const { transport, rerender } = setup();
     fireEvent.click(await screen.findByRole('button', { name: en.historyTitle }));
     await screen.findAllByText(en.reasons.allowance);

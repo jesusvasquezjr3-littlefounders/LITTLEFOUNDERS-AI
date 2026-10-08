@@ -20,7 +20,7 @@ function strings(copy: Record<string, unknown>): Array<[string, string]> {
 }
 
 describe('narrative copy (B.9, B.13)', () => {
-  const recallRole = (key: string): CopyRole => (['next', 'happened', 'hide'].includes(key) ? 'action' : key === 'heading' ? 'heading' : key === 'reflect' ? 'prompt' : 'body');
+  const recallRole = (key: string): CopyRole => (['next'].includes(key) ? 'action' : key === 'heading' ? 'heading' : key === 'reflect' ? 'prompt' : 'body');
   const journalRole = (key: string): CopyRole => {
     if (['back', 'retry', 'more', 'clear', 'clearYes', 'clearNo', 'tryIt', 'notNow', 'createGoal', 'planOnly', 'openWallet'].includes(key)) return 'action';
     if (['title', 'loading', 'errorTitle', 'emptyTitle', 'bridgeTitle'].includes(key)) return 'heading';
@@ -109,14 +109,14 @@ describe('an independent teen turns a savings prompt into their own goal (OD-28,
     const create = screen.getByRole('button', { name: 'Create goal' });
     expect((create as HTMLButtonElement).disabled).toBe(true);
     fireEvent.change(screen.getByLabelText('What will you save for?'), { target: { value: 'Headphones' } });
-    fireEvent.change(screen.getByLabelText('Coins to save'), { target: { value: '0' } });
+    fireEvent.change(screen.getByLabelText('Seeds to save'), { target: { value: '0' } });
     expect((create as HTMLButtonElement).disabled).toBe(true);
-    fireEvent.change(screen.getByLabelText('Coins to save'), { target: { value: '300' } });
+    fireEvent.change(screen.getByLabelText('Seeds to save'), { target: { value: '300' } });
     fireEvent.click(create);
     expect(await screen.findByText('Goal added to your Wallet.')).toBeTruthy();
     expect(onBridge).toHaveBeenCalledWith('bridge-1', 'act', { title: 'Headphones', target: 300 });
     expect(screen.getByText('Headphones')).toBeTruthy();
-    expect(screen.getByText('300 coins to save')).toBeTruthy();
+    expect(screen.getByText('300 seeds to save')).toBeTruthy();
     expect(screen.queryByRole('textbox')).toBeNull();
     fireEvent.click(screen.getByRole('button', { name: 'See my Wallet' }));
     expect(onOpenWallet).toHaveBeenCalledTimes(1);
@@ -127,7 +127,7 @@ describe('an independent teen turns a savings prompt into their own goal (OD-28,
     render(<SelfBridgeList bridges={savings} locale="pt-BR" onBridge={onBridge} />);
     fireEvent.click(screen.getByRole('button', { name: 'Vou tentar' }));
     fireEvent.change(screen.getByLabelText('Para que você vai poupar?'), { target: { value: 'Fone' } });
-    fireEvent.change(screen.getByLabelText('Moedas para poupar'), { target: { value: '1200' } });
+    fireEvent.change(screen.getByLabelText('Sementes para poupar'), { target: { value: '1200' } });
     fireEvent.click(screen.getByRole('button', { name: 'Criar meta' }));
     expect(await screen.findByText('Salvo como seu plano.')).toBeTruthy();
     expect(screen.queryByText('Meta adicionada à sua Carteira.')).toBeNull();
@@ -139,7 +139,7 @@ describe('an independent teen turns a savings prompt into their own goal (OD-28,
     render(<SelfBridgeList bridges={savings} locale="es-MX" onBridge={onBridge} />);
     fireEvent.click(screen.getByRole('button', { name: 'Lo intentaré' }));
     fireEvent.change(screen.getByLabelText('¿Para qué vas a ahorrar?'), { target: { value: 'Bici' } });
-    fireEvent.change(screen.getByLabelText('Monedas por ahorrar'), { target: { value: '120' } });
+    fireEvent.change(screen.getByLabelText('Semillas por ahorrar'), { target: { value: '120' } });
     fireEvent.click(screen.getByRole('button', { name: 'Crear meta' }));
     expect(await screen.findByText('Tu Cartera no está abierta.')).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Solo un plan' }));
@@ -165,19 +165,18 @@ describe('an independent teen turns a savings prompt into their own goal (OD-28,
 });
 
 describe('the recall screen', () => {
-  it('leads with the situation and the choice; what happened and a changed mind are one tap away; then continues', () => {
+  it('tells the whole memory at once (the situation, the choice, what happened, the changed mind); then continues', () => {
     const onContinue = vi.fn();
     render(<NarrativeRecallView recall={recallFixture('en-US')} locale="en-US" dark={false} onContinue={onContinue} />);
     expect(screen.getByRole('heading', { level: 1, name: 'Remember this?' })).toBeTruthy();
     expect(screen.getByText('What price brings me closer to the guitar?')).toBeTruthy();
-    expect(screen.getByText('10 coins, double the price')).toBeTruthy();
-    expect(screen.queryByText('5 coins, the usual price')).toBeNull();
-    const more = screen.getByRole('button', { name: 'What happened' });
-    fireEvent.click(more);
-    expect(screen.getByRole('button', { name: 'Hide it' }).getAttribute('aria-expanded')).toBe('true');
-    expect(screen.getByText('5 coins, the usual price')).toBeTruthy();
-    expect(screen.getByText('Two neighbors buy. Liruf earns 16 coins toward the guitar.')).toBeTruthy();
+    expect(screen.getByText('10 seeds, double the price')).toBeTruthy();
+    // Nothing waits behind a tap: what happened and the first choice are in view.
+    expect(screen.getByText('Two neighbors buy. Liruf earns 16 seeds toward the guitar.')).toBeTruthy();
+    expect(screen.getByText('5 seeds, the usual price')).toBeTruthy();
+    expect(screen.getByText('You changed your mind')).toBeTruthy();
     expect(screen.getByText('The lemonade stand')).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'What happened' })).toBeNull();
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }));
     expect(onContinue).toHaveBeenCalledOnce();
   });
@@ -201,14 +200,17 @@ describe('the decision journal', () => {
     render(<DecisionJournalView state={journalFixture('en-US', false)} locale="en-US" dark={false} onBack={() => {}} onMore={onMore} onClear={noopClear} onBridge={noopBridge} />);
     expect(screen.getByRole('heading', { level: 1, name: 'My decisions' })).toBeTruthy();
     expect(screen.getAllByRole('listitem')).toHaveLength(2);
-    expect(screen.queryByText('Two neighbors buy. Liruf earns 16 coins toward the guitar.')).toBeNull();
+    // The decisions are grouped by day, and what happened next is in the first view.
+    expect(screen.getByText('Today')).toBeTruthy();
+    expect(screen.getByText('Yesterday')).toBeTruthy();
+    expect(screen.getByText('Two neighbors buy. Liruf earns 16 seeds toward the guitar.')).toBeTruthy();
+    expect(screen.getByText('You changed your mind')).toBeTruthy();
     expect(screen.getAllByText('You chose')).toHaveLength(2);
-    const first = screen.getAllByRole('button', { name: 'What happened' })[0]!;
-    fireEvent.click(first);
-    expect(first.getAttribute('aria-expanded')).toBe('true');
+    // Every decision is told in full, with no toggle: the question, the choice, what happened, the change of mind and the echo.
     expect(screen.getByText('What price brings me closer to the guitar?')).toBeTruthy();
-    expect(screen.getByText('Two neighbors buy. Liruf earns 16 coins toward the guitar.')).toBeTruthy();
-    expect(screen.getByText('5 coins, the usual price')).toBeTruthy();
+    expect(screen.getByText('5 seeds, the usual price')).toBeTruthy();
+    expect(screen.getByText('It came back in the story')).toBeTruthy();
+    expect(screen.queryByRole('button', { name: 'The story moment' })).toBeNull();
     expect(screen.queryByRole('region', { name: 'Try it for real' })).toBeNull();
     fireEvent.click(screen.getByRole('button', { name: 'Show more' }));
     expect(onMore).toHaveBeenCalledOnce();

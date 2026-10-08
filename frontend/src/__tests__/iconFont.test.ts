@@ -6,7 +6,7 @@ import { resolve } from 'node:path';
 describe('the in-house glyph contract', () => {
   it('ships only the approved text fonts and no retired external icon font', () => {
     expect(readdirSync(resolve('public/fonts')).filter((file) => file.endsWith('.woff2')).sort()).toEqual([
-      'fredoka-latin-v1.woff2', 'nunito-latin-v1.woff2',
+      'plus-jakarta-sans-latin-v1.woff2',
     ]);
     expect(existsSync(resolve('public/fonts/material-symbols-outlined.woff2'))).toBe(false);
   });

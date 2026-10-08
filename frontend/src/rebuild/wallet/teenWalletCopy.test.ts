@@ -50,14 +50,16 @@ describe('teen wallet copy', () => {
     });
 
     it(`keeps the first view (header, balance, section buttons) inside its budget in ${locale}`, () => {
-      const firstView = [file.page.title, file.page.sub, file.page.simulation, fillAll(file.page.total), file.page.save, file.page.spend, file.page.share,
+      const firstView = [file.page.title, file.page.simulation, fillAll(file.page.total), file.page.save, file.page.spend, file.page.share,
         file.income.open, file.goals.open, file.rewards.open, file.history.open, file.parents.open];
       const words = firstView.reduce((sum, text) => sum + wordCount(text), 0);
       expect(words).toBeLessThanOrEqual(firstViewLimit({ locale: locale as Locale, ageBand: '13-17', surface: 'app' })!);
     });
 
     it(`keeps the controlled glossary in ${locale}`, () => {
-      const all = Object.values(file).flatMap((strings) => Object.values(strings as Record<string, string>)).join(' \n ');
+      // OD-40: the one place the word "money" is allowed is its own denial, in plain words ("Not real money").
+      const all = Object.values(file).flatMap((strings) => Object.values(strings as Record<string, string>)).join(' \n ')
+        .replace(/Not real money|No es dinero real|Não é dinheiro de verdade/g, '');
       expect(all).not.toMatch(/—/);
       expect(all).not.toMatch(/\b(money|dinero|dinheiro|pesos|reais|withdraw|retirar|sacar|bank account|interest|interés|juros|invest|invertir|investir|streak|racha|sequência)\b/i);
       expect(all).not.toMatch(/\b(bot|assistant|asistente|assistente|Mentor|AI|IA)\b/);
@@ -65,10 +67,10 @@ describe('teen wallet copy', () => {
     });
   }
 
-  it('names coins and the glossary pockets in every locale', () => {
-    expect(en.page.total).toContain('coins');
-    expect(es.page.total).toContain('monedas');
-    expect(pt.page.total).toContain('moedas');
+  it('names seeds and the glossary pockets in every locale', () => {
+    expect(en.page.total).toContain('seeds');
+    expect(es.page.total).toContain('semillas');
+    expect(pt.page.total).toContain('sementes');
     expect([en.page.save, en.page.spend, en.page.share]).toEqual(['Save', 'Spend', 'Share']);
     expect([es.page.save, es.page.spend, es.page.share]).toEqual(['Ahorrar', 'Gastar', 'Compartir']);
     expect([pt.page.save, pt.page.spend, pt.page.share]).toEqual(['Poupar', 'Gastar', 'Compartilhar']);

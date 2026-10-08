@@ -59,7 +59,7 @@ describe('FamilyConsole (F1)', () => {
     expect(screen.getAllByRole('heading', { level: 1 }).map((h) => h.textContent)).toEqual([en.familyConsole.title]);
     expect(screen.queryByRole('navigation', { name: en.familyConsole.children })).toBeNull();
     expect(screen.getByText('@sofia_2016')).toBeInTheDocument();
-    expect(screen.getByText('34 coins')).toBeInTheDocument();
+    expect(screen.getByText('34 seeds')).toBeInTheDocument();
     expect(screen.getByText('6-day chore streak')).toBeInTheDocument();
     expect(screen.getByRole('link', { name: '2 to approve' })).toHaveAttribute('href', '/tasks');
     expect(screen.getByRole('link', { name: en.familyConsole.progress })).toHaveAttribute('href', `/family/${KID_A}/territory`);
@@ -76,7 +76,7 @@ describe('FamilyConsole (F1)', () => {
     everyTextHasARole(view.container);
   });
 
-  it('never says "0 to approve" and says coins are unavailable instead of a zero', async () => {
+  it('never says "0 to approve" and says seeds are unavailable instead of a zero', async () => {
     setup({ 'GET /family/kids': ok({ kids: [childWire({ pendingApprovalCount: 0, walletTotal: null, taskStreakDays: 0 })] }) });
     await screen.findByText(en.familyConsole.coinsUnknown);
     expect(screen.queryByRole('link', { name: /to approve/ })).toBeNull();

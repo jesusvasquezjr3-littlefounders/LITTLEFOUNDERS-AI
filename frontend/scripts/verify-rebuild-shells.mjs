@@ -80,7 +80,7 @@ async function navigate(params) {
     await wait(50);
   }
   await page.evaluate('document.fonts.ready');
-  if (!await page.evaluate("document.fonts.check('600 16px Fredoka') && document.fonts.check('500 16px Nunito')")) throw Error('Fonts did not load');
+  if (!await page.evaluate("document.fonts.check('700 16px Plus Jakarta Sans') && document.fonts.check('500 16px Plus Jakarta Sans')")) throw Error('Fonts did not load');
   await page.evaluate(`Promise.all([...document.images].map(i => i.complete ? 0 : new Promise(r => { i.onload = i.onerror = r; })))`);
   await frames();
 }

@@ -1,0 +1,47 @@
+/*
+ * Landing section 3: a mini lesson that teaches by doing. No band and no frame: Dina, a transparent clip, stands directly on the page
+ * at the left, and one card at the right holds one sentence, one picture and the action. Spacing is by grid gap only. Tokens only.
+ */
+.lf-rebuild .lf-demo { display: grid; gap: var(--spacing-8); padding-block: var(--spacing-10) var(--spacing-6); justify-items: start; }
+.lf-rebuild .lf-demo-head { display: grid; gap: var(--spacing-2); max-inline-size: 40rem; }
+.lf-rebuild .lf-demo-head h2 { margin: 0; }
+.lf-rebuild .lf-demo-head p { margin: 0; font: var(--type-body-lg); color: var(--content-muted); text-wrap: pretty; }
+
+.lf-rebuild .lf-demo-stage { display: grid; gap: var(--spacing-4); align-items: end; inline-size: 100%; min-inline-size: 0; }
+.lf-rebuild .lf-demo-scene { position: relative; display: grid; align-items: end; min-block-size: 18rem; min-inline-size: 0; }
+.lf-rebuild .lf-demo-scene > .lf-scene-fill, .lf-rebuild .lf-demo-scene > div { inline-size: 100%; block-size: 100%; min-block-size: 18rem; }
+.lf-rebuild .lf-demo-dina { justify-self: center; inline-size: min(75%, 19rem); pointer-events: none; }
+.lf-rebuild .lf-demo-card { display: grid; gap: var(--spacing-5); align-content: start; padding: var(--spacing-6); border-radius: var(--rounded-xl); background: var(--surface); box-shadow: var(--elevation-float); min-inline-size: 0; }
+.lf-rebuild .lf-demo-card > * { margin: 0; }
+.lf-rebuild .lf-demo-progress { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--spacing-2); }
+.lf-rebuild .lf-demo-progress span { block-size: 8px; border-radius: var(--rounded-full); background: var(--sunken); }
+.lf-rebuild .lf-demo-progress span[data-done='true'] { background: var(--primary); }
+.lf-rebuild .lf-demo-line { max-inline-size: 28em; font: var(--type-headline); font-size: clamp(1.25rem, 2.2vw, 1.625rem); line-height: 1.25; color: var(--content); text-wrap: balance; }
+.lf-rebuild .lf-demo-ask { font: var(--type-title); color: var(--primary-strong); }
+
+.lf-rebuild .lf-demo-goal { display: grid; gap: var(--spacing-3); padding: var(--spacing-5); border-radius: var(--rounded-lg); background: var(--sunken); }
+.lf-rebuild .lf-demo-goal-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--spacing-3); }
+.lf-rebuild .lf-demo-goal-title { font: var(--type-title); }
+.lf-rebuild .lf-demo-week { padding: var(--spacing-1) var(--spacing-3); border-radius: var(--rounded-full); background: var(--primary); color: var(--on-primary); font: var(--type-chip); font-variant-numeric: tabular-nums; }
+.lf-rebuild .lf-demo .lf-goal-progress-part { transition: inline-size 480ms var(--ease-standard); }
+.lf-rebuild .lf-demo-learned { display: grid; gap: var(--spacing-2); padding: var(--spacing-5); border-radius: var(--rounded-lg); background: var(--primary-soft); }
+.lf-rebuild .lf-demo-learned-title { font: var(--type-label); color: var(--primary-strong); }
+.lf-rebuild .lf-demo-learned strong { font: var(--type-headline); color: var(--content); text-wrap: balance; }
+
+.lf-rebuild .lf-demo-actions { display: flex; flex-wrap: wrap; gap: var(--spacing-3); }
+.lf-rebuild .lf-demo-note { color: var(--content-muted); font: var(--type-body-lg); text-wrap: pretty; }
+.lf-rebuild .lf-demo-bridge { margin: 0; max-inline-size: 28em; padding-inline-start: var(--spacing-5); border-inline-start: 4px solid var(--primary); font: var(--type-headline); color: var(--content); text-wrap: balance; }
+
+@media (prefers-reduced-motion: no-preference) {
+  .lf-rebuild .lf-demo-card { animation: lf-demo-in var(--dur-component) var(--ease-standard); }
+}
+@keyframes lf-demo-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+@container app (min-width: 840px) {
+  .lf-rebuild .lf-demo { padding-block: var(--spacing-12) var(--spacing-8); }
+  .lf-rebuild .lf-demo-stage { grid-template-columns: minmax(0, 6fr) minmax(0, 6fr); gap: var(--spacing-6); }
+  .lf-rebuild .lf-demo-scene, .lf-rebuild .lf-demo-scene > .lf-scene-fill, .lf-rebuild .lf-demo-scene > div { min-block-size: 30rem; }
+  /* The clip keeps headroom for her jumps, so she is drawn larger than her column and the empty edges overlap the gap. */
+  .lf-rebuild .lf-demo-dina { inline-size: 130%; margin-inline: -15%; justify-self: center; }
+  .lf-rebuild .lf-demo-card { padding: var(--spacing-8); }
+}

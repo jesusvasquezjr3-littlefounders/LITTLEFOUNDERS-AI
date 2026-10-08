@@ -82,7 +82,7 @@ export interface StatementInput {
   adjusted: number;
   given: number;
   saved: number;
-  entries: { id: number; bucket: string; amount: number; reason: string; createdAt: string }[];
+  entries: { id: number; bucket: string; amount: number; reason: string; title?: string | null; createdAt: string }[];
 }
 
 /** How many statement lines a teen reads on the card; the full list stays in the statement itself. */
@@ -99,7 +99,7 @@ export function presentStatement(register: MoneyRegister, s: StatementInput) {
   if (register === 'transition') return totals;
   return {
     ...totals,
-    lines: s.entries.slice(0, TEEN_STATEMENT_LINES).map((e) => ({ id: e.id, bucket: e.bucket, amount: e.amount, reason: e.reason, createdAt: e.createdAt })),
+    lines: s.entries.slice(0, TEEN_STATEMENT_LINES).map((e) => ({ id: e.id, bucket: e.bucket, amount: e.amount, reason: e.reason, title: e.title ?? null, createdAt: e.createdAt })),
   };
 }
 

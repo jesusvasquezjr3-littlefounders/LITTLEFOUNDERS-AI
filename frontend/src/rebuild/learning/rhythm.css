@@ -13,14 +13,14 @@
 .lf-rhythm-streak h2, .lf-rhythm-pace h2, .lf-rhythm-choices h2 { font-size: 1.25rem; }
 .lf-rhythm-count { display: flex; align-items: center; flex-wrap: wrap; gap: var(--spacing-2); margin: 0; }
 .lf-rhythm-flame { inline-size: 40px; block-size: 50px; flex: none; }
-.lf-rhythm-count strong { font-family: Fredoka, sans-serif; font-size: 3rem; line-height: 1; font-variant-numeric: tabular-nums; color: var(--reward-strong); }
+.lf-rhythm-count strong { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 3rem; line-height: 1; font-variant-numeric: tabular-nums; color: var(--reward-strong); }
 .lf-rhythm-count span { font-weight: 800; font-size: 1.125rem; }
 .lf-rhythm-status { font-weight: 800; }
 /* One fact per row on a phone (label, then its number), three tiles when there is room. Words never break mid-word. */
 .lf-rhythm-facts { display: grid; gap: var(--spacing-2); margin: 0; }
 .lf-rhythm-facts > div { display: flex; align-items: center; justify-content: space-between; gap: var(--spacing-3); min-inline-size: 0; padding: var(--spacing-2) var(--spacing-4); border-radius: var(--rounded-md); background: var(--surface); }
 .lf-rhythm-facts dt { font-weight: 800; color: var(--content-muted); overflow-wrap: break-word; hyphens: manual; }
-.lf-rhythm-facts dd { margin: 0; font-family: Fredoka, sans-serif; font-size: 1.5rem; font-variant-numeric: tabular-nums; }
+.lf-rhythm-facts dd { margin: 0; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.5rem; font-variant-numeric: tabular-nums; }
 .lf-rhythm-rule { font-weight: 700; }
 
 /* Two tabs on the shared Button: the selected one is a real interaction state (4.4 case 2), shown by the brand fill. */

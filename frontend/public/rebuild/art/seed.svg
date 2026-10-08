@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" fill="none" aria-hidden="true">
+  <style>*{transform-box:fill-box}
+  .hop{transform-origin:50% 100%;animation:hop 5.8s cubic-bezier(.34,1.56,.64,1) infinite}
+  @keyframes hop{0%{transform:scale(1.1,.86)}7%{transform:translateY(-5px) scale(.94,1.08)}14%{transform:translateY(0) scale(1.06,.94)}20%,100%{transform:scale(1)}}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important}}</style>
+  <g class="hop">
+  <g transform="translate(24 24) scale(0.9) rotate(28) translate(-24 -24)">
+    <path d="M24 2.5C36.5 9 43.5 24 38.5 36C34.5 45 13.5 45 9.5 36C4.5 24 11.5 9 24 2.5Z" fill="#A88205"/>
+    <path d="M24 7.5C34 13 39 25 35 34C31.8 41 16.2 41 13 34C9 25 14 13 24 7.5Z" fill="#EBB806"/>
+    <path d="M24 12.5C28.2 19 29.5 28 26.2 34" stroke="#A88205" stroke-width="2.6" stroke-linecap="round"/>
+    <circle cx="24" cy="38" r="2.6" fill="#856600"/>
+  </g>
+  </g>
+</svg>

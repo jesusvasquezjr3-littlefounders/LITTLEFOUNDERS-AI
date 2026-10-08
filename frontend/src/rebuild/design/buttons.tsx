@@ -9,7 +9,7 @@ import { useIdleMotion, useOneShot, withPressFeedback } from './motion';
  * danger is destructive only (always behind a confirmation), secondary is the
  * neutral surface plus soft shadow, inverse sits on a coloured band or card.
  */
-export type ButtonVariant = 'accent' | 'brand' | 'success' | 'reward' | 'sky' | 'mint' | 'berry' | 'danger' | 'secondary' | 'inverse';
+export type ButtonVariant = 'accent' | 'brand' | 'success' | 'reward' | 'sky' | 'mint' | 'berry' | 'danger' | 'secondary' | 'inverse' | 'ghost';
 /** Size follows function, never audience (02 §8): sm = 48, md = 56, lg = 64 px floors. */
 export type ButtonSize = 'sm' | 'md' | 'lg';
 
@@ -79,3 +79,11 @@ export const ButtonLink = forwardRef<HTMLAnchorElement, AnchorHTMLAttributes<HTM
     if (className) classes.push(className);
     return <a {...props} ref={ref} className={classes.join(' ')} data-copy-role="action">{children}</a>;
   });
+
+/**
+ * A whole card or row that is one action (a pocket, a quick action, a card strip). The tile it wraps owns its look; this owns
+ * what every press needs: a real button, keyboard focus, the press feedback and the disabled state.
+ */
+export const TileButton = forwardRef<HTMLButtonElement, ButtonHTMLAttributes<HTMLButtonElement>>(function TileButton({ className, onPointerDown, type = 'button', ...props }, ref) {
+  return <button ref={ref} type={type} className={`lf-tile-button${className ? ` ${className}` : ''}`} onPointerDown={withPressFeedback(onPointerDown)} {...props} />;
+});

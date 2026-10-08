@@ -4,6 +4,7 @@ import { rebuildNamespaceCopy } from '@/i18n/rebuild';
 import { FAMILY, fakeTransport, KID_A, KID_B, ok, refuse, type Answer } from '../../family/console/consoleFixtures';
 import type { Child } from '../../family/console/consoleApi';
 import { accountWire, allowanceWire } from '../../family/tasks/moneyFixtures';
+import autonomy from '@/i18n/en-US/familyAutonomy.json';
 import { TutorCoins } from './TutorCoins';
 
 /*
@@ -22,6 +23,7 @@ const SETUP = (kid: string): Record<string, Answer> => ({
   [`GET /banking/allowance/${kid}`]: ok({ rule: allowanceWire() }),
   [`GET /banking/spend-limit/${kid}`]: ok({ status: { configured: true, period: 'weekly', cap: 50, used: 20, remaining: 30 } }),
   // GAP-FIX-R6: the child's pockets, read for the Tutor under the freeze card.
+  [`GET /banking/allowance-requests/${kid}`]: ok({ requests: [] }),
   [`GET /tasks/${kid}/wallet`]: ok({ balances: kid === KID_A ? { save: 12, spend: 20, share: 3 } : { save: 1, spend: 2, share: 3 } }),
 });
 
@@ -37,7 +39,7 @@ function setup(routes: Record<string, Answer> = {}, selectedId: string | null = 
     corrections: <p data-copy-role="data" data-slot="corrections">corrections</p>,
     share: <p data-copy-role="data" data-slot="share">share</p>,
   }; });
-  const props = { copy: en, colours: copy.coinCard, locale: 'en-US' as const, dark: false, transport, onSelect, onNavigate, childSlots: slots,
+  const props = { copy: en, notYetCopy: autonomy.notYet, colours: copy.coinCard, locale: 'en-US' as const, dark: false, transport, onSelect, onNavigate, childSlots: slots,
     aside: <p data-copy-role="data">aside</p> };
   const view = render(<TutorCoins {...props} selectedId={selectedId} />);
   return { transport, onSelect, onNavigate, slots, view, changes, rerender: (id: string | null) => view.rerender(<TutorCoins {...props} selectedId={id} />) };
@@ -131,10 +133,10 @@ describe('TutorCoins (F5-P)', () => {
     expect(onNavigate).toHaveBeenCalledWith('/verify-parent');
   });
 
-  // GAP-FIX-R6 (OD-3 §2, Law 5): the child's pockets under the freeze card, with or without a coin card; a slot's coin movement re-reads them.
-  it("shows the child's pockets right after the freeze card and re-reads them when a slot moved coins", async () => {
+  // GAP-FIX-R6 (OD-3 §2, Law 5): the child's pockets under the freeze card, with or without a seed card; a slot's coin movement re-reads them.
+  it("shows the child's pockets right after the freeze card and re-reads them when a slot moved seeds", async () => {
     const { view, transport, changes } = setup();
-    await screen.findByRole('heading', { name: "Sofía's coins" });
+    await screen.findByRole('heading', { name: "Sofía's seeds" });
     const parts = [...view.container.querySelectorAll('[data-family-part]')].map((el) => el.getAttribute('data-family-part'));
     expect(parts.slice(0, 2)).toEqual(['freeze', 'child-coins']);
     const reads = () => transport.calls.filter((c) => c.path === `/tasks/${KID_A}/wallet`).length;
@@ -143,10 +145,10 @@ describe('TutorCoins (F5-P)', () => {
     await waitFor(() => expect(reads()).toBe(2));
   });
 
-  it('shows the pockets of a child with no coin card yet, beside the offer to open one', async () => {
+  it('shows the pockets of a child with no seed card yet, beside the offer to open one', async () => {
     setup({ [`GET /banking/accounts/${KID_A}`]: ok({ account: null }) });
     await screen.findByRole('heading', { name: en.openTitle });
-    expect(await screen.findByRole('heading', { name: "Sofía's coins" })).toBeInTheDocument();
+    expect(await screen.findByRole('heading', { name: "Sofía's seeds" })).toBeInTheDocument();
   });
 
   it('sends a Tutor with no children to Family', async () => {

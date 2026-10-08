@@ -133,10 +133,10 @@ describe('learner home', () => {
     expect(screen.getByRole('link', { name: 'Your rhythm' })).toBeTruthy();
   });
 
-  it('links the learner journal, and shows an independent teen prompts where they are (B.9, B.13)', async () => {
+  it('shows an independent teen prompts where they are, and keeps the journal out of the home (it lives in the profile) (B.9, B.13)', async () => {
     const onBridge = vi.fn(async () => 'done' as const);
     home({ bridges: selfBridgesFixture(), onBridge, shelf: homePreviewShelf('teen'), ageBand: '13-17' });
-    expect(screen.getByRole('link', { name: 'My decisions' }).getAttribute('href')).toBe('/learn/journal');
+    expect(screen.queryByRole('link', { name: 'My decisions' })).toBeNull();
     expect(screen.getAllByRole('article', { name: 'Try it for real' }).length).toBeGreaterThan(0);
   });
 

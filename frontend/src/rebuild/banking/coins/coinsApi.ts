@@ -170,3 +170,96 @@ export function fetchChildHistory(transport: ConsoleTransport, kidId: string) {
 export function monthInWindow(month: string, current: string): boolean {
   return MONTH.test(month) && month <= current && month >= shiftMonth(current, -(STATEMENT_MONTHS_BACK - 1));
 }
+
+// ── The holder's own money: moving coins, the goals they live in, the allowance ──
+// Core's rules mirrored by the database (wallet_moves): whole coins, nothing leaves the account, no approval.
+
+export type Pocket = 'save' | 'spend' | 'share';
+export interface OwnGoal { id: string; title: string; target: number; status: 'active' | 'reached' | 'archived'; saved: number }
+
+export function fetchOwnGoals(transport: ConsoleTransport): Promise<Outcome<OwnGoal[]>> {
+  return call(transport, '/tasks/goals', (data) => {
+    if (!isObject(data) || !Array.isArray(data.goals)) return undefined;
+    const goals = data.goals.map((g: unknown) => isObject(g) && typeof g.id === 'string' && typeof g.title === 'string' && isCount(g.target) && isCount(g.saved)
+      && (g.status === 'active' || g.status === 'reached' || g.status === 'archived') ? { id: g.id, title: g.title, target: g.target, status: g.status, saved: g.saved } : null);
+    return goals.every((g): g is OwnGoal => g !== null) ? goals : undefined;
+  });
+}
+
+/** The child's own allowance rule, so "when does my allowance come" is never a guess. Null: none is set. */
+export function fetchOwnAllowance(transport: ConsoleTransport): Promise<Outcome<Allowance | null>> {
+  return call(transport, '/banking/allowance', (data) => isObject(data) && 'rule' in data ? toAllowance(data.rule) : undefined);
+}
+
+const movedOf = (data: unknown): { moveId: string } | undefined => isObject(data) && typeof data.moveId === 'string' ? { moveId: data.moveId } : undefined;
+
+export function moveOwnCoins(transport: ConsoleTransport, input: { from: Pocket; to: Pocket; amount: number }) {
+  return call(transport, '/tasks/wallet/moves', movedOf, { method: 'POST', body: input });
+}
+
+/** `in`: plain Save into the goal. `out`: the goal's coins back to plain Save. */
+export function moveOwnGoalCoins(transport: ConsoleTransport, goalId: string, direction: 'in' | 'out', amount: number) {
+  return call(transport, `/tasks/goals/${encodeURIComponent(goalId)}/moves`, movedOf, { method: 'POST', body: { direction, amount } });
+}
+
+/** The three pockets as the database holds them (Save includes whatever is tied to a goal). */
+export function fetchOwnPockets(transport: ConsoleTransport): Promise<Outcome<Record<Pocket, number>>> {
+  return call(transport, '/tasks/wallet', (data) => {
+    const b = isObject(data) ? data.balances : undefined;
+    return isObject(b) && isInt(b.save) && isInt(b.spend) && isInt(b.share) ? { save: b.save, spend: b.spend, share: b.share } : undefined;
+  });
+}
+
+// ── Asking for a bigger allowance (allowance_requests): the child asks, the Tutor answers ──
+
+export const ASK_REASONS = ['saving_goal', 'more_needs', 'worked_more', 'other'] as const;
+export type AskReason = (typeof ASK_REASONS)[number];
+export const DENIAL_CODES = ['later_date', 'not_suitable', 'talk_first'] as const;
+export type DenialCode = (typeof DENIAL_CODES)[number];
+export const ASK_NOTE_MAX = 120;
+
+export interface AllowanceRequest {
+  id: string; fromAmount: number; amount: number; reasonKind: AskReason; note: string | null; status: 'requested' | 'approved' | 'denied' | 'withdrawn';
+  createdAt: string; decidedAt: string | null; decisionCode: DenialCode | null; decisionReason: string | null; revisitOn: string | null;
+}
+
+function toRequest(value: unknown): AllowanceRequest | undefined {
+  if (!isObject(value) || typeof value.id !== 'string' || !isCount(value.fromAmount) || !isCount(value.amount) || !ASK_REASONS.includes(value.reasonKind as AskReason)
+    || !['requested', 'approved', 'denied', 'withdrawn'].includes(value.status as string) || !isInstant(value.createdAt)
+    || (value.note !== null && typeof value.note !== 'string') || (value.decidedAt !== null && !isInstant(value.decidedAt))
+    || (value.decisionCode !== null && !DENIAL_CODES.includes(value.decisionCode as DenialCode))
+    || (value.decisionReason !== null && typeof value.decisionReason !== 'string') || (value.revisitOn !== null && typeof value.revisitOn !== 'string')) return undefined;
+  return {
+    id: value.id, fromAmount: value.fromAmount, amount: value.amount, reasonKind: value.reasonKind as AskReason, note: value.note as string | null,
+    status: value.status as AllowanceRequest['status'], createdAt: value.createdAt, decidedAt: value.decidedAt as string | null,
+    decisionCode: value.decisionCode as DenialCode | null, decisionReason: value.decisionReason as string | null, revisitOn: value.revisitOn as string | null,
+  };
+}
+
+/** The child's latest request (waiting, answered or taken back), or null when they never asked. */
+export function fetchOwnAllowanceRequest(transport: ConsoleTransport): Promise<Outcome<AllowanceRequest | null>> {
+  return call(transport, '/banking/allowance-request', (data) => isObject(data) && 'request' in data ? (data.request === null ? null : toRequest(data.request)) : undefined);
+}
+
+export function askMoreAllowance(transport: ConsoleTransport, input: { amount: number; reasonKind: AskReason; note?: string }) {
+  return call(transport, '/banking/allowance-request', (data) => isObject(data) ? toRequest(data.request) : undefined, { method: 'POST', body: input });
+}
+
+export function withdrawAllowanceAsk(transport: ConsoleTransport) {
+  return call(transport, '/banking/allowance-request/withdraw', (data) => isObject(data) && data.withdrawn === true ? true : undefined, { method: 'POST', body: {} });
+}
+
+/** The Tutor's view of one child's requests, newest first. */
+export function fetchAllowanceRequests(transport: ConsoleTransport, kidId: string): Promise<Outcome<AllowanceRequest[]>> {
+  return call(transport, `/banking/allowance-requests/${kid(kidId)}`, (data) => {
+    if (!isObject(data) || !Array.isArray(data.requests)) return undefined;
+    const list = data.requests.map(toRequest);
+    return list.every((r): r is AllowanceRequest => r !== undefined) ? list : undefined;
+  });
+}
+
+export function answerAllowanceRequest(transport: ConsoleTransport, requestId: string,
+  answer: { approve: true } | { approve: false; reasonCode: DenialCode; reason: string; revisitOn: string | null }) {
+  return call(transport, `/banking/allowance-requests/${encodeURIComponent(requestId)}/decide`, (data) => isObject(data) && (data.outcome === 'approved' || data.outcome === 'denied') ? data.outcome : undefined,
+    { method: 'POST', body: answer });
+}

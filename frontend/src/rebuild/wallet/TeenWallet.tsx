@@ -1,8 +1,12 @@
 import { ApplicationArt } from '../design/ApplicationArt';
-import { useCallback, useEffect, useId, useRef, useState, type FormEvent, type ReactNode } from 'react';
+import { useCallback, useEffect, useId, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react';
 import {
-  Button, ButtonLink, CoinAmount, Copy, DashboardLayout, EmptyState, ErrorState, InlineNotice, LoadingState, SegmentedControl, SelectField, TextField,
+  Button, ButtonLink, CoinAmount, Copy, DashboardLayout, EmptyState, ErrorState, Glyph, InlineNotice, LoadingState, SegmentedControl, SelectField, TextField, TileButton,
 } from '../design/controls';
+import { QuickAction } from '../banking/CoinAccount';
+import { MoveCoins, type MoveCopy } from '../banking/coins/MoveCoins';
+import type { OwnGoal } from '../banking/coins/coinsApi';
+import type { ConsoleTransport } from '../family/console/consoleApi';
 import {
   archiveGoal, archiveReward, claimReward, createGoal, createParentInvite, createReward, decideParent, fetchBalances,
   fetchHistory, fetchParents, fetchRewards, fetchWalletAccess, logIncome, releaseGoal,
@@ -18,10 +22,12 @@ import { ShareGiving, type ShareGivingCopy, type ShareTeenCopy } from '../family
 import { UsualSplit, type UsualSplitCopy } from '../family/UsualSplit';
 import { PocketMark } from '../family/PocketMark';
 import { SplitBar } from '../family/PocketSplit';
-import type { TeenWalletScreenCopy } from '../family/tasks/taskParts';
+import type { ChildCoinsCopy, TeenWalletScreenCopy } from '../family/tasks/taskParts';
+import type { Locale } from '../design/copyBudget';
 import '../design/tokens.css';
 import '../design/system.css';
 import './teenWallet.css';
+import '../banking/wallet.css';
 
 /*
  * S07.2 — D.3 (OD-3 Option B): the self-registered teen's personal wallet,
@@ -56,7 +62,7 @@ import './teenWallet.css';
 
 type Group<K extends string> = Record<K, string>;
 export interface TeenWalletCopy {
-  page: Group<'title' | 'sub' | 'simulation' | 'loading' | 'failed' | 'retry' | 'total' | 'save' | 'spend' | 'share' | 'sections' | 'close'>;
+  page: Group<'title' | 'simulation' | 'loading' | 'failed' | 'retry' | 'total' | 'save' | 'spend' | 'share' | 'sections' | 'close'>;
   income: Group<'open' | 'heading' | 'amount' | 'source' | 'allowance' | 'gift' | 'earned' | 'split' | 'left' | 'done' | 'toGoal' | 'noGoal'
     | 'submit' | 'saving' | 'result' | 'goalReached' | 'invalidAmount' | 'splitMismatch' | 'frozen' | 'failed' | 'useUsual' | 'usualNote'>;
   goals: Group<'open' | 'heading' | 'empty' | 'name' | 'target' | 'create' | 'created' | 'invalid' | 'progress' | 'reached' | 'archived' | 'move'
@@ -64,7 +70,7 @@ export interface TeenWalletCopy {
   rewards: Group<'open' | 'heading' | 'empty' | 'name' | 'cost' | 'create' | 'created' | 'invalid' | 'price' | 'use' | 'used' | 'notEnough' | 'limit'
     | 'full' | 'archive' | 'archivedNotice' | 'failed'>;
   history: Group<'open' | 'heading' | 'empty' | 'income' | 'allowance' | 'gift' | 'earned' | 'reward' | 'goalMove' | 'task' | 'familyReward'
-    | 'tutorCorrection' | 'tutorGoalMove' | 'familyAllowance' | 'bonus' | 'note' | 'shared' | 'shareBack'>;
+    | 'tutorCorrection' | 'tutorGoalMove' | 'familyAllowance' | 'bonus' | 'note' | 'shared' | 'shareBack' | 'moved' | 'goalCoins'>;
   parents: Group<'open' | 'heading' | 'tasksLocked' | 'optional' | 'invite' | 'inviting' | 'linkReady' | 'linkLabel' | 'copy' | 'copied' | 'copyFailed'
     | 'tooMany' | 'waiting' | 'unnamed' | 'confirm' | 'reject' | 'confirmed' | 'rejectedNotice' | 'verified' | 'rejected' | 'revoked' | 'pendingOther'
     | 'tasksOn' | 'openTasks' | 'failed'>;
@@ -123,9 +129,11 @@ function Section({ id, heading, children }: { id: string; heading: string; child
 const REFUSED = new Set(['WALLET_UNAVAILABLE', 'WALLET_HOLDER_REQUIRED', 'FORBIDDEN', 'TEEN_WALLET_REQUIRED']);
 type Failure = 'failed' | 'offline' | 'refused';
 
-export function TeenWallet({ copy, habits, locale, dark, session, tasksHref, onOpenTasks, inviteLinkFor, copyText, onAccessChanged, screen, aside }: {
+export function TeenWallet({ copy, habits, shared, locale, dark, session, tasksHref, onOpenTasks, inviteLinkFor, copyText, onAccessChanged, screen, aside }: {
   copy: TeenWalletCopy;
   habits: TeenHabitsCopy;
+  /** The home and move words every wallet shares (the child's wallet reads the same ones): a teen's wallet is the same product, not another one. */
+  shared: { home: ChildCoinsCopy['home']; move: MoveCopy };
   locale: string;
   dark: boolean;
   session: Session;
@@ -155,8 +163,12 @@ export function TeenWallet({ copy, habits, locale, dark, session, tasksHref, onO
   const [panel, setPanel] = useState<Panel | null>(null);
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState<Notice>(null);
+  const [moveOpen, setMoveOpen] = useState(false);
+  const [movePreset, setMovePreset] = useState<{ from?: string; to?: string } | null>(null);
   const generation = useRef(0);
   useEffect(() => () => { generation.current++; }, []);
+  // The move dialog speaks Core's console transport; the teen's session carries the same calls with a token.
+  const moveTransport = useMemo(() => ((path: string, init?: { method?: string; body?: unknown }) => session.transport(path, { token: session.token, ...init } as never)) as unknown as ConsoleTransport, [session]);
 
   const load = useCallback(async () => {
     const current = ++generation.current;
@@ -353,20 +365,21 @@ export function TeenWallet({ copy, habits, locale, dark, session, tasksHref, onO
     savings_bonus: copy.history.bonus,
     share_gift: copy.history.shared,
     share_gift_returned: copy.history.shareBack,
+    pocket_move: copy.history.moved,
+    goal_move: copy.history.goalCoins,
   })[e.reason];
   const name = (p: ParentLink) => p.displayName || copy.parents.unnamed;
 
-  const panels: { key: Panel; label: string }[] = [
-    { key: 'income', label: copy.income.open }, { key: 'goals', label: copy.goals.open }, { key: 'rewards', label: copy.rewards.open },
-    { key: 'share', label: habits.share.heading }, { key: 'history', label: copy.history.open }, { key: 'parents', label: copy.parents.open },
-  ];
   const balanceTotal = balances ? balances.save + balances.spend + balances.share : 0;
+  const heldInGoals = goals.reduce((sum, goal) => sum + goal.saved, 0);
+  const ownGoals: OwnGoal[] = goals.map((goal) => ({ id: goal.id, title: goal.title, target: goal.target, status: goal.status, saved: goal.saved }));
+  const places = { save: Math.max(0, (balances?.save ?? 0) - heldInGoals), spend: balances?.spend ?? 0, share: balances?.share ?? 0 };
+  const openMove = (preset: { from?: string; to?: string } | null) => { setNotice(null); setMovePreset(preset); setMoveOpen(true); };
 
   return <section className="lf-rebuild lf-teen-wallet" data-teen-wallet="root" data-theme={dark ? 'dark' : 'light'} data-age-band="13-17" lang={locale}
     aria-labelledby={ids.title}>
     <header className="lf-teen-wallet-header lf-illustrated-header"><div className="lf-illustrated-heading">
       <h1 id={ids.title} data-copy-role="heading">{copy.page.title}</h1>
-      <Copy role="body">{copy.page.sub}</Copy>
       <span className="lf-teen-wallet-chip" data-copy-role="data">{copy.page.simulation}</span>
     </div><ApplicationArt scene="wallet" /></header>
 
@@ -385,21 +398,52 @@ export function TeenWallet({ copy, habits, locale, dark, session, tasksHref, onO
         retryLabel={screen.copy.retry} retryingLabel={screen.copy.retrying} retrying={retrying} onRetry={() => { setRetrying(true); void load(); }} />)}
 
     {state === 'ready' && balances && access && <DashboardLayout secondary={aside} primary={<>
-      <section className="lf-teen-wallet-balance" aria-label={fill(copy.page.total, { n: balanceTotal })}>
-        <p className="lf-teen-wallet-total"><CoinAmount size="lg">{fill(copy.page.total, { n: balanceTotal })}</CoinAmount></p>
-        <ul className="lf-teen-wallet-pockets">
+      {panel === null && <div className="lf-teen-home">
+        {/* What you have comes first, in one number and one bar that splits it over the three pockets. */}
+        <div className="lf-wallet-hero">
+          <span className="lf-wallet-hero-label" data-copy-role="body">{shared.home.have}</span>
+          <CoinAmount size="lg" className="lf-wallet-balance-count">{balanceTotal}</CoinAmount>
+          {balanceTotal > 0 && <div className="lf-wallet-hero-bar" role="img" aria-label={(['save', 'spend', 'share'] as const).map((bucket) => `${pocket[bucket]} ${balances[bucket]}`).join(', ')}>
+            {(['save', 'spend', 'share'] as const).map((bucket) => balances[bucket] > 0 && <span key={bucket} data-segment={bucket} style={{ flexGrow: balances[bucket] }} />)}
+          </div>}
+        </div>
+        <ul className="lf-wallet-quick" aria-label={shared.home.actions}>
+          <li><QuickAction icon={<Glyph name="plus" />} label={copy.income.open} onClick={() => toggle('income')} /></li>
+          <li><QuickAction icon={<Glyph name="refresh" />} label={shared.home.move} onClick={() => openMove(null)} /></li>
+          <li><QuickAction icon={<PocketMark pocket="spend" size="md" />} label={copy.rewards.open} onClick={() => toggle('rewards')} /></li>
+          <li><QuickAction icon={<PocketMark pocket="share" size="md" />} label={shared.home.share} onClick={() => toggle('share')} /></li>
+        </ul>
+        <ul className="lf-wallet-pots" aria-label={copy.page.sections}>
           {(['save', 'spend', 'share'] as const).map((bucket) => <li key={bucket} data-pocket={bucket}>
-            <PocketMark pocket={bucket} />
-            <span data-copy-role="option">{pocket[bucket]}</span>
-            <CoinAmount className="lf-teen-wallet-amount">{fill(copy.page.total, { n: balances[bucket] })}</CoinAmount>
+            <TileButton className="lf-wallet-pot" onClick={() => toggle(bucket === 'save' ? 'goals' : bucket === 'spend' ? 'rewards' : 'share')}>
+              <PocketMark pocket={bucket} size="md" />
+              <span className="lf-wallet-pot-name" data-copy-role="body">{pocket[bucket]}</span>
+              <CoinAmount className="lf-wallet-pot-count">{balances[bucket]}</CoinAmount>
+              <span className="lf-wallet-pot-hint" data-copy-role="body">{bucket === 'save' ? (heldInGoals > 0 ? shared.home.inGoals.replace('{count}', String(heldInGoals)) : shared.home.hintSave) : bucket === 'spend' ? shared.home.hintSpend : shared.home.hintShare}</span>
+            </TileButton>
           </li>)}
         </ul>
-      </section>
+        <section className="lf-teen-home-section" aria-label={copy.goals.heading}>
+          <div className="lf-wallet-section-head"><Copy role="heading" as="h2">{copy.goals.heading}</Copy><Button size="sm" onClick={() => toggle('goals')}>{shared.home.seeAll}</Button></div>
+          {goals.filter((g) => g.status !== 'archived').length === 0 ? <Copy role="body">{copy.goals.empty}</Copy> : goals.filter((g) => g.status !== 'archived').slice(0, 2).map((goal) => <div key={goal.id} className="lf-teen-home-card" data-goal-status={goal.status}>
+            <span className="ugc" data-copy-role="data">{goal.title}</span>
+            <GoalProgress copy={habits.goalProgress} title={goal.title} target={goal.target} progress={goal.progress} compact />
+            {goal.status === 'active' && <div className="lf-actions"><Button size="sm" onClick={() => openMove({ from: 'save', to: `goal:${goal.id}` })}>{shared.home.putIn}</Button></div>}
+          </div>)}
+        </section>
+        {history.length > 0 && <section className="lf-teen-home-section" aria-label={copy.history.heading}>
+          <div className="lf-wallet-section-head"><Copy role="heading" as="h2">{copy.history.heading}</Copy><Button size="sm" onClick={() => toggle('history')}>{shared.home.seeAll}</Button></div>
+          <ul className="lf-teen-home-lines">
+            {history.slice(0, 4).map((e) => <li key={e.id} data-ledger-reason={e.reason}>
+              <span data-copy-role="option">{entryLabel(e)}</span>
+              <span className={`lf-teen-wallet-amount${e.amount > 0 ? ' lf-teen-wallet-amount--credit' : ''}`} data-copy-role="data">{e.amount > 0 ? `+${e.amount}` : `−${Math.abs(e.amount)}`} {pocket[e.bucket]}</span>
+            </li>)}
+          </ul>
+        </section>}
+        <div className="lf-actions"><Button onClick={() => toggle('parents')}>{copy.parents.open}</Button></div>
+      </div>}
 
-      <div className="lf-teen-wallet-tabs" role="group" aria-label={copy.page.sections}>
-        {panels.map((p) => <Button key={p.key} variant={p.key === 'income' ? 'accent' : 'secondary'} aria-expanded={panel === p.key}
-          aria-controls={ids[p.key]} onClick={() => toggle(p.key)}>{p.label}</Button>)}
-      </div>
+      {panel !== null && <div className="lf-actions lf-teen-back"><Button onClick={() => { setNotice(null); setPanel(null); }}><Glyph name="back" />{shared.home.back}</Button></div>}
 
       <NoticeLine notice={notice} />
 
@@ -443,6 +487,7 @@ export function TeenWallet({ copy, habits, locale, dark, session, tasksHref, onO
               onStart={(input) => void nextStep(goal, () => createHabitGoal({ ...input, followsGoalId: goal.id }, session), habits.nextGoal.started)}
               onNotNow={() => void nextStep(goal, () => declineNextStep(goal.id, session), habits.nextGoal.later)} />}
             <div className="lf-actions">
+              {goal.status === 'active' && <Button variant="accent" disabled={busy} onClick={() => openMove({ from: 'save', to: `goal:${goal.id}` })}>{shared.home.putIn}</Button>}
               {goal.saved > 0 && <Button aria-expanded={moving === goal.id} onClick={() => { setMoving(moving === goal.id ? null : goal.id); setMoveAmount(''); setNotice(null); }}>
                 {copy.goals.move}</Button>}
               {goal.status !== 'archived' && <Button disabled={busy} onClick={() => void act(() => archiveGoal(goal.id, session), copy.goals.archivedNotice, {}, copy.goals.failed)}>
@@ -505,7 +550,7 @@ export function TeenWallet({ copy, habits, locale, dark, session, tasksHref, onO
                 {e.amount > 0 ? `+${e.amount}` : `−${Math.abs(e.amount)}`} {pocket[e.bucket]}
               </span>
             </div>
-            {e.rewardTitle && <span className="ugc" data-copy-role="data">{e.rewardTitle}</span>}
+            {(e.title ?? e.rewardTitle) && <span className="ugc" data-copy-role="data">{e.title ?? e.rewardTitle}</span>}
             {e.note && <span className="ugc" data-copy-role="data">{fill(copy.history.note, { note: e.note })}</span>}
             <time className="lf-teen-wallet-muted" data-copy-role="data" dateTime={e.createdAt}>{date.format(new Date(e.createdAt))}</time>
           </li>)}
@@ -544,6 +589,8 @@ export function TeenWallet({ copy, habits, locale, dark, session, tasksHref, onO
           </div>}
       </Section>}
     </>} />}
+    {state === 'ready' && balances ? <MoveCoins open={moveOpen} onOpenChange={setMoveOpen} locale={locale as Locale} copy={shared.move} names={pocket} places={places} goals={ownGoals}
+      preset={movePreset} transport={moveTransport} onMoved={(text) => { setNotice({ text, error: false }); void load(); }} /> : null}
   </section>;
 }
 

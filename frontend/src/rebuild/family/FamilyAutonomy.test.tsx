@@ -266,7 +266,7 @@ describe("the child's side (D.17, D.18)", () => {
         next: { ...autonomy().next!, level: 3, daysAtLevel: { value: 20, min: 28, ok: false } } }), changes: [] }}
       loading={false} failed={false} busy={false} notice={null} onRetry={vi.fn()} onAsk={onAsk} onStepDown={onStepDown} />);
     expect(container.textContent).toContain('Level 2: Small steps');
-    expect(container.textContent).toContain('Rewards up to 10 coins need no asking.');
+    expect(container.textContent).toContain('Rewards up to 10 seeds need no asking.');
     expect(container.textContent).toContain('7 of 10 to Trusted');
     expect(container.textContent).toContain('8 more days on this level.');
     fireEvent.click(screen.getByRole('button', { name: en.myLevel.ask }));
