@@ -16,7 +16,6 @@ This README is the operational reference: how to run the repo and how it reaches
 | Mentor | The AI Mentor stage (`/tutor`) and Oracle. To be redesigned |
 | Profile and social | Profile, avatar, settings, follows, blocks, reports |
 | Staff console | `/admin` |
-| Games | KartRush is embedded at `/learn/play/kartrush`; its code lives in the separate `LittleFounders-AI/KartRush` repo and `docs/games/KRV1-CONTRACT.md` is the wire contract |
 | Content pipeline | Forge (`coursegen/`) is to be rebuilt from zero; Echo (`audiogen/`) and Prism (`picturegen/`) are to be reworked |
 
 ## Service map
@@ -91,7 +90,7 @@ and, for anything a person sees, by running it and looking at it in light and da
 
 Work is committed locally and pushed only when the owner decides, because **a push to `main` is a deploy.** Each service has `.github/workflows/<service>-ci.yml` (install, type-check, lint, build; `paths:`-filtered) and `<service>-cd.yml`, which deploys that service when its CI goes green on `main`. `database-cd.yml` also applies additive migrations to production automatically.
 
-`main` has a ruleset that requires a pull request and the status check "Mentor self-improvement governance (C.22)". The workflow that produced that check was removed with the gates, so the ruleset must be changed before the next merge (`docs/operations/BRANCH-PROTECTION.md`).
+`main` has a GitHub ruleset that requires a pull request and the status check "Mentor self-improvement governance (C.22)". The workflow that produced that check was deleted, so the ruleset must be changed or removed before the next merge.
 
 Repo secrets: `RAILWAY_TOKEN`, `RAILWAY_SSH_PRIVATE_KEY`, `INTERNAL_API_KEY`, `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID`.
 
@@ -130,7 +129,7 @@ RAILWAY_TOKEN=… RAILWAY_SSH_KEY_PATH=~/.ssh/id_ed25519 \
 
 Deploy the code that stops using a table before the migration that drops it. Take and verify a fresh Vault backup first. `database`'s `npm test` refuses a migration over 23,000 bytes (each travels as one command-line argument): split it.
 
-**Backups:** `vault-backup.yml` (08:00 UTC) and `pulse-backup.yml` (08:30 UTC) write daily `pg_dump`s to Depot's Railway volume. Procedures: `docs/operations/BACKUP-RESTORE-ROLLBACK.md`.
+**Backups:** `vault-backup.yml` (08:00 UTC) and `pulse-backup.yml` (08:30 UTC) write daily `pg_dump`s to Depot's Railway volume. Procedures: `docs/operations/BACKUP-RESTORE.md`.
 
 ## Scheduled production jobs
 
@@ -184,4 +183,4 @@ Oracle's daily spend ceiling (`DAILY_SPEND_CEILING_USD`) is enforced per process
 
 ## License
 
-Proprietary, all rights reserved. The third-party skill under `.github/skills/` and `.claude/skills/` (the same files, read by two tools) keeps its original license; its `_SOURCE.md` records the upstream project.
+Proprietary, all rights reserved.

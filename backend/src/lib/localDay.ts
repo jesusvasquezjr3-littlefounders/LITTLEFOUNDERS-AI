@@ -1,6 +1,6 @@
 /*
  * The learner-local day boundary, shared by every daily cap (the Mentor's sessions
- * in routes/tutor.ts, the games' sessions in routes/games.ts). Moved here from
+ * in routes/tutor.ts). Moved here from
  * routes/tutor.ts so a second caller does not import that whole route module;
  * routes/tutor.ts re-exports it, so its callers and tests are unchanged. One
  * change on the way: the offset ignores the fractional second, so a boundary is

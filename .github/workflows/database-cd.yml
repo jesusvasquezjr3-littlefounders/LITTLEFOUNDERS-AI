@@ -138,7 +138,7 @@ jobs:
             cat /tmp/premig.dump > "$FILE"
           railway ssh --service db -i ~/.ssh/railway_key -- rm -f /tmp/premig.dump
           test -s "$FILE"
-          node database/migration-od9/backup-crypto.mjs encrypt --in "$FILE" --out "$FILE.lfbk" --key-file "$RUNNER_TEMP/backup.key"
+          node database/scripts/backup-crypto.mjs encrypt --in "$FILE" --out "$FILE.lfbk" --key-file "$RUNNER_TEMP/backup.key"
           test -s "$FILE.lfbk"
           test -s "$FILE.lfbk.manifest.json"
           test ! -e "$FILE"

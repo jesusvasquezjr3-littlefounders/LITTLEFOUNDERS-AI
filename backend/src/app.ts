@@ -1,7 +1,7 @@
 import express from 'express';
 import helmet from 'helmet';
 import { cors } from './middleware/cors.js';
-import { gamesRateLimiter, globalRateLimiter } from './middleware/rateLimit.js';
+import { globalRateLimiter } from './middleware/rateLimit.js';
 import { accountDeletionSweepRouter, accountRouter } from './routes/account.js';
 import { adminRouter } from './routes/admin.js';
 import { analyticsRouter } from './routes/analytics.js';
@@ -10,7 +10,6 @@ import { socialRetentionSweepRouter } from './routes/socialRetention.js';
 import { opsHeartbeatRouter } from './routes/opsHeartbeat.js';
 import { learningRetentionSweepRouter } from './routes/learningRetention.js';
 import { coopGoalsRouter } from './routes/coopGoals.js';
-import { familyPlayLimitsRouter } from './routes/games.js';
 import { authRouter } from './routes/auth.js';
 import { eventsRouter } from './routes/events.js';
 import { learnRouter } from './routes/learn.js';
@@ -62,9 +61,6 @@ export function createApp(): express.Express {
   // on every product router, not only on /auth/me (middleware/accountAdmission.ts).
   app.use([...ACTIVE_ACCOUNT_PATHS], requireActiveAccount);
   app.use('/api/v1/events', eventsRouter());
-  // Games: heartbeats come every 30-60 s for as long as a child plays, so they get their own
-  // budget (the global limiter skips this prefix) and a body limit that fits the 64 KB save.
-  app.use('/api/v1/learn/games', gamesRateLimiter, express.json({ limit: '80kb' }));
   app.use(globalRateLimiter);
   app.use(express.json({ limit: '64kb' }));
 
@@ -90,8 +86,6 @@ export function createApp(): express.Express {
   app.use('/api/v1/onboarding', onboardingRouter());
   app.use('/api/v1/placement', placementRouter());
   app.use('/api/v1/tutor', tutorRouter());
-  // Games: the verified Tutor lowers a child's play limits (docs/games/KRV1-CONTRACT.md).
-  app.use('/api/v1/family/play-limits', familyPlayLimitsRouter());
   app.use('/api/v1/profile', ownProfileRouter());
   app.use('/api/v1/profiles', publicProfilesRouter());
   // L-04 (OD-27 (1)): teen cooperative goals.

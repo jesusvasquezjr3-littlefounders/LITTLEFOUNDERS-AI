@@ -83,7 +83,6 @@ export const ACTIVE_ACCOUNT_PATHS = [
   '/api/v1/onboarding',
   '/api/v1/placement',
   '/api/v1/tutor',
-  '/api/v1/family/play-limits',
   '/api/v1/profile',
   '/api/v1/profiles',
   '/api/v1/coop-goals',

@@ -23,9 +23,6 @@
     "db:status": "bash scripts/local-stack.sh status",
     "db:types": "supabase gen types --lang typescript --db-url \"$(bash scripts/local-stack.sh db-url)\" --schema public > types/database.ts",
     "db:railway:migrate": "bash scripts/railway-migrate.sh",
-    "od9": "node migration-od9/od9.mjs",
-    "od9:prove": "node migration-od9/prove-od9-postgres.mjs",
-    "od9:rehearse": "node migration-od9/rehearse-cutover.mjs",
-    "od9:backup": "node migration-od9/backup-crypto.mjs"
+    "backup": "node scripts/backup-crypto.mjs"
   }
 }

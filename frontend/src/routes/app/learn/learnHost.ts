@@ -8,7 +8,7 @@ import type { AgeBand } from '@/rebuild/design/copyBudget';
 import type { LearnLinks, LearnNavigate } from '@/rebuild/learning/learnCopy';
 import type { LearnTransport } from '@/rebuild/learning/learnHome';
 import { fetchLearnerRegister, type RegisterState, type RegisterTransport } from '@/rebuild/learning/learnerRegister';
-import { coursePath, decisionJournalPath, learningRhythmPath, lessonPath, placementPath, playPath, territoryPath, togetherPath } from './paths';
+import { coursePath, decisionJournalPath, learningRhythmPath, lessonPath, placementPath, territoryPath, togetherPath } from './paths';
 
 /*
  * W2L: what every rebuilt learner page host needs from the application, in
@@ -30,8 +30,6 @@ export const LEARN_LINKS: LearnLinks = {
   mentor: '/tutor',
   journal: decisionJournalPath(),
   together: togetherPath(),
-  // The game host: KartRush is the only game in v1 (KRV1-CONTRACT §1).
-  play: playPath('kartrush'),
 };
 
 type Reply = Awaited<ReturnType<LearnTransport>>;

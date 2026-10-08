@@ -105,7 +105,7 @@ jobs:
 
           # Encrypt before the dump leaves the runner; the tool deletes the
           # plaintext. Fail on an empty ciphertext or a surviving plaintext.
-          node database/migration-od9/backup-crypto.mjs encrypt --in "$FILE" --out "$FILE.lfbk" --key-file "$RUNNER_TEMP/backup.key"
+          node database/scripts/backup-crypto.mjs encrypt --in "$FILE" --out "$FILE.lfbk" --key-file "$RUNNER_TEMP/backup.key"
           test -s "$FILE.lfbk"
           test -s "$FILE.lfbk.manifest.json"
           test ! -e "$FILE"

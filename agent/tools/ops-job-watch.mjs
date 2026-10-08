@@ -174,7 +174,7 @@ export function buildNotification(result, runUrl = '') {
   lines.push("A missed account-deletion sweep means a due deletion, or a child paused for 90 days, is not erased on time; a missed family, social or learning retention sweep or insights prune means family data outlives the period families were promised.");
   lines.push("A failed or missed warehouse_retention step means learner-keyed usage events outlive their 400-day window in the analytics warehouse, or an erased account's rows come back with a later sync (dataintel logs; GET /api/v1/intel/maintenance/status).");
   lines.push("A missed or failing legacy badge-image purge means the picture of a child's achievement behind an expired or revoked link still resolves at its storage URL.");
-  lines.push('Runbook: docs/operations/GOVERNANCE.md section 4.');
+  lines.push('Check the failed or missing run in GitHub Actions.');
   if (runUrl) lines.push('', `Run: ${runUrl}`);
   return lines.join('\n');
 }

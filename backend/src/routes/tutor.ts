@@ -263,7 +263,7 @@ export function isStaffRoles(roles: readonly string[]): boolean {
 /** Without a cap the tutor is the cheapest XP per minute and courses become optional (§8). */
 const MAX_TUTOR_XP_PER_DAY = 120;
 const PASS_THRESHOLD = 70;
-// The learner-local day boundary lives in lib/localDay.ts (shared with the games' daily cap); re-exported so existing callers are unchanged.
+// The learner-local day boundary lives in lib/localDay.ts; re-exported so existing callers are unchanged.
 export { startOfLocalDayIso } from '../lib/localDay.js';
 
 /**
