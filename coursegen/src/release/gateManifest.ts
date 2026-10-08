@@ -1,14 +1,13 @@
-// The Forge release-gate manifest (S05.4c; Product G.2, Appendix C Part 3 Stage 2).
+// The Forge release-gate manifest.
 //
 // One list of every check `verify:course` records in a course's release
 // attestation. Vault's `release_course` preflight (shared by Core's staff
 // publish route and the local `db:publish-course` command) refuses a release
 // unless the attestation carries a passing entry for every id seeded into
-// `public.forge_release_gates` by the release-gate-manifest migration.
-// `agent/tools/check-forge-release-gate-parity.mjs` fails when this list and
-// the migrations disagree, so a new Forge gate cannot ship without being part
-// of the release preflight, and a DB requirement cannot name a check Forge
-// never records.
+// `public.forge_release_gates` by the release-gate-manifest migration. Keep
+// this list and the migrations in agreement, so a new Forge gate is part of
+// the release preflight and a DB requirement never names a check Forge never
+// records.
 //
 // Keep ids stable: they are the contract with the database. Add a new id with
 // a new migration row; never rename one.
@@ -23,9 +22,7 @@ export interface ReleaseCheckDefinition {
   /** Forge gate number when the check is one of runAllGates' document gates. */
   gate?: GateNumber;
   /**
-   * SPEC ids the check enforces. 'AppC-S2.8' marks the gates Appendix C Stage 2
-   * item 8 carries over from the legacy pipeline; 'G.2' marks release-integrity
-   * checks with no narrower Block B owner.
+   * Requirement ids the check enforces (seeded into the database row).
    */
   spec: readonly string[];
   scope: ReleaseCheckScope;
@@ -33,8 +30,8 @@ export interface ReleaseCheckDefinition {
   description: string;
   /**
    * Whether a blueprint's `known_exception` may excuse a document failing this
-   * check. Only the legacy gates 1-9 may be excused: Appendix C Stage 1 gives
-   * no gate exemption to any draft, and B.17 says an over-ceiling lesson is
+   * check. Only the legacy gates 1-9 may be excused: no draft gets a
+   * gate exemption, and an over-ceiling lesson is
    * "split, not shipped as authored". The content and lesson-policy gates
    * (11-16) and the reward and wellbeing gates (17-19) are never exemptable.
    */
@@ -55,7 +52,7 @@ export const FORGE_RELEASE_CHECKS: readonly ReleaseCheckDefinition[] = [
   { id: 'forge.catalog.regional-adaptation', spec: ['B.16'], scope: 'catalog', exemptable: false, description: 'Every lesson with market context declares its market scenarios' },
   { id: 'forge.catalog.tone', spec: ['B.14'], scope: 'catalog', exemptable: false, description: 'Catalog titles, descriptions and tips pass the Law 2 tone gate' },
   { id: 'forge.catalog.copy-budget', spec: ['OD-13'], scope: 'catalog', exemptable: false, description: 'Catalog titles, descriptions and tips meet the Copy Budget' },
-  // ---- documents: one check per Forge gate (Appendix C Part 1.3 pass rate per gate)
+  // ---- documents: one check per Forge gate
   { id: 'forge.gate.01.contract', gate: 1, spec: ['AppC-S2.8'], scope: 'document', exemptable: true, description: 'Gate 1: lesson contract' },
   { id: 'forge.gate.02.age-vocabulary', gate: 2, spec: ['AppC-S2.8'], scope: 'document', exemptable: true, description: 'Gate 2: age-tier vocabulary' },
   { id: 'forge.gate.03.currency-facts', gate: 3, spec: ['AppC-S2.8'], scope: 'document', exemptable: true, description: 'Gate 3: currency facts' },

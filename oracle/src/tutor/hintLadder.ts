@@ -1,11 +1,11 @@
 import { z } from 'zod';
 
 /*
- * C.13: the hint ladder as a first-class, independently-tracked
+ * The hint ladder as a first-class, independently-tracked
  * dialogue-manager object.
  *
  * The ladder owns hint ESCALATION per learner per sub-step, in the order
- * Appendix D §3.3 specifies: re-ask/pump → indirect hint → targeted hint
+ * set by the research: re-ask/pump → indirect hint → targeted hint
  * naming the misconception → fill-in-the-blank prompt → assertion/tell.
  *
  * Two hard rules, enforced by this object rather than by per-turn LLM
@@ -50,7 +50,7 @@ export type HintLadderSnapshot = z.infer<typeof HintLadderSnapshotSchema>;
  * apostrophes straightened): speech-to-text regularly drops accents ("dimelo",
  * "me da uma dica"), and a detector that only knew the accented form would
  * treat a spoken request differently from the same request typed. Both are
- * registered in the C.20 bias audit (`safety/biasAudit/registry.ts`), which
+ * registered in the bias audit (`safety/biasAudit/registry.ts`), which
  * found on its first run (2026-09-25) that Portuguese had no hint or tell
  * phrase at all ("me dá uma dica", "me diga a resposta"), that "I need help"
  * was not a hint request, and that Rioplatense "decime" and Mexican "échame
@@ -120,8 +120,8 @@ export function isHintRequest(text: string): boolean {
 }
 
 /**
- * C.17: a ladder's rungs, in order. Every ladder starts with the re-ask and
- * ends with the tell, keeps Appendix D §3.3's order, and repeats no rung —
+ * A ladder's rungs, in order. Every ladder starts with the re-ask and
+ * ends with the tell, keeps that order, and repeats no rung —
  * a shorter ladder for younger children drops rungs, it never reorders them.
  */
 export function isValidLadder(rungs: readonly HintLevel[]): boolean {
@@ -133,14 +133,14 @@ export function isValidLadder(rungs: readonly HintLevel[]): boolean {
 export class HintLadder {
   private levels = new Map<string, number>();
   private told = new Set<string>();
-  /** C.17: this session's rungs (the full ladder unless the dialogue policy shortened it). */
+  /** This session's rungs (the full ladder unless the dialogue policy shortened it). */
   private readonly rungs: readonly HintLevel[];
 
   constructor(rungs: readonly HintLevel[] = HINT_LEVELS) {
     this.rungs = isValidLadder(rungs) ? [...rungs] : HINT_LEVELS;
   }
 
-  /** C.17: how many rungs this ladder has (5, or 4 for the younger-child register). */
+  /** How many rungs this ladder has (5, or 4 for the younger-child register). */
   get rungCount(): number {
     return this.rungs.length;
   }
@@ -177,7 +177,7 @@ export class HintLadder {
   }
 
   /**
-   * C.10: whether this sub-step has had ANY ladder help since it last reset —
+   * Whether this sub-step has had ANY ladder help since it last reset —
    * a success after help is scaffolded, not independent evidence of mastery.
    */
   assisted(stepKey: string): boolean {

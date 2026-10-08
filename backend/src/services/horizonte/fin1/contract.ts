@@ -14,7 +14,7 @@ const whole = (minimum: number, maximum: number) => z.number().int().min(minimum
 const MAX_SAFE = Number.MAX_SAFE_INTEGER;
 const tolerance = z.object({ absolute: z.string().max(32).optional(), relative_bps: z.number().int().min(0).max(10_000).optional() }).strict();
 
-/* ── F1.10 compound interest: predict, slide, reveal, explain ── */
+/* ── compound interest: predict, slide, reveal, explain ── */
 
 export const compoundPayload = z.object({
   principalCents: whole(COMPOUND_PRINCIPAL.min, COMPOUND_PRINCIPAL.max),
@@ -35,7 +35,7 @@ export const compoundPayload = z.object({
   if (meetsChallenge(payload.principalCents, payload.challenge, payload.scenario.rate, payload.scenario.years)) ctx.addIssue({ code: 'custom', path: ['challenge'], message: 'The sliders already meet the challenge when they open' });
 });
 
-/* ── F2.11 time value of money and annuities ── */
+/* ── time value of money and annuities ── */
 
 const orderTask = z.object({ kind: z.literal('order'), side: z.enum(['receive', 'pay']), amountsCents: z.array(whole(TV_AMOUNT.min, TV_AMOUNT.max)).min(TV_PAYMENTS.min).max(TV_PAYMENTS.max) }).strict();
 const annuityTask = z.object({ kind: z.literal('annuity'), timing: z.enum(['end', 'start']), amountCents: whole(TV_AMOUNT.min, TV_AMOUNT.max), count: whole(TV_PAYMENTS.min, TV_PAYMENTS.max) }).strict();
@@ -49,7 +49,7 @@ export const timeValuePayload = z.object({
   if (payload.task.kind === 'order' && new Set(payload.task.amountsCents).size !== payload.task.amountsCents.length) ctx.addIssue({ code: 'custom', path: ['task', 'amountsCents'], message: 'Payment amounts differ, so exactly one order is best' });
 });
 
-/* ── F2.12 effective rate, credit card, NPV and IRR ── */
+/* ── effective rate, credit card, NPV and IRR ── */
 
 const flows = z.array(whole(0, CASH.amount.max)).min(CASH.flows.min).max(CASH.flows.max);
 export const ratePayload = z.discriminatedUnion('kind', [

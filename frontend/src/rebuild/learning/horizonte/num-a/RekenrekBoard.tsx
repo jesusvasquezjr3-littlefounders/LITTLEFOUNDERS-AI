@@ -27,7 +27,7 @@ const MOVE_ORDER: readonly Move[] = ['add-1', 'add-5', 'back-1', 'back-5'];
 const slide = (count: number, move: Move): number | null => { const next = count + MOVES[move]; return next >= 0 && next <= REKENREK_BEADS ? next : null; };
 
 /*
- * A05: two rows of ten beads, five to a block. The learner slides beads by tapping one, or by dragging a one or five chip
+ * Two rows of ten beads, five to a block. The learner slides beads by tapping one, or by dragging a one or five chip
  * onto a row; "Move to" is the keyboard path. The answer is the count slid in each row; Core holds the target.
  */
 function Rekenrek({ document, segment, onBack, sequence, onGrade }: Omit<HorizonteBoardProps, 'segment'> & { segment: RekenrekSegment }) {

@@ -1,9 +1,8 @@
-// The Stage 2 gates a v2 document must carry over from the v1 pipeline
-// (GAP-FIX-R2 learning; Appendix C Part 3 Stage 2 gates 4, 7 and 8; B.22,
-// B.26, B.27; Product G.2 "no structurally exempt path").
+// The gates a v2 document must carry over from the v1 pipeline (no
+// structurally exempt path).
 //
-// S05.4c and GAP-FIX-R1 ran gates 11-16 on v2 documents; gates 2, 3, 4, 17
-// and 18 ran only inside the v1 runAllGates, so a new-catalog lesson (OD-24)
+// The content gates ran gates 11-16 on v2 documents; gates 2, 3, 4, 17
+// and 18 ran only inside the v1 runAllGates, so a new-catalog lesson
 // could publish without the reward-mechanic, shame/family-finance, age
 // vocabulary, currency-fact and arithmetic re-execution checks. These
 // adapters run the same measurement code (or, where the v1 gate reads a v1
@@ -37,7 +36,7 @@
 //                             family-finance moralizing, loss and purchase
 //                             lures) over the raw document, the step
 //                             `feedback` banners included;
-//   gate 19 (age register)    GAP-FIX-R6 (B.20, B.23): runAgeRegisterGate over
+//   gate 19 (age register)    runAgeRegisterGate over
 //                             the raw document for the eligibility's ages
 //                             (a register's forbidden lexicon, praise that
 //                             names nothing from age 10), plus Core's
@@ -549,7 +548,7 @@ export function v2RewardAndWellbeingGates(document: Json): V2Finding[] {
   ];
 }
 
-/** Gate 19 over the raw v2 document: the age register (B.23) and the authored feedback rules (B.20). */
+/** Gate 19 over the raw v2 document: the age register and the authored feedback rules. */
 export function v2AgeRegisterGate(document: Json): V2Finding[] {
   const eligibility = document.eligibility as { minimum_age?: unknown; maximum_age?: unknown } | undefined;
   const ages = typeof eligibility?.minimum_age === 'number' && typeof eligibility.maximum_age === 'number'

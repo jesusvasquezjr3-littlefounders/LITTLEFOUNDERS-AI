@@ -1,11 +1,11 @@
 #!/usr/bin/env node
 /*
- * `npm run seed:tutor-packs` — loads the curated activity packs (C.6) from
+ * `npm run seed:tutor-packs` — loads the curated activity packs from
  * database/seeds/tutor_packs/*.json into `tutor_packs`, as `review`.
  *
  *   --check   validate every pack against the tutor-pack.v1 contract and the
  *             knowledge-component graph, print the plan, write nothing (no
- *             credentials needed; this is what the tests and CI run)
+ *             credentials needed)
  *   (none)    the same validation, then upsert by (skill_key, tier, locale):
  *             an unchanged pack (same content hash) is left alone; a changed
  *             one gets its content replaced, its version bumped and its

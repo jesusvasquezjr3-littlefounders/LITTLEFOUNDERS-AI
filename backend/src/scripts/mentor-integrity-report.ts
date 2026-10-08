@@ -1,17 +1,17 @@
 #!/usr/bin/env node
 /*
  * `npm run tutor:integrity-report` — the Mentor-integrity monitor for
- * Product C.10 and C.18 (Appendix F §1.1–1.2, Part 3 Stage 7).
+ * the Extended Mastery Engine and the Mentor's turn honesty.
  *
- *   C.10  Corroborating-Evidence Compliance Rate and Mastery Declaration
+ *   Mastery: Corroborating-Evidence Compliance Rate and Mastery Declaration
  *         Reversal Rate, from the Extended Mastery Engine event log
  *         (`tutor_trajectory_step`).
- *   C.18  Answer-Reveal Rate per persona and per session, the delivered
+ *   Honesty: Answer-Reveal Rate per persona and per session, the delivered
  *         false-affirmation count, and the specific-vs-generic praise share,
  *         from `tutor_turn_honesty`.
  *
  * Reads only, except `--resolve`, which records an operator's resolution of
- * the Extended Mastery Engine's Stage 7 automatic rollback
+ * the Extended Mastery Engine's automatic rollback
  * (`mentor.kill_switch.mastery.resolved`, with the root cause in words): the
  * rolled-back KCs return to the corroborated requirement for new sessions
  * within the kill-switch cache window. Costs nothing (no model call).
@@ -24,9 +24,9 @@
  * DRIFT check compares it with the equally long window before it. Exit code
  * 1 when any defect is found (a compliance miss, a reveal rate over the
  * ceiling or drifting up, a delivered false affirmation, a reversal rate over
- * the Stage 7 ceiling) so a scheduled run can page someone; "insufficient
+ * the rollback ceiling) so a scheduled run can page someone; "insufficient
  * data" is printed, never passed off as healthy. Every threshold is
- * provisional — see docs/rebuild/mentor/THRESHOLD-RECALIBRATION-LOG.md.
+ * provisional.
  */
 
 import { serviceRest } from '../services/supabaseRest.js';
@@ -47,7 +47,7 @@ import {
 const PAGE = 1000;
 const MAX_ROWS = 200_000;
 
-/** Reads every row of a window, paginated. Null on ANY failed page (§1.14: never a partial report). */
+/** Reads every row of a window, paginated. Null on ANY failed page (never a partial report). */
 async function readAll<T>(path: string): Promise<T[] | null> {
   const out: T[] = [];
   for (let offset = 0; offset < MAX_ROWS; offset += PAGE) {
@@ -119,7 +119,7 @@ async function main(): Promise<void> {
   }
   const log = masteryKillSwitchLog(trips);
   const inForce = log.length > 0 && log[log.length - 1]!.resolvedAt === null;
-  // The per-KC table shows only what Stage 7 acts on: a KC over the ceiling or with a compliance miss.
+  // The per-KC table shows only what the rollback acts on: a KC over the ceiling or with a compliance miss.
   const complianceById = new Map(compliance.byKc.map((kc) => [kc.kcId, kc]));
   const flaggedKcs = mastery.byKc
     .map((kc) => ({ ...kc, complianceMisses: complianceById.get(kc.kcId)?.complianceMisses ?? 0 }))

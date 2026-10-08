@@ -4,7 +4,7 @@ import type { Locale } from '../context/schema.js';
 import { stripInvisible } from './untrusted.js';
 
 /*
- * Moderation before the screen AND before the ear (/ORACLE.md §6).
+ * Moderation before the screen AND before the ear.
  *
  * The rule that shapes this whole file: a turn is generated whole, moderated
  * whole, and only then spoken. Token-streaming into text-to-speech would put
@@ -49,7 +49,7 @@ export interface ModerationInput {
    * lands after the learner was told to ask again protects nobody and costs
    * the turn. Re-checked with a LIVE `Date.now()` immediately before the
    * retry fires, not only once when the caller built this input — found by
-   * adversarial review, round 24 (2026-08-30, MEDIUM): the caller used to
+   * adversarial review: the caller used to
    * freeze this into a boolean before the first attempt even started, so a
    * first attempt that itself consumed most or all of `MODEL_TIMEOUT_MS`
    * (more than double the deadline the boolean was based on) still bought a
@@ -60,7 +60,7 @@ export interface ModerationInput {
    */
   retryDeadlineMs?: number;
   /**
-   * TRAJECTORY CONTEXT (round 104, 2026-08-31). The tutor's own last few
+   * TRAJECTORY CONTEXT. The tutor's own last few
    * lines from earlier in this SAME conversation, oldest first — never the
    * learner's words, which are untrusted input with nothing to fence them
    * here (the same reason `orchestrator.ts`'s own `recentTutorLines` getter
@@ -73,7 +73,7 @@ export interface ModerationInput {
    * several turns each individually benign, the SEQUENCE reaching a real
    * harm category only when read together — structurally invisible to it,
    * and to the per-utterance input classifier (`safety/classifier.ts`),
-   * which is equally blind to sequence. See `RUNBOOK.md` Round 104 for the
+   * which is equally blind to sequence. for the
    * full investigation; the short version: a bounded look-back the judge
    * already gets for free on the SAME call it already makes every turn is
    * proportionate to this product's actual threat model (the pedagogical
@@ -92,7 +92,7 @@ export interface ModerationInput {
  * the vocabulary of instruction, not the exact wording.
  *
  * TWO FENCE VOCABULARIES EXIST, AND ONLY ONE WAS COVERED HERE. Found by
- * adversarial review, round 55 (2026-08-30, HIGH): `session/review.ts`'s
+ * adversarial review: `session/review.ts`'s
  * `fenceTranscript` wraps a whole session transcript in its OWN marker,
  * `<<<SESSION_TRANSCRIPT_<nonce>>>>` — deliberately different from
  * `safety/untrusted.ts`'s per-turn `LEARNER_INPUT` fence, since it fences a
@@ -234,7 +234,7 @@ export function deterministicModeration(input: ModerationInput): ModerationVerdi
  * Prose instructions did not hold, so the verdict is a closed vocabulary
  * instead. A refusal must NAME one of these categories; anything else — a
  * category we do not recognise, or none at all — is not a safety refusal, and
- * the turn is allowed with the judge's opinion logged. That is the §1.14 rule
+ * the turn is allowed with the judge's opinion logged. That is the rule
  * this repository keeps relearning: a closed vocabulary is checkable and free
  * text is not.
  *
@@ -313,7 +313,7 @@ interface JudgeChoice {
 /**
  * Builds the judge's user-turn content.
  *
- * With no `recentTutorLines` (every caller before round 104, and every turn
+ * With no `recentTutorLines` (every caller that predates it, and every turn
  * with no prior tutor line to show) this returns `input.text` UNCHANGED —
  * the exact request every existing test and every existing caller already
  * expects, byte for byte. The wrapping only appears once there is context
@@ -335,7 +335,7 @@ function buildJudgeUserContent(input: ModerationInput): string {
 /**
  * The model pass. Returns `null` when no judge is configured, so the caller can
  * distinguish "not configured" from "said no" — collapsing those two is exactly
- * the §1.14 failure-is-not-emptiness mistake.
+ * the failure-is-not-emptiness mistake.
  */
 async function modelModeration(input: ModerationInput): Promise<ModerationVerdict | null> {
   const config = getConfig();
@@ -344,12 +344,12 @@ async function modelModeration(input: ModerationInput): Promise<ModerationVerdic
   const response = await withTimeout(
     fetch(`${config.JUDGE_API_BASE}/chat/completions`, {
       method: 'POST',
-      // Found by adversarial review, round 24 (2026-08-30, HIGH, shared
+      // Found by adversarial review (2026-08-30, HIGH, shared
       // with the pedagogical model call in model/provider.ts): `withTimeout`
       // below races an already-invoked fetch — on OUR timeout it stops
       // waiting, but the real HTTP request keeps running and can still be
       // billed by the provider with nothing in our own ledger to show for
-      // it. `AGENTS.md` item 25 fixed this at the three voice provider call
+      // it. This was already fixed at the three voice provider call
       // sites; this is the highest-volume judge call in the service and had
       // never gotten the same fix. The signal is what actually cancels the
       // request; `withTimeout` stays for its labeled error message.
@@ -392,7 +392,7 @@ async function modelModeration(input: ModerationInput): Promise<ModerationVerdic
      * Found by an adversarial review, 2026-08-30 (CRITICAL): `{}` used to
      * take that branch and be silently converted to `{ allowed: true }`,
      * bypassing `requireModelPass` for exactly the malformed-response shape
-     * §6's fail-closed rule exists to cover — reachable by ordinary model
+     * the fail-closed rule exists to cover — reachable by ordinary model
      * non-compliance with the requested JSON shape, not an adversarial input.
      */
     throw new Error('moderation judge response had no interpretable verdict');
@@ -402,7 +402,7 @@ async function modelModeration(input: ModerationInput): Promise<ModerationVerdic
   const detail = typeof parsed.reason === 'string' ? parsed.reason.slice(0, 200) : 'judge marked unsafe';
   const rawCategory = typeof parsed.category === 'string' ? parsed.category : '';
   /*
-   * NORMALIZED BEFORE THE MEMBERSHIP CHECK (round 66, 2026-08-30, CRITICAL).
+   * NORMALIZED BEFORE THE MEMBERSHIP CHECK.
    * This exact-string `includes` used to run on `parsed.category` untouched.
    * Reproduced live: a judge that correctly identified real harm — "graphic
    * self-harm description" — and named its own category as `" self_harm"`,
@@ -460,7 +460,7 @@ async function modelModeration(input: ModerationInput): Promise<ModerationVerdic
  *   refuse. A child never hears model-authored text an unavailable judge did
  *   not clear.
  * - Still no verdict, on a session that does not require it (an adult) → the
- *   deterministic pass above already ran and allowed it, and §6 already says
+ *   deterministic pass above already ran and allowed it, and the policy already says
  *   an adult's session may run on that pass alone.
  *
  * THAT LAST BRANCH IS THE FIX, and the asymmetry it removes cost a real
@@ -504,7 +504,7 @@ export async function moderateTutorOutput(input: ModerationInput): Promise<Moder
     if (input.requireModelPass) {
       return { allowed: false, reason: 'moderator_unavailable', detail: failure };
     }
-    // Adult session: the deterministic pass already cleared this text, and §6
+    // Adult session: the deterministic pass already cleared this text, and policy
     // permits running on it alone. Destroying the turn would protect nobody.
     console.warn(`[oracle] moderation judge unavailable, allowing on the deterministic pass: ${failure}`);
     return { allowed: true };

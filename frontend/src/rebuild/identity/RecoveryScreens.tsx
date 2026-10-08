@@ -4,20 +4,20 @@ import type { Locale } from '../design/copyBudget';
 import { AuthError, AuthForm, AuthIntro, AuthOutcome, AuthSwitch, identityCopy, PasswordField, type Navigate } from './authBlocks';
 
 /*
- * A3 Forgot password, A4 Reset password, A5 the Google return and A6 Save your
- * progress, rebuilt on the sign-in shell (W2S.2).
+ * Forgot password, Reset password, the Google return and Save your
+ * progress, rebuilt on the sign-in shell.
  *
- *   A3  one email field. Core never says whether an address has an account, so
+ *   Forgot password  one email field. Core never says whether an address has an account, so
  *       the confirmation is the same for every address ("if an account uses
  *       this email"). A refused request (too many tries, no connection) says
  *       so instead of claiming a link was sent.
- *   A4  the link's short-lived recovery session authorises one new password;
+ *   Reset password  the link's short-lived recovery session authorises one new password;
  *       an old or used link says so and offers a new one.
- *   A5  "Signing you in", or "Sign-in didn't finish" with the way back. What
- *       comes next (the mandatory age screen for a first Google sign-in, A.3)
+ *   Google return  "Signing you in", or "Sign-in didn't finish" with the way back. What
+ *       comes next (the mandatory age screen for a first Google sign-in)
  *       is the app's route guard, not this screen.
- *   A6  attaches an email and password to the guest account in place: the
- *       same account, so the streak and progress stay (and so does the A.2
+ *   Save your account  attaches an email and password to the guest account in place: the
+ *       same account, so the streak and progress stay (and so does the
  *       origin marker, server-side).
  */
 

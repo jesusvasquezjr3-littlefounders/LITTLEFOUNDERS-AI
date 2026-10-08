@@ -30,7 +30,7 @@ import type { ConceptFamily } from './explanationLexicon.js';
  * Every text in this file is enumerated by `scriptedLineCatalogue()` below.
  * Across 4 characters and 3 locales the whole set is 384 pieces of audio that
  * never change, so `npm run speech:pregenerate` synthesises them ONCE and the
- * runtime serves the stored URLs forever after (/ORACLE.md §15).
+ * runtime serves the stored URLs forever after.
  *
  * The consequence for whoever edits a line here: changing one character of a
  * string changes its content hash, so the pre-generated entry stops matching
@@ -137,15 +137,15 @@ const MODERATION_BLOCKED: Trilingual = {
 };
 
 /*
- * ── C.16: THE CLOSING LINES, ONE SET PER END-REASON ─────────────────────────
+ * ── THE CLOSING LINES, ONE SET PER END-REASON ─────────────────────────
  *
  * These replace the single positive template ("We did great work today…")
  * that used to close EVERY session, including interrupted ones. See
  * `sessionClosing.ts` for the four scripts and how each is chosen.
  *
- * Each line obeys the Mentor copy budget (Frontend Bible 06 §3.1: 2
+ * Each line obeys the Mentor copy budget (2
  * sentences; 12 words for ages 6–9 in English, 25% more in es-MX and pt-BR),
- * so one line serves every age band. `sessionClosing.test.ts` measures them.
+ * so one line serves every age band.
  *
  * The earlier lesson still holds: a goodbye must never promise anything the
  * socket will not deliver. "Next time, we pick up right here" is kept by the
@@ -221,7 +221,7 @@ const SAFETY_STOP_CLOSE: Trilingual = {
  * when the learner chose something else.
  */
 const REENGAGEMENT: Record<Exclude<SessionOpening, 'greeting'>, Trilingual> = {
-  // Persona-neutral (C.15): the learner may return to a different Mentor,
+  // Persona-neutral: the learner may return to a different Mentor,
   // and "last time WE stopped" would then be a false shared memory.
   reengage_left_resume: {
     'en-US': "Welcome back! Your last session stopped partway, so let's pick up there.",
@@ -246,7 +246,7 @@ const REENGAGEMENT: Record<Exclude<SessionOpening, 'greeting'>, Trilingual> = {
 };
 
 /**
- * C.19: the humble check-in the SYSTEM asks when the Behavioral Telemetry
+ * The humble check-in the SYSTEM asks when the Behavioral Telemetry
  * Layer fires its disengagement signal. It asks whether the Mentor is
  * helping — never how the learner feels — and it is a written line so the
  * repair move happens on every firing, not only when a model chooses to ask.
@@ -258,7 +258,7 @@ const CHECK_IN: Trilingual = {
 };
 
 /**
- * C.14: the self-explanation question the SYSTEM asks after a money decision
+ * The self-explanation question the SYSTEM asks after a money decision
  * (`selfExplanation.ts`). `why` after a correct or ungraded choice, `how`
  * after a verified-wrong one, `scaffolded` (a sentence stem) for a learner
  * whose explanations rarely name the idea yet. About the reasoning, never
@@ -283,7 +283,7 @@ const SELF_EXPLANATION: Record<PromptVariant, Trilingual> = {
 };
 
 /**
- * C.15: the renegotiation question after repeated declined adaptation
+ * The renegotiation question after repeated declined adaptation
  * offers. It names the METHOD as what is not working, never the learner.
  */
 const RENEGOTIATION: Trilingual = {
@@ -293,11 +293,11 @@ const RENEGOTIATION: Trilingual = {
 };
 
 /**
- * C.15 persona continuity: the honest opening when this persona has never
+ * Persona continuity: the honest opening when this persona has never
  * worked with the learner (`introduce`: a first meeting or a persona switch)
  * or has not for a long time (`reconnect`: a memory gap). They replace a
  * greeting that assumes a shared history (Liruf's "You came back!") so the
- * Mentor never acts falsely familiar (Appendix D §3.4). Each ends by asking
+ * Mentor never acts falsely familiar. Each ends by asking
  * what the learner wants to do: the goal-agreement move follows.
  */
 const CONTINUITY_OPENINGS: Record<'introduce' | 'reconnect', Record<CharacterId, Trilingual>> = {
@@ -372,7 +372,7 @@ const CONSENT_REVOKED: Trilingual = {
  * the client composes it; baking it into the audio would make the line
  * unshareable between learners and put us straight back into paying for one
  * synthesis per child per session. It also means this audio contains nothing
- * about anybody, which is what lets it live in the shared bucket (§15).
+ * about anybody, which is what lets it live in the shared bucket.
  *
  * The voices follow GLOSSARY.md's canonical cast table — Dina female and calm,
  * Liruf male and bouncing, Dr. Rho male ("el Dr. Rho", never "la Dra.") and
@@ -447,7 +447,7 @@ export function consentRevokedResponse(locale: Locale): TutorTurn {
  * `excited` because bouncing and racing ahead are who they are, Dina and Dr.
  * Rho open `happy` because calm and precise are who THEY are. It matters more
  * than it looks for Liruf and Dina, who have no mouth card: posture is their
- * only speech channel (/ORACLE.md §2.2).
+ * only speech channel.
  */
 export function greetingResponse(character: CharacterId, locale: Locale): TutorTurn {
   const lively = character === 'liruf' || character === 'zara';
@@ -474,7 +474,7 @@ export function completedCloseText(locale: Locale, act: EffortAct): string {
 
 export function completedCloseResponse(locale: Locale, act: EffortAct): TutorTurn {
   // Warm, and deliberately NOT a celebration: no `celebrate` action and no
-  // `excited` emotion outside the milestone list (OD-7).
+  // `excited` emotion outside the milestone list.
   return closingTurn(COMPLETED_CLOSE[act][locale], 'happy', 'wave');
 }
 
@@ -490,7 +490,7 @@ export function safetyStopCloseResponse(locale: Locale): TutorTurn {
   return closingTurn(SAFETY_STOP_CLOSE[locale], 'neutral', 'idle');
 }
 
-/** C.19: the check-in line; the session continues for the learner's answer. */
+/** The check-in line; the session continues for the learner's answer. */
 export function checkInText(locale: Locale): string {
   return CHECK_IN[locale];
 }
@@ -501,16 +501,16 @@ export function checkInResponse(locale: Locale): TutorTurn {
   return turn(CHECK_IN[locale], 'encouraging', 'nod');
 }
 
-/** C.14: the self-explanation question; the session continues for the learner's reason. */
+/** The self-explanation question; the session continues for the learner's reason. */
 export function selfExplanationText(locale: Locale, variant: PromptVariant): string {
   return SELF_EXPLANATION[variant][locale];
 }
 
 /**
- * GAP-FIX-R2 (C.14, Frontend Bible 08 §4): the scaffolded prompt's
+ * The scaffolded prompt's
  * SENTENCE-STEM chips, system-written, finishing "I picked it because…": the
  * reason that names the decision's idea, a reason that does not, and "I don't
- * know" (a help request the C.13 ladder honours). The learner picks or types;
+ * know" (a help request the ladder honours). The learner picks or types;
  * the quality check reads whichever they send, so a stem never passes for
  * them. Within the `option` budget for ages 6-9 (5 words, x1.25 for es/pt).
  */
@@ -528,7 +528,7 @@ const SCAFFOLD_STEMS: Record<ConceptFamily, Trilingual> = {
 const SCAFFOLD_OTHER: Trilingual = { 'en-US': 'Because I liked it', 'es-MX': 'Porque me gustó', 'pt-BR': 'Porque eu gostei' };
 const SCAFFOLD_UNSURE: Trilingual = { 'en-US': "I don't know", 'es-MX': 'No lo sé', 'pt-BR': 'Não sei' };
 
-/** The three stems a scaffolded prompt offers (exported for the parity and budget tests). */
+/** The three stems a scaffolded prompt offers. */
 export function scaffoldStems(locale: Locale, family: ConceptFamily): string[] {
   return [SCAFFOLD_STEMS[family][locale], SCAFFOLD_OTHER[locale], SCAFFOLD_UNSURE[locale]];
 }
@@ -539,7 +539,7 @@ export function selfExplanationResponse(locale: Locale, variant: PromptVariant, 
   return variant === 'scaffolded' && family !== null ? { ...asked, replies: scaffoldStems(locale, family) } : asked;
 }
 
-/** C.15: the renegotiation question; the learner answers in their own words. */
+/** The renegotiation question; the learner answers in their own words. */
 export function renegotiationText(locale: Locale): string {
   return RENEGOTIATION[locale];
 }
@@ -548,7 +548,7 @@ export function renegotiationResponse(locale: Locale): TutorTurn {
   return turn(RENEGOTIATION[locale], 'encouraging', 'nod');
 }
 
-/** C.15: the honest opening of a first meeting / persona switch (`introduce`) or a memory gap (`reconnect`). */
+/** The honest opening of a first meeting / persona switch (`introduce`) or a memory gap (`reconnect`). */
 export function continuityOpeningText(character: CharacterId, locale: Locale, kind: 'introduce' | 'reconnect'): string {
   return CONTINUITY_OPENINGS[kind][character][locale];
 }
@@ -576,7 +576,7 @@ export function openingResponse(character: CharacterId, locale: Locale, opening:
  *
  * They are enumerated PER CHARACTER even though most of the texts are
  * character-independent, because the audio is not: each of the four has their
- * own cloned voice per locale (/ORACLE.md §3.3), so "Time is up for
+ * own cloned voice per locale, so "Time is up for
  * today" is four different recordings, not one.
  *
  * 32 texts × 4 characters × 3 locales = 384 clips, and that number is the
@@ -604,7 +604,7 @@ export function scriptedLineCatalogue(): ScriptedLine[] {
       });
       lines.push({ key: 'moderation_blocked', character, locale, text: MODERATION_BLOCKED[locale] });
       lines.push({ key: 'consent_revoked', character, locale, text: CONSENT_REVOKED[locale] });
-      // C.16 closing scripts and the queued re-engagement openings.
+      // Closing scripts and the queued re-engagement openings.
       lines.push({ key: 'closing.recap', character, locale, text: RECAP_PROMPT[locale] });
       for (const [act, trilingual] of Object.entries(COMPLETED_CLOSE)) {
         lines.push({ key: `closing.completed.${act}`, character, locale, text: trilingual[locale] });
@@ -614,13 +614,13 @@ export function scriptedLineCatalogue(): ScriptedLine[] {
       for (const [opening, trilingual] of Object.entries(REENGAGEMENT)) {
         lines.push({ key: `opening.${opening}`, character, locale, text: trilingual[locale] });
       }
-      // C.19: the disengagement check-in.
+      // The disengagement check-in.
       lines.push({ key: 'check_in', character, locale, text: CHECK_IN[locale] });
-      // C.14: the self-explanation questions.
+      // The self-explanation questions.
       for (const [variant, trilingual] of Object.entries(SELF_EXPLANATION)) {
         lines.push({ key: `self_explanation.${variant}`, character, locale, text: trilingual[locale] });
       }
-      // C.15: the renegotiation question and the continuity openings.
+      // The renegotiation question and the continuity openings.
       lines.push({ key: 'renegotiation', character, locale, text: RENEGOTIATION[locale] });
       for (const kind of ['introduce', 'reconnect'] as const) {
         lines.push({ key: `opening.${kind}`, character, locale, text: CONTINUITY_OPENINGS[kind][character][locale] });

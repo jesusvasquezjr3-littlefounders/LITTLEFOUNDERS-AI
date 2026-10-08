@@ -8,8 +8,8 @@ import {
 import { IdDocumentField } from './IdDocumentField';
 
 /*
- * A7 Become a Tutor (the verified parent, OD-6), rebuilt on the sign-in shell
- * (W2S.2). The Core contract is unchanged (S01, A.5):
+ * Become a Tutor (the verified parent), rebuilt on the sign-in shell.
+ * The Core contract is unchanged:
  *
  *   - the status comes from Core before anything is claimed: a parent role
  *     alone never shows "already a Tutor"; an unreadable status offers a retry,
@@ -18,12 +18,12 @@ import { IdDocumentField } from './IdDocumentField';
  *     screen offers the support address and no form;
  *   - a child account cannot verify as an adult (Core answers FORBIDDEN): the
  *     screen says who can, and offers no retry that could never succeed;
- *   - an account whose own age record is under 18 (AGE_RECORD_MINOR, F3):
+ *   - an account whose own age record is under 18 (AGE_RECORD_MINOR):
  *     no form; the way out is the staff-reviewed age correction in Settings,
  *     or a person when the record cannot be corrected there;
  *   - the steps are explained before the form opens, and the privacy promise
  *     (the photo is checked in memory and never kept) comes first on the form;
- *   - no document-type field (A.5: a declaration that cannot be checked against
+ *   - no document-type field (a declaration that cannot be checked against
  *     the image is not collected);
  *   - every failed check is named, with a way out to a person.
  */

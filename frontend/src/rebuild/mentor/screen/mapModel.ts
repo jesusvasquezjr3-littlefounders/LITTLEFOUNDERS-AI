@@ -1,7 +1,7 @@
 import type { TutorMapNode, TutorMapResponse } from '../session/tutorApi';
 
 /*
- * The learning map (T1f) as steps: the knowledge-component graph read the way
+ * The learning map as steps: the knowledge-component graph read the way
  * a learner reads a path. A skill's step is one past its deepest prerequisite,
  * so every prerequisite sits on an earlier step; the same graph always lays
  * out the same way (no measuring, no randomness). A skill that is not open yet

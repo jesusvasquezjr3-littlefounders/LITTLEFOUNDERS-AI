@@ -30,7 +30,7 @@ const place = (angle: Angle): CSSProperties => {
 };
 
 /*
- * F4.4: a figure of cubes turns about one named axis through four stops (90 degrees each). The learner sets the turn on a dial
+ * A figure of cubes turns about one named axis through four stops (90 degrees each). The learner sets the turn on a dial
  * (drag, arrow keys, or "Move to") and the figure is redrawn at that angle; the task is to pick the shape it becomes and to give
  * the turn. The answer is the shape and the angle; Core holds the key, the browser never says met.
  */

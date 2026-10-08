@@ -2,12 +2,11 @@ import { Button, InlineNotice, LoadingState } from '../design/controls';
 import './mentorDecisions.css';
 
 /*
- * WHAT THE MENTOR DECIDED, AND ON WHAT EVIDENCE (GAP-FIX-R2).
+ * WHAT THE MENTOR DECIDED, AND ON WHAT EVIDENCE.
  *
- * Product Block C's Real-Time Interaction Standard asks that the Extended
- * Mastery Engine's outputs stay interpretable and auditable to a parent, and
- * Appendix D §2.6 asks the parent-facing layer to "expose the evidence, not
- * just the conclusion" (C.10). Core projects the controller's logged
+ * The Extended Mastery Engine's outputs must stay interpretable and auditable to a parent:
+ * the parent-facing layer should "expose the evidence, not
+ * just the conclusion". Core projects the controller's logged
  * decisions as numbers and closed labels (`GET /tutor/kids/:kidUserId/mastery`
  * for the verified Tutor, `GET /tutor/mastery` for the learner); this card
  * phrases them as templated sentences such as "Moved on after 2 correct
@@ -15,7 +14,7 @@ import './mentorDecisions.css';
  * text or transcript: the only free string is the skill's authored title.
  *
  * Read-only in both places: the Family console child page and the learner's
- * own learning map sheet. Built from the shared controls (02 rule 23).
+ * own learning map sheet. Built from the shared controls.
  *
  * The wire shape is hand-mirrored from `backend/src/services/pedagogy/
  * masteryEvidence.ts` (no shared types across packages, by design) and

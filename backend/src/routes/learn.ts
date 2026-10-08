@@ -93,10 +93,10 @@ import {
 
 /*
  * /api/v1/learn — server-authoritative course tree, lesson delivery and
- * grading (COURSE_ENGINE.md §2, LESSON_ENGINE.md §6-§7). Core is the ONLY
+ * grading. Core is the ONLY
  * place unlock state and scores are computed; the client never re-derives
  * either. Grading reuses the frontend's pure validators via
- * ../lesson-contract/ (a parity-checked copy — no workspaces, /AGENTS.md §1.2).
+ * ../lesson-contract/ (a copy — no workspaces).
  */
 
 const NOT_FOUND = 'NOT_FOUND';
@@ -117,7 +117,7 @@ function lessonAttemptSecret(): string | null {
   return getConfig().LESSON_ATTEMPT_SECRET ?? null;
 }
 
-/** F3.0: the seed of every seeded segment, derived from the token just issued (or re-signed), beside `attempt_tokens`. */
+/** The seed of every seeded segment, derived from the token just issued (or re-signed), beside `attempt_tokens`. */
 function attemptSeedsField(
   segments: ReadonlyArray<{ id: string; type: string }>,
   attempts: ReadonlyArray<{ sid: string; lid: string; uid: string; jti: string; exp: number }>,
@@ -133,12 +133,12 @@ export type LearnerCourseTree = CourseTree & { pathway?: PathwayView };
 
 export interface LearnerCourseLoad {
   tree: LearnerCourseTree;
-  /** Present in pathway mode: the learner's graph context, reused by the B.2 check and badge settlement. */
+  /** Present in pathway mode: the learner's graph context, reused by the prerequisite check and badge settlement. */
   pathway: LearnerPathwayContext | null;
 }
 
 /**
- * The pathway engine's inputs for one learner (B.6, S05.3b). Null in linear
+ * The pathway engine's inputs for one learner. Null in linear
  * mode; 'unreachable' when any read failed — never a silent linear fallback,
  * which would hand a minor chapters the safeguard closes.
  */
@@ -210,7 +210,7 @@ export async function loadCourseTree(accessToken: string, userId: string, course
  * other locked lesson is simply not on the frontier yet.
  *
  * The entry placement is NOT a refusal: it is an offered shortcut to find a
- * start (B.15), never a wall. A learner who has not placed is simply at the
+ * start, never a wall. A learner who has not placed is simply at the
  * beginning of their stage's path, which is where the frontier already points.
  */
 export function lessonAdmissionRefusal(tree: LearnerCourseTree, lessonId: string): { code: string; message: string } | null {
@@ -231,10 +231,10 @@ export function lessonAdmissionRefusal(tree: LearnerCourseTree, lessonId: string
  *  - A completed pathway records its stage credential.
  *  - A badge the live full-course rule grants that is not stored yet is frozen
  *    as `legacy` for the stage the course's legacy chapters form, so growing
- *    the catalog can never revoke it (OD-9). The migration froze every badge
+ *    the catalog can never revoke it. The migration froze every badge
  *    that existed when it ran; this covers badges earned after it.
- * Pathway mode only: the linear engine keeps the pre-B.6 behavior exactly and
- * must run before the B.6 tables exist. A failed write is logged and retried
+ * Pathway mode only: the linear engine keeps the pre-pathway behavior exactly and
+ * must run before the pathway tables exist. A failed write is logged and retried
  * on the next read; it never fails the learner's completion, which is already
  * committed.
  */
@@ -258,18 +258,18 @@ type CourseEntry =
   | { kind: 'refused'; status: number; code: string; message: string; details?: Record<string, unknown> };
 
 /*
- * B.2: course-level prerequisites are ENFORCED, not dormant. A course whose
+ * Course-level prerequisites are ENFORCED, not dormant. A course whose
  * declared `requires` are not met refuses to open, naming the missing
  * prerequisites so the learner knows exactly what to finish first.
  * Enforcement is on the entry point only: the shelf keeps listing the course
  * (it is a real, reachable course, with a visible first step), and earned
  * progress stays earned.
  *
- * Linear engine (S05.2ba): every declared prerequisite needs its badge.
- * Pathway engine (B.6 rule P7, S05.3b): a badge of the required course from
+ * Linear engine: every declared prerequisite needs its badge.
+ * Pathway engine: a badge of the required course from
  * ANY stage satisfies it, a frozen legacy badge included; it is WAIVED when
  * the learner's pathway in the required course would be a younger bridge (a
- * teen or an adult facing a children's course), because OD-16 never makes an
+ * teen or an adult facing a children's course), because the pathway never makes an
  * older learner complete another stage's chapters; what that course teaches
  * still reaches them through the shared graph. The age safeguard runs first:
  * a course with no chapter open to this learner refuses with
@@ -295,7 +295,7 @@ async function courseEntry(user: AuthedUser, course: CourseHierarchyRow, ageScre
 
   const load = await loadLearnerCourse(user.accessToken, user.id, course, ageScreen);
   if (!load || !load.tree.pathway || !load.pathway) return { kind: 'refused', status: 502, code: 'INTERNAL', message: 'Content service unreachable' };
-  // OD-25: a course with no chapter for this age still opens when mastery can open (or opened) a chapter one stage early.
+  // A course with no chapter for this age still opens when mastery can open (or opened) a chapter one stage early.
   if (load.tree.pathway.basis === 'unavailable' && load.tree.pathway.earlyAccess.length === 0) {
     return { kind: 'refused', status: 403, code: 'COURSE_AGE_RESTRICTED', message: 'This course is not available for this age yet' };
   }
@@ -306,7 +306,7 @@ async function courseEntry(user: AuthedUser, course: CourseHierarchyRow, ageScre
     if (decision === 'missing') missing.push(slug);
   }
   if (missing.length > 0) {
-    // Appendix C 1.3 (B.2): prerequisite gate compliance, from Core's own decision.
+    // Prerequisite gate compliance, from Core's own decision.
     recordServerLearnEvent(user, 'prerequisite_refused', null, { segmentId: 'pathway' });
     return { kind: 'refused', status: 409, code: 'COURSE_PREREQUISITE_REQUIRED', message: 'Finish the prerequisite course first', details: { missingPrerequisites: missing } };
   }
@@ -411,7 +411,7 @@ export async function loadCourseTrees(
   if (!placements) return null;
   const credits = await getPlacementCreditsForCourses(accessToken, userId, courseIds);
   if (!credits) return null;
-  // Pathway mode (B.6): one learner context and one content read for the
+  // Pathway mode: one learner context and one content read for the
   // whole shelf, like every level above.
   const ctx = await learnerPathwayContext(userId, ageScreen);
   if (ctx === 'unreachable') return null;
@@ -491,7 +491,7 @@ interface LessonContext {
   topic: { id: string; slug: string; title?: unknown };
   course: CourseHierarchyRow;
   tree: LearnerCourseTree;
-  /** B.8 (GAP-FIX-R1): the chapter's declared scene theme (0007 closed CHECK list). */
+  /** The chapter's declared scene theme (0007 closed CHECK list). */
   adventureTheme: string | null;
 }
 
@@ -518,7 +518,7 @@ async function resolveLessonContext(accessToken: string, userId: string, lessonI
  * A server-authored learning event, fire-and-forget, behind exactly the gate
  * the client ingest (routes/events.ts) applies: no guest, no unresolved or
  * protected age screen, a kid only with active guardian consent, anyone else
- * only with self-managed analytics allowed (H.1). The replay-notice rate
+ * only with self-managed analytics allowed. The replay-notice rate
  * divides a client event by this one, so both must be dropped for the same
  * learners or the rate would lie.
  */
@@ -547,7 +547,7 @@ export function recordServerLearnEvent(
 }
 
 /**
- * B.21 (S05.3e): the Appendix C rest-day utilization inputs, from Core's own
+ * The rest-day utilization inputs, from Core's own
  * completion result. A rest day kept the run; a restart means a run of two or
  * more days had broken (a one-day "run" breaking is not a lost streak).
  */
@@ -561,11 +561,11 @@ function recordStreakOutcome(user: AuthedUser, completion: LessonCompletionResul
 }
 
 /**
- * B.20 / B.21 / B.24 (S05.3e): what Core adds to every completion response.
- * `celebrations` is the closed OD-7 list this completion reached (the client
+ * What Core adds to every completion response.
+ * `celebrations` is the closed celebration list this completion reached (the client
  * celebrates nothing else); `recognition` names what was figured out, so the
- * XP tally is informational, not payment (B.20); `pace` compares today's
- * passed lessons with the learner's own plan (B.24). Best-effort reads: a
+ * XP tally is informational, not payment; `pace` compares today's
+ * passed lessons with the learner's own plan. Best-effort reads: a
  * missing enrichment is omitted, never invented.
  */
 async function completionMotivation(input: {
@@ -608,11 +608,11 @@ async function v2GuidedReview(userId: string, ctx: LessonContext, locale: string
 export function learnRouter(): Router {
   const router = Router();
   router.use(requireAuth, requireAgeScreen);
-  // B.9 (S05.3c): the learner's decision journal.
+  // The learner's decision journal.
   router.use(learnNarrativeRouter());
-  // B.21 / B.24 (S05.3e): the learner's streak, pace and autonomy levers.
+  // The learner's streak, pace and autonomy levers.
   router.use(learnMotivationRouter());
-  // B.23 (S05.3f): the learner's age register and its one-time graduation moment.
+  // The learner's age register and its one-time graduation moment.
   router.use(learnRegisterRouter());
 
   // Future Tutor-ready boundary. It returns only the caller's derived skill
@@ -633,8 +633,8 @@ export function learnRouter(): Router {
     target: z.string().regex(/^[a-z0-9._-]{1,64}$/),
   });
 
-  // A treatment is recorded only after it rendered. OD-23 / OD-26 (owner
-  // review M-12): every experiment except C.17 is ADULTS ONLY, and C.17's
+  // A treatment is recorded only after it rendered. Every experiment except the
+  // dialogue calibration is ADULTS ONLY, and its
   // exposure is recorded by Core itself when a Mentor session starts
   // (services/pedagogy/dialogueCalibration.ts), never through this route. So
   // this route records only for a self-managed adult (not a kid-role account,
@@ -711,7 +711,7 @@ export function learnRouter(): Router {
     if (!loaded) return fail(res, 502, 'INTERNAL', 'Content service unreachable');
 
     /*
-     * B.3 requires every dropped course to become a staff-visible operational
+     * Every dropped course must become to become a staff-visible operational
      * signal. This counter is deliberately independent from the learner's
      * response: an incident-write outage must not take the healthy shelf down.
      */
@@ -749,7 +749,7 @@ export function learnRouter(): Router {
         inProgress: summary.inProgress,
         adventureCount: summary.adventureCount,
         progress: summary.progress,
-        // B.6 pathway mode only: the learner's stage and how this course
+        // Pathway mode only: the learner's stage and how this course
         // serves it. `unavailable` is the age safeguard (a 9-year-old and a
         // teen-only course); the shelf still lists it so nothing vanishes.
         ...(tree.pathway ? {
@@ -758,7 +758,7 @@ export function learnRouter(): Router {
             pathwayStage: tree.pathway.pathwayStage,
             basis: tree.pathway.basis,
             recommendedLessonId: tree.nextLessonId,
-            // OD-25: mastery can open (or opened) a chapter one stage early, so a course closed by age is still offered.
+            // Mastery can open (or opened) a chapter one stage early, so a course closed by age is still offered.
             earlyAccess: tree.pathway.earlyAccess.length > 0,
           },
         } : {}),
@@ -795,7 +795,7 @@ export function learnRouter(): Router {
   });
 
   /*
-   * 2b. GET /courses/:slug/path — the rebuilt course path (B.6, S05.3b). The
+   * 2b. GET /courses/:slug/path — the rebuilt course path. The
    * same pathway decision as the tree, projected to what a learner needs on
    * one screen: chapters with their access, the frontier with titles, what is
    * blocked and why, and the skills the pathway teaches. Pathway mode only.
@@ -809,7 +809,7 @@ export function learnRouter(): Router {
     if (entry.kind === 'refused') return fail(res, entry.status, entry.code, entry.message, entry.details);
     if (!entry.load.tree.pathway || !entry.load.pathway) return fail(res, 502, 'INTERNAL', 'Content service unreachable');
     const projection = projectCoursePath(entry.load.tree as PathwayCourseTree, entry.load.pathway.kcTitles);
-    // GAP-FIX-R5 (B.24; Appendix C 1.2 adoption): the denominator of the enrichment lever, once per learner, course and day.
+    // The denominator of the enrichment lever, once per learner, course and day.
     if (projection.enrichment.length > 0) {
       recordServerLearnEvent(user, 'enrichment_offer', null, {
         clientEventId: deterministicEventId(`enrichment_offer:${user.id}:${course.id}:${new Date().toISOString().slice(0, 10)}`),
@@ -819,7 +819,7 @@ export function learnRouter(): Router {
   });
 
   /*
-   * 2c. OD-25 (27 September 2026), pathway engine only. Both writes re-derive
+   * 2c. Pathway engine only. Both writes re-derive
    * the offer from the learner's own pathway on the server, the same tree the
    * lesson gate uses; the body only names which offer. Nothing is stored for
    * an offer the pathway does not make, and a replay changes nothing.
@@ -835,7 +835,7 @@ export function learnRouter(): Router {
    * have shown mastery of X; unlock the next level?"). Stored as a mastery
    * credit with the skills and estimates it was accepted on; read as a credit
    * (never played, never XP). A completed pathway then records its badge.
-   * `decision: 'decline'` (W3L.1) records the learner's "no" instead: the
+   * `decision: 'decline'` records the learner's "no" instead: the
    * topic is never offered again and stays to be played. The first answer is
    * final: a declined topic cannot be accepted later and an accepted one
    * cannot be declined (409 MASTERY_OFFER_ANSWERED); the same answer replays.
@@ -844,7 +844,7 @@ export function learnRouter(): Router {
   const EarlyAccessBody = z.object({ chapterId: z.string().uuid() }).strict();
   const MasteryCreditBody = z.object({ topicId: z.string().uuid(), decision: z.enum(['accept', 'decline']).optional() }).strict();
 
-  /** The learner's pathway course for an OD-25 write, or answers the refusal itself. */
+  /** The learner's pathway course for an early-access or mastery-credit write, or answers the refusal itself. */
   async function pathwayCourseFor(req: { params: Record<string, string | undefined> }, res: Parameters<typeof fail>[0]) {
     if (courseEngine() !== 'pathway') {
       fail(res, 409, 'PATHWAY_ENGINE_DISABLED', 'The course path is not enabled yet');
@@ -941,28 +941,28 @@ export function learnRouter(): Router {
       return fail(res, 422, 'UNSUPPORTED_LESSON', 'This lesson document is not ready');
     }
     /*
-     * OD-19 / S05.2bh: the compact Mentor stage projection. The learner's own
+     * The compact Mentor stage projection. The learner's own
      * stored character (catalog default when never chosen) rides with the
      * document-declared scene as the response's `mentor_stage` field, while
      * the authored mentor_stage is stripped from the delivered document so
      * the answerless document and the per-learner projection never mix. A
      * preference READ failure omits the stage rather than showing the wrong
-     * character (§1.14): the lesson must not depend on this cosmetic read.
-     * B.8 (GAP-FIX-R3): the preferences are read for EVERY v2 document, so the
+     * character: the lesson must not depend on this cosmetic read.
+     * The preferences are read for EVERY v2 document, so the
      * Mentor is present whether or not the author declared a stage.
      */
     const prefs = await getTutorPreferences(user.id).catch(() => null);
     const mentorStage = projectV2MentorStage(document, prefs?.character);
-    // B.18 (GAP-FIX-R3): the v2 narration channel, resolved against Echo's manifest; prompt audio only.
+    // The v2 narration channel, resolved against Echo's manifest; prompt audio only.
     const narrationAudio = v2NarrationAudio(document, picked.audio);
     const stripped = stripV2MentorStage(safeDocument) as { meta?: { cast?: unknown }; scoring?: unknown; segments?: unknown };
-    // M9–M10 (GAP-FIX-R1): worked examples fade by the learner's mastery, chosen here on Core.
+    // Worked examples fade by the learner's mastery, chosen here on Core.
     const deliveredDocument = await applyMasteryFade(stripped, user.id, ctx.topic.id);
-    // B.9 (S05.3c): one earlier, relevant story decision from this course,
+    // One earlier, relevant story decision from this course,
     // resurfaced as the lesson opens. Best-effort: never blocks the lesson.
     const narrativeRecall = await resurfaceForLesson({ userId: user.id, tree: ctx.tree, courseId: ctx.course.id, topicId: ctx.topic.id, lessonId });
-    // B.24 (S05.3e): opening a lesson from a path that offered a real choice is
-    // the Appendix C adoption signal (1 = not the recommendation). One per
+    // Opening a lesson from a path that offered a real choice is
+    // the adoption signal (1 = not the recommendation). One per
     // learner, lesson and day: a reload is the same choice.
     const pathway = (ctx.tree as Partial<PathwayCourseTree>).pathway;
     const choice = pathway ? pathChoice(pathway, lessonId) : null;
@@ -972,7 +972,7 @@ export function learnRouter(): Router {
         clientEventId: deterministicEventId(`path_choice:${user.id}:${lessonId}:${new Date().toISOString().slice(0, 10)}`),
       });
     }
-    // GAP-FIX-R5 (B.24): opening an optional depth lesson is the enrichment lever, once per learner, lesson and day.
+    // Opening an optional depth lesson is the enrichment lever, once per learner, lesson and day.
     if (ctx.lessonRow.optional_enrichment === true) {
       recordServerLearnEvent(user, 'enrichment_open', lessonId, {
         value: 1,
@@ -990,7 +990,7 @@ export function learnRouter(): Router {
         estimated_minutes: ctx.lessonRow.estimated_minutes,
         cast: deliveredDocument.meta?.cast ?? [],
         scoring: deliveredDocument.scoring ?? null,
-        // W2L.4: the course the lesson belongs to, so a deep-linked lesson's result shows that course's badge and its way back.
+        // The course the lesson belongs to, so a deep-linked lesson's result shows that course's badge and its way back.
         course_slug: ctx.course.slug,
       },
       locale: picked.locale,
@@ -1000,7 +1000,7 @@ export function learnRouter(): Router {
       audio: picked.audio ?? {},
       ...(mentorStage ? { mentor_stage: mentorStage } : {}),
       ...(Object.keys(narrationAudio).length > 0 ? { narration_audio: narrationAudio } : {}),
-      // B.8 (GAP-FIX-R1): the lesson inherits its adventure's scene, a closed enum beside the stage projection.
+      // The lesson inherits its adventure's scene, a closed enum beside the stage projection.
       ...(document && projectAdventureTheme(ctx.adventureTheme) ? { adventure_theme: projectAdventureTheme(ctx.adventureTheme) } : {}),
       ...(narrativeRecall ? { narrative_recall: narrativeRecall } : {}),
     });
@@ -1079,7 +1079,7 @@ export function learnRouter(): Router {
             .map((receipt) => receipt.segment_id)])];
           return ok(res, {
             run_id: prior.id, version_id: document.version_id, expires_at: prior.expires_at, resumed: true, met_segment_ids: metSegmentIds,
-            // GAP-FIX-R5 (B.24): the approach this run pinned, so the player resumes that chain (null before choosing).
+            // The approach this run pinned, so the player resumes that chain (null before choosing).
             ...(document.approaches ? { approach_id: prior.approach_id ?? null } : {}),
             attempted_segment_ids: attemptedSegmentIds,
             viewed_segment_ids: viewedSegmentIds,
@@ -1100,12 +1100,12 @@ export function learnRouter(): Router {
       .map((segment) => ({ segmentId: segment.id, ...mintLessonAttemptToken({
         uid: user.id, vid: picked.document_version_id!, lid: lessonId, loc: document.locale, sid: segment.id, rid: runId,
       }, secret, issuedAt) }));
-    // GAP-FIX-R1 (OD-17): a lesson with no server-graded segment still pins a
+    // A lesson with no server-graded segment still pins a
     // run, completed by view receipts. The run's lifetime matches a token's.
     const expiresAt = issued[0]?.expiresAt ?? mintLessonAttemptToken({
       uid: user.id, vid: picked.document_version_id, lid: lessonId, loc: document.locale, sid: document.segments[0]!.id, rid: runId,
     }, secret, issuedAt).expiresAt;
-    // Appendix P Part 4.4 (GAP-FIX-R2): a fluent learner is never sent back to concrete. Core picks the M1
+    // A fluent learner is never sent back to concrete. Core picks the CPA
     // entry stage from mastery and the learner's last first-unaided stage, pins it on the run, and the
     // skipped stages restore like attempted ones (completion never required them).
     const progression = document.representation_progressions?.[0];
@@ -1138,8 +1138,7 @@ export function learnRouter(): Router {
   });
 
   /*
-   * 4a. POST /lessons/:id/v2-runs/:runId/approach — GAP-FIX-R5 (Product 10
-   * Block B "Age-band registers" autonomy; B.24): the learner chooses which of
+   * 4a. POST /lessons/:id/v2-runs/:runId/approach — the learner chooses which of
    * the lesson's equally valid approach chains to practise. Core checks the
    * run is theirs and open, the pinned document offers that approach (and its
    * age band offers the lever: the contract refuses approaches below 10), and
@@ -1185,11 +1184,11 @@ export function learnRouter(): Router {
     return ok(res, { approach_id: pinned });
   });
 
-  // 4b. POST /lessons/:id/v2-runs/:runId/views — GAP-FIX-R1 (OD-17, B.7):
+  // 4b. POST /lessons/:id/v2-runs/:runId/views:
   // the learner acted on a non-scored segment (a Mentor turn, an explored
   // visual). Core checks the segment against the run's pinned immutable
   // version; a graded segment can never be "viewed" into completion.
-  // GAP-FIX-R4 (Appendix C 1.2; Appendix P Part 7.5): optional time on task, an analytics field only.
+  // Optional time on task, an analytics field only.
   const TimeOnTask = z.number().int().min(0).max(7200);
   const V2ViewBody = z.object({ segment_id: z.string().min(1).max(101), time_spent_seconds: TimeOnTask.optional() }).strict();
   router.post('/lessons/:id/v2-runs/:runId/views', async (req, res) => {
@@ -1209,7 +1208,7 @@ export function learnRouter(): Router {
     const document = validateV2LessonForGrading(stripAnswers(version.document), version.answer_keys, { lessonId, locale: version.locale });
     if (!document) return fail(res, 422, 'UNSUPPORTED_LESSON', 'This lesson document is not ready');
     if (!v2ViewedSegmentIds(document).includes(parsed.data.segment_id)) return fail(res, 400, 'VALIDATION_ERROR', 'This step is not a viewed step');
-    // GAP-FIX-R5 (B.24): a step inside an approach chain counts only for the approach this run chose.
+    // A step inside an approach chain counts only for the approach this run chose.
     const viewRefusal = v2ApproachRefusal(document, parsed.data.segment_id, run.approach_id);
     if (viewRefusal) return fail(res, 409, viewRefusal, viewRefusal === 'APPROACH_REQUIRED' ? 'Choose how to practise first' : 'This step belongs to another approach');
     const stored = await recordV2SegmentView({ p_user_id: user.id, p_run_id: run.id, p_document_version_id: run.document_version_id, p_segment_id: parsed.data.segment_id });
@@ -1227,12 +1226,12 @@ export function learnRouter(): Router {
     answer: z.unknown(),
     run_id: z.string().uuid(),
     attempt_token: z.string().min(1).max(4_096),
-    // GAP-FIX-R1 (Bible 08 §11, B.10): help-ladder steps opened before Check. Never changes the score.
+    // Help-ladder steps opened before Check. Never changes the score.
     hints_used: z.number().int().min(0).max(2).optional(),
-    // GAP-FIX-R2 (Appendix P Part 8 scorer parity): the browser scorer's advisory reading of the same answer.
+    // The browser scorer's advisory reading of the same answer.
     // Never trusted and never graded: Core only records whether it agreed.
     client_verdict: z.enum(['valid', 'invalid']).optional(),
-    // GAP-FIX-R4 (Appendix C 1.2 Session Efficiency; Appendix P Part 7.5): seconds from the step shown to Check,
+    // Seconds from the step shown to Check,
     // idle capped by the browser. Stored beside the receipt for analytics; never a grading input.
     time_spent_seconds: TimeOnTask.optional(),
   }).strict();
@@ -1274,7 +1273,7 @@ export function learnRouter(): Router {
         uid: user.id, vid: picked.document_version_id, lid: lessonId, loc: document.locale, sid: segmentId, rid: parsed.data.run_id,
       });
       if (verified.status !== 'valid') return fail(res, 403, 'INVALID_ATTEMPT_TOKEN', 'This lesson attempt is no longer valid');
-      // GAP-FIX-R5 (B.24): a segment inside an approach chain is graded only under the approach the run pinned.
+      // A segment inside an approach chain is graded only under the approach the run pinned.
       if (v2ApproachOf(document.approaches, segmentId) !== null) {
         const pinnedRun = await getV2LessonRunForRecovery(user.id, lessonId, parsed.data.run_id);
         if (pinnedRun === undefined) return fail(res, 502, 'INTERNAL', 'Could not read this lesson attempt');
@@ -1283,33 +1282,33 @@ export function learnRouter(): Router {
       }
       const graded = gradeV2Visual(document, picked.answer_keys as Record<string, unknown>, segmentId, answer, { seed: deriveAttemptSeed(verified.payload, secret) });
       if (!graded) {
-        // Part 8: a browser that read the refused answer as valid disagreed with Core; the miss is counted.
+        // Scorer parity: a browser that read the refused answer as valid disagreed with Core; the miss is counted.
         if (parsed.data.client_verdict === 'valid') recordServerLearnEvent(user, 'scorer_parity_miss', lessonId, { segmentId });
         return fail(res, 400, 'VALIDATION_ERROR', 'Invalid answer for this lesson segment');
       }
       const next = mintLessonAttemptToken({
         uid: user.id, vid: picked.document_version_id, lid: lessonId, loc: document.locale, sid: segmentId, rid: parsed.data.run_id,
       }, secret);
-      // B.12: a reasoning answer carries its judgment quality inside the same
+      // A reasoning answer carries its judgment quality inside the same
       // one-use receipt as the score (the database CHECK pins its shape).
       const gradedSegment = document.segments.find((item) => item.id === segmentId)!;
       const hintsUsed = Math.min(parsed.data.hints_used ?? 0, gradedSegment.help?.length ?? 0);
-      // Appendix P Part 4.5 / Appendix C 1.1 (GAP-FIX-R1): the diagnostic code,
+      // The diagnostic code,
       // hint use, item role, KC and detection counts ride in the same receipt.
       const v2Verdict = { correct: graded.correct, score: graded.score, ...(graded.judgment ? { judgment: { quality: graded.judgment } } : {}),
         diagnostic: graded.diagnostic, hints_used: hintsUsed,
         ...(gradedSegment.item_role ? { item_role: gradedSegment.item_role } : {}),
         kc: gradedSegment.knowledge_component_id ?? document.knowledge_component_ids[0]!,
         ...(graded.detection ? { detection: graded.detection } : {}),
-        // L12 / $11 (GAP-FIX-R2): cue ticks are stored as a diagnostic; d′ is still computed from detection alone.
+        // Cue ticks are stored as a diagnostic; d′ is still computed from detection alone.
         ...(graded.cues ? { cues: graded.cues } : {}),
-        // M2/M3 (GAP-FIX-R5, Appendix P Part 4.6): the placement error as a share of the line, beside the tolerance verdict.
+        // Number-line: the placement error as a share of the line, beside the tolerance verdict.
         ...(graded.pae !== undefined ? { pae: graded.pae } : {}),
-        // Appendix P Part 8 (GAP-FIX-R2): scorer parity, pre/post phase and the representation variant.
+        // Scorer parity, pre/post phase and the representation variant.
         ...(parsed.data.client_verdict ? { client_agree: parsed.data.client_verdict === 'valid' } : {}),
         ...(gradedSegment.item_phase ? { item_phase: gradedSegment.item_phase } : {}),
         ...(gradedSegment.variant ? { variant: gradedSegment.variant } : {}) };
-      // Appendix P Part 4.4 (GAP-FIX-R2): the run's pinned M1 entry stage. A skipped stage is never graded in that run.
+      // The run's pinned entry stage. A skipped stage is never graded in that run.
       const cpaStage = v2FirstUnaidedStage(document, segmentId);
       let entryStage: 'concrete' | 'pictorial' | 'abstract' = 'concrete';
       if (cpaStage) {
@@ -1339,14 +1338,14 @@ export function learnRouter(): Router {
         });
       if (!receipt) return fail(res, 502, 'INTERNAL', 'Could not record the lesson attempt');
       if ('blocked' in receipt) return fail(res, 409, 'LESSON_PREREQUISITE_REQUIRED', 'Complete the previous learning step first');
-      // Part 7.5: the time is written after the verdict exists and only onto its receipt (set once; a replay keeps the first).
+      // The time is written after the verdict exists and only onto its receipt (set once; a replay keeps the first).
       if (parsed.data.time_spent_seconds !== undefined && !receipt.replayed) {
         await recordV2TimeOnTask({ p_user_id: user.id, p_run_id: parsed.data.run_id, p_segment_id: segmentId, p_receipt_jti: verified.payload.jti, p_seconds: parsed.data.time_spent_seconds });
       }
       if (!receipt.replayed) {
-        // P-09 (GAP-FIX-R1): the grade is evidence on the topic's primary KC, once per receipt (best-effort).
+        // The grade is evidence on the topic's primary KC, once per receipt (best-effort).
         await recordCourseLessonEvidence({ userId: user.id, topicId: ctx.topic.id, receiptKey: courseReceiptKey('v2', verified.payload.jti), score: graded.score });
-        // B.9 for v2 (OD-24): a graded story choice goes to the decision journal. Best-effort.
+        // A graded story choice goes to the decision journal. Best-effort.
         await recordV2GradedDecisions({ userId: user.id, courseId: ctx.course.id, topicId: ctx.topic.id, lessonId, locale: document.locale,
           lessonTitle: document.title, segment: gradedSegment, answer });
       }
@@ -1358,10 +1357,10 @@ export function learnRouter(): Router {
           p_fading_group_id: firstUnaided.fadingGroupId, p_stage: firstUnaided.stage, p_receipt_jti: verified.payload.jti });
       }
       const retryAttemptToken = !receipt.replayed && !receipt.verdict.correct && receipt.retry_jti === next.payload.jti ? next.token : undefined;
-      // B.26 / OD-1 (S05.3f): a miss costs nothing; a run of misses on this lesson earns an offer, never a lock.
+      // A miss costs nothing; a run of misses on this lesson earns an offer, never a lock.
       const guidedReview = receipt.verdict.correct ? null : await v2GuidedReview(user.id, ctx, document.locale);
       return ok(res, {
-        // The client projection: score, correctness, the B.12 judgment and the diagnostic code (never hint counts or detection cells).
+        // The client projection: score, correctness, the judgment and the diagnostic code (never hint counts or detection cells).
         verdict: { correct: receipt.verdict.correct, score: receipt.verdict.score, ...(receipt.verdict.judgment ? { judgment: receipt.verdict.judgment } : {}),
           ...(receipt.verdict.diagnostic && receipt.verdict.diagnostic !== 'none' ? { diagnostic: receipt.verdict.diagnostic } : {}) },
         replayed: receipt.replayed,
@@ -1428,11 +1427,11 @@ export function learnRouter(): Router {
       if (!hasV2LessonEligibility(res, version.schema_version, version.document, profiles?.[0]?.birth_date)) return;
       const document = validateV2LessonForGrading(stripAnswers(version.document), version.answer_keys, { lessonId, locale: version.locale });
       if (!document) return fail(res, 422, 'UNSUPPORTED_LESSON', 'This lesson document is not ready');
-      // GAP-FIX-R5 (B.24): a lesson with approaches completes through the chosen chain; without a choice there is nothing to complete.
+      // A lesson with approaches completes through the chosen chain; without a choice there is nothing to complete.
       if (document.approaches && !run.approach_id) return fail(res, 409, 'APPROACH_REQUIRED', 'Choose how to practise first');
       const requiredSegmentIds = v2CompletionRequiredSegmentIds(document, run.approach_id ?? null);
       const viewedSegmentIds = v2ViewedSegmentIds(document, run.approach_id ?? null);
-      // GAP-FIX-R1 (OD-17): met receipts for graded steps, view receipts for the rest.
+      // Met receipts for graded steps, view receipts for the rest.
       const completion = await completeV2MixedLesson({
         p_user_id: user.id, p_lesson_id: lessonId, p_run_id: run.id, p_document_version_id: run.document_version_id,
         p_required_segment_ids: requiredSegmentIds, p_viewed_segment_ids: viewedSegmentIds, p_xp: ctx.lessonRow.xp_total,
@@ -1440,12 +1439,12 @@ export function learnRouter(): Router {
         p_local_date: parsed.data.local_date ?? new Date().toISOString().slice(0, 10),
       });
       if (!completion) return fail(res, 409, 'UNSUPPORTED_LESSON', 'Complete every learning step first');
-      // B.5: the denominator of the replay-notice display rate, server-side and consent-gated.
+      // The denominator of the replay-notice display rate, server-side and consent-gated.
       if (replayNoticeRequired(completion) && !completion.replayed) recordServerLearnEvent(user, 'replay_below_best', lessonId);
       recordStreakOutcome(user, completion);
       const refreshed = await loadLearnerCourse(user.accessToken, user.id, ctx.course, res.locals.ageScreen as AgeScreenState);
       if (refreshed && courseEngine() === 'pathway') await settleCourseBadges(user.id, ctx.course, refreshed);
-      // B.20 / B.24 (S05.3e): the closed celebration list, what was figured out, and today's pace.
+      // The closed celebration list, what was figured out, and today's pace.
       const motivation = await completionMotivation({
         user, completion, before: ctx.tree, after: refreshed?.tree ?? null, topicId: ctx.topic.id, locale: document.locale,
       });

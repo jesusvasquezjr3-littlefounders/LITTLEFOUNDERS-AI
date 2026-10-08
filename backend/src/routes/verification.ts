@@ -15,7 +15,7 @@ import { readAdultVerificationStatus } from '../services/mentorSafety.js';
 import { readAgeScreen } from '../services/ageScreen.js';
 
 /*
- * F3-identity-site (A.2, A.5, E.4, OD-3 section 2): an ID check typed and
+ * An ID check typed and
  * photographed by the account holder never outranks the account's own age
  * record. An account whose record says under 13 (the under-13 origin of an
  * age-refusal guest or an under-13 declaration, which survives an upgrade) or
@@ -61,7 +61,7 @@ const Fields = z.object({
       const age = (Date.now() - Date.parse(d)) / (365.25 * 24 * 3600 * 1000);
       return age >= 18 && age < 120;
     }, 'Applicant must be an adult'),
-  // A.5: the declared document type is NOT collected anymore — the image
+  // The declared document type is NOT collected anymore — the image
   // content cannot be validated against the declaration, and collecting an
   // unvalidated claim was the exact pattern the requirement bans. The
   // historical column keeps its DB default for pre-existing rows only.
@@ -175,7 +175,7 @@ export function verificationRouter(): Router {
 
     const granted = await grantRole(user.id, 'parent', user.id);
     if (!granted) return fail(res, 502, 'INTERNAL', 'Could not grant the Tutor role');
-    // Appendix C 1.2 Parent Time-to-Value starts here: the verified parent's signup is complete.
+    // Parent time-to-value starts here: the verified parent's signup is complete.
     recordParentJourneyEvent(user.id, 'parent_signup_completed');
 
     return ok(res, { verified: true, role: 'parent' });

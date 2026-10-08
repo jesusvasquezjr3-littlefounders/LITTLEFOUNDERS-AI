@@ -93,7 +93,7 @@ function panBalance(segment: unknown, response: unknown, rubric: unknown): V2Gra
 const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
 
 /**
- * F1.3 on the arrangement.slots shape: each given number goes on a mark. invalid: malformed, off the line, or a key that is not the
+ * On the arrangement.slots shape: each given number goes on a mark. invalid: malformed, off the line, or a key that is not the
  * one arrangement the numbers force. valid: nothing placed (and every well-formed placement without a rubric). review or met: the shape.
  */
 function orderLine(segment: unknown, response: unknown, rubric: unknown): V2Grade {
@@ -110,7 +110,7 @@ function orderLine(segment: unknown, response: unknown, rubric: unknown): V2Grad
   return { verdict: shape.verdict, diagnostic: shape.diagnostic };
 }
 
-/** F1.7 on the number.tolerance shape: the length read off the ruler, in whole units, exact. The untouched 0 is never a score. */
+/** On the number.tolerance shape: the length read off the ruler, in whole units, exact. The untouched 0 is never a score. */
 function rulerRead(segment: unknown, response: unknown, rubric: unknown): V2Grade {
   const setup = readSetup(payloadOf(segment));
   if (!setup) return INVALID;

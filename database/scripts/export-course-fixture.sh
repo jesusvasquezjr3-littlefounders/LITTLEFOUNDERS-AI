@@ -12,10 +12,9 @@
 # audio URLs pointing at whoever's local filebase generated them
 # (http://localhost:4006/files/...) — those links will 404 for anyone else,
 # since only the manifests (small JSON) are exported, not the underlying
-# binary files. Icons remain the fallback for missing images (DESIGN.md /
-# LESSON_ENGINE.md), so the lesson still renders and grades correctly either
+# binary files. Icons remain the fallback for missing images, so the lesson still renders and grades correctly either
 # way; only the illustration/audio playback itself is unavailable until that
-# developer regenerates it locally (cheap — a few cents, see audiogen/README).
+# developer regenerates it locally (cheap — a few cents).
 #
 # Usage: bash scripts/export-course-fixture.sh first-lemonade-stand \
 #          seeds/qa-course-fixture.sql

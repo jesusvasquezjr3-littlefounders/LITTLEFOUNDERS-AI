@@ -4,8 +4,8 @@ import type { Strategy } from '../context/schema.js';
 import type { SessionPlanEntry } from '../core/client.js';
 
 /*
- * THE SIMULATED-STUDENT GYM — V4 harness backlog (ROADMAP.md "Remaining
- * harness phases", /ORACLE.md §20). Governance: the harness doc's own §15.1,
+ * THE SIMULATED-STUDENT GYM — V4 harness backlog.
+ * Governance:
  * "nothing autonomous reaches a child" — this module is BACKSTAGE ONLY. It
  * never runs against a real learner, never writes anything, and has no
  * caller anywhere in the live session path (`ws/`, `orchestrator.ts`'s
@@ -68,7 +68,7 @@ const CONFIDENT_LATENCY_MS = 1_500;
 const HESITANT_LATENCY_MS = 9_000;
 
 /**
- * Four reactive learner archetypes. Small on purpose (AGENTS.md's own
+ * Four reactive learner archetypes. Small on purpose (the
  * "smallest genuinely useful piece" — a cross-product over starting mastery,
  * plan shape and attempt-count dynamics is a real, larger follow-up, left
  * for when this first slice earns it, not built speculatively now).
@@ -115,7 +115,7 @@ export const STUDENT_ARCHETYPES: Record<string, StudentModel> = {
   /**
    * Always correct, but reliably slow after an initial fast run — the
    * "correcto + latencia alta -> dominio frágil, no promover" case
-   * (blueprint §8.3, `controller.ts`'s `answeredHesitantly`). No fixed
+   * (`controller.ts`'s `answeredHesitantly`). No fixed
    * script in verify-pedagogy.ts runs long enough, at a consistent enough
    * pace, to show whether mastery is EVER wrongly declared on fragile
    * evidence — this archetype is built specifically to test that.
@@ -142,11 +142,10 @@ export const STUDENT_ARCHETYPES: Record<string, StudentModel> = {
    * (does mastery ever get RECONSIDERED) that this codebase has no
    * mechanism for anywhere today. Raising `MASTERY_MIN_OPPORTUNITIES` was
    * considered and rejected: that constant already sits at the TOP of the
-   * blueprint's own cited range ("2-3 ítems de sondeo" — see its own
+   * cited range ("2-3 ítems de sondeo" — see its own
    * comment in `controller.ts`), so raising it further contradicts the
-   * source spec rather than fixing a bug in this codebase's reading of it.
-   * Left open deliberately rather than guessed at further — see
-   * `pedagogyGym.test.ts`'s `KNOWN_GAPS` for the tracked, precise wording.
+   * original range rather than fixing a bug in this codebase's reading of it.
+   * Left open deliberately rather than guessed at further.
    */
   'fragile hesitant': ({ turnIndex }) =>
     activityResult(true, turnIndex < 3 ? CONFIDENT_LATENCY_MS : HESITANT_LATENCY_MS),
@@ -194,11 +193,11 @@ export const GYM_SCENARIOS: GymScenario[] = Object.entries(STUDENT_ARCHETYPES).m
    * evidence, and a single-entry plan has no "later" at all: the controller
    * celebrates on turn 3 and goes dormant before this archetype's slow phase
    * (turnIndex >= 3) ever produces a turn. That is not a hypothetical about
-   * the fixture; it is why this scenario sat in `KNOWN_GAPS` describing a
+   * the fixture; it is why this scenario once described a
    * defect the run could not actually reach. Two entries is also the real
    * product shape, not a contrivance: `review_due` is how a KC genuinely
-   * comes back, and it is the same two-entry plan `controller.test.ts` has
-   * always used to make TRANSFER observable.
+   * comes back, and it is the same two-entry plan that makes
+   * TRANSFER observable.
    */
   plan: name === 'fragile hesitant' ? [entry(), entry({ reason: 'review_due' })] : [entry()],
   turnBudget: 16,
@@ -213,7 +212,7 @@ export const GYM_SCENARIOS: GymScenario[] = Object.entries(STUDENT_ARCHETYPES).m
          * have satisfied it without withholding mastery from a learner who had
          * so far been nothing but fast and right.
          *
-         * What is enforceable, and what §8.3 actually protects, is that
+         * What is enforceable, and what the latency rule actually protects, is that
          * mastery must not STAND once the slow evidence arrives. So the
          * promotion is allowed and the REVOCATION is required — and it is read
          * from `revokedMasteryKcIds`, the controller's own conclusion, not

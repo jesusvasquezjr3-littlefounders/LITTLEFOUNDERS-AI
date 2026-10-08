@@ -1,8 +1,6 @@
 /*
- * The shared Pizarrón visuals (product B.7: one component set for lessons and
- * the Mentor's board). `PIZARRON_VISUALS` names every exported visual; the
- * whiteboard parity gate (agent/tools/check-instrument-parity.mjs) requires
- * every Oracle whiteboard kind to map to one of them.
+ * The shared Pizarrón visuals (one component set for lessons and
+ * the Mentor's board). `PIZARRON_VISUALS` names every exported visual.
  */
 export {
   ArrayVisual, BalanceScaleVisual, BarModelVisual, SchemaSlotsVisual, BeadStringVisual, CIRCLE_DENOMINATORS, CoinGroupsVisual, DealVisual, FillContainerVisual,
@@ -15,10 +13,10 @@ export {
   FunctionMachineVisual, GoalBulletVisual, GrowthCompareVisual, NumberAxisVisual, PercentGridVisual, SavingsLineVisual, StackedSlicesVisual,
 } from './lessonVisuals';
 export type { ComparePoint, LinePoint, PocketAmount, RuleCondition, StackSlice, WalletPocket } from './lessonVisuals';
-// GAP-FIX-R4 (B.7): the concept pictures, shared with the Mentor's board.
+// The concept pictures, shared with the Mentor's board.
 export { RiskReturnVisual, StackedColumnsVisual, SupplyDemandVisual } from './conceptVisuals';
 export type { Column, ColumnPart, PlotLine, PlotPoint } from './conceptVisuals';
-// Bible 05 §5 (GAP-FIX-R2): KaTeX notation, loaded only when a board shows notation.
+// KaTeX notation, loaded only when a board shows notation.
 export { MathExpression, localizeTex } from './MathExpression';
 export type {
   ChanceOutcome, CoinGroup, GrowthSeries, LedgerEntry, LineJump, LineMark, PictographRow, RatioGroup, RatioLine, RatioTick, SeriesBarRow, SeriesTone,
@@ -34,9 +32,9 @@ export const PIZARRON_VISUALS = [
   'AdditionDotsVisual', 'AllocationDonutVisual', 'AllocationStackVisual', 'AllocationWaffleVisual', 'BalanceMeterVisual', 'BaseTenVisual',
   'ConditionRuleVisual', 'FunctionMachineVisual', 'GoalBulletVisual', 'GrowthCompareVisual', 'NumberAxisVisual', 'PercentGridVisual',
   'SavingsLineVisual', 'StackedSlicesVisual',
-  // Notation (GAP-FIX-R2).
+  // Notation.
   'MathExpression',
-  // The concept pictures (GAP-FIX-R4).
+  // The concept pictures.
   'RiskReturnVisual', 'StackedColumnsVisual', 'SupplyDemandVisual',
 ] as const;
 export type PizarronVisualName = (typeof PIZARRON_VISUALS)[number];

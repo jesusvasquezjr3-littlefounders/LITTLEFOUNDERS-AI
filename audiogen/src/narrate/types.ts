@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 
-/** One ordered narratable unit extracted from a LessonDocument (LESSON_ENGINE.md §12). */
+/** One ordered narratable unit extracted from a LessonDocument. */
 export interface NarrationUnit {
   /** Deterministic id: `${segment_id}.${field}`. */
   unit_id: string;

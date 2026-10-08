@@ -18,7 +18,7 @@ const ROW_H = 22;
 const BIN_H = 110;
 
 /*
- * H21: a Galton board (pegs send a ball left or right) or a random walk (each step goes left or right), run from a seed Core issued
+ * A Galton board (pegs send a ball left or right) or a random walk (each step goes left or right), run from a seed Core issued
  * with the attempt. The bins fill like the bars of a binomial, and the share of balls in the target bin settles on its chance. The
  * run is a prefix of one seeded stream; Core replays that stream to grade.
  */

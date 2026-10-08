@@ -1,10 +1,10 @@
 /*
- * Core's half of Product C.7 — the persistent learner disposition profile.
+ * Core's half of the persistent learner disposition profile.
  *
  * "The mastery model answers what the learner knows; nothing answers how
- * this specific learner learns best" (C.7 Finding). This file keeps the
+ * this specific learner learns best". This file keeps the
  * cross-session record of HOW a learner works, populated at every close from
- * what the Behavioral Telemetry Layer (C.9) and the Alliance Controller (C.15)
+ * what the Behavioral Telemetry Layer and the Alliance Controller
  * observed, and projects it for Oracle's pedagogy controller, which reads it
  * BESIDE the mastery values when selecting a strategy.
  *
@@ -23,15 +23,14 @@
  *      Oracle's `DispositionProfileSchema` accepts, sent in the SESSION
  *      context only when Oracle announced it can parse it. It is not a field
  *      of the sealed model context, so nothing here reaches a model.
- *   4. THE CONTINUITY DECISION (`decideContinuity`, C.15): whether this
+ *   4. THE CONTINUITY DECISION (`decideContinuity`): whether this
  *      persona has worked with this learner before, from the rapport history
  *      (plus the recent session rows for learners closed before this build).
  *   5. READ / WRITE / RESET / RETENTION, service role only; RLS lets the
  *      learner and a verified guardian SELECT the row.
  *
  * Vocabularies are HAND-MIRRORED from Oracle (`tutor/dispositionProfile.ts`,
- * `tutor/allianceController.ts`) and the migration's CHECKs;
- * `npm run alliance:check` keeps them identical.
+ * `tutor/allianceController.ts`) and the migration's CHECKs.
  */
 
 import { z } from 'zod';
@@ -47,7 +46,7 @@ export const DISPOSITION_EFFECTS = ['stuck_degrade_early', 'scaffolded_explanati
 export const CONTINUITY_KINDS = ['first_meeting', 'persona_switch', 'memory_gap', 'continuing'] as const;
 export type ContinuityKind = (typeof CONTINUITY_KINDS)[number];
 
-/** Every value is PROPOSED, PENDING CALIBRATION (docs/rebuild/mentor/THRESHOLD-RECALIBRATION-LOG.md). */
+/** Every value is PROPOSED, PENDING CALIBRATION. */
 export const DISPOSITION_THRESHOLDS = {
   /** EWMA weight of the newest session. */
   alpha: 0.3,
@@ -142,11 +141,11 @@ export interface SessionFacts {
   character: (typeof CHARACTERS)[number];
   closeReason: string;
   endedAt: string;
-  /** Whether the C.9 layer fired at least once (act or shadow). Null: the layer did not run. */
+  /** Whether the telemetry layer fired at least once (act or shadow). Null: the layer did not run. */
   disengagementFired: boolean | null;
-  /** Whether a C.19 check-in was answered "not really". Null: no check-in was answered. */
+  /** Whether a check-in was answered "not really". Null: no check-in was answered. */
   checkInMisaligned: boolean | null;
-  /** C.14: prompts asked and how many passed on the first attempt. */
+  /** Prompts asked and how many passed on the first attempt. */
   selfExplanationPrompts: number;
   selfExplanationFirstPass: number;
 }
@@ -156,7 +155,7 @@ const round3 = (v: number): number => Math.round(v * 1000) / 1000;
 const ewma = (prev: number | null, value: number, alpha: number): number => round3(prev === null ? value : prev + alpha * (value - prev));
 const clamp01 = (v: number): number => Math.min(1, Math.max(0, v));
 
-/** Sessions whose behaviour must not enter the profile (§ SAFEGUARDS in the migration). */
+/** Sessions whose behaviour must not enter the profile (see SAFEGUARDS in the migration). */
 export const NON_BEHAVIOURAL_CLOSES = new Set(['safety_stop', 'consent_revoked', 'error']);
 
 export function emptyProfile(userId: string, now: string): DispositionRow {
@@ -306,7 +305,7 @@ export function toOracleProjection(row: DispositionRow): OracleDispositionProjec
 }
 
 /**
- * Pure (C.15): has THIS persona worked with this learner before? From the
+ * Pure: has THIS persona worked with this learner before? From the
  * persistent rapport, merged with the learner's recent closed sessions (for
  * sessions closed before this build wrote a profile).
  */
@@ -338,7 +337,7 @@ const PROFILE_COLUMNS =
   'misaligned_rate,left_rate,se_prompts,se_first_pass,adaptation_history,persona_rapport,help_style,persistence,explanation,' +
   'last_session_at,updated_at';
 
-/** The stored profile; `null` when the learner has none; `undefined` when the read FAILED (§1.14: not the same). */
+/** The stored profile; `null` when the learner has none; `undefined` when the read FAILED (not the same). */
 export async function getDispositionProfile(userId: string): Promise<DispositionRow | null | undefined> {
   const rows = await serviceRest<DispositionRow[]>(
     `/learner_disposition_profile?user_id=eq.${encodeURIComponent(userId)}&select=${PROFILE_COLUMNS}`,
@@ -360,7 +359,7 @@ export async function writeDispositionProfile(row: DispositionRow): Promise<bool
 /**
  * Folds one close into the learner's profile. Best-effort after the close
  * landed: a failed read is NOT an empty profile, so nothing is written over
- * real history on a read failure (§1.14). One live session per learner at a
+ * real history on a read failure. One live session per learner at a
  * time (the session lock) makes a read-modify-write race improbable; the
  * worst case is one session's contribution lost, never a corrupted row.
  */
@@ -407,7 +406,7 @@ export async function purgeStaleDispositionProfiles(now: Date = new Date(), t = 
   return rows === null ? null : rows.length;
 }
 
-/** The parent- and learner-readable explanation of a profile (Appendix D §2.6: interpretable). */
+/** The parent- and learner-readable explanation of a profile (interpretable). */
 export function explainProfile(row: DispositionRow | null, now: Date = new Date(), t = DISPOSITION_THRESHOLDS): {
   exists: boolean;
   current: boolean;

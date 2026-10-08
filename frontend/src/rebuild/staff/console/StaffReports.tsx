@@ -6,16 +6,16 @@ import { fill, useConsoleCopy, type ConsoleCopy } from './staffConsoleCopy';
 import { OpsJobsCard, RetentionSweepCard } from './StaffProgramme';
 
 /*
- * E.3's platform review queue (manage_support). Every social report routes
+ * The platform review queue (manage_support). Every social report routes
  * here, and the automatic pattern trigger (reports or blocks from 3 unrelated
- * minors in 30 days, children and self-registered teens alike: OD-3) opens a
+ * minors in 30 days, children and self-registered teens alike) opens a
  * case with origin "pattern". A case shows only
  * what Core stores: the predefined category and the capped optional note of
  * each report, never free-form profile data. Resolving is a staff decision:
  * Core closes the case in a service-only transaction and records the deciding
  * staff member in the central audit log; guardian notices are Core's.
  *
- * W2T.4: the same grant (manage_support) opens the support tools as a second
+ * The same grant (manage_support) opens the support tools as a second
  * view: the Mentor retention sweep's health and the operations watchdog. The
  * queue is read only in its view.
  */

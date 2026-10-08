@@ -6,19 +6,19 @@ import { SiteLink, SiteSection, follow, siteCopy, type Navigate } from './blocks
 import { legalDocument, matchingSections, type LegalDoc } from './legalContent';
 
 /*
- * M5 (Terms and Conditions) and M6 (Privacy Notice), rebuilt on the
- * public-site shell (W2 Lane 1).
+ * Terms and Conditions and Privacy Notice, rebuilt on the
+ * public-site shell.
  *
- * The document text is Legal's and is shown whole (`legal` copy, 06 §3.3);
+ * The document text is Legal's and is shown whole (`legal` copy);
  * the page around it is budgeted interface copy. What a reader can do, as
  * before: switch between the two documents, jump to a clause from the
  * contents (each clause keeps its address, `#c3`, `#s2`, so a shared link
  * still lands), search the clauses, and from the Privacy Notice open the
- * cookie preferences (M8). The language is the site footer's. The legacy
+ * cookie preferences. The language is the site footer's. The legacy
  * copy-link, print and back-to-top buttons are gone: the clause address is in
  * the contents link, and the browser prints and scrolls on its own.
  *
- * Layout (03 §3.3): one reading column on phones; from an 840 px container
+ * Layout: one reading column on phones; from an 840 px container
  * the contents sit beside the text, 1:2, and stay in view while reading.
  */
 export function LegalDocumentPage({ locale, doc, onNavigate, onOpenCookies }: {

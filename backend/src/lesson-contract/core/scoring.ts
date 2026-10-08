@@ -1,4 +1,4 @@
-// Pure scoring helpers — LESSON_ENGINE.md §6.
+// Pure scoring helpers.
 // Dependency-free on purpose: Core will reuse these server-side when the
 // content-schema session lands. Keep every function pure and numerically tested.
 

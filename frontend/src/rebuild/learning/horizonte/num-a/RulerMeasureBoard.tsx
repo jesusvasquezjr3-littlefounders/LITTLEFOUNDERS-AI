@@ -22,7 +22,7 @@ const EDGE_Y = 72;
 const HEIGHT = 134;
 
 /*
- * F1.7: an object (a pencil or a paper strip) drawn against a ruler, with its near end on a mark that is not always 0. The learner reads
+ * An object (a pencil or a paper strip) drawn against a ruler, with its near end on a mark that is not always 0. The learner reads
  * how long it is with the stepper and checks; the answer is the length they report. Core holds the target.
  */
 function RulerMeasure({ document, segment, onBack, sequence, onGrade }: Omit<HorizonteBoardProps, 'segment'> & { segment: MeasureSegment }) {

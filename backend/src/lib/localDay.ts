@@ -2,7 +2,7 @@
  * The learner-local day boundary, shared by every daily cap (the Mentor's sessions
  * in routes/tutor.ts). Moved here from
  * routes/tutor.ts so a second caller does not import that whole route module;
- * routes/tutor.ts re-exports it, so its callers and tests are unchanged. One
+ * routes/tutor.ts re-exports it, so its callers are unchanged. One
  * change on the way: the offset ignores the fractional second, so a boundary is
  * an exact local midnight and not midnight plus whatever millisecond `now` had.
  */
@@ -11,7 +11,7 @@
  * Start of "today" in the calendar day the LEARNER experiences, not the
  * server's UTC day.
  *
- * Found by adversarial review, round 34 (2026-08-30, MEDIUM-HIGH,
+ * Found by adversarial review (2026-08-30, MEDIUM-HIGH,
  * systematic — not a rare boundary case). This used to be a plain
  * `Date.UTC(...)` midnight, and UTC midnight falls in the afternoon or
  * evening local time for all three of this platform's locales (roughly

@@ -1,15 +1,15 @@
-// The v2 lesson plan: what Appendix C Stage 0 (scoping) and Stage 1
-// (authoring) hand to the emitter for ONE lesson (S05.4c).
+// The v2 lesson plan: what scoping and authoring hand to the emitter for ONE
+// lesson.
 //
-// Stage 0 fixes the identity, age pathway, knowledge components, segment
-// kinds with their locale-neutral numbers, and the private rubrics. Stage 1
+// Scoping fixes the identity, age pathway, knowledge components, segment
+// kinds with their locale-neutral numbers, and the private rubrics. Authoring
 // supplies every learner-visible string per market (`copy`). In a live
-// generation run a model would author the copy (owner-run, OD-23); in the
+// generation run a model would author the copy (owner-run); in the
 // zero-spend dry-run the plan carries fixture copy, so the emitter, the gates
 // and Core's validation run on real documents with no model call.
 //
 // The plan also carries the lesson-policy declarations that gates 14-16 need
-// (B.17 `new_concepts`, B.11 `mentor_misjudgment`, B.16 `regional`), exactly
+// (`new_concepts`, `mentor_misjudgment`, `regional`), exactly
 // like a v1 lesson blueprint does.
 
 import { readdirSync, readFileSync } from 'node:fs';
@@ -42,7 +42,7 @@ const localized = <T extends z.ZodType>(value: T) =>
 /**
  * Learner-visible strings of one segment in one market: the prompt, the
  * optional help ladder (up to two Mentor turns, shown on request), the
- * optional feedback banner (GAP-FIX-R6, B.20: `met` names what was done right,
+ * optional feedback banner (`met` names what was done right,
  * `not_yet` is a hint), plus string fields merged into the payload. A Horizonte
  * kind (`hasNeutralPayload`) instead carries its `labels` (one name per payload
  * id) and its notation's `spokenText` here, and nothing is merged into its payload.
@@ -69,14 +69,14 @@ export const v2PlanSegmentSchema = z
     /** Private rubric: goes to answer_keys, never into the public document. */
     rubric: z.record(z.string(), z.unknown()).optional(),
     /**
-     * B.16 / F-06 (GAP-FIX-R1): a per-market rubric, when a market's scenario
+     * A per-market rubric, when a market's scenario
      * changes the answer (its own prices or amounts). Each locale's answer
      * keys are written from its own entry; it replaces `rubric`.
      */
     rubric_by_locale: localized(z.record(z.string(), z.unknown())).optional(),
     /** Private arithmetic derivation linked to visible inputs, never emitted to learners. */
     numeric_proof: numericProofSchema.optional(),
-    /** Appendix C 1.1 (GAP-FIX-R1): practice or transfer item, and the KC it evidences. */
+    /** Practice or transfer item, and the KC it evidences. */
     item_role: z.enum(['practice', 'transfer']).optional(),
     item_phase: z.enum(['pre', 'post']).optional(),
     variant: z.string().regex(/^[a-z0-9][a-z0-9._:-]{2,100}$/).optional(),
@@ -107,24 +107,24 @@ export const v2LessonPlanSchema = z
     knowledge_component_ids: z.array(id).min(1),
     adventure_scene_id: id,
     mentor_stage: z.object({ character: z.enum(['rho', 'zara', 'liruf', 'dina']), scene: z.enum(['diorama-a', 'diorama-b']) }).strict().optional(),
-    /** Stage 1 author brief in the authoring market (es-MX): the situation this lesson teaches through. */
+    /** Author brief in the authoring market (es-MX): the situation this lesson teaches through. */
     brief: z.string().trim().min(20).max(600),
     title: localized(z.string().trim().min(1).max(120)),
-    /** B.17: the genuinely new concepts this lesson introduces ([] for practice). Required: undeclared density blocks. */
+    /** The genuinely new concepts this lesson introduces ([] for practice). Required: undeclared density blocks. */
     new_concepts: z.array(id).max(12),
-    /** B.11: a flagged mentor misjudgment-and-recovery episode. */
+    /** A flagged mentor misjudgment-and-recovery episode. */
     mentor_misjudgment: z
       .object({ character: z.enum(['rho', 'zara', 'liruf', 'dina']), misjudgment: z.string().min(20).max(400), recovery: z.string().min(20).max(400) })
       .strict()
       .optional(),
-    /** B.16: one scenario per market, or an explicit market-neutral claim. */
+    /** One scenario per market, or an explicit market-neutral claim. */
     regional: z.union([
       z.object({ universal: z.string().trim().min(10).max(300) }).strict(),
       z.object({ scenarios: localized(marketScenarioSchema) }).strict(),
     ]),
     representation_progressions: z.array(z.unknown()).max(20).optional(),
     /**
-     * B.24 / Product 10 Block B autonomy (GAP-FIX-R5): two or three named,
+     * Autonomy: two or three named,
      * equally valid strategy chains for the same skill; the learner chooses
      * one before practice. The label is copy (one per market); the chain is
      * the segment ids, contiguous and each with a graded step (the emitter
@@ -162,7 +162,7 @@ export function loadV2Plans(dir: string): LoadedPlan[] {
         return { file, errors: [`not valid JSON: ${(error as Error).message}`] };
       }
       // A red-team sample wraps its plan as { expected_gate, note, plan } so the
-      // same command demonstrates each block (Appendix C DoD "Gated").
+      // same command demonstrates each block.
       if (raw && typeof raw === 'object' && 'expected_gate' in raw && 'plan' in raw) raw = (raw as { plan: unknown }).plan;
       const parsed = v2LessonPlanSchema.safeParse(raw);
       if (!parsed.success) return { file, errors: parsed.error.issues.map((issue) => `${issue.path.join('.') || '(plan)'}: ${issue.message}`) };

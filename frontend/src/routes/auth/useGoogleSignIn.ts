@@ -3,11 +3,11 @@ import { fetchEnabledProviders, startOAuth } from '@/auth/oauth';
 import type { GoogleState } from '@/rebuild/identity/authBlocks';
 
 /*
- * Google sign-in for the rebuilt A1/A2 screens (W2S.2). The button appears only
+ * Google sign-in for the rebuilt sign-in and sign-up screens. The button appears only
  * once Core reports the provider enabled, so enabling Google stays a backend
  * step. A start that cannot reach Core's authorize URL re-enables the button
  * and says so (the legacy button re-enabled silently). What happens after the
- * provider returns is /auth/callback and the mandatory age screen (A.3).
+ * provider returns is /auth/callback and the mandatory age screen.
  */
 export function useGoogleSignIn(): GoogleState {
   const [available, setAvailable] = useState(false);

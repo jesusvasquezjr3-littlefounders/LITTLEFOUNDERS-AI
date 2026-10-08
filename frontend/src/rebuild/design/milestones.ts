@@ -1,13 +1,12 @@
 /*
- * OD-7 is a closed list (Frontend Bible 02 D7 and rule 17; Product 10 B.20).
+ * The milestone list is closed.
  * Celebration effects (confetti, floating XP or coin amounts, spring overshoot,
  * the streak flame takeover) fire ONLY for these milestones. A correct answer,
  * a coin split, an ordinary practised day, reaching one's own daily pace or a
  * routine press cannot celebrate.
  *
- * This module is the only gate. Every celebration effect in the frontend is
- * registered in `celebrationBudget.test.ts`, which scans the source and fails
- * when an effect appears anywhere that does not decide through one of the
+ * This module is the only gate. Every celebration effect in the frontend
+ * decides through one of the
  * functions below. Core names the milestones a completion reached
  * (`celebrations`, backend/src/services/celebrationBudget.ts, same
  * identifiers); the client never infers one on its own except by crossing a

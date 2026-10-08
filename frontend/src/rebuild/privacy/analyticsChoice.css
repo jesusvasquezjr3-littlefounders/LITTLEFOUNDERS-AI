@@ -3,14 +3,14 @@
   margin-block-start: 1.5rem;
   padding: 1.5rem;
   border-radius: var(--rounded-lg);
-  /* A card on a neutral page: surface fill and a soft elevation, never an outline (02 §4.4). */
+  /* A card on a neutral page: surface fill and a soft elevation, never an outline. */
   background: var(--surface);
   box-shadow: var(--elevation-card);
   display: grid;
   gap: .75rem;
 }
 
-/* Inside the first-session sheet (F3-identity-site): the sheet is the surface. */
+/* Inside the first-session sheet: the sheet is the surface. */
 .lf-rebuild.lf-analytics-choice.lf-analytics-choice--plain {
   margin-block-start: 0;
   padding: 0;

@@ -82,7 +82,7 @@ export function audioRouter(deps: AudioRouterDeps = {}): Router {
       }
       return res.json({ data: row.audio, error: null });
     } catch (err) {
-      // getLessonDocument throws on a Vault 5xx/network failure (§1.14 — a
+      // getLessonDocument throws on a Vault 5xx/network failure (a
       // down Vault must never read as "manifest missing", so 404 stays
       // reserved for a genuinely absent row). A down Vault is an upstream
       // dependency failure, not an audiogen fault: answer 502 like the POST

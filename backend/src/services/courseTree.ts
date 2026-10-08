@@ -2,7 +2,7 @@ import { computeAdventureState, computeLessonStates, progressOf, type LessonStat
 import type { PlacementTopic } from './placementAlgorithm.js';
 
 /*
- * Pure assembly of the COURSE_ENGINE.md §2 hierarchy
+ * Pure assembly of the course hierarchy
  * (courses → adventures → sagas → topics → lessons) plus per-user unlock
  * state, from already-fetched rows. No I/O here — routes/learn.ts fetches
  * rows via services/supabaseRest.ts and hands them to this module, which
@@ -75,7 +75,7 @@ export interface LessonRowLite {
   difficulty: number;
   xp_total: number;
   estimated_minutes: number;
-  /** GAP-FIX-R5 (*_learning_autonomy_levers.sql): depth/enrichment; never counted toward progress, badges or unlock order. */
+  /** Depth/enrichment (*_learning_autonomy_levers.sql); never counted toward progress, badges or unlock order. */
   optional_enrichment?: boolean;
 }
 
@@ -109,9 +109,9 @@ export interface LessonNode {
    */
   placementCredited: boolean;
   /**
-   * GAP-FIX-R5 (B.24, Block B autonomy): an optional depth/enrichment lesson.
+   * An optional depth/enrichment lesson.
    * Outside every required count: unlock order, topic, saga, chapter and
-   * course progress, badges and OD-25 offers. The pathway engine serves it as
+   * course progress, badges and early-access offers. The pathway engine serves it as
    * optional to the registers whose mechanism offers enrichment; the linear
    * engine never serves it (it stays locked unless already passed).
    */
@@ -227,7 +227,7 @@ export function assembleCourseTree(
   const sortedAdventures = byPosition(adventureRows);
 
   // Global flat order (adventure.position, saga.position, topic.position, lesson.position) —
-  // COURSE_ENGINE.md §2's single source of truth for unlocking.
+  // The single source of truth for unlocking.
   const flatLessons: { id: string }[] = [];
   const lessonIdsByAdventure = new Map<string, string[]>();
   for (const adventure of sortedAdventures) {
@@ -431,7 +431,7 @@ export function flattenTopicsForPlacement(tree: CourseTree): PlacementTopic[] {
 }
 
 /**
- * B.6 rule P6 (S05.3b): a placement is the entry into ONE pathway stage, so in
+ * A placement is the entry into ONE pathway stage, so in
  * pathway mode it walks only that stage's chapters. Optional chapters (another
  * stage, open to this learner) and closed ones are never placed into or
  * credited: an adult's entry placement never credits childhood chapters, and a

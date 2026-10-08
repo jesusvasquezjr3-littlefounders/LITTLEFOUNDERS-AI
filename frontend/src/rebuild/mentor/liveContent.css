@@ -1,4 +1,4 @@
-/* C.5 / C.6 staff panels (the live-content status, one review decision, the
+/* Staff panels (the live-content status, one review decision, the
    curated-pack release). They reuse the alliance panel's surface and equal
    chips (alliance.css) and the profile's label / value rows; this file only
    lays out what is new. Tokens only; no animation of its own. */
@@ -47,7 +47,7 @@
   gap: var(--spacing-3);
 }
 .lf-generated-pack-actions .lf-button { inline-size: 100%; min-block-size: var(--target-base); }
-/* The release gate's reasons, listed under the refusal inside the shared banner. */
+/* The release check's reasons, listed under the refusal inside the shared banner. */
 .lf-generated-refusal { margin: var(--spacing-2) 0 0; padding-inline-start: var(--spacing-4); display: grid; gap: var(--spacing-1); }
 .lf-generated-refusal li { overflow-wrap: anywhere; }
 

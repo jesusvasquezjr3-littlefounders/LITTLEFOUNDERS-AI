@@ -44,7 +44,7 @@ export function WorkedExampleBoard({ document, segment, onBack, onGrade, sequenc
   sequence?: LessonSequenceControl;
 }) {
   const t = copy[document.locale];
-  // GAP-FIX-R5 (08 §11): while a worked example is on screen the Mentor demonstrates beside the board.
+  // While a worked example is on screen the Mentor demonstrates beside the board.
   useLessonStageRequest('demonstrating');
   const steps = segment.payload.steps;
   const fadeAt = steps.length - segment.payload.fade_count;
@@ -65,11 +65,11 @@ export function WorkedExampleBoard({ document, segment, onBack, onGrade, sequenc
     setIndex(index + 1);
     setPrediction('');
   };
-  // Bible 05 §3: Reset restores the authored start (the first step, no predictions or answers) and clears the verdict.
+  // Reset restores the authored start (the first step, no predictions or answers) and clears the verdict.
   const pristine = index === 0 && prediction === '' && Object.keys(values).length === 0 && verdict === null;
   const reset = () => { setIndex(0); setPrediction(''); setValues({}); setVerdict(null); };
   const complete = segment.payload.response_step_ids.every((stepId) => values[stepId]?.trim());
-  // Appendix P Part 5 (GAP-FIX-R1): a typed number is parsed for the lesson's locale and sent as its canonical
+  // A typed number is parsed for the lesson's locale and sent as its canonical
   // value; Core compares values, not text. Anything that is not a number is sent as written.
   const canonical = (text: string) => parseLocaleNumber(text, document.locale) ?? text.trim();
   const echo = (text: string) => {
@@ -94,7 +94,7 @@ export function WorkedExampleBoard({ document, segment, onBack, onGrade, sequenc
             revealed={Math.round((index + 1) / steps.length * segment.payload.algorithm.steps.length)} /> : null}
           <WorkedStepsList steps={steps.map((step, stepIndex) => {
             const faded = stepIndex >= fadeAt;
-            // Bible 05 §5 (GAP-FIX-R2): a step that carries TeX notation renders it with KaTeX; spokenText is its accessible name.
+            // A step that carries TeX notation renders it with KaTeX; spokenText is its accessible name.
             return { id: step.id, marker: String(stepIndex + 1), expression: step.notation
               ? <MathExpression tex={step.notation} spokenText={step.spokenText} fallback={step.expression} locale={document.locale} /> : step.expression,
               state: index === stepIndex ? 'active' as const : index > stepIndex ? 'complete' as const : 'pending' as const,
@@ -128,8 +128,8 @@ export function WorkedExampleBoard({ document, segment, onBack, onGrade, sequenc
 
 /** A local fixture that lets visual review inspect full and faded states without Forge. */
 /**
- * Bible 05 §5 (GAP-FIX-R2): a worked example that declares TeX notation (a
- * fraction and an exponent), the text-fit and board-audit state for KaTeX.
+ * A worked example that declares TeX notation (a
+ * fraction and an exponent), the state for KaTeX.
  * pt-BR reads its decimals with a comma ({,}); spokenText stays the name.
  */
 export function notationPilotDocument(locale: Locale): unknown {

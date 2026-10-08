@@ -9,17 +9,17 @@ import type { MentorCharacter } from '@/rebuild/design/controls';
 import { OnboardingFlow, type AccountChoice, type OnboardingValues } from '@/rebuild/identity/OnboardingFlow';
 
 /*
- * `/onboarding` (O1): a guest's one-time first run, rebuilt (W2S.2) without the
+ * `/onboarding`: a guest's one-time first run, rebuilt without the
  * legacy guided-voice stage. RequireAuth mounts it (a guest already has a
- * session) after the mandatory age question (A.3, A.4), and RequireOnboarded
+ * session) after the mandatory age question, and RequireOnboarded
  * sends an unfinished guest here from any app screen.
  *
  * Core contracts, unchanged: POST /onboarding/complete with exactly
  * { displayName, discoveryChannel?, accountOfferChoice, localDate } (Core's
- * body is strict: no date of birth, S01.3), which grants day one of the streak;
+ * body is strict: no date of birth), which grants day one of the streak;
  * "Create account" continues to /upgrade-account, "Later" to Learn.
  *
- * The Mentor choice (OD-6, 08 §8) is saved with PUT /tutor/preferences
+ * The Mentor choice is saved with PUT /tutor/preferences
  * { character }, the preference the Mentor screen and the learner's Mentor tab
  * already read. It is optional: skipping leaves the choice to the Mentor screen.
  *

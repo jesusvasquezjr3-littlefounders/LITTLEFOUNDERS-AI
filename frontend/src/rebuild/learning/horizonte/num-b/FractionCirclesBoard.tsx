@@ -65,7 +65,7 @@ function Stepper({ t, heading, id, more, fewer, locked }: { t: Copy; heading: st
   </section>;
 }
 
-/* F1.6 circles, show: cut one circle into equal parts and shade the parts the fraction names. The learner chooses both numbers. */
+/* Circles, show: cut one circle into equal parts and shade the parts the fraction names. The learner chooses both numbers. */
 function ShowBoard({ document, segment, onBack, sequence, onGrade, payload }: Props<ShowPayload>) {
   const { locale } = document;
   const t = copyText(NUM_B_COPY, locale);
@@ -101,7 +101,7 @@ function ShowBoard({ document, segment, onBack, sequence, onGrade, payload }: Pr
   </NumBFrame>;
 }
 
-/* F1.6 circles, compare: two circles cut the same way; shade each to its name, then say which holds more. */
+/* Circles, compare: two circles cut the same way; shade each to its name, then say which holds more. */
 function CompareBoard({ document, segment, onBack, sequence, onGrade, payload }: Props<CirclePairPayload>) {
   const { locale } = document;
   const t = copyText(NUM_B_COPY, locale);
@@ -145,7 +145,7 @@ function CompareBoard({ document, segment, onBack, sequence, onGrade, payload }:
   </NumBFrame>;
 }
 
-/* F1.6 circles, add and subtract: two given circles cut the same way, a work circle to shade the join or what is left, then the typed fraction. */
+/* Circles, add and subtract: two given circles cut the same way, a work circle to shade the join or what is left, then the typed fraction. */
 function JoinBoard({ document, segment, onBack, sequence, onGrade, payload }: Props<CirclePairPayload>) {
   const { locale } = document;
   const t = copyText(NUM_B_COPY, locale);

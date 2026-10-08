@@ -1,7 +1,7 @@
 // Shared OpenAI-compatible chat/completions transport — the ONE fetch
 // chokepoint DeepSeek and Qwen (DashScope compatible-mode) both go through.
-// COURSE_ENGINE.md §5: "All clients are raw fetch behind one providers/
-// chokepoint with usage logging."
+// All clients are raw fetch behind one providers/
+// chokepoint with usage logging.
 
 import { getConfig } from '../env.js';
 import {
@@ -44,7 +44,7 @@ export interface OpenAiCompatibleConfig {
   baseUrl: string;
   apiKey: string;
   model: string;
-  /** Default 120s (COURSE_ENGINE.md §5 deepseek.ts spec). */
+  /** Default 120s. */
   timeoutMs?: number;
 }
 

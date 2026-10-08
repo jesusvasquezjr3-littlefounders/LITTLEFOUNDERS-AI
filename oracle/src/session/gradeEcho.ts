@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { getConfig } from '../env.js';
 
 /*
- * The grade echo (/ORACLE.md, Tutor v3).
+ * The grade echo.
  *
  * Core grades an activity, updates the learner's mastery, and hands the
  * CLIENT a signed receipt: `{segmentId, kcId, correct, misconceptionCode}`
@@ -21,8 +21,8 @@ import { getConfig } from '../env.js';
  *
  * FORMAT IS DUPLICATED with backend/src/services/pedagogy/recordAttempt.ts
  * (`signGradeEcho`), the same deliberate choice as the session token: no
- * shared package exists (§1.2 no-workspaces), so a parity test pins the wire
- * format on both sides instead.
+ * shared package exists, so the wire
+ * format is mirrored on both sides instead.
  */
 
 const ECHO_PREFIX = 'ge1';
@@ -48,7 +48,7 @@ function sign(body: string, secret: string): string {
   return crypto.createHmac('sha256', secret).update(body).digest('base64url');
 }
 
-/** Test-side mint, so parity is pinned against the same vectors Core signs. */
+/** Test-side mint, signing the same way Core does. */
 export function mintGradeEcho(payload: GradeEchoPayload, secret: string): string {
   const body = `${ECHO_PREFIX}.${Buffer.from(JSON.stringify(payload), 'utf8').toString('base64url')}`;
   return `${body}.${sign(body, secret)}`;
@@ -62,7 +62,7 @@ export function verifyGradeEcho(token: string, nowMs = Date.now()): EchoVerdict 
   const expected = sign(body, getConfig().TUTOR_SESSION_SECRET);
   const a = Buffer.from(crypto.createHash('sha256').update(parts[2] ?? '').digest());
   const b = Buffer.from(crypto.createHash('sha256').update(expected).digest());
-  // Constant-time on fixed-width digests (§1.14) — never a length pre-check.
+  // Constant-time on fixed-width digests — never a length pre-check.
   if (!crypto.timingSafeEqual(a, b)) return { ok: false, reason: 'bad_signature' };
 
   let payload: unknown;

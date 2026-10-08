@@ -156,7 +156,7 @@ for (const file of files) {
    * in quantized units and the bind-pose shortcut above does not apply. Rather
    * than print a confidently wrong height (it reads ~65,000), the measurement
    * is withheld — real-world size is read from the SOURCE export, which is
-   * where the pipeline needs it anyway (/AGENTS.md §1.14).
+   * where the pipeline needs it anyway.
    */
   const quantized = root.listExtensionsUsed().some((e) => e.extensionName === 'KHR_mesh_quantization');
   if (quantized) {

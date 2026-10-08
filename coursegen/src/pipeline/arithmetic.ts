@@ -1,5 +1,4 @@
-// Tiny, safe arithmetic helpers for gate 4 (ARITHMETIC RE-EXECUTION,
-// COURSE_ENGINE.md §4). No `eval`, no Function constructor — everything is
+// Tiny, safe arithmetic helpers for gate 4 (ARITHMETIC RE-EXECUTION). No `eval`, no Function constructor — everything is
 // a hand-rolled evaluator or brute-force search bounded to kid-content
 // scale (small denominations, ≤8 weights, targets in the hundreds).
 

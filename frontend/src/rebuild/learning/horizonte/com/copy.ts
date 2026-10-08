@@ -1,7 +1,7 @@
 import type { HorizonteCopy } from '../boardTypes';
 
 /*
- * Every authored string of F2.16 to F2.18, in three native versions. Spoken math is copy too: a screen reader says
+ * Every authored string, in three native versions. Spoken math is copy too: a screen reader says
  * "f of x equals" in the learner's language, so each locale writes how its own classroom reads a formula aloud.
  */
 export const COM_COPY = {
@@ -16,7 +16,7 @@ export const COM_COPY = {
   no: { role: 'data', band: '13-17', 'en-US': 'No', 'es-MX': 'No', 'pt-BR': 'Não' },
   unknown: { role: 'data', band: '13-17', 'en-US': 'to find', 'es-MX': 'por hallar', 'pt-BR': 'a descobrir' },
 
-  /* ── F2.16 networks and counting: headings, zones, names ── */
+  /* ── Networks and counting: headings, zones, names ── */
   headingPlaces: { role: 'heading', band: '13-17', 'en-US': 'Land areas', 'es-MX': 'Zonas', 'pt-BR': 'Áreas' },
   headingBridges: { role: 'heading', band: '13-17', 'en-US': 'Bridges', 'es-MX': 'Puentes', 'pt-BR': 'Pontes' },
   headingStops: { role: 'heading', band: '13-17', 'en-US': 'Stops', 'es-MX': 'Paradas', 'pt-BR': 'Paradas' },
@@ -98,7 +98,7 @@ export const COM_COPY = {
   metPascal: { role: 'body', band: '13-17', 'en-US': 'Right. Those are all the multiples.', 'es-MX': 'Bien. Esos son todos los múltiplos.', 'pt-BR': 'Certo. Esses são todos os múltiplos.' },
   hintPascal: { role: 'body', band: '13-17', 'en-US': 'Not yet. Check every number once more.', 'es-MX': 'Aún no. Revisa otra vez cada número.', 'pt-BR': 'Ainda não. Confira cada número mais uma vez.' },
 
-  /* ── F2.18 bits and logic gates ── */
+  /* ── Bits and logic gates ── */
   headingBits: { role: 'heading', band: '13-17', 'en-US': 'Bits', 'es-MX': 'Bits', 'pt-BR': 'Bits' },
   headingGates: { role: 'heading', band: '13-17', 'en-US': 'Gates', 'es-MX': 'Compuertas', 'pt-BR': 'Portas' },
   bitsOn: { role: 'data', band: '13-17', 'en-US': 'Switched on', 'es-MX': 'Encendidos', 'pt-BR': 'Ligados' },
@@ -137,7 +137,7 @@ export const COM_COPY = {
   metGates: { role: 'body', band: '13-17', 'en-US': 'Right. The lamp follows the whole table.', 'es-MX': 'Bien. La lámpara sigue toda la tabla.', 'pt-BR': 'Certo. A lâmpada segue a tabela inteira.' },
   hintGates: { role: 'body', band: '13-17', 'en-US': 'Not yet. Compare the lamp with the table, row by row.', 'es-MX': 'Aún no. Compara la lámpara con la tabla, fila por fila.', 'pt-BR': 'Ainda não. Compare a lâmpada com a tabela, linha por linha.' },
 
-  /* ── F2.17 explorers: predict, then find one number ── */
+  /* ── Explorers: predict, then find one number ── */
   headingExplore: { role: 'heading', band: '13-17', 'en-US': 'Explore', 'es-MX': 'Explora', 'pt-BR': 'Explore' },
   needPredict: { role: 'body', band: '13-17', 'en-US': 'First, choose your prediction.', 'es-MX': 'Primero, elige tu predicción.', 'pt-BR': 'Primeiro, escolha a sua previsão.' },
   needAngle: { role: 'body', band: '13-17', 'en-US': 'Next, move the point to an angle.', 'es-MX': 'Ahora, mueve el punto a un ángulo.', 'pt-BR': 'Agora, mova o ponto para um ângulo.' },

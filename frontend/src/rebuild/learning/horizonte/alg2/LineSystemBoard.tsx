@@ -14,7 +14,7 @@ import './alg2.css';
 type SystemSegment = Extract<HorizonteSegment, { type: 'math.line-system.v2' }>;
 
 /*
- * F2.5, D19: two or three lines on the Plano plane and a marker for each place where lines meet. One marker is the
+ * Two or three lines on the Plano plane and a marker for each place where lines meet. One marker is the
  * handle at a time (a roving handle would break Plano's one-tab-stop rule); the marker control picks which one, and
  * the plane (drag, arrows, tap) and the across and up steppers move it. Markers stay on the grid and never share a
  * spot. The readout says how many lines each marker is on; Core holds the crossings and checks them exactly.

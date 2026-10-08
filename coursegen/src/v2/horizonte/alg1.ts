@@ -94,7 +94,7 @@ function judge(subject: string, found: Derived, slots: readonly string[], answer
   return result(answerKey === undefined ? [] : keyIssues(subject, found.solutions, slots, answerKey), stats);
 }
 
-/* F2.1 tiles */
+/* Tiles */
 const TILE_CLASSES = ['sq-pos', 'sq-neg', 'bar-pos', 'bar-neg', 'unit-pos', 'unit-neg'] as const;
 const TILE_KINDS = ['sq', 'bar', 'unit'] as const;
 type TileCounts = Record<(typeof TILE_CLASSES)[number], number>;
@@ -137,7 +137,7 @@ const tilesChecker: SolvabilityChecker = (segment, context) => {
   return judge(subject, exact([tilesAnswer(read.counts)]), ['mat', 'zero'], context.answerKey);
 };
 
-/* F2.2 cards */
+/* Cards */
 const DISGUISE_ORDER = ['picture', 'mixed', 'notation'] as const;
 const CARD_FACE = /^(unk|unk-neg|(?:pos|neg)-[1-9])$/;
 interface Cards { disguise: (typeof DISGUISE_ORDER)[number]; left: string[]; right: string[]; supply: string[] }
@@ -201,7 +201,7 @@ const cardsChecker: SolvabilityChecker = (segment, context) => {
   return judge(subject, found, slots, context.answerKey);
 };
 
-/* F2.3 area model */
+/* Area model */
 interface Term { d: number; k: number }
 const TERM = /^([0-2]):(-?[1-9][0-9]?)$/;
 type Area =

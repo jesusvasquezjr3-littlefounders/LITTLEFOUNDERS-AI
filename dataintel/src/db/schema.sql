@@ -144,7 +144,7 @@ CREATE TABLE IF NOT EXISTS agg_daily_users (
   PRIMARY KEY (day, role)
 );
 
--- Product 10 E.6 account erasure. One row per erased account id (kind
+-- Account erasure. One row per erased account id (kind
 -- 'user') and per converted pre-signup visitor id (kind 'anon'). The sync
 -- re-applies the deletion after every run, so a batch read from Vault just
 -- before the account was erased cannot bring its rows back. Rows older than
@@ -179,8 +179,8 @@ CREATE TABLE IF NOT EXISTS content_retirement_state (
   backup_sha256 VARCHAR
 );
 
--- H.2 / Appendix O 1.2: the experiment tables are keyed by a learner and are
--- inside the warehouse's 400-day retention window and the E.6 erasure, so both
+-- The experiment tables are keyed by a learner and are
+-- inside the warehouse's 400-day retention window and the account erasure, so both
 -- jobs need them to exist from the first boot, not only after the first
 -- experiment call (services/experiments.ts keeps the same definitions).
 CREATE TABLE IF NOT EXISTS experiment_assignments (
@@ -204,7 +204,7 @@ CREATE TABLE IF NOT EXISTS experiment_exposures (
 -- window applied and when, so a prune that stopped running is visible. The
 -- erasure re-apply (services/erasure.ts) writes one row per run as well, and a
 -- failed run of either writes ok = FALSE with its error. Core's watched job
--- warehouse_retention reads it (services/warehouseMaintenance.ts, GAP-FIX-R8).
+-- warehouse_retention reads it (services/warehouseMaintenance.ts).
 CREATE TABLE IF NOT EXISTS warehouse_maintenance_log (
   job VARCHAR NOT NULL,
   table_name VARCHAR NOT NULL,
@@ -261,8 +261,7 @@ ALTER TABLE warehouse_maintenance_log ADD COLUMN IF NOT EXISTS error VARCHAR;
 -- ninety-five places is a filter that will be missed in one. Renaming the
 -- physical tables and re-creating the old names as filtered views made every
 -- existing query correct at once, and makes the CLEAN name the path of least
--- resistance for new ones. `queries-are-staff-free.test.ts` fails the build if
--- an analytical file reaches for a *_raw table.
+-- resistance for new ones. An analytical file must not reach for a *_raw table.
 --
 -- The filter is deliberately BELT AND BRACES, because neither signal is
 -- sufficient alone:

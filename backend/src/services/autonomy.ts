@@ -3,14 +3,14 @@ import { binaryFrontier } from './pathway/coursePathProjection.js';
 import { autonomyOffer, type LearnerRegister } from './learnerRegisterPolicy.js';
 
 /*
- * B.24 (S05.3e): the learner's real autonomy levers.
+ * The learner's real autonomy levers.
  *
- * Sailer et al. (2017, Appendix B §3.5) found that avatar customization does
+ * Sailer et al. (2017) found that avatar customization does
  * not measurably serve the autonomy need; real choice over path, approach or
  * pace does. So the product's autonomy levers are exactly these three, each a
  * choice the SERVER honours, never a cosmetic:
  *
- *   path    which lesson to take next from the course path's frontier (B.6).
+ *   path    which lesson to take next from the course path's frontier.
  *           Core serves every lesson the learner may start now and marks one
  *           as the recommendation; opening any other is a real choice, and
  *           the lesson gate accepts it.
@@ -22,13 +22,11 @@ import { autonomyOffer, type LearnerRegister } from './learnerRegisterPolicy.js'
  *           today's plan is done: a natural stopping point they chose.
  *
  * Avatar customization is deliberately NOT in this list and must never be
- * counted toward autonomy support in a design review (B.24; the policy's
- * design-review checklist). The Appendix C adoption metric
+ * counted toward autonomy support in a design review. The adoption metric
  * (learning_autonomy_adoption) reports these three levers only.
  */
 /*
- * GAP-FIX-R5 (Product 10 Block B "Age-band registers", autonomy column; B.24):
- * two more levers, offered by register (learnerRegisterPolicy.AUTONOMY_OFFERS,
+ * Two more levers, offered by register (learnerRegisterPolicy.AUTONOMY_OFFERS,
  * read from REGISTERS[register].autonomy):
  *   approach    which of two or three equally valid, fully graded strategies
  *               to practise (a v2 document's `approaches`), from 10;

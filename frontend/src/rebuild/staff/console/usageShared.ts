@@ -9,11 +9,8 @@
  * this came from the same query as the counts, `signup_complete` would simply
  * not appear and the card would look clean.
  *
- * The cost is that this drifts if the constraint changes. That is what
- * `usageShared.test.ts` is for: it reads `database/migrations/*.sql`, finds the
- * LAST `learning_events_event_check`, and fails if the two disagree — so
- * adding an event to the schema and forgetting this list is a red test, not a
- * silently short list.
+ * The cost is that this drifts if the constraint changes: adding an event to
+ * the schema means adding it to this list too, or the list is silently short.
  *
  * Source of truth: the final `learning_events_event_check` in
  * database/migrations (0028 at the time of writing; 0033 removed the game
@@ -55,27 +52,27 @@ export const INSTRUMENTED_EVENTS = [
   'parent_report_viewed',
   'badge_generated',
   'badge_shared',
-  // B.5 replay-notice display rate (S05.3d): Core writes replay_below_best,
+  // Replay-notice display rate: Core writes replay_below_best,
   // the result screen writes replay_notice_view.
   'replay_below_best',
   'replay_notice_view',
-  // B.21 / B.24 motivation signals (S05.3e): all three written by Core only.
+  // Motivation signals: all three written by Core only.
   'streak_rest_day',
   'streak_restart',
   'path_choice',
-  // Appendix C 1.3 QA and Appendix P Part 8 scorer parity (GAP-FIX-R2): all six written by Core only.
+  // QA and scorer parity: all six written by Core only.
   'placement_commit_ok',
   'placement_commit_failed',
   'prerequisite_refused',
   'prerequisite_passed',
   'lesson_update_required',
   'scorer_parity_miss',
-  // C.24 Parent Time-to-Value (GAP-FIX-R2): written by Core only, once per
+  // Parent Time-to-Value: written by Core only, once per
   // account — identity verification made the adult a verified parent, then
   // their first read of a linked child's progress or weekly narrative.
   'parent_signup_completed',
   'parent_first_value',
-  // B.24 autonomy levers (GAP-FIX-R5): the approach choice, an enrichment offer and an enrichment lesson opened; Core only.
+  // Autonomy levers: the approach choice, an enrichment offer and an enrichment lesson opened; Core only.
   'approach_choice',
   'enrichment_offer',
   'enrichment_open',
@@ -84,8 +81,8 @@ export const INSTRUMENTED_EVENTS = [
 /**
  * Values the database CHECK still permits but no client may emit any more.
  * `badge_link_click` measured a stranger opening a legacy badge link — viewer
- * reach, which OD-20's Appendix L never counts. Core refuses it; the CHECK is
- * narrowed in the dated removal (docs/rebuild/policies/ACHIEVEMENT-SHARING.md).
+ * reach, which is never counted. Core refuses it; the CHECK is
+ * narrowed in the dated removal.
  */
 export const RETIRED_EVENTS = ['badge_link_click'] as const;
 
@@ -100,7 +97,7 @@ export type UsageBand = 'anonymous' | 'registered' | 'staff';
  * module, and a band that disagreed across the wire would put a session in one
  * bucket on the server and another in the browser — which is the kind of
  * defect that shows up as a total that does not add up and takes a day to
- * find. `usageShared.test.ts` asserts the two definitions stay identical.
+ * find.
  */
 export function bandOf(role: string): UsageBand {
   if (role === 'admin' || role === 'superadmin') return 'staff';

@@ -6,9 +6,9 @@ import { NotFoundPage } from '@/routes/NotFoundPage';
 import { DevRoute } from './LazyRoute';
 
 /*
- * Lane 0 (core): development-only harnesses, the standalone state routes and
- * the route of last resort. Owned by Lane 0; the wave-2 lanes each own one
- * sibling module (site, learn, mentor, family, profile, staff).
+ * Core routes: development-only harnesses, the standalone state routes and
+ * the route of last resort. Each other area owns one sibling module (site,
+ * learn, mentor, profile, staff).
  */
 
 /*
@@ -16,7 +16,7 @@ import { DevRoute } from './LazyRoute';
  * calls must sit behind `import.meta.env.DEV` themselves: a module-level
  * `lazy(() => import(...))` is kept by Rollup even when no route renders it,
  * so the production build used to emit the four lab chunks (about 140 kB,
- * with the lab's local grader) as dead files (S10L.2). Inside the branch the
+ * with the lab's local grader) as dead files. Inside the branch the
  * production build folds `false ? … : null` away and no chunk is emitted.
  *
  * Lesson Engine QA uses the rebuilt fixture gallery and real v2 route.
@@ -30,8 +30,8 @@ const devLabs = import.meta.env.DEV ? {
 } : null;
 
 /* The legacy Tutor lab (/dev/tutor-lab) and learn lab (/dev/learn-lab) were
- * removed with the legacy UI (S10L.1, OD-2, 02 rule 23): the rebuilt screens
- * are reviewed in the design-system preview entry and the rebuild audits. */
+ * removed with the legacy UI: the rebuilt screens
+ * are reviewed in the design-system preview entry. */
 
 /** DEV-only harnesses; an empty fragment in a production build. */
 export const devRoutes = devLabs ? (
@@ -44,11 +44,11 @@ export const devRoutes = devLabs ? (
 /** Standalone state screens: public by design, no navigation around them. */
 export const standaloneStateRoutes = (
   <>
-    {/* A.1 suspended/removed kid account — public by design: Core has
+    {/* Suspended/removed kid account — public by design: Core has
         already revoked the sessions, so this page must render with no
         session at all. The AuthContext flags pick the wording. */}
     <Route path="account-suspended" element={<KidSuspendedPage />} />
-    {/* E.6 account deletion state — public by design: after a confirmed
+    {/* Account deletion state — public by design: after a confirmed
         request the session is gone (signed out everywhere, or erased),
         and a signed-in account with a scheduled deletion lands here to
         keep it or sign out (RequireAuth redirects). */}

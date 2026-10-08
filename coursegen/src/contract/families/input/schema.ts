@@ -1,4 +1,4 @@
-// `input` family — payload/answer Zod schemas (LESSON_ENGINE.md §5.3, types 14–19).
+// `input` family — payload/answer Zod schemas (types 14–19).
 
 import { z } from 'zod'
 import { idSchema, idText, markdownLite, segmentSchema, iconName, imageUrl } from '../../core/schemaBase.js'

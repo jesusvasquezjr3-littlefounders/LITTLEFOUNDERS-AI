@@ -1,5 +1,5 @@
 /*
- * The seeded run protocol (F3.0). Core mints an attempt token and derives one 256 bit seed from the verified token
+ * The seeded run protocol. Core mints an attempt token and derives one 256 bit seed from the verified token
  * (HMAC-SHA256, server secret, lesson, segment, learner, nonce and issue time). The seed travels beside the token, the
  * browser simulates with it, and the server replays the same simulation with the seed it derives itself to grade. The
  * seed never appears in a lesson document, an answer key or any response before the attempt is issued.

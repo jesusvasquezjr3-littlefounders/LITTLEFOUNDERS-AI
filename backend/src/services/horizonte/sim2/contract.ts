@@ -5,7 +5,7 @@ import { CHOICES_MAX, CHOICES_MIN, GOAL_MAX, GOAL_MIN, MONEY_MAX, PERIODS_MAX, P
 
 const money = (high: number) => z.number().int().min(0).max(high);
 
-/** F3.3: a scenario, its starting books and income, the finish and floor a future must meet, the goal count and the choices the learner may set. */
+/** a scenario, its starting books and income, the finish and floor a future must meet, the goal count and the choices the learner may set. */
 export const lifeSimPayload = z.object({
   scenario: z.enum(SCENARIOS),
   periods: z.number().int().min(PERIODS_MIN).max(PERIODS_MAX),

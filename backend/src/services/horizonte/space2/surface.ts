@@ -1,7 +1,7 @@
 import type { Vec3 } from '../solids/model.js';
 
 /*
- * F4.7: a surface is a third real variable. Two inputs make a grid of outputs: a rate and a term give an amount (compound
+ * a surface is a third real variable. Two inputs make a grid of outputs: a rate and a term give an amount (compound
  * interest), a price and a quantity give a profit. The grid is the whole truth: the browser draws it as a mesh on the
  * solids projection engine, slices it into a 2D curve under a slider, and lists it in a table. Every value is whole cents
  * computed with integers (a year of interest is rounded half up to the cent), so Core and the browser agree to the cent.

@@ -1,34 +1,33 @@
-// Forge content gates over a v2 lesson document (S05.4c).
+// Forge content gates over a v2 lesson document.
 //
-// S05.4a/b built gates 11-16 over the v1 document Forge produces today and
-// listed "no v2 adapter" as an open item. A v2 document that skipped them
-// would be exactly the structurally exempt path Product G.2 forbids, so the
-// same gates run here, through the same measurement code, on the v2 shape:
+// Gates 11-16 were built over the v1 document Forge produces. A v2 document
+// that skipped them would be a structurally exempt path, so the same gates
+// run here, through the same measurement code, on the v2 shape:
 //
-//   gate 11 (B.18 redundancy)   GAP-FIX-R1: v2 Mentor turns carry the
+//   gate 11 (redundancy)        v2 Mentor turns carry the
 //                               narration channel (mode text_only or
 //                               differentiated plus script). A differentiated
 //                               script must add to its on-screen line, and a
 //                               narrated line longer than a caption must not
 //                               duplicate the script. A document with no
 //                               narrated segment voices nothing and passes.
-//   gate 12 (B.14 tone)         every learner-visible string (title, prompts,
+//   gate 12 (tone)              every learner-visible string (title, prompts,
 //                               labels, spoken text, worked-step text).
-//   gate 13 (OD-13 Copy Budget) title = heading, prompt = prompt, diagram
+//   gate 13 (Copy Budget)       title = heading, prompt = prompt, diagram
 //                               labels = option; spoken readouts, expressions
-//                               and results are data (Bible 06 §3.3).
-//   gate 14 (B.17 concept cap)  the plan's declared new concepts against the
+//                               and results are data.
+//   gate 14 (concept cap)       the plan's declared new concepts against the
 //                               age band's ceiling (plan-level).
-//   gate 15 (B.11 misjudgment)  a flagged episode must be staged: the plan
+//   gate 15 (misjudgment)       a flagged episode must be staged: the plan
 //                               needs a `voice.mentor-episode.v2` segment (the
 //                               Mentor voices the misjudgment and the
 //                               recovery); without one it blocks (plan-level).
-//                               GAP-FIX-R3 (B.8, OD-19): the document's stage
+//                               Also the document's stage
 //                               scene (mentor_stage.scene, else the lesson's
 //                               adventure_scene_id) must be an approved
 //                               catalog scene, so every v2 lesson stages the
 //                               learner's Mentor (document-level).
-//   gate 16 (B.16 regional)     another market's anchors or currency always
+//   gate 16 (regional)          another market's anchors or currency always
 //                               block; with the plan's scenarios, a missing
 //                               market scenario or an unapplied one blocks.
 //
@@ -56,7 +55,7 @@ import { horizontePieceGates } from './horizonte/index.js';
 import './solvabilityPacks.js';
 import { runSolvabilityGate } from './solvability.js';
 
-// F0.4: solvability findings ride gate 1 (structure). A dedicated gate number needs a DB migration; see docs/rebuild/sprints/horizonte/F0.4-solvability.md.
+// Solvability findings ride gate 1 (structure). A dedicated gate number needs a DB migration.
 export const SOLVABILITY_GATE: GateNumber = 1;
 
 export interface V2DocumentLike {
@@ -94,12 +93,12 @@ export function v2Locale(document: V2DocumentLike): ContentLocale {
   return LOCALES.includes(document.locale as ContentLocale) ? (document.locale as ContentLocale) : 'es-MX';
 }
 
-/** Copy Budget audience: Bible 06's 6-9 limits apply to the 6-9 pathway only. */
+/** Copy Budget audience: the 6-9 limits apply to the 6-9 pathway only. */
 export function v2Audience(ageBand: unknown): Audience {
   return ageBand === '6-9' ? { young: true, label: 'v2 age band 6-9' } : { young: false, label: `v2 age band ${String(ageBand)}` };
 }
 
-/** Working-memory band of a v2 age pathway (B.17). Unknown bands take the strictest. */
+/** Working-memory band of a v2 age pathway. Unknown bands take the strictest. */
 export function v2WorkingMemoryBand(ageBand: V2AgeBand | unknown): WorkingMemoryBand {
   if (ageBand === '10-12') return '10-12';
   if (ageBand === '13-17' || ageBand === 'adult') return '13+';
@@ -107,7 +106,7 @@ export function v2WorkingMemoryBand(ageBand: V2AgeBand | unknown): WorkingMemory
 }
 
 function roleForPayloadKey(key: string): CopyRole {
-  // GAP-FIX-R1: the new families' learner-visible fields keep their Bible 06 roles.
+  // The new families' learner-visible fields keep their copy roles.
   if (key === 'line' || key === 'setup' || key === 'misjudgment' || key === 'recovery') return 'mentor';
   // StoryChoiceBoard renders this immediately as narrative, not behind a help tap.
   if (key === 'scene') return 'narrative';
@@ -137,7 +136,7 @@ function payloadStrings(node: unknown, pathSoFar: string, key: string, out: Arra
 export function v2TextBlocks(document: V2DocumentLike): V2TextBlock[] {
   const blocks: V2TextBlock[] = [];
   if (typeof document.title === 'string') blocks.push({ segmentId: '(title)', path: 'title', role: 'heading', text: document.title });
-  // GAP-FIX-R5 (B.24): an approach's name is a choice the learner reads, an option under the Copy Budget.
+  // An approach's name is a choice the learner reads, an option under the Copy Budget.
   const approaches = (document.approaches as { options?: Array<{ label?: unknown }> } | undefined)?.options ?? [];
   approaches.forEach((option, index) => { if (typeof option.label === 'string') blocks.push({ segmentId: '(approaches)', path: `approaches.options[${index}].label`, role: 'option', text: option.label }); });
   const segments = Array.isArray(document.segments) ? (document.segments as Array<Record<string, unknown>>) : [];
@@ -146,7 +145,7 @@ export function v2TextBlocks(document: V2DocumentLike): V2TextBlock[] {
     if (typeof segment.prompt === 'string') blocks.push({ segmentId, path: 'prompt', role: 'prompt', text: segment.prompt });
     // Help ladder steps are spoken by the Mentor in one speech-plate turn each.
     if (Array.isArray(segment.help)) segment.help.forEach((step, index) => { if (typeof step === 'string') blocks.push({ segmentId, path: `help[${index}]`, role: 'mentor', text: step }); });
-    // GAP-FIX-R6 (B.20, Bible 02 §9.2): the feedback banner is one body string per verdict.
+    // The feedback banner is one body string per verdict.
     const feedback = segment.feedback as Record<string, unknown> | undefined;
     if (feedback && typeof feedback === 'object') for (const key of ['met', 'not_yet']) {
       if (typeof feedback[key] === 'string') blocks.push({ segmentId, path: `feedback.${key}`, role: 'body', text: feedback[key] as string });
@@ -195,7 +194,7 @@ export function runV2DocumentGates(
     else review.push({ gate: 12, severity: 'review', ...where, message });
   }
 
-  // OD-11 (GAP-FIX-R1): the controlled glossary over every learner-visible v2 string.
+  // The controlled glossary over every learner-visible v2 string.
   for (const block of blocks) {
     for (const finding of scanGlossary(block.text, locale)) {
       const where = block.segmentId.startsWith('(') ? {} : { segmentId: block.segmentId };
@@ -216,7 +215,7 @@ export function runV2DocumentGates(
 
   for (const message of checkV2StageScene(document)) problems.push({ gate: 15, message });
 
-  // Appendix C Stage 2 / G.2: every legacy document gate with a v2 equivalent
+  // Every legacy document gate with a v2 equivalent
   // (2-9, 17-19) is blocking here; no v2 publication path is structurally exempt.
   const carried = runV2CarriedGates(document as Record<string, unknown>, answerKeys);
   problems.push(...carried.problems);
@@ -236,7 +235,7 @@ export function runV2DocumentGates(
 export const V2_STAGE_SCENES = ['diorama-a', 'diorama-b'] as const;
 
 /**
- * B.8 / OD-19 (GAP-FIX-R3): every v2 lesson stages the learner's Mentor on a
+ * Every v2 lesson stages the learner's Mentor on a
  * scene the lesson declares. The stage scene is `mentor_stage.scene`, else
  * the lesson's `adventure_scene_id`; a document whose stage scene is not an
  * approved catalog scene blocks, so Core never has to fall back.
@@ -249,7 +248,7 @@ export function checkV2StageScene(document: V2DocumentLike): string[] {
 }
 
 /**
- * Gate 11 (B.18) on v2: every Mentor-voiced segment's narration channel. A
+ * Gate 11 on v2: every Mentor-voiced segment's narration channel. A
  * differentiated script must say more than the plate (it may not repeat the
  * on-screen line), and a plate longer than a caption may not substantially
  * duplicate what is read aloud.
@@ -286,7 +285,7 @@ export interface V2PlanPolicy {
 export function analyzeV2Plan(plan: V2LessonPlan, markets: MarketInventory = loadMarketInventory(), design: LessonDesignOptions = {}): V2PlanPolicy {
   const findings: V2Finding[] = [];
 
-  // Gate 14 — B.17.
+  // Gate 14: concept cap.
   const band = v2WorkingMemoryBand(plan.age_band);
   const { target, ceiling } = CONCEPT_CEILINGS[band];
   const count = new Set(plan.new_concepts).size;
@@ -301,7 +300,7 @@ export function analyzeV2Plan(plan: V2LessonPlan, markets: MarketInventory = loa
   findings.push(...checkLessonDesign(plan, design));
   findings.push(...checkInstructionalContract(plan));
 
-  // Gate 15 — B.11: a flagged episode is staged by a Mentor-voiced episode segment.
+  // Gate 15 — a flagged episode is staged by a Mentor-voiced episode segment.
   if (plan.mentor_misjudgment && !plan.segments.some((segment) => segment.type === 'voice.mentor-episode.v2')) {
     findings.push({
       gate: 15,
@@ -310,7 +309,7 @@ export function analyzeV2Plan(plan: V2LessonPlan, markets: MarketInventory = loa
     });
   }
 
-  // Gate 16 — B.16.
+  // Gate 16: regional adaptation.
   const scenarios = 'scenarios' in plan.regional ? (plan.regional.scenarios as Record<ContentLocale, MarketScenario>) : undefined;
   const analysis = analyzeRegionalLesson(
     {

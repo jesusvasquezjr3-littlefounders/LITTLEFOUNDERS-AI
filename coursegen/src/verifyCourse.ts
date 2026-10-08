@@ -7,11 +7,11 @@
  * true or false rather than as a feeling. Every check below is deterministic and
  * re-runnable, so the same command answers the question the same way tomorrow.
  *
- * S05.4c: the checks themselves live in release/evaluate.ts (pure, tested) and
+ * The checks themselves live in release/evaluate.ts (pure) and
  * are keyed by the release-gate manifest (release/gateManifest.ts). The
  * attestation this command writes names every check by its manifest id, and
  * Vault's release_course preflight (shared by Core's staff publish route and
- * the local publish command, Product G.2) refuses a release unless every
+ * the local publish command) refuses a release unless every
  * required id passed. A report is also written under runs/verify-course/.
  */
 import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
@@ -54,8 +54,7 @@ async function qChunked<T>(pathForBatch: (ids: string[]) => string, ids: string[
  * The course's content watermark (latest document change or v2 activation),
  * captured BEFORE anything is read. Vault's release preflight refuses an
  * attestation whose watermark is not the current one, so a change that lands
- * while this command is still reading or evaluating cannot ride on it (S05.4c
- * lane review, Product G.2). The value is kept as Vault's own text so it
+ * while this command is still reading or evaluating cannot ride on it. The value is kept as Vault's own text so it
  * round-trips at microsecond precision (a JS Date would truncate it).
  */
 async function contentWatermark(courseId: string): Promise<{ ok: true; value: string | null } | { ok: false }> {

@@ -12,9 +12,9 @@ import pt from '@/i18n/pt-BR/rebuild-mentor.json';
 import '@/rebuild/mentor/screen/mentorScreen.css';
 
 /*
- * Lane 3 (mentor): the Mentor screen (Frontend Bible 08). The route path stays
+ * Mentor routes: the Mentor screen. The route path stays
  * `/tutor` (a path change is a later decision, with a redirect: lessons link a
- * guided review here); the label a learner sees is the character's name (OD-6).
+ * guided review here); the label a learner sees is the character's name.
  */
 
 /* The Mentor's 3D stage. Lazy is MANDATORY, not an optimisation: `three` plus
@@ -27,8 +27,7 @@ const TutorPage = lazy(() => import('@/routes/app/TutorPage'));
  * While the screen's chunk downloads: the rebuilt loading state, in the
  * learner's language. A bare design-system root, not `ShellRoot`: the shell
  * root moves focus on the first mount after a route change, and that mount
- * must be the Mentor screen's, not this placeholder's (found by the real-route
- * focus check, W2M.2).
+ * must be the Mentor screen's, not this placeholder's.
  */
 function MentorChunkLoading() {
   const locale = useShellLocale();
@@ -47,7 +46,7 @@ function MentorChunkLoading() {
 /*
  * The second full-screen layer, and the list is closed at two (lesson and
  * Mentor; adding a third is an owner decision). It sits outside the app shell:
- * the Mentor screen has its own top bar with the way out (08 §2), and the app
+ * the Mentor screen has its own top bar with the way out, and the app
  * navigation underneath would be a keyboard trap of links nobody can see. The
  * onboarding gate is kept, because an un-onboarded learner has no preferences
  * for the Mentor to be built from.

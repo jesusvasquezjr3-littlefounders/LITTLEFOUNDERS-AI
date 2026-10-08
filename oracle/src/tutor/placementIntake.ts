@@ -17,14 +17,14 @@
  *
  * WHY IT LIVES IN ORACLE. Core has no model client and should not grow one:
  * this needs the injection fence, the moderation pass and the `.strict()`
- * context gate that already exist here, and /AGENTS.md §1.5 routes
+ * context gate that already exist here, and the architecture routes
  * internal-only work service-to-service. Core calls it with INTERNAL_API_KEY
  * and treats it as OPTIONAL — if this service is down, placement runs its
  * deterministic path and the learner never learns there was a fancier one
- * (§1.14: liveness must not depend on optional infrastructure).
+ * (liveness must not depend on optional infrastructure).
  *
- * §1.9 POSTURE. The learner's free text reaches a provider, which is the
- * /ORACLE.md §0 carve-out and is offered to 12+ ONLY — Core refuses to call
+ * PRIVACY POSTURE. The learner's free text reaches a provider, which is the
+ * one carve-out and is offered to 12+ ONLY — Core refuses to call
  * this for a younger learner, and the age arrives as a BAND, never a birth
  * date. No name, no id, no location, no history. `.strict()` on the input
  * schema is what makes "nothing else can travel" a runtime fact rather than an
@@ -65,10 +65,10 @@ export const PlacementIntakeInputSchema = z
 export type PlacementIntakeInput = z.infer<typeof PlacementIntakeInputSchema>;
 
 /**
- * THE THIRD DOOR (/ORACLE.md §4.1b).
+ * THE THIRD DOOR.
  *
- * Named `seal…` on purpose: `boundaries.test.ts` asserts that any file calling
- * the model has sealed SOMETHING first, and matching on the prefix is what
+ * Named `seal…` on purpose: any file calling
+ * the model must seal SOMETHING first, and matching on the prefix is what
  * keeps that true as payload kinds are added. The seal sits here, one line from
  * the send, rather than only at the HTTP edge — a route can be bypassed by a
  * future in-process caller, and then the `.strict()` guarantee this whole
@@ -217,7 +217,7 @@ export async function runPlacementIntake(
    */
   const classification = classifyLearnerInput(input.learnerText, input.locale);
   if (classification.category !== null && classification.action !== 'allow') {
-    // Loud on purpose (§1.9): this is the one signal available today that a
+    // Loud on purpose: this is the one signal available today that a
     // flagged utterance happened here at all — see `PlacementIntakeResult.
     // flagged`'s own comment for why a full guardian-visible record is a
     // separate, not-yet-made schema decision.
@@ -252,7 +252,7 @@ export async function runPlacementIntake(
    * handed in so the echo check runs here too: a reply that reproduces its own
    * fence has been talked into reciting its instructions.
    *
-   * §1.9 makes the model pass non-optional for minors. A refusal — including a
+   * The privacy rule makes the model pass non-optional for minors. A refusal — including a
    * judge that is simply unavailable — lands on the neutral prior, so the worst
    * case is a placement that opens one question away from ideal, never an
    * unmoderated sentence shown to a 13-year-old and never a broken screen.

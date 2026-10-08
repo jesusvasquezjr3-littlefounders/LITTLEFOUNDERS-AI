@@ -1,6 +1,6 @@
 /*
- * Plano (Horizonte F0.2): the pure model of the shared SVG plane. Nothing here touches the DOM or React, so the
- * scale, snapping, keyboard and sampling rules are unit-tested alone and a board's scorer can reuse them.
+ * Plano: the pure model of the shared SVG plane. Nothing here touches the DOM or React, so the
+ * scale, snapping, keyboard and sampling rules stand alone and a board's scorer can reuse them.
  *
  * Coordinates live in two spaces. Domain space is what the learner reads (x, y). View space is the SVG's viewBox
  * (0..width, 0..height, y growing downwards). The grid is always anchored at 0: a step of 2 snaps to ..., -2, 0, 2, ...
@@ -17,11 +17,11 @@ export type PlanoAxisLock = 'both' | 'x' | 'y';
 export type PlanoStep = number | { x: number; y: number };
 /** Extra limits for one handle, inside the domain. */
 export interface PlanoBounds { xMin?: number; xMax?: number; yMin?: number; yMax?: number }
-/** Series hue slot: 1 sky, 2 mint, 3 berry, anything else a neutral mark (Bible 05 §2). */
+/** Series hue slot: 1 sky, 2 mint, 3 berry, anything else a neutral mark. */
 export type PlanoSeries = 1 | 2 | 3 | 'neutral';
 
 export const PLANO_VIEWBOX: PlanoSize = { width: 600, height: 400 };
-/** The handle's hit area on screen (Bible 02 `target-lg`, V4). The CSS draws it with `var(--target-lg)`. */
+/** The handle's hit area on screen (`target-lg`). The CSS draws it with `var(--target-lg)`. */
 export const HANDLE_HIT_PX = 64;
 /** Shift multiplies the keyboard step by this much. */
 export const COARSE_FACTOR = 5;

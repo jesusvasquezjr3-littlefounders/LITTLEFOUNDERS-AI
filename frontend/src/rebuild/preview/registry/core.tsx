@@ -6,12 +6,12 @@ import { SystemGallery } from '../SystemGallery';
 import { framed, standalone, type PreviewContext, type PreviewRegistry } from './types';
 
 /*
- * Lane 0 (core): the design-system catalogues (S03.1 controls, S03.2 overlays
+ * Core: the design-system catalogues (controls, overlays
  * and shells) and the preview index with its two small practice screens.
  */
 
 function Gallery({ locale, theme, ageBand, params, t, screen }: PreviewContext) {
-  // S03.2 component gallery: dev/preview only (this entry never ships; see main.tsx).
+  // Component gallery: dev/preview only (this entry never ships; see main.tsx).
   const shell = SHELL_KINDS.includes(params.get('shell') as ShellKind) ? params.get('shell') as ShellKind : 'learner';
   const open = (next: string, kind?: ShellKind) => {
     const query = new URLSearchParams({ locale, theme, screen: next, ...(kind ? { shell: kind } : {}) });

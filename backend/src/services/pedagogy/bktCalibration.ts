@@ -1,7 +1,7 @@
 /*
  * BKT calibration — INSTRUMENTATION, not a mastery-model change.
  *
- * `/ORACLE.md` §19.1 describes online mastery as "Four-parameter Bayesian
+ * Online mastery is "Four-parameter Bayesian
  * Knowledge Tracing... Degeneracy guards in schema AND code" — one FIXED set
  * of parameters per knowledge component (`kc.p_l0/p_t/p_g/p_s`), shared by
  * every learner. Migration `0052` already reserves a per-LEARNER override
@@ -11,16 +11,16 @@
  * plumbing for personalization exists; the calibration step that would
  * populate it responsibly does not.
  *
- * Investigated for ORACLE.md §19.5's "per-learner BKT parameters" backlog
+ * Investigated for the "per-learner BKT parameters" backlog
  * item, 2026-09-01. Fitting real per-learner (or even per-learner-per-KC)
  * parameters from scratch is a genuine algorithm change with real
  * pedagogical stakes: it would touch what a live session teaches a real
- * child, and AGENTS.md's own §1.14 (four-parameter degeneracy guards
- * already fenced in the schema) exists precisely because BKT is easy to
+ * child, and the four-parameter degeneracy guards
+ * already fenced in the schema exist precisely because BKT is easy to
  * mis-fit into an uninterpretable model on sparse data — and on 2026-09-01
  * this platform's own production numbers put that sparsity beyond "a risk
  * to manage": the Tutor's only real, recurring learner is the owner's own
- * account (ORACLE.md §20.4's "owner-accepted interim while the platform's
+ * account (an "owner-accepted interim while the platform's
  * only active learner is the owner"), and family accounts are otherwise at
  * zero. Fitting four free parameters per KC from single-digit attempt
  * counts is the textbook overfitting case the schema's own guess/slip
@@ -41,7 +41,7 @@
  *
  * Reads only; writes nothing; changes no live session's behaviour. A verdict
  * below `minSample` attempts is reported as NOT YET EVIDENCED rather than as
- * a clean bill of health or a confirmed problem — AGENTS.md §1.14's "failure
+ * a clean bill of health or a confirmed problem — The rule that "failure
  * must be distinguishable from emptiness" applies here exactly as it does to
  * any other read: a confident verdict from three data points is worse than
  * none, and it must not be allowed to look like one.

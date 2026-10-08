@@ -19,7 +19,7 @@ const TRAY = 'tray';
 const unitsOf = (item: string) => Number(item.slice('n-'.length));
 
 /*
- * F1.3: a line of equal gaps with only its ends (and often its middle) labelled, and a few given numbers to place on its marks.
+ * A line of equal gaps with only its ends (and often its middle) labelled, and a few given numbers to place on its marks.
  * The learner taps a number and then a mark, drags it, or uses its "Move to" menu; the scorer checks every position. Core holds the key.
  */
 function OrderLine({ document, segment, onBack, sequence, onGrade }: Omit<HorizonteBoardProps, 'segment'> & { segment: OrderSegment }) {

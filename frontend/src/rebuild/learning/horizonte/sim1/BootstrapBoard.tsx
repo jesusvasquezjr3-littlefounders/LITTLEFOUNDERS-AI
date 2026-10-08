@@ -20,7 +20,7 @@ const HIST_H = 130;
 const MAX_BINS = 40;
 
 /*
- * H27: a small sample, resampled with replacement. Each resample adds up to a total; the middle part of the totals gives the interval.
+ * A small sample, resampled with replacement. Each resample adds up to a total; the middle part of the totals gives the interval.
  * The learner runs more resamples from the authored stops and watches the two edges stop moving. The edges drawn here come from the
  * run itself; the settled edges stay in the private rubric, which Core replays against the seed to grade.
  */

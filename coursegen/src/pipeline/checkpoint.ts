@@ -1,4 +1,4 @@
-// File checkpoint — runs/<run-id>/checkpoint.json (COURSE_ENGINE.md §4).
+// File checkpoint — runs/<run-id>/checkpoint.json.
 // Per-slot state machine: planned → written → reviewed → localized →
 // illustrated → published | failed. Resuming a run just means re-invoking
 // the CLI with the same --course/--slots: each stage in run.ts checks the
@@ -152,7 +152,7 @@ export function isSlotDone(checkpoint: RunCheckpoint, slotId: string): boolean {
 
 export class CheckpointStore {
   // run.ts shares ONE checkpoint object across FORGE_CONCURRENCY concurrent
-  // slot workers (COURSE_ENGINE.md §4) — save() can be called concurrently.
+  // slot workers — save() can be called concurrently.
   // This queue serializes the actual disk writes in call order: each save()
   // snapshots the checkpoint to JSON SYNCHRONOUSLY (matching the exact
   // ordering of the synchronous in-memory mutations that preceded the call),

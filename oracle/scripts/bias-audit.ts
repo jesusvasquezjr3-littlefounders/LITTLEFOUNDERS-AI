@@ -1,11 +1,11 @@
 /*
- * `npm run bias-audit` — C.20: THE DIALECT / ACCENT / ASR-ARTIFACT BIAS AUDIT
- * of every lexical component that feeds the Behavioral Telemetry Layer (C.9),
+ * `npm run bias-audit` — THE DIALECT / ACCENT / ASR-ARTIFACT BIAS AUDIT
+ * of every lexical component that feeds the Behavioral Telemetry Layer,
  * the check-in and stop-offer replies, and content moderation.
  *
- * A thin CLI over `src/safety/biasAudit/` (which has its own vitest suite,
- * `src/__tests__/biasAudit.test.ts`). Fixture-based and free: no network, no
- * model, no voice provider. Policy: docs/rebuild/mentor/BIAS-AUDIT-POLICY.md.
+ * A thin CLI over `src/safety/biasAudit/`.
+ * Fixture-based and free: no network, no
+ * model, no voice provider.
  *
  *   (no flag)       run the audit and print the report; exit 1 on any failure
  *   --json          the same report as JSON
@@ -17,8 +17,8 @@
  *                   `src/safety/biasAudit/audit-log.json` (commit it)
  *   --judge-plan    print what the live model-judge audit would send, and how
  *                   many calls it would make; sends nothing
- *   --judge-live    OWNER-RUN ONLY (a paid model call per variant; OD-23
- *                   forbids spend without approval). Refuses unless
+ *   --judge-live    OWNER-RUN ONLY (a paid model call per variant;
+ *                   spend is forbidden without approval). Refuses unless
  *                   BIAS_AUDIT_JUDGE_LIVE=approved is set and a model key is
  *                   configured. Requires every dialect variant of a Mentor
  *                   line to be judged exactly like the standard line.

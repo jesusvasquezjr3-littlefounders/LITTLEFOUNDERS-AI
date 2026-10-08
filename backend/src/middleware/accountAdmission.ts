@@ -6,7 +6,7 @@ import { verifyAccessToken } from '../lib/jwt.js';
 import { serviceRest } from '../services/supabaseRest.js';
 
 /*
- * A.1 (FAQ 'cancelTutor'), Appendix M Part 2.1 criterion 2, OD-3 section 2:
+ * FAQ 'cancelTutor':
  * "your child's account is paused at once, until an active Tutor supervises
  * it again", enforced on every path, not on one read.
  *
@@ -21,8 +21,8 @@ import { serviceRest } from '../services/supabaseRest.js';
  *      an access token minted before the pause stays cryptographically valid
  *      until it expires, so Core refuses it here with 403 ACCOUNT_SUSPENDED.
  *
- * Only kid-role accounts are paused: a self-registered teen keeps Option B
- * (a personal account without a parent) when a guardian link it invited goes
+ * Only kid-role accounts are paused: a self-registered teen keeps
+ * a personal account without a parent when a guardian link it invited goes
  * away. The read fails closed: an unreadable marker is a 503, never a pass.
  * A request without a valid token passes through untouched; the router's own
  * requireAuth answers it, and public reads stay public.

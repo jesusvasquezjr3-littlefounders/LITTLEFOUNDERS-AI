@@ -2,7 +2,7 @@ import { classifyLearnerInput } from '../safety/classifier.js';
 import type { Locale } from '../context/schema.js';
 
 /*
- * Product C.5 / Appendix E §3.1.1 — Oracle's half of the content-risk
+ * Oracle's half of the content-risk
  * category of a live-generated activity (`standard` or `sensitive`).
  *
  * Oracle generated the item, so it reports what it can see and Core cannot:
@@ -16,7 +16,7 @@ import type { Locale } from '../context/schema.js';
  *
  * HAND-MIRRORED from `backend/src/services/pedagogy/contentRisk.ts`. The
  * block between the markers must stay byte-identical (after whitespace
- * normalization); `npm run live-content:check` enforces it.
+ * normalization).
  */
 
 export type ContentRiskCategory = 'standard' | 'sensitive';

@@ -11,15 +11,15 @@ import { useGoogleSignIn } from './useGoogleSignIn';
 import { failureCode } from './failureCode';
 
 /*
- * `/login` (A1): the rebuilt screen (rebuild/identity) fed the session. What
+ * `/login`: the rebuilt screen (rebuild/identity) fed the session. What
  * this bridge keeps from the legacy page, unchanged: Core's `identifier`
  * (email or a child's username), the funnel's `login_complete` reported with
  * the analytics permission Core just resolved (never from a stale context),
  * the return to the page that asked for sign-in (and its state), otherwise
- * a pending Tutor invite's landing (GAP-FIX-R5: the confirmation email opens
+ * a pending Tutor invite's landing (the confirmation email opens
  * a new tab with no router state), otherwise Learn.
  *
- * New: an account Core has paused or removed (A.1: the child's last verified
+ * New: an account Core has paused or removed (the child's last verified
  * guardian link is gone) signs in to its own screen, `/account-suspended`,
  * instead of bouncing back to this form with no word (the sign-in succeeds,
  * then `/auth/me` answers ACCOUNT_SUSPENDED and the session is dropped).
@@ -48,7 +48,7 @@ export function LoginPage() {
     setErrorCode(null);
     const { error, analyticsEnabled } = await login(identifier, password);
     setPending(false);
-    // A.1: the password was right and the account is paused (Core names it only then).
+    // The password was right and the account is paused (Core names it only then).
     if (error?.code === 'ACCOUNT_SUSPENDED') { navigate('/account-suspended', { replace: true }); return; }
     if (error) {
       playPlatformSound('auth_error');

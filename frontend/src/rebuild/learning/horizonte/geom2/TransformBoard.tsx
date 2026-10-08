@@ -42,7 +42,7 @@ function mirrorPoints(move: Extract<TransformMove, { kind: 'reflect' }>, reach: 
   return [{ x: -reach, y: reach + at }, { x: reach, y: -reach + at }];
 }
 
-/* F2.8 transformations: the figure and the move are given; the learner places each corner of the image. */
+/* Transformations: the figure and the move are given; the learner places each corner of the image. */
 function Transform({ document, segment, onBack, sequence, onGrade }: Omit<HorizonteBoardProps, 'segment'> & { segment: TransformSegment }) {
   const { extent, figure, move } = segment.payload;
   const t = copyText(GEOM2_COPY, document.locale);

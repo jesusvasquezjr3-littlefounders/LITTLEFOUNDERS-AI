@@ -1,6 +1,6 @@
-/* The rebuilt staff console (W2T.1). A dashboard page (02 §4.5): neutral page, cards that separate by
+/* The rebuilt staff console. A dashboard page: neutral page, cards that separate by
    elevation in light and by surface step in dark, no outlines. Tokens only, logical properties only,
-   layout by container width (02 §7 rule 9), no motion of its own (a staff surface; reduced motion
+   layout by container width, no motion of its own (a staff surface; reduced motion
    needs no override). Text never truncates: ids, names and addresses wrap anywhere (.ugc). */
 
 .lf-rebuild .lf-staff-page { container: lf-staff-page / inline-size; display: grid; gap: var(--spacing-6); min-inline-size: 0; }
@@ -43,7 +43,7 @@
 
 .lf-rebuild .lf-staff-section { display: grid; gap: var(--spacing-4); min-inline-size: 0; }
 .lf-rebuild .lf-staff-sheet { display: grid; gap: var(--spacing-5); min-inline-size: 0; }
-/* A notice or a bar list keeps a readable measure on a wide page too (03 §3: at most 75 characters a line). */
+/* A notice or a bar list keeps a readable measure on a wide page too (at most 75 characters a line). */
 .lf-rebuild .lf-staff-sheet .lf-notice, .lf-rebuild .lf-staff-page .lf-notice, .lf-rebuild .lf-staff-page .lf-viz-bars { max-inline-size: 34rem; }
 /* A wide table scrolls inside its own box under the WCAG 1.4.12 spacing overrides, never the page. */
 .lf-rebuild .lf-staff-page .lf-table-wrap { overflow-x: auto; }
@@ -51,7 +51,7 @@
 .lf-rebuild .lf-staff-muted { color: var(--content-muted); }
 .lf-rebuild .lf-staff-form { display: grid; gap: var(--spacing-4); min-inline-size: 0; }
 .lf-rebuild .lf-staff-pager { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--spacing-3); }
-/* A neutral button inside a card separates by fill (02 §4.4): the card is the surface, so the button takes the sunken step. */
+/* A neutral button inside a card separates by fill: the card is the surface, so the button takes the sunken step. */
 .lf-rebuild .lf-staff-page .lf-card .lf-button--secondary { background: var(--sunken); }
 .lf-rebuild .lf-staff-copy { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-3); }
 .lf-rebuild .lf-staff-switches { display: grid; gap: var(--spacing-3); }
@@ -98,7 +98,7 @@
 .lf-rebuild .lf-staff-multiple-caption > [data-copy-role='data'] { color: var(--content); font-variant-numeric: tabular-nums; }
 .lf-rebuild .lf-staff-multiple .lf-viz-spark { display: block; inline-size: 100%; block-size: var(--spacing-12); }
 
-/* ---- W2T.2: Content, Generation and Mentor quality --------------------------------------------------- */
+/* ---- Content, Generation and Mentor quality --------------------------------------------------- */
 
 /* The view switch of a section (Courses / Lesson review / Mentor activities / Learning quality; Live / Run history / Trends / Coach). */
 .lf-rebuild .lf-staff-views { min-inline-size: 0; }
@@ -114,10 +114,10 @@
   .lf-rebuild .lf-staff-pair { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
 }
 
-/* B.3: courses learners could not open. */
+/* Courses learners could not open. */
 .lf-rebuild .lf-staff-incidents { display: grid; gap: var(--spacing-3); min-inline-size: 0; }
 
-/* G.2: the release check's refusal, with its reason and next step. */
+/* The release check's refusal, with its reason and next step. */
 .lf-rebuild .lf-staff-refusal { display: grid; gap: var(--spacing-2); }
 
 /* A lesson under review: its parts, audio and images. */
@@ -137,15 +137,15 @@
 .lf-rebuild .lf-staff-image { display: grid; gap: var(--spacing-1); margin: 0; }
 .lf-rebuild .lf-staff-image img { display: block; inline-size: 100%; aspect-ratio: 1; object-fit: contain; border-radius: var(--rounded-md); background: var(--sunken); }
 .lf-rebuild .lf-staff-image figcaption { font: var(--type-caption); color: var(--content-muted); }
-/* A value beside its verdict chip (Appendix O targets); wraps on a phone. */
+/* A value beside its verdict chip (targets); wraps on a phone. */
 .lf-rebuild .lf-staff-inline { display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-2); }
-/* A plain link that still meets the 48 px target (02 §8). */
+/* A plain link that still meets the 48 px target. */
 .lf-rebuild .lf-staff-inline-link {
   display: inline-flex; align-items: center; min-block-size: var(--target-base); min-inline-size: var(--target-base); padding-inline: var(--spacing-2);
   font: var(--type-label); color: var(--primary-strong); text-decoration: underline; text-underline-offset: 0.2em;
 }
 
-/* Live Mentor activities: what the learner saw, and three equal verdicts (C.5). */
+/* Live Mentor activities: what the learner saw, and three equal verdicts. */
 .lf-rebuild .lf-staff-quote { margin: 0; padding: var(--spacing-3) var(--spacing-4); border-radius: var(--rounded-md); background: var(--sunken); font: var(--type-body); }
 .lf-rebuild[data-theme='dark'] .lf-staff-quote { background: var(--raised); }
 .lf-rebuild .lf-staff-decisions { display: grid; gap: var(--spacing-3); grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr)); }
@@ -168,7 +168,7 @@
 .lf-rebuild .lf-staff-multiples { display: grid; gap: var(--spacing-4); grid-template-columns: repeat(auto-fill, minmax(min(100%, 12rem), 1fr)); }
 .lf-rebuild .lf-staff-preview-loading { font: var(--type-body); color: var(--content-muted); }
 
-/* ---- W2T.3: Analytics & Health, Learning intel (with Insights) ------------------------------------ */
+/* ---- Analytics & Health, Learning intel (with Insights) ------------------------------------ */
 
 /* The view switch and the period control, side by side once there is room. */
 .lf-rebuild .lf-staff-controls { display: grid; gap: var(--spacing-4); min-inline-size: 0; }
@@ -212,7 +212,7 @@
 .lf-rebuild .lf-staff-map-region { fill: var(--sunken); stroke: var(--surface); stroke-width: 1; vector-effect: non-scaling-stroke; }
 .lf-rebuild .lf-staff-map-border { fill: none; stroke: var(--content-muted); stroke-width: 2; vector-effect: non-scaling-stroke; }
 .lf-rebuild .lf-staff-map-point { stroke: var(--surface); stroke-width: 2; vector-effect: non-scaling-stroke; }
-/* One data hue (sky), five steps from light to full; primary marks only the selected place (05 §2). */
+/* One data hue (sky), five steps from light to full; primary marks only the selected place. */
 .lf-rebuild .lf-staff-map-step-0 { fill: color-mix(in srgb, var(--sky-strong) 20%, var(--surface)); }
 .lf-rebuild .lf-staff-map-step-1 { fill: color-mix(in srgb, var(--sky-strong) 38%, var(--surface)); }
 .lf-rebuild .lf-staff-map-step-2 { fill: color-mix(in srgb, var(--sky-strong) 56%, var(--surface)); }

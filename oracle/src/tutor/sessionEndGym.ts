@@ -6,9 +6,7 @@ import {
 } from './sessionEndSignal.js';
 
 /*
- * C.8 / C.12 — THE SESSION-END SIGNAL AGAINST APPENDIX F'S SIMULATED LEARNERS
- * (Part 3, Stage 2: "a change that degrades behavior against any one persona
- * returns to Stage 1 with an itemized failure report").
+ * THE SESSION-END SIGNAL AGAINST SIMULATED LEARNERS
  *
  * The signal is a pure function of graded observations, so each persona is a
  * deterministic stream of them — answer latency, correctness, and the
@@ -29,12 +27,12 @@ import {
  *   gaming         Baker rapid guessing: very fast, uniform answers, many
  *                  misses. Offering a stop would reward the guessing; the
  *                  latency half of the signature is absent, so it must NOT fire
- *                  (gaming is the Behavioral Telemetry Layer's job, C.9).
+ *                  (gaming is the Behavioral Telemetry Layer's job).
  *   reactant_teen  The disengaging signature, but declines every offer
- *                  (Appendix D §3.6). The decline must be honoured: never more
+ *                  The decline must be honoured: never more
  *                  than `maxOffers`, and never re-offered inside the re-arm
  *                  window.
- *   masking        Appendix D §1.6: slow, careful and correct. Slowness is not
+ *   masking        Slow, careful and correct. Slowness is not
  *                  the signature — must NOT fire.
  *   steady         A learner in flow for the whole 25 minutes. Must NOT fire,
  *                  however long the session runs (time is never an input).
@@ -47,9 +45,9 @@ import {
  *                  one. Each channel alone is steady; only MIXING them would
  *                  look erratic. Must NOT fire (channels never mix).
  *
- * Every threshold is the proposed default (Threshold Recalibration Log); the
+ * Every threshold is the proposed default; the
  * personas are a floor for regressions, not a validation of the design, which
- * Appendix D §2.5 says plainly no study provides.
+ * no study provides.
  */
 
 export type OfferResponse = 'accept' | 'decline' | 'ignore';

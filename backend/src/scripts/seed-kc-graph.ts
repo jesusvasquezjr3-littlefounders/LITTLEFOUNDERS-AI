@@ -2,9 +2,9 @@
 /*
  * `npm run seed:kc` — loads the Tutor v3 knowledge-component graph
  * (database/seeds/kc_graph.v1.json) into Vault via the service role, then
- * the B.6 topic → KC map (database/seeds/kc_topic_map.v1.json) into
- * topic_knowledge_components. Order of operations for the S05.3a graph:
- * apply the B.6 data-layer and kc_strand_widening migrations first; the new
+ * the topic → KC map (database/seeds/kc_topic_map.v1.json) into
+ * topic_knowledge_components. Order of operations for the graph:
+ * apply the pathway data-layer and kc_strand_widening migrations first; the new
  * Owner-approved KCs are still staged as `draft` until the post-release
  * activation transaction proves their published lesson bridge is usable.
  *
@@ -36,10 +36,7 @@
  * module's top level unconditionally called `main()`. The write happened to
  * be idempotent and land the already-reviewed, correct seed content, so no
  * harm followed — but the hazard is real and this module invites exactly the
- * import that triggers it, since `seedKcGraph.test.ts` already imports these
- * same helpers on every `npm test` run (safe only because the test env's
- * `SUPABASE_URL` is the unroutable `http://supabase.test` sentinel — a
- * property of the test environment, not of this file).
+ * import that triggers it, since other code can import these same helpers.
  */
 
 import { readFileSync } from 'node:fs';
@@ -54,8 +51,8 @@ import { seedTopicKcLinks, type RestFn } from '../services/pathway/topicKcSeed.j
 const Localized = z.record(z.enum(['en-US', 'es-MX', 'pt-BR']), z.string().min(1));
 
 /**
- * The KC strands. `money_life` and `investing` arrived with the B.6 topic map
- * (S05.3a) and need the kc_strand_widening migration before this seed runs.
+ * The KC strands. `money_life` and `investing` arrived with the pathway topic map
+ * and need the kc_strand_widening migration before this seed runs.
  */
 export const KC_STRANDS = ['money_math', 'entrepreneurship', 'money_life', 'investing'] as const;
 
@@ -68,8 +65,8 @@ export const SeedSchema = z.object({
       strand: z.enum(KC_STRANDS),
       /**
        * `draft` KCs are catalogued but invisible to the Mentor and to clients
-       * (getActiveKcs and the kc RLS policy read only `active`). The S05.3a
-       * additions stay draft unless the owner approves them. Approved OD-22
+       * (getActiveKcs and the kc RLS policy read only `active`). The newer
+       * additions stay draft unless the owner approves them. Approved
        * rows are still staged as draft by this loader until the post-release
        * transaction proves their live teaching bridge.
        */
@@ -130,7 +127,7 @@ export function assertAcyclic(keys: Set<string>, edges: Array<[string, string]>)
 /**
  * A prerequisite can never require a HIGHER tier than the KC it unlocks.
  *
- * Found by adversarial review, round 52 (2026-08-30, HIGH): the edge
+ * Found by adversarial review (2026-08-30, HIGH): the edge
  * `money.savings-plan-math` (tier 2) -> `biz.saving-goal` (tier 1) survived
  * `assertAcyclic` (it is not a cycle) and every other gate, but
  * `sessionPlan.ts`'s `buildSessionPlan` filters to `tier_min <= tier` BEFORE
@@ -159,7 +156,7 @@ export function assertTierOrder(kcs: readonly { key: string; tier_min: number }[
 }
 
 /**
- * A draft KC can never be a prerequisite of an active one (B.6, S05.3a).
+ * A draft KC can never be a prerequisite of an active one.
  *
  * The Mentor's planner drops edges whose ends are not both active, so today a
  * draft prerequisite is inert. The day the drafts are activated, though, such
@@ -357,7 +354,7 @@ async function main(): Promise<void> {
       `${seed.edges.length} edges, ${seed.misconceptions.length} misconceptions (idempotent upsert)`,
   );
 
-  // 5) The B.6 topic → KC map (topic_knowledge_components, 0123). Topics the
+  // 5) The topic → KC map (topic_knowledge_components, 0123). Topics the
   // live catalog does not have are reported, not invented; published topics
   // the map does not cover are the coverage failure this step exists to find.
   const summary = summarizeKcTopicMap(map);
@@ -374,8 +371,7 @@ async function main(): Promise<void> {
     process.exitCode = 1;
   }
 
-  // THE BRIDGE AUDIT — moved to services/contentBridgeAudit.ts (RUNBOOK.md
-  // Round 105) so it can ALSO run standalone, on a schedule, against whatever
+  // THE BRIDGE AUDIT — moved to services/contentBridgeAudit.ts so it can ALSO run standalone, on a schedule, against whatever
   // is currently live in Vault (`npm run audit:content-bridge`), independent
   // of a human remembering to re-seed. It runs AFTER the upserts above
   // because they are idempotent: a red audit is a report about data that is

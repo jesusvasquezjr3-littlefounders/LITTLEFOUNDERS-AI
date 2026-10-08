@@ -1,7 +1,7 @@
 import { getConfig } from '../env.js';
 
 /*
- * THE PLATFORM-WIDE SPEND CIRCUIT BREAKER (/ORACLE.md §15.2 item 1).
+ * THE PLATFORM-WIDE SPEND CIRCUIT BREAKER.
  *
  * Every cost control that existed before this one bounds a SINGLE session or
  * a single learner (the turn cap, the budget clocks, `MAX_SESSIONS_PER_DAY`
@@ -14,7 +14,7 @@ import { getConfig } from '../env.js';
  * IN-PROCESS AND ROLLING, on purpose — and the reason is INDEPENDENCE, not
  * convenience. A shared store (Redis, Postgres) would couple this breaker to
  * infrastructure it exists to survive, and a circuit breaker that goes down
- * WITH the thing it is supposed to protect is worse than none at all (§1.14,
+ * WITH the thing it is supposed to protect is worse than none at all (
  * liveness must not depend on optional infrastructure — the same reasoning
  * extended to spend safety). A process restart forgets the running total; the
  * worst that allows is one extra window at full exposure on the day of a
@@ -26,7 +26,7 @@ import { getConfig } from '../env.js';
  * This comment used to justify itself with "Oracle is explicitly
  * single-replica today", alongside the nonce ledger and `parkedSessions`.
  * BOTH of those have since moved to shared state and Oracle no longer requires
- * one replica (/ORACLE.md §16, `RUNBOOK.md` Round 143) — so that premise is
+ * one replica — so that premise is
  * gone, while the independence argument above survives it intact and is why
  * this one deliberately did NOT move with them.
  *
@@ -36,8 +36,8 @@ import { getConfig } from '../env.js';
  * total. Scaling out therefore requires DIVIDING the configured ceiling by the
  * replica count, and it is the one cost control that does not scale itself.
  * The breaker still does its real job at any N — each instance stops its OWN
- * runaway multiplier, which is the shape of bug it was built for (§15.2 item
- * 1) — but the platform-wide dollar figure is only as true as that division.
+ * runaway multiplier, which is the shape of bug it was built for
+ * — but the platform-wide dollar figure is only as true as that division.
  *
  * WHAT COUNTS: every real, already-incurred cost this process knows about —
  * the model call inside `TutorOrchestrator.produce()`, tier-3 live-generation
@@ -52,7 +52,7 @@ import { getConfig } from '../env.js';
  * WHAT ADMISSION CONTROLS: nothing about who a caller is — only whether a
  * NEW session may open at all. Refusing at the socket, before a single call
  * is made on its behalf, is the only enforcement point that costs nothing to
- * apply: it does not interrupt a session already running (§1.0's "money
+ * apply: it does not interrupt a session already running (the "money
  * leaves in the owner's hours" applies equally to a support conversation
  * about a tutor that hung up on a child mid-sentence), and it turns away
  * exactly the load that would otherwise keep the total climbing.
@@ -85,8 +85,8 @@ class SpendGuard {
    * `usd <= 0` is silently ignored rather than corrupting the ledger — the
    * four call sites already guard their own `estimateCostUsd`/
    * `estimateVoiceCostUsd` results, but a guard that trusts its callers to
-   * have gotten that right everywhere, forever, is the same mistake §1.14
-   * keeps naming under a different call site.
+   * have gotten that right everywhere, forever, is the same mistake
+   * recurs under a different call site.
    */
   record(usd: number, now = Date.now()): void {
     this.rollWindowIfNeeded(now);

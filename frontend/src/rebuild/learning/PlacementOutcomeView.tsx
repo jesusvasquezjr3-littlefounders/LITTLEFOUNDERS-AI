@@ -5,13 +5,13 @@ import { placementFrameSchema, placementOutcomeCopy, placementOutcomeLines } fro
 import './placementOutcome.css';
 
 /**
- * B.15 (S05.3d): the rebuilt placement outcome. It renders only Core's closed
+ * The rebuilt placement outcome. It renders only Core's closed
  * frame (`framing` on the placement result) and never a score, a count of
  * right answers or a comparison. A malformed frame shows a neutral state with
  * the one action that still makes sense: start.
  *
  * `PlacementOutcomeBody` is the outcome itself (heading, the two framing
- * lines, the actions); the placement flow (W2L.2) mounts it inside its own
+ * lines, the actions); the placement flow mounts it inside its own
  * single-state screen, and `PlacementOutcomeView` is the standalone page the
  * preview shows.
  */
@@ -25,7 +25,7 @@ export function PlacementOutcomeBody({ rawFrame, locale, onStart, onEarlier, hea
   headingRef?: Ref<HTMLHeadingElement>;
   /** A plain fact that replaces the growth line (the start stopped before a topic with an unmet prerequisite). */
   note?: string | null;
-  /** Only the basis line: something else on the screen needs the words (a save to try again, 06 §3.1). */
+  /** Only the basis line: something else on the screen needs the words (a save to try again). */
   brief?: boolean;
   /** The start is being saved: both actions wait, the chosen one says so. */
   pending?: boolean;

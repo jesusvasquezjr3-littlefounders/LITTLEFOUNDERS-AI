@@ -14,16 +14,16 @@ import './mentorStage.css';
 
 /*
  * Development preview of the Mentor stage at full size (the preview entry's `mentor-stage` screen),
- * inside the stage region of the Mentor screen's layout (Frontend Bible 08 §6):
+ * inside the stage region of the Mentor screen's layout:
  * about 58% of the height on a phone, half on a tablet, the left 7 of 12
  * columns on a desktop. The other region belongs to the Mentor screen (speech
  * plate, board, response area); here it only names the character (the top
- * bar's title, 08 §2) and what the stage is showing.
+ * bar's title) and what the stage is showing.
  *
- *   ?character=rho|zara|liruf|dina  ?state=<08 §3 state>  ?milestone=<D7 id>
- *   ?closing=<C.16 script>  ?board=1  ?scene=diorama-a|diorama-b  ?shot=<camera shot>
- *   ?device=low-power|no-webgl|data-saver   the stage's fallback on this device (08 §7), without emulating one
- *   ?then=<08 §3 state>   switch to this state a second after the stage is ready: in the fallback, the
+ *   ?character=rho|zara|liruf|dina  ?state=<state>  ?milestone=<milestone id>
+ *   ?closing=<script>  ?board=1  ?scene=diorama-a|diorama-b  ?shot=<camera shot>
+ *   ?device=low-power|no-webgl|data-saver   the stage's fallback on this device, without emulating one
+ *   ?then=<state>   switch to this state a second after the stage is ready: in the fallback, the
  *                         state change plays the pose's rendered sequence once and settles on its still
  *
  * The query is read again on `popstate`, so a harness (the sequence renderer, render-mentor-stage-sequences.mjs)
@@ -62,7 +62,7 @@ export function MentorStagePreview({ locale, theme, ageBand: initialAgeBand, par
   const scene = pick<MentorStageScene>(params.get('scene'), ['diorama-a', 'diorama-b'], 'diorama-a');
   const shot = (MENTOR_SHOTS as readonly string[]).includes(params.get('shot') ?? '') ? params.get('shot') as MentorShot : undefined;
   const milestone = params.get('milestone');
-  // `?size=compact`: the lesson band (08 §11), for the band-still renderer and visual checks.
+  // `?size=compact`: the lesson band, for the band-still renderer and visual checks.
   const size = params.get('size') === 'compact' ? 'compact' : 'full';
   return <div className="lf-rebuild" data-theme={theme} lang={locale} data-age-band={ageBand}>
     <main className="lf-mentor-layout" data-screen="mentor-stage">

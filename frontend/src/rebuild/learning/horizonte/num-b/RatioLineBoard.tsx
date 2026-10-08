@@ -18,7 +18,7 @@ const UNIT_KEYS = {
   minutes: 'unitMinutes', pages: 'unitPages', stickers: 'unitStickers', boxes: 'unitBoxes',
 } as const satisfies Record<RatioUnit, keyof typeof NUM_B_COPY>;
 
-/* F1.5 double number line: both lines scale by the same steps; the learner reads the steps on the given line and types the other. */
+/* Double number line: both lines scale by the same steps; the learner reads the steps on the given line and types the other. */
 function DoubleLineBoard({ document, segment, onBack, sequence, onGrade, payload }: Props<DoubleLinePayload>) {
   const { locale } = document;
   const t = copyText(NUM_B_COPY, locale);
@@ -80,7 +80,7 @@ function DoubleLineBoard({ document, segment, onBack, sequence, onGrade, payload
   </NumBFrame>;
 }
 
-/* F1.5 ratio tape: a whole cut into equal boxes, part A and part B made of some of them; find the value of the asked part. */
+/* Ratio tape: a whole cut into equal boxes, part A and part B made of some of them; find the value of the asked part. */
 function RatioTapeBoard({ document, segment, onBack, sequence, onGrade, payload }: Props<RatioTapePayload>) {
   const { locale } = document;
   const t = copyText(NUM_B_COPY, locale);

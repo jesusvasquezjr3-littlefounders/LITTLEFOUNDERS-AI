@@ -10,7 +10,7 @@
 // Authors annotate each segment with its `teaching_role` (plan.ts). This module
 // reads the annotations; it never touches the emitted document, so Core's strict
 // contract is unchanged. Findings ride gate 14 (the lesson-design gate beside
-// the B.17 concept cap): gate numbers are bounded by a database constraint, so
+// the concept cap): gate numbers are bounded by a database constraint, so
 // a new check joins an existing gate rather than minting a new number.
 
 import { V2_TEACHING_ROLES, type V2LessonPlan, type V2PlanSegment, type V2TeachingRole } from './plan.js';

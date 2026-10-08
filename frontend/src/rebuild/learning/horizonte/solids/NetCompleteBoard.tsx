@@ -17,7 +17,7 @@ import './solids.css';
 type NetSegment = Extract<HorizonteSegment, { type: 'geometry.cube-net.v2' }>;
 
 /*
- * F4.2, completion mode: some squares of a net are fixed on a grid and the learner adds the rest so the six fold into a cube. Tapping a
+ * Completion mode: some squares of a net are fixed on a grid and the learner adds the rest so the six fold into a cube. Tapping a
  * grid square adds or removes it; a square chip can also be dragged or placed with "Move to". The folded cube beside the grid shows where
  * each square lands, as feedback on the learner's own layout. Core decides whether the net is a cube net.
  */

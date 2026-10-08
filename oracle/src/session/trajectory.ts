@@ -1,8 +1,7 @@
 import { persistTutorTrajectory, type TrajectoryStepInput } from '../core/client.js';
 
 /*
- * TRAJECTORY EMISSION — the V4 harness backlog's first slice (ROADMAP.md
- * "Remaining harness phases", /ORACLE.md §20).
+ * TRAJECTORY EMISSION — the first slice of the V4 harness.
  *
  * WHAT THIS IS. A durable, queryable record of what
  * `PedagogicalController.decide()` actually chose across a real session —
@@ -12,17 +11,17 @@ import { persistTutorTrajectory, type TrajectoryStepInput } from '../core/client
  * writes what a session taught US about the LEARNER; this one writes what it
  * taught us about the CONTROLLER.
  *
- * WHY THIS IS BACKSTAGE-ONLY, BY CONSTRUCTION. Governance (the harness doc's
- * own §15.1, quoted in ORACLE.md §20.1): "nothing autonomous reaches a
+ * WHY THIS IS BACKSTAGE-ONLY, BY CONSTRUCTION. The governing rule:
+ * "nothing autonomous reaches a
  * child." This module only ever WRITES a record of a decision that already
  * happened; it reads nothing back into a session, changes no turn, and adds
- * no field to the sealed model context (§4.1). There is no read path here at
+ * no field to the sealed model context. There is no read path here at
  * all — a future consumer (a researcher's own query, a training pipeline)
  * reads the table Core owns directly, never through this service.
  *
  * WHY FIRE-AND-FORGET, AFTER THE SESSION ENDS, NOT DURING IT. The controller
  * decides on every ordinary turn, and a network call on that path is exactly
- * the class of mistake oracle/AGENTS.md §2.7 already exists to prevent — an
+ * the class of mistake to avoid — an
  * unbounded number of extra round trips on the one path where latency IS the
  * product. `TutorOrchestrator` accumulates each decision as a plain in-memory
  * push (`recordTrajectoryStep`, no I/O, microseconds) and this module flushes

@@ -1,4 +1,4 @@
-/* F1.5 double number line and ratio tape: step columns that scale together, and a tape of equal boxes. Tokens only. */
+/* Double number line and ratio tape: step columns that scale together, and a tape of equal boxes. Tokens only. */
 .lf-line-scroll { max-inline-size: 100%; overflow-x: auto; }
 .lf-line { --steps: 1; display: grid; grid-template-columns: auto repeat(var(--steps), minmax(var(--target-min), 4rem)); align-items: stretch; gap: var(--spacing-2); }
 .lf-line-names { display: grid; align-content: space-between; padding-block: var(--spacing-1); font-weight: 800; }

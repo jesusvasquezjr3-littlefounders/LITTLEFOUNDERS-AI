@@ -5,7 +5,7 @@ import './circuitFigure.css';
 
 /*
  * The wired circuit of the gates board: switches on the left, gates in columns by how many gates stand between them and a switch,
- * the lamp on the right. Every name is HTML over the drawing (Frontend Bible 05 section 5), 14 px wherever the board is, so the
+ * the lamp on the right. Every name is HTML over the drawing, 14 px wherever the board is, so the
  * drawing is laid out in CSS pixels, at scale one: a switch's name hangs above or below its pin, on the side its wires leave
  * away from, and a gate's name sits in its box. Only the "?" of a bare box is drawn in the SVG.
  */

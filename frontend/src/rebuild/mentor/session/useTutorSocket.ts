@@ -42,7 +42,7 @@ export interface TutorTurnState {
   audioPending: boolean;
   /**
    * Word-level timing for `audioUrl`, or `null` when this clip has none —
-   * the common case today (ORACLE.md §19.5): absent on every path except a
+   * the common case today: absent on every path except a
    * fresh synthesis from a voice-provider model that actually returned it.
    * Reset to `null` on every new `turn`, same as `audioUrl` itself, so a
    * highlight can never survive into the WRONG line.
@@ -64,7 +64,7 @@ export interface TutorTurnState {
    */
   whiteboard: TutorWhiteboardWire | null;
   /**
-   * Class III / S17 (TUTOR_INSTRUMENTS.md §3.4): a pre-authored roleplay
+   * Class III: a pre-authored roleplay
    * scene this turn started, by id — see `tutor/roleplay/scenes.ts`. Null
    * on every ordinary turn.
    */
@@ -76,7 +76,7 @@ export interface TutorTurnState {
    */
   pointAt: number | null;
   /**
-   * GAP-FIX-R2 (Frontend Bible 08 §2 layer 5, §4, §9): the likely answers
+   * The likely answers
    * Oracle offers for this turn, shown as reply chips and sent back as the
    * learner's own words. Already within budget, moderated and cleared
    * against the open activity's key by Oracle. Empty when it offers none.
@@ -85,9 +85,8 @@ export interface TutorTurnState {
 }
 
 /**
- * At most three reply chips on screen at once (Frontend Bible 08 §2).
- * HAND-MIRRORED from Oracle's `REPLY_CHIP_MAX` (turnSchema.ts);
- * `npm run honesty:check` keeps the copies identical.
+ * At most three reply chips on screen at once.
+ * HAND-MIRRORED from Oracle's `REPLY_CHIP_MAX` (turnSchema.ts).
  */
 export const REPLY_CHIP_MAX = 3;
 
@@ -138,7 +137,7 @@ export function closeCodeToReason(code: number): CloseReasonCode {
       return 'BUDGET_EXHAUSTED';
     /*
      * A second tab or device with the same conversation open. Oracle refuses
-     * the SECOND socket outright (2026-08-29, adversarial review) rather than
+     * the SECOND socket outright rather than
      * silently running two parallel, independently-budgeted sessions — which
      * is what happened before the server-side fix. The first socket is
      * untouched; only this later one sees this code.
@@ -148,7 +147,7 @@ export function closeCodeToReason(code: number): CloseReasonCode {
     case 4013:
       return 'SERVICE_DEGRADED';
     /*
-     * The platform-wide spend circuit breaker (/ORACLE.md §15.2 item 1) —
+     * The platform-wide spend circuit breaker —
      * deliberately its OWN numeric code server-side (`CLOSE_CODES.
      * SPEND_CEILING`, `oracle/src/ws/protocol.ts`) so an operator's logs can
      * tell "cost control tripped" apart from "moderation is down" at a
@@ -189,13 +188,13 @@ export interface TutorSocket {
   micRevoked: boolean;
   intelDegraded: boolean;
   adaptationOffer: Adaptation | null;
-  /** C.8/C.12: the Mentor's last turn asked "stop here, or one more?" and is waiting for the choice. */
+  /** The Mentor's last turn asked "stop here, or one more?" and is waiting for the choice. */
   sessionEndOffer: boolean;
-  /** C.16: how the session ended (the closing script), once the server says so. */
+  /** How the session ended (the closing script), once the server says so. */
   closingSummary: SessionClosingSummary | null;
-  /** C.19: the Mentor's last turn was the check-in ("are we on the same page?") and waits for an answer. */
+  /** The Mentor's last turn was the check-in ("are we on the same page?") and waits for an answer. */
   checkInOpen: boolean;
-  /** C.15: the Mentor's last turn restated the session goal and waits for "yes" or "something else". */
+  /** The Mentor's last turn restated the session goal and waits for "yes" or "something else". */
   goalCheckOpen: boolean;
   closedReason: string | null;
   error: { code: string; message: string } | null;
@@ -233,14 +232,14 @@ export interface TutorSocket {
     pedagogy?: { echo: string; attemptNumber: number },
   ) => void;
   answerAdaptation: (adaptation: Adaptation, accepted: boolean) => void;
-  /** C.8/C.12: answer the stop-or-continue offer. Never sent unless an offer is open. */
+  /** Answer the stop-or-continue offer. Never sent unless an offer is open. */
   answerSessionEnd: (accepted: boolean) => void;
-  /** C.19: answer the check-in on its chips. Never sent unless a check-in is open. */
+  /** Answer the check-in on its chips. Never sent unless a check-in is open. */
   answerCheckIn: (aligned: boolean) => void;
-  /** C.15: answer the goal restatement on its chips. Never sent unless the goal check is open. */
+  /** Answer the goal restatement on its chips. Never sent unless the goal check is open. */
   answerGoal: (agreed: boolean) => void;
   /**
-   * End the session. `recapFirst` (OD-28, M-04): the learner pressed end, so
+   * End the session. `recapFirst`: the learner pressed end, so
    * the Mentor asks the recap question first and the session stays open for
    * one answer; a second press (or no flag) closes it at once.
    */
@@ -265,7 +264,7 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
   const socketRef = useRef<WebSocket | null>(null);
   /**
    * Messages sent while the handshake is still in flight, held here rather
-   * than dropped. Found by an adversarial review, 2026-08-30 (CRITICAL): the
+   * than dropped. The
    * composer renders fully enabled the instant `phase` becomes 'conversing',
    * the same render that starts the handshake — there is no gate on
    * `connection === 'open'` anywhere in that path. `sendText` echoes the
@@ -286,8 +285,7 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
   const [microphone, setMicrophone] = useState(false);
   /**
    * Whether THIS live socket has observed a guardian revoke consent —
-   * unlike `error`, this never clears itself on the next turn. Found by
-   * adversarial review, round 30 (2026-08-30, LOW-MEDIUM): `TutorExperience`
+   * unlike `error`, this never clears itself on the next turn. `TutorExperience`
    * computed the mic's blocked reason from `session.microphoneBlockedBy`, a
    * value fixed once at session creation and never updated after a live
    * revocation — so once the transient `CONSENT_REVOKED` error banner was
@@ -357,7 +355,7 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
 
     /*
      * THE ACTUAL CONNECTION IS DEFERRED ONE MICROTASK, and that is
-     * load-bearing rather than stylistic — see RUNBOOK.md Round 81/82.
+     * load-bearing rather than stylistic.
      * React 18 StrictMode's dev-only mount -> cleanup -> mount runs
      * entirely SYNCHRONOUSLY (verified directly against this codebase's own
      * React version: a dependency that is already non-null on a component's
@@ -371,11 +369,11 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
      *
      * Before this, whenever two runs of this effect DID both reach `new
      * WebSocket(...)` — confirmed live, instrumenting the real
-     * `window.WebSocket` constructor during round 82's own reproduction —
+     * `window.WebSocket` constructor —
      * BOTH opened a REAL socket against Oracle with the IDENTICAL session
      * token. `close()` on a socket that is still `CONNECTING` does not
      * reliably stop its handshake from completing (spec-permitted,
-     * implementation-defined — round 82's own finding), so the discarded
+     * implementation-defined), so the discarded
      * run's socket could still finish connecting for real. Oracle's
      * single-use nonce ledger (`session/token.ts`) then lets whichever
      * socket's handshake the server processes FIRST claim the token and
@@ -470,8 +468,7 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
                * `history`: invisible while `TutorTranscript`'s `spokenSeq`
                * filter still matched THIS seq, but printing the same sentence
                * twice in a row in the accessible transcript the moment the
-               * NEXT turn changed which seq that filter hides. Found by an
-               * adversarial review, 2026-08-30 (MEDIUM).
+               * NEXT turn changed which seq that filter hides.
                */
               prev.at(-1)?.speaker === 'tutor' && prev.at(-1)?.seq === message.seq
                 ? prev
@@ -483,8 +480,7 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
             setThinking(false);
             /*
              * A new turn also clears any adaptation offer from the PREVIOUS
-             * turn. Found by adversarial review, round 34 (2026-08-30, HIGH):
-             * an `adaptation_offer` frame is only ever sent when THAT turn's
+             * turn. An `adaptation_offer` frame is only ever sent when THAT turn's
              * `offerAdaptation` is truthy — there is no explicit "the offer is
              * gone now" frame — and the orchestrator's own notion of "the
              * currently valid offer" moves on with every produced turn. Left
@@ -499,14 +495,14 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
              * turn arrives right after and re-sets it via its own case below.
              */
             setAdaptationOffer(null);
-            // C.8/C.12: the same rule for the stop-or-continue offer — the
+            // The same rule for the stop-or-continue offer — the
             // server sends `session_end_offer` right AFTER the turn that asks
             // it, so a new turn without one means the question has moved on.
             setSessionEndOffer(false);
-            // C.19: likewise the check-in — `check_in` follows the turn
+            // Likewise the check-in — `check_in` follows the turn
             // that asks it, so any new turn closes the chips first.
             setCheckInOpen(false);
-            // C.15: and the goal chips — `goal_check` follows its own turn.
+            // And the goal chips — `goal_check` follows its own turn.
             setGoalCheckOpen(false);
             break;
           case 'turn_audio':
@@ -576,7 +572,7 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
               setMicrophone(false);
               setMicRevoked(true);
             }
-            // A.1 (F3-identity-site): Oracle ended this session because the
+            // Oracle ended this session because the
             // account was paused; the shell drops the session and shows why.
             if (message.code === 'ACCOUNT_SUSPENDED') announceAccountSuspended();
             break;
@@ -620,7 +616,7 @@ export function useTutorSocket(socketUrl: string | null): TutorSocket {
          * `closedReason !== null || connection === 'closed'` — either one. So
          * when the close beats the frame, the phase flips with `closedReason`
          * still null, and `ClosingInWorld`'s safety branch — which exists, is
-         * correct, and has its own passing test — is simply never reached.
+         * correct — is simply never reached.
          * Nothing was broken; one of two racing paths carried the fact and the
          * other did not.
          *

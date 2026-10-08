@@ -1,6 +1,6 @@
 /*
- * The Forge copy of the space2 models (F4.7 surface, F4.8 globe, F4.9 AR table). The Forge imports nothing from the backend,
- * so the pure rules the solvability checkers and gate 4 need are repeated here and pinned by the pack test. Every value is
+ * The Forge copy of the space2 models (surface, globe, AR table). The Forge imports nothing from the backend,
+ * so the pure rules the solvability checkers and gate 4 need are repeated here. Every value is
  * whole cents or whole kilometres computed with integers, exactly as Core computes them.
  */
 

@@ -34,7 +34,7 @@ import {
 import { insertPlacementSafetyFlag } from '../services/tutorData.js';
 
 /*
- * /api/v1/placement — the per-course placement flow (COURSE_ENGINE.md §3.2).
+ * /api/v1/placement — the per-course placement flow.
  *
  * STATELESS BY DESIGN. There is no session table and no server-side quiz state.
  * The client holds the answers it has given and sends the whole list with every
@@ -130,12 +130,12 @@ function signalsFrom(
     educationLevel: body.educationLevel as EducationLevel | undefined,
     ageYears: ageYearsFrom(body.birthDate ?? knownBirthDate, now),
     aiPriorFraction: body.aiPriorFraction,
-    // B.6 P6: Mentor mastery and skills shown in another stage, server-computed, never client-supplied.
+    // Mentor mastery and skills shown in another stage, server-computed, never client-supplied.
     graphPriorFraction: tree.pathway?.graphPriorFraction ?? undefined,
   };
 }
 
-/** B.6 P4: a course with no chapter open to this learner has nothing to place into. */
+/** A course with no chapter open to this learner has nothing to place into. */
 function ageRestricted(tree: LearnerCourseTree): boolean {
   return tree.pathway?.basis === 'unavailable';
 }
@@ -151,7 +151,7 @@ function describeResult(done: DoneStep, topics: readonly PlacementTopic[]) {
     totalTopicCount: topics.length,
     method: done.method,
     cappedByPrerequisite: done.cappedByPrerequisite,
-    // B.15: a closed frame the client turns into growth-oriented, non-comparative copy.
+    // A closed frame the client turns into growth-oriented, non-comparative copy.
     framing: placementFrame(done),
   };
 }
@@ -177,7 +177,7 @@ export function placementRouter(): Router {
     return ok(res, {
       ageAlreadyKnown: Boolean(birthDate),
       /*
-       * The §1.9 floor, decided here and nowhere else. Under 12 — and unknown,
+       * The age floor, decided here and nowhere else. Under 12 — and unknown,
        * which we refuse to treat as "probably old enough" — never sees a
        * free-text box, and the client is told so rather than being trusted to
        * work it out.
@@ -210,10 +210,10 @@ export function placementRouter(): Router {
 
     const locale = (profiles[0]?.locale as Locale | undefined) ?? 'en-US';
     /*
-     * Found by adversarial review, round 40 (2026-08-30, HIGH): this used to
+     * Found by adversarial review (2026-08-30, HIGH): this used to
      * be `parsed.data.birthDate ?? profiles[0]?.birth_date` — a client-
      * supplied birth date took priority over the learner's own verified
-     * profile. §1.9's floor for this exact gate is "decided here and nowhere
+     * profile. the age floor for this exact gate is "decided here and nowhere
      * else" (see GET /intake above, which never accepted a client value); a
      * crafted request with a fabricated adult birth date bypassed the 12+
      * floor for an account whose REAL, on-file birth date belonged to a
@@ -247,7 +247,7 @@ export function placementRouter(): Router {
 
     if (!outcome) return ok(res, { available: false, priorFraction: null, reflection: null });
     if (outcome.flagged) {
-      // Loud on purpose (§1.9), and with the user id attached — this handler
+      // Loud on purpose, and with the user id attached — this handler
       // is the one place in the whole path with real request context. Found
       // by adversarial review, 2026-08-30 (HIGH): a flagged placement-intake
       // utterance used to be indistinguishable, in every log and every
@@ -260,7 +260,7 @@ export function placementRouter(): Router {
           `${outcome.flagged.category} (${outcome.flagged.severity})`,
       );
       /*
-       * /ORACLE.md §4.1b's own "not yet done" note, closed by migration 0065:
+       * Closed by migration 0065:
        * the log line above is the loud FLOOR, never the ceiling — a guardian
        * could not previously see this anywhere. `course.id` is real request
        * context this handler already has (the ONE place in the whole path
@@ -269,7 +269,7 @@ export function placementRouter(): Router {
        * voice turn's latency budget, and a silent write failure here would
        * quietly recreate the exact "loud log only" gap this migration
        * exists to close — so a failed write gets its OWN loud line, never a
-       * response the client can distinguish from success (§1.9: the client
+       * response the client can distinguish from success (the client
        * answer is unconditionally the innocuous one, come what may).
        */
       const persisted = await insertPlacementSafetyFlag({
@@ -390,11 +390,11 @@ export function placementRouter(): Router {
       method: placement.method,
     };
     /*
-     * B.6 P6 (pathway mode): the entry placement of the learner's pathway
-     * STAGE, through B.1's atomic pipeline extended per stage. The database
+     * Pathway mode: the entry placement of the learner's pathway
+     * STAGE, through the atomic placement pipeline extended per stage. The database
      * refuses a credit outside that stage's chapters, so even a Core defect
      * cannot credit another stage's pathway. A learner who reaches a new stage
-     * places again for it; earlier placements and credits stay (T2/T3).
+     * places again for it; earlier placements and credits stay.
      */
     const pathwayStage = tree.pathway?.pathwayStage ?? null;
     const recorded = tree.pathway && pathwayStage
@@ -404,7 +404,7 @@ export function placementRouter(): Router {
         credited_topics: placement.creditedTopicCount,
       }, placement.creditedLessonIds)
       : await commitCoursePlacement(legacyRow, placement.creditedLessonIds);
-    // Appendix C 1.3 (B.1): Placement Commit Success Rate, from the write itself.
+    // Placement Commit Success Rate, from the write itself.
     if (!recorded) { recordServerLearnEvent(user, 'placement_commit_failed', null, { segmentId: 'write_failed' }); return fail(res, 502, 'INTERNAL', 'Could not record placement'); }
     if (recorded === 'conflict') { recordServerLearnEvent(user, 'placement_commit_failed', null, { segmentId: 'already_complete' }); return fail(res, 409, 'PLACEMENT_ALREADY_COMPLETE', 'Placement was already completed for this course'); }
     recordServerLearnEvent(user, 'placement_commit_ok', null, { segmentId: placement.method });
@@ -415,7 +415,7 @@ export function placementRouter(): Router {
       await patchOwnProfile(user.accessToken, user.id, { birth_date: parsed.data.signals.birthDate });
     }
 
-    // Placement credits can complete a pathway: settle its badge now (B4), not on the next read.
+    // Placement credits can complete a pathway: settle its badge now, not on the next read.
     if (tree.pathway) {
       const refreshed = await loadLearnerCourse(user.accessToken, user.id, course, res.locals.ageScreen as AgeScreenState);
       if (refreshed) await settleCourseBadges(user.id, course, refreshed);

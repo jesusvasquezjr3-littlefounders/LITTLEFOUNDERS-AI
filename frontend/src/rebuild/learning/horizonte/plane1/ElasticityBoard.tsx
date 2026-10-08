@@ -9,7 +9,7 @@ import { Fraction, PlaneBoard, PlaneFigure, fmt, slots, usePlaneGrade, wholeOn }
 type ElasticSegment = Extract<HorizonteSegment, { type: 'econ.elasticity.v2' }>;
 
 /*
- * N13: a demand line and a goal elasticity. The learner moves the price marker along the demand line until the elasticity
+ * A demand line and a goal elasticity. The learner moves the price marker along the demand line until the elasticity
  * (the price over the quantity, times the slope) reaches the goal. The answer is the whole price; Core holds it.
  */
 function Elasticity({ document, segment, onBack, sequence, onGrade }: Omit<HorizonteBoardProps, 'segment'> & { segment: ElasticSegment }) {

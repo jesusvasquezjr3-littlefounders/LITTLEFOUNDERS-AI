@@ -1,5 +1,5 @@
 /*
- * Product C.21: THE DETERMINISTIC TRANSCRIPT SCORER (zero spend, Tier 3).
+ * THE DETERMINISTIC TRANSCRIPT SCORER (zero spend, Tier 3).
  *
  * Scores one ended Mentor session against the rubric in `transcriptRubric.ts`
  * from what the session left behind: its transcript (`tutor_turns`) and the
@@ -17,7 +17,7 @@
  *     what the runtime did NOT notice about itself.
  *
  * Criteria that need semantic judgement (`scaffold_quality`) produce no row
- * here: only a calibrated judge may score them (C.23). `tell_honored` is
+ * here: only a calibrated judge may score them. `tell_honored` is
  * scored from the runtime's own record: every explicit "just tell me" that
  * was not withdrawn (the learner cut in, or a safety response replaced the
  * turn) must have been answered by a Mentor turn carrying the tell rung.
@@ -70,7 +70,7 @@ export interface SessionBundle {
     variant: string | null;
     band: string | null;
     controlling_delivered: number | null;
-    /** C.13 tell requests and the answer turns that honoured them (null before gap-fix round 1). */
+    /** Tell requests and the answer turns that honoured them (null before they were recorded). */
     tell_requests?: number | null;
     tell_delivered?: number | null;
     tell_withdrawn?: number | null;
@@ -100,9 +100,9 @@ export function foldTranscript(text: string): string {
 
 /*
  * A DECLARATIVE claim about the learner's emotional state, in the three
- * locales (Block C non-negotiable; Appendix D §1.7). Second person + a state
+ * locales (non-negotiable). Second person + a state
  * verb + an emotion word. A question ("are you tired?", "¿estás cansado?") is
- * the humble check-in C.19 asks for and is never matched: sentences that end
+ * the humble check-in the disengagement move asks for and is never matched: sentences that end
  * with "?" or open with "¿" are skipped before the lexicon runs.
  */
 const EMOTION_WORDS_EN =
@@ -130,7 +130,7 @@ export const EMOTION_CLAIM = [
 /*
  * A tag question ("you're tired, aren't you?", "estás cansada, ¿verdad?",
  * "você está cansado, né?") is a statement with a tag, not a humble question:
- * the claim stands. Found by the lexicon test: a first version skipped every
+ * the claim stands. A first version skipped every
  * sentence ending in "?", which let a tagged declaration through.
  */
 const TAG_QUESTION = /,\s*(?:aren't you|are you not|right|isn't it|don't you|no|verdad|cierto|no crees|ne|né|nao e|não é|certo|verdade)\s*\?$/i;
@@ -195,21 +195,21 @@ export function scoreSession(bundle: SessionBundle): CriterionScore[] {
   const bySeq = new Map(bundle.turns.map((t) => [t.seq, t]));
   const scores: CriterionScore[] = [];
 
-  // C.18 answer reveal: the honesty ledger's own reading, per session.
+  // Answer reveal: the honesty ledger's own reading, per session.
   const inSequence = bundle.honesty.filter((r) => r.sequence_kind !== 'none');
   scores.push(verdict('answer_reveal', inSequence.filter(isUnsanctionedReveal).length, inSequence.length));
 
-  // C.18 zero tolerance: a delivered false affirmation.
+  // Zero tolerance: a delivered false affirmation.
   scores.push(verdict('false_affirmation', bundle.honesty.filter((r) => r.false_affirmation_delivered).length, bundle.honesty.length));
 
-  // C.18 diagnostic: specific praise over all praise.
+  // Diagnostic: specific praise over all praise.
   const praised = bundle.honesty.filter((r) => r.praise !== null);
   scores.push(verdict('praise_specificity', praised.filter((r) => r.praise === 'specific').length, praised.length));
 
-  // C.9: an independent read of every delivered Mentor turn.
+  // An independent read of every delivered Mentor turn.
   scores.push(verdict('emotion_label', tutorTurns.filter((t) => declaresEmotion(t.text)).length, tutorTurns.length));
 
-  // C.13: a hint repeated word for word inside the session's hint-ladder turns.
+  // A hint repeated word for word inside the session's hint-ladder turns.
   const ladderTurns = bundle.honesty
     .filter((r) => r.sequence_kind === 'hint_ladder')
     .sort((a, b) => a.turn_seq - b.turn_seq)
@@ -225,7 +225,7 @@ export function scoreSession(bundle: SessionBundle): CriterionScore[] {
   }
   scores.push(verdict('hint_repeat', repeats, ladderTurns.length));
 
-  // C.16: the closing script matches the end reason.
+  // The closing script matches the end reason.
   const { close_reason: reason, closing_script: script } = bundle.session;
   const expected = reason !== null ? CLOSING_SCRIPT_FOR_REASON[reason as CloseReason] : undefined;
   scores.push(
@@ -234,13 +234,13 @@ export function scoreSession(bundle: SessionBundle): CriterionScore[] {
       : verdict('closing_script', expected === script ? 0 : 1, 1),
   );
 
-  // C.19: every act-mode firing a Mentor turn could carry was carried.
+  // Every act-mode firing a Mentor turn could carry was carried.
   const act = bundle.firings.filter((f) => f.mode === 'act');
   const missed = act.filter((f) => (MISSED_OUTCOMES as readonly string[]).includes(f.outcome)).length;
   const carried = act.filter((f) => (INITIATED_OUTCOMES as readonly string[]).includes(f.outcome)).length;
   scores.push(verdict('check_in', missed, missed + carried));
 
-  // C.15: goal agreement, above the turn floor.
+  // Goal agreement, above the turn floor.
   const alliance = bundle.alliance;
   scores.push(
     alliance === null || alliance.learner_turns < ALLIANCE_THRESHOLDS.goalTurnFloor
@@ -248,20 +248,19 @@ export function scoreSession(bundle: SessionBundle): CriterionScore[] {
       : verdict('goal_agreement', alliance.goal_agreement === 'agreed' || alliance.goal_agreement === 'renegotiated' ? 1 : 0, 1),
   );
 
-  // C.17: controlling language that reached a teen or adult. Gap-fix round 6:
-  // the gate follows the band in BOTH A/B arms (OD-26 put teens in the
+  // Controlling language that reached a teen or adult. The gate follows the band in BOTH A/B arms (teens are in the
   // control arm), so a control-arm session is scored too.
   const d = bundle.dialogue;
   const autonomy = d !== null && d.variant !== null && (d.band === 'teen' || d.band === 'adult');
   scores.push(autonomy ? verdict('controlling_language', Math.min(d!.controlling_delivered ?? 0, tutorTurns.length), tutorTurns.length) : verdict('controlling_language', 0, 0));
 
-  // C.13 non-negotiable: "just tell me" is always honoured (hard invariant, rules-scored).
+  // Non-negotiable: "just tell me" is always honoured (hard invariant, rules-scored).
   const tellOwed = d === null || d.tell_delivered === null || d.tell_delivered === undefined
     ? 0
     : Math.max(0, (d.tell_requests ?? 0) - (d.tell_withdrawn ?? 0));
   scores.push(verdict('tell_honored', tellOwed === 0 ? 0 : Math.max(0, tellOwed - (d!.tell_delivered ?? 0)), tellOwed));
 
-  // C.14 diagnostic: first-attempt concept answers.
+  // Diagnostic: first-attempt concept answers.
   const answered = bundle.selfExplanation.filter(
     (r) => r.mode === 'act' && r.first_quality !== null && r.first_quality !== 'unanswered' && r.first_quality !== 'help',
   );

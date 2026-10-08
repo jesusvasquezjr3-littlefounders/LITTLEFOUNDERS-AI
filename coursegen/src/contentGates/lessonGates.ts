@@ -1,6 +1,6 @@
-// The three Forge content gates over one v1 lesson document, in Appendix C
-// Stage 2 order: redundancy (B.18, gate 11), tone (B.14, gate 12), then the
-// OD-13 Copy Budget (gate 13). Deterministic and free: they run inside
+// The three Forge content gates over one v1 lesson document, in
+// Order: redundancy (gate 11), tone (gate 12), then the
+// Copy Budget (gate 13). Deterministic and free: they run inside
 // runAllGates (so the write stage's corrective retry, the judge's revision,
 // localization and verify:course all enforce them) and in `content:gates`.
 
@@ -29,7 +29,7 @@ export interface LessonContentReport {
   redundancy: RedundancyFinding[];
   tone: LocatedToneFinding[];
   copyBudget: CopyBudgetFinding[];
-  /** Tone hits a human reviewer must judge (Appendix C Stage 3). Never block. */
+  /** Tone hits a human reviewer must judge. Never block. */
   toneReview: LocatedToneFinding[];
   firstView: FirstViewAdvisory[];
   unclassified: UnclassifiedString[];

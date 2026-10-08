@@ -22,7 +22,7 @@ const HEARTBEAT_MS = 60_000;
 const FLUSH_MS = 60_000;
 
 /*
- * Session-lifecycle wiring for the insights beacon (/INSIGHTS.md). Mounted
+ * Session-lifecycle wiring for the insights beacon. Mounted
  * ONCE at the App level — ABOVE the route groups — because the lesson player
  * routes live OUTSIDE AppLayout: mounting this in the layout meant entering
  * a lesson unmounted the beacon, silently discarding lesson_start /

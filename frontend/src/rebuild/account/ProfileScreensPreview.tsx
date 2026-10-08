@@ -25,8 +25,8 @@ import { BlockedCard, DetailsCard, GuestCard, SettingsPanels, SettingsScreen, Si
 import { resolveLook, type AvatarLook, type CoverId } from './avatar/avatarKit';
 
 /*
- * Fixture-only preview of the profile lane's rebuilt screens (P1-P3), for the
- * audits and design review, on the development-only preview entry
+ * Fixture-only preview of the rebuilt profile screens, for
+ * design review, on the development-only preview entry
  * (`?screen=own-profile|look-editor|account-settings&state=…`). No transport, no session, no spend. Names are
  * long on purpose where a real name can be long, to prove wrapping at 320 px.
  */
@@ -62,11 +62,9 @@ export const SETTINGS_PREVIEW_STATES = ['adult', 'teen', 'kid', 'guest', 'editin
   'discoverableConfirming', 'discoverableEnabled', 'discoverableSaving', 'discoverableFailed'] as const;
 
 /*
- * GAP-FIX-R6 social (Bible 02 §7 item 10, 06 §7, 03 §5): one Settings card in
- * each of its states, so the three audits measure every string the card can
- * show. The age card (S-04, OD-28; E.4 as amended by OD-3): each kind Core
+ * Social: one Settings card in each of its states. The age card: each kind Core
  * answers, the staff-reviewed correction's form (opened by a real press) and
- * each receipt. The discoverable card (OD-27 (2), S-03): the confirmation a
+ * each receipt. The discoverable card: the confirmation a
  * 16-17-year-old answers before becoming findable, its pending save, the card
  * while the choice is on, and a failed save.
  */

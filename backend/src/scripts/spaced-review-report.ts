@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 /*
- * `npm run tutor:spaced-review-report` — the monitor for Product C.11 (the
- * two-tier spaced review), Appendix F §1.1 "Spaced-Review Routing Accuracy"
- * and the router's Part 3 Stage 7 rollback.
+ * `npm run tutor:spaced-review-report` — the monitor for the
+ * two-tier spaced review ("Spaced-Review Routing Accuracy")
+ * and the router's rollback.
  *
  *   Routing picture   tiers, reasons and outcomes of every recorded routing
  *                     decision in the window; the share of within-session
  *                     routings retired in-session versus handed off.
  *   Routing Accuracy  every recorded decision RE-EVALUATED against the
- *                     Appendix D §2.4 rule from its recorded inputs (a
+ *                     routing rule from its recorded inputs (a
  *                     mismatch is a misroute, and a defect), plus the
  *                     systematic pattern check (within-session routings that
  *                     mostly never got their re-check before the session
@@ -21,7 +21,7 @@
  *                     The report is a defect when the router has more than a
  *                     quarter of history and no audit was recorded within the
  *                     cadence (99 days).
- *   Stage 7           the Kill-Switch Trigger Log.
+ *   Rollback          the Kill-Switch Trigger Log.
  *
  * Reads only, except `--record-audit` and `--resolve="root cause"` (records an
  * operator's resolution of a trip in force, lifting the rollback for new
@@ -32,8 +32,7 @@
  *       [--sample=N --seed=S] [--record-audit="..." --seed=S --sampled=N --misroutes=K] [--resolve="..."]
  *
  * Exit code 1 on a defect; "insufficient data" is printed, never passed off
- * as healthy. Every threshold is provisional — see
- * docs/rebuild/mentor/THRESHOLD-RECALIBRATION-LOG.md.
+ * as healthy. Every threshold is provisional.
  */
 
 import { serviceRest } from '../services/supabaseRest.js';
@@ -56,7 +55,7 @@ import {
 const PAGE = 1000;
 const MAX_ROWS = 200_000;
 
-/** Reads every row of a window, paginated. Null on ANY failed page (§1.14: never a partial report). */
+/** Reads every row of a window, paginated. Null on ANY failed page (never a partial report). */
 async function readAll<T>(path: string): Promise<T[] | null> {
   const out: T[] = [];
   for (let offset = 0; offset < MAX_ROWS; offset += PAGE) {

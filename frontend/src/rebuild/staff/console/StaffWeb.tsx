@@ -13,7 +13,7 @@ import { WorldMap } from './WorldMap';
 import { fill, useConsoleCopy } from './staffConsoleCopy';
 
 /*
- * The Web view of Analytics & Health (W2T.3): Plausible, which by design sees
+ * The Web view of Analytics & Health: Plausible, which by design sees
  * only anonymous, consented visitors on the marketing pages. Every block here
  * (headline figures, trend, map, breakdowns and report files) reads the same
  * window and the same segment filters, so a filter added from a breakdown row

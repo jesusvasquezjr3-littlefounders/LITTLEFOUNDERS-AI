@@ -7,7 +7,7 @@
  * pregenerated.json` already holds every roleplay clip's URL, keyed by a
  * content hash the frontend has no way to independently derive (it would
  * need oracle's own voice-fingerprint resolution to do it). Core is the
- * only service the frontend calls (/AGENTS.md §1.5), and oracle's manifest
+ * only service the frontend calls, and oracle's manifest
  * is not secret — "tracked config... URLs to world-readable audio," per its
  * own header — so a new authenticated round trip through Core would add a
  * live dependency to serve a value that never changes at runtime. A

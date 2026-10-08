@@ -11,23 +11,23 @@ import { fill, learnCopy, linkTo, plural, type LearnLinks, type LearnNavigate } 
 import { currentWorldId, reviewsDue, sceneAssetId, topicLesson, worldAccess, type Territory, type TerritoryState, type TerritoryTopic, type TerritoryWorld } from './territory';
 
 /*
- * W2L.2 — L3, the course world at /learn/:courseSlug/territory, inside the
+ * The course world at /learn/:courseSlug/territory, inside the
  * learner shell.
  *
  * The whole course at a glance with "you are here" (the legacy territory
  * map's orientation idea, kept): every chapter of the course is a world with
- * its own scene (B.8: the adventure's theme, `adventures.theme`, drawn as our
- * own scene art registered in the manifest, 07 §3; never stock art, never a
- * 3D stand-in: the Diorama belongs to the Mentor stage, 02 rule 10, 08), its
+ * its own scene (the adventure's theme, `adventures.theme`, drawn as our
+ * own scene art registered in the manifest; never stock art, never a
+ * 3D stand-in: the Diorama belongs to the Mentor stage), its
  * progress, and its topics grouped as Core groups them. Topic states are
  * Core's, from graded passes and the spaced-review layer (`review-due`); each
- * is said with a word, never by colour alone (02 rule 6).
+ * is said with a word, never by colour alone.
  *
- * Layering (06 §4): the first view is the map itself, the worlds and where
+ * Layering: the first view is the map itself, the worlds and where
  * the learner is; a world opens to its topics on request. A world not reached
- * yet shows its name and "Later" only (the legacy fog of war); under the B.6
+ * yet shows its name and "Later" only (the legacy fog of war); under the
  * pathway engine a chapter the age safeguard closes is counted, never listed
- * or offered (OD-16), and a younger chapter is an extra. When the entry
+ * or offered, and a younger chapter is an extra. When the entry
  * placement is owed, the map offers it and no topic opens a lesson (Core
  * refuses every lesson until it is taken).
  *
@@ -104,7 +104,7 @@ function MapState({ state, t, c, courseTitles, links, onNavigate, onRetry, retry
   const retryable = (state.status === 'error' || state.status === 'offline') && onRetry;
   return <>
     {body ? <p data-copy-role="body">{body}</p> : null}
-    {/* B.2: each course still to finish, by name, one press away (as on the course screen). */}
+    {/* Each course still to finish, by name, one press away (as on the course screen). */}
     {missing.length ? <div className="lf-course-path-missing"><List label={c.prereqTitle}>
       {missing.map((course) => <ListRow key={course} title={courseTitles?.[course] ?? course} titleRole="option" onPress={() => onNavigate(links.course(course))} />)}
     </List></div> : null}
@@ -130,7 +130,7 @@ function ReadyMap({ map, slug, locale, t, links, onNavigate }: TerritoryMapViewP
       </div>
       {due > 0 ? <Pill tone="sky">{plural(locale, due, t.reviewsOne, t.reviewsOther)}</Pill> : null}
     </div>
-    {/* The entry placement is an OFFER (B.15: finding a start, not a test): it is never a wall, so lessons stay open. */}
+    {/* The entry placement is an OFFER (finding a start, not a test): it is never a wall, so lessons stay open. */}
     {placementRequired ? <section className="lf-course-path-hero" aria-labelledby={placementId} data-step="placement">
       <h2 id={placementId} data-copy-role="heading">{t.placementTitle}</h2>
       <div className="lf-course-path-hero-action">
@@ -157,7 +157,7 @@ function World({ world, here, map, slug, locale, t, links, onNavigate }: {
   const explorable = access !== 'later' && world.sagas.some((saga) => saga.topics.length > 0);
   return <li className={`lf-territory-world lf-territory-world--${access}${here ? ' lf-territory-world--here' : ''}`} data-world={world.slug} data-scene={scene ? world.theme : undefined}>
     <article aria-labelledby={`${id}-title`}>
-      {/* The chapter's own scene (B.8), decorative: its name is the heading beside it (07 §8). */}
+      {/* The chapter's own scene, decorative: its name is the heading beside it. */}
       {scene ? <div className="lf-territory-scene"><Art assetId={scene} /></div> : null}
       <div className="lf-territory-world-head">
         <h2 id={`${id}-title`} data-copy-role="heading">{title}</h2>

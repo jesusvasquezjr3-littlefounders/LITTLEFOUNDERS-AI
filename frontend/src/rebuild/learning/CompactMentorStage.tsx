@@ -7,11 +7,10 @@ import type { LessonMentorStage } from './lessonDocument';
 import './mentorStage.css';
 
 /**
- * B.23 / B.26 (S05.3f): presence and reactions come from the one register
+ * Presence and reactions come from the one register
  * policy, through the Mentor stage's own state table (`mentor/stageStates.ts`).
  * A miss is always met with encouragement, never a sad or disappointed state; a
- * teen's Mentor is calmer and smaller. Never a celebration for a single answer
- * (OD-7).
+ * teen's Mentor is calmer and smaller. Never a celebration for a single answer.
  */
 export function mentorReaction(ageBand: AgeBand, verdict: LessonVerdict) {
   const mentor = REGISTERS[registerForCopyBand(ageBand)].mentor;
@@ -20,21 +19,21 @@ export function mentorReaction(ageBand: AgeBand, verdict: LessonVerdict) {
 }
 
 /**
- * The lesson player's Mentor presence (Frontend Bible 08 §11, B.8): the SAME
+ * The lesson player's Mentor presence: the SAME
  * stage component as the Mentor screen, at its compact size. Decorative here:
  * the lesson's prompt label carries the Mentor's name and words.
  */
 export function CompactMentorStage({ ageBand, theme, verdict, state, character, scene, beat, backdrop = null }: {
   ageBand: AgeBand; theme: 'light' | 'dark'; verdict: LessonVerdict;
   /**
-   * GAP-FIX-R5 (08 §11): the state the lesson requests (`lessonStageStateFor`: introducing, speaking,
+   * The state the lesson requests (`lessonStageStateFor`: introducing, speaking,
    * demonstrating, offering), already resolved against the verdict. Absent: the verdict alone decides.
    */
   state?: MentorStageState;
   character: LessonMentorStage['character']; scene: LessonMentorStage['scene'];
   /** Bump for each new verdict, so a second miss gets a second nod. */
   beat?: number;
-  /** The lesson's adventure scene, drawn inside the one band (GAP-FIX-R3), never as its own stripe. */
+  /** The lesson's adventure scene, drawn inside the one band, never as its own stripe. */
   backdrop?: ReactNode;
 }) {
   return <MentorStage size="compact" character={character} scene={scene} state={state ?? lessonStateFor(verdict)} ageBand={ageBand}

@@ -21,8 +21,8 @@ import { readDataPracticeApplies } from '../services/dataPractices.js';
 import { findProfileByUsername, getSocialCards, submitSocialReport, SOCIAL_REPORT_CATEGORIES, SOCIAL_REPORT_NOTE_MAX, type ListedUser } from '../services/supabaseRest.js';
 
 /*
- * /api/v1/coop-goals — L-04 (owner decision OD-27 (1)): teen cooperative
- * goals. Policy: docs/rebuild/policies/SOCIAL-TIERS.md section 1.2.
+ * /api/v1/coop-goals — teen cooperative
+ * goals.
  *
  * Teens 13 to 17 set one shared learning goal ("finish N lessons together in
  * 7, 14 or 28 days") with 1 to 4 mutual connections. The session is always
@@ -38,12 +38,12 @@ import { findProfileByUsername, getSocialCards, submitSocialReport, SOCIAL_REPOR
  *                                connection of every member, or does not exist
  *                                (one answer, so nothing about them leaks)
  *   409 COOP_GROUP_FULL / COOP_GOAL_LIMIT / COOP_ALREADY_ASKED
- *   403 DATA_PRACTICE_CONSENT_REQUIRED  a migrated child (OD-9 4.2) whose Tutor
+ *   403 DATA_PRACTICE_CONSENT_REQUIRED  a migrated child whose Tutor
  *                                has not consented to 'sharing.cooperative_goals'
  *   404 NOT_FOUND                not your goal, invitation or member
  *
- * No free text is accepted anywhere (E.10: there is no messaging); the only
- * strings are usernames matched to the handle pattern and the E.3 report's
+ * No free text is accepted anywhere (there is no messaging); the only
+ * strings are usernames matched to the handle pattern and the report's
  * category and bounded note, which only the safety team reads. The overview
  * carries the group total only: no per-member number, no rank, no reward.
  */
@@ -93,7 +93,7 @@ async function accountOf(username: string): Promise<string | null | 'unavailable
   return rows[0]?.user_id ?? null;
 }
 
-/** The OD-9 4.2 data practice this surface is (database: cooperative_goals_data_practice). */
+/** The data practice this surface is (database: cooperative_goals_data_practice). */
 const COOP_PRACTICE = 'sharing.cooperative_goals';
 
 async function requireEligible(res: Response, userId: string, isGuest: boolean): Promise<boolean> {
@@ -101,7 +101,7 @@ async function requireEligible(res: Response, userId: string, isGuest: boolean):
   const eligible = await readCoopEligible(userId);
   if (eligible === null) { refuse(res, 'unavailable'); return false; }
   if (!eligible) {
-    // OD-9 4.2: name the missing consent only on a clear no from the database.
+    // Name the missing consent only on a clear no from the database.
     const applies = await readDataPracticeApplies(userId, COOP_PRACTICE);
     refuse(res, applies === false ? 'practice-consent' : 'not-eligible');
     return false;
@@ -226,7 +226,7 @@ export function coopGoalsRouter(): Router {
   });
 
   /*
-   * E.3 from inside a goal: report someone who is or was in it with you, and
+   * Report from inside a goal: report someone who is or was in it with you, and
    * optionally leave in the same step. The report joins the same safety queue
    * as a profile report (a child's Tutor is told, the pattern trigger counts
    * it); the person reported is never told who reported them.

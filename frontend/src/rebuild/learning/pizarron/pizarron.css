@@ -1,5 +1,5 @@
 /*
- * The shared Pizarrón visuals (visuals.tsx). Frontend Bible 05 §2: series use
+ * The shared Pizarrón visuals (visuals.tsx). Series use
  * sky, mint and berry in that order (fills: the base hue; strokes: the strong
  * hue), with the pattern channel from the second series on (mint diagonal,
  * berry dots); a fourth or later series is the neutral overflow (crosshatch).
@@ -44,7 +44,7 @@
 .lf-pz-track { display: flex; overflow: hidden; }
 .lf-pz-track .lf-pz-seg { position: relative; display: grid; place-items: center; min-inline-size: 2px; border-radius: 0; border-inline-end: 2px solid var(--surface); }
 .lf-pz-seg--unknown { background: var(--surface) !important; border: 3px dashed var(--edge) !important; }
-/* GAP-FIX-R3 (M7 build): a slot the learner has not filled yet: an outline, never a fill or a number. */
+/* M7 build: a slot the learner has not filled yet: an outline, never a fill or a number. */
 .lf-pz-seg--empty { background: transparent !important; border: 2px dotted var(--outline) !important; }
 .lf-pz-seg-text { padding: 0 var(--spacing-1); border-radius: var(--rounded-sm); background: var(--surface); color: var(--content); font-style: normal; font-size: .875rem; font-weight: 800; white-space: nowrap; }
 .lf-pz-row-total { color: var(--content-muted); }
@@ -104,7 +104,7 @@
 .lf-pz-waffle-cell { min-inline-size: 0; min-block-size: 0; }
 .lf-pz-waffle-cell:not([class*='lf-pz-fill--']) { background: var(--sunken); }
 
-/* Coins: reward, with the ridge outline (05 §2). */
+/* Coins: reward, with the ridge outline. */
 .lf-pz-coins { display: flex; flex-wrap: wrap; gap: var(--spacing-4); align-items: flex-end; }
 .lf-pz-coin-group { display: grid; gap: var(--spacing-1); justify-items: start; font-weight: 800; }
 .lf-pz-coins[data-arrow='true'] .lf-pz-coin-group { grid-template-columns: auto 1fr; }
@@ -193,23 +193,23 @@
 /* The growth-lines frame: the chart, its key and its axis labels sit closer than the default frame gap. */
 .lf-pz-growth { gap: var(--spacing-2); }
 
-/* Bible 05 §5 (GAP-FIX-R2): KaTeX notation inherits the board's ink and size; the fallback is the plain expression. */
+/* KaTeX notation inherits the board's ink and size; the fallback is the plain expression. */
 .lf-math { display: inline-block; max-inline-size: 100%; overflow-x: auto; color: var(--content); vertical-align: middle; }
 .lf-math--block { display: block; }
 .lf-math .katex { font-size: 1.25rem; color: inherit; }
 .lf-math-katex, .lf-math-fallback { display: inline-block; max-inline-size: 100%; }
 .lf-math-fallback { white-space: pre-wrap; overflow-wrap: anywhere; }
 
-/* GAP-FIX-R4: notes in the coin family (Bible 05 §2, §7 Money): a simplified reward token with the ridge outline. */
+/* Notes in the coin family: a simplified reward token with the ridge outline. */
 .lf-pz-coin-bill { inline-size: 30px; block-size: 16px; border-radius: var(--rounded-sm); background: var(--reward); box-shadow: inset 0 0 0 2px var(--reward-ridge); }
-/* The Euler layouts and a board's drop targets (Bible 05 §4: the region highlights while an object is carried). */
+/* The Euler layouts and a board's drop targets (the region highlights while an object is carried). */
 .lf-pz-venn-regions[data-regions='2'] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .lf-pz-venn-regions[data-regions='4'] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .lf-pz [data-drop-target] { min-block-size: var(--target-base); border-radius: var(--rounded-md); padding: var(--spacing-2); box-shadow: inset 0 0 0 2px var(--outline); }
 .lf-pz [data-drop-target][data-drop-selected='true'] { box-shadow: inset 0 0 0 3px var(--primary-strong); background: var(--primary-soft); }
 .lf-pz [data-drop-target][data-drop-armed='true'] { cursor: pointer; }
 
-/* GAP-FIX-R4 (Bible 05 §5): concept plots. Marks in the SVG; every word an HTML label over it, 14 px, wrapping. */
+/* Concept plots. Marks in the SVG; every word an HTML label over it, 14 px, wrapping. */
 .lf-pz-plot-area { position: relative; margin-block: 1.75rem; margin-inline-start: 0.5rem; }
 .lf-pz-plot-area svg { display: block; inline-size: 100%; block-size: auto; aspect-ratio: 3 / 2; max-block-size: 280px; overflow: visible; }
 .lf-pz-plot-labels { position: absolute; inset: 0; pointer-events: none; }

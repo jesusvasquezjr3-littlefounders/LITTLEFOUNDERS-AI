@@ -5,7 +5,7 @@ import { useShellLocale } from '@/app-shell/ShellRoot';
 import { RouteErrorFrame } from '@/rebuild/site/RouteErrorScreen';
 
 /*
- * The boundary that keeps a broken route from becoming a white screen (X2).
+ * The boundary that keeps a broken route from becoming a white screen.
  *
  * Two reasons this exists, and both were live defects rather than theory:
  *
@@ -21,8 +21,7 @@ import { RouteErrorFrame } from '@/rebuild/site/RouteErrorScreen';
  *
  * A stale chunk is fixed by reloading, so that case says so and offers it. Any
  * other error sends the person somewhere real. Either way the screen SAYS
- * something. The screen itself is rebuilt (rebuild/site/RouteErrorScreen,
- * W2 Lane 1): inside a shell it renders as that page's content, so the shell
+ * something. The screen itself is rebuilt (rebuild/site/RouteErrorScreen): inside a shell it renders as that page's content, so the shell
  * keeps its one <main> and its navigation; on a full-screen layer (the lesson
  * player, the Mentor stage) it is the single-state screen.
  */

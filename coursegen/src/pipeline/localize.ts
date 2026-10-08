@@ -1,4 +1,4 @@
-// localize stage — es-MX → {en-US, pt-BR} (COURSE_ENGINE.md §4). Structure
+// localize stage — es-MX → {en-US, pt-BR}. Structure
 // is FROZEN programmatically: only learner-visible strings are extracted
 // into an indexed map, DeepSeek translates just the map, and the result is
 // re-injected at the exact same paths — ids/numbers/answers are never seen
@@ -252,9 +252,9 @@ export function translationSystemPrompt(targetLocale: 'en-US' | 'pt-BR', toneDir
     'Preserve any EMOJI exactly as-is (same emoji, same position in the sentence) — never drop, add, or swap them. ' +
     'LENGTH: on-screen instructions are hard-capped — a translation must NEVER be meaningfully LONGER than its source string; when your language runs long, compress (drop filler words, use the shorter synonym) rather than exceed the source length. ' +
     `${currencyLine} ${colloquialLine} ` +
-    // OD-11 (GAP-FIX-R1): the controlled glossary, for the target market.
+    // The controlled glossary, for the target market.
     `${glossaryPromptLines(targetLocale)} ` +
-    // B.16 (S05.4b): a lesson with per-market scenarios is ADAPTED, not translated.
+    // A lesson with per-market scenarios is ADAPTED, not translated.
     (adaptation ? `${adaptation} ` : '') +
     'Output ONLY a strict flat JSON object mapping each input key to its translation — same keys, translated values, nothing else.'
   );
@@ -328,9 +328,9 @@ export interface LocalizeResult {
 export interface LocalizeDeps {
   ledger?: UsageLedger;
   translate?: typeof completeDeepSeek;
-  /** COURSE_ENGINE.md §3.3 — injected into the translation prompt for the adult register. Absent = kid (no change). */
+  /** injected into the translation prompt for the adult register. Absent = kid (no change). */
   registerToneEs?: string;
-  /** COURSE_ENGINE.md §3.3 — adult register skips the forbidden-vocabulary re-gate (piaget gates are kid-only). */
+  /** adult register skips the forbidden-vocabulary re-gate (piaget gates are kid-only). */
   skipVocabularyGate?: boolean;
 }
 
@@ -452,19 +452,19 @@ export async function localizeLesson(
   }
 
   /*
-   * Forge content gates 11-13 re-run on the TARGET locale (S05.4a): the tone
-   * lexicon is per language, and Bible 06 budgets differ per locale (en-US at
-   * 1x, es-MX/pt-BR at 1.25x). Bible 06 §5.9: a translation that cannot meet
+   * Forge content gates 11-13 re-run on the TARGET locale: the tone
+   * lexicon is per language, and budgets differ per locale (en-US at
+   * 1x, es-MX/pt-BR at 1.25x). A translation that cannot meet
    * its budget is never truncated; the es-MX source is rewritten shorter, so
    * the slot fails with the itemized problems instead of shipping over budget.
    */
   const contentProblems = [
     ...runLessonContentGates(parsed.data, audienceForTier(gateCtx.taxonomy, gateCtx.tier, gateCtx.register ?? 'kid')).problems,
-    // Gates 14-16 (S05.4b) on the TARGET market: a localized lesson that still
+    // Gates 14-16 on the TARGET market: a localized lesson that still
     // carries the source market's context, or skips its own scenario, is a
-    // translation, not a localization (B.16).
+    // translation, not a localization.
     ...runLessonPolicyGates(parsed.data, gateCtx.lessonPolicy, markets).problems,
-    // OD-11 (GAP-FIX-R1): a never-use glossary term in the translation blocks like a tone hit (gate 12).
+    // A never-use glossary term in the translation blocks like a tone hit (gate 12).
     ...glossaryProblems(parsed.data, targetLocale).map((message) => ({ gate: 12 as const, message })),
   ];
   if (contentProblems.length > 0) {

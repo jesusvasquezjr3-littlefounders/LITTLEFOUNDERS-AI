@@ -12,23 +12,21 @@ import { courseProgress, courseTitle, nextStep, type CourseAnswer, type CourseDe
 import { fill, learnCopy, linkTo, plural, type LearnLinks, type LearnNavigate } from './learnCopy';
 
 /*
- * W2L.1 — L2, one course screen at /learn/:courseSlug, inside the learner
+ * One course screen at /learn/:courseSlug, inside the learner
  * shell. It reconciles the legacy course page (the linear engine's tree) and
- * the S05.3b course path (the B.6 pathway engine's frontier) into one rebuilt
+ * the course path (the pathway engine's frontier) into one rebuilt
  * screen; `/learn/:courseSlug/path` now redirects here.
  *
- * The first view carries the course, its progress and the one next step
- * (Bible 06 layering): the entry placement when Core says one is owed (B.15:
- * framed as finding a start, never as a test), the recommended lesson, or a
- * plainly stated finished path (not celebrated here: D7's milestones belong
+ * The first view carries the course, its progress and the one next step: the entry placement when Core says one is owed (framed as finding a start, never as a test), the recommended lesson, or a
+ * plainly stated finished path (not celebrated here: milestones belong
  * to the lesson and badge moments). Under the pathway engine the other open
- * lessons follow as real choices (B.24), then the chapters with their access
- * (age-closed chapters are counted, never offered or listed, OD-16) and the
+ * lessons follow as real choices, then the chapters with their access
+ * (age-closed chapters are counted, never offered or listed) and the
  * skills the path teaches. Under the linear engine the chapters open to their
  * lessons in Core's order, with each lesson's state as Core computed it.
  *
  * Every refusal Core can give has its own state with a way back: the age
- * safeguard, a prerequisite course not finished yet (B.2, rule P7 under the
+ * safeguard, a prerequisite course not finished yet (under the
  * pathway engine; the missing courses are offered by name), an unknown
  * course, no connection, not allowed, and a retryable failure.
  *
@@ -53,18 +51,18 @@ export interface CourseViewProps {
   onRetry?: () => void;
   retrying?: boolean;
   fixture?: boolean;
-  /** OD-25: the learner confirms opening a chapter one stage early; the host refreshes the course after it. */
+  /** The learner confirms opening a chapter one stage early; the host refreshes the course after it. */
   onOpenEarly?: (chapterId: string) => Promise<CourseAnswer>;
-  /** OD-25: the learner accepts counting a topic as done on what they showed with the Mentor. */
+  /** The learner accepts counting a topic as done on what they showed with the Mentor. */
   onAcceptMastery?: (topicId: string) => Promise<CourseAnswer>;
-  /** OD-25 (W3L.1): the learner says no; Core remembers it. Without it (an older host), "Not now" only hides the question. */
+  /** The learner says no; Core remembers it. Without it (an older host), "Not now" only hides the question. */
   onDeclineMastery?: (topicId: string) => Promise<CourseAnswer>;
 }
 
 type Copy = (typeof learnCopy)['en-US']['course'];
 
 /*
- * Density follows the learner's stage by composition only (D8): a child sees
+ * Density follows the learner's stage by composition only: a child sees
  * two further choices before "Show more", an older learner four.
  */
 const firstItems = (stage: CoursePath['pathway']['learnerStage']) => (stage === 'child' ? 2 : 4);
@@ -76,7 +74,7 @@ export function CourseView(props: CourseViewProps) {
   const ready = state.status === 'ready' ? state.detail : null;
   /*
    * The top row and the <h1> are the same elements in every state: the shell
-   * moves focus to the page's <h1> on arrival (02 rule 13), which happens
+   * moves focus to the page's <h1> on arrival, which happens
    * while the course is still loading, and the heading that takes focus must
    * survive the answer instead of being replaced under it.
    */
@@ -112,11 +110,11 @@ function RefusalState({ state, t, courseTitles, links, onNavigate, onRetry, retr
   const retryable = (state.status === 'error' || state.status === 'offline') && onRetry;
   return <>
     {s.body ? <p data-copy-role="body">{s.body}</p> : null}
-    {/* B.2: each course still to finish, by name, one press away. */}
+    {/* Each course still to finish, by name, one press away. */}
     {missing.length ? <div className="lf-course-path-missing"><List label={t.prereqTitle}>
       {missing.map((slug) => <ListRow key={slug} title={courseTitles?.[slug] ?? slug} titleRole="option" onPress={() => onNavigate(links.course(slug))} />)}
     </List></div> : null}
-    {/* The heading already says it is loading (aria-busy on the page); the placeholder shimmers only as busy motion, still under reduced motion (OD-28 V-04). */}
+    {/* The heading already says it is loading (aria-busy on the page); the placeholder shimmers only as busy motion, still under reduced motion. */}
     {state.status === 'loading' ? <Skeleton lines={4} /> : null}
     {retryable ? <div className="lf-actions"><Button variant="accent" pending={retrying} pendingLabel={t.retrying} onClick={onRetry}>{t.retry}</Button></div> : null}
   </>;
@@ -188,7 +186,7 @@ function PathwaySections({ path, slug, locale, t, links, onNavigate, onOpenEarly
   const open = (lessonId: string) => onNavigate(links.lesson(lessonId), { courseSlug: slug });
   const eligibleEarly = path.earlyAccess.filter((entry) => entry.state === 'eligible');
   /*
-   * OD-25: each offer is a question the learner answers; nothing opens or
+   * Each offer is a question the learner answers; nothing opens or
    * counts until they say yes. After an answer the host reads the course
    * again and the offer leaves the payload, so an answered card is kept here
    * for this visit: the learner sees what their answer did.
@@ -213,7 +211,7 @@ function PathwaySections({ path, slug, locale, t, links, onNavigate, onOpenEarly
     {pathway.badge.contentGap && pathway.basis !== 'unavailable' ? <p className="lf-course-path-note" data-copy-role="body">{t.contentGap}</p> : null}
     {offers.map((offer) => <OfferCard key={offer.key} offer={offer} t={t} locale={locale} onAnswer={() => keep(offer)} />)}
     {others.length > 0 ? <section className="lf-course-path-section" aria-labelledby={`${ids}-more`}>
-      {/* GAP-FIX-R5 (Block B autonomy, 6-9): Core offers a simple binary pick, so the second step is the one alternative. */}
+      {/* For ages 6-9, Core offers a simple binary pick, so the second step is the one alternative. */}
       <h2 id={`${ids}-more`} data-copy-role="heading">{moreTitle}</h2>
       <div className="lf-course-path-items"><List label={moreTitle}>
         {visibleItems.map((item) => <ListRow key={item.lessonId} title={text(item.topicTitle)} titleRole="option" onPress={() => open(item.lessonId)}
@@ -222,7 +220,7 @@ function PathwaySections({ path, slug, locale, t, links, onNavigate, onOpenEarly
       {others.length > FIRST_ITEMS ? <Button aria-expanded={allItems} onClick={() => setAllItems(!allItems)}>{allItems ? t.showLess : t.showMore}</Button> : null}
     </section> : null}
 
-    {/* GAP-FIX-R5 (Block B autonomy, 13-17 and adults; B.24): optional depth lessons, never counted toward progress or badges. */}
+    {/* For ages 13-17 and adults: optional depth lessons, never counted toward progress or badges. */}
     {path.autonomy.enrichment && path.enrichment.length > 0 ? <section className="lf-course-path-section" aria-labelledby={`${ids}-explore`} data-lever="enrichment">
       <h2 id={`${ids}-explore`} data-copy-role="heading">{t.exploreTitle}</h2>
       <p className="lf-course-path-note" data-copy-role="body">{t.exploreNote}</p>
@@ -241,7 +239,7 @@ function PathwaySections({ path, slug, locale, t, links, onNavigate, onOpenEarly
           <span className="lf-course-path-chapter-count" data-copy-role="data">{chapter.progress.passed}/{chapter.progress.total}</span>
         </li>)}
       </ol>
-      {/* Chapters the age safeguard closes are counted, never offered and never listed as lessons (OD-16). */}
+      {/* Chapters the age safeguard closes are counted, never offered and never listed as lessons. */}
       {closedCount > 0 ? <p className="lf-course-path-note" data-copy-role="body">{plural(locale, closedCount, t.closedOne, t.closedOther)}</p> : null}
       {path.blocked.length > 0 ? <p className="lf-course-path-note" data-copy-role="body">{fill(t.waiting, { n: path.blocked.length })}</p> : null}
     </section>
@@ -259,7 +257,7 @@ function PathwaySections({ path, slug, locale, t, links, onNavigate, onOpenEarly
   </>;
 }
 
-/** One OD-25 question as the course screen asks it. */
+/** One question as the course screen asks it. */
 type Offer = {
   key: string;
   kind: 'early' | 'mastery';
@@ -276,7 +274,7 @@ type Offer = {
 const SHOWN_SKILLS = 3;
 
 /**
- * OD-25: one offer the learner answers, with what saying yes means. "Yes" is
+ * One offer the learner answers, with what saying yes means. "Yes" is
  * the confirmation Core records (the host refreshes the course after it). On
  * the Mentor offer "No" is recorded too and the topic stays to be played; on
  * the early chapter "Not now" only hides the question. A refused answer means
@@ -309,7 +307,7 @@ function OfferCard({ offer, t, locale, onAnswer }: { offer: Offer; t: Copy; loca
     <p data-copy-role="body">{offer.question}</p>
     {state === 'done' ? <InlineNotice tone="success" live>{kind === 'early' ? t.earlyDone : t.masteryDone}</InlineNotice>
       : state === 'declined' ? <InlineNotice tone="info" live>{t.masteryDeclined}</InlineNotice> : <>
-        {/* What saying yes means: OD-25's confirmation is an informed one. */}
+        {/* What saying yes means: the confirmation is an informed one. */}
         <p className="lf-course-path-offer-means" data-copy-role="body">{kind === 'early' ? t.earlyMeans : t.masteryMeans}</p>
         <OfferSkills skills={offer.skills} t={t} locale={locale} />
         {state === 'failed' ? <InlineNotice tone="error" live>{t.saveFailed}</InlineNotice> : null}
@@ -322,9 +320,9 @@ function OfferCard({ offer, t, locale, onAnswer }: { offer: Offer; t: Copy; loca
 }
 
 /**
- * What the learner showed, never cut by the system (02 D1, rule 1): up to
+ * What the learner showed, never cut by the system: up to
  * three skills inline, and past that a localized count ("and 2 more") that
- * opens a Details sheet with the whole list (06 §4 item 4).
+ * opens a Details sheet with the whole list.
  */
 function OfferSkills({ skills, t, locale }: { skills: string[]; t: Copy; locale: Locale }) {
   const [open, setOpen] = useState(false);
@@ -341,7 +339,7 @@ function OfferSkills({ skills, t, locale }: { skills: string[]; t: Copy; locale:
 }
 
 function LinearChapters({ tree, slug, locale, t, links, onNavigate }: { tree: CourseTree; slug: string; locale: Locale; t: Copy; links: LearnLinks; onNavigate: LearnNavigate }) {
-  // Every chapter starts closed: the next lesson is the hero's, and the first view stays within the Copy Budget (06 §3.1).
+  // Every chapter starts closed: the next lesson is the hero's, and the first view stays within the Copy Budget.
   const [open, setOpen] = useState<string | null>(null);
   const ids = useId();
   return <section className="lf-course-path-section" aria-labelledby={`${ids}-chapters`}>

@@ -1,7 +1,7 @@
 /*
  * Pure document-matching logic: OCR text vs applicant-declared data.
  * No I/O, no logging — OCR text carries PII and must never leave this
- * function's scope (parent-id-check/AGENTS.md: strictest PII handling).
+ * function's scope.
  */
 
 export interface ApplicantData {

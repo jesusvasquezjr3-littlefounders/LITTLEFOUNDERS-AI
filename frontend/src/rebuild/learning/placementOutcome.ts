@@ -2,7 +2,7 @@ import { z } from 'zod';
 import type { Locale } from '../design/copyBudget';
 
 /*
- * B.15 (S05.3d): placement outcome framing as accompaniment, not a verdict.
+ * Placement outcome framing as accompaniment, not a verdict.
  *
  * Core classifies every placement outcome into one closed frame
  * (backend/src/services/placementFraming.ts); this module owns the words.
@@ -11,9 +11,8 @@ import type { Locale } from '../design/copyBudget';
  * the path grows from there. Nothing compares the learner with anyone else,
  * and no score, count of right answers or rank is ever shown.
  *
- * PLACEMENT_VERDICT_LEXICON is the enforceable half of the mandate: a test
- * runs it over this copy and over the live placement screen's strings in all
- * three locales, so ability, ranking or failure language cannot come back.
+ * PLACEMENT_VERDICT_LEXICON lists the words that must not appear in placement
+ * copy, so ability, ranking or failure language cannot come back.
  */
 
 export const placementFrameSchema = z.object({

@@ -5,20 +5,20 @@ import { hasCurrentTeenConsent, readSocialTier, type SocialTier } from './social
 import { isTeenProfileDiscoverable } from './teenDiscoverability.js';
 
 /*
- * Who may see whom (E.1, E.8, E.13). Mirrors public.social_subject_visible
+ * Who may see whom. Mirrors public.social_subject_visible
  * (migration social_tier_enforcement), which enforces the same rule for any
  * browser read of the follow graph.
  *
  *   full  the whole public profile, and the account appears in lists
  *   card  only a private card (username, cartoon avatar, cover preset) and a
- *         way to ask the teen to connect: E.8's private-by-default teen
+ *         way to ask the teen to connect: the private-by-default teen
  *   none  404, indistinguishable from "no such account"
  *
  * By the subject's tier:
  *   adult     full for any viewer with a social layer
  *   guardian  full for the linked family; for an outsider only through a
  *             current guardian approval, and never while the child's name or
- *             handle is flagged by the E.13 review
+ *             handle is flagged by the name review
  *   teen      full for the teen's verified guardian (if one exists), for an
  *             account the teen accepted, and for an account the teen chose to
  *             follow; card for everyone else; none while flagged
@@ -40,7 +40,7 @@ async function readSocialFields(userId: string): Promise<SocialFields | null> {
   return rows.success ? { username: rows.data[0]!.username, displayName: rows.data[0]!.display_name } : null;
 }
 
-/** E.13: a minor's flagged name or handle stays inside the family. An unreadable profile counts as flagged. */
+/** A minor's flagged name or handle stays inside the family. An unreadable profile counts as flagged. */
 async function isFlagged(userId: string, fields?: SocialFields): Promise<boolean> {
   const current = fields ?? await readSocialFields(userId);
   return current === null || reviewProfileFields(current).flagged;
@@ -80,7 +80,7 @@ export async function profileAccess(viewerId: string, subjectId: string, fields?
       if (await isFlagged(subjectId, fields)) return 'none';
       if (await hasCurrentTeenConsent(viewerId, subjectId)) return 'full';
       if (await isFollowing(subjectId, viewerId)) return 'full';
-      // S-03 (OD-27): a 16- or 17-year-old who opted in, and is still eligible,
+      // A 16- or 17-year-old who opted in, and is still eligible,
       // is discoverable. The database re-checks eligibility on every read.
       if (await isTeenProfileDiscoverable(subjectId)) return 'full';
       return 'card';
@@ -97,8 +97,8 @@ export async function mayDiscoverProfile(viewerId: string, subjectId: string, fi
 
 /**
  * Filters a list to the accounts this viewer may see in full, and applies
- * E.5 to each card: the list used to carry the bare parent role as a Tutor
- * badge, which is exactly the platform-wide trust signal E.5 removed from the
+ * the Tutor-badge rule to each card: the list used to carry the bare parent role as a Tutor
+ * badge, which is exactly the platform-wide trust signal that was removed from the
  * profile itself.
  */
 export async function visibleSocialUsers(viewerId: string, users: ListedUser[]): Promise<ListedUser[]> {

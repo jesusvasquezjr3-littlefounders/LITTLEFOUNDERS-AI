@@ -1,8 +1,8 @@
 /*
- * The public site's pages (W2 Lane 1): tokens only, the 4 px spacing scale
- * (03 §3.1), the named type steps (03 §3.2), layouts by the `app` container
- * width (02 §7 rule 9), no borders on filled shapes (02 §4.4), light and dark
- * from the same tokens. Text never truncates: every row wraps (02 §7).
+ * The public site's pages: tokens only, the 4 px spacing scale,
+ * the named type steps, layouts by the `app` container
+ * width, no borders on filled shapes, light and dark
+ * from the same tokens. Text never truncates: every row wraps.
  */
 
 /* ---- Page and sections ---- */
@@ -16,7 +16,7 @@
 .lf-rebuild .lf-site-section--default { padding-block: var(--spacing-4); }
 .lf-rebuild .lf-site-section--tight { padding-block: 0; }
 .lf-rebuild .lf-site-section--soft { padding: var(--spacing-6) var(--spacing-5); border-radius: var(--rounded-lg); background: var(--primary-soft); color: var(--content); }
-/* The one full-colour block per page (03 §3.3; 02 `hero-band`). */
+/* The one full-colour block per page (`hero-band`). */
 .lf-rebuild .lf-site-section--band { padding: var(--spacing-6); border-radius: var(--rounded-xl); background: var(--primary); color: var(--on-primary); }
 .lf-rebuild .lf-site-section--band :is(a, button):focus-visible { outline-color: var(--on-primary); }
 .lf-rebuild .lf-site-section > * { min-inline-size: 0; }
@@ -38,7 +38,7 @@
 @container app (max-width: 399px) {
   .lf-rebuild .lf-site-hero-art { order: -1; }
 }
-/* GAP-FIX-R5: the hero scene is portrait 4:5 (03 §3.3). Small above the copy on a phone, so the heading stays in the first view. */
+/* The hero scene is portrait 4:5. Small above the copy on a phone, so the heading stays in the first view. */
 .lf-rebuild .lf-site-hero-scene { display: block; inline-size: 100%; max-inline-size: min(100%, 320px); }
 .lf-rebuild .lf-site-hero-scene img { display: block; inline-size: 100%; block-size: auto; aspect-ratio: 4 / 5; border-radius: var(--rounded-xl); }
 @container app (max-width: 399px) {
@@ -63,7 +63,7 @@
 .lf-rebuild .lf-site-consequence { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-3); min-block-size: var(--target-lg); padding: var(--spacing-3) var(--spacing-4); border-radius: var(--rounded-md); background: var(--sunken); }
 .lf-rebuild .lf-site-consequence > p { flex: 1 1 12em; }
 
-/* ---- Steps: one column, a staircase from 840 px (03 §3.3) ---- */
+/* ---- Steps: one column, a staircase from 840 px ---- */
 .lf-rebuild .lf-site-steps { display: grid; gap: var(--spacing-4); counter-reset: none; }
 .lf-rebuild .lf-site-step { display: grid; gap: var(--spacing-2); align-content: start; min-inline-size: 0; padding: var(--spacing-5); border-radius: var(--rounded-lg); background: var(--surface); box-shadow: var(--elevation-card); }
 .lf-rebuild[data-theme='dark'] .lf-site-step { background: var(--raised); }
@@ -126,16 +126,16 @@
 .lf-rebuild .lf-consent-kinds { display: grid; gap: var(--spacing-3); margin: 0; padding: 0; list-style: none; }
 .lf-rebuild .lf-consent-kind { display: grid; gap: var(--spacing-2); padding: var(--spacing-4); border-radius: var(--rounded-md); background: var(--sunken); }
 
-/* A notice keeps the reading measure of the text around it (03 §3.2: 30em). */
+/* A notice keeps the reading measure of the text around it (30em). */
 .lf-rebuild :is(.lf-site-page, .lf-route-error) .lf-notice { max-inline-size: 30em; }
-/* Until the visitor chooses, the cookie choice holds the thumb zone: the docked call to action (03 §3.4) waits beneath it. */
+/* Until the visitor chooses, the cookie choice holds the thumb zone: the docked call to action waits beneath it. */
 body:has([data-consent-banner]) .lf-rebuild .lf-sticky-action { visibility: hidden; }
 
-/* ---- X2: a screen that failed to load ---- */
+/* ---- A screen that failed to load ---- */
 .lf-rebuild .lf-route-error { display: grid; gap: var(--spacing-4); align-content: start; }
 .lf-rebuild.lf-route-error-root { min-block-size: 0; background: none; }
 
-/* ---- M7: the public badge-link page (OD-20, retiring) ---- */
+/* ---- The public badge-link page (retiring) ---- */
 .lf-rebuild .lf-badge-landing { display: grid; gap: var(--spacing-4); justify-items: start; max-inline-size: 30em; margin-inline: auto; }
 .lf-rebuild .lf-badge-landing-image { inline-size: 100%; max-inline-size: 20rem; block-size: auto; border-radius: var(--rounded-lg); }
 .lf-rebuild .lf-badge-landing-title { overflow-wrap: anywhere; }
@@ -150,7 +150,7 @@ body:has([data-consent-banner]) .lf-rebuild .lf-sticky-action { visibility: hidd
   .lf-rebuild .lf-site-hero[data-layout='hero'] { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); align-items: center; gap: var(--spacing-10); }
   .lf-rebuild .lf-site-hero-art .lf-avatar--lg { inline-size: var(--spacing-32); block-size: var(--spacing-32); }
   .lf-rebuild .lf-site-hero-scene { max-inline-size: 100%; }
-  /* The portrait art reaches past the hero into the next section's top (03 §3.3: allowed to overlap by design). */
+  /* The portrait art reaches past the hero into the next section's top (allowed to overlap by design). */
   .lf-rebuild .lf-site-hero--overlap .lf-site-hero-art { position: relative; z-index: 1; align-self: end; margin-block-end: calc(-1 * var(--spacing-16)); }
   .lf-rebuild .lf-site-section--split { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); column-gap: var(--spacing-10); align-items: start; }
   .lf-rebuild .lf-site-section--split-end { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); }

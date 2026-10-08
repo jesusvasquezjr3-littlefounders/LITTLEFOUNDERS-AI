@@ -3,8 +3,7 @@ import { CHARACTER_MEASUREMENTS } from './measurements';
 import { poseFor, STAGE_BEARING, type ShotId, type ShotScene, type Vec3 } from './shots';
 
 /*
- * NOTHING DECORATIVE COVERS THE CHARACTER'S FACE OR HANDS (Frontend Bible 08
- * §2, "stage rules"; §10 item 3).
+ * NOTHING DECORATIVE COVERS THE CHARACTER'S FACE OR HANDS.
  *
  * Both Dioramas are ONE mesh with one material (see scripts/generate-walkmask.ts):
  * the ammonite on diorama-a and the palms and bushes on diorama-b are not
@@ -15,13 +14,11 @@ import { poseFor, STAGE_BEARING, type ShotId, type ShotScene, type Vec3 } from '
  * before it reaches the island?
  *
  * PURE ON PURPOSE, like `shots.ts`: the caller supplies `hit`, the distance to
- * the first island surface along a ray (a three.js raycast in the product and in
- * `npm run verify:placement`, a synthetic occluder in the unit test), so the
- * rule itself is tested headless.
+ * the first island surface along a ray (a three.js raycast in the product), so the
+ * rule itself can run headless.
  *
  * THE POINTS ARE PROPORTIONAL, NOT SKINNED. The character exports are
- * meshopt-quantized and skinned (`scripts/verify-placement.ts`
- * `characterStandIn` records why they cannot be measured headless), so the
+ * meshopt-quantized and skinned (so they cannot be measured headless), so the
  * head and hands are sampled at fractions of each character's measured height,
  * in the bind pose, facing the camera. The fractions are written per character
  * below because the cast is not one shape: Dina's head is far forward of her
@@ -132,7 +129,7 @@ export const CORRIDOR_FACING_OFFSETS: readonly number[] = [-25, -12, 0, 12, 25].
 
 /**
  * The placement solver's gate for the lead's spot, before facings are solved.
- * `verify:placement` re-checks with the facings actually solved.
+ * Facings are solved afterwards, hence the offsets above.
  */
 export function corridorClear(who: CharacterId, spot: { x: number; y: number; z: number }, scene: ShotScene, hit: RayHit): boolean {
   return CORRIDOR_FACING_OFFSETS.every((offset) => stageOcclusions({ who, ...spot, facing: STAGE_BEARING + offset }, scene, hit).length === 0);

@@ -26,7 +26,7 @@ import {
  * THE BUDGET IS PEDAGOGICAL, NOT TECHNICAL. `listenSilenceMs` arrives per turn
  * from the strategy in force, so the same silence is read as a child thinking
  * through a Socratic question or a child who has lost the thread in a fluency
- * drill (blueprint §6.2, differentiator #1). A dormant v3 brain sends nothing
+ * drill. A dormant v3 brain sends nothing
  * and the fallback is deliberately patient rather than zero.
  */
 
@@ -42,8 +42,7 @@ export interface HandsFreeTurnInput {
   awaitingReply: boolean;
   /**
    * The current turn's own `turn_audio` frame has not arrived yet, so it is
-   * still unknown whether the tutor is about to have a clip. Found by
-   * adversarial review, 2026-08-30 (HIGH): `speaking` only becomes true once
+   * still unknown whether the tutor is about to have a clip. `speaking` only becomes true once
    * that frame lands with a real URL — but the turn's TEXT arrives first, in
    * its own frame, and `awaitingReply` clears the instant text lands. In the
    * gap between those two moments, both `speaking` and `awaitingReply` read
@@ -86,8 +85,7 @@ export function useHandsFreeTurn(input: HandsFreeTurnInput): void {
     let unsubscribe: (() => void) | null = null;
 
     /*
-     * FLOORED, NEVER TRUSTED RAW. Found by adversarial review, round 38
-     * (2026-08-30, MEDIUM, not reachable through any code path shipped
+     * FLOORED, NEVER TRUSTED RAW. (Not reachable through any code path shipped
      * today — every real `listenSilenceMs` the server sends is a hardcoded
      * positive constant, 900-3500ms). Nothing on either side of the wire
      * enforced positivity here, and `ws/protocol.ts`'s own comment already

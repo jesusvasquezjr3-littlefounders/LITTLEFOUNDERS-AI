@@ -1,4 +1,4 @@
-// `choice` family — pure validators (LESSON_ENGINE.md §5.2, §6).
+// `choice` family — pure validators.
 // Malformed answers → score 0, never throw. feedback_md comes from authored
 // content (per-distractor rationale); tier microcopy is the UI's job (i18n).
 
@@ -117,7 +117,7 @@ const gradeSpeedTap: FamilyGrader = (segment, answer) => {
   const targets = key ? strArray(key.target_ids) : null
   if (!selected || !targets) return MALFORMED
   const items = Array.isArray(segment.payload.items) ? (segment.payload.items as unknown[]) : []
-  // OD-28 (L-01): running out of time no longer costs points. The timer stays and
+  // Running out of time no longer costs points. The timer stays and
   // the answer still reports `overtime`, but the score is the answer's own.
   return {
     score: signalDetection(selected, targets, items.length),
@@ -132,7 +132,7 @@ const gradeConfidenceQuiz: FamilyGrader = (segment, answer) => {
   const confidence = a && typeof a.confidence === 'number' ? a.confidence : null
   if (!chosen || confidence === null || !key) return MALFORMED
   const right = chosen === key.correct_option_id
-  // Pure calibration payoff (§5.2 #13): confident-and-wrong is the costly cell;
+  // Pure calibration payoff: confident-and-wrong is the costly cell;
   // hedged answers land in the "almost" band either way — that IS the lesson.
   return {
     score: calibration(right, confidence),

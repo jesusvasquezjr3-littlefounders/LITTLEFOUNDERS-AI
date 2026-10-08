@@ -4,14 +4,14 @@ import { adminRevokeUserSessions } from './gotrue.js';
 import { eraseNow } from './accountDeletion.js';
 
 /*
- * A.1's built FAQ promise: a kid whose last verified guardian link disappears
+ * The FAQ promise: a kid whose last verified guardian link disappears
  * is suspended immediately and deleted if nothing reactivates it within 90
  * days. The suspension marker (and, since identity_enforcement, the GoTrue
  * ban) is written by migration 0110's trigger. The 90-day deletion runs in
  * two places, both through `purgeExpiredKidSuspension`, which hard deletes
  * only when the window has passed AND no verified link exists: the daily
  * account-deletion sweep (`listExpiredKidSuspensions`, so a child who never
- * signs in again is still erased; F3-identity-site) and the kid's own
+ * signs in again is still erased) and the kid's own
  * session boundary (GET /auth/me).
  */
 
@@ -37,7 +37,7 @@ export async function readKidSuspension(userId: string): Promise<string | null |
  * Lazy 90-day purge, evaluated at the kid's session boundary. Hard-deletes
  * the account ONLY when the window has passed AND no verified guardian link
  * exists. Returns 'deleted' | 'suspended' | 'active' | 'unknown' — a failed
- * read NEVER deletes (§1.14: never destroy on an ambiguous read). The link
+ * read NEVER deletes (never destroy on an ambiguous read). The link
  * read is shape-validated so an empty 200 body or a proxy artifact can never
  * masquerade as an empty link set.
  */
@@ -51,7 +51,7 @@ export async function purgeExpiredKidSuspension(userId: string, suspendedAt: str
   const parsed = z.array(z.object({ id: z.string().uuid() })).safeParse(links);
   if (!parsed.success) return 'unknown';
   if (parsed.data.length > 0) return 'active';
-  // E.6: the purge is the same erasure as every other deletion (database,
+  // The purge is the same erasure as every other deletion (database,
   // Mentor sessions, stored files, warehouse), recorded and audited on an
   // account_deletion_requests row. 'deleted' once the account itself is gone;
   // any remaining cleanup is resumed by the daily sweep.
@@ -80,7 +80,7 @@ export async function listExpiredKidSuspensions(limit: number): Promise<{ userId
 }
 
 /**
- * The enforcement boundary A.1's suspension promise rests on: a suspended
+ * The enforcement boundary the suspension promise rests on: a suspended
  * kid's sessions are revoked so the account is unusable immediately, and the
  * lazy 90-day purge runs at the same admission point. 'unknown' means a read
  * failed — the caller must treat it as not-suspended evidence (never delete,

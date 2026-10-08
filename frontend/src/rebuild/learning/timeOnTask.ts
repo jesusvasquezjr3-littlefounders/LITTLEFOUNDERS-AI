@@ -1,6 +1,5 @@
 /*
- * Time on task for a v2 lesson step (GAP-FIX-R4; Appendix C 1.2 Session
- * Efficiency Ratio; Appendix P Part 7.5: an analytics field, never a grading
+ * Time on task for a v2 lesson step (an analytics field, never a grading
  * input).
  *
  * The clock runs from the moment a step is shown (the lesson entered, or the

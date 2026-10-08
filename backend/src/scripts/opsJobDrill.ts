@@ -12,8 +12,8 @@ import { BADGE_IMAGE_SWEEP_AUDIT_ACTION } from '../routes/badgePublic.js';
 import { RETENTION_SWEEP_AUDIT_ACTION, RETENTION_STALE_HOURS } from '../services/tutorData.js';
 
 /*
- * H.4 / Appendix O 2.3: the SIMULATED JOB-FAILURE DRILL. Appendix O is not
- * met until a simulated failure of each watched job is shown to notify a
+ * The SIMULATED JOB-FAILURE DRILL. The watchdog is not
+ * complete until a simulated failure of each watched job is shown to notify a
  * human. Locally, with zero spend and no production access:
  *
  *   1. the audit trail Core reads is simulated: the chosen job's last
@@ -28,21 +28,21 @@ import { RETENTION_SWEEP_AUDIT_ACTION, RETENTION_STALE_HOURS } from '../services
  * replacement lives only for the duration of step 2.
  *
  * Targets: every watched job in services/opsJobs.ts OPS_JOBS (the backups,
- * the drift probe, and since GAP-FIX-R6 the learning retention sweep, the
+ * the drift probe, and the learning retention sweep, the
  * insights prune, the account-deletion sweep, the family retention sweep and
  * the social retention sweep, each with its own trail simulated stale, and
- * since GAP-FIX-R8 the legacy badge-image purge, drilled in its realistic
+ * the legacy badge-image purge, drilled in its realistic
  * failure: the sweep still runs every day but a page keeps failing to purge,
  * so its latest attempt is fresh and failed while its last clean run is stale);
  * `tutor_retention`, the Mentor 90-day retention sweep (its
- * `tutor.retention.swept` trail simulated stale, Appendix O 2.3(b) names it);
- * `content_retro_checks` (G.2, an overdue retroactive release check);
- * `access_reviews` (G.4, an elevated grant past the 90-day access review);
- * `account_deletion_failures` (E.6, an erasure whose step failed more than a
+ * `tutor.retention.swept` trail simulated stale);
+ * `content_retro_checks` (an overdue retroactive release check);
+ * `access_reviews` (an elevated grant past the 90-day access review);
+ * `account_deletion_failures` (an erasure whose step failed more than a
  * day ago and never completed).
- * `alerts_undelivered` (H.3, GAP-FIX-R6: a warehouse alert trigger whose
+ * `alerts_undelivered` (a warehouse alert trigger whose
  * delivery failed after its retries, read from dataintel).
- * `warehouse_retention` (H.4, GAP-FIX-R8, one of OPS_JOBS): the warehouse's
+ * `warehouse_retention` (one of OPS_JOBS): the warehouse's
  * 400-day prune last succeeded outside its window and its latest attempt
  * failed, read from dataintel's maintenance status.
  */
@@ -68,7 +68,7 @@ const reviewStatus = (due: number) => ({
   cadenceDays: 90, total: 2, stale: due, reviewedEver: 1,
   grants: [{ userId: '00000000-0000-4000-8000-000000000001', kind: 'role', grant: 'admin', grantedAt: '2026-01-01T00:00:00Z', lastReviewedAt: null, due: due > 0 }],
 });
-/** H.3: the warehouse's undelivered-trigger read (dataintel GET /alerts/undelivered). */
+/** The warehouse's undelivered-trigger read (dataintel GET /alerts/undelivered). */
 const undelivered = (count: number) => ({
   data: {
     hours: 36, count,
@@ -77,7 +77,7 @@ const undelivered = (count: number) => ({
   },
   error: null,
 });
-/** GAP-FIX-R8: dataintel GET /maintenance/status; the prune step is the one simulated failing when `failing`. */
+/** Dataintel GET /maintenance/status; the prune step is the one simulated failing when `failing`. */
 const maintenance = (failing: boolean, staleAt: string, freshAt: string) => ({
   data: {
     steps: [
@@ -118,21 +118,21 @@ export async function runOpsJobDrill(job: DrillTarget, now: Date = new Date()): 
   const original = globalThis.fetch;
   globalThis.fetch = (async (input: RequestInfo | URL) => {
     const url = decodeURIComponent(String(input));
-    // G.2: a retroactive release check past its 30 days, simulated through the same status read.
+    // A retroactive release check past its 30 days, simulated through the same status read.
     if (url.includes('/rpc/content_bypass_metrics')) return json(metricsRow(job === 'content_retro_checks' ? 1 : 0));
-    // G.4: an elevated grant past the 90-day access review.
+    // An elevated grant past the 90-day access review.
     if (url.includes('/rpc/staff_access_review_status')) return json(reviewStatus(job === 'access_reviews' ? 1 : 0));
-    // E.6: an erasure still processing whose step failed more than a day ago.
+    // An erasure still processing whose step failed more than a day ago.
     if (url.includes('/account_deletion_requests')) return json(job === 'account_deletion_failures' ? [{ id: DRILL_REQUEST }] : []);
-    // H.3: a warehouse alert whose delivery failed after its retries.
+    // A warehouse alert whose delivery failed after its retries.
     if (url.includes('/api/v1/intel/alerts/undelivered')) return json(undelivered(job === 'alerts_undelivered' ? 1 : 0));
-    // H.4 (GAP-FIX-R8): the warehouse prune failed and has not succeeded inside its window.
+    // The warehouse prune failed and has not succeeded inside its window.
     if (url.includes('/api/v1/intel/maintenance/status')) return json(maintenance(job === 'warehouse_retention', staleAt, freshAt));
     const action = /action=eq\.([^&]+)/.exec(url)?.[1] ?? '';
     if (action === DELETION_STEP_FAILED_AUDIT_ACTION) {
       return json(job === 'account_deletion_failures' ? [{ detail: { request_id: DRILL_REQUEST, step: 'depot', reason: 'unreachable' } }] : []);
     }
-    // F.2 (GAP-FIX-R8): the badge sweep records counts; a clean page has failed = 0.
+    // The badge sweep records counts; a clean page has failed = 0.
     if (action === BADGE_IMAGE_SWEEP_AUDIT_ACTION) {
       if (job !== 'badge_link_retirement') return json([{ created_at: freshAt, detail: { scanned: 3, purged: 3, stillReferenced: 0, failed: 0 } }]);
       // The drilled failure: the last clean page is stale, the latest page ran today and could not purge two images.

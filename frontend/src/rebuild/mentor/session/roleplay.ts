@@ -2,7 +2,7 @@ import type { CharacterAction, CharacterEmotion, CharacterId } from './vocabular
 import ROLEPLAY_VOICES from './roleplayVoices.generated.json';
 
 /*
- * Class III `roleplay` (TUTOR_INSTRUMENTS.md §3.4): a short scene two
+ * Class III `roleplay`: a short scene two
  * characters act out while the learner watches, then decides something
  * themselves. The model names a scene BY ID (`turn.roleplayScene`); it never
  * writes the lines. Oracle's `oracle/src/tutor/roleplayScenes.ts` holds what
@@ -11,15 +11,14 @@ import ROLEPLAY_VOICES from './roleplayVoices.generated.json';
  * how long it holds). The rebuilt captions live in `rebuild-mentor.json`
  * `mentorRoleplay.scenes.<id>.beats`, one per beat, in order.
  *
- * `npm run roleplay-voices:check` (agent/tools/check-roleplay-voice-parity.mjs)
- * keeps the three agreeing: the speakers here against Oracle's, and every
- * rebuilt caption's words against the words Oracle's clip speaks (punctuation
+ * The three must agree: the speakers here with Oracle's, and every
+ * rebuilt caption's words with the words Oracle's clip speaks (punctuation
  * may differ: the rebuilt copy follows the Copy Budget's style, an em dash
  * becomes a comma, the voice says the same words).
  *
  * The voice clips were generated once, ahead of time (`roleplayVoices.generated.json`,
  * written by `npm run roleplay-voices:generate`): playing a scene calls no
- * provider and spends nothing (OD-23). A clip that does not resolve is silent,
+ * provider and spends nothing. A clip that does not resolve is silent,
  * never a stand-in: the caption still carries the line.
  */
 

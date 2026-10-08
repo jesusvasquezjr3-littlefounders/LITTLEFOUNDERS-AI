@@ -42,7 +42,7 @@ const FIN1_GUIDANCE: readonly ForgeGuidance[] = [
 ];
 
 /* ── An independent, compact copy of the fin1 model. Core and the browser own the real one; this one only exists to check the
-   keys and the payloads, and the Forge test pins it to the same golden values. Money is whole cents, rates are whole basis
+   keys and the payloads. Money is whole cents, rates are whole basis
    points, every figure is exact in BigInt and rounded half up once. ── */
 
 const B = 10_000n;
@@ -435,7 +435,7 @@ function fin1Gates(document: { segments?: unknown }, answerKeys?: Record<string,
   return problems;
 }
 
-/* ── Solvability (F0.4): the two puzzle pieces. The rate-return piece is checked in solvability-plane.ts. ── */
+/* ── Solvability: the two puzzle pieces. The rate-return piece is checked in solvability-plane.ts. ── */
 
 export const compoundChecker: SolvabilityChecker = (segment, context) => {
   const subject = `compound interest ${segment.id}`;

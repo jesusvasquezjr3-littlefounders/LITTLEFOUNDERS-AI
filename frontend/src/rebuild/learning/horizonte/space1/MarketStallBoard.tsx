@@ -32,7 +32,7 @@ function goalText(goal: StallGoal, t: Space1Text, locale: Locale): string {
 }
 
 /*
- * F4.6, the stall: items with prices sit on a shelf and the learner fills a basket (drag, tap then tap, or the Move to menu)
+ * The stall: items with prices sit on a shelf and the learner fills a basket (drag, tap then tap, or the Move to menu)
  * to hit an exact total, to get a given change, or to buy the most items a budget allows. Many baskets can be right, so the
  * answer is the basket and Core checks the rule; the cost bar only restates the sum the basket already is.
  */

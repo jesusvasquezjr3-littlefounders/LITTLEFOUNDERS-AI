@@ -16,7 +16,7 @@ export type TaxBracketResult = {
 };
 
 /**
- * Canonical minor-unit tax-bracket model for M20. Each bracket tax is rounded
+ * Canonical minor-unit tax-bracket model for tax brackets. Each bracket tax is rounded
  * independently to the nearest minor unit, matching how progressive brackets
  * are displayed and avoiding a browser-only aggregate rounding rule.
  */

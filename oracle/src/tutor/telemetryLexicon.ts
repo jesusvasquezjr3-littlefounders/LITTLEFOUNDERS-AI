@@ -1,22 +1,21 @@
 import type { Locale } from '../context/schema.js';
 
 /*
- * C.9 / C.19 / C.20 — THE LEXICAL DETECTORS OF THE BEHAVIORAL TELEMETRY LAYER.
+ * THE LEXICAL DETECTORS OF THE BEHAVIORAL TELEMETRY LAYER.
  *
  * Every function here reads a LEARNER's words and returns a plain fact about
  * the words (a count, a yes/no, a canonical answer). None of them returns, or
  * is allowed to return, a statement about how the learner feels: the layer
- * that consumes them (`behavioralTelemetry.ts`) outputs signal strength only
- * (Appendix D §1.7).
+ * that consumes them (`behavioralTelemetry.ts`) outputs signal strength only.
  *
- * THEY ARE BIAS-AUDITED (C.20). Lexical rules are exactly where dialect bias
- * enters a system like this (Appendix D §1.7: classifiers rating African
+ * THEY ARE BIAS-AUDITED. Lexical rules are exactly where dialect bias
+ * enters a system like this (classifiers rating African
  * American English and other vernacular forms as more negative than
  * semantically equivalent standard forms). Each detector is registered in
  * `safety/biasAudit/registry.ts` and run against paired dialect, code-switch,
- * child-spelling and ASR-artifact variants of the same meaning on every CI
- * run (`biasAudit.test.ts`); a variant treated differently from its standard
- * form fails the build. So the lists below are written to be SYMMETRIC: when a
+ * child-spelling and ASR-artifact variants of the same meaning
+ * a variant treated differently from its standard
+ * form is a defect. So the lists below are written to be SYMMETRIC: when a
  * standard form is in a list, its regional, vernacular and ASR renderings are
  * in it too, and the audit is what proves it.
  *
@@ -54,11 +53,11 @@ export function countWords(text: string): number {
 const phrase = (alternation: string): RegExp =>
   new RegExp(`(?<![\\p{L}\\p{N}'])(?:${alternation})(?![\\p{L}\\p{N}'])`, 'u');
 
-// ── Hedging / uncertainty language (Appendix D §1.3, §1.6) ───────────────────
+// ── Hedging / uncertainty language ───────────────────
 
 /*
  * "I don't know", "this doesn't make sense", "I guess": an UNCERTAINTY marker
- * (ITSPOKE's most transferable finding, Appendix D §1.6), in the three product
+ * (ITSPOKE's most transferable finding), in the three product
  * languages and the forms children actually type or say. Every standard form
  * sits beside its vernacular and speech-to-text renderings, so the same
  * uncertainty is read the same way whoever says it.
@@ -163,7 +162,7 @@ export function isHedging(text: string, locale: Locale): boolean {
   return HEDGES_LOCAL[locale]?.test(t) ?? false;
 }
 
-// ── Terse replies (Appendix D §1.3: "k", "idk", "fine") ─────────────────────
+// ── Terse replies ("k", "idk", "fine") ─────────────────────
 
 /*
  * A minimal-engagement reply: the whole message is one of these, or nothing
@@ -193,7 +192,7 @@ export function isTerseReply(text: string): boolean {
   return TERSE_REPLIES.has(words.join(' '));
 }
 
-// ── Off-topic drift (Appendix D §1.3) ──────────────────────────────────────
+// ── Off-topic drift ──────────────────────────────────────
 
 /*
  * Off-topic is read as "a contentful message that shares nothing with the
@@ -305,7 +304,7 @@ export function isOffTopic(text: string, topicText: string): boolean | null {
   return true;
 }
 
-// ── Answer normalization (repeated identical answers, Appendix D §1.3) ──────
+// ── Answer normalization (repeated identical answers) ──────
 
 const EN_NUMBERS: Record<string, number> = {
   zero: 0, one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10, eleven: 11,
@@ -343,7 +342,7 @@ const EN_TENS = ['twenty', 'thirty', 'forty', 'fourty', 'fifty', 'sixty', 'seven
 
 /**
  * The value of one number word, or null. Beyond the exact table it reads the
- * forms the C.20 bias audit found children and speech-to-text produce: an
+ * forms the bias audit found children and speech-to-text produce: an
  * English compound written as one word ("twentyfive"), and the phonetic
  * spellings of young writers ("beinticinco" for "veinticinco", "sinco" for
  * "cinco", "vinti" for "vinte"). Without them a child who writes the same
@@ -417,7 +416,7 @@ export function normalizeAnswer(text: string, locale: Locale): string {
   return [...numbers.map(String), ...[...rest].sort()].join(' ');
 }
 
-// ── The learner's answer to the check-in (C.19) ─────────────────────────────
+// ── The learner's answer to the check-in ─────────────────────────────
 
 /*
  * "Are we on the same page?" — the Mentor's humble check-in. The read is

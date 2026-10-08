@@ -10,17 +10,17 @@ import { localizedText } from './coursePath';
 import type { NarrativeRecall } from './narrative';
 
 /*
- * B.9 / S05.3c — "Remember this?" A decision the learner made earlier in the
+ * "Remember this?" A decision the learner made earlier in the
  * story comes back as a later, relevant lesson opens: the situation, what
  * they chose and what happened next. It is a single-state moment, so the
- * whole screen is one hue (Bible 02 rule 15), shown before the lesson.
+ * whole screen is one hue, shown before the lesson.
  *
  * It carries no score and no judgement: the quality an author gave the
  * choice never reaches the client. It asks one reflective question and
  * moves on; nothing is graded or stored from it. No celebration, no lives.
  * The whole memory is in view (the situation, the choice, what happened next and, if they changed
  * their mind, the first choice struck through), with the learner's own Mentor thinking beside it: a
- * deviation from the Bible 06 layering that put what happened behind a tap (OD-42).
+ * deviation from an earlier layering that put what happened behind a tap.
  * Presentation only: the host decides when to show it and what Continue does.
  */
 

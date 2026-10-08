@@ -7,8 +7,7 @@ import {
 import './overlays.css';
 
 /*
- * Overlays (Frontend Bible 02 rules 12 and 13, §9.8, §11 item 10; 06 §4
- * layering; S03.2). Modal overlays (dialog, sheet) sit on a scrim, fixed to the
+ * Overlays. Modal overlays (dialog, sheet) sit on a scrim, fixed to the
  * viewport, trap focus, close on Escape, lock page scroll without moving it and
  * make the page behind them inert; closing gives focus back to what opened
  * them. Anchored layers (popover, menu, tooltip) are non-modal. No component
@@ -19,7 +18,7 @@ import './overlays.css';
 function useModal(open: boolean, layer: LayerKind, onDismiss: (() => void) | undefined, panel: React.RefObject<HTMLElement>, initialFocus?: React.RefObject<HTMLElement>) {
   const host = useLayerHost(open, { layer });
   // A host React already removed is not ready: under development double effects a render can still hold the first
-  // host after its cleanup, and a focus trap run there focuses nothing (W2T.1, found on the real staff routes).
+  // host after its cleanup, and a focus trap run there focuses nothing.
   const ready = open && host !== null && host.isConnected;
   useLayer(ready, host, true, onDismiss);
   useScrollLock(ready);
@@ -32,7 +31,7 @@ export interface DialogProps {
   /** Escape and a press on the scrim call this. Omit it only while an action is in flight. */
   onClose?: () => void;
   heading: string;
-  /** What happens, in words (02 §9.8): a dialog never relies on colour to say it. */
+  /** What happens, in words: a dialog never relies on colour to say it. */
   description: string;
   children?: ReactNode;
   /** The action row. Put the safe option first. */
@@ -64,7 +63,7 @@ export function Dialog({ open, onClose, heading, description, children, actions,
 export interface ConfirmDialogProps {
   open: boolean;
   heading: string;
-  /** The consequence of confirming, stated plainly (02 §9.8). */
+  /** The consequence of confirming, stated plainly. */
   consequence: string;
   keepLabel: string;
   confirmLabel: string;
@@ -80,7 +79,7 @@ export interface ConfirmDialogProps {
 /**
  * A confirmation. The keep option always comes first, in reading order and in
  * focus order, and it is where focus lands, so Enter, Escape and a press on the
- * scrim all keep (02 §9.8: "a destructive action always has an explicit
+ * scrim all keep ("a destructive action always has an explicit
  * keep/cancel option offered before the destructive one").
  */
 export function ConfirmDialog({ open, heading, consequence, keepLabel, confirmLabel, pendingLabel, pending = false, destructive = false, onKeep, onConfirm }: ConfirmDialogProps) {
@@ -96,7 +95,7 @@ export function ConfirmDialog({ open, heading, consequence, keepLabel, confirmLa
 /**
  * The only way a surface offers a destructive action: a danger button that
  * opens a `ConfirmDialog` and runs `onConfirm` only after the person confirms
- * (02 §9.5: the error hue is "always behind a confirmation dialog").
+ * (the error hue is "always behind a confirmation dialog").
  */
 export function DestructiveAction({ label, confirm, onConfirm, pending = false, disabled = false, size }: {
   label: string;
@@ -127,14 +126,14 @@ export interface SheetProps {
   closeLabel: string;
   children: ReactNode;
   footer?: ReactNode;
-  /** `bottom`: details behind a tap (06 §4) and short choices. `full`: the phone navigation menu. */
+  /** `bottom`: details behind a tap and short choices. `full`: the phone navigation menu. */
   placement?: 'bottom' | 'full';
   /** A full sheet may use the brand mark in place of a visible heading; the heading still names the dialog. */
   headingHidden?: boolean;
   headerStart?: ReactNode;
 }
 
-/** A modal sheet on the sheet layer (02 §9.8, z 50), anchored to the bottom edge and the safe area. */
+/** A modal sheet on the sheet layer (z 50), anchored to the bottom edge and the safe area. */
 export function Sheet({ open, onClose, heading, closeLabel, children, footer, placement = 'bottom', headingHidden = false, headerStart }: SheetProps) {
   const id = useId();
   const panel = useRef<HTMLElement>(null);
@@ -203,7 +202,7 @@ export interface PopoverTriggerProps {
 
 /**
  * A non-modal panel anchored to its trigger: a short "Why?" or "Details"
- * layer (06 §4). Focus moves into it; Escape, a press outside or tabbing past
+ * layer. Focus moves into it; Escape, a press outside or tabbing past
  * its edge closes it, and Escape or tabbing out return focus to the trigger.
  */
 export function Popover({ label, trigger, children, onOpenChange }: {
@@ -255,7 +254,7 @@ export interface MenuTriggerProps {
  * An action menu (WAI-ARIA menu button pattern). Enter, Space or ArrowDown
  * open it on the first item, ArrowUp on the last; arrows, Home, End and the
  * first letter move; Enter or Space choose; Escape and Tab close and give
- * focus back to the trigger. Items are at least 48 px tall (02 §8).
+ * focus back to the trigger. Items are at least 48 px tall.
  */
 export function Menu({ label, items, trigger }: { label: string; items: readonly MenuItem[]; trigger: (props: MenuTriggerProps) => ReactNode }) {
   const id = useId();

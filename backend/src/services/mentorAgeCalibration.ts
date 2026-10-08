@@ -29,7 +29,7 @@ export async function readMentorAgeCalibration(userId: string): Promise<{ tier: 
 /**
  * Internal socket admission resolves evidence again; a legacy session tier is
  * not age evidence. The birth date read here travels no further than Core
- * (C.17 derives the dialogue band from it; Oracle only ever sees the band).
+ * (the dialogue band is derived from it; Oracle only ever sees the band).
  */
 export async function resolveInternalMentorAge(
   userId: string,
@@ -56,7 +56,7 @@ export async function recordMentorAgeCalibration(userId: string, tier: MentorAge
   return result.success ? result.data : null;
 }
 
-// ── C.1 / Appendix F 1.3 Age-Tier Calibration Coverage Rate (GAP-FIX-R3) ────
+// ── Age-Tier Calibration Coverage Rate ────
 
 const count = z.coerce.number().int().nonnegative();
 const CoverageRows = z

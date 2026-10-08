@@ -165,26 +165,26 @@ export const ClientMessageSchema = z.discriminatedUnion('type', [
     })
     .strict(),
   /**
-   * `recapFirst` (OD-28, owner review M-04): the learner pressed "end" on the
-   * Mentor screen. The Mentor asks the C.16 recap question first and the
+   * `recapFirst`: the learner pressed "end" on the
+   * Mentor screen. The Mentor asks the recap question first and the
    * session stays open for one answer; a second `end_session` (or the answer)
    * closes it. Without the flag the session closes at once (start over, a
    * learner leaving mid-recap, older clients).
    */
   z.object({ type: z.literal('end_session'), recapFirst: z.literal(true).optional() }).strict(),
   /**
-   * C.8/C.12: the learner's choice on the stop-or-continue offer
+   * The learner's choice on the stop-or-continue offer
    * (`session_end_offer`). Honoured only while an offer is open.
    */
   z.object({ type: z.literal('session_end_response'), accepted: z.boolean() }).strict(),
   /**
-   * C.19: the learner's answer to the system's check-in (`check_in`) on the
+   * The learner's answer to the system's check-in (`check_in`) on the
    * two reply chips: `aligned` = "yes, we're good", false = "not really".
    * Honoured only while a check-in is open.
    */
   z.object({ type: z.literal('check_in_response'), aligned: z.boolean() }).strict(),
   /**
-   * C.15: the learner's answer to the goal restatement (`goal_check`) on the
+   * The learner's answer to the goal restatement (`goal_check`) on the
    * two equal chips: `agreed` = "yes, that's it", false = "something else".
    * Honoured only while the goal check is open.
    */
@@ -204,7 +204,7 @@ export type BudgetState = 'running' | 'wrapping' | 'ended';
  * `tutor/whiteboard.ts`). Named
  * and exported so `core/client.ts`'s `PersistTurnInput` can persist the SAME
  * object a learner actually saw rather than a second, driftable shape — a
- * board replay must show, per /ORACLE.md §12, is the one that was drawn,
+ * board replay must show is the one that was drawn,
  * never one recomputed later against arithmetic that could disagree with it.
  *
  * A discriminated union on `kind`, mirroring `Whiteboard` (turnSchema.ts)
@@ -285,7 +285,7 @@ export type ServerMessage =
       character: string;
       companion: string | null;
       diorama: string;
-      /** Whether speech is available at all this session (/ORACLE.md §14). */
+      /** Whether speech is available at all this session. */
       voice: boolean;
       /** Whether the microphone may be opened: voice AND consent AND permission. */
       microphone: boolean;
@@ -329,7 +329,7 @@ export type ServerMessage =
        *
        * `idleNudgeMs` — how long to let the learner think before any gentle
        * nudge. `listenSilenceMs` — how much silence, AFTER they have actually
-       * spoken, means the turn is theirs no longer (blueprint §6.2). The two
+       * spoken, means the turn is theirs no longer. The two
        * are different questions: one is about a learner who has not started,
        * the other about one who has finished. Thinking time is sacred in a
        * Socratic beat and fluency work wants pace, so both move with the
@@ -356,14 +356,14 @@ export type ServerMessage =
        */
       lesson?: { topic: string | null; step: number; of: number };
       /**
-       * V4: a live sequence board synced to this turn's story (/ORACLE.md
-       * §20.5). `values` are the SERVER-COMPUTED running quantities — the
+       * V4: a live sequence board synced to this turn's story.
+       * `values` are the SERVER-COMPUTED running quantities — the
        * client renders them as given and never redoes the arithmetic, exactly
        * the posture `checkAnswer`'s verdict already takes with a spoken answer.
        */
       whiteboard?: WireWhiteboard;
       /**
-       * Class III / S17 `roleplay` (TUTOR_INSTRUMENTS.md §3.4): a closed id
+       * `roleplay`: a closed id
        * into the frontend's own pre-authored scene catalog
        * (`frontend/src/rebuild/mentor/session/roleplay.ts`). Unlike `savePlan`, this
        * IS on the wire — the frontend is what plays the scene, so it needs
@@ -378,7 +378,7 @@ export type ServerMessage =
        */
       pointAt?: number | null;
       /**
-       * GAP-FIX-R2: up to three likely answers, shown as reply chips and sent
+       * Up to three likely answers, shown as reply chips and sent
        * back as the learner's own words. Absent when the turn offers none.
        * HAND-MIRRORED in the frontend's `TutorTurnState.replies`.
        */
@@ -395,8 +395,8 @@ export type ServerMessage =
       audioUrl: string | null;
       /**
        * Word-level timing for THIS clip, present only when the voice
-       * provider actually returned it for these exact bytes (ORACLE.md
-       * §19.5 — gated on the configured TTS model, which nothing in
+       * provider actually returned it for these exact bytes (
+       * gated on the configured TTS model, which nothing in
        * production requests today, so this is absent on every turn until
        * that changes; see the voice adapter's own comment in `src/voice/`).
        * Omitted rather than sent empty/null: the caption treats "no
@@ -416,7 +416,7 @@ export type ServerMessage =
   | {
       /**
        * The conversation so far, sent ONLY when a dropped session re-attaches
-       * (/ORACLE.md §3.2 resume). The client's per-socket state was reset by
+       * (resume). The client's per-socket state was reset by
        * the reconnect; this refills the transcript so the learner returns to
        * the conversation they left, not to a blank one. The final tutor entry
        * carries the real seq of the re-sent `turn` frame so the caption and
@@ -437,7 +437,7 @@ export type ServerMessage =
       origin: 'catalog' | 'bank' | 'live';
       /** A stripped Lesson Engine segment. The answer key is not here. */
       segment: Record<string, unknown>;
-      /** Whether this segment can award XP (/ORACLE.md §8). */
+      /** Whether this segment can award XP. */
       scoresXp: boolean;
       framing: string;
     }
@@ -446,25 +446,25 @@ export type ServerMessage =
       adaptation: (typeof ADAPTATIONS)[number];
     }
   /**
-   * C.8/C.12: the turn just delivered asked the learner to choose between
+   * The turn just delivered asked the learner to choose between
    * stopping for today and doing one more. The stage shows two equal
    * choices; the answer is `session_end_response`.
    */
   | { type: 'session_end_offer' }
   /**
-   * C.19: the turn just delivered is the system's check-in ("are we on the
+   * The turn just delivered is the system's check-in ("are we on the
    * same page?"). The stage shows two equal reply chips; the answer is
    * `check_in_response` or the learner's own words.
    */
   | { type: 'check_in' }
   /**
-   * C.15: the turn just delivered restated the session goal as one
+   * The turn just delivered restated the session goal as one
    * confirming question. The stage shows two equal chips; the answer is
    * `goal_response` or the learner's own words.
    */
   | { type: 'goal_check' }
   /**
-   * C.16: sent once, just before `closed` on a graceful close. `script` is
+   * Sent once, just before `closed` on a graceful close. `script` is
    * the closing script this ending used; `effort` the specific act a
    * completed close named (null otherwise); `topic` the lesson the next
    * session picks up from (null for a safety stop). Our own catalog text.
@@ -501,7 +501,7 @@ export const CLOSE_CODES = {
   SERVICE_DEGRADED: 4013,
   /**
    * The platform-wide spend circuit breaker refused a NEW session
-   * (/ORACLE.md §15.2 item 1, `session/spend-guard.ts`). Deliberately its
+   * (`session/spend-guard.ts`). Deliberately its
    * own code rather than reusing `SERVICE_DEGRADED` — an on-call engineer
    * grepping close codes needs "cost control tripped" to be instantly
    * distinguishable from "moderation is down"; the two have nothing in

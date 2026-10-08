@@ -1,7 +1,6 @@
-/* C.15 / C.7 surfaces: the goal chips, the end-of-session bond proxy and the
-   learner disposition profile (Frontend Bible 08 §2 response area; Bible 02
-   §4.4 panels). A panel on the page with a surface fill and a soft shadow,
-   never an outline; dark mode steps the surface and keeps a soft shadow (OD-28, V-04). No
+/* Surfaces: the goal chips, the end-of-session bond proxy and the
+   learner disposition profile. A panel on the page with a surface fill and a soft shadow,
+   never an outline; dark mode steps the surface and keeps a soft shadow. No
    animation of its own, so reduced motion needs no override: nothing moves. */
 .lf-rebuild.lf-alliance-panel {
   padding: var(--spacing-4);
@@ -29,13 +28,13 @@
 }
 /* Three chips never wrap 2 + 1 (an orphan chip reads as a different, lesser
    answer): one row where all three fit, otherwise one column. Sized by the
-   panel (an `app` container), never by the viewport (02 §6, 03 §3.2). */
+   panel (an `app` container), never by the viewport. */
 .lf-alliance-chips--three { grid-template-columns: minmax(0, 1fr); }
 @container app (min-width: 36rem) {
   .lf-alliance-chips--three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
 /* Sunken fill in both themes: on the surface panel the chips need their own
-   boundary, and a dark control shadow alone is faint (Bible 02 §4.4). */
+   boundary, and a dark control shadow alone is faint. */
 .lf-alliance-chip {
   inline-size: 100%;
   min-block-size: var(--target-base);

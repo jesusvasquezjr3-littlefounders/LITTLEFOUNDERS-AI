@@ -19,7 +19,7 @@ import {
  * (required), an optional discovery-channel survey, and the
  * create-account-now-or-later offer. On completion, day-1 streak activates
  * (Duolingo-style: the platform gives an early win before the first lesson).
- * Since S05.3e (B.21) the day is recorded by record_learning_practice_day:
+ * The day is recorded by record_learning_practice_day:
  * the habit streak model (rest days, never a reset over one missed day)
  * advanced atomically under the stats row lock, touching no other stat.
  *
@@ -43,7 +43,7 @@ const OnboardingCompleteBody = z.object({
 
 export function onboardingRouter(): Router {
   const router = Router();
-  // Appendix M 1.1 / Part 2.3(b): completing onboarding records a Learn
+  // Completing onboarding records a Learn
   // practice day, so an unscreened account is refused here as on /learn. A
   // refused child's guest carries the under-13 origin and reads as screened.
   router.use(requireAuth, requireAgeScreen);
@@ -67,7 +67,7 @@ export function onboardingRouter(): Router {
     const streak = await recordLearningPracticeDay(user.id, todayLocal);
     if (!streak) return fail(res, 502, 'INTERNAL', 'Profile saved, but learning stats could not be updated');
 
-    // A.2, Appendix M 1.1 (target zero): the discovery answer is an optional
+    // The discovery answer is an optional
     // acquisition event, stored only under the predicate signup attribution
     // uses. A guest from the age-refusal path, a kid, or a teen who has not
     // opted in completes onboarding with the answer discarded (null), and the

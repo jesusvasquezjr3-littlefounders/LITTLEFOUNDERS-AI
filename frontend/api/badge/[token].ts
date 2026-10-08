@@ -2,13 +2,13 @@
  * Vercel Edge Function — /badge/:token (rewritten from vercel.json, which
  * maps the PUBLIC path to /api/badge/:token, this file's route).
  *
- * RETIRING (OD-20, 24 September 2026). New achievement shares are images the
+ * RETIRING (24 September 2026). New achievement shares are images the
  * parent sends; no new link is issued. This function serves only legacy
  * links issued before the cutover, until they expire. From
  * BADGE_LINK_ROUTE_RETIRES_AT it answers 410 with the private headers and
  * never asks Core — the dated retirement of the public page. Deleting this
- * file, its vercel.json rewrite, the landing route and the SEO entry is the
- * runbook in docs/rebuild/policies/ACHIEVEMENT-SHARING.md.
+ * file, its vercel.json rewrite, the landing route and the SEO entry finishes
+ * the retirement.
  *
  * The ONLY job here is serving correct <head> Open Graph / Twitter tags to
  * an unfurler (WhatsApp, iMessage, Slack, X, …) that reads the raw HTML and
@@ -43,10 +43,10 @@ interface BadgePayload {
 }
 
 /*
- * Bible 02 section 1.2 (three locales) and rule 16 (no em dash): the unfurl a
+ * Three locales and no em dash: the unfurl a
  * family member sees in a chat app is written in the language the label was
  * written in, never fixed English. Keyed by the payload's locale; en-US for a
- * missing or unknown one. Tested in src/badgeEdge.test.ts.
+ * missing or unknown one.
  */
 export const BADGE_UNFURL_COPY: Record<BadgeLocale, { title: (name: string, label: string) => string; description: (name: string, label: string) => string; ogLocale: string }> = {
   'en-US': {
@@ -70,7 +70,7 @@ export function badgeUnfurlCopy(locale: string | undefined): (typeof BADGE_UNFUR
   return locale && Object.hasOwn(BADGE_UNFURL_COPY, locale) ? BADGE_UNFURL_COPY[locale as BadgeLocale] : BADGE_UNFURL_COPY['en-US'];
 }
 
-/** Mirrors backend/src/services/badgeLinkWindow.ts; `npm run sharing:check` keeps them equal. */
+/** Mirrors backend/src/services/badgeLinkWindow.ts. */
 export const BADGE_LINK_ROUTE_RETIRES_AT = '2026-10-24T00:00:00.000Z';
 
 const TOKEN_RE = /^[A-Za-z0-9_-]{16,64}$/;
@@ -123,8 +123,8 @@ function withOgTags(shell: string, badge: BadgePayload): string {
     `<meta name="twitter:image" content="${image}" />`,
   ].join('\n    ');
 
-  // noindex is UNCHANGED and deliberate (/AGENTS.md §1.15's "failing
-  // direction, by construction"): a personal share link must never compete
+  // noindex is UNCHANGED and deliberate (it fails in the safe
+  // direction, by construction): a personal share link must never compete
   // with a real page in search results, but noindex and social-unfurling
   // OG tags are unrelated mechanisms — an unfurler ignores robots directives
   // entirely, so this stays out of the index while still rendering a rich

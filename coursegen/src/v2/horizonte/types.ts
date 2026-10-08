@@ -4,7 +4,7 @@ import type { V2DocumentLike } from '../gates.js';
 /** Authoring guidance for one segment type: short lines appended to the author prompt when a skeleton uses the type. */
 export interface ForgeGuidance { type: string; lines: readonly string[] }
 
-/** One Horizonte pack as Forge consumes it. `capabilities` is parity-checked against Core and the browser. */
+/** One Horizonte pack as Forge consumes it. `capabilities` must match Core and the browser. */
 export interface ForgeHorizontePack {
   id: string;
   capabilities: Readonly<Record<string, readonly string[]>>;

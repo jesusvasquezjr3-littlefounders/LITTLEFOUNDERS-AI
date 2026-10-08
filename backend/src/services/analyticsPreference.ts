@@ -19,7 +19,7 @@ export async function setAnalyticsPreference(userId: string, enabled: boolean): 
 /** Applied only after role/guardian checks; does not authorize safety-log changes. */
 export async function allowsSelfManagedAnalytics(userId: string, state: AgeScreenState): Promise<boolean> {
   if (state.required || state.protectedOrigin) return false;
-  // S-04 (OD-28): a teen who reached the adult tier by birth month keeps an
+  // A teen who reached the adult tier by birth month keeps an
   // explicit earlier "no" (the database gates 0090/0160 do the same, migration
   // 0182_effective_age_band). With no recorded preference, the adult rule.
   if (state.ageBand === 'adult' && state.adultByBirthMonth === true) {
@@ -33,7 +33,7 @@ export async function allowsSelfManagedAnalytics(userId: string, state: AgeScree
 }
 
 /*
- * A.2, Appendix M 1.1 (Unconsented Analytics Event Rate, flagged sessions:
+ * Unconsented analytics event rate (flagged sessions:
  * target zero): the one predicate every self-reported acquisition answer uses
  * (signup attribution, the onboarding "how did you hear about us" survey, the
  * /auth/me flag the survey step reads). Never an under-13 origin (a guest from

@@ -25,7 +25,7 @@ import {
 } from '../services/insights.js';
 
 /*
- * POST /api/v1/events — first-party usage telemetry ingest (/INSIGHTS.md).
+ * POST /api/v1/events — first-party usage telemetry ingest.
  *
  * TWO identities, never both:
  *  - AUTHENTICATED (Authorization header): user_id + role stamped from the
@@ -38,7 +38,7 @@ import {
  *    NOT carry product events, because "anonymous" on a product surface just
  *    means "a kid whose consent we haven't checked".
  *
- * §1.9 gate (authenticated): when the caller is — or might be — a kid,
+ * Kid-safety gate (authenticated): when the caller is — or might be — a kid,
  * events are recorded ONLY while guardian consent is active. No consent, or
  * Vault unable to answer, means the batch is acknowledged and DROPPED
  * (202, accepted: 0).
@@ -65,7 +65,7 @@ const ANON_EVENTS = new Set([
   'signup_start', 'signup_submit', 'signup_complete', 'login_complete',
   'session_start', 'session_end', 'nav_view',
   // badge_link_click (a stranger opening a legacy badge link) is no longer
-  // accepted from anyone: OD-20's Appendix L counts shares initiated by the
+  // accepted from anyone: the share metric counts shares initiated by the
   // parent, never viewer reach.
 ]);
 
@@ -75,7 +75,7 @@ const EventBody = z.object({
   lessonId: z.string().uuid().optional(),
   courseId: z.string().uuid().optional(),
   // Content-id charset (mirrors the 0023 CHECK) — a length cap alone would
-  // leave a free-text channel into a table §1.9 promises has none.
+  // leave a free-text channel into a table promised to have none.
   segmentId: z.string().regex(/^[A-Za-z0-9._-]{1,64}$/).optional(),
   value: z.number().finite().min(0).max(86_400).optional(),
   sessionId: z.string().uuid().optional(),
@@ -174,7 +174,7 @@ export function eventsRouter(): Router {
      * was the least defended of the three. Dropped like the consent and
      * internal-traffic gates: acknowledged (202, accepted 0), never an error,
      * so a misclassified client does not retry in a loop. The agent string is
-     * read for the decision and never stored (§1.9).
+     * read for the decision and never stored.
      */
     if (isBotUserAgent(req.get('user-agent'))) return ok(res, { accepted: 0 }, 202);
 

@@ -4,11 +4,11 @@ import ptLegal from '../../i18n/pt-BR/legal.json';
 import type { Locale } from '../design/copyBudget';
 
 /*
- * The Terms and the Privacy Notice (M5, M6) as documents. Their text is
- * Legal's (OD-10: Legal updates the Terms once the migration is done), so it
+ * The Terms and the Privacy Notice as documents. Their text is
+ * Legal's (Legal updates the Terms once the migration is done), so it
  * lives in its own file per locale (`i18n/<locale>/legal.json`), apart from
- * the budgeted interface copy, and is rendered whole as `legal` copy (06
- * §3.3: mandated text is never shortened). This module only turns the file
+ * the budgeted interface copy, and is rendered whole as `legal` copy
+ * (mandated text is never shortened). This module only turns the file
  * into ordered sections: every paragraph a clause has, in order, stopping at
  * the first gap (the legacy viewer once rendered an allowlist of paragraphs
  * and silently dropped 48 of them).

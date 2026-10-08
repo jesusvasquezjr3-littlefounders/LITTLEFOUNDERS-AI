@@ -41,7 +41,7 @@ function FactTable({ locale, caption, labelHead, valueHead, rows, current }: {
 }
 
 /*
- * F4.5: five questions about solids drawn in twelve fixed views. A plane cuts a solid (a tetrahedron, a cube, an octahedron or
+ * Five questions about solids drawn in twelve fixed views. A plane cuts a solid (a tetrahedron, a cube, an octahedron or
  * a cylinder) and the learner names the shape of the cut; or slides the plane along its normal to make a named shape; or a
  * Platonic or Archimedean solid shows two of its three counts and the learner finds the third from V - E + F = 2; or a pyramid
  * sits in a prism, or a cone in a cylinder, of the same base and height and the learner gives its volume. The board draws only

@@ -14,7 +14,7 @@ import './solids.css';
 type ViewerSegment = Extract<HorizonteSegment, { type: 'geometry.solid-viewer.v2' }>;
 
 /*
- * F4.1: turn the solids through fixed views, label their faces, edges or vertices, choose the one with the searched
+ * Turn the solids through fixed views, label their faces, edges or vertices, choose the one with the searched
  * count, then count something else on it. The viewed solid and the chosen solid are separate on purpose: looking is free.
  * The answer is { solid, count }; Core holds the target and the browser never says met.
  */

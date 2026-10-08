@@ -1,5 +1,5 @@
 /*
- * S5 Analytics & Health (view_analytics), W2T.3: the wire shapes Core serves
+ * Analytics & Health (view_analytics): the wire shapes Core serves
  * under /admin/analytics/*, /admin/insights/* and /admin/health/services,
  * hand-mirrored (no shared types across packages by design) and checked on
  * arrival. The period and filter vocabulary is Core's own (backend
@@ -10,7 +10,7 @@
  * our own event stream (who was here, with the role attached), the product's
  * own usage views, Plausible (anonymous, consented, marketing pages only) and
  * Umami (marketing plus signed-in adult surfaces; never a child's session).
- * The consent gate (H.1) acts at the source: a child's events exist only when
+ * The consent gate acts at the source: a child's events exist only when
  * a verified guardian consented, so every figure here is already gated.
  */
 

@@ -2,7 +2,7 @@ import { api } from '@/lib/api';
 
 /*
  * Social login helpers. Core brokers everything (the frontend never talks to the
- * auth host directly — /AGENTS.md §1.5): Core tells us which providers are live
+ * auth host directly): Core tells us which providers are live
  * and hands back the GoTrue /authorize URL to redirect the browser to. GoTrue
  * then returns to /auth/callback with the session in the URL fragment.
  */

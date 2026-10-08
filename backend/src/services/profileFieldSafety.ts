@@ -1,5 +1,5 @@
 /*
- * E.13 — profile-content safety review for minors' profile fields.
+ * Profile-content safety review for minors' profile fields.
  *
  * An approved connection is not automatically a safe one, and a profile seen
  * before a block cannot be unseen. So the fields every social surface shows
@@ -16,7 +16,7 @@
  * Both implementations run the shared corpus in
  * database/scripts/fixtures/profile-field-safety-cases.json.
  *
- * Deliberate limits, stated in docs/rebuild/policies/SOCIAL-TIERS.md: a city
+ * Deliberate limits: a city
  * name, a surname or a handle with no platform marker is not reasonably
  * detectable by rules and is not claimed.
  */

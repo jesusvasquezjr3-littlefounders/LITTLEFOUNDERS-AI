@@ -6,7 +6,7 @@ import {
   QUADRANT_OPTIONS, TIMES_OPTIONS, circleWaveAngles, circleWaveProblem, quadrantOf, unitCircleAngles, unitCircleProblem, type CircleWavePayload, type UnitCirclePayload,
 } from './trig.js';
 
-/* F2.17 "Circulo unitario, secante y suma de Riemann": one choice (the prediction) and one whole number the learner finds by exploring. */
+/* "Circulo unitario, secante y suma de Riemann": one choice (the prediction) and one whole number the learner finds by exploring. */
 
 export const EXPLORER_VISUALS = ['unit-circle', 'circle-wave', 'secant', 'derivative-link', 'riemann', 'accumulation'] as const;
 export type ExplorerVisual = (typeof EXPLORER_VISUALS)[number];

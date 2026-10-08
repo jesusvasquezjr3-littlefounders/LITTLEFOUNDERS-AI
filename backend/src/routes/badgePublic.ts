@@ -8,17 +8,17 @@ import { getBadgeShareByToken, getBadgeShareLocale, insertAuditLog, listDeadBadg
 /*
  * GET /api/v1/badges/:token — the LEGACY public badge-link read (0073/0109).
  *
- * OD-20 (24 September 2026) made a new share an image handed to the parent;
- * no new link is issued. Links issued before the cutover keep their F.2
+ * Since 24 September 2026 a new share is an image handed to the parent;
+ * no new link is issued. Links issued before the cutover keep their
  * controls until they expire: this route serves one only while it is
  * un-revoked, inside its 30-day window and was issued before the cutover
  * (services/badges.ts isBadgeShareActive). From BADGE_LINK_ROUTE_RETIRES_AT
  * every legacy link has expired, so the route answers 410 Gone without
  * reading anything — the dated retirement of the public page. Removing the
- * code itself is the runbook in docs/rebuild/policies/ACHIEVEMENT-SHARING.md.
+ * code itself is the last step.
  *
  * It is the ONE unauthenticated Core read a stranger's browser reaches
- * (/AGENTS.md §1.5's deliberate exception while legacy links live). The
+ * (a deliberate exception while legacy links live). The
  * response is whitelisted to display fields only (and the locale the
  * label was written in): no kid_user_id, no created_by, no row id. `token`
  * is a 32-char base64url opaque string (~144 bits of entropy), rate-limited
@@ -28,7 +28,7 @@ import { getBadgeShareByToken, getBadgeShareLocale, insertAuditLog, listDeadBadg
 const TokenParam = z.string().regex(/^[A-Za-z0-9_-]{16,64}$/);
 
 /*
- * Bible 02 section 1.2: the unfurl (frontend/api/badge/[token].ts) writes its
+ * The unfurl (frontend/api/badge/[token].ts) writes its
  * title and description in the family's language, so the payload carries the
  * locale the label was written in. One of the three product locales, en-US
  * when the sharing Tutor's and the child's profiles give none.
@@ -53,7 +53,7 @@ export function badgePublicRouter(): Router {
 
     const share = await getBadgeShareByToken(parsedToken.data);
     if (!share || !isBadgeShareActive(share)) {
-      // F.2: a revoked, expired or post-cutover share is unreachable — page
+      // A revoked, expired or post-cutover share is unreachable — page
       // AND image. The revoke route purges synchronously and the sweep below
       // catches every dead link nobody visits; this lazy purge is a third
       // path. Never awaited: the 404 must not wait on Depot.
@@ -77,7 +77,7 @@ export function badgePublicRouter(): Router {
 /*
  * POST /api/v1/internal/badge-links/purge — the legacy-image sweep.
  *
- * F.2 says a dead link is not dead until its IMAGE stops resolving at its
+ * A dead link is not dead until its IMAGE stops resolving at its
  * own storage URL. Revocation purges at once and the public route purges
  * lazily on a visit, but a link that simply expires unvisited kept a
  * world-readable image forever. This sweep walks every dead legacy link
@@ -90,7 +90,7 @@ export function badgePublicRouter(): Router {
  *
  * It reports what it did and writes `badge_links.images_swept` to audit_logs
  * on every run, including a run that purged nothing: "ran and found nothing"
- * and "never ran" must stay distinguishable (§1.14). A failed read is a 502,
+ * and "never ran" must stay distinguishable. A failed read is a 502,
  * never a reassuring zero.
  */
 export const BADGE_IMAGE_SWEEP_AUDIT_ACTION = 'badge_links.images_swept';

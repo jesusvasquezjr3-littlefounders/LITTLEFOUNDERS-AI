@@ -8,16 +8,15 @@ import { useRebuildEnvironment } from '../../design/controls';
 import type { Locale } from '../../design/copyBudget';
 
 /*
- * The staff console's copy (`rebuild-staff.json` → `staffConsole`, Lane 6),
- * keyed <screen>.<role>.<key> so the copy-budget test reads each string's role
- * from its path. The section names are the staff navigation's own labels
- * (`rebuild-core.json` → `appShell.staff`, Lane 0), read, never copied, so a
+ * The staff console's copy (`rebuild-staff.json` → `staffConsole`),
+ * keyed <screen>.<role>.<key> so each string's role is read from its path. The section names are the staff navigation's own labels
+ * (`rebuild-core.json` → `appShell.staff`), read, never copied, so a
  * page title and its menu entry cannot drift apart.
  */
 
 export type ConsoleCopy = typeof enStaff.staffConsole;
 export type SectionNames = typeof enCore.appShell.staff;
-/** The C.5 / C.6 panels' copy (`staffLiveContent`) and the C.24 dashboard's (`staffMentorQuality`), mounted by W2T.2. */
+/** The live-content panels' copy (`staffLiveContent`) and the Mentor-quality dashboard's (`staffMentorQuality`). */
 export type LiveCopy = typeof enStaff.staffLiveContent;
 export type QualityCopy = typeof enStaff.staffMentorQuality;
 

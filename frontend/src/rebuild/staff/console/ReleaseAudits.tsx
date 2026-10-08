@@ -7,9 +7,9 @@ import { useFormats } from './ConsoleParts';
 import { fill, useConsoleCopy } from './staffConsoleCopy';
 
 /*
- * GAP-FIX-R2 (Product C.24, Appendix C 1.2): the per-release manual audits
- * the dashboard reads. B.25 (dark patterns) and B.22 (variable-ratio rewards)
- * belong to the Safety and Trust lead, B.20 (reward framing) to the
+ * The per-release manual audits
+ * the dashboard reads. The dark-patterns and variable-ratio-rewards audits
+ * belong to the Safety and Trust lead, the reward-framing audit to the
  * pedagogical lead. Each kind shows its latest recorded audit; a named owner
  * records the next one here. Core (POST /admin/mentor-quality/audits) and
  * Vault (record_release_audit) enforce the owner and audit the write; the

@@ -1,7 +1,6 @@
 name: Social-graph retention sweep
 
-# The daily social-graph retention sweep (Product 10 E.11;
-# docs/rebuild/policies/SOCIAL-GOVERNANCE.md §3).
+# The daily social-graph retention sweep.
 #
 # Nothing deletes an expired connection request, a resolved report's note or a
 # read safety notice unless something asks,
@@ -11,7 +10,7 @@ name: Social-graph retention sweep
 # (social_retention.sweep_ran), including a run that found nothing; nothing is
 # ever deleted from the append-only audit log. The same
 # run removes any follow that exposes a child without a current guardian's
-# approval (a legacy edge from before E.1 and the S08.6 tiers).
+# approval (a legacy edge from before guardian approval and the age tiers).
 #
 # WHY IT CALLS CORE FROM INSIDE CORE: same reasoning as tutor-retention.yml.
 # The sweep route is internal-key-only, and standing inside the container over
@@ -114,7 +113,7 @@ jobs:
             teen=$(count "$body" teenPendingExpired)
             guardian=$(count "$body" guardianPendingExpired)
 
-            # An absent count is NOT zero (§1.14): an error envelope or a proxy
+            # An absent count is NOT zero: an error envelope or a proxy
             # page must fail the run, never read as "nothing was due".
             if [ -z "${complete:-}" ] || [ -z "${edges:-}" ] || [ -z "${teen:-}" ] || [ -z "${guardian:-}" ] ; then
               echo "::error::Core's reply carried no sweep counts; refusing to report a sweep that may not have happened"

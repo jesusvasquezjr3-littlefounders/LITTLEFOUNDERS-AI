@@ -1,27 +1,27 @@
 #!/usr/bin/env node
 /*
- * `npm run tutor:alliance-report` — the monitor for Product C.15 (the
- * Alliance Controller), C.14 (the self-explanation move) and C.7 (the learner
- * disposition profile), Appendix F §1.2 and Part 3 Stage 7.
+ * `npm run tutor:alliance-report` — the monitor for the
+ * Alliance Controller, the self-explanation move and the learner
+ * disposition profile, and the controller's rollback.
  *
- *   C.15  Goal-Agreement Completion Rate (near 100% for sessions above the
+ *   - Alliance Controller: Goal-Agreement Completion Rate (near 100% for sessions above the
  *         turn floor; below 95% with enough sessions it is a defect), the
  *         continuity moves (first meeting, persona switch, memory gap), the
  *         Adaptation-Offer Renegotiation Trigger Rate and how often the
  *         session improved after a renegotiation (diagnostic), and the
  *         Alliance Bond Proxy Score per persona with the share of praise that
- *         named something specific (diagnostic; the Stage 7 input).
- *   C.14  Self-Explanation Quality-Check Pass Rate: first-attempt passes per
+ *         named something specific (diagnostic; the rollback input).
+ *   - Self-explanation: Quality-Check Pass Rate, first-attempt passes per
  *         concept family (diagnostic: drift in prompt design or a rising
  *         filler pattern, never a verdict on a learner).
- *   C.7   Disposition-Profile Completeness Rate: learners active in the
+ *   - Disposition profile: Completeness Rate, learners active in the
  *         trailing 30 days with a profile updated in the last 30 (diagnostic).
- *   Stage 7 the Alliance Controller's Kill-Switch Trigger Log.
+ *   - Rollback: the Alliance Controller's Kill-Switch Trigger Log.
  *
  * Reads only, except:
  *   --resolve="root cause"   records an operator's resolution of the trip in
  *                            force, lifting the rollback for new sessions;
- *   --purge-stale            the C.7 retention job: deletes disposition
+ *   --purge-stale            the disposition-profile retention job: deletes disposition
  *                            profiles not updated for 365 days.
  * No model call; costs nothing. Operator tool:
  *
@@ -29,8 +29,7 @@
  *     npm run tutor:alliance-report -- [--since=YYYY-MM-DD] [--json] [--resolve="..."] [--purge-stale]
  *
  * Exit code 1 on a defect; "insufficient data" is printed, never passed off
- * as healthy. Every threshold is provisional — see
- * docs/rebuild/mentor/THRESHOLD-RECALIBRATION-LOG.md.
+ * as healthy. Every threshold is provisional.
  */
 
 import { countServiceRows, serviceRest } from '../services/supabaseRest.js';
@@ -54,7 +53,7 @@ import { DISPOSITION_THRESHOLDS, purgeStaleDispositionProfiles } from '../servic
 const PAGE = 1000;
 const MAX_ROWS = 200_000;
 
-/** Reads every row of a window, paginated. Null on ANY failed page (§1.14: never a partial report). */
+/** Reads every row of a window, paginated. Null on ANY failed page (never a partial report). */
 async function readAll<T>(path: string): Promise<T[] | null> {
   const out: T[] = [];
   for (let offset = 0; offset < MAX_ROWS; offset += PAGE) {

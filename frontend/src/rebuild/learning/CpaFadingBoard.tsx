@@ -44,7 +44,7 @@ export function CpaFadingBoard({ document, segment, onBack, onGrade, sequence }:
   if (!progression || !stage) return null;
   const label = t[stage.stage];
   const steps = stage.worked_steps_shown;
-  // Bible 05 §5 / Appendix P Part 5 (GAP-FIX-R7): the count is read for the lesson's locale and sent as its canonical whole number.
+  // The count is read for the lesson's locale and sent as its canonical whole number.
   const domain = { whole: true, max: segment.payload.left + segment.payload.right };
   const typed = readNumberAnswer(value, document.locale, domain).canonical;
   const valid = typed !== null;
@@ -83,7 +83,7 @@ export function CpaFadingBoard({ document, segment, onBack, onGrade, sequence }:
         {stage.stage === 'abstract' ? <div className="lf-cpa-equation" aria-label={segment.payload.spokenText}><strong data-copy-role="data">{segment.payload.left}</strong><span aria-hidden="true">+</span><strong data-copy-role="data">{segment.payload.right}</strong><span aria-hidden="true">=</span><strong aria-hidden="true">?</strong></div> : null}
         {steps > 0 ? <ol className="lf-cpa-steps" aria-label={t.count}>{t.worked(segment.payload.left, segment.payload.right).slice(0, steps).map((item, index) => <li key={index} data-copy-role="body">{item}</li>)}</ol> : null}
       </section>
-      <div className="lf-learning-control-strip lf-cpa-answer">{/* Bible 05 §3: Reset restores the authored start (an empty answer) and clears the verdict; an icon with its name, so the 6-9 first view keeps its word budget (06 §3.1). */}<div className="lf-learning-control-bar"><IconButton glyph="refresh" label={t.reset} onClick={() => { setValue(''); setVerdict(null); }} disabled={pending || advancing || value === '' && verdict === null} /></div><NumberAnswer label={t.answer} locale={document.locale} {...domain} disabled={pending} value={value} onTextChange={(text) => { setValue(text); setVerdict(null); }} /></div>
+      <div className="lf-learning-control-strip lf-cpa-answer">{/* Reset restores the authored start (an empty answer) and clears the verdict; an icon with its name, so the 6-9 first view keeps its word budget. */}<div className="lf-learning-control-bar"><IconButton glyph="refresh" label={t.reset} onClick={() => { setValue(''); setVerdict(null); }} disabled={pending || advancing || value === '' && verdict === null} /></div><NumberAnswer label={t.answer} locale={document.locale} {...domain} disabled={pending} value={value} onTextChange={(text) => { setValue(text); setVerdict(null); }} /></div>
       <footer className="lf-learning-foot"><LessonFeedback verdict={verdict}>{verdict === null ? null : verdictBannerText(document.locale, verdict, namedFeedback(document.locale, 'cpa-count'), segment.feedback)}</LessonFeedback><div className="lf-learning-actions"><Button variant="accent" disabled={!valid || pending || advancing} onClick={submit}>{t.check}</Button></div></footer>
     </div>
   </div></main>;

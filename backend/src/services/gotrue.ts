@@ -2,7 +2,7 @@ import { getConfig } from '../config.js';
 
 /*
  * Thin GoTrue (Supabase Auth) client over fetch — Core is the only service
- * the frontend talks to (/AGENTS.md §1.5), so auth flows proxy through here.
+ * the frontend talks to, so auth flows proxy through here.
  * Social login (Google first, then Discord/Facebook…) plugs in later via
  * GoTrue's /authorize provider flow — same envelope, new route; nothing in
  * this module's shape needs to change.
@@ -45,9 +45,9 @@ function normalizeError(status: number, body: Record<string, unknown>): GotrueEr
   if (lower.includes('already registered') || lower.includes('already been registered')) code = 'EMAIL_IN_USE';
   else if (lower.includes('invalid login credentials') || lower.includes('invalid credentials')) code = 'INVALID_CREDENTIALS';
   else if (lower.includes('not confirmed')) code = 'EMAIL_NOT_CONFIRMED';
-  // A.1 (F3-identity-site): the pause bans a child's account at GoTrue. GoTrue
+  // The pause bans a child's account at GoTrue. GoTrue
   // checks the ban BEFORE the password, so callers must not echo this code to
-  // an unauthenticated sign-in (routes/auth.ts keeps /login uniform, E.1).
+  // an unauthenticated sign-in (routes/auth.ts keeps /login uniform).
   else if (body.error_code === 'user_banned' || lower.includes('banned')) code = 'ACCOUNT_SUSPENDED';
   else if (status === 429) code = 'RATE_LIMITED';
   else if (status >= 400 && status < 500) code = 'VALIDATION_ERROR';
@@ -97,7 +97,7 @@ export function signUp(input: SignUpInput): Promise<GotrueResult<Partial<GotrueS
 }
 
 /*
- * Move a parent-created child's synthetic sign-in address (S-06, OD-28): the
+ * Move a parent-created child's synthetic sign-in address: the
  * address is derived from the username, so a guardian-initiated username
  * change moves both, and the caller undoes this if the profile cannot follow.
  * Confirmed at once: the `.invalid` address can never receive mail.
@@ -116,7 +116,7 @@ export function adminUpdateUserEmail(userId: string, email: string): Promise<Got
 }
 
 /**
- * Revoke every live session for a user (GoTrue's admin endpoint). A.1's
+ * Revoke every live session for a user (GoTrue's admin endpoint). The
  * suspension enforcement: a kid whose last verified guardian link is gone
  * must be unusable IMMEDIATELY — killing the sessions is the enforcement,
  * not a UI flag, so no already-authenticated socket or API call survives.
@@ -196,7 +196,7 @@ export function signOut(accessToken: string, scope?: 'local' | 'global'): Promis
 
 /**
  * Kicks off the password-recovery email (renders `recovery.html` via
- * Courier/GoTrue — email-server/AGENTS.md). GoTrue itself always answers 200
+ * Courier/GoTrue). GoTrue itself always answers 200
  * regardless of whether the address has an account, so this proxy leaks
  * nothing beyond what GoTrue already guards against. `redirectTo` must be in
  * `GOTRUE_URI_ALLOW_LIST`; the `type=recovery` fragment tokens land there,

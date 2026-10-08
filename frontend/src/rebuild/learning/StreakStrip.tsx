@@ -5,14 +5,13 @@ import type { StreakView } from './motivation';
 import './streakStrip.css';
 
 /*
- * GAP-FIX-R1 learning (Bible 02 §9.6 rules 4-6, §4.4 item 2; Bible 04 §4.3):
- * the weekly streak strip. Seven day dots, Monday first, from Core's `week`
+ * The weekly streak strip. Seven day dots, Monday first, from Core's `week`
  * (the learner's own calendar). Each state is carried by shape, glyph and a
- * word (rule 6): practised is a filled dot with a check, a rest day a
+ * word: practised is a filled dot with a check, a rest day a
  * half-filled dot, a paused day a square with the pause glyph, an open day an
  * empty ring. Today wears a 3 px primary-strong ring. An ordinary practised
- * day updates the strip without a celebration (rule 5); the dots only wave in
- * once, on a real route entry (the shared Wave pattern, 04 §4.3), and not at
+ * day updates the strip without a celebration; the dots only wave in
+ * once, on a real route entry (the shared Wave pattern), and not at
  * all with reduced motion.
  */
 

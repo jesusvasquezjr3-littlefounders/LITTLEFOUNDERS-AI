@@ -3,8 +3,8 @@ import { deterministicEventId, getRolesForGate, insertLearningEvents, stampRole 
 import { serviceRest } from './supabaseRest.js';
 
 /*
- * Appendix C 1.2 "Parent Time-to-Value" (B.10, B.23) for the C.24 dashboard
- * (GAP-FIX-R2 staff-ops; migration *_parent_time_to_value.sql).
+ * "Parent Time-to-Value" for the staff dashboard
+ * (migration *_parent_time_to_value.sql).
  *
  * Two server-authored events, each at most ONCE per account (a deterministic
  * idempotency key; the unique index drops a repeat):
@@ -15,7 +15,7 @@ import { serviceRest } from './supabaseRest.js';
  *     routes/familyLearning.ts). The route guard already required a verified
  *     link, so "a child is linked and the parent saw the first insight".
  * Both go through insertLearningEvents, which applies the consent gate every
- * event has (an adult only with self-managed analytics allowed, H.1). Fire and
+ * event has (an adult only with self-managed analytics allowed). Fire and
  * forget: a failed write never fails the parent's request. A process-local set
  * skips the gate reads for an account already recorded here.
  */

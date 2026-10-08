@@ -3,7 +3,7 @@
  * Service role only — every table here is service-role-write by design, and
  * the reads happen inside internal or owner-scoped routes.
  *
- * FAILURE POSTURE (§1.14): every reader returns null on an upstream failure,
+ * FAILURE POSTURE: every reader returns null on an upstream failure,
  * never an empty default. The pedagogy pipeline reads, modifies and writes
  * back — collapsing "Vault did not answer" into "no mastery yet" would let a
  * transient blip reset a learner's posterior to the prior.
@@ -16,7 +16,7 @@ const eu = (v: string): string => encodeURIComponent(v);
 
 export type Localized = Partial<Record<'en-US' | 'es-MX' | 'pt-BR', string>>;
 
-/** 0052 + the B.6 widening (S05.3a): the draft money_life/investing KCs are not served until activated. */
+/** 0052 + the pathway widening: the draft money_life/investing KCs are not served until activated. */
 export type KcStrand = 'money_math' | 'entrepreneurship' | 'money_life' | 'investing';
 
 export interface KcRow {
@@ -58,16 +58,16 @@ export async function getActiveKcs(): Promise<KcRow[] | null> {
  * Whether `skillKey` names a real KC, at any status — and, separately,
  * whether that could even be determined.
  *
- * Found by adversarial review, round 47 (2026-08-30, HIGH): `weak_skill`'s
+ * Found by adversarial review (2026-08-30, HIGH): `weak_skill`'s
  * `skillKey` had no server-side existence check at all — a route comment
  * claimed one happened "downstream," and it did not. Deliberately not
  * restricted to `status=eq.active`: a `retired` KC is a real, previously-
  * taught skill, not injected text, and whether a retired KC should still be
- * OFFERABLE is round 37's own separate, deliberately-unresolved product
- * question (`RUNBOOK.md`) — this check exists only to distinguish a real
+ * OFFERABLE is a separate, deliberately-unresolved product
+ * question — this check exists only to distinguish a real
  * identifier from an arbitrary string, not to re-litigate that question.
  *
- * `'error' | 'not_found'` are kept apart on purpose (§1.14): a transient
+ * `'error' | 'not_found'` are kept apart on purpose: a transient
  * read failure must refuse the session (502) rather than either silently
  * rejecting a real learner's real skillKey as invalid (400) or — worse —
  * treating "could not check" as "must be fine" and letting an unverified
@@ -204,14 +204,14 @@ export interface KcAttemptInsert {
   source: 'segment_grade' | 'voice_check' | 'course_lesson';
   correct: boolean;
   score: number | null;
-  /** GAP-FIX-R1 (0206): the course-lesson grade receipt this evidence came from; idempotency key. */
+  /** (0206): the course-lesson grade receipt this evidence came from; idempotency key. */
   receipt_key?: string;
   strategy: string | null;
   misconception_id: string | null;
   p_known_before: number;
   p_known_after: number;
   /**
-   * C.11: whether this attempt was a spaced review of the memory card or a
+   * Whether this attempt was a spaced review of the memory card or a
    * within-session re-exposure inside the short horizon (`fsrs.ts`
    * `reviewCardTwoTier`). Optional: written by `recordAttempt`, which falls
    * back to the row without it on a pre-migration schema.
@@ -237,7 +237,7 @@ export interface KcAttemptForSessions {
 
 /**
  * This page's own evidence rows, for the guardian "what is happening"
- * narrative (/ORACLE.md §12, 2026-09-01). Bounded to the session ids the
+ * narrative (2026-09-01). Bounded to the session ids the
  * caller is already displaying — never a learner-wide scan — and capped
  * defensively like every other list read in this file. `session_id` is
  * nullable on the wire (the column is `ON DELETE SET NULL`, migration
@@ -257,7 +257,7 @@ export function getKcAttemptsForSessions(sessionIds: string[]): Promise<KcAttemp
  * Titles only, by id, for a small set already named by other evidence (the
  * narrative above). Deliberately NOT status-filtered: a retired KC is a
  * real, previously-taught skill, not injected text — the same reasoning
- * `getKcBySkillKey` already established above (round 47).
+ * `getKcBySkillKey` already established above.
  */
 export function getKcTitlesByIds(kcIds: string[]): Promise<Array<{ id: string; title: Localized }> | null> {
   if (kcIds.length === 0) return Promise.resolve([]);
@@ -281,7 +281,7 @@ export function getKcTitlesByIds(kcIds: string[]): Promise<Array<{ id: string; t
  * sizes here are small (an early-stage product) and this runs on an
  * operator's own schedule, not a request path, so a second migration to add
  * a view is not warranted for what a `.reduce()` already does correctly
- * (§1.14 — prefer the boring, cheap, verifiable path).
+ * (prefer the boring, cheap, verifiable path).
  */
 
 export interface KcMasteryAggregateRow {
@@ -293,7 +293,7 @@ export interface KcMasteryAggregateRow {
   avgPKnown: number;
 }
 
-/** Every `learner_kc_mastery` row with at least one real attempt, aggregated per KC. `null` on a failed read — never collapsed to an empty report (§1.14): a curation tool that cannot see real data must say so, not report a false "nothing to curate". */
+/** Every `learner_kc_mastery` row with at least one real attempt, aggregated per KC. `null` on a failed read — never collapsed to an empty report: a curation tool that cannot see real data must say so, not report a false "nothing to curate". */
 export async function getAggregateMasteryByKc(): Promise<KcMasteryAggregateRow[] | null> {
   const rows = await serviceRest<{ kc_id: string; p_known: number; attempts: number; correct: number }[]>(
     '/learner_kc_mastery?select=kc_id,p_known,attempts,correct&attempts=gt.0&limit=20000',
@@ -363,7 +363,7 @@ export interface KcAttemptCalibrationRow {
  * freshest evidence rather than an arbitrary early slice.
  */
 /**
- * C.10: how many CONSECUTIVE correct answers each KC's most recent attempts
+ * How many CONSECUTIVE correct answers each KC's most recent attempts
  * end in, per learner — the corroborating-evidence half of "mastered".
  * Rows must be newest first; a KC whose latest attempt is wrong has 0. Pure.
  */
@@ -385,9 +385,9 @@ export function trailingCorrectStreaks(
 }
 
 /**
- * C.10: the learner's trailing correct streak per KC, from `kc_attempt`
+ * The learner's trailing correct streak per KC, from `kc_attempt`
  * (the evidence ledger every graded and voice-checked answer writes). Null on
- * a failed read — never an empty map (§1.14): "no corroboration" and "could
+ * a failed read — never an empty map: "no corroboration" and "could
  * not look" must not collapse, or a failed read would silently demote every
  * mastered KC. 2,000 most recent rows is far past what a streak of 2 needs
  * for any KC practised in the learner's recent history; a KC whose latest

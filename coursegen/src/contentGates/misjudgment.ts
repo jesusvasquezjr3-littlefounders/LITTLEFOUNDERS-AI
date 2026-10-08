@@ -1,30 +1,30 @@
-// B.11 — mentors model flawed, human decisions (Forge gate 15).
+// Mentors model flawed, human decisions (Forge gate 15).
 //
 // "Require a minimum proportion of story content per course — proposed
 // starting point: at least one such episode per course, flagged for
 // content-team validation — to show a mentor making and recovering from a real
 // financial misjudgment, narrated with the same no-shame framing mandated for
-// learner mistakes." Appendix C: the metric is Mentor-Misjudgment Content
-// Coverage (100% of courses at or above the minimum), and the Stage 3 reviewer
+// learner mistakes." The metric is Mentor-Misjudgment Content
+// Coverage (100% of courses at or above the minimum), and the human reviewer
 // judges whether the fallibility is real.
 //
 // What a machine can check, and does:
 //   catalog  — episodes are declared on the lesson blueprint
 //              (`mentor_misjudgment`: character, misjudgment, recovery). A
 //              course below the minimum blocks release; every declared episode
-//              is a Stage 3 review item (content-team validation), never
+//              is a human review item (content-team validation), never
 //              accepted silently.
 //   document — the generated episode really stages it: the named mentor is in
 //              the cast and speaks in at least two moments (the misjudgment and
 //              the recovery), and no line carries self-global shame language
 //              ("I'm so stupid", "soy un desastre", "sou burro"). The judgement
 //              that the misjudgment is real and the recovery is honest stays
-//              with the Stage 3 reviewer.
+//              with the human reviewer.
 
 import { foldText, hasTerm } from './text.js';
 import type { ContentLocale } from './budgets.js';
 
-/** The SPEC's proposed starting point, recalibrated through the Threshold Recalibration Log. */
+/** The proposed starting point: at least one episode per course. */
 export const MIN_MISJUDGMENT_EPISODES_PER_COURSE = 1;
 /** One moment for the misjudgment, one for the recovery. */
 export const MIN_EPISODE_VOICED_MOMENTS = 2;
@@ -38,7 +38,7 @@ export interface MisjudgmentPolicy {
 }
 
 /**
- * Self-global shame language (Appendix B §1.8/§2.8: feedback is scoped to the
+ * Self-global shame language (feedback is scoped to the
  * action, never to the person). A mentor's mistake is narrated the same way a
  * learner's is: "I forgot to count the bag", never "I'm so stupid". Folded
  * (no accents, lower case), matched at word boundaries. Only self- or

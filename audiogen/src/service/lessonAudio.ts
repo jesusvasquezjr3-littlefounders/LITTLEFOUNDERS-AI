@@ -57,7 +57,7 @@ const defaultDeps: NarrateLessonDeps = {
 };
 
 /*
- * narrateLesson — LESSON_ENGINE.md §12 / COURSE_ENGINE.md §7. Reads the
+ * Reads the
  * CLIENT-SAFE document (never answer keys, per the repo's select clause),
  * narrates every unit missing from the manifest OR whose content hash
  * changed, uploads each to filebase (bucket lesson-audio, public), then
@@ -89,8 +89,8 @@ export async function narrateLesson(
   const finalUnits: Record<string, AudioUnitEntry> = {};
 
   await runPool(units, config.AUDIOGEN_CONCURRENCY, async (unit) => {
-    // Voice AND model = the segment's narrator character (COURSE_ENGINE.md
-    // §7), resolved per unit so a lesson can mix narrators; falls back to
+    // Voice AND model = the segment's narrator character,
+    // resolved per unit so a lesson can mix narrators; falls back to
     // the locale default + TTS_MODEL when unnarrated or the character has
     // no override yet. A character override always pairs with the clone
     // model — DashScope binds a voice to the exact model it was enrolled under.

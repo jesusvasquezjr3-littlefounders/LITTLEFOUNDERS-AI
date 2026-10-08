@@ -1,7 +1,7 @@
 import type { ApiError } from '@/lib/api';
 
 /*
- * The code a rebuilt identity screen shows for a failed request (W2S.3). The
+ * The code a rebuilt identity screen shows for a failed request. The
  * API client reports a request that never reached Core as INTERNAL with the
  * message "Network error"; shown as "Something went wrong on our side", that
  * blames the server for the person's own connection. A request that failed

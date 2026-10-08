@@ -1,10 +1,10 @@
 /*
- * Releasing the boot veil (Bible 02 rule 2, 04 §2; the recipe is in index.html).
+ * Releasing the boot veil (the recipe is in index.html).
  *
  * index.html arms the veil before the first paint and owns the release ITSELF
  * (`window.__lfBoot.release`), so the dissolve's duration is read from the
  * stylesheet that declares it instead of being hand-copied into this bundle —
- * the drift class §1.14 keeps naming. What lives here is the only part the
+ * the drift class of values hand-copied between files. What lives here is the only part the
  * bundle is in a position to know: WHEN there is something worth looking at.
  *
  * Idempotent by construction. StrictMode double-invokes effects in

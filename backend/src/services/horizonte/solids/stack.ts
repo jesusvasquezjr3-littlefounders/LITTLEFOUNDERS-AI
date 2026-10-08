@@ -100,7 +100,7 @@ export function solveStack(goal: StackGoal, size: number, maxHeight: number = ST
 export const stackSlotId = (col: number, row: number): string => `c${col}r${row}`;
 export const stackSlotIds = (size: number): string[] => Array.from({ length: size * size }, (_, index) => stackSlotId(index % size, Math.floor(index / size)));
 
-/** The F0.3 arrangement context of a stack: one repeatable cube piece, a slot per cell holding up to `maxHeight` cubes. */
+/** The arrangement context of a stack: one repeatable cube piece, a slot per cell holding up to `maxHeight` cubes. */
 export function stackContext(size: number, maxHeight: number = STACK_MAX_HEIGHT): { pieceIds: string[]; slotIds: string[]; capacities: Record<string, number>; repeatable: true } {
   const slotIds = stackSlotIds(size);
   return { pieceIds: [STACK_PIECE], slotIds, capacities: Object.fromEntries(slotIds.map((slot) => [slot, maxHeight])), repeatable: true };

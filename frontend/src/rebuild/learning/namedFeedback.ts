@@ -1,18 +1,16 @@
 import type { Locale } from '../design/copyBudget';
 
 /*
- * GAP-FIX-R6 learning (B.20 "a banner naming what was done right"; Frontend
- * Bible 02 §9.2: correct is the informational success banner that names what
- * happened, not yet is the warning banner with a hint; Appendix B §1.8; B.23
- * 10-12 "recognition tied to the specific skill demonstrated").
+ * Correct is the informational success banner that names what
+ * happened, not yet is the warning banner with a hint.
  *
  * A graded v2 step shows the author's `feedback.met` / `feedback.not_yet`
  * when the document carries it (Forge requires `met` from age 10). Without
  * it, the board falls back to its own named confirmation below, built from
  * the graded state, never a bare "Correct" or "That works.": `met` names the
  * action or strategy the learner used, `hint` starts with "Not yet." and
- * points at the one thing to check. Budgeted as body copy in
- * namedFeedback.test.ts (Bible 06: 12 words, x1.25 in es-MX and pt-BR).
+ * points at the one thing to check. Budgeted as body copy
+ * (12 words, x1.25 in es-MX and pt-BR).
  */
 export interface NamedFeedback { met: string; hint: string }
 

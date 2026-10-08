@@ -1,4 +1,4 @@
-// B.16 — the Regional Adaptation Gate (Appendix C Stage 2, gate 6; Forge gate 16).
+// The Regional Adaptation Gate (Forge gate 16).
 //
 // "Add a regional-adaptation layer to the content-generation pipeline, beyond
 // translation — adjusting examples, amounts, and context per market, informed
@@ -6,7 +6,6 @@
 // produce a named, documented 'Regional Adaptation Gate' in Forge with an
 // explicit per-market checklist, owned by the content/learning-design team."
 //
-// The written policy and checklist: docs/content/REGIONAL-ADAPTATION-GATE.md.
 // The market problem inventory: coursegen/regional/markets.yaml.
 //
 //   required   — a lesson needs per-market scenarios when it cites real-world
@@ -240,7 +239,7 @@ export function analyzeRegionalLesson(
       block(`the ${locale} scenario repeats the ${AUTHORING_MARKET} brief; describe ${market.country}'s own situation, amounts and context`);
     }
   }
-  review(`per-market scenarios need content-team sign-off against the checklist in docs/content/REGIONAL-ADAPTATION-GATE.md (amounts and everyday context are judged there)`);
+  review(`per-market scenarios need content-team sign-off (amounts and everyday context are judged by the team)`);
   return { policy: { required, reasons, scenarios }, findings };
 }
 

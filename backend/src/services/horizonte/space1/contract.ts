@@ -11,7 +11,7 @@ import { BOX, FIGURE_LIMITS, ROTATION_AXES, TARGET_IDS, TARGET_LIMITS } from './
 const cellPart = z.number().int().min(0).max(BOX - 1);
 const figure = z.array(z.tuple([cellPart, cellPart, cellPart])).min(FIGURE_LIMITS.min).max(FIGURE_LIMITS.max);
 
-/** F4.4: turn a figure about one axis to match one of a few targets; the answer is which target and by how many degrees. */
+/** Turn a figure about one axis to match one of a few targets; the answer is which target and by how many degrees. */
 export const rotationPayload = z.object({
   axis: z.enum(ROTATION_AXES),
   figure,
@@ -20,7 +20,7 @@ export const rotationPayload = z.object({
 
 const planePart = z.number().int().min(-PLANE_LIMITS.normal).max(PLANE_LIMITS.normal);
 
-/** F4.5: `section` names the shape a plane cuts from a solid, `slide` moves the plane until it cuts a given shape, `euler` types the hidden count from V - E + F = 2, `volume` and `cone` type a pyramid's volume and a cone's volume in pi. */
+/** `section` names the shape a plane cuts from a solid, `slide` moves the plane until it cuts a given shape, `euler` types the hidden count from V - E + F = 2, `volume` and `cone` type a pyramid's volume and a cone's volume in pi. */
 export const solidSectionPayload = z.discriminatedUnion('mode', [
   z.object({
     mode: z.literal('section'),
@@ -54,7 +54,7 @@ const stallGoal = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('most'), budget: z.number().int().min(1).max(STALL_LIMITS.total.max) }).strict(),
 ]);
 
-/** F4.6 stall: fill a basket from priced items so it meets a total, the change from a payment, or the biggest bag a budget buys. */
+/** Stall: fill a basket from priced items so it meets a total, the change from a payment, or the biggest bag a budget buys. */
 export const marketStallPayload = z.object({
   items: z.array(z.object({
     id: z.enum(STALL_IDS),
@@ -64,7 +64,7 @@ export const marketStallPayload = z.object({
   goal: stallGoal,
 }).strict();
 
-/** F4.6 stack: set how many coins or bills stand in a stack drawn to scale, from an amount of money or a height. */
+/** Stack: set how many coins or bills stand in a stack drawn to scale, from an amount of money or a height. */
 export const coinStackPayload = z.object({
   piece: z.enum(COIN_PIECES),
   value: z.number().int().min(COIN_LIMITS.value.min).max(COIN_LIMITS.value.max),

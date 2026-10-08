@@ -2,8 +2,8 @@ import { z } from 'zod';
 
 /*
  * Pulse (observability stack) clients — Plausible Stats API v2, Umami API,
- * Uptime Kuma status page. Core is the ONLY thing that talks to these
- * (pulse/AGENTS.md #5): tokens live here server-side, the browser sees only
+ * Uptime Kuma status page. Core is the ONLY thing that talks to these:
+ * tokens live here server-side, the browser sees only
  * the /api/v1/admin envelope. Every reader is cached in-memory (60s TTL) so
  * admin-panel refreshes stay far under Plausible's 600 req/h default limit.
  *
@@ -11,7 +11,7 @@ import { z } from 'zod';
  * OPTIONAL by design: Core must boot and serve the product even when the
  * observability stack is absent (local dev, incidents) — routes answer 503
  * PULSE_UNCONFIGURED instead. An outage here loses telemetry, never product
- * (RUNBOOK.md § Pulse).
+ * (the pulse service).
  */
 
 /**
@@ -43,7 +43,7 @@ const PulseEnv = z.object({
    * "today" there and "today" in UTC are different days for six hours out of
    * every twenty-four. Resolving our windows in UTC put the tail of every
    * range one day ahead of the data, which `fillDailySeries` then rendered as
-   * a zero-traffic today, permanently (RUNBOOK 2026-08-27).
+   * a zero-traffic today, permanently (2026-08-27).
    *
    * Default verified against production on 2026-08-27: Plausible echoed
    * `-06:00` for every resolved range. Override it here if the site's own
@@ -377,8 +377,8 @@ function filterCacheKey(filters?: PlausibleFilter[]): string {
 /*
  * Acquisition scope — applied to EVERY Plausible query, retroactively.
  *
- * Until 2026-08-14 the tracker self-captured SPA navigations (see RUNBOOK:
- * "Plausible records /admin/* and product routes"), so twelve months of stored
+ * Until 2026-08-14 the tracker self-captured SPA navigations
+ * ("Plausible records /admin/* and product routes"), so twelve months of stored
  * events include the staff console, the product, and signup. That history
  * cannot be edited — Plausible has no delete-by-filter — but it can be scoped
  * at READ time, which fixes every report at once rather than leaving the
@@ -463,7 +463,7 @@ export function scoped(filters?: PlausibleQueryFilter[]): PlausibleQueryFilter[]
  * tracking had only been switched on in late July. Nothing had been switched
  * on or off. We were throwing the explanation away on arrival.
  *
- * §1.14: a caller that reads, modifies and presents a value must be able to
+ * A caller that reads, modifies and presents a value must be able to
  * tell "this is everything" from "this is what I could get".
  */
 export interface PlausibleMeta {
@@ -558,7 +558,7 @@ function toAggregate(metrics: number[] | undefined): PlausibleAggregate {
  * came back as no rows at all and the chart simply stopped — so a fortnight
  * with no visitors rendered as a graph ending on the 18th, which reads as a
  * broken view rather than as the honest answer "nobody came". That is
- * /AGENTS.md §1.14 drawn on a chart: an absence must be distinguishable from a
+ * the absence-versus-fault rule drawn on a chart: an absence must be distinguishable from a
  * fault, and a flat line at zero says the true thing where a missing line says
  * nothing at all.
  *
@@ -932,8 +932,8 @@ export interface UmamiStats {
   totaltime: number;
   /**
    * Pageviews in this window recorded on `/admin/*` — traffic the boundary
-   * never permitted, captured by the auto-track defect fixed on 2026-08-14
-   * (RUNBOOK). Reported rather than subtracted: Umami's API has no negation
+   * never permitted, captured by the auto-track defect fixed on 2026-08-14.
+   * Reported rather than subtracted: Umami's API has no negation
    * filter, so `pageviews` can be corrected by subtraction but `visits`,
    * `bounces` and `totaltime` cannot (one visitor may span both). Removing
    * only the summable metric would leave the payload internally inconsistent

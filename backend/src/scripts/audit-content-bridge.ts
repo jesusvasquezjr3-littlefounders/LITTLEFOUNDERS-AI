@@ -4,7 +4,7 @@
  * (`../services/contentBridgeAudit.ts`) against whatever is CURRENTLY live in
  * Vault, independent of `database/seeds/kc_graph.v1.json`.
  *
- * WHY THIS EXISTS SEPARATELY FROM `seed:kc`. Until RUNBOOK.md Round 105 the
+ * WHY THIS EXISTS SEPARATELY FROM `seed:kc`. Originally the
  * bridge audit only ever ran as a side effect of a human dispatching
  * `tutor-deploy.yml`'s `seed-kc` step — the ONLY trigger for the exact defect
  * this audit exists to catch (a `kc.skill_key` that no longer reaches
@@ -39,8 +39,7 @@ import { auditContentBridge } from '../services/contentBridgeAudit.js';
 
 async function main(): Promise<void> {
   const kcs = await getActiveKcs();
-  // A null read is a FAILED fetch, never "zero active KCs" (/AGENTS.md
-  // §1.14) — collapsing the two would report a healthy bridge on an
+  // A null read is a FAILED fetch, never "zero active KCs" — collapsing the two would report a healthy bridge on an
   // unanswered query, exactly the silent-miss shape this audit exists to
   // catch in the first place.
   if (kcs === null) {

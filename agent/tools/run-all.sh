@@ -14,8 +14,7 @@ fi
 # requested script is intended; never visiting it at all is not — omitting
 # Prism/Depot/Data Intel once made a green root gate weaker than those services'
 # own CI, and a hand-kept list is exactly how that happens again the next time a
-# service is added. (The list this replaces was pinned to "AGENTS.md §1.5", a
-# section deleted in 77b55596, so it was pinned to nothing.)
+# service is added.
 SERVICES=()
 for dir in */; do
   name="${dir%/}"

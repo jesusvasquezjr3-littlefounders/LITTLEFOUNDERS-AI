@@ -13,9 +13,9 @@ import { fill } from './MentorViews';
 import { playLessonCue } from '../../learning/lessonCue';
 
 /*
- * THE LIVE ACTIVITY (product inventory T1c; Frontend Bible 08 §2 layer 4, 05).
+ * THE LIVE ACTIVITY.
  *
- * The activity the Mentor served, drawn with the 02 controls in the board's
+ * The activity the Mentor served, drawn with the shared controls in the board's
  * place: the question, the answer controls, one Check. Grading is Core's
  * (server-authoritative; the key is never in the browser): a first miss keeps
  * the answer and says "not yet" with the reason Core returned, the second
@@ -23,8 +23,7 @@ import { playLessonCue } from '../../learning/lessonCue';
  * the Mentor reacts to it. "Practice only" is said before answering when Core
  * cannot pay XP for it. A demonstration the Mentor performs moves the open
  * tray while it speaks, with the learner's input locked until it hands the
- * tray back. No lives, no penalty, never the error hue for a wrong answer
- * (B.26): "not yet" is the retry tone. OD-28 (L-02): a graded answer plays the
+ * tray back. No lives, no penalty, never the error hue for a wrong answer: "not yet" is the retry tone. A graded answer plays the
  * lesson's cue where sound is on (the platform off switch): the gentle "not yet"
  * for a miss, the success cue for a right answer; a failed check stays silent.
  */

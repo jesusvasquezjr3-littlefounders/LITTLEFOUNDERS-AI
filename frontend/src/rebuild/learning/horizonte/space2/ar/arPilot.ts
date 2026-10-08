@@ -2,12 +2,12 @@ import { createContext, useContext } from 'react';
 import type { ArConsent, ArObjectId } from '../ar.generated';
 
 /*
- * F4.9: what the AR pilot depends on, injected so a test (and, later, the app) can supply it. The default is closed on every
+ * What the AR pilot depends on, injected so the app can supply it. The default is closed on every
  * count: the flag is off unless the build sets VITE_HORIZONTE_AR_PILOT=true, and no consent record exists yet, so a production
  * build can never open the gate. The age is real: with the flag on and no age supplied, the board reads the learner's age band
  * from Core (ar/ArLearnerAge.tsx), and an unknown age keeps the pilot closed. Consent comes from this environment only; recording
  * a verified guardian's consent in Core is an owner follow-up, and the pilot must not be enabled before the legal and pediatric
- * review (docs/rebuild/sprints/horizonte/space2.md).
+ * review.
  */
 
 /** The part of a WebXR session the pilot touches. Structural on purpose: no SDK, and no global type is required to compile. */

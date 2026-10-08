@@ -10,12 +10,12 @@ import { TogetherView } from '@/rebuild/learning/TogetherView';
 import { useLearnHost } from '@/routes/app/learn/learnHost';
 
 /*
- * /learn/together — the host of goals together (L-04, OD-27 (1)) on the
+ * /learn/together — the host of goals together on the
  * learner shell. It reads GET /coop-goals and, only when the learner opens a
  * form, the people who may be asked; every action re-reads the page, so what
  * the screen shows is always what Core decided after the action. Core refuses
  * everyone who is not a 13-to-17 participant; the page then says it is not open.
- * The report dialog reuses the profile's report copy (E.3), one wording for
+ * The report dialog reuses the profile's report copy, one wording for
  * the one safety queue.
  */
 const REPORT_COPY = { 'en-US': en.report, 'es-MX': es.report, 'pt-BR': pt.report } as const;

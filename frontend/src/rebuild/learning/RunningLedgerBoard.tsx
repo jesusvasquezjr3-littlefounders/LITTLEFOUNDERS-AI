@@ -45,7 +45,7 @@ const copy: Record<Locale, Labels> = {
     previous: 'Anterior', next: 'Próximo', play: 'Reproduzir', pause: 'Pausar' },
 };
 
-/** Answerless Appendix A operation 13 candidate; no credit or wallet mutation. */
+/** Answerless candidate; no credit or wallet mutation. */
 export function runningLedgerPilotDocument(locale: Locale): unknown {
   const t = copy[locale];
   return {

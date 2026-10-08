@@ -32,7 +32,7 @@ export function reallocateBoundary(item: AllocationItem, value: Allocation, boun
 
 export type AllocationVerdict = 'invalid' | 'incomplete' | 'review' | 'met';
 
-/** Pure interaction model. The production scorer is server-authoritative (Appendix P Part 7). */
+/** Pure interaction model. The production scorer is server-authoritative. */
 export function inspectAllocation(item: AllocationItem, value: Allocation): AllocationVerdict {
   if (!Number.isSafeInteger(item.total) || !Number.isSafeInteger(item.step) || item.total <= 0 || item.step <= 0 || item.total % item.step !== 0) return 'invalid';
   if (!Number.isSafeInteger(item.minimumSave) || item.minimumSave < 0 || item.minimumSave > item.total) return 'invalid';

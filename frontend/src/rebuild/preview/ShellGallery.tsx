@@ -24,9 +24,9 @@ const members = [
 ] as const;
 
 /**
- * Preview-only states of every shared shell (S03.2). Navigation is real:
- * every link changes the route key, so the matrix can check document titles,
- * route focus and scroll reset; the pages are long enough to scroll.
+ * Preview-only states of every shared shell. Navigation is real:
+ * every link changes the route key, so document titles,
+ * route focus and scroll reset can be checked; the pages are long enough to scroll.
  */
 export function ShellGallery({ kind, t, s, locale, onGallery }: {
   kind: ShellKind; t: GalleryCopy; s: SystemCopy; locale: Locale; onGallery: () => void;
@@ -41,7 +41,7 @@ export function ShellGallery({ kind, t, s, locale, onGallery }: {
   };
   const href = (id: string) => `?${new URLSearchParams({ ...Object.fromEntries(new URLSearchParams(location.search)), page: id }).toString()}`;
   // Each preview destination wears the class B navigation mark of its real slot (app-shell/navigation.ts), so the
-  // compact tab bar below 360 px (02 section 7 rule 9) shows here as it does on the real routes.
+  // compact tab bar below 360 px shows here as it does on the real routes.
   const item = (id: string, label: string): ShellNavItem => ({ id, label, href: href(id), iconAssetId: PREVIEW_MARKS[id] });
   const labels = { skip: t.skip, navigation: t.navigation };
   const common = { appName: APP, routeKey: `${kind}:${page}`, locale, onNavigate: navigate };
@@ -162,7 +162,7 @@ function Filler({ t }: { t: GalleryCopy }) {
   </div>;
 }
 
-/** The gallery's index: one link per catalogue and per shell state, for audits and owner review. */
+/** The gallery's index: one link per catalogue and per shell state, for review. */
 export function GalleryIndex({ t, onOpen }: { t: GalleryCopy; onOpen: (screen: string, shell?: ShellKind, extra?: Record<string, string>) => void }) {
   const shells: [ShellKind, string, Record<string, string>?][] = [
     ['learner', t.shellLearner], ['tutor', t.shellTutor], ['staff', t.shellStaff], ['staff-limited', t.shellStaffLimited],

@@ -1,6 +1,6 @@
 /*
- * The Appendix J/L (trust) and Appendix M (identity) programme metrics, the
- * Mentor retention sweep status, the operations watchdog and the C.24 owner
+ * The trust and identity programme metrics, the
+ * Mentor retention sweep status, the operations watchdog and the owner
  * roster.
  *
  * Core is the control: every path sits behind requireRole(admin|superadmin)
@@ -32,7 +32,7 @@ export interface MetricSpec {
   id: string;
   path: (days: number) => string;
   headline?: MetricField;
-  /** Appendix targets: zero (e.g. rows past their period), full (100%) or a check that must hold. Diagnostics have none. */
+  /** Targets: zero (e.g. rows past their period), full (100%) or a check that must hold. Diagnostics have none. */
   target?: MetricTarget;
   facts: readonly MetricField[];
 }
@@ -45,7 +45,7 @@ const metricDays = (days: number) => Math.min(365, Math.max(1, Math.round(days))
 const withDays = (path: string) => (days: number) => `${path}?days=${metricDays(days)}`;
 const fixed = (path: string) => () => path;
 
-/* ---- Trust (Appendix J and L, view_analytics) ------------------------------ */
+/* ---- Trust (view_analytics) ------------------------------ */
 
 export const TRUST_METRICS: readonly MetricSpec[] = [
   { id: 'socialSafety', path: fixed('/admin/analytics/social-safety'), headline: f('reviewCoverage', 'rate'), target: 'full',
@@ -62,7 +62,7 @@ export const TRUST_METRICS: readonly MetricSpec[] = [
       f('overdueReportNotes', 'count', ['overdue', 'reportNotes']), f('overdueResolvedReports', 'count', ['overdue', 'resolvedReports']),
       f('overdueResolvedCases', 'count', ['overdue', 'resolvedCases']), f('overdueNotices', 'count', ['overdue', 'notices']),
       f('lastSweep', 'date', ['lastSweep', 'at'])] },
-  // Appendix J E.1-E.5 (one Core read, three cards by target): zero-target
+  // One Core read, three cards by target: zero-target
   // exposure metrics, the 100% escalation metric with the queue times, and
   // the 100% audit reconciliation.
   { id: 'socialDiscovery', path: withDays('/admin/analytics/social-protection'), headline: f('spDiscoveryReached', 'count', ['discovery', 'unrelatedReached']), target: 'zero',
@@ -134,7 +134,7 @@ export function metricGuard(spec: MetricSpec) {
   };
 }
 
-/** Whether the headline meets the Appendix target (null when there is no target or no data). */
+/** Whether the headline meets the target (null when there is no target or no data). */
 export function onTarget(spec: MetricSpec, value: unknown): boolean | null {
   if (!spec.target || value === null || value === undefined) return null;
   if (spec.target === 'zero') return value === 0;
@@ -149,13 +149,13 @@ export const RETENTION_SWEEP_PATH = '/admin/tutor/retention-status';
 export const isRetentionSweep = (value: unknown): value is RetentionSweep => isRecord(value) && typeof value.stale === 'boolean'
   && (value.lastRunAt === null || typeof value.lastRunAt === 'string') && (value.hoursSinceLastRun === null || isNumber(value.hoursSinceLastRun));
 
-/* ---- H.4 operations watchdog (manage_support) --------------------------------- */
+/* ---- Operations watchdog (manage_support) --------------------------------- */
 
 export const OPS_JOBS_PATH = '/admin/ops/job-status';
 /**
- * GAP-FIX-R6: the data jobs (account deletion, social and learning retention, the insights prune) are watched too.
- * GAP-FIX-R8: so is the analytics warehouse's 400-day prune and erasure re-apply (`warehouse_retention`, read from dataintel).
- * GAP-FIX-R8 (F.2 under OD-20, D-08): so is the daily legacy badge-image purge.
+ * The data jobs (account deletion, social and learning retention, the insights prune) are watched too.
+ * So is the analytics warehouse's 400-day prune and erasure re-apply (`warehouse_retention`, read from dataintel).
+ * So is the daily legacy badge-image purge.
  */
 export const OPS_JOB_NAMES = [
   'vault_backup', 'pulse_backup', 'vault_drift', 'learning_retention', 'insights_prune', 'account_deletions', 'social_retention',
@@ -166,7 +166,7 @@ export type OpsJobName = (typeof OPS_JOB_NAMES)[number];
 export interface OpsJob {
   job: OpsJobName; lastRunAt: string | null; hoursSinceLastRun: number | null; lastAttemptAt: string | null;
   lastAttemptOk: boolean | null; staleAfterHours: number; stale: boolean;
-  /** GAP-FIX-R8: Core could not read this job's record (the warehouse was down); always stale. */
+  /** Core could not read this job's record (the warehouse was down); always stale. */
   unreadable?: true;
 }
 const isNullableTime = (value: unknown): value is string | null => value === null || typeof value === 'string';
@@ -175,7 +175,7 @@ const isOpsJob = (value: unknown): value is OpsJob => isRecord(value) && (OPS_JO
   && (value.lastAttemptOk === null || typeof value.lastAttemptOk === 'boolean') && isNumber(value.staleAfterHours) && typeof value.stale === 'boolean'
   && (value.unreadable === undefined || value.unreadable === true);
 /**
- * H.3 (GAP-FIX-R6): warehouse alert triggers in the window that notified
+ * Warehouse alert triggers in the window that notified
  * nobody (Core's services/warehouseAlerts.ts). `undelivered: null` is a
  * warehouse Core could not read, never "all delivered".
  */
@@ -186,7 +186,7 @@ export const undeliveredAlertsOf = (value: unknown): UndeliveredAlerts | null =>
   if (!(undelivered === null || (isNumber(undelivered) && undelivered >= 0)) || !isNumber(windowHours)) return null;
   return { undelivered, windowHours, alerts: Array.isArray(alerts) ? alerts : [] };
 };
-/** E.6: erasures whose step failed more than `afterHours` ago and never completed. */
+/** Erasures whose step failed more than `afterHours` ago and never completed. */
 export interface DeletionFailures { stuck: number; afterHours: number }
 const isDeletionFailures = (value: unknown): value is DeletionFailures => isRecord(value)
   && isNumber(value.stuck) && Number.isInteger(value.stuck) && value.stuck >= 0 && isNumber(value.afterHours);
@@ -195,7 +195,7 @@ export const isOpsJobs = (value: unknown): value is { jobs: OpsJob[]; anyStale: 
   && Array.isArray(value.jobs) && value.jobs.every(isOpsJob) && OPS_JOB_NAMES.every((name) => (value.jobs as OpsJob[]).some((job) => job.job === name))
   && typeof value.anyStale === 'boolean' && isDeletionFailures(value.accountDeletionFailures);
 
-/* ---- Appendix M Part 1: identity metrics (view_analytics) ----------------------- */
+/* ---- Identity metrics (view_analytics) ----------------------- */
 
 export const identityPath = (days: number) => `/admin/analytics/identity?days=${days}`;
 export type IdentityKind = 'release_gate' | 'diagnostic';
@@ -218,7 +218,7 @@ export const isIdentityReport = (value: unknown): value is IdentityReport => isR
   && value.adversarial.every((entry) => isRecord(entry) && typeof entry.id === 'string')
   && isRecord(value.releaseGate) && isNumber(value.releaseGate.total) && isNumber(value.releaseGate.met) && isNumber(value.releaseGate.missed);
 
-/* ---- C.24 named owners (manage_users) ---------------------------------------- */
+/* ---- Named owners (manage_users) ---------------------------------------- */
 
 export const OWNERS_PATH = '/admin/mentor-quality/owners';
 /** Staff who could be named: an owner must be staff who can read analytics (Core refuses anyone else with NOT_ELIGIBLE_OWNER). */

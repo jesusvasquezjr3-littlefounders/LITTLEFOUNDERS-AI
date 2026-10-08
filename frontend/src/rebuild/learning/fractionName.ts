@@ -1,7 +1,7 @@
 import type { Locale } from '../design/copyBudget';
 
 /*
- * Bible 05 §6 (GAP-FIX-R5): a movable point on a fraction line is a slider
+ * A movable point on a fraction line is a slider
  * whose aria-valuetext names the fraction in the learner's language ("three
  * quarters", "tres cuartos", "três quartos"), not "3/4". The fraction is read
  * as written on the line (2/4 is "two quarters", never reduced), with a whole

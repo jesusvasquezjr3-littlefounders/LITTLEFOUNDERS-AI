@@ -1,15 +1,15 @@
-// The release acceptance evaluation behind `verify:course` (S05.4c), pure over
+// The release acceptance evaluation behind `verify:course`, pure over
 // already-loaded inputs so it is testable without Vault.
 //
 // It produces exactly one result per id in FORGE_RELEASE_CHECKS. The result
 // list is the release attestation `verify:course` writes to
 // `course_release_verifications.checks`, and Vault's `release_course`
 // preflight refuses a release unless every id it requires carries `ok: true`
-// (Product G.2: Core's staff publish route and the local publish command share
+// (Core's staff publish route and the local publish command share
 // that one preflight).
 //
-// Per-gate document checks are also the release-time snapshot of Appendix C
-// Part 1.3's Forge Gate Pass Rate (per gate).
+// Per-gate document checks are also the release-time snapshot of the
+// Forge Gate Pass Rate (per gate).
 
 import type { CourseCatalog, LoadIssue } from '../catalog/loader.js';
 import { checkProgression } from '../catalog/progression.js';
@@ -311,7 +311,7 @@ export function evaluateRelease(input: ReleaseInput): ReleaseEvaluation {
       : `ORPHANED WITH PROGRESS: ${input.orphansWithProgress.join(', ')}`,
   );
 
-  // Not exemptable: a leaked currency word is a B.16 localization defect.
+  // Not exemptable: a leaked currency word is a localization defect.
   const leaks: string[] = [];
   for (const row of input.documents) {
     if (WRONG_CURRENCY[row.locale]?.test(visibleText(row.document).join(' \n '))) leaks.push(`${slugById.get(row.lesson_id) ?? ''} [${row.locale}]`);
@@ -327,8 +327,8 @@ export function evaluateRelease(input: ReleaseInput): ReleaseEvaluation {
   add('forge.release.topic-titles', untranslated.length === 0, `${untranslated.length} topic(s) blank or identical across locales`);
 
   // v2: the document half of the Forge content gates (tone, Copy Budget,
-  // another market's anchors or currency). The plan-level half (B.17, B.11,
-  // B.16 scenarios) ran when the emitter built the document.
+  // another market's anchors or currency). The plan-level half (concept cap, misjudgment,
+  // Scenarios) ran when the emitter built the document.
   const v2Documents = input.v2Documents ?? [];
   const v2Failures: string[] = [];
   for (const row of v2Documents) {

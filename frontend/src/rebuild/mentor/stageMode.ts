@@ -1,12 +1,12 @@
 /*
- * How the Mentor stage renders on this device (Frontend Bible 08 §7), as a
- * pure decision so every branch is tested without a GPU:
+ * How the Mentor stage renders on this device, as a
+ * pure decision, needing no GPU:
  *
  *   live   the real-time 3D character on its Diorama, animated;
  *   held   the same real-time 3D, each pose HELD at one frame and switched by a
- *          short cross-fade: `prefers-reduced-motion` (08 §7, 04 §3). The idle
+ *          short cross-fade: `prefers-reduced-motion`. The idle
  *          loop stops and every state stays visible;
- *   still  pre-rendered stills of the same character (07 §4): no WebGL, a
+ *   still  pre-rendered stills of the same character: no WebGL, a
  *          low-power device, data saver on, a device that cannot hold the
  *          frame-rate floor, or a renderer that failed. The layout does not
  *          change.
@@ -16,9 +16,9 @@ export type MentorStageMode = 'live' | 'held' | 'still';
 export type MentorStageFallback = 'no-webgl' | 'low-power' | 'data-saver' | 'frame-rate' | 'render-error';
 export type MentorStageFailure = Extract<MentorStageFallback, 'frame-rate' | 'render-error'>;
 
-/** First render of the stage on a mid-range phone (08 §7). */
+/** First render of the stage on a mid-range phone. */
 export const FIRST_RENDER_BUDGET_MS = 2500;
-/** The steady frame-rate floor (08 §7). */
+/** The steady frame-rate floor. */
 export const FRAME_RATE_FLOOR = 30;
 /**
  * Consecutive one-second readings under the floor, at the renderer's lowest

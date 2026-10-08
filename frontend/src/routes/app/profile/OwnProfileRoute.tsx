@@ -10,8 +10,8 @@ import { TeenConnectionsPanel } from './TeenConnectionsPanel';
 import { ProfileSafetyControl } from './SocialTierNotes';
 
 /*
- * /profile (P1): the data plane of the rebuilt own-profile screen. Core's
- * GET /profile decides everything the screen shows (the tier, the E.13
+ * /profile: the data plane of the rebuilt own-profile screen. Core's
+ * GET /profile decides everything the screen shows (the tier, the
  * review, the badges); an answer that does not have the expected shape is a
  * failure with a retry, never a guessed profile.
  */
@@ -28,13 +28,13 @@ interface WireProfile {
 const TIERS = ['guardian', 'teen', 'adult', 'closed'] as const;
 const count = (value: unknown) => (typeof value === 'number' && Number.isFinite(value) && value >= 0 ? Math.floor(value) : null);
 
-/** `discoverable`: OD-27 (2), a 16-17-year-old's own choice to be found, as Core reports it (absent = private). */
+/** `discoverable`: a 16-17-year-old's own choice to be found, as Core reports it (absent = private). */
 export interface ParsedProfile { data: OwnProfileData; review: ('username' | 'displayName')[]; discoverable: boolean }
 
 /**
  * Core's answer, checked field by field. `null` when anything the screen relies on is missing.
  * `roleTutor` (the parent role) is only the fallback for an older Core that does not send its
- * own `isTutor` verdict (OD-6: only a currently ID-verified parent is a Tutor).
+ * own `isTutor` verdict (only a currently ID-verified parent is a Tutor).
  */
 export function parseOwnProfile(raw: unknown, locale: string, seed: string, roleTutor: boolean): ParsedProfile | null {
   const wire = raw as WireProfile | null;
@@ -84,7 +84,7 @@ function ScopedOwnProfile() {
   const [discoverable, setDiscoverable] = useState(false);
   const [attempt, setAttempt] = useState(0);
   const [invite, setInvite] = useState<InviteStatus>('idle');
-  // Bible 08 §8 / 04 §4.3 (GAP-FIX-R1): the chosen Mentor and this week's strip, best-effort (no row without them).
+  // The chosen Mentor and this week's strip, best-effort (no row without them).
   const [rhythm, setRhythm] = useState<OwnProfileRhythm | null>(null);
   const inviteTimer = useRef<number | null>(null);
 
@@ -131,10 +131,10 @@ function ScopedOwnProfile() {
   }, []);
 
   const tier = view.kind === 'ready' ? view.data.tier : null;
-  // E.13: the owner (a minor) learns which field keeps their profile hidden.
+  // The owner (a minor) learns which field keeps their profile hidden.
   const safetyNotice = review.length > 0 && (tier === 'teen' || tier === 'guardian')
     ? <ProfileSafetyControl audience={tier === 'teen' ? 'self' : 'kidSelf'} fields={review} /> : null;
-  // E.8: the self-registered teen manages their own connection requests.
+  // The self-registered teen manages their own connection requests.
   const connections = tier === 'teen' ? <TeenConnectionsPanel discoverable={discoverable} /> : null;
 
   return <OwnProfile copy={copy.ownProfile} locale={locale} dark={dark} ageBand={ageBand} view={view} origin={window.location.origin}

@@ -52,7 +52,7 @@ function usePainted(build: () => PaintedPart[]) {
 
 /* ---------------------------------------------------------------------- seeds */
 
-/** The platform's own unit (OD-41): a plump golden seed, one metal mesh, turning in place. Money-shaped things are not in this scene. */
+/** The platform's own unit: a plump golden seed, one metal mesh, turning in place. Money-shaped things are not in this scene. */
 export function Seed({ reflections }: { reflections: Texture | null }) {
   const geometry = useMemo(() => {
     // An almond: round belly, a soft point, flattened a little front to back: a pip, never a drop.

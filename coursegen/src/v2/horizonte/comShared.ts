@@ -4,8 +4,8 @@ import {
 } from '../solvability.js';
 
 /*
- * Shared helpers of the com pack (F2.16, F2.17, F2.18). Hand-mirrored from backend/src/services/horizonte/com/arrange.ts:
- * the packages share no code, so the rules are copied and the parity of the capability literals is tested.
+ * Shared helpers of the com pack. Hand-mirrored from backend/src/services/horizonte/com/arrange.ts:
+ * the packages share no code, so the rules are copied.
  */
 
 export type Rec = Record<string, unknown>;

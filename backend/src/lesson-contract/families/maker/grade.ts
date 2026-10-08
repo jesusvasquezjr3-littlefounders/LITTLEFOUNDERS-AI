@@ -1,4 +1,4 @@
-// `maker` family — pure validators (LESSON_ENGINE.md §5.8, §6).
+// `maker` family — pure validators.
 // Malformed answers → score 0, never throw. robot_path re-simulates the
 // submitted program authoritatively; the renderer reuses the same simulator
 // so what the kid watched IS what gets graded.

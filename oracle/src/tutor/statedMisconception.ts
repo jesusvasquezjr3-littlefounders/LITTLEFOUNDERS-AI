@@ -15,8 +15,8 @@
  * it has no way to say "that was just a question" that costs it nothing — and
  * a confident wrong label is exactly the harm here. It would also add a paid
  * call and its latency to every learner turn, on the one surface where
- * latency IS the product. And it could not be tested: this file's behaviour
- * is pinned by unit tests that run in milliseconds and cost nothing.
+ * latency IS the product. And it could not be tested cheaply: this file's behaviour
+ * can be checked in milliseconds, at no cost.
  *
  * PRECISION OVER RECALL, DELIBERATELY. Every pattern below requires the
  * child to COMMIT to the belief, not merely to touch the topic. "¿un cuarto
@@ -27,9 +27,9 @@
  * of something they never believed, which is the failure this file exists to
  * avoid. When in doubt, return null.
  *
- * THE CODES ARE NOT FREE-FORM. Every code returned here is checked against
- * the KC graph seed by `instrumentSpecs.test.ts`, the same registry the moves
- * are checked against, so a code that no knowledge component declares cannot
+ * THE CODES ARE NOT FREE-FORM. Every code returned here must exist in
+ * the KC graph seed, the same registry the moves
+ * use, so a code that no knowledge component declares cannot
  * silently become unreachable guidance.
  */
 
@@ -83,7 +83,7 @@ const NEVER_A_CLAIM = [
   /\b(no s[ée]\b(?!\s+(?:puede|puedo|pueden))|no estoy segur[oa]|creo que no|verdad\s*\?|es correcto|est[áa] bien(?:\s|$))/i,
   /\b(me equivoqu[ée]|estaba mal|ya entend[íi])\b/i,
   /*
-   * C.18: the same hedges in English and Portuguese — the unsound-decision
+   * The same hedges in English and Portuguese — the unsound-decision
    * patterns below now read all three product locales, and a hedge in any of
    * them is an invitation, not a belief.
    */
@@ -166,7 +166,7 @@ const PATTERNS: StatedPattern[] = [
     all: [/\b(segur[oa]|de fijo|obvio)\b/i, /\b(me lo compran|gano|se vende|voy a vender|funciona)\b/i],
   },
   /*
-   * C.18 — THE UNSOUND MONEY DECISIONS, IN ENGLISH AND PORTUGUESE.
+   * THE UNSOUND MONEY DECISIONS, IN ENGLISH AND PORTUGUESE.
    *
    * The anti-sycophancy constraint's hard rule ("never affirm a financially
    * unsound in-scenario decision") is only enforceable where the decision is

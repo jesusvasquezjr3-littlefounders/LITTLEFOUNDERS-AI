@@ -181,7 +181,7 @@ export type PrismStyleProbe = { styleVersion: string } | { unavailable: string }
  * it is safe as a run preflight — but callers must still skip it in dry-run,
  * which stays fully offline by contract. `unavailable` (instead of a version
  * string) keeps "Prism did not answer" distinguishable from a real mismatch
- * (§1.14: failure must be distinguishable from emptiness).
+ * (failure must be distinguishable from emptiness).
  */
 export async function fetchPrismStyleVersion(): Promise<PrismStyleProbe> {
   const c = getConfig();

@@ -77,7 +77,7 @@ services:
     ports: !override
       - ${SESSION_PORT}:5432
       - \${POOLER_PROXY_PORT_TRANSACTION}:6543
-  # A.6 / Appendix M 1.3: pinned, not left to GoTrue's default. An address
+  # Pinned, not left to GoTrue's default. An address
   # change must also be confirmed from the OLD address; a child's is a
   # synthetic .invalid one, so a child's change can never complete (the
   # database refuses it too: guard_kid_email).

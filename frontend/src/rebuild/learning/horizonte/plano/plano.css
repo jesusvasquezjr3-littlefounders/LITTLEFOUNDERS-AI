@@ -1,5 +1,5 @@
-/* Plano (Horizonte F0.2): the shared SVG plane. A neutral board (V2): a surface, quiet grid lines, a 2 px axis and the
-   learner's marks, nothing decorative (V3). Series hues are sky, mint and berry with a second channel (dash, pattern,
+/* Plano: the shared SVG plane. A neutral board: a surface, quiet grid lines, a 2 px axis and the
+   learner's marks, nothing decorative. Series hues are sky, mint and berry with a second channel (dash, pattern,
    shape); primary marks the handle being moved. Words and numerals are HTML beside the SVG so they never scale with
    the viewBox, and marks and handles are HTML over it so they keep their size at any width. The only motion is the
    250 ms glide of a handle after a key or a tap, under no-preference. Tokens and logical properties only. */
@@ -59,7 +59,7 @@
 .lf-rebuild .lf-plano-point[data-shape='diamond'] .lf-plano-mark { border-radius: 0; transform: rotate(45deg); }
 .lf-rebuild .lf-plano-point-label { position: absolute; inset-inline-start: calc(100% + var(--spacing-1)); inset-block-start: 50%; transform: translateY(-50%); font: var(--type-caption); color: var(--content); white-space: nowrap; }
 
-/* A handle: a 64 px hit area (target-lg, V4) around a 24 px disk. Primary is the default ink; a series hue replaces it. */
+/* A handle: a 64 px hit area (target-lg) around a 24 px disk. Primary is the default ink; a series hue replaces it. */
 .lf-rebuild .lf-plano-handle {
   --plano-ink: var(--primary-strong);
   position: absolute; display: grid; place-items: center; inline-size: var(--target-lg); block-size: var(--target-lg);

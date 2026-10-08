@@ -11,12 +11,12 @@ import { fetchLearnerRegister, type RegisterState, type RegisterTransport } from
 import { coursePath, decisionJournalPath, learningRhythmPath, lessonPath, placementPath, territoryPath, togetherPath } from './paths';
 
 /*
- * W2L: what every rebuilt learner page host needs from the application, in
+ * What every rebuilt learner page host needs from the application, in
  * one place: the learner's session transport to Core, the language and mode
  * the shell shows, the route table as links, and Core's register (the Copy
  * Budget band a page reads in; the youngest while it is unknown, the most
- * protective reading). The rebuilt surfaces import nothing from the legacy app
- * (Bible 02 rule 23); these hosts are the bridge.
+ * protective reading). The rebuilt surfaces import nothing from the legacy app;
+ * these hosts are the bridge.
  */
 
 export const LEARN_LINKS: LearnLinks = {
@@ -26,7 +26,7 @@ export const LEARN_LINKS: LearnLinks = {
   placement: placementPath,
   territory: territoryPath,
   rhythm: learningRhythmPath(),
-  // Bible 08 §8 (GAP-FIX-R1): the home card's way to the learner's Mentor.
+  // The home card's way to the learner's Mentor.
   mentor: '/tutor',
   journal: decisionJournalPath(),
   together: togetherPath(),
@@ -60,7 +60,7 @@ export function useLearnHost() {
   return { locale, dark: isDark, transport, links: LEARN_LINKS, onNavigate };
 }
 
-/** Core's register for this learner (B.23): the band a page's Copy Budget reads in. */
+/** Core's register for this learner: the band a page's Copy Budget reads in. */
 export function useLearnerRegister(transport: RegisterTransport): [RegisterState, (next: RegisterState) => void] {
   const [state, setState] = useState<RegisterState>({ status: 'loading' });
   useEffect(() => {

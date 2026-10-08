@@ -1,4 +1,4 @@
-// `input` family — pure validators (LESSON_ENGINE.md §5.3, §6).
+// `input` family — pure validators.
 // Malformed answers → score 0, never throw. All helpers are dependency-free so
 // Core can reuse them server-side.
 
@@ -107,7 +107,7 @@ const gradeCountObjects: FamilyGrader = (segment, answer) => {
   const value = a ? num(a.value) : null
   const target = key ? num(key.value) : null
   if (value === null || target === null) return MALFORMED
-  // Young-kid tolerance (§5.3 #18): an off-by-one count usually means one object was
+  // Young-kid tolerance: an off-by-one count usually means one object was
   // missed or double-tapped, not a broken counting concept — worth the "almost" band
   // (40), never the "within 2× tolerance" 50 of toleranceBands. Anything further off
   // is a real miss and scores 0.

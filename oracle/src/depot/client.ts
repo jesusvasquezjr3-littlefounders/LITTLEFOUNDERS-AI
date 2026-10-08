@@ -10,7 +10,7 @@ import { withTimeout } from '../lib/http.js';
  * 1. DEPOT IS CONTENT-ADDRESSED. It serves files at /files/:bucket/:hash.:ext
  *    and the name it stores under has nothing to do with the name we upload.
  *    So the URL must come from the upload RESPONSE and never be constructed by
- *    concatenating a filename — /TUTOR_3D.md §3.2 records what that cost when
+ *    concatenating a filename — that is what went wrong when
  *    the 3D assets tried it.
  * 2. THE MIME TYPE MUST BE ONE DEPOT ACCEPTS. Publishing the 3D scene failed
  *    on exactly this, against a Depot deployment whose code supported the type
@@ -27,7 +27,7 @@ import { withTimeout } from '../lib/http.js';
  *   tutor-speech          One child's session. The model said it, to them, in
  *                         answer to something they said. Core's nightly sweep
  *                         deletes it with the session at 90 days
- *                         (/ORACLE.md §12, backend/src/services/
+ *                         (backend/src/services/
  *                         tutorRetention.ts).
  *   tutor-speech-shared   A line out of the closed, human-written scripted set
  *                         (src/tutor/scripted.ts). Identical for every

@@ -1,8 +1,8 @@
 import { ADAPTATIONS, type Adaptation } from '../context/schema.js';
 
 /*
- * C.19 — THE DISENGAGEMENT CHECK-IN AND REPAIR-INITIATION MOVE
- * (Appendix D §3.7; Block C non-negotiable: "a fired disengagement signal
+ * THE DISENGAGEMENT CHECK-IN AND REPAIR-INITIATION MOVE
+ * (non-negotiable: "a fired disengagement signal
  * always produces an explicit, humble check-in before the current plan
  * continues").
  *
@@ -11,7 +11,7 @@ import { ADAPTATIONS, type Adaptation } from '../context/schema.js';
  * understood you". Here the repair is the SYSTEM's responsibility, not the
  * model's and not the child's:
  *
- *   1. The Behavioral Telemetry Layer (C.9) fires its disengagement signal.
+ *   1. The Behavioral Telemetry Layer fires its disengagement signal.
  *   2. The Mentor's reacting turn is told to react in one sentence and ask
  *      nothing (`CHECK_IN_LEAD_INSTRUCTION`); the SYSTEM then adds the
  *      check-in itself — a human-written, pre-generatable line
@@ -24,13 +24,13 @@ import { ADAPTATIONS, type Adaptation } from '../context/schema.js';
  *                      happened; the Mentor says it will try another way and
  *                      offers one adaptation (`repairInstruction`), routing
  *                      the signal through the adaptation-offer mechanism,
- *                      the learner-controlled choice Appendix D §1.7 requires;
+ *                      the learner-controlled choice the design requires;
  *        unclear     → answered as an ordinary turn (they may simply have
  *                      answered the lesson).
  *
  * Nothing in any of these lines, or in what the model is told, describes how
  * the learner feels: the check-in asks whether the MENTOR is helping, which
- * is the humble framing the SPEC names, and every model turn is also checked
+ * is the humble framing, and every model turn is also checked
  * for affect claims (`affectClaims.ts`).
  */
 
@@ -48,7 +48,7 @@ export const CHECK_IN_ALIGNED_INSTRUCTION = [
 
 /**
  * The repair after "not really". Routed through the adaptation-offer
- * mechanism (Appendix D §1.7), excluding every adaptation the learner
+ * mechanism, excluding every adaptation the learner
  * already declined this session; when none is left, the repair is a fresh
  * explanation instead.
  */

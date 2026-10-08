@@ -1,10 +1,8 @@
 /*
- * `npm run equity-audit` — C.18 / C.20 / Appendix D §3.7: THE EQUITY-DRIFT
+ * `npm run equity-audit` — THE EQUITY-DRIFT
  * AUDIT of the Mentor's praise and feedback against learner identity cues.
  *
- * A thin CLI over `src/safety/equityAudit/` (vitest suite:
- * `src/__tests__/equityAudit.test.ts`). Policy:
- * docs/rebuild/mentor/EQUITY-AUDIT-POLICY.md.
+ * A thin CLI over `src/safety/equityAudit/`.
  *
  *   (no flag)       the zero-spend DRY RUN: every scripted session replayed
  *                   through the real orchestrator for every identity cue,
@@ -24,7 +22,7 @@
  *   --live-plan     print what the live run would send and how many model
  *                   calls it would make; sends nothing
  *   --live [--repeats N] [--record]
- *                   OWNER-RUN ONLY (paid model calls; OD-23 forbids spend
+ *                   OWNER-RUN ONLY (paid model calls; spend is forbidden
  *                   without approval). Refuses unless
  *                   EQUITY_AUDIT_LIVE=approved and a model key is configured.
  *

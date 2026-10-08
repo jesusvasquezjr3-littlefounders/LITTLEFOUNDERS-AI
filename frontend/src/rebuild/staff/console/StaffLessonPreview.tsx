@@ -12,9 +12,7 @@ import type { LessonPreviewRequest } from './StaffContent';
 import './staffLessonPreview.css';
 
 /*
- * GAP-FIX-R6 (Bible 02 rule 23 and D13; 08 §0 item 2; OD-24; Appendix C Part 3
- * Stage 3; Product 10 G.2; inventory S2 "preview a lesson rendered in each
- * language"): the staff review of a v2 lesson plays it in the learner's OWN
+ * The staff review of a v2 lesson plays it in the learner's OWN
  * rebuilt renderer, the LessonDocumentView the learner route mounts, in the
  * lesson layer the learner gets (its own language, age band and Copy Budget,
  * the compact Mentor stage Core projects), never in the legacy v1 player and
@@ -26,7 +24,7 @@ import './staffLessonPreview.css';
  *     NOTHING is recorded: no run, no receipt, no view, no completion;
  *   - no `onView` and no `onComplete`, so no step is saved and the end of the
  *     lesson is the plain end screen;
- *   - an approach choice (B.24) stays local to the preview.
+ *   - an approach choice stays local to the preview.
  *
  * It opens as a full-viewport modal layer over the console (the page behind
  * is hidden and inert, scroll is locked, focus is trapped, Escape closes),
@@ -43,8 +41,8 @@ export default function StaffLessonPreview({ request }: { request: LessonPreview
   const onClose = request.onExit;
   useLayer(ready, host, true, onClose);
   // The layer is opaque and fills the viewport, so nothing of the console behind it can be seen: while it is open the
-  // console is hidden, not only inert, and the page's one visible <h1> is the lesson's, as on the learner's own route
-  // (03 §3.2). Declared before the focus trap, so the console is shown again before focus goes back to its opener.
+  // console is hidden, not only inert, and the page's one visible <h1> is the lesson's, as on the learner's own route.
+  // Declared before the focus trap, so the console is shown again before focus goes back to its opener.
   useLayoutEffect(() => {
     if (!ready) return;
     document.body.dataset.lfCovered = 'lesson-preview';

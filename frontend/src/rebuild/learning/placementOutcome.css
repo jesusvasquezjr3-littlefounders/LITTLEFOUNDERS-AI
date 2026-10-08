@@ -1,4 +1,4 @@
-/* B.15 (S05.3d): placement outcome as accompaniment. Tokens only. */
+/* Placement outcome as accompaniment. Tokens only. */
 .lf-placement-outcome { min-block-size: 100dvh; padding: var(--spacing-4); background: var(--sky); color: var(--on-sky); display: grid; align-items: center; }
 .lf-placement-outcome-inner { display: grid; gap: var(--spacing-5); inline-size: 100%; max-inline-size: 640px; margin-inline: auto; }
 .lf-placement-outcome-inner > * { min-inline-size: 0; }

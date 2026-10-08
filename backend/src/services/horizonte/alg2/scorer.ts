@@ -23,7 +23,7 @@ const fromShape = (grade: { verdict: string; diagnostic: V2Grade['diagnostic'] }
   grade.verdict === 'met' ? MET : grade.verdict === 'review' ? { verdict: 'review', diagnostic: grade.diagnostic } : INVALID;
 
 /**
- * F2.4. invalid: malformed, a family other than the payload's, parameters off the sliders, or (with a rubric) a key that
+ * Invalid: malformed, a family other than the payload's, parameters off the sliders, or (with a rubric) a key that
  * is malformed, off the sliders, off the marks or already met by the start. valid: the sliders untouched, and every
  * well-formed response without a rubric. review: moved, but not on the key, with the diagnostic of `curve.parameters`.
  * met: the key, within its tolerance.
@@ -59,7 +59,7 @@ function systemContext(system: ReadSystem) {
 }
 
 /**
- * F2.5. invalid: malformed, a different number of markers than the payload starts with, a marker off the window or the
+ * Invalid: malformed, a different number of markers than the payload starts with, a marker off the window or the
  * grid, two markers on one spot, or (with a rubric) a key that is not exactly one crossing per marker or is already met
  * by the start. valid: the markers untouched. review: moved, but not on the key, with the diagnostic of `points.set`.
  * met: every marker on a required crossing.
@@ -87,7 +87,7 @@ const sampleLineSystem = (segment: Segment): unknown => {
 };
 
 /**
- * F2.6. invalid: malformed, a line that does not read (or reads as the wrong kind), or (with a rubric) a reference that
+ * Invalid: malformed, a line that does not read (or reads as the wrong kind), or (with a rubric) a reference that
  * is not the finished form of the given. valid: the given, untouched, and every readable response without a rubric.
  * review: value when a line does not equal the one above it (or structure when the last line is right all the same),
  * partial when every line follows but the last is not the finished form. met: every line follows and the last line is

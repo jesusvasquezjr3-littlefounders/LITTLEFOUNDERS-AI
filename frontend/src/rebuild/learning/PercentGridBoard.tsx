@@ -41,7 +41,7 @@ const fixtures: Record<'10-12', PercentSegment['payload']> = {
   '10-12': { baseUnits: 100, step: 5, initialPercent: 20, mode: 'discount', currency: 'coins' },
 };
 
-/** An answerless, controlled M15 candidate for the youngest Appendix P-compatible pathway. */
+/** An answerless, controlled M15 candidate for the youngest pathway. */
 export function percentGridPilotDocument(locale: Locale, ageBand: AgeBand): unknown {
   if (ageBand !== '10-12') return null;
   const t = copy[locale];

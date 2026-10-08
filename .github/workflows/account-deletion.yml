@@ -1,15 +1,14 @@
 name: Account deletion sweep
 
-# The daily account-deletion sweep (Product 10 E.6;
-# docs/rebuild/policies/ACCOUNT-DELETION.md).
+# The daily account-deletion sweep.
 #
 # A self-service deletion waits out its 14-day grace period as a 'pending'
 # row in account_deletion_requests. Nothing erases it on the due date unless
 # something asks, so this workflow asks Core, daily, to run every due request,
-# re-check every request held by an open E.3 safety review, and resume any
+# re-check every request held by an open safety review, and resume any
 # erasure whose Oracle, Depot or warehouse step failed on an earlier attempt.
 # It also erases every child whose account has been paused for 90 days with
-# no verified Tutor (A.1's FAQ promise; F3-identity-site): the child never has
+# no verified Tutor (the FAQ promise): the child never has
 # to sign in again for the deletion to happen. Immediate deletions (guests,
 # self-registered under-13 accounts, a Tutor deleting a child) run at request
 # time; this sweep is only their retry path.
@@ -113,7 +112,7 @@ jobs:
             purged=$(printf '%s' "$body" | grep -o '"suspensionsErased":[0-9]*' | head -1 | cut -d: -f2)
             expired=$(printf '%s' "$body" | grep -o '"suspensionsExpired":[0-9]*' | head -1 | cut -d: -f2)
 
-            # An absent count is NOT zero (§1.14): an error envelope or a proxy
+            # An absent count is NOT zero: an error envelope or a proxy
             # page must fail the run, never read as "nothing was due".
             if [ -z "${scanned:-}" ] || [ -z "${completed:-}" ] || [ -z "${held:-}" ] || [ -z "${retrying:-}" ] || [ -z "${purged:-}" ] || [ -z "${expired:-}" ]; then
               echo "::error::Core's reply carried no sweep counts; refusing to report a sweep that may not have happened"

@@ -4,14 +4,14 @@ import { BADGE_DESIGN, type BadgeFace } from './badgeDesign.generated.js';
 
 /*
  * Templated (NOT AI-generated) compositor for the shareable-achievement-badge
- * loop. Deliberately separate from Prism/picturegen (/AGENTS.md §1.5): Prism
+ * loop. Deliberately separate from Prism/picturegen: Prism
  * is the ONLY AI-image-generation service and this draws no generated art,
  * calls no model, spends nothing per badge — one deterministic SVG, rasterized
- * once and handed straight back to Core (OD-20: the image is never stored, so
+ * once and handed straight back to Core (the image is never stored, so
  * it has no company-hosted URL anyone could open or a messaging app could
  * preview).
  *
- * Depot's own boundary (AGENTS.md "owns / does not own") still holds: this
+ * Depot's own boundary still holds: this
  * function knows nothing about kids, courses or achievements as DOMAIN
  * concepts — it takes already-decided, already-validated display strings and
  * draws pixels. Core decides WHAT the badge says (every word, localized);
@@ -23,7 +23,7 @@ export type BadgeKind = 'course_badge' | 'streak' | 'goal_reached';
 export type BadgeLocale = 'en-US' | 'es-MX' | 'pt-BR';
 
 /*
- * F.6 standing constraint (information minimization): the image carries the
+ * Standing constraint (information minimization): the image carries the
  * achievement kind, a server-derived label and a FIRST NAME, nothing else —
  * no age or age band, no surname, no photo, no link (the kicker is Core's
  * fixed localized copy, not data about the child). The type has no field
@@ -34,7 +34,7 @@ export interface BadgeParams {
   kind: BadgeKind;
   /** Server-derived display label (a course title or "7-day streak"), never raw client text. */
   label: string;
-  /** First name ONLY — /AGENTS.md §1.9's "age band + first name" ceiling applies here too (0073). */
+  /** First name ONLY: the "age band + first name" ceiling applies here too (0073). */
   firstName: string;
   /** Language of the image; the label and the kicker arrive already localized from Core. */
   locale: BadgeLocale;
@@ -43,12 +43,11 @@ export interface BadgeParams {
 }
 
 /*
- * THE HOUSE STYLE (gap-fix round 2; Frontend Bible 02 D1, D3, D4, rules 2, 3
- * and 16; 07 sections 1 and 3). Every colour is a generated Bible 02 token
- * (light mode), mirrored into badgeDesign.generated.ts and pinned to the
- * frontend sheet by test: a solid kind colour with its on-* text colour, the
+ * THE HOUSE STYLE. Every colour is a generated design token
+ * (light mode), mirrored into badgeDesign.generated.ts from the
+ * frontend sheet: a solid kind colour with its on-* text colour, the
  * kind's -soft tint behind the mark, no gradient and no opacity. The mark is
- * the registered class B asset (badgeArt.ts), never an emoji. Text is set in
+ * the registered asset (badgeArt.ts), never an emoji. Text is set in
  * the design system's own faces as outlines (Fredoka for the kicker, the name
  * and the wordmark; Nunito for the label), because librsvg cannot load a web
  * font and would fall back to a system face. Nothing is ever cut with an

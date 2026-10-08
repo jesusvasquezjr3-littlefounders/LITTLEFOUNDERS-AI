@@ -22,7 +22,7 @@ import {
 import { LazyRoute } from './LazyRoute';
 
 /*
- * Lane 2 (learn): learner home, courses, territory, the course path, the
+ * Learn routes: learner home, courses, territory, the course path, the
  * decision journal, the learning rhythm, placement and the lesson player.
  */
 
@@ -37,16 +37,16 @@ const LessonRoute = lazy(() => import('@/routes/app/learn/LessonRoute'));
 /** Pages inside the signed-in app shell (App.tsx wraps them in RequireAuth + RequireOnboarded). */
 export const learnShellRoutes = (
   <>
-    {/* W2L.1: the rebuilt learner home (L1) and the one course screen (L2, both course engines). */}
+    {/* The rebuilt learner home and the one course screen (both course engines). */}
     <Route path="learn" element={<LearnHomeRoute />} />
     <Route path={COURSE_ROUTE_PATH} element={<CourseRoute />} />
-    {/* W2L.2: the rebuilt course world (L3). */}
+    {/* The rebuilt course world. */}
     <Route path={TERRITORY_ROUTE_PATH} element={<TerritoryRoute />} />
-    {/* The S05.3b course path became the course screen; its old address redirects. */}
+    {/* The course path became the course screen; its old address redirects. */}
     <Route path={COURSE_PATH_ROUTE_PATH} element={<CoursePathRedirect />} />
     <Route path={DECISION_JOURNAL_ROUTE_PATH} element={<DecisionJournalRoute />} />
     <Route path={LEARNING_RHYTHM_ROUTE_PATH} element={<LearningRhythmRoute />} />
-    {/* L-04 (OD-27 (1)): goals together, the one peer mechanic for 13 to 17 year olds. */}
+    {/* Goals together, the one peer mechanic for 13 to 17 year olds. */}
     <Route path={TOGETHER_ROUTE_PATH} element={<TogetherRoute />} />
   </>
 );
@@ -54,7 +54,7 @@ export const learnShellRoutes = (
 /** Full-screen layers with no app navigation around them. */
 export const learnStandaloneRoutes = (
   <>
-    {/* W2L.2: the rebuilt placement flow (L4), the per-course entry placement (0043). Its own full-screen
+    {/* The rebuilt placement flow, the per-course entry placement (0043). Its own full-screen
         layer like onboarding, but still funnels an unboarded guest to /onboarding first (RequireOnboarded)
         so the two one-time flows never interleave out of order. */}
     <Route path={PLACEMENT_ROUTE_PATH} element={<RequireAuth><RequireOnboarded><PlacementRoute /></RequireOnboarded></RequireAuth>} />

@@ -18,7 +18,7 @@ import type { CharacterAction, CharacterEmotion, CharacterId } from '@/component
  *
  * It deliberately knows NOTHING about DeepSeek, Qwen, retrieval, transcripts or
  * turn-taking. It knows that speech is a URL that starts and stops. Everything
- * upstream of that belongs to /ORACLE.md.
+ * upstream of that belongs to Oracle.
  *
  * WHY THE AUDIO ELEMENT LIVES HERE: `useLipSync` needs an element, not a URL,
  * because an element can only ever be adopted by one AudioContext — a second
@@ -41,15 +41,15 @@ export interface TutorStageProps {
   action?: CharacterAction;
   /** Bump to replay the same one-shot action twice in a row. */
   actionKey?: number;
-  /** See `TutorSceneProps.perCharacter`'s own comment (Class III / S17 `roleplay`). */
+  /** See `TutorSceneProps.perCharacter`'s own comment. */
   perCharacter?: TutorSceneProps['perCharacter'];
-  /** See `TutorSceneProps.presenceAvatarUri`'s own comment (Class III / S17 `presence`). */
+  /** See `TutorSceneProps.presenceAvatarUri`'s own comment. */
   presenceAvatarUri?: TutorSceneProps['presenceAvatarUri'];
-  /** See `TutorSceneProps.props`'s own comment (Class III / S18 `props`, generalized). */
+  /** See `TutorSceneProps.props`'s own comment. */
   props?: TutorSceneProps['props'];
   /** @deprecated Use `props: ['stall']` — see `TutorSceneProps.showStall`. */
   showStall?: TutorSceneProps['showStall'];
-  /** See `TutorSceneProps.pointBearing`'s own comment (Class III `point_at`). */
+  /** See `TutorSceneProps.pointBearing`'s own comment. */
   pointBearing?: TutorSceneProps['pointBearing'];
   /**
    * Drives the syllabic articulation heuristic (`Character3D`'s `speaking`),
@@ -110,7 +110,7 @@ export interface TutorStageProps {
    * Framing WHILE speaking.
    *
    * @deprecated Pass `shot`. It existed because `liruf` and `dina` have no
-   * mouth card (/TUTOR_3D.md §3.1) and closing the camera on a painted,
+   * mouth card and closing the camera on a painted,
    * motionless mouth frames the one thing that is not working. The shot
    * vocabulary answers that properly with `closeup-wide` — off-axis and wider,
    * with the hands in frame — rather than by leaving them at the island shot
@@ -135,13 +135,13 @@ export interface TutorStageProps {
    * Forwarded verbatim to `TutorScene`. It reaches this surface at all because
    * the ONE quality decision the renderer cannot apply itself is the HUD
    * material's `backdrop-filter`, and the HUD is DOM outside the canvas — see
-   * `TutorSceneProps.onQuality` and /DESIGN.md §Lumen → The blur, profiled.
+   * `TutorSceneProps.onQuality`.
    */
   onQuality?: TutorSceneProps['onQuality'];
   /**
    * The renderer's live counters (frame rate, tier, draw calls), about once a
    * second. Forwarded verbatim to `TutorScene`. The rebuilt Mentor stage reads
-   * the frame rate to keep its 30 fps floor (Frontend Bible 08 §7): a device
+   * the frame rate to keep its 30 fps floor: a device
    * that cannot hold it at the lowest tier gets the still fallback.
    */
   onStats?: TutorSceneProps['onStats'];
@@ -162,7 +162,7 @@ export interface TutorStageProps {
    * again with `null` if it is ever detached).
    *
    * A raw element, not a URL or a playback position: this stage stays
-   * deliberately ignorant of what is IN the audio (§ above, "knows NOTHING
+   * deliberately ignorant of what is IN the audio ("knows NOTHING
    * about DeepSeek, Qwen, retrieval, transcripts or turn-taking") — reading
    * `.currentTime` against word-level timing is a conversational-layer
    * concern, not a rendering one. The element is handed out rather than
@@ -238,7 +238,7 @@ export function TutorStage({
          * Refused. The mouth must not be left open pretending to talk over
          * silence — and, unlike before, the shell is TOLD, so the learner gets
          * an honest "tap to turn sound on" instead of a tutor that mouths
-         * nothing. §1.14: a failure has to be distinguishable from working.
+         * nothing. A failure has to be distinguishable from working.
          */
         setSpeaking(false);
         onSpeechBlocked?.(true);
@@ -274,7 +274,7 @@ export function TutorStage({
            * fired `ended` — with no error anywhere — and produced no sound.
            * The mouth stayed shut too, because the analyser read zeros. Every
            * server-side check passed: Oracle synthesized it, Depot stored it,
-           * `curl` and `verify-speaks` fetched it back. None of them is a
+           * `curl` fetched it back. None of them is a
            * browser routing audio through an analyser, which is the only
            * client that can see this.
            *
@@ -300,7 +300,7 @@ export function TutorStage({
          * Live that was invisible, because nothing waits: the tutor's next line
          * is driven by the socket. A REPLAY waits, because the clip ending IS
          * what ends the beat, and a session whose audio has been swept by the
-         * 90-day retention (/ORACLE.md §12) is every session eventually. Rather
+         * 90-day retention is every session eventually. Rather
          * than teach the replay to distrust this callback, the callback is made
          * true: the clip is over, for whichever of the two reasons.
          */

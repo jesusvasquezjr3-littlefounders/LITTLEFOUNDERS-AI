@@ -1,7 +1,6 @@
 /*
- * Product C.5 — the judge-approved live-generation tier, governed by
- * Appendix E §3.1.1 ("live per-item content judging is its own tier") and
- * instrumented for Appendix F §1.3 and Part 3 Stage 7.
+ * The judge-approved live-generation tier, governed as its own tier
+ * ("live per-item content judging") and instrumented with a rollback.
  *
  * Before this, every live-generated activity a model judge approved was
  * served, and a fixed 15% die roll queued it for a staff review nothing
@@ -20,22 +19,20 @@
  *      rejection restarts the count.
  *   3. A CALIBRATED JUDGE. No approval is trusted at any rate until the judge
  *      (model + prompt hash) has a passed calibration against a human-rated
- *      seed set (Appendix E §2.1/§3.2), no older than the re-check cadence.
+ *      seed set, no older than the re-check cadence.
  *      An item approved by a different judge than the calibrated one is
- *      refused. Since C.23 (S06.14) the calibration standard, its records
+ *      refused. The calibration standard, its records
  *      and the trust rule are the shared ones in `judgeCalibration.ts`
  *      (`mentor_judge_calibration`), the same for every evaluation judge.
- *   4. STAGE 7. If staff disagree with the judge too often (the Judge
+ *   4. ROLLBACK. If staff disagree with the judge too often (the Judge
  *      Approval-Quality Concordance Rate below 90%) or staff review falls
  *      below the floor, live generation for that category is SUSPENDED: the
  *      ladder serves the human-approved tiers (published lessons and curated
- *      packs, C.6) or nothing, and Oracle is told not to author. The trip is
+ *      packs) or nothing, and Oracle is told not to author. The trip is
  *      logged in `audit_logs` and holds until an operator resolves it — and a
  *      concordance trip only after the judge was recalibrated.
  *
- * Every threshold is PROPOSED, pending calibration:
- * docs/rebuild/mentor/THRESHOLD-RECALIBRATION-LOG.md (C.5 rows). The written
- * policy is docs/rebuild/mentor/LIVE-CONTENT-GOVERNANCE-POLICY.md.
+ * Every threshold is PROPOSED, pending calibration.
  */
 
 import { getConfig } from '../../config.js';
@@ -55,7 +52,7 @@ import {
 
 export const RISK_CATEGORIES = ['standard', 'sensitive'] as const;
 
-/** Appendix E §3.1.1 floors. Tier-1-adjacent: never lowered without full human review. */
+/** Floors. Tier-1-adjacent: never lowered without full human review. */
 export const LIVE_CONTENT_FLOORS: Record<ContentRiskCategory, number> = { standard: 0.15, sensitive: 0.5 };
 
 export const LIVE_CONTENT_THRESHOLDS = {
@@ -63,9 +60,9 @@ export const LIVE_CONTENT_THRESHOLDS = {
   elevatedRate: { standard: 0.5, sensitive: 1 } as Record<ContentRiskCategory, number>,
   /** One review batch = this many consecutive staff decisions in a category. */
   batchSize: 20,
-  /** Consecutive clean batches that restore the baseline rate (the SPEC's proposed 5). */
+  /** Consecutive clean batches that restore the baseline rate (the proposed 5). */
   cleanBatchesToRestore: 5,
-  /** Appendix F Stage 7: the Judge Approval-Quality Concordance floor. */
+  /** The Judge Approval-Quality Concordance floor. */
   concordanceFloor: 0.9,
   /** The concordance is read over the latest N decisions under the current calibration. */
   concordanceWindow: 100,
@@ -78,7 +75,7 @@ export const LIVE_CONTENT_THRESHOLDS = {
   /** Below this many served items in the window, coverage is not judged. */
   reviewMinServed: 20,
   // The calibration bar and cadence live in `judgeCalibration.ts`
-  // (JUDGE_REGISTRY.live_content_judge.standard), shared by every judge (C.23).
+  // (JUDGE_REGISTRY.live_content_judge.standard), shared by every judge.
   gateCacheMs: 60_000,
 } as const;
 
@@ -108,7 +105,7 @@ export type ReviewIssue = (typeof REVIEW_ISSUES)[number];
 
 /**
  * The configured baselines, each floored. A configured value below its floor
- * is IGNORED (reported in `ignored`), never obeyed: Appendix E §3.1.1 lets a
+ * is IGNORED (reported in `ignored`), never obeyed: a
  * human decision tighten the floor at any time and never loosen it.
  */
 export function baselineRates(configured: { standard: number; sensitive: number }): {
@@ -187,13 +184,13 @@ export function samplingState(
 
 // ── 3. the calibrated judge (pure) ───────────────────────────────────────────
 
-/** A recorded calibration run of the live-content judge (`mentor_judge_calibration`, C.23). */
+/** A recorded calibration run of the live-content judge (`mentor_judge_calibration`). */
 export type CalibrationRow = CalibrationRecordRow;
 
 export type CalibrationState = 'passed' | 'uncalibrated' | 'stale';
 
 /**
- * The live-content judge's trust, from its recorded runs (C.23's shared
+ * The live-content judge's trust, from its recorded runs (the shared
  * rule): the latest full calibration decides, so a failed recalibration
  * un-trusts a judge that passed before; a failed spot check requires a new
  * calibration; a pass not re-verified within the cadence is stale. For this
@@ -223,7 +220,7 @@ export function judgeMatches(
   );
 }
 
-// ── 4. Stage 7 conditions (pure) ─────────────────────────────────────────────
+// ── 4. Rollback conditions (pure) ─────────────────────────────────────────────
 
 /** Judge Approval-Quality Concordance: staff approvals over staff decisions. */
 export function concordance(
@@ -325,7 +322,7 @@ export function openTrips(rows: readonly AuditRow[]): OpenTrip[] {
   return [...open.values()];
 }
 
-/** The Kill-Switch Trigger Log (Appendix F §1.3) for the live-content judge. */
+/** The Kill-Switch Trigger Log for the live-content judge. */
 export function liveContentKillSwitchLog(rows: readonly AuditRow[]): {
   category: string;
   cause: string;
@@ -420,7 +417,7 @@ async function categorySampling(
 }
 
 /**
- * Evaluates the Stage 7 conditions for one category and writes a trip when
+ * Evaluates the rollback conditions for one category and writes a trip when
  * one newly holds. Returns false when a read failed (not evidence either way).
  */
 async function evaluateTrips(
@@ -569,7 +566,7 @@ export async function sessionSafetyFlagCount(sessionId: string): Promise<number 
 
 const CATALOG_KEY = /^(kc:)?[a-z0-9][a-z0-9._/-]{0,127}$/;
 
-/** One content-ladder decision (C.6 demand signal). Best-effort: never fails the request. */
+/** One content-ladder decision (curated-pack demand signal). Best-effort: never fails the request. */
 export async function recordLadderEvent(input: {
   outcome: LadderOutcome;
   route: LadderRoute;
@@ -655,7 +652,7 @@ export async function resolveLiveContentKillSwitch(input: {
   const trip = openTrips(audit).find((o) => o.category === input.category && o.cause === input.cause);
   if (!trip) return { ok: false, why: `no open ${input.cause} trip for ${input.category}` };
   if (input.cause === 'concordance_below_floor') {
-    // Appendix E §3.1.1(b): suspended "until the judge is recalibrated".
+    // Suspended "until the judge is recalibrated".
     const rows = await calibrationRows();
     if (rows === undefined) return { ok: false, why: 'could not read the calibration log' };
     const current = calibrationStatus(rows, now).row;
@@ -685,9 +682,9 @@ export async function resolveLiveContentKillSwitch(input: {
   return written ? { ok: true } : { ok: false, why: 'the resolution row did not land' };
 }
 
-// ── 9. calibration against a human-rated seed set (Appendix E §2.1/§3.2) ────
+// ── 9. calibration against a human-rated seed set ────
 //
-// Since C.23 the computation is the shared standard in `judgeCalibration.ts`
+// The computation is the shared standard in `judgeCalibration.ts`
 // (inter-rater agreement raw and chance-corrected, the judge per category
 // with both labels present, Cohen's kappa, the verbosity and self-
 // enhancement checks). This is the content judge's adapter: one question
@@ -722,7 +719,7 @@ const asQuestion = (labels: Record<string, SeedLabel>): Record<string, Record<st
 
 /**
  * Computes a content-judge calibration run from its raw parts — never from a
- * number the harness computed — with the shared C.23 standard. NOT
+ * number the harness computed — with the shared standard. NOT
  * RECORDABLE whatever the numbers: fewer than two raters, a rating file not
  * from the human panel, a judge not run live, or a missing label/verdict.
  */
@@ -890,7 +887,7 @@ export function summarizeLiveLog(rows: readonly LiveLogRow[], now: Date, t = LIV
 }
 
 /**
- * C.6's measure: the share of served activities per rung, the demand the
+ * The measure: the share of served activities per rung, the demand the
  * curated tier does not cover yet (ranked request patterns that fell through
  * to live generation), and the live share per week (it must fall as packs
  * land).

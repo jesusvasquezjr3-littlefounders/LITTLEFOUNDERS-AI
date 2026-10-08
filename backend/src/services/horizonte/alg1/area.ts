@@ -1,7 +1,7 @@
 import { isRecord, isWholeIn, exactKeys, oneOf, type ArrangePiece, type ClassState, type Solution } from './arrange.js';
 
 /**
- * F2.3: an area model. The edges carry the factors and the cells the partial products, so a(b+c), (x+a)(x+b) and
+ * An area model. The edges carry the factors and the cells the partial products, so a(b+c), (x+a)(x+b) and
  * completing the square are all one picture. A term is a face `degree:coefficient`, so `1:3` is 3x and `0:-2` is -2.
  * `cells` fills the products, `edges` fills the factors of given products, `square` fills the corner and the constant.
  */

@@ -198,8 +198,8 @@ export async function listEmailLogs(opts: { limit: number; offset: number; q?: s
  * (`backend/src/routes/admin.ts`) that fan-out reliably lost the race, and
  * the admin console showed "Courier no respondió" — a 2026-09 incident that
  * had nothing to do with mail delivery (Haraka kept relaying the whole time)
- * and everything to do with this being the SAME shape of bug the README
- * already documents for `GET /learn/courses`: an unbounded `Promise.all`
+ * and everything to do with this being the SAME shape of bug as
+ * `GET /learn/courses`: an unbounded `Promise.all`
  * whose request count scales with data nobody reviews at deploy time.
  *
  * The fix is the same one applied there: one row in flight's worth of work

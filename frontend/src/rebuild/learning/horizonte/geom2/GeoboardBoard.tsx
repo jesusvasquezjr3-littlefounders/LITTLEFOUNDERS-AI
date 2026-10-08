@@ -16,7 +16,7 @@ type GeoboardSegment = Extract<HorizonteSegment, { type: 'math.geoboard.v2' }>;
 
 const same = (a: Cell, b: Cell) => a.x === b.x && a.y === b.y;
 
-/* F2.7 geoboard: pegs on a square lattice and one rubber band. The band is the pegs the learner picked, in order. */
+/* Geoboard: pegs on a square lattice and one rubber band. The band is the pegs the learner picked, in order. */
 function Geoboard({ document, segment, onBack, sequence, onGrade }: Omit<HorizonteBoardProps, 'segment'> & { segment: GeoboardSegment }) {
   const { size } = segment.payload;
   const t = copyText(GEOM2_COPY, document.locale);

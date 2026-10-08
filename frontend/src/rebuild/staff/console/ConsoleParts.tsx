@@ -5,9 +5,9 @@ import { fill, useConsoleCopy } from './staffConsoleCopy';
 import './staffConsole.css';
 
 /*
- * The pieces every rebuilt staff console page shares (W2T.1), built only from
- * the design system's controls (02 rule 23). A console page is a dashboard
- * page (02 §4.5: neutral page, coloured cards); it has one h1 (the section's
+ * The pieces every rebuilt staff console page shares, built only from
+ * the design system's controls. A console page is a dashboard
+ * page (neutral page, coloured cards); it has one h1 (the section's
  * navigation label), one short intro, and every block below it states its own
  * loading, empty, error, offline and permission-refused state.
  */
@@ -158,7 +158,7 @@ export function ConsoleLink({ href, onNavigate, children, variant = 'secondary' 
   return <ButtonLink size="sm" variant={variant} href={href} onClick={consoleLinkHandler(href, onNavigate)}>{children}</ButtonLink>;
 }
 
-/** Shares of a whole, each as a labelled bar with its count and share written out (02 rule 6). */
+/** Shares of a whole, each as a labelled bar with its count and share written out. */
 export function ShareBars({ label, rows, total, locale, tone = 'primary' }: {
   label: string; rows: readonly { id: string; label: string; count: number }[]; total: number; locale: Locale; tone?: 'primary' | 'mint';
 }) {
@@ -172,7 +172,7 @@ export function ShareBars({ label, rows, total, locale, tone = 'primary' }: {
   </ul>;
 }
 
-/* ---- W2T.3: shared by Analytics & Health and Learning intel -------------------------------- */
+/* ---- Shared by Analytics & Health and Learning intel -------------------------------- */
 
 /** Hands a file Core rendered to the browser's save. The name is ours: a cross-origin response hides its Content-Disposition. */
 export function saveDownload(blob: Blob, filename: string) {

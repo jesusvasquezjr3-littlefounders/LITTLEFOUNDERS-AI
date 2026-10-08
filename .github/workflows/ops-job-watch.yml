@@ -1,6 +1,6 @@
 name: Operations job watch
 
-# H.4 / Appendix O 1.3 and 2.3: THE WATCHDOG-PLUS-NOTIFICATION PATTERN of
+# THE WATCHDOG-PLUS-NOTIFICATION PATTERN of
 # tutor-retention-watch.yml, extended to the daily Vault backup, the daily
 # Pulse backup and the schema drift probe.
 #
@@ -21,7 +21,7 @@ name: Operations job watch
 # The same notice is proven locally by the simulated-failure drill
 # (backend: npm run ops:drill).
 #
-# GAP-FIX-R3: Appendix O 1.3 names three jobs that each need a watchdog AND
+# Three jobs each need a watchdog AND
 # an external notification: the Mentor retention sweep, the backup and the
 # drift probe. The retention sweep is the fourth watched job here: Core's
 # status carries it as `tutorRetention`, built from getTutorRetentionStatus()
@@ -31,16 +31,16 @@ name: Operations job watch
 # that reaches a human.
 #
 # The same reply carries two more conditions a human must act on:
-# `contentRetroChecks.overdue` (G.2, a retroactive release check past its 30
-# days) and `accessReviews.due` (G.4, an elevated staff grant past the 90-day
+# `contentRetroChecks.overdue` (a retroactive release check past its 30
+# days) and `accessReviews.due` (an elevated staff grant past the 90-day
 # access review, so the staff/access owner is told without first opening
 # Roles & Access). Any of them fails this run and is named in the notice.
 #
-# GAP-FIX-R6 (H.4 and the Block H non-negotiable: no job whose silent failure
-# would harm family data may lack this pattern): the account-deletion sweep
-# (E.6, A.1's 90-day paused child), the family retention sweep (D.21), the
-# social retention sweep (E.11), the learning practice-day sweep and the
-# insights prune (H.2's 400-day raw-event window) are watched jobs too, each
+# No job whose silent failure
+# would harm family data may lack this pattern: the account-deletion sweep
+# (the 90-day paused child), the family retention sweep, the
+# social retention sweep, the learning practice-day sweep and the
+# insights prune (the 400-day raw-event window) are watched jobs too, each
 # read from its own trail in services/opsJobs.ts. `accountDeletionFailures.stuck`
 # (an erasure whose step failed more than a day ago and never completed) is a
 # notify condition like the ones above.

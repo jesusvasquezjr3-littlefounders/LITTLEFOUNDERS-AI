@@ -1,17 +1,17 @@
 #!/usr/bin/env node
 /*
- * `npm run tutor:session-end-report` — the monitor for Product C.16 and
- * C.8/C.12 (Appendix F §1.1–1.2).
+ * `npm run tutor:session-end-report` — the monitor for session closing
+ * and the early-warning signal.
  *
- *   C.16    Session-Closing Script Accuracy: every closed session's recorded
+ *   - Session-Closing Script Accuracy: every closed session's recorded
  *           closing script against the one its close reason requires. A HARD
  *           target of 100% — one safety stop closed with the positive script
  *           is a defect, whatever the sample. Also how often each queued
  *           re-engagement opening was delivered.
- *   C.8/12  Early-Warning Signal Trigger Rate: the share of evaluated sessions
+ *   - Early-Warning Signal Trigger Rate: the share of evaluated sessions
  *           where the behavioral-signature signal fired before the hard cap,
  *           the precision of those firings, offer outcomes, shadow firings
- *           (the Stage 7 kill switch) and the split by persona. DIAGNOSTIC —
+ *           (the kill switch) and the split by persona. DIAGNOSTIC —
  *           no fixed target; it establishes the baseline.
  *
  * Reads only; writes nothing; costs nothing (no model call). Operator tool,
@@ -21,8 +21,7 @@
  *     npm run tutor:session-end-report -- [--since=YYYY-MM-DD] [--json]
  *
  * Exit code 1 on a closing-script defect; "insufficient data" is printed,
- * never passed off as healthy. Every threshold is provisional — see
- * docs/rebuild/mentor/THRESHOLD-RECALIBRATION-LOG.md.
+ * never passed off as healthy. Every threshold is provisional.
  */
 
 import { serviceRest } from '../services/supabaseRest.js';
@@ -37,7 +36,7 @@ import {
 const PAGE = 1000;
 const MAX_ROWS = 200_000;
 
-/** Reads every row of a window, paginated. Null on ANY failed page (§1.14: never a partial report). */
+/** Reads every row of a window, paginated. Null on ANY failed page (never a partial report). */
 async function readAll<T>(path: string): Promise<T[] | null> {
   const out: T[] = [];
   for (let offset = 0; offset < MAX_ROWS; offset += PAGE) {

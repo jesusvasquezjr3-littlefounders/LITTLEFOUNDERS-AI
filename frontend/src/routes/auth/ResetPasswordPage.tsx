@@ -6,7 +6,7 @@ import { ResetPasswordScreen, type ResetView } from '@/rebuild/identity/Recovery
 import { failureCode } from './failureCode';
 
 /*
- * `/reset-password` (A4), the recovery email's link (GoTrue redirect_to, Core
+ * `/reset-password`, the recovery email's link (GoTrue redirect_to, Core
  * POST /auth/recover). GoTrue hands back a short-lived `type=recovery` session
  * in the URL fragment. It is never kept as a sign-in: it authorises the one
  * POST /auth/reset-password below, then the person signs in with the new

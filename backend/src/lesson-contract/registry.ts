@@ -1,7 +1,7 @@
 // Server-side grader registry — mirrors frontend/src/lesson-engine/registry.ts's
 // GRADERS composition (families only; no components/registry entries, Core
 // never renders anything). `story` is intentionally absent: its 5 types are
-// ungraded content (LESSON_ENGINE.md §5.1) and never reach the grade endpoint.
+// ungraded content and never reach the grade endpoint.
 
 import type { FamilyGrader } from './core/types.js';
 import { choiceGraders } from './families/choice/grade.js';

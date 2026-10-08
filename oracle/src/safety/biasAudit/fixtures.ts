@@ -1,15 +1,15 @@
 import type { Locale } from '../../context/schema.js';
 
 /*
- * C.20 — THE PAIRED DIALECT / ASR-ARTIFACT FIXTURES.
+ * THE PAIRED DIALECT / ASR-ARTIFACT FIXTURES.
  *
  * Each item is ONE meaning, written the way different children actually
  * say or type it, plus the way speech-to-text hands it to us. The audit runs
  * every audited component on every variant and requires each variant to be
  * treated exactly as the standard form is (and as the item's expected label
  * says). A variant that is read differently is DIFFERENTIAL TREATMENT: the
- * failure mode Appendix D §1.7 documents for sentiment and toxicity
- * classifiers (Sap et al., 2019), and the one C.20 exists to catch.
+ * failure mode documented for sentiment and toxicity
+ * classifiers (Sap et al., 2019), and the one this audit exists to catch.
  *
  * VARIANT GROUPS (what each means per locale):
  *
@@ -30,7 +30,7 @@ import type { Locale } from '../../context/schema.js';
  *                   accents, number words, disfluencies ("um"), merged words.
  *
  * These are written with care to represent real forms respectfully; they are
- * reviewed like any other safety fixture (policy §5). Items whose standard
+ * reviewed like any other safety fixture. Items whose standard
  * form is itself misread are ACCURACY failures and fail the audit too.
  * `knownGaps` records a variant the component cannot yet read, with the
  * reason; it is reported on every run and never silently passes.
@@ -718,9 +718,8 @@ const INPUT: AuditItem[] = [
       knownGaps: {
         /*
          * Differential treatment found by the first run (2026-09-25) and NOT
-         * fixed in code: narrowing a moderation rule is a Tier 1 change
-         * (Safety/Trust Lead), and the classifier fails closed by design.
-         * Proposed fix and owner question: bias-audit policy §6.
+         * fixed in code: narrowing a moderation rule needs sign-off
+         * from the Safety/Trust Lead, and the classifier fails closed by design.
          */
         vernacular:
           'Mexican "pelado" (a rude or cheeky person) matches the adult-content word list, where it stands for Portuguese "pelado" (naked): a benign Mexican sentence gets the scripted adult-content reply and a guardian-visible flag. Pending Safety/Trust decision.',
@@ -789,7 +788,7 @@ const OUTPUT_DETERMINISTIC: AuditItem[] = [
   }),
 ];
 
-// ── self_explanation.quality (C.14) ──────────────────────────────────────────
+// ── self_explanation.quality ──────────────────────────────────────────
 const SAVING_DECISION = 'saving,spending,sharing,time,budget';
 const EXPLANATION_ITEMS: AuditItem[] = [
   item('self_explanation.quality', 'en-US', 'concept', 'concept', {
@@ -842,7 +841,7 @@ const EXPLANATION_ITEMS: AuditItem[] = [
   }, { context: SAVING_DECISION }),
 ];
 
-// ── self_explanation.decision_answer (C.14) ──────────────────────────────────
+// ── self_explanation.decision_answer ──────────────────────────────────
 const Q_EN = 'You got 20 dollars. Would you save it or spend it?';
 const Q_ES = 'Te dieron 20 pesos. ¿Los ahorras o los gastas?';
 const Q_PT = 'Você ganhou 20 reais. Vai guardar ou gastar?';
@@ -897,7 +896,7 @@ const DECISION_ITEMS: AuditItem[] = [
   }, { context: Q_PT }),
 ];
 
-// ── alliance.goal_reply (C.15) ───────────────────────────────────────────────
+// ── alliance.goal_reply ───────────────────────────────────────────────
 const GOAL_ITEMS: AuditItem[] = [
   item('alliance.goal_reply', 'en-US', 'agree', 'agree', {
     standard: "Yes, that's it.",
@@ -966,8 +965,8 @@ export const AUDIT_ITEMS: AuditItem[] = [
 ];
 
 /*
- * The model-based output judge cannot run in the fixture audit (a paid call,
- * OD-23). Its fixtures are Mentor lines that mirror a learner's dialect; the
+ * The model-based output judge cannot run in the fixture audit (a paid call).
+ * Its fixtures are Mentor lines that mirror a learner's dialect; the
  * live audit (`npm run bias-audit -- --judge-live`, owner-run) requires every
  * variant to be ALLOWED exactly like the standard line.
  */

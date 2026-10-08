@@ -2,9 +2,9 @@ import type { AgeScreenState } from './ageScreen.js';
 import { DIALOGUE_EXPERIMENT_OPENABLE_BANDS, type DialogueBand } from './pedagogy/dialogueCalibration.js';
 
 /*
- * M-12 (OD-26): which consent screen must SAY that it also enrols a learner in
- * the C.17 dialogue-style experiment. A display hint only: the consent itself
- * stays the analytics consent OD-26 names (the teen's own opt-in, the
+ * Which consent screen must SAY that it also enrols a learner in
+ * the dialogue-style experiment. A display hint only: the consent itself
+ * stays the analytics consent (the teen's own opt-in, the
  * guardian's consent for a 10-12 child), and `resolveDialogueCalibration`
  * re-decides eligibility and consent on every Mentor session.
  *

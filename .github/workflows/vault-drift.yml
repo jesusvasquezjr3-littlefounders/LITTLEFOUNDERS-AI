@@ -2,10 +2,9 @@ name: Vault drift probe
 
 # IS PRODUCTION'S SCHEMA WHERE THE REPOSITORY THINKS IT IS?
 #
-# Until now that question was answered by a paragraph in ROADMAP.md, and
-# RUNBOOK.md already records what that costs: "This sentence said PENDING until
-# 2026-08-23, two days after the migration ran, in the document an operator
-# reads before a migration handoff." A prose claim about production state goes
+# Until now that question was answered by a paragraph of prose, which went
+# stale: a sentence said PENDING two days after the migration ran, in the
+# document an operator reads before a migration handoff. A prose claim about production state goes
 # stale silently and is read as truth precisely when it matters.
 #
 # This is READ-ONLY. It runs `railway-migrate.sh --dry-run`, which inspects the
@@ -103,7 +102,7 @@ jobs:
       # `railway-migrate.sh` already exits non-zero on a checksum mismatch
       # ("migration drift detected"), which means a file in the repository has
       # been edited after it was applied — an applied migration is immutable
-      # (/AGENTS.md §1.3) and the fix is a delta, never an edit. That is a
+      # and the fix is a delta, never an edit. That is a
       # broken invariant and should page someone.
       #
       # Migrations merely PENDING are the normal state between a merge and a
@@ -113,7 +112,7 @@ jobs:
           echo "Pending: ${{ steps.probe.outputs.pending }}"
           echo "Drift would have failed the previous step; reaching here means the ledger agrees with the repository."
 
-      # H.4: leave the run in Core's audit trail (scripts/ops-heartbeat.sh);
+      # Leave the run in Core's audit trail (scripts/ops-heartbeat.sh);
       # ops-job-watch.yml notifies a human when this job goes quiet.
       - name: Record the heartbeat
         if: success() && github.event_name != 'push'

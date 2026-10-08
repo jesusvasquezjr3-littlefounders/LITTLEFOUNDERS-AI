@@ -25,7 +25,7 @@ const MAX_TILT = 14;
 const REGIONS = [PAN_LEFT, PAN_TRAY, PAN_RIGHT] as const;
 
 /*
- * A16: a pan balance with fixed weights on each pan and loose weights in a tray. The learner moves a weight to a pan by tapping it
+ * A pan balance with fixed weights on each pan and loose weights in a tray. The learner moves a weight to a pan by tapping it
  * and then the pan, by dragging it, or with its "Move to" menu; the beam tilts with the difference. Core holds the target difference.
  */
 function PanBalance({ document, segment, onBack, sequence, onGrade }: Omit<HorizonteBoardProps, 'segment'> & { segment: BalanceSegment }) {

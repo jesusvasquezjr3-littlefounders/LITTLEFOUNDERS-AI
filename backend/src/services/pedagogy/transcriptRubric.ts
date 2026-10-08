@@ -1,44 +1,39 @@
 import { createHash } from 'node:crypto';
 
 /*
- * Product C.21: THE MENTOR TRANSCRIPT RUBRIC (Appendix E §3.1 Tier 3, Appendix F).
+ * THE MENTOR TRANSCRIPT RUBRIC.
  *
  * The defined rubric every ended Mentor session is scored against,
  * continuously, by the evaluation loop (`evaluationLoop.ts`). Each criterion
- * is one Appendix F metric or one Block C non-negotiable constraint, read
+ * is one metric or one non-negotiable constraint, read
  * from what the session actually left behind: its transcript and the event
  * rows Core already wrote for it.
  *
- * GOVERNANCE. The core evaluation rubric is a Tier 1 item (Appendix E §3.1:
- * "changes to the core evaluation rubric used to judge Mentor quality ...
- * must always go through full human review"). Its identity is the SHA-256 of
- * the canonical definition below (`TRANSCRIPT_RUBRIC_HASH`), and a test pins
- * that hash to the latest row of the rubric change record in
- * docs/rebuild/mentor/EVALUATION-LOOP-AND-QUALITY-DASHBOARD-POLICY.md, which
- * names both sign-offs. Changing a criterion, a kind or a target without
- * that record turns the Core suite red. Scores are stored with the hash, so
- * a changed rubric never mixes with the old one in a trend.
+ * GOVERNANCE. The core evaluation rubric is a Tier 1 item ("changes to the core evaluation rubric used to judge Mentor
+ * quality ... must always go through full human review"). Its identity is the
+ * SHA-256 of the canonical definition below (`TRANSCRIPT_RUBRIC_HASH`).
+ * Scores are stored with the hash, so a changed rubric never mixes with the
+ * old one in a trend.
  *
  * `scoredBy` says who can score a criterion today:
  *   rules  the deterministic, zero-spend scorer in `transcriptScoring.ts`
  *   judge  only an AI judge can read it (a semantic judgement). No judge may
- *          score for a decision until it is calibrated against a human panel
- *          (C.23, Appendix E §3.2); until then its output is Tier 3
+ *          score for a decision until it is calibrated against a human panel;
+ *          until then its output is Tier 3
  *          information only, produced by the owner-run harness
  *          (`npm --prefix oracle run transcript-judge`), and the schema
  *          refuses judge rows (`tutor_transcript_score.scorer` is 'rules').
  *
  * The criterion vocabulary is HAND-MIRRORED in the migration CHECK
- * (`*_mentor_evaluation_loop_and_quality_dashboard.sql`);
- * `npm run evaluation-loop:check` keeps them identical.
+ * (`*_mentor_evaluation_loop_and_quality_dashboard.sql`).
  */
 
 export const TRANSCRIPT_RUBRIC_VERSION = 'mentor-transcript-rubric.v2';
 
 export type CriterionKind =
-  /** One violation is a defect, whatever the sample (Appendix F "100%" invariants). */
+  /** One violation is a defect, whatever the sample ("100%" invariants). */
   | 'hard_invariant'
-  /** Zero tolerance on a delivered harm (Appendix F "zero tolerance"). */
+  /** Zero tolerance on a delivered harm ("zero tolerance"). */
   | 'zero_tolerance'
   /** A rate that must stay under a ceiling. */
   | 'ceiling'
@@ -118,7 +113,7 @@ export const TRANSCRIPT_RUBRIC: readonly RubricCriterion[] = [
     requirement: 'C.13',
     kind: 'hard_invariant',
     // Rules: Oracle's own count of tell requests and of the answer turns that
-    // carried the tell rung (tutor_dialogue_calibration, gap-fix round 1). The
+    // carried the tell rung (tutor_dialogue_calibration). The
     // judge still reads whether that turn really gave the answer.
     scoredBy: ['rules', 'judge'],
     measures: 'explicit "just tell me" requests the next Mentor turn did not honour',

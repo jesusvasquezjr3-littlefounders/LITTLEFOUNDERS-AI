@@ -18,7 +18,7 @@ import * as solidsFixtures from './solids/fixtures.generated';
 import * as space1Fixtures from './space1/fixtures.generated';
 import * as space2Fixtures from './space2/fixtures.generated';
 
-/** Preview, audit and test only: kept out of the player bundle. */
+/** Preview only: kept out of the player bundle. */
 export const HORIZONTE_FIXTURES: Readonly<Record<string, readonly HorizonteFixture[]>> = {
   'golden': goldenFixtures.GOLDEN_FIXTURES,
   'num-a': numAFixtures.NUM_A_FIXTURES,

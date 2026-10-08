@@ -1,9 +1,9 @@
 import { z } from 'zod';
 
 /*
- * C.8 / C.12 — THE BEHAVIORAL-SIGNATURE SESSION-END SIGNAL (Appendix D §2.5).
+ * THE BEHAVIORAL-SIGNATURE SESSION-END SIGNAL.
  *
- * Part of the Extended Mastery Engine (Block C standard). Session budgets are
+ * Part of the Extended Mastery Engine. Session budgets are
  * clock- and turn-based, and time-on-task is a documented weak predictor of
  * learning (Baker et al.: ~1.9% of variance, negative in 8 of 19 classrooms).
  * This signal looks instead at the signature the adjacent vigilance
@@ -13,9 +13,9 @@ import { z } from 'zod';
  *      answer times (standard deviation of ln(latency), so a slow and a fast
  *      learner are judged on the same scale), in a rolling window of recent
  *      graded turns, against their OWN session-opening baseline.
- *      PER CHANNEL (gap-fix round 1): a typed reply, a spoken reply and an
+ *      PER CHANNEL: a typed reply, a spoken reply and an
  *      activity answer are timed differently (the onset-based reply latency
- *      C.9 already computes for typed and spoken answers; the activity's own
+ *      the telemetry layer already computes for typed and spoken answers; the activity's own
  *      answer time), so each source keeps its own baseline — the first
  *      `baselineSize` latencies OF THAT SOURCE — and a window's SD is only
  *      ever compared with the baseline of the same source. Channels are never
@@ -35,23 +35,23 @@ import { z } from 'zod';
  *
  * WHAT IT OUTPUTS: signal STRENGTH (two measured deltas), never an emotional
  * state. Nothing here, and nothing the Mentor is told because of it, may say
- * the learner is tired, bored or frustrated (the Block C non-negotiable; the
+ * the learner is tired, bored or frustrated (non-negotiable; the
  * orchestrator also checks the delivered text, `affectClaims.ts`).
  *
  * WHAT IT DRIVES: an adaptation offer with two equal choices — stop here for
  * today, or do one more — never an automatic close. At most `maxOffers` per
  * session, re-armed only after `rearmAfterObservations` more graded turns.
  *
- * STAGE 7 KILL SWITCH (Appendix F Part 3): `TUTOR_SESSION_END_SIGNAL=shadow`
+ * STAGE 7 KILL SWITCH: `TUTOR_SESSION_END_SIGNAL=shadow`
  * keeps computing and logging but never offers; `off` stops it entirely.
  * Either reverts session management to the time/turn caps alone.
  *
- * Every threshold below is PROPOSED, PENDING CALIBRATION, and is listed in
- * docs/rebuild/mentor/THRESHOLD-RECALIBRATION-LOG.md. Appendix D §2.5 is
+ * Every threshold below is PROPOSED, PENDING CALIBRATION.
+ * The research is
  * explicit that no study validates this exact design for children; it is a
  * synthesis of adjacent science and must be described that way.
  *
- * Pure and serializable: it rides the park snapshot (snapshotFence.test.ts).
+ * Pure and serializable: it rides the park snapshot.
  */
 
 export type SessionEndSignalMode = 'offer' | 'shadow' | 'off';
@@ -59,7 +59,7 @@ export type SessionEndSignalMode = 'offer' | 'shadow' | 'off';
 export interface SessionEndSignalConfig {
   /** Graded observations that form the session-opening baseline. */
   baselineSize: number;
-  /** The rolling window (Appendix D §2.5: "last 8–10 graded turns"). */
+  /** The rolling window ("last 8–10 graded turns"). */
   windowSize: number;
   /** Observations after the baseline before the window is evaluated at all. */
   minWindow: number;
@@ -104,7 +104,7 @@ export function parseSessionEndSignalMode(raw: string | undefined): SessionEndSi
   return raw === 'shadow' || raw === 'off' || raw === 'offer' ? raw : 'offer';
 }
 
-/** The answer channels, mirroring behavioralTelemetry.ts's TelemetrySource (session-end:check). */
+/** The answer channels, mirroring behavioralTelemetry.ts's TelemetrySource. */
 export const LATENCY_SOURCES = ['typed', 'spoken', 'activity'] as const;
 export type LatencySource = (typeof LATENCY_SOURCES)[number];
 
@@ -148,7 +148,7 @@ const EventSchema = z
     mode: z.enum(['offer', 'shadow']),
     outcome: z.enum(OFFER_OUTCOMES),
     /**
-     * Precision label (Appendix F §1.1 "Early-Warning Signal Trigger Rate"):
+     * Precision label ("Early-Warning Signal Trigger Rate"):
      * true = the learner accepted the stop, or the surprising misses persisted
      * in the next `confirmWindow` observations; false = declined/shadow and the
      * next observations recovered; null = undetermined (session ended first).
@@ -437,7 +437,7 @@ export class SessionEndSignal {
  * is deliberately NARROW: only an explicit stop is an acceptance, only an
  * explicit "keep going" is a decline, and everything else is "unanswered" —
  * which continues the lesson. An ambiguous "yes" to "stop, or one more?" is
- * never read as either (Frontend Bible 08 §4: never a default-accepted path).
+ * never read as either (never a default-accepted path).
  */
 /*
  * Whole-word matching that understands accented letters: JavaScript's `\b`

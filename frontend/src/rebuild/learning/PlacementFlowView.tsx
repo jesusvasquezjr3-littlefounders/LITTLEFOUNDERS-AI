@@ -11,21 +11,21 @@ import { dontKnowIndex, type PlacementFlow, type PlacementScreen } from './place
 import { PlacementOutcomeBody } from './PlacementOutcomeView';
 
 /*
- * W2L.2 — L4, the placement flow at /learn/:courseSlug/placement: welcome,
+ * The placement flow at /learn/:courseSlug/placement: welcome,
  * the conversational opener (12+ only, Core decides), the adaptive questions,
  * the outcome and the learner's own adjustment, on one full-hue screen
- * (02 rule 15: one state, one hue) with no app navigation around it.
+ * (one state, one hue) with no app navigation around it.
  *
- * B.15: framed as accompaniment, not a test. The learner's own Mentor (the
+ * Framed as accompaniment, not a test. The learner's own Mentor (the
  * chosen character, a real-model render; no character before one is chosen)
- * says one short turn per step (06 §3.1 `mentor`), "I don't know yet" is
+ * says one short turn per step, "I don't know yet" is
  * always an answer, the learner can go back one question, start from the
  * beginning without any question, and move a start earlier on the outcome.
  * The outcome says only Core's closed frame (PlacementOutcomeBody): what the
  * learner has seen, never what they can do; no score, count or comparison.
  *
  * Every step keeps its screen when a request fails and offers the same
- * request again (B.1: an identical retry of the commit). Presentation only:
+ * request again (an identical retry of the commit). Presentation only:
  * the host owns transport and navigation (routes/app/learn/PlacementRoute.tsx).
  */
 
@@ -65,7 +65,7 @@ export function PlacementFlowView({ flow, slug, locale, dark, ageBand, mentor, l
   /*
    * A new step is a new state of the same page: when the learner moved it (focus was on a control of the flow,
    * or on nothing once the pressed control left), focus moves to the new heading so it is announced. Arrival is
-   * the shell's (02 rule 13): the heading stays the same element from loading to the first step, and a first load
+   * the shell's: the heading stays the same element from loading to the first step, and a first load
    * leaves focus where the document starts.
    */
   useEffect(() => {
@@ -88,14 +88,14 @@ export function PlacementFlowView({ flow, slug, locale, dark, ageBand, mentor, l
     <Body screen={screen} flow={flow} t={t} c={c} headingId={headingId} heading={heading} locale={locale} links={links} onNavigate={onNavigate} />
     {turn ? <MentorTurn mentor={mentor} dark={dark} text={turn} /> : null}
     <Actions screen={screen} flow={flow} t={t} c={c} links={links} onNavigate={onNavigate} headingId={headingId} />
-    {/* What did not go through, said once; the same action sends it again (B.1: the identical body for a save). */}
+    {/* What did not go through, said once; the same action sends it again (the identical body for a save). */}
     {issue ? <div className="lf-placement-issue">
       <InlineNotice tone="error" live>{issue.offline ? t.offlineError : issue.kind === 'save' ? t.saveError : t.stepError}</InlineNotice>
     </div> : null}
   </div>;
 }
 
-/** One Mentor turn per step, at most; the outcome's words are B.15's frame alone. */
+/** One Mentor turn per step, at most; the outcome's words are the closed frame alone. */
 function mentorTurn(screen: PlacementScreen, flow: PlacementFlow, t: Copy): string | null {
   switch (screen.kind) {
     case 'welcome': return t.welcomeMentor;

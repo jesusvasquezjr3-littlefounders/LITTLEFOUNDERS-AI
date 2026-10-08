@@ -16,19 +16,19 @@ import { lessonSoundMuted, playLessonNarration, stopLessonNarration } from './le
 import './segmentKit.css';
 
 /*
- * GAP-FIX-R1 learning: the shared pieces every v2 board uses.
+ * The shared pieces every v2 board uses.
  *
- * - `SegmentPrompt` (Bible 08 §11, Bible 05 §3): the Mentor's name and avatar
+ * - `SegmentPrompt`: the Mentor's name and avatar
  *   as the prompt label ("Dina asks") above the prompt, and the optional help
- *   ladder (Appendix A Part 2 "help available on request"): up to two steps,
+ *   ladder ("help available on request"): up to two steps,
  *   each shown on request as one speech-plate turn. Opening a step is counted
- *   and sent with the next grade (B.10's narrative); it never changes a score.
- * - `NumberAnswer` (Appendix P Part 5, Bible 05 §5): a typed number parsed
+ *   and sent with the next grade; it never changes a score.
+ * - `NumberAnswer`: a typed number parsed
  *   for the lesson's locale and echoed back before Check, so the learner sees
  *   what Core will compare. The board submits the canonical string only.
  * - `GradedFoot` / `ViewedFoot`: the one feedback row and action for graded and
  *   non-scored steps, so every board advances the general player the same way.
- *   GAP-FIX-R6 (B.20, Bible 02 §9.2): the success banner names what was done
+ *   The success banner names what was done
  *   right and "not yet" carries a hint: the author's `feedback` when the
  *   document has it, else the board's own named confirmation (namedFeedback.ts).
  */
@@ -43,7 +43,7 @@ interface LessonPlayerContextValue {
   stage: LessonMentorStage | null;
   theme: 'light' | 'dark';
   onHelpUsed?: (segmentId: string, steps: number) => void;
-  /** B.18 (GAP-FIX-R3): Core's resolved narration, segment id -> public URL (prompt audio only). */
+  /** Core's resolved narration, segment id -> public URL (prompt audio only). */
   narrationAudio?: Readonly<Record<string, string>>;
 }
 const LessonPlayerContext = createContext<LessonPlayerContextValue>({ stage: null, theme: 'light' });
@@ -53,7 +53,7 @@ export function LessonPlayerProvider({ stage, theme, onHelpUsed, narrationAudio,
 }
 
 /**
- * B.8 / B.18 (GAP-FIX-R3): the Mentor's differentiated narration for one
+ * The Mentor's differentiated narration for one
  * segment. "Narration explains, text labels": the plate on screen stays the
  * caption, and the learner presses Listen to hear the fuller script. Nothing
  * renders when Core resolved no audio (the text-only fallback) or when the
@@ -64,7 +64,7 @@ export function NarrationControl({ segmentId, locale }: { segmentId: string; loc
   const src = narrationAudio?.[segmentId];
   const [playing, setPlaying] = useState(false);
   useEffect(() => () => stopLessonNarration(), [segmentId]);
-  // GAP-FIX-R5 (08 §11): the character speaks for exactly as long as its line plays.
+  // The character speaks for exactly as long as its line plays.
   useLessonStageRequest('speaking', playing);
   if (!src || lessonSoundMuted()) return null;
   const t = copy[locale];
@@ -135,14 +135,14 @@ export function SegmentProgress({ sequence, locale, finished }: { sequence?: Les
 }
 
 /**
- * The domain a board's typed answer must fall in before Check (GAP-FIX-R7):
+ * The domain a board's typed answer must fall in before Check:
  * `whole` takes only a non-negative whole number; `min` / `max` are the
  * board's public bounds, the same ones Core's canonical scorer refuses past.
  */
 export interface NumberAnswerDomain { whole?: boolean; min?: number; max?: number }
 export type NumberAnswerReading = { canonical: string; problem: null } | { canonical: null; problem: 'empty' | 'notNumber' | 'wholeNumber' | 'tooSmall' | 'tooBig' };
 
-/** A typed answer read for the lesson's locale (Appendix P Part 5): the canonical string it submits, or why Check stays off. */
+/** A typed answer read for the lesson's locale: the canonical string it submits, or why Check stays off. */
 export function readNumberAnswer(text: string, locale: Locale, domain: NumberAnswerDomain = {}): NumberAnswerReading {
   if (!text.trim()) return { canonical: null, problem: 'empty' };
   const parsed = parseLocaleNumber(text, locale);
@@ -154,8 +154,8 @@ export function readNumberAnswer(text: string, locale: Locale, domain: NumberAns
 }
 
 /**
- * A typed number with the locale-aware parse echoed before Check (Bible 05
- * §5: inputmode="decimal", a locale-aware parser, the parsed value echoed).
+ * A typed number with the locale-aware parse echoed before Check
+ * (inputmode="decimal", a locale-aware parser, the parsed value echoed).
  * `onChange` receives the canonical string, or null while the text is empty
  * or outside the board's domain; the field then says why (never a silently
  * disabled Check). Controlled when the board passes `value` (so its Reset can
@@ -179,11 +179,11 @@ export function NumberAnswer({ label, locale, onChange, disabled, value, onTextC
   </div>;
 }
 
-/** GAP-FIX-R6: a graded step's authored banner text (v2 `feedback`, in the document's locale). */
+/** A graded step's authored banner text (v2 `feedback`, in the document's locale). */
 export type SegmentFeedback = { met?: string; not_yet?: string; choice_hints?: Record<string, string> };
 
 /**
- * B.20 / Bible 02 §9.2 / Appendix B §1.8 (GAP-FIX-R6): the one banner text of
+ * The one banner text of
  * a graded verdict, for every graded board. Met names what the learner did
  * right; a miss is "not yet" with a hint. The author's feedback wins; the
  * board's named confirmation (built from its graded state) is the fallback,
@@ -195,7 +195,7 @@ export function verdictBannerText(locale: Locale, verdict: 'met' | 'review' | 'u
 }
 
 /**
- * B.8 / Bible 08 §11 (GAP-FIX-R5): the verdict the compact Mentor stage
+ * The verdict the compact Mentor stage
  * reacts to, from a graded step's server result. Met or a miss only; a
  * pending, unavailable or refused check leaves the stage neutral. Every graded
  * board passes it to `LessonStageSlot` (a static check pins this).
@@ -247,10 +247,10 @@ export function ViewedFoot({ locale, sequence, ready = true }: { locale: Locale;
 }
 
 /**
- * Keyboard and tap alternative to dragging (Bible 05 §4): the object the
+ * Keyboard and tap alternative to dragging: the object the
  * learner picked up (a pressed chip: Enter or Space on it, or a tap) goes to
  * the place chosen in one shared "Move to…" menu (WAI-ARIA menu button) of
- * the board's regions or bins. GAP-FIX-R4: one menu per board, not one set of
+ * the board's regions or bins. One menu per board, not one set of
  * regions repeated under every item, so the first view stays in budget; the
  * menu names the carried item and is off until something is picked up.
  */
@@ -266,8 +266,7 @@ export function MoveToChoice<T extends string>({ locale, item, options, onChange
 }
 
 /**
- * Drag an object onto a board region, with the tap alternative (Bible 05 §4,
- * V4; GAP-FIX-R4). The chip the learner presses is picked up (tap path: press
+ * Drag an object onto a board region, with the tap alternative. The chip the learner presses is picked up (tap path: press
  * the chip, then press the region); dragging it past a few pixels carries it,
  * the region under the pointer highlights, and releasing over a region places
  * it. The keyboard path is the board's "Move to" menu, which stays beside it.
@@ -322,10 +321,10 @@ export function useDragPlace<T extends string>(onPlace: (item: string, target: T
 }
 
 /**
- * The Bible 05 board anatomy every new v2 board shares: back and progress on
+ * The board anatomy every new v2 board shares: back and progress on
  * top, the compact Mentor stage band, the title, the Mentor-labelled prompt
  * with its help ladder, the board itself, its control strip, then its foot.
- * GAP-FIX-R4 (Bible 05 §3): the control strip always carries Reset when the
+ * The control strip always carries Reset when the
  * board has a state to restore (`onReset`, disabled while nothing changed);
  * `controls` adds the board's own controls beside it.
  */

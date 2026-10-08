@@ -3,7 +3,7 @@ import { join, resolve } from 'node:path';
 import { launchBrowser, openPage, warmDevServer } from './lesson-engine/browser.mjs';
 
 /*
- * Mentor avatar renders from the REAL models (Frontend Bible 07 §4, 02 rule 21).
+ * Mentor avatar renders from the REAL models.
  *
  * Renders each of the four Mentor characters in one pose-catalogue pose, in
  * both colour modes, with a transparent background, locally and at zero spend:
@@ -23,10 +23,10 @@ import { launchBrowser, openPage, warmDevServer } from './lesson-engine/browser.
  *      (RGBA). `AVATAR_FROM_MASTERS=1` re-crops without re-rendering.
  *
  * The files are drafts: `src/rebuild/assets/manifest.json` registers them with
- * `reviewStatus: "draft"` until the owner approves the character-render family
- * (07 §7, OD-14), and the release build refuses drafts.
+ * `reviewStatus: "draft"` until the owner approves the character-render family,
+ * and the release build refuses drafts.
  *
- * Prerequisites (both gitignored; see README "Rebuild assets and audits"):
+ * Prerequisites (both gitignored):
  *   - the runtime models in `public/scenes/` (a copy from a provisioned
  *     checkout) and the Basis transcoder in `public/basis/`
  *     (`node scripts/copy-3d-decoders.mjs`);

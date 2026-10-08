@@ -35,7 +35,7 @@
  * (binary search still has to bracket the frontier from one side), and it
  * never enters `k`. For a learner whose answers are
  * consistent with a single frontier, the placement is bit-identical whatever
- * the signals said — asserted in placementAlgorithm.test.ts, because "we place
+ * the signals said — because "we place
  * by knowledge, not by age" is the product promise this file has to keep.
  *
  * CREDIT IS INFERRED FROM A SAMPLED WALK, and that is a deliberate product
@@ -102,7 +102,7 @@ export interface PlacementSignals {
   ageYears?: number;
   aiPriorFraction?: number;
   /**
-   * B.6 rule P6 (S05.3b): where the Mentor's graph already shows this learner
+   * Where the Mentor's graph already shows this learner
    * (Mentor mastery, skills shown in another stage) along the pathway's
    * topics. Like every signal here it only moves the first question.
    */

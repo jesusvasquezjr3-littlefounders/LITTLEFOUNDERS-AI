@@ -19,7 +19,7 @@ import { TrustMetricsView } from './StaffProgramme';
 import { fill, labelOf, useConsoleCopy, type ConsoleCopy } from './staffConsoleCopy';
 
 /*
- * S5 Analytics & Health (view_analytics), W2T.3. One window (a Plausible
+ * Analytics & Health (view_analytics). One window (a Plausible
  * preset or a custom range) drives every read on the page, so no two blocks
  * can describe different periods; the first-party views receive the same
  * window as a day count. Five views, each reading only its own data:
@@ -37,8 +37,8 @@ import { fill, labelOf, useConsoleCopy, type ConsoleCopy } from './staffConsoleC
  *              (the exclusions need manage_support; Core checks it too).
  *
  * Every figure is written as text; a chart repeats it and has Show as table.
- * H.1: the consent gate acts where events are recorded, so every count here is
- * already gated; this page reads no transcript and no wallet (G.6).
+ * The consent gate acts where events are recorded, so every count here is
+ * already gated; this page reads no transcript and no wallet.
  */
 
 export interface DeviceOptOut { optedOut: () => boolean; set: (on: boolean) => void }

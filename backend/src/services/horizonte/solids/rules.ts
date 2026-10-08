@@ -129,7 +129,7 @@ export function stackProblem(payload: StackPayload): string | null {
   return done ? 'The start must not already be the answer' : null;
 }
 
-/** F4.2 for the solids that are not cubes: the model is in polynet.ts, the authoring rules are here. */
+/** Nets for the solids that are not cubes: the model is in polynet.ts, the authoring rules are here. */
 export interface SolidLabel { mode: 'label'; solid: PolySolidSpec; net: string; fixed: { panel: number; name: PolyFaceName }[] }
 export interface SolidComplete { mode: 'complete'; solid: PolySolidSpec; root: PolyFaceName; fixed: { parent: PolyFaceName; child: PolyFaceName }[]; sheet: Sheet }
 export interface SolidArea { mode: 'area'; solid: PolySolidSpec; net: string }

@@ -1,4 +1,4 @@
-/* L-04 goals together. Tokens only; separation by fill, never by outline (Bible 02 §4.4). A dashboard page (rule 15). */
+/* Goals together. Tokens only; separation by fill, never by outline. A dashboard page. */
 .lf-together { min-block-size: 100dvh; padding: var(--spacing-4); background: var(--base); color: var(--content); }
 .lf-together-inner { display: grid; gap: var(--spacing-5); max-inline-size: 760px; margin-inline: auto; align-content: start; }
 .lf-together-inner > * { min-inline-size: 0; }

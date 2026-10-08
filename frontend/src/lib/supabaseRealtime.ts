@@ -5,11 +5,11 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js';
  * connects to Supabase directly ONLY for the generation_runs_live table
  * (CDC via Postgres logical replication; its RLS policy, since migration
  * generation_live_manage_content, admits a superadmin or an admin holding
- * manage_content (G.1), and the table carries ZERO PII).
+ * manage_content, and the table carries ZERO PII).
  *
  * Every other Vault interaction goes through Core (service role) as always.
  * This is an architectural exception in the same class as Depot's public
- * file route and Pulse's tracker scripts (AGENTS.md §1.5).
+ * file route and Pulse's tracker scripts.
  */
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined;

@@ -21,7 +21,7 @@ const EDGE_Y = 66;
 const HEIGHT = 130;
 
 /*
- * A15: a ruler with a bar that starts on a mark. The learner stretches the end of the bar to a whole mark by tapping the ruler or
+ * A ruler with a bar that starts on a mark. The learner stretches the end of the bar to a whole mark by tapping the ruler or
  * with the stepper, whose buttons are the keyboard path. The answer is the mark the bar ends on; Core holds the target.
  */
 function Ruler({ document, segment, onBack, sequence, onGrade }: Omit<HorizonteBoardProps, 'segment'> & { segment: RulerSegment }) {

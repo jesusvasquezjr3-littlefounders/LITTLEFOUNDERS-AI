@@ -31,7 +31,7 @@ interface ExplorerSpec extends Common {
   value: number;
 }
 
-/** F2.16 and F2.18: the answer is an arrangement; the key lists examples and the scorer checks the rule. */
+/** The answer is an arrangement; the key lists examples and the scorer checks the rule. */
 function arrangement(spec: ArrangeSpec): HorizonteFixture {
   return {
     id: spec.id,
@@ -47,7 +47,7 @@ function arrangement(spec: ArrangeSpec): HorizonteFixture {
   };
 }
 
-/** F2.17: the answer is the prediction and then one whole number; the prediction alone is the untouched rung. */
+/** The answer is the prediction and then one whole number; the prediction alone is the untouched rung. */
 function explorer(spec: ExplorerSpec): HorizonteFixture {
   return {
     id: spec.id,
@@ -68,7 +68,7 @@ const CIRCUITS = 'computing.bits-gates.v2';
 const kids = { ana: ['Ana', 'Ana', 'Ana'], ben: ['Ben', 'Ben', 'Ben'], cai: ['Cai', 'Cai', 'Cai'], dev: ['Dev', 'Dev', 'Dev'] } as const satisfies Record<string, Words>;
 
 export const COM_FIXTURES: readonly HorizonteFixture[] = [
-  /* ── F2.16 Redes y conteo ── */
+  /* ── Redes y conteo ── */
   arrangement({
     id: 'konigsberg', title: ['The seven bridges', 'Los siete puentes', 'As sete pontes'], band: '10-12', ages: [10, 12], type: NETWORK, visual: 'graph',
     prompt: ['Count the bridges at each land area. Mark every area with an odd number of bridges.', 'Cuenta los puentes de cada zona. Marca cada zona con un número impar de puentes.', 'Conte as pontes de cada área. Marque cada área com um número ímpar de pontes.'],
@@ -161,7 +161,7 @@ export const COM_FIXTURES: readonly HorizonteFixture[] = [
     solutions: [pascalByRow(['r3c1', 'r3c2', 'r4c2', 'r6c1', 'r6c2', 'r6c4', 'r6c5', 'r7c2', 'r7c5'])], invalid: { 'row-3': ['no-such-id'] },
   }),
 
-  /* ── F2.17 Circulo unitario, secante y suma de Riemann ── */
+  /* ── Circulo unitario, secante y suma de Riemann ── */
   explorer({
     id: 'unit-circle-cos', title: ['Cosine on the circle', 'Coseno en el círculo', 'Cosseno no círculo'], band: '13-17', ages: [15, 17], type: TRIG, visual: 'unit-circle',
     prompt: ['Predict the quadrant. Then drag the point to the angle where the cosine fits.', 'Predice el cuadrante. Luego arrastra el punto al ángulo donde encaja el coseno.', 'Preveja o quadrante. Depois arraste o ponto até o ângulo em que o cosseno se encaixa.'],
@@ -198,7 +198,7 @@ export const COM_FIXTURES: readonly HorizonteFixture[] = [
     payload: { coeffs: [6, -1, 0, 0], from: 0, to: 8, target: 18 }, predict: 'flat', value: 6,
   }),
 
-  /* ── F2.18 Bits y compuertas ── */
+  /* ── Bits y compuertas ── */
   arrangement({
     id: 'bits-ten', title: ['Ten in four bits', 'Diez en cuatro bits', 'Dez em quatro bits'], band: '10-12', ages: [10, 12], type: CIRCUITS, visual: 'bits',
     prompt: ['Switch the bits on to make 10. Each bit is worth double the one to its right.', 'Enciende los bits para formar 10. Cada bit vale el doble del que está a su derecha.', 'Ligue os bits para formar 10. Cada bit vale o dobro do que está à sua direita.'],

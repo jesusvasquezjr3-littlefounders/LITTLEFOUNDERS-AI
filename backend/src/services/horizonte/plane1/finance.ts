@@ -15,7 +15,7 @@ export const PERCENT_MAX: Readonly<Record<Basis, number>> = { markup: 300, margi
 
 export type BreakEven = { fixed: number; price: number; unit: number; maxUnits: number; start: number };
 
-/** N08, N09: a fixed cost, a price and a cost per unit; the learner finds the units where revenue meets cost. The answer is the whole unit count. */
+/** A fixed cost, a price and a cost per unit; the learner finds the units where revenue meets cost. The answer is the whole unit count. */
 export function solveBreakEven(payload: unknown): Solved<number> {
   if (!hasOnly(payload, ['fixed', 'price', 'unit', 'maxUnits', 'start'])) return broken('', 'The payload is a fixed cost, a price, a cost per unit, a unit limit and a start');
   const { fixed, price, unit, maxUnits, start } = payload;
@@ -31,7 +31,7 @@ export function solveBreakEven(payload: unknown): Solved<number> {
 
 export type CostStructure = { fixed: number; variable: number; maxUnits: number; goal: { average: number }; start: number };
 
-/** N28: total cost is fixed plus variable per unit; the learner finds the units where the average cost per unit falls to the goal. */
+/** Total cost is fixed plus variable per unit; the learner finds the units where the average cost per unit falls to the goal. */
 export function solveCostStructure(payload: unknown): Solved<number> {
   if (!hasOnly(payload, ['fixed', 'variable', 'maxUnits', 'goal', 'start'])) return broken('', 'The payload is a fixed cost, a variable cost, a unit limit, a goal and a start');
   const { fixed, variable, maxUnits, goal, start } = payload;
@@ -49,7 +49,7 @@ export function solveCostStructure(payload: unknown): Solved<number> {
 
 export type MarginMarkup = { cost: number; basis: Basis; percent: number; maxPrice: number; start: number };
 
-/** N10: a cost and a markup or margin percent; the learner sets the price. Markup is on cost, margin is on price. The answer is the whole price. */
+/** A cost and a markup or margin percent; the learner sets the price. Markup is on cost, margin is on price. The answer is the whole price. */
 export function solveMarginMarkup(payload: unknown): Solved<number> {
   if (!hasOnly(payload, ['cost', 'basis', 'percent', 'maxPrice', 'start'])) return broken('', 'The payload is a cost, a basis, a percent, a price limit and a start');
   const { cost, basis, percent, maxPrice, start } = payload;

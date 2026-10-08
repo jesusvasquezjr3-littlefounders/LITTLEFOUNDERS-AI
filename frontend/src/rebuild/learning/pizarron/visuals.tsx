@@ -6,8 +6,7 @@ import './pizarron.css';
 
 /*
  * THE PIZARRÓN VISUALS: ONE COMPONENT SET FOR LESSONS AND THE MENTOR'S BOARD
- * (product B.7 "unified with the AI Mentor's whiteboard … one component set";
- * Frontend Bible 05; 08 §2 layer 4 "the teaching board (05)").
+ * (unified with the AI Mentor's whiteboard).
  *
  * Each visual is PRESENTATION ONLY: it draws the numbers and words it is given
  * and does no arithmetic a learner could be asked to do. Scaling a length to
@@ -15,7 +14,7 @@ import './pizarron.css';
  * running total, a difference or a unit price always arrives already computed
  * (by Oracle for the Mentor, by the lesson's own model for a lesson).
  *
- * Hue rules (05 §2): only `sky`, `mint` and `berry` encode a data series, in
+ * Hue rules: only `sky`, `mint` and `berry` encode a data series, in
  * that order, with the pattern channel from the second series on (solid,
  * diagonal, dots); a fourth or later series uses the neutral overflow style
  * (crosshatch) with a direct label. `primary` never encodes data: it only
@@ -40,8 +39,8 @@ const clamp01 = (share: number) => Math.max(0, Math.min(1, Number.isFinite(share
 
 /**
  * A static visual is one image with a description (`role="img"`). An
- * interactive one (a lesson board with drop targets or controls inside,
- * GAP-FIX-R4) is a named group instead: Bible 05 §6, never `role="img"` on
+ * interactive one (a lesson board with drop targets or controls inside)
+ * is a named group instead: never `role="img"` on
  * something the learner acts on, since it removes the children from the
  * accessibility tree.
  */
@@ -50,14 +49,14 @@ function Frame({ name, label, children, className, interactive = false }: { name
     data-interactive={interactive ? 'true' : undefined}>{children}</div>;
 }
 
-/** What a lesson board attaches to a region or bin it makes a drop target (GAP-FIX-R4, Bible 05 §4). */
+/** What a lesson board attaches to a region or bin it makes a drop target. */
 export type DropTargetProps = Record<`data-${string}`, string> & { onClick?: () => void; className?: string };
 
 // ── Schema slots (M8: change, group, compare, ratio) ─────────────────────────
 
 export interface SchemaSlot { id: string; label: string; value: string; detail?: string }
 
-/** A problem schema as three slots joined by its two operators (M8, GAP-FIX-R2); the name states the schema's shape. */
+/** A problem schema as three slots joined by its two operators (M8); the name states the schema's shape. */
 export function SchemaSlotsVisual({ label, schema, slots, operators }: { label: string; schema: string; slots: readonly [SchemaSlot, SchemaSlot, SchemaSlot]; operators: readonly [string, string] }) {
   const box = (slot: SchemaSlot) => <div key={slot.id} className="lf-schema-slot" data-slot={slot.id}>
     <span data-copy-role="label">{slot.label}</span><strong data-copy-role="data">{slot.value}</strong>
@@ -94,7 +93,7 @@ export interface TapeSegment { id: string; label: string; value: string; share: 
 export interface TapeRow { id: string; label: string; segments: readonly TapeSegment[]; tag?: string; total?: string }
 
 /**
- * The bar (tape) model (05 §7 "Bar and schema models"): each row is a tape
+ * The bar (tape) model: each row is a tape
  * whose segments are proportional parts; the unknown is a dashed segment
  * labelled "?". Also the strip for a split of a whole (a budget, a receipt,
  * money kept after spending) and the two sides of an equation.
@@ -132,7 +131,7 @@ export interface LineMark { id: string; position: number; label: string; marked?
 export interface LineJump { id: string; from: number; to: number; label: string }
 
 /**
- * A bounded number line (05 §7 "Number lines"): both ends labelled, marks at
+ * A bounded number line: both ends labelled, marks at
  * their SERVER-COMPUTED positions (0..1), and jumps drawn as arcs between
  * stops (the open number line). Also the timeline (events at positions).
  */
@@ -168,7 +167,7 @@ export function NumberLineVisual({ label, minLabel, maxLabel, marks, jumps = [] 
 
 // ── Fractions ───────────────────────────────────────────────────────────────
 
-/** Equal parts of one whole, some shaded (05 §7 "Fractions": the area model). */
+/** Equal parts of one whole, some shaded (the area model). */
 export function FractionCellsVisual({ label, parts, shaded, series = 'sky' }: { label: string; parts: number; shaded: number; series?: SeriesTone }) {
   const count = Math.max(1, Math.min(48, Math.round(parts)));
   return <Frame name="fraction-cells" label={label} className="lf-fraction-area">
@@ -179,7 +178,7 @@ export function FractionCellsVisual({ label, parts, shaded, series = 'sky' }: { 
   </Frame>;
 }
 
-/** Circle models only for halves, thirds, quarters and sixths (05 §7); any other denominator is the area model. */
+/** Circle models only for halves, thirds, quarters and sixths; any other denominator is the area model. */
 export const CIRCLE_DENOMINATORS: readonly number[] = [2, 3, 4, 6];
 
 export function FractionCircleVisual({ label, parts, shaded }: { label: string; parts: number; shaded: number }) {
@@ -229,7 +228,7 @@ export interface LedgerEntry { id: string; label: string; change: string; direct
 /**
  * Money in and out with the balance after each entry (the running ledger).
  * A balance below zero is shown by POSITION left of the zero line and a minus
- * sign, never by `error` red (05 §2).
+ * sign, never by `error` red.
  */
 export function LedgerVisual({ label, entries, inLabel, outLabel }: { label: string; entries: readonly LedgerEntry[]; inLabel: string; outLabel: string }) {
   const scale = Math.max(1, ...entries.map((entry) => Math.abs(entry.balance)));
@@ -270,7 +269,7 @@ export function WorkedStepsList({ steps, loop = false }: { steps: readonly Worke
   </ol>;
 }
 
-/** A worked example written out step by step (05 §7 "Worked examples"); also a cycle and an ordered list of stages. */
+/** A worked example written out step by step; also a cycle and an ordered list of stages. */
 export function WorkedStepsVisual({ label, steps, loop = false }: { label: string; steps: readonly WorkedStep[]; loop?: boolean }) {
   return <Frame name="worked-steps" label={label}>
     <WorkedStepsList loop={loop} steps={steps.map((step) => ({ id: step.id, marker: step.marker, state: step.state,
@@ -291,9 +290,9 @@ export interface GrowthSeries { id: string; label: string; values: readonly numb
  */
 export function GrowthLinesVisual({ label, series, startLabel, endLabel, maxText, shown, threshold, marker, max: fixedMax, count }: {
   label: string; series: readonly GrowthSeries[]; startLabel: string; endLabel: string; maxText: string; shown?: number;
-  /** GAP-FIX-R4: a reference line (the doubling line) with its HTML label, and the flag where a line first reaches it. */
+  /** A reference line (the doubling line) with its HTML label, and the flag where a line first reaches it. */
   threshold?: { value: number; label: string }; marker?: number;
-  /** GAP-FIX-R4: a fixed scale and period count, so a run and its ghost share one frame (debt payoff). */
+  /** A fixed scale and period count, so a run and its ghost share one frame (debt payoff). */
   max?: number; count?: number;
 }) {
   const length = Math.max(2, count ?? 0, ...series.map((s) => s.values.length));
@@ -359,11 +358,11 @@ export function WaffleVisual({ label, categories }: { label: string; categories:
 
 // ── Coins ──────────────────────────────────────────────────────────────────
 
-/** `kind: 'bill'` draws a simplified note token in the same reward family (GAP-FIX-R4, Bible 05 §7 Money). */
+/** `kind: 'bill'` draws a simplified note token in the same reward family. */
 export interface CoinGroup { id: string; label: string; count: number; subtotal?: string; kind?: 'coin' | 'bill' }
 
 /**
- * Piles of coins or notes (05 §2: coins use `reward` with the ridge outline;
+ * Piles of coins or notes (coins use `reward` with the ridge outline;
  * notes are simplified tokens of the same family, never the wallet's save or
  * spend hues). Up to 20 are drawn per pile; the count is written. The lesson
  * coin tray ($1, $2) and the Mentor's tokens, trade and change draw with it.
@@ -491,7 +490,7 @@ type VennRegion = { count: string; items: readonly string[] };
 
 /**
  * Two sets and their regions: each region lists its items and its count (the
- * circles are outlines, sky and dashed mint). GAP-FIX-R4 (Appendix P L5): the
+ * circles are outlines, sky and dashed mint). The
  * relation draws the three Euler layouts - `overlap` (two crossing circles),
  * `subset` (the left set nested inside the right; no "only left" region) and
  * `disjoint` (two circles apart; no "both" region) - and an optional `neither`
@@ -542,7 +541,7 @@ export interface SortBin { id: string; label: string; count?: string; items: rea
 /**
  * Things sorted into labelled groups (the Mentor's two bins, the lesson's L10
  * and $10 sorts). A lesson board passes `targetProps` to make each bin a drop
- * target (GAP-FIX-R4); the visual is then a group, not an image.
+ * target; the visual is then a group, not an image.
  */
 export function SortBinsVisual({ label, bins, targetProps }: { label: string; bins: readonly SortBin[]; targetProps?: (id: string) => DropTargetProps | undefined }) {
   return <Frame name="sort-bins" label={label} interactive={Boolean(targetProps)}>
@@ -576,7 +575,7 @@ export function DealVisual({ label, bins, perBin, remainder, remainderLabel, tot
 
 export interface ChanceOutcome { id: string; label: string; count: number; countText: string; series: SeriesTone }
 
-/** Chance as an icon array of 100 in rows of ten (05 §7 "Probability"): counts first ("12 of 100"). */
+/** Chance as an icon array of 100 in rows of ten: counts first ("12 of 100"). */
 export function IconArrayVisual({ label, outcomes }: { label: string; outcomes: readonly ChanceOutcome[] }) {
   const cells = outcomes.flatMap((outcome) => Array.from({ length: Math.max(0, outcome.count) }, () => outcome.series)).slice(0, 100);
   return <Frame name="icon-array" label={label}>

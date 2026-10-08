@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { SRGBColorSpace, TextureLoader, type Texture } from 'three';
 
 /*
- * Class III / S17 `presence` (TUTOR_INSTRUMENTS.md §3.4): "the learner's
+ * The `presence` prop: "the learner's
  * existing avatar appears in the scene during a transaction." Confirmed by
  * research before writing this: nothing in this codebase has ever rendered
  * anything but one of the 4 rigged, authored `.glb` characters inside the 3D
@@ -35,8 +35,8 @@ import { SRGBColorSpace, TextureLoader, type Texture } from 'three';
  * whose only dependency is the URL string itself, stored in ordinary
  * `useState`, and explicitly `dispose()`d on cleanup — no property of an
  * already-uploaded texture is ever touched again outside that one effect run.
- * `drei` is deliberately unused on this stage (/AGENTS.md's locked stack
- * table), so this is `TextureLoader` used directly, the way `useLoader`
+ * `drei` is deliberately unused on this stage (the project's locked stack),
+ * so this is `TextureLoader` used directly, the way `useLoader`
  * itself does internally, minus the Suspense/cache layer that this specific
  * usage did not get right.
  */

@@ -1,25 +1,24 @@
 /*
- * Core's half of Product C.16 (end-reason-specific closing scripts) and
- * C.8/C.12 (the behavioral-signature session-end signal).
+ * Core's half of end-reason-specific closing scripts and
+ * the behavioral-signature session-end signal.
  *
  *   1. The CLOSE RECORD. Oracle reports, at close, which closing script it
  *      used, which opening the session began with, and the signal's record.
  *      Core stores the script and opening on `tutor_sessions` and each firing
  *      in `tutor_session_end_signal` (migration *_mentor_session_end_and_closing).
  *   2. THE QUEUED RE-ENGAGEMENT. A silent dropout or a budget interruption
- *      queues a short, no-blame message for the learner's return (Appendix D
- *      §3.5). Core decides it from its OWN rows when the next session's
- *      context is built (`decideOpening`), so nothing about it depends on the
+ *      queues a short, no-blame message for the learner's return. Core decides it from its OWN rows
+ *      when the next session's context is built (`decideOpening`), so nothing about it depends on the
  *      client or on transcript text.
- *   3. THE METRICS (Appendix F §1.1–1.2): Session-Closing Script Accuracy
+ *   3. THE METRICS: Session-Closing Script Accuracy
  *      (target 100%) and the Early-Warning Signal Trigger Rate (diagnostic:
  *      share of evaluated sessions that fired before the hard cap, and the
- *      precision of those firings). Pure summaries, unit-tested without a
+ *      precision of those firings). Pure summaries, computed without a
  *      database; `npm run tutor:session-end-report` prints them.
  *
  * The vocabularies and the reason → script table are HAND-MIRRORED from
  * Oracle (`oracle/src/tutor/sessionClosing.ts`, `sessionEndSignal.ts`) and
- * the migration's CHECKs; `npm run session-end:check` keeps them identical.
+ * the migration's CHECKs.
  */
 
 import { z } from 'zod';
@@ -49,7 +48,7 @@ export const CLOSE_REASONS = [
 ] as const;
 export type CloseReason = (typeof CLOSE_REASONS)[number];
 
-/** Mirrors oracle/src/tutor/sessionClosing.ts CLOSING_SCRIPT_FOR_REASON (checked by `npm run session-end:check`). */
+/** Mirrors oracle/src/tutor/sessionClosing.ts CLOSING_SCRIPT_FOR_REASON. */
 export const CLOSING_SCRIPT_FOR_REASON: Record<CloseReason, ClosingScript> = {
   completed: 'completed',
   soft_budget: 'completed',
@@ -65,7 +64,7 @@ export const CLOSING_SCRIPT_FOR_REASON: Record<CloseReason, ClosingScript> = {
 export const SIGNAL_OUTCOMES = ['accepted', 'declined', 'unanswered', 'not_offered'] as const;
 export const SIGNAL_MODES = ['offer', 'shadow'] as const;
 
-/** Mirrors oracle/src/tutor/sessionEndSignal.ts EventSchema (checked by `npm run session-end:check`). */
+/** Mirrors oracle/src/tutor/sessionEndSignal.ts EventSchema. */
 export const SessionEndEventBody = z
   .object({
     observation: z.number().int().min(1).max(10_000),
@@ -118,7 +117,7 @@ export const SESSION_END_THRESHOLDS = {
    * calibration (Threshold Recalibration Log).
    */
   reengagementMaxAgeDays: 30,
-  /** Session-Closing Script Accuracy target (Appendix F §1.2): 100%. */
+  /** Session-Closing Script Accuracy target: 100%. */
   closingScriptAccuracyTarget: 1,
   /** Below this many evaluated sessions the trigger rate is insufficient data. */
   triggerRateMinSessions: 50,
@@ -127,7 +126,7 @@ export const SESSION_END_THRESHOLDS = {
 } as const;
 
 /**
- * C.16: the opening a new session begins with, from the learner's previous
+ * The opening a new session begins with, from the learner's previous
  * CLOSED session (Core's own row, never the client's word).
  *
  *   hard_budget                       → reengage_interrupted_*  ("time ran out")
@@ -165,7 +164,7 @@ const eu = (val: string) => encodeURIComponent(z.string().uuid().parse(val));
 
 /**
  * The learner's most recent CLOSED session other than this one. `null` when
- * there is none; `undefined` when the read FAILED (§1.14: a failed read is
+ * there is none; `undefined` when the read FAILED (a failed read is
  * not an empty one — the caller then opens with the plain greeting).
  */
 export async function getPreviousClosedSession(
@@ -239,7 +238,7 @@ export interface SignalEventRow {
 export type MetricStatus = 'ok' | 'defect' | 'insufficient_data' | 'diagnostic';
 
 export interface ClosingAccuracySummary {
-  /** Sessions closed with a recorded closing script (built after C.16). */
+  /** Sessions closed with a recorded closing script (built after closing scripts). */
   recorded: number;
   correct: number;
   accuracy: number | null;
@@ -251,7 +250,7 @@ export interface ClosingAccuracySummary {
   defects: string[];
 }
 
-/** Session-Closing Script Accuracy (Appendix F §1.2, target 100%). */
+/** Session-Closing Script Accuracy (target 100%). */
 export function summarizeClosingAccuracy(rows: ClosedSessionRow[]): ClosingAccuracySummary {
   const recorded = rows.filter((r) => r.closing_script !== null && r.close_reason !== null);
   const mismatches = recorded
@@ -295,7 +294,7 @@ export interface TriggerRateSummary {
 }
 
 /**
- * Early-Warning Signal Trigger Rate (Appendix F §1.1). DIAGNOSTIC — no fixed
+ * Early-Warning Signal Trigger Rate. DIAGNOSTIC — no fixed
  * target: it establishes a baseline and is watched for its trend toward high
  * precision, so it never produces a defect on its own.
  */

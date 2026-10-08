@@ -1,6 +1,6 @@
-// `story` family — payload Zod schemas (LESSON_ENGINE.md §5.1, types 1–5).
+// `story` family — payload Zod schemas (types 1–5).
 // Content types carry NO answer schema: they are ungraded, ship with `xp: 0`
-// and always count as complete on advance (§3).
+// and always count as complete on advance.
 
 import { z } from 'zod'
 import {
@@ -93,7 +93,7 @@ export const EAVESDROP_HIGHLIGHT = /==([^=\n]+)==/g
 /**
  * `eavesdrop` — an overheard conversation between canon characters, revealed
  * turn by turn, where highlighted money terms/idioms carry tap-to-explain
- * notes (LESSON_ENGINE.md §5.1, type 57). The whole artifact is generated in
+ * notes (type 57). The whole artifact is generated in
  * ONE pass and gated BEFORE the kid sees turn one — the "live conversation"
  * feel with zero ungated runtime AI (Little Language Lessons' progressive
  * reveal, 2026-07-25 analysis).

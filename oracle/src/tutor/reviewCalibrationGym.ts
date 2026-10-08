@@ -17,10 +17,10 @@ import { HintLadder, type HintLevel } from './hintLadder.js';
 import { buildPlan, recordGrade, stuckMove, type StuckMoveKind } from './plan.js';
 
 /*
- * C.11 / C.17 — THE SPACED-REVIEW ROUTER AND THE DIALOGUE CALIBRATION AGAINST
- * APPENDIX F'S SIMULATED LEARNERS (Part 3, Stage 2).
+ * THE SPACED-REVIEW ROUTER AND THE DIALOGUE CALIBRATION AGAINST
+ * SIMULATED LEARNERS.
  *
- * The C.11 personas drive the REAL controller and the REAL router with the
+ * The spaced-review personas drive the REAL controller and the REAL router with the
  * same glue the orchestrator uses (`strategyInstruction` / `openDueReview`),
  * on a simulated clock and turn budget. Each is a deterministic script of
  * learner acts with the behaviour the two tiers must show:
@@ -40,9 +40,9 @@ import { buildPlan, recordGrade, stuckMove, type StuckMoveKind } from './plan.js
  *                           Massed misses MUST NOT count as spaced ones, and the
  *                           re-exposure cap MUST hand it off.
  *
- * The C.17 personas run the dialogue policy the session would run:
+ * The dialogue-calibration personas run the dialogue policy the session would run:
  *
- *   reactant_teen           Appendix D §3.6's autonomy threat. Every controlling
+ *   reactant_teen           Autonomy threat. Every controlling
  *                           draft (three locales) MUST be caught; a stuck skill
  *                           MUST get an offer, never a unilateral change; RESCUE
  *                           MUST ask first.
@@ -51,11 +51,11 @@ import { buildPlan, recordGrade, stuckMove, type StuckMoveKind } from './plan.js
  *   young_hint_seeker       asks for help four times. MUST reach the tell in
  *                           three requests on the shorter ladder, never
  *                           repeating a rung, in "together" wording.
- *   adult_control           the control arm. MUST be the uniform pre-C.17
+ *   adult_control           the control arm. MUST be the uniform pre-calibration
  *                           register (full ladder, no gate, unilateral change).
  */
 
-// ── C.11 ────────────────────────────────────────────────────────────────────
+// ── Spaced review ────────────────────────────────────────────────────────────────────
 
 const A = 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaa1';
 const B = 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbb1';
@@ -289,7 +289,7 @@ export const REVIEW_PERSONAS: ReviewPersona[] = [
   },
 ];
 
-// ── C.17 ────────────────────────────────────────────────────────────────────
+// ── Dialogue calibration ────────────────────────────────────────────────────────────────────
 
 export interface CalibrationPersona {
   name: string;

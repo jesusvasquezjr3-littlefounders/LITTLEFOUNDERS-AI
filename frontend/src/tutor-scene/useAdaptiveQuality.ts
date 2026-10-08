@@ -56,7 +56,7 @@ export function useAdaptiveQuality(): AdaptiveQuality {
     // lone long frame is dropped. A device that is simply this slow draws long
     // frame after long frame, and from the second in a row they are counted:
     // dropping them all left a stage under 2 fps unmeasured, never stepped down
-    // and never falling back to its still (Bible 08 §7), which is what software
+    // and never falling back to its still, which is what software
     // GL on a 2-vCPU machine showed.
     if (deltaSeconds > 0.5) {
       longFrames.current += 1;

@@ -30,15 +30,14 @@ import { clearCoursesCache } from './coursesCache';
 import { coursePath, guidedReviewPath, placementPath } from './paths';
 
 /*
- * /learn/lesson/:lessonId — the learner's lesson route (COURSE_ENGINE.md §2,
- * LESSON_ENGINE.md §7), a full-screen layer of its own outside the app shell:
+ * /learn/lesson/:lessonId — the learner's lesson route, a full-screen layer of its own outside the app shell:
  * no navigation ever renders behind a lesson.
  *
- * W2L.3: every rebuilt screen of the route renders in ONE lesson layer
+ * Every rebuilt screen of the route renders in ONE lesson layer
  * (`LessonLayer`): opening, Core's refusals, the offline and failure states,
- * the B.9 recall, the v2 lesson with its compact Mentor stage on every board
- * (B.8), the B.5 result with the OD-7 lesson, course, badge and streak
- * moments Core named, and the B.26 guided-review offer. The layer persists
+ * the recall, the v2 lesson with its compact Mentor stage on every board,
+ * the result with the lesson, course, badge and streak
+ * moments Core named, and the guided-review offer. The layer persists
  * across them, so the document title follows the screen and focus moves to
  * each new screen's heading.
  *
@@ -47,16 +46,16 @@ import { coursePath, guidedReviewPath, placementPath } from './paths';
  */
 
 interface LessonResponse {
-  /** W2L.4: `course_slug` names the lesson's course, so a deep link still finds its badge and its way back. */
+  /** `course_slug` names the lesson's course, so a deep link still finds its badge and its way back. */
   lesson: { id: string; slug: string; course_slug?: unknown };
   locale: string;
   document: unknown;
-  /** B.18 (GAP-FIX-R3): a v2 lesson's resolved narration, segment id -> public URL (Core resolves `audio_ref` against the manifest). */
+  /** A v2 lesson's resolved narration, segment id -> public URL (Core resolves `audio_ref` against the manifest). */
   narration_audio?: unknown;
   mentor_stage?: unknown;
-  /** B.8 (GAP-FIX-R1): the lesson's adventure scene theme, a closed enum. */
+  /** The lesson's adventure scene theme, a closed enum. */
   adventure_theme?: unknown;
-  /** B.9 (S05.3c): an earlier, relevant story decision Core resurfaced for this lesson. */
+  /** An earlier, relevant story decision Core resurfaced for this lesson. */
   narrative_recall?: unknown;
 }
 
@@ -74,9 +73,9 @@ interface V2RunResponse {
   attempted_segment_ids?: string[];
   viewed_segment_ids?: string[];
   attempt_tokens: Record<string, string>;
-  /** F3.0: the seed of each seeded segment's attempt; absent when the lesson has none. */
+  /** The seed of each seeded segment's attempt; absent when the lesson has none. */
   attempt_seeds?: Record<string, string>;
-  /** GAP-FIX-R5 (B.24): present when the lesson offers approaches; null until the learner chooses. */
+  /** Present when the lesson offers approaches; null until the learner chooses. */
   approach_id?: string | null;
 }
 
@@ -84,12 +83,12 @@ interface V2Attempt {
   runId: string;
   versionId: string;
   tokens: Record<string, string>;
-  /** F3.0: the seed of each seeded segment's current attempt, renewed with its token. */
+  /** The seed of each seeded segment's current attempt, renewed with its token. */
   seeds: Record<string, string>;
   metSegmentIds: string[];
   attemptedSegmentIds: string[];
   viewedSegmentIds: string[];
-  /** GAP-FIX-R5: the pinned approach, or null before choosing (lessons without approaches: null). */
+  /** The pinned approach, or null before choosing (lessons without approaches: null). */
   approachId: string | null;
 }
 
@@ -117,9 +116,9 @@ function LessonRouteSession() {
   const [initialCheckpoint] = useState(() => storageKey ? readCheckpoint(storageKey) : newCheckpoint());
   const checkpoint = useRef(initialCheckpoint);
   const v2EnteredAt = useRef(Date.now());
-  // Bible 08 §11 / B.10: help-ladder steps opened per segment, sent with its next grade.
+  // Help-ladder steps opened per segment, sent with its next grade.
   const hintsRef = useRef<Record<string, number>>({});
-  // GAP-FIX-R4 (Appendix C 1.2; Appendix P Part 7.5): time on each v2 step, idle capped, sent beside its Check or
+  // Time on each v2 step, idle capped, sent beside its Check or
   // Continue as an analytics field only (Core never grades on it).
   const timeOnTask = useRef<TimeOnTaskClock | null>(null);
   useEffect(() => {
@@ -134,17 +133,17 @@ function LessonRouteSession() {
   const [state, setState] = useState<LoadState>({ status: 'loading' });
   const [loadRevision, setLoadRevision] = useState(0);
   const retry = useCallback(() => setLoadRevision((revision) => revision + 1), []);
-  // B.5 (S05.3d): Core's authenticated completion receipt for a v2 lesson.
+  // Core's authenticated completion receipt for a v2 lesson.
   const [v2Receipt, setV2Receipt] = useState<unknown>(null);
-  // B.9: the recall shows once, before the lesson, and never over a lesson resumed mid-way.
+  // The recall shows once, before the lesson, and never over a lesson resumed mid-way.
   const [recallDone, setRecallDone] = useState(() => initialCheckpoint.runId !== null);
 
-  // The link that opened the lesson names its course; a deep link falls back to the course Core names (W2L.4).
+  // The link that opened the lesson names its course; a deep link falls back to the course Core names.
   const courseSlug = (location.state as LocationState | null)?.courseSlug ?? (state.status === 'ready' ? state.courseSlug : null);
-  // Insights (/INSIGHTS.md): lesson_start on entry; lesson_abandon on exit
+  // Insights: lesson_start on entry; lesson_abandon on exit
   // WITHOUT completing — the drop-off signal the server cannot see, since
   // /complete only fires on the results screen. trackInsight is a no-op for
-  // unconsented kids, so this wiring carries no §1.9 decision of its own.
+  // unconsented kids, so this wiring carries no consent decision of its own.
   const completedRef = useRef(false);
   useEffect(() => {
     completedRef.current = false;
@@ -156,11 +155,11 @@ function LessonRouteSession() {
       }
     };
   }, [lessonId]);
-  // B.26 / OD-1 (S05.3f): a miss costs nothing; consecutive misses on one
+  // A miss costs nothing; consecutive misses on one
   // skill bring the learner's Mentor's offer to review it (never a lock).
   const [guidedReview, setGuidedReview] = useState<GuidedReviewOfferValue | null>(null);
-  // B.23: the learner's register, which Core resolves from its own age
-  // evidence. It words the guided-review offer and (S05.3g) sets the live
+  // The learner's register, which Core resolves from its own age
+  // evidence. It words the guided-review offer and sets the live
   // player's cast presence and milestone motion. Read once per lesson; until it
   // answers, and if it fails, the youngest register is the reading.
   const [register, setRegister] = useState<RegisterState>({ status: 'loading' });
@@ -201,7 +200,7 @@ function LessonRouteSession() {
       }
       if (cancelled) return;
       const clientDocument = loadLessonClientDocument(data.document);
-      // GAP-FIX-R1 (OD-17): every playable v2 lesson pins a run, graded or not;
+      // Every playable v2 lesson pins a run, graded or not;
       // non-scored steps complete through Core's view receipts.
       if (clientDocument.status !== 'ready') {
         setState({ status: 'ready', ...ready, v2Attempt: null });
@@ -211,7 +210,7 @@ function LessonRouteSession() {
       const started = await api<V2RunResponse>(`/learn/lessons/${lessonId}/v2-runs`, { method: 'POST', token, body: resumeRunId ? { run_id: resumeRunId } : {} });
       if (cancelled) return;
       /*
-       * W2L.3: a run that could not start is said as what it is. A lost
+       * A run that could not start is said as what it is. A lost
        * connection or a Core failure is the offline or retry screen, a refusal
        * is its own screen; only a run Core answered with data that does not
        * match this document fails closed as a lesson that cannot be played.
@@ -238,7 +237,7 @@ function LessonRouteSession() {
     if (state.status === 'ready' && recallDone) timeOnTask.current?.take();
   }, [state.status, recallDone]);
 
-  // W2L.3: an offline screen retries by itself when the connection comes back; the button stays for the learner.
+  // An offline screen retries by itself when the connection comes back; the button stays for the learner.
   const offline = state.status === 'error' && state.offline;
   useEffect(() => {
     if (!offline) return;
@@ -257,7 +256,7 @@ function LessonRouteSession() {
     const seconds = timeOnTask.current?.take();
     const { data, error } = await api<{ verdict: { correct: boolean; score: number; judgment?: { quality?: unknown }; diagnostic?: unknown }; replayed: boolean; retry_attempt_token?: string; retry_attempt_seed?: string; guided_review?: unknown }>(`/learn/lessons/${lessonId}/grade`, {
       method: 'POST', token, body: { segment_id: segmentId, answer, run_id: attempt.runId, attempt_token: attemptToken, ...(hints ? { hints_used: hints } : {}),
-        // Appendix P Part 8 (GAP-FIX-R2): the browser scorer's advisory reading; Core only records whether it agreed.
+        // The browser scorer's advisory reading; Core only records whether it agreed.
         ...(parity ? { client_verdict: parity } : {}),
         ...(seconds !== undefined ? { time_spent_seconds: seconds } : {}) },
     });
@@ -289,12 +288,12 @@ function LessonRouteSession() {
   const gradeV2SchemaDiagram: OnGradeSchemaDiagram = useCallback((answer, segmentId, document) => submitV2Grade(answer, segmentId, document), [submitV2Grade]);
   const gradeV2WorkedExample: OnGradeWorkedExample = useCallback((answer, segmentId, document) => submitV2Grade(answer, segmentId, document), [submitV2Grade]);
   const gradeV2Reasoning: OnGradeReasoning = useCallback((answer, segmentId, document) => submitV2GradeDetailed(answer, segmentId, document), [submitV2GradeDetailed]);
-  // GAP-FIX-R1: every newly gradable visual and first-release family grades through one handler.
+  // Every newly gradable visual and first-release family grades through one handler.
   const gradeV2Any: OnGradeAny = useCallback(async (answer, segmentId, document) => {
     const graded = await submitV2GradeDetailed(answer, segmentId, document);
     return { verdict: graded.verdict, ...(graded.diagnostic ? { diagnostic: graded.diagnostic } : {}) };
   }, [submitV2GradeDetailed]);
-  // OD-17: a non-scored step is recorded with Core before the player moves past it.
+  // A non-scored step is recorded with Core before the player moves past it.
   const viewV2: OnView = useCallback(async (segmentId, document) => {
     const attempt = state.status === 'ready' ? state.v2Attempt : null;
     const token = await getToken();
@@ -305,7 +304,7 @@ function LessonRouteSession() {
     });
     return !error;
   }, [getToken, lessonId, state]);
-  // GAP-FIX-R5 (B.24, Block B autonomy): the learner's approach, pinned on the run by Core before its chain is played.
+  // The learner's approach, pinned on the run by Core before its chain is played.
   const chooseApproachV2: OnChooseApproach = useCallback(async (approachId, document) => {
     const attempt = state.status === 'ready' ? state.v2Attempt : null;
     const token = await getToken();
@@ -347,7 +346,7 @@ function LessonRouteSession() {
     locale={appLocale} dark={isDark} onDecline={() => setGuidedReview(null)}
     onReview={(skillKey) => navigate(guidedReviewPath(skillKey, lessonId))} /> : null;
   const lessonTitle = learnCopy[appLocale].lesson.pageTitle;
-  // Bible 06 §7 (GAP-FIX-R4): every lesson screen carries a band. A lesson document declares its own audience; the
+  // Every lesson screen carries a band. A lesson document declares its own audience; the
   // opening, recall and refusal screens read in the learner's register (the youngest until Core answers).
   const learnerBand = REGISTERS[registerOf(register)].copyBand;
   const layer = (screen: string, view: JSX.Element, frame: { locale?: Locale; ageBand?: AgeBand; pageTitle?: string } = {}) =>
@@ -384,7 +383,7 @@ function LessonRouteSession() {
   if (v2Receipt) {
     // The receipt is written in the lesson's own locale, which is the response locale.
     const receiptLocale = ['en-US', 'es-MX', 'pt-BR'].includes(state.locale) ? state.locale as Locale : appLocale;
-    // B.23: a v2 lesson declares its audience band, and Core admits only learners inside it (S05.2a).
+    // A v2 lesson declares its audience band, and Core admits only learners inside it.
     const band = (state.document as { age_band?: unknown }).age_band;
     const resultRegister = band === '6-9' || band === '10-12' || band === '13-17' || band === 'adult' ? registerForBand(band) : registerOf(register);
     return layer('result', <LessonResultView rawReceipt={v2Receipt} locale={receiptLocale} dark={isDark} onContinue={goBack} register={resultRegister}
@@ -416,10 +415,10 @@ function validateV2Attempt(document: LessonClientDocument, value: V2RunResponse 
     || !value.attempt_tokens || typeof value.attempt_tokens !== 'object' || Array.isArray(value.attempt_tokens)) return null;
   const expected = document.segments.filter(segment => segment.grading === 'server').map(segment => segment.id).sort();
   const supplied = Object.keys(value.attempt_tokens).sort();
-  // GAP-FIX-R1: a lesson with no graded step pins a run with no tokens; its steps complete by view receipts.
+  // A lesson with no graded step pins a run with no tokens; its steps complete by view receipts.
   if (expected.length !== supplied.length || expected.some((id, index) => id !== supplied[index])) return null;
   if (supplied.some((id) => typeof value.attempt_tokens[id] !== 'string' || value.attempt_tokens[id]!.length === 0)) return null;
-  // F3.0: exactly the seeded server-graded segments carry a seed, each a 64-hex string.
+  // Exactly the seeded server-graded segments carry a seed, each a 64-hex string.
   const seededIds = document.segments.filter(segment => segment.grading === 'server' && isSeededHorizonteType(segment.type)).map(segment => segment.id).sort();
   const seeds = value.attempt_seeds ?? {};
   if (typeof seeds !== 'object' || seeds === null || Array.isArray(seeds)) return null;
@@ -436,7 +435,7 @@ function validateV2Attempt(document: LessonClientDocument, value: V2RunResponse 
   if (value.viewed_segment_ids !== undefined
     && (!Array.isArray(value.viewed_segment_ids) || value.viewed_segment_ids.some((id) => typeof id !== 'string' || !viewable.includes(id)))) return null;
   const viewedSegmentIds = [...new Set(value.viewed_segment_ids ?? [])].sort();
-  // GAP-FIX-R5: a pinned approach must be one this document offers; a lesson without approaches never carries one.
+  // A pinned approach must be one this document offers; a lesson without approaches never carries one.
   const offered = document.approaches?.options.map((option) => option.id) ?? [];
   if (value.approach_id !== undefined && value.approach_id !== null && (typeof value.approach_id !== 'string' || !offered.includes(value.approach_id))) return null;
   const approachId = typeof value.approach_id === 'string' ? value.approach_id : null;
@@ -466,7 +465,7 @@ type ErrorScreen =
   | { kind: 'transport'; state: LessonTransportState; retry: boolean };
 
 /**
- * W2L.3: every answer Core gives the lesson route has its own screen. A
+ * Every answer Core gives the lesson route has its own screen. A
  * refusal no retry can change never offers one (it would only fail again);
  * a lost connection or a Core failure always does.
  */

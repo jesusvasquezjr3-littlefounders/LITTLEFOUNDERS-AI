@@ -1,5 +1,5 @@
 /*
- * Product C.21 + C.24: THE CONTINUOUS EVALUATION LOOP (Appendix E §3.1 Tier 3).
+ * THE CONTINUOUS EVALUATION LOOP.
  *
  * One pass, run hourly by `.github/workflows/mentor-evaluation-loop.yml`
  * through Core's internal route (`POST /api/v1/tutor/internal/evaluation/run`)
@@ -24,7 +24,7 @@
  * FAIL CLOSED, NEVER PARTIAL. A session whose rows cannot all be read is not
  * scored (a missing honesty ledger would read as a clean session); a signal
  * whose source cannot be read is `unavailable` and opens a flag, never a
- * reassuring zero (AGENTS.md §1.14). No model call: zero spend (OD-23).
+ * reassuring zero. No model call: zero spend.
  */
 
 import { z } from 'zod';
@@ -227,7 +227,7 @@ async function rpcRows<T>(name: string, body: Record<string, unknown>, schema: z
 const RetentionRows = z.array(z.object({ kc_key: z.string(), window_days: count, learners: count, correct: count }));
 
 /**
- * Appendix C 1.1 Delayed Retention (GAP-FIX-R4, 0237). The latest recorded
+ * Delayed Retention (0237). The latest recorded
  * release's frozen cells are the comparison; the current period runs from
  * that release's period end (the reviews this release has seen so far), or
  * over the dashboard window when no release is recorded yet (the release-1
@@ -251,8 +251,8 @@ export async function readDelayedRetention(since: Date, now: Date): Promise<{ cu
 }
 
 /**
- * C.24 consolidates what the Learning Quality tab already computes (Appendix
- * C 1.1 and 1.2): the same RPCs learningQuality.ts and engagementHealth.ts
+ * The consolidated dashboard collects what the Learning Quality tab already computes:
+ * the same RPCs learningQuality.ts and engagementHealth.ts
  * read, over the dashboard's window (the weekly trends over the engagement
  * report's 12 weeks). A failed read is null, and the signal reads
  * 'unavailable' with a flag for the engineering lead, never a calm zero.
@@ -266,7 +266,7 @@ export async function collectLearningSignals(now: Date): Promise<LearningSignalS
     }))),
     rpcRows('learning_narrative_metrics', window, z.object({
       journal_entries_recorded: count, journal_entries_resurfaced: count,
-      // GAP-FIX-R7 (Appendix C 1.1, B.9): the coverage denominator; absent before its migration, so optional.
+      // The coverage denominator; absent before its migration, so optional.
       story_decisions_made: count.optional(), story_decisions_journaled: count.optional(), story_decisions_without_consent: count.optional(),
     })),
     rpcRows('learning_session_efficiency', weekly, z.array(z.object({ week_start: z.string(), learners: count, efficiency_ratio: ratio }))),
@@ -330,27 +330,27 @@ export async function collectSources(now: Date): Promise<QualitySources> {
     readAll<AuditRow>(`/audit_logs?select=action,created_at,detail&action=like.mentor.kill_switch.*&order=created_at.asc`),
     readAll<{ user_id: string }>(`/tutor_sessions?select=user_id&started_at=gte.${iso(currentProfiles)}&order=started_at.asc`),
     countServiceRows(`/learner_disposition_profile?updated_at=gte.${iso(currentProfiles)}&select=user_id`),
-    // Every evidence source (B.6: one mastery model); the practice band keeps to Mentor practice by `source`.
+    // Every evidence source (one mastery model); the practice band keeps to Mentor practice by `source`.
     readAll<KcAttemptRow & { kc?: { key: string } | null }>(`/kc_attempt?select=user_id,kc_id,source,correct,p_known_after,created_at,kc(key)&created_at=gte.${iso(since)}&order=created_at.asc`),
-    // GAP-FIX-R4 (Appendix C 1.1): Delayed Retention per KC, against the latest recorded release (0237).
+    // Delayed Retention per KC, against the latest recorded release (0237).
     readDelayedRetention(since, now),
     readCalibrationRows(),
     collectLearningSignals(now),
-    // GAP-FIX-R1 (Appendix C 1.1): v2 practice vs transfer first-try success (0207).
+    // v2 practice vs transfer first-try success (0207).
     serviceRest<{ kc: string; item_role: 'practice' | 'transfer'; first_attempts: number; successes: number }[]>('/rpc/learning_transfer_success', {
       method: 'POST', body: JSON.stringify({ p_since: iso(since), p_until: iso(now) }),
     }),
-    // GAP-FIX-R2 (Appendix C 1.2): the per-release manual audits (B.25, B.22, B.20), newest first.
+    // The per-release manual audits, newest first.
     serviceRest<unknown>('/release_audit_results?select=audit_kind,release_id,result,finding_count,recorded_at&order=recorded_at.desc&limit=60'),
-    // GAP-FIX-R2 (Appendix C 1.2, B.10): Parent Time-to-Value over the window.
+    // Parent Time-to-Value over the window.
     readParentTimeToValue(since, now),
-    // GAP-FIX-R3 (C.22 Stage 5): the sessions of the window that ran a canary arm (0231).
+    // The sessions of the window that ran a canary arm (0231).
     readAll<unknown>(
       `/tutor_sessions?select=id,canary_proposal_id,canary_arm,ended_at&canary_proposal_id=not.is.null&ended_at=gte.${iso(since)}&order=ended_at.asc`,
     ),
-    // GAP-FIX-R3 (C.1, Appendix F 1.3): Age-Tier Calibration Coverage over the window (0232).
+    // Age-Tier Calibration Coverage over the window (0232).
     readAgeCalibrationCoverage(since, now),
-    // GAP-FIX-R4 (Appendix C 1.1): Time-to-Mastery by age band; bands only (0237).
+    // Time-to-Mastery by age band; bands only (0237).
     rpcRows('learning_kc_learner_age_bands', { p_since: iso(since) }, z.array(z.object({ user_id: z.string(), age_band: z.string() }))),
   ]);
   const arms = canaryArms === null ? null : CanaryArmRows.safeParse(canaryArms);

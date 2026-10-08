@@ -10,7 +10,7 @@ import type { CharacterId } from '@/components/characters/control/types';
  * calculation or a headless verification script actually needs, and none of
  * those has any business needing a build tool to read them.
  *
- * `scripts/verify-placement.ts` is the case that forced the issue: it runs the
+ * A headless check is the case that forced the issue: it runs the
  * real solver against the real islands with no browser, and it could not import
  * a single measured number without dragging in asset URL resolution.
  *
@@ -41,7 +41,7 @@ export interface CharacterMeasurement {
    * that decides how many characters may stand on the island at once. The
    * personalization audition puts the whole cast on stage, and "the whole cast"
    * is a budget question before it is a design one: an answer computed from
-   * these figures can be asserted in a unit test, whereas an answer reasoned
+   * these figures can be checked, whereas an answer reasoned
    * about in a review is how a scene ships at three times its frame ceiling.
    */
   triangles: number;
@@ -145,10 +145,8 @@ export function pairSeparationM(a: number, b: number): number {
  *
  * Used as the SCALE for "are these two standing together", not as the hard
  * gate — the gate is per pair (above). It lives here, beside the measurements
- * it is computed from, because `scripts/verify-placement.ts` has to solve with
- * the SAME rule the product solves with: it used to hold its own copy of this
- * arithmetic, and a gate that exercises a different configuration certifies a
- * different product.
+ * it is computed from, so a headless solve uses the SAME rule the product
+ * solves with.
  */
 export function castSeparationM(footprints: readonly number[]): number {
   const widest = [...footprints].sort((a, b) => b - a);

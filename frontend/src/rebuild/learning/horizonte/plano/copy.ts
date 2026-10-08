@@ -3,8 +3,7 @@ import type { HorizonteCopy } from '../boardTypes';
 
 /*
  * The few words the plane itself owns. Everything a lesson says (the figure's name, its takeaway, axis names, layer
- * and handle names) is the board's copy and arrives through props. Each line fits the Copy Budget of its role
- * (06 §3): the actions are three words or fewer, the hints are body copy of two short sentences.
+ * and handle names) is the board's copy and arrives through props. Each line fits the Copy Budget of its role: the actions are three words or fewer, the hints are body copy of two short sentences.
  */
 export const PLANO_COPY = {
   table: { role: 'action', 'en-US': 'Show as table', 'es-MX': 'Ver como tabla', 'pt-BR': 'Ver como tabela' },

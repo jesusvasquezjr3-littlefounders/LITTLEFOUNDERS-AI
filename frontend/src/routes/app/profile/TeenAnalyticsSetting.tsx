@@ -19,7 +19,7 @@ export function TeenAnalyticsSetting() {
 /*
  * The Settings card. Until a choice is on file (Core's `disclosed`) it offers
  * the same two explicit answers as the first-session step, never the switch:
- * a flip from nothing could only record "on" (F3-identity-site).
+ * a flip from nothing could only record "on".
  */
 function AccountAnalyticsSetting() {
   const { i18n } = useTranslation(); const { isDark } = useTheme();

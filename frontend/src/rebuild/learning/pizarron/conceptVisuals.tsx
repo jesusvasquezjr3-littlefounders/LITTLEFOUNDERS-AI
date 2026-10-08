@@ -5,16 +5,16 @@ import '../conceptBoards.css';
 import './pizarron.css';
 
 /*
- * GAP-FIX-R4 (B.7 "one component set"; Bible 05 §5 and §6): the concept
+ * The concept
  * pictures the lesson concept boards used to draw inline, as shared Pizarrón
  * visuals the Mentor's board can use too.
  *
  * - Word labels (axis titles, curve names, asset names) are HTML placed over
- *   the drawing and wrapping; the SVG carries marks only (05 §5).
+ *   the drawing and wrapping; the SVG carries marks only.
  * - The drawing is `aria-hidden`; the frame is an image with a description
  *   when static, and a named group when a board lays interactive marks over it
  *   (`overlay`), whose accessible path is the board's own HTML controls
- *   (steppers), never the SVG (05 §6: never `role="img"` on an interactive SVG).
+ *   (steppers), never the SVG (never `role="img"` on an interactive SVG).
  * - Positions are normalised: x from 0 (left) to 1 (right), y from 0 (bottom)
  *   to 1 (top); the board's model has already done any arithmetic.
  */

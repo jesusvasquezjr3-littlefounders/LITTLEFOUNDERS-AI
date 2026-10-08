@@ -5,7 +5,7 @@ import type { CharacterAction, CharacterEmotion, CharacterId } from './vocabular
  *
  * These mirror Oracle's `ws/protocol.ts` and Core's `/api/v1/tutor/*`
  * responses. They are hand-written rather than generated because the platform
- * has no shared package (/AGENTS.md §1.2) — the same reason the lesson
+ * has no shared package — the same reason the lesson
  * graders are a checked copy.
  */
 
@@ -45,9 +45,9 @@ export interface TutorCatalog {
   backdrops: string[];
   adaptations: Adaptation[];
   /**
-   * The characters whose mouths actually move (/TUTOR_3D.md §3.1).
+   * The characters whose mouths actually move.
    *
-   * All four are selectable as the speaking tutor (owner decision 4), but only
+   * All four are selectable as the speaking tutor, but only
    * these two have a mouth card, so only these two earn the tight
    * `conversation` framing. The others are framed wider and lean on the 2D
    * bubble, where their heads DO articulate.
@@ -83,8 +83,7 @@ export interface TutorOffers {
   intelDegraded: boolean;
   /**
    * Whether a session can be started at all right now — Oracle's own health
-   * AND the learner's daily session cap folded into one answer (round 99:
-   * this used to reflect only Oracle's health, so a learner who had used
+   * AND the learner's daily session cap folded into one answer (this used to reflect only Oracle's health, so a learner who had used
    * every session today saw the same inviting screen as one who had used
    * none). `startBlockedBy` names the reason; `'SESSION_LIMIT'` is the SAME
    * code `POST /sessions` returns for the identical refusal.
@@ -94,7 +93,7 @@ export interface TutorOffers {
   /**
    * When `startBlockedBy` is `'SESSION_LIMIT'`, the learner's next local
    * midnight — the SAME reset instant `POST /sessions`'s own 429 `resetAt`
-   * carries (round 95), exposed here too so the proactive refusal on this
+   * carries, exposed here too so the proactive refusal on this
    * screen and the post-tap one never disagree about how long the wait is.
    * Null whenever the cap is not what is blocking (or not reached at all).
    */
@@ -161,12 +160,12 @@ export type ServerMessage =
       lesson?: { topic: string | null; step: number; of: number };
       /**
        * V4: a live whiteboard synced to this turn's story — SERVER-COMPUTED
-       * fields included, never redone client-side (/ORACLE.md §20.5). See
+       * fields included, never redone client-side. See
        * `TutorWhiteboardWire`, below, for the four shapes.
        */
       whiteboard?: TutorWhiteboardWire;
       /**
-       * Class III / S17 (TUTOR_INSTRUMENTS.md §3.4): a pre-authored roleplay
+       * Class III: a pre-authored roleplay
        * scene this turn started, by id — see `tutor/roleplay/scenes.ts`.
        */
       roleplayScene?: string | null;
@@ -176,7 +175,7 @@ export type ServerMessage =
        * `tutor-scene/pointTarget.ts`.
        */
       pointAt?: number | null;
-      /** GAP-FIX-R2: up to three likely answers (Oracle's `replies`), shown as reply chips. */
+      /** Up to three likely answers (Oracle's `replies`), shown as reply chips. */
       replies?: string[];
     }
   | {
@@ -204,24 +203,24 @@ export type ServerMessage =
     }
   | { type: 'adaptation_offer'; adaptation: Adaptation }
   /**
-   * C.8/C.12: the turn just delivered asked "stop here for today, or one
+   * The turn just delivered asked "stop here for today, or one
    * more?". Two equal choices; the answer is `session_end_response`
    * (mirrors oracle/src/ws/protocol.ts).
    */
   | { type: 'session_end_offer' }
   /**
-   * C.19: the turn just delivered is the system's check-in ("are we on the
+   * The turn just delivered is the system's check-in ("are we on the
    * same page?"). Two equal reply chips; the answer is `check_in_response`
    * or the learner's own words (mirrors oracle/src/ws/protocol.ts).
    */
   | { type: 'check_in' }
   /**
-   * C.15: the turn just delivered restated the session goal as one confirming
+   * The turn just delivered restated the session goal as one confirming
    * question. Two equal chips; the answer is `goal_response` or the learner's
    * own words (mirrors oracle/src/ws/protocol.ts).
    */
   | { type: 'goal_check' }
-  /** C.16: how the session ended, sent once just before `closed` on a graceful close. */
+  /** How the session ended, sent once just before `closed` on a graceful close. */
   | { type: 'session_closing'; script: ClosingScript; effort: EffortAct | null; topic: string | null }
   | { type: 'state'; budget: BudgetState; remainingMs: number; turnCount: number }
   | { type: 'closed'; reason: string }
@@ -229,7 +228,7 @@ export type ServerMessage =
 
 /**
  * v3: one closed step of a demonstration (mirrors Oracle's `DemoStepSchema`).
- * Widened to 4 families 2026-09-02 (/TUTOR_INSTRUMENTS.md Sprint 2) — see
+ * Widened to 4 families — see
  * `trayDemo.ts` for which family reads which fields.
  */
 export interface TrayDemoStep {
@@ -246,9 +245,9 @@ export interface TrayDemoStep {
 /**
  * V4's live whiteboard, exactly as it reaches the wire — mirrors Oracle's
  * `WireWhiteboard` (`ws/protocol.ts`). A discriminated union on `kind`, one
- * member per shape (/ORACLE.md §20.5): `sequence`, `compare`, `marked_line`
- * and `categories` — the first bounded slice of "UI generativa acotada"
- * (blueprint §10.4). Every field the model itself sets, plus the ONE thing
+ * member per shape: `sequence`, `compare`, `marked_line`
+ * and `categories` — the first bounded slice of "UI generativa acotada".
+ * Every field the model itself sets, plus the ONE thing
  * only the server ever adds per kind (`values` / `difference`+`greater` /
  * each mark's `position`) — the client renders these as given and never
  * redoes the arithmetic, exactly the posture `checkAnswer`'s verdict already
@@ -578,7 +577,7 @@ export type TutorWhiteboardWire =
     }
   | {
       /**
-       * Class II, S9 (/TUTOR_INSTRUMENTS.md §3.3) — items and bins the
+       * Class II — items and bins the
        * LEARNER sorts by tapping, ungraded by construction. Nothing here is
        * SERVER-COMPUTED: no field for which bin an item belongs in, unlike
        * `two_bins`' `items[].bin` — that placement is the learner's own,
@@ -591,7 +590,7 @@ export type TutorWhiteboardWire =
     }
   | {
       /**
-       * Class II, S9 (/TUTOR_INSTRUMENTS.md §3.3) — an empty container the
+       * Class II — an empty container the
        * LEARNER taps to fill, ungraded by construction like `grab`. Nothing
        * here is SERVER-COMPUTED: how many are filled is local component
        * state, never sent back.
@@ -603,7 +602,7 @@ export type TutorWhiteboardWire =
     }
   | {
       /**
-       * Class II, S10 (/TUTOR_INSTRUMENTS.md §3.3) — NOT ungraded, unlike
+       * Class II — NOT ungraded, unlike
        * `grab`/`fill`: `values` is SERVER-COMPUTED, one running-value array
        * per branch, `sequence_compare`'s own shape generalised from exactly
        * two tracks to 2-3 branches sharing one `start`. Switching branches
@@ -619,7 +618,7 @@ export type TutorWhiteboardWire =
     }
   | {
       /**
-       * Class II, S10 (/TUTOR_INSTRUMENTS.md §3.3) — NOT ungraded: ONE
+       * Class II — NOT ungraded: ONE
        * `sequence`, server-computed in a single pass, split at `givenCount`
        * into the tutor's shown prefix and the learner's tap-to-reveal
        * suffix. `values` carries steps.length + 1 entries, same as
@@ -636,13 +635,13 @@ export type TutorWhiteboardWire =
     };
 
 /**
- * C.16: the four end-reason closing scripts and the act a completed close
- * names (mirror oracle/src/tutor/sessionClosing.ts; `npm run session-end:check`).
+ * The four end-reason closing scripts and the act a completed close
+ * names (mirror oracle/src/tutor/sessionClosing.ts).
  */
 export type ClosingScript = 'completed' | 'interrupted' | 'learner_left' | 'safety_stop';
 export type EffortAct = 'corroborated' | 'recovered' | 'hint_then_solved' | 'kept_going' | 'talked_through' | 'none';
 
-/** What the closing state shows (Frontend Bible 08 §3–4). */
+/** What the closing state shows. */
 export interface SessionClosingSummary {
   script: ClosingScript;
   effort: EffortAct | null;
@@ -669,13 +668,13 @@ export type ClientMessage =
       attemptNumber?: number;
     }
   | { type: 'adaptation_response'; adaptation: Adaptation; accepted: boolean }
-  /** C.8/C.12: the learner's choice on the stop-or-continue offer. */
+  /** The learner's choice on the stop-or-continue offer. */
   | { type: 'session_end_response'; accepted: boolean }
-  /** C.19: the learner's answer to the check-in: `aligned` = "we're good", false = "not really". */
+  /** The learner's answer to the check-in: `aligned` = "we're good", false = "not really". */
   | { type: 'check_in_response'; aligned: boolean }
-  /** C.15: the learner's answer to the goal restatement: `agreed` = "yes, that's it", false = "something else". */
+  /** The learner's answer to the goal restatement: `agreed` = "yes, that's it", false = "something else". */
   | { type: 'goal_response'; agreed: boolean }
-  /** `recapFirst` (OD-28, M-04): the learner pressed end; the Mentor asks the recap question first. */
+  /** `recapFirst`: the learner pressed end; the Mentor asks the recap question first. */
   | { type: 'end_session'; recapFirst?: true }
   | { type: 'ping' };
 
@@ -697,9 +696,9 @@ export interface SessionSummary {
 }
 
 /**
- * The "what is happening" narrative (/ORACLE.md §12, 2026-09-01) —
+ * The "what is happening" narrative —
  * structured data, not a pre-composed sentence: the CALLER picks the i18n
- * template and grammar for its own locale (/AGENTS.md §1.8 — no user-facing
+ * template and grammar for its own locale (no user-facing
  * string is ever backend-composed), the same convention `intent` and
  * `closeReason` above already follow. The guardian view reads it through
  * `getKidTutorHistory`; the learner reads their own through the transcript
@@ -731,24 +730,21 @@ export interface TranscriptTurn {
   /**
    * V4's live whiteboard, exactly as it was shown — never recomputed. Null
    * on every row that never drew one, including every row written before
-   * this field existed. Found by adversarial review, round 35 (2026-08-30,
-   * HIGH): a session that used the whiteboard lost it silently on replay
+   * this field existed. A session that used the whiteboard lost it silently on replay
    * (see `TutorWhiteboardWire`, above, the same shape this mirrors).
    */
   whiteboard: TutorWhiteboardWire | null;
   /**
    * Tutor v3's tray-demonstration steps, exactly as they were shown — never
    * recomputed. Null on every row that never demonstrated, including every
-   * row written before migration 0067 added the column. Found while
-   * investigating ORACLE.md §19.5's "replaying `demonstrate` animations"
-   * backlog item, 2026-09-01 — the identical gap round 35 found for
+   * row written before migration 0067 added the column. It is the identical gap found for
    * `whiteboard` above, on the tutor's OTHER v3 turn-schema visual field.
    * Reuses `TrayDemoStep` above (the same live-wire shape) rather than a
    * third copy of the same three fields.
    */
   demonstrate: TrayDemoStep[] | null;
   /**
-   * Class III / S17 (TUTOR_INSTRUMENTS.md §3.4, migration 0070): the
+   * Class III (migration 0070): the
    * pre-authored roleplay scene id this turn started, when it started one —
    * the identical live-only-field gap `demonstrate` above closes, closed
    * the same way. Null on every row that never started one, including every

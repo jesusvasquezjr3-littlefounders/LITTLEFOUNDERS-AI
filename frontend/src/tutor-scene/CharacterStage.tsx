@@ -63,7 +63,7 @@ export interface CharacterStageProps {
    * ON: a stage with nothing driving visemes renders no card, so the character
    * keeps its own painted mouth instead of a static one pasted over it.
    *
-   * THE DEBT THIS CARRIES A DUE DATE FOR (/AGENTS.md §1.14): the moment a
+   * THE DEBT THIS CARRIES A DUE DATE FOR: the moment a
    * lesson does drive visemes, the card comes back, and under this surface's
    * dark `auto` rig its tint is under-corrected - it reads as a pale rectangle
    * because `mouthCardTint` corrects for the light rig's irradiance while the
@@ -190,8 +190,7 @@ export function CharacterStage({
    * Rho 6,284 -> 3,204, Liruf 6,268 -> 3,136.
    *
    * That is the difference between one lesson avatar costing a whole Tutor
-   * scene and costing a fifth of one, on the same mid-range phones (/AGENTS.md
-   * §1.0). The override is on the copy handed DOWN, so the canvas governor that
+   * scene and costing a fifth of one, on the same mid-range phones. The override is on the copy handed DOWN, so the canvas governor that
    * resolved the tier is untouched and the diorama keeps its shadows.
    */
   const stageSettings = useMemo(

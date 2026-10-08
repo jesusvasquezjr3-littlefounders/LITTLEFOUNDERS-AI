@@ -122,7 +122,7 @@ export const SessionContextSchema = z
     /** The skill this session was opened about, when it was opened about one. */
     skillKey: z.string().min(1).max(128).nullable().optional(),
     /**
-     * Up to three prior conversations as strict digests (/ORACLE.md §4.1,
+     * Up to three prior conversations as strict digests
      * owner sign-off 2026-08-28). OPTIONAL on the wire so an Oracle deployed
      * ahead of Core degrades to a tutor with no memory rather than to a
      * refused handshake; the sealed context defaults it to empty.
@@ -145,8 +145,8 @@ export const SessionContextSchema = z
     /**
      * Whether Core's OWN read of `learnerBrief` failed, as opposed to this
      * learner genuinely having no memory yet — the same "failure is not
-     * emptiness" distinction `intelDegraded` already makes for `skillStates`
-     * (/AGENTS.md, round 28, 2026-08-30, HIGH). OPTIONAL on the wire, so an
+     * emptiness" distinction `intelDegraded` already makes for `skillStates`.
+     * OPTIONAL on the wire, so an
      * Oracle deployed ahead of Core (which does not send this field yet)
      * defaults to `false` — the same conservative default `learnerBrief`
      * itself already had before this flag existed, not a regression.
@@ -167,7 +167,7 @@ export const SessionContextSchema = z
     /**
      * True for an `admin`/`superadmin` account, which is exempt from the
      * USAGE limits so staff can test the product past the two-sessions-a-day
-     * and twenty-five-minute bounds a learner lives inside (§15.2).
+     * and twenty-five-minute bounds a learner lives inside.
      *
      * OPTIONAL, and that is the deployment story rather than laziness: Core
      * and Oracle deploy independently, so an Oracle that ships first must
@@ -177,17 +177,17 @@ export const SessionContextSchema = z
      * pattern the `sessionPlan`/`kcStates` fields above already use.
      *
      * This reaches the BUDGET only. It is not, and must never become, part
-     * of the model context (§4.1) — `verify:tutor` asserts that context
+     * of the model context — `verify:tutor` asserts that context
      * rejects every unlisted field, and this one has no business shaping how
      * a tutor speaks to anybody.
      */
     isStaff: z.boolean().optional(),
     /** Whether an active guardian voice consent exists RIGHT NOW. */
     voiceConsent: z.boolean(),
-    /** Whether personalization could actually be read (§14: failure != empty). */
+    /** Whether personalization could actually be read (failure != empty). */
     intelDegraded: z.boolean(),
     /**
-     * C.16: the opening this session begins with — the character's greeting,
+     * The opening this session begins with — the character's greeting,
      * or the re-engagement message a silent dropout / a budget interruption
      * in the learner's PREVIOUS session queued for their return. Decided by
      * Core from its own rows (never from transcript text). OPTIONAL on the
@@ -196,7 +196,7 @@ export const SessionContextSchema = z
      */
     opening: z.enum(SESSION_OPENINGS).optional(),
     /**
-     * C.9/C.19 Appendix F Stage 7 AUTOMATIC ROLLBACK: Core's verdict on the
+     * AUTOMATIC ROLLBACK: Core's verdict on the
      * Behavioral Telemetry Layer's kill-switch condition over its trailing
      * window (Default-to-Inaction Rate below the floor, or a check-in that a
      * fired signal never produced). `shadow` means the layer keeps measuring
@@ -206,7 +206,7 @@ export const SessionContextSchema = z
      */
     behavioralTelemetryMode: z.enum(['act', 'shadow']).optional(),
     /*
-     * C.7: the derived projection of this learner's persistent disposition
+     * The derived projection of this learner's persistent disposition
      * profile (help-seeking style, persistence, explanation style, adaptations
      * turned down across sessions, typical reply pace). SERVER-SIDE ONLY: it
      * steers the controller's strategy selection and which written line the
@@ -216,7 +216,7 @@ export const SessionContextSchema = z
      */
     dispositionProfile: DispositionProfileSchema.nullable().optional(),
     /*
-     * C.15: whether THIS persona has worked with this learner before, decided
+     * Whether THIS persona has worked with this learner before, decided
      * by Core from the persistent persona-rapport history: first_meeting,
      * persona_switch, memory_gap or continuing. Null when Core could not say
      * (the ordinary opening, no continuity move). Selects a written line and
@@ -224,7 +224,7 @@ export const SessionContextSchema = z
      */
     allianceContinuity: z.enum(CONTINUITY_KINDS).nullable().optional(),
     /*
-     * C.15 Appendix F Stage 7 AUTOMATIC ROLLBACK: Core's verdict on the
+     * AUTOMATIC ROLLBACK: Core's verdict on the
      * Alliance Controller's kill-switch condition (a persona's bond proxy
      * dropping more than 15% below its baseline, or renegotiations that do not
      * improve sessions). `shadow` suspends the renegotiation trigger and the
@@ -233,7 +233,7 @@ export const SessionContextSchema = z
      */
     allianceMode: z.enum(['act', 'shadow']).optional(),
     /*
-     * C.11 Appendix F Stage 7 AUTOMATIC ROLLBACK: Core's verdict on the
+     * AUTOMATIC ROLLBACK: Core's verdict on the
      * spaced-review router (a recorded routing decision the rule does not
      * reproduce, or in-session re-exposures that systematically never happen
      * before the session ends). `shadow` keeps every routing decision recorded
@@ -242,18 +242,18 @@ export const SessionContextSchema = z
      */
     spacedReviewMode: z.enum(['act', 'shadow']).optional(),
     /*
-     * C.17: this learner's dialogue register — the age band Core derived
+     * This learner's dialogue register — the age band Core derived
      * from its own age evidence (the birth date never travels), the variant
-     * (`calibrated` or the uniform `control`), how it was assigned (the H.7
-     * experiment enrols adults only, OD-23) and the experiment id. SERVER-SIDE
+     * (`calibrated` or the uniform `control`), how it was assigned (the
+     * experiment enrols adults only) and the experiment id. SERVER-SIDE
      * ONLY: it selects the hint ladder and a fixed register note and is never
      * a field of the sealed model context. Null when Core could not decide
      * (the tier fallback applies). OPTIONAL: negotiated.
      */
     dialogueCalibration: DialogueCalibrationSchema.nullable().optional(),
     /*
-     * C.22 / Appendix F Stage 5: this learner's arm of a running Mentor
-     * canary (an adults-only H.7 experiment, target `mentor.canary`), with the
+     * This learner's arm of a running Mentor
+     * canary (an adults-only experiment, target `mentor.canary`), with the
      * proposal it delivers and, for the canary arm, the registered Tier 2
      * parameter overrides. SERVER-SIDE ONLY: it sets three config objects in
      * the orchestrator (tutor/mentorCanary.ts clamps every value to the
@@ -263,8 +263,8 @@ export const SessionContextSchema = z
      */
     canary: MentorCanarySchema.nullable().optional(),
     /*
-     * C.10 Appendix F Stage 7 AUTOMATIC ROLLBACK: the `kc.key`s Core's
-     * Extended Mastery Engine kill switch reverted to the pre-C.10
+     * AUTOMATIC ROLLBACK: the `kc.key`s Core's
+     * Extended Mastery Engine kill switch reverted to the
      * single-observation baseline (a KC whose Mastery Declaration Reversal
      * Rate is over the 8% ceiling, or with a Corroborating-Evidence
      * Compliance miss), held until an operator resolves the logged trip.
@@ -285,9 +285,9 @@ export const SessionContextSchema = z
  * field an older Oracle does not know would make that Oracle refuse every
  * session. Core therefore sends an optional field only when it is named here,
  * which makes the deploy order of the two services irrelevant (found while
- * building C.9, 2026-09-25: C.16's `opening` had been sent unconditionally,
+ * building the telemetry layer, 2026-09-25: the `opening` had been sent unconditionally,
  * so deploying Core before Oracle would have refused every session in the
- * gap). Kept identical to Core's list by `npm run telemetry:check`.
+ * gap). Kept identical to Core's list.
  */
 export const CONTEXT_OPTIONAL_FIELDS = [
   'opening',
@@ -338,7 +338,7 @@ async function coreFetch(path: string, init: RequestInit = {}): Promise<unknown>
  * Resolves everything Oracle is allowed to know about this session.
  *
  * Returns `null` on any failure, and the caller must REFUSE the socket rather
- * than proceeding with defaults. §1.14, stated for this specific case: an
+ * than proceeding with defaults. Stated for this specific case: an
  * unreadable context is not an empty context, and running a session as
  * "tier 2, no consent, no history" because Core hiccuped would silently open
  * a microphone we were never told we could open.
@@ -367,7 +367,7 @@ export interface PersistTurnInput {
   source: 'model' | 'scripted' | 'stt';
   moderation?: Record<string, unknown>;
   /**
-   * C.18: the turn's honesty facts (`tutor/feedbackHonesty.ts`), stored by
+   * The turn's honesty facts (`tutor/feedbackHonesty.ts`), stored by
    * Core in `tutor_turn_honesty` together with its own key-based reveal check
    * against `openSegmentId`'s answer key. Tutor turns only; optional so a
    * Core that predates it simply ignores it (its TurnBody is not strict).
@@ -376,7 +376,7 @@ export interface PersistTurnInput {
   /**
    * V4's live sequence board, when this tutor turn drew one — the SAME
    * object sent over the wire (see `WireWhiteboard`'s own comment), never
-   * recomputed. Found by adversarial review, round 35 (2026-08-30, HIGH):
+   * recomputed. Found by adversarial review:
    * this field did not exist at all, so a session that used the whiteboard
    * lost it silently on replay and on the guardian transcript viewer.
    */
@@ -384,15 +384,14 @@ export interface PersistTurnInput {
   /**
    * Tutor v3's tray-demonstration steps, when this turn carried one — the
    * SAME steps sent over the wire (`WireDemoStep`), never re-derived.
-   * Migration 0067 closed the identical gap round 35 found for `whiteboard`
+   * Migration 0067 closed the identical gap found for `whiteboard`
    * above: this field did not exist at all, so a session where the tutor
    * demonstrated on the money tray lost that fact silently on replay and on
-   * the guardian transcript viewer (found while investigating ORACLE.md
-   * §19.5's "replaying `demonstrate` animations" backlog item, 2026-09-01).
+   * the guardian transcript viewer.
    */
   demonstrate?: WireDemoStep[] | null;
   /**
-   * Class V (migration 0069, TUTOR_INSTRUMENTS.md §3.6): "persist this
+   * Class V (migration 0069): "persist this
    * turn's board as the learner's ongoing plan." Meaningless without
    * `whiteboard` on the same input — `TutorTurnSchema`'s own refine already
    * enforces that upstream of here, so Core's own body validator is what
@@ -400,7 +399,7 @@ export interface PersistTurnInput {
    */
   savePlan?: boolean | null;
   /**
-   * Class III / S17 (TUTOR_INSTRUMENTS.md §3.4, migration 0070): the
+   * Class III (migration 0070): the
    * pre-authored scene id this turn started, when it started one — the SAME
    * live-only-field gap migrations 0058 (`whiteboard`) and 0067
    * (`demonstrate`) already closed, closed the identical way.
@@ -441,7 +440,7 @@ export interface PersistFlagInput {
   handled: 'scripted_response' | 'turn_blocked' | 'session_stopped';
 }
 
-/** Records a safety flag. Guardian-visible (/ORACLE.md §5, migration 0047). */
+/** Records a safety flag. Guardian-visible (migration 0047). */
 export async function persistSafetyFlag(input: PersistFlagInput): Promise<boolean> {
   try {
     const body = await coreFetch('/tutor/internal/flags', {
@@ -473,21 +472,21 @@ export interface CloseSessionInput {
   segmentCount: number;
   costUsd: number;
   /**
-   * C.16: the closing script this ending used — the Session-Closing Script
-   * Accuracy metric (Appendix F §1.2) compares it with `closeReason`.
+   * The closing script this ending used — the Session-Closing Script
+   * Accuracy metric compares it with `closeReason`.
    */
   closingScript: ClosingScript;
-  /** C.16: the opening this session began with (greeting or a queued re-engagement). */
+  /** The opening this session began with (greeting or a queued re-engagement). */
   opening: SessionOpening;
   /**
-   * C.8/C.12: the session-end signal's record — whether it was evaluated at
+   * The session-end signal's record — whether it was evaluated at
    * all, and every firing with its measured deltas, mode and outcome
    * (Early-Warning Signal Trigger Rate). Signal strength only, never an
    * emotional label, and nothing the learner wrote.
    */
   endSignal: SessionEndSignalReport;
   /**
-   * C.9/C.19: the Behavioral Telemetry Layer's record — turns evaluated,
+   * The Behavioral Telemetry Layer's record — turns evaluated,
    * turns acted on (Default-to-Inaction Rate) and every firing with its
    * channel strengths and the check-in's outcome (Disengagement-Repair
    * Initiation Rate). Signal strength only, never an emotional label, and
@@ -495,39 +494,39 @@ export interface CloseSessionInput {
    */
   behavioralTelemetry?: BehavioralTelemetryReport;
   /**
-   * C.15: the Alliance Controller's record — the continuity move, the goal
+   * The Alliance Controller's record — the continuity move, the goal
    * agreement, adaptation offers/accepts/declines, bond references and every
    * renegotiation with its outcome and whether the session improved after
    * it. Labels and counts only. Absent while the controller is off.
    */
   alliance?: AllianceReport;
   /**
-   * C.14: the self-explanation move's record — each prompt's decision
+   * The self-explanation move's record — each prompt's decision
    * source, concept family, variant and quality labels. Never what the
    * learner said. Absent while the move is off.
    */
   selfExplanation?: SelfExplanationReport;
   /**
-   * C.7: what this session contributes to the persistent disposition profile
+   * What this session contributes to the persistent disposition profile
    * (help requests, typical reply pace, adaptations taken or turned down)
    * and which profile effects were applied. Numbers and closed labels only.
    */
   disposition?: DispositionObservation;
   /**
-   * C.11: the spaced-review router's record — every routing decision with
+   * The spaced-review router's record — every routing decision with
    * the inputs the rule read (so Core can re-evaluate it) and its outcome;
    * Core applies the cross-session hand-offs to the learner's memory cards.
    * Ids of our own catalog, labels and numbers only. Absent while off.
    */
   spacedReview?: SpacedReviewReport;
   /**
-   * C.17: the dialogue register this session ran (band, variant, assignment)
+   * The dialogue register this session ran (band, variant, assignment)
    * and what it did (ladder rungs, hint and tell requests, controlling
    * language caught and delivered, pacing offers vs unilateral changes).
    */
   dialogueCalibration?: DialogueCalibrationReport;
   /**
-   * C.22 Stage 5: the canary arm this session actually ran (Core stores it on
+   * The canary arm this session actually ran (Core stores it on
    * the session row for the canary-vs-control reading). Absent when no
    * canary applied, including a refused one.
    */
@@ -542,12 +541,12 @@ export interface CloseSessionInput {
  * see `finish()`'s own comment) already landed, and what this call sent was
  * NOT persisted. `'failed'` — the HTTP call itself failed.
  *
- * Found by adversarial review, round 98 (2026-08-31, MEDIUM): this used to
+ * Found by adversarial review: this used to
  * return a bare `boolean`, `true` for BOTH a real update and a zero-row
  * no-op alike (Core's own `Prefer: return=minimal` made the two
  * indistinguishable at the HTTP layer). `finish()` awaited this and never
  * even read the result, so a lost race reported success with no trace
- * anywhere. See `RUNBOOK.md` Round 98.
+ * anywhere..
  */
 export type CloseSessionOutcome = 'closed' | 'already-closed' | 'failed';
 
@@ -569,13 +568,13 @@ export async function closeSession(input: CloseSessionInput): Promise<CloseSessi
 
 /**
  * Adds an already-spent amount to a session's recorded cost, AFTER the close
- * that wrote it (round 78, 2026-08-30).
+ * that wrote it.
  *
  * `closeSession` above is the session's own economics, read once from the
  * orchestrator at the moment the socket closes. This is for the paid work a
  * session causes but does not finish paying for by then — today exactly one
  * caller, `session/review.ts`, whose model call is fired fire-and-forget after
- * `finish()`/`finalizeParked()` have already persisted `costUsd`. Round 64's
+ * `finish()`/`finalizeParked()` have already persisted `costUsd`. The
  * `noteGenerationCost` covers the other shape (a paid call DURING the
  * session), where the running total is still there to add to.
  *
@@ -615,7 +614,7 @@ const ServedSegmentSchema = z
      * for, which the ladder is free to miss (see `servedDifficultyOf` in
      * `backend/src/routes/tutor.ts`). `null` means the chosen segment declares
      * no usable difficulty, which is a different fact from "band 3" and is
-     * kept distinguishable from it (§1.14).
+     * kept distinguishable from it.
      *
      * OPTIONAL ON PURPOSE, and the direction matters. This object is
      * `.strict()`, so it is the OLD-Oracle-meets-NEW-Core direction that is
@@ -623,7 +622,7 @@ const ServedSegmentSchema = z
      * `null`, and every single activity in every session becomes NO_SEGMENT.
      * Optional here only covers the opposite pairing (this Oracle against a
      * Core that predates the field), so the deploy ORDER is load-bearing —
-     * Oracle first, then Core. Recorded in `RUNBOOK.md` Round 74.
+     * Oracle first, then Core.
      */
     servedDifficulty: z.number().int().min(1).max(5).nullable().optional(),
   })
@@ -642,7 +641,7 @@ const NeedsGenerationSchema = z
   .strict();
 
 /**
- * C.5 / Appendix E §3.1.1(b): Core could not serve from the human-approved
+ * Core could not serve from the human-approved
  * tiers, AND live generation is suspended for this request's content-risk
  * category (the judge is uncalibrated or its calibration is stale, its
  * approval concordance with staff fell below the floor, or staff review fell
@@ -684,14 +683,14 @@ export interface RequestSegmentInput {
   strategy?: string | null;
   /**
    * A hint so the ladder can prefer a VISUAL catalog segment over its own
-   * frontier fallback (ROADMAP.md V4 sprint 2 backlog). Best-effort — Core
+   * frontier fallback. Best-effort — Core
    * still serves whatever it would have otherwise when nothing matches.
    */
   preferredTypes?: readonly string[] | null;
 }
 
 /**
- * Asks Core for the next activity through the content ladder (/ORACLE.md §7).
+ * Asks Core for the next activity through the content ladder.
  *
  * Core owns tiers 1 and 2 because they are database reads, and it owns the
  * VERIFICATION of tier 3 because that means re-running the real graders. What
@@ -724,7 +723,7 @@ export async function requestSegment(
  * Oracle does not get to decide that its own output is good enough. Core runs
  * the deterministic gates and re-executes the answer key with the real
  * graders; only what survives is stored and served, and only what the key
- * re-execution confirmed can pay XP (/ORACLE.md §7.3, §8).
+ * re-execution confirmed can pay XP.
  */
 export async function verifyGeneratedSegment(input: {
   sessionId: string;
@@ -768,7 +767,7 @@ export type VoiceCheckResult = z.infer<typeof VoiceCheckResultSchema>;
 /**
  * v3: deterministic verification of a SPOKEN answer against the open
  * activity's stored key. Core normalizes the words to a number and runs the
- * real grader; the LLM never judges correctness (/ORACLE.md, Tutor v3).
+ * real grader; the LLM never judges correctness.
  *
  * `null` means the call failed — the caller proceeds as a plain conversation
  * turn, which is also what `recognized: false` means. Neither is ever a
@@ -801,7 +800,7 @@ export async function voiceCheck(input: {
 }
 
 /**
- * GAP-FIX-R2: Core's key-based reveal check for a turn's reply chips, before
+ * Core's key-based reveal check for a turn's reply chips, before
  * the turn is delivered (Core `POST /tutor/internal/segments/:id/reveal-check`).
  * One verdict per text: `true` states the open item's answer, `false` does
  * not, `null` not scorable. `null` for the whole call on ANY failure — the
@@ -833,7 +832,7 @@ export async function checkReplyReveal(input: {
  *
  * `expectedBefore` is THIS SESSION'S OWN belief — `learnerBrief.learner`/
  * `.pedagogy`, read at session START — not a value re-derived at write time.
- * Found by adversarial review, round 51 (2026-08-30, MEDIUM): Core's
+ * Found by adversarial review: Core's
  * memory write used to read the CURRENT row itself, immediately
  * before its own compare-and-swap call, and compare against THAT — which by
  * construction always matches whatever is currently stored (barring a
@@ -864,7 +863,7 @@ export async function updateLearnerMemory(input: {
         written: z.record(z.string(), z.boolean()),
         /*
          * THE PARENTAL APPROVAL GATE (Core's `PUT /learner-memory`, migration
-         * 0068, /ORACLE.md §20). For a `kid`, the LEARNER store's proposal
+         * 0068). For a `kid`, the LEARNER store's proposal
          * PARKS as a pending row a verified guardian decides on, so it is
          * correctly absent from `written` — it was not written. It did not
          * FAIL either, and without this third answer a gated write would be
@@ -875,7 +874,7 @@ export async function updateLearnerMemory(input: {
          * — the behaviour this function already had.
          */
         /*
-         * GAP-FIX-R2 (C.4, OD-18): the PEDAGOGY note parks too for every
+         * The PEDAGOGY note parks too for every
          * minor with a reviewer (a verified guardian, or an independent teen
          * reviewing their own notes), so `pending` may name either store.
          * A closed set: a word this client does not know is a drifted Core,
@@ -888,7 +887,7 @@ export async function updateLearnerMemory(input: {
     /*
      * EVERY STORE ACTUALLY ASKED FOR, NOT JUST "DID THE ENVELOPE PARSE".
      *
-     * Found by adversarial review, round 28 (2026-08-30, HIGH): Core answers
+     * Found by adversarial review: Core answers
      * this call with a real 200 even when a per-store write fails — a null
      * store in `input.stores` means "nothing proposed for it" and is
      * correctly absent from `written` (Core's own route: `if (content ===
@@ -931,8 +930,7 @@ export async function updateLearnerMemory(input: {
 
 /**
  * One `PedagogicalController.decide()` outcome, shaped for the wire — the
- * V4 harness backlog's TRAJECTORY EMISSION (ROADMAP.md "Remaining harness
- * phases", /ORACLE.md §20, migration `0065`). See
+ * TRAJECTORY EMISSION (migration `0065`). See
  * `oracle/src/session/trajectory.ts` for where these are accumulated and
  * flushed.
  *
@@ -954,22 +952,22 @@ export interface TrajectoryStepInput {
   misconceptionCode: string | null;
   kcId: string | null;
   kcMode: 'new' | 'review' | 'probe' | 'remediation' | null;
-  /** C.10: the rule a consequential decision's evidence satisfied, or null. */
+  /** The rule a consequential decision's evidence satisfied, or null. */
   evidenceRule: 'mastery' | 'remediation' | 'rescue' | null;
-  /** C.10: consecutive qualifying observations behind it, or null. */
+  /** Consecutive qualifying observations behind it, or null. */
   evidenceObservations: number | null;
-  /** C.10: the corroboration requirement in force for that KC, or null. */
+  /** The corroboration requirement in force for that KC, or null. */
   evidenceRequired: number | null;
-  /** GAP-FIX-R2: which correct answers the evidence chain set aside (travels with the evidence), or null. */
+  /** Which correct answers the evidence chain set aside (travels with the evidence), or null. */
   evidenceDiscounted: 'none' | 'too_fast' | 'hint_assisted' | 'too_fast_and_hint_assisted' | null;
-  /** C.10: this decision withdrew a mastery declared earlier in the session. */
+  /** This decision withdrew a mastery declared earlier in the session. */
   masteryRevoked: boolean;
 }
 
 /**
  * Bulk-persists one session's worth of trajectory steps in ONE call.
  * Fire-and-forget, called only from `session/trajectory.ts` AFTER a session
- * has ended — never on the live turn path (§2.7 of oracle/AGENTS.md: nothing
+ * has ended — never on the live turn path (nothing
  * here claims the socket's turn slot, because nothing here needs to).
  *
  * Same best-effort posture as every other write in this file: `false` means
@@ -1000,7 +998,7 @@ export async function persistTutorTrajectory(input: {
  * `locale` is the CURRENT session's — the language the "¿te acuerdas...?" /
  * "do you remember...?" question was actually asked in — so the query text
  * is parsed with the matching Postgres text-search configuration. Found by
- * adversarial review, round 29 (2026-08-30, HIGH): the search used to
+ * adversarial review: the search used to
  * hardcode Spanish regardless of locale, and Postgres's Spanish stemmer
  * actively mistransforms English/Portuguese words rather than merely
  * leaving them unstemmed — `to_tsvector('spanish','remember')` and
@@ -1032,7 +1030,7 @@ export async function recallOwnHistory(
 }
 
 /**
- * A.1 (FAQ 'cancelTutor': paused at once), F3-identity-site finish: whether
+ * Whether
  * Core still admits this learner's account. 'suspended' only for a kid-role
  * account whose last verified Tutor link is gone. 'unsupported' when Core
  * answers 404 (a Core deployed before the route; the pause is still enforced

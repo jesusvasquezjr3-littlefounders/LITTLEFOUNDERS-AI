@@ -4,7 +4,7 @@ import { api } from '@/lib/api';
 import { MENTOR_CHARACTERS, type MentorCharacter } from '@/rebuild/design/controls';
 
 /*
- * The learner's chosen Mentor, for the learner shell's Mentor tab (OD-6: the
+ * The learner's chosen Mentor, for the learner shell's Mentor tab (the
  * tab shows the chosen character's name and a render of the real model).
  *
  * Read from Core's GET /tutor/preferences, the same record the Mentor stage

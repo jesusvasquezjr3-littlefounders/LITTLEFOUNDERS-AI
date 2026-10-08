@@ -8,14 +8,14 @@ import {
 } from './explanationLexicon.js';
 
 /*
- * C.14 — THE SELF-EXPLANATION PROMPT AS A DISTINCT, NAMED, QUALITY-CHECKED
- * DIALOGUE MOVE (Appendix D §3.3; Appendix F Part 4 phase 3).
+ * THE SELF-EXPLANATION PROMPT AS A DISTINCT, NAMED, QUALITY-CHECKED
+ * DIALOGUE MOVE.
  *
  * Prompting a learner to explain their own reasoning causally improves
  * understanding and transfer (Chi et al., 1989/1994; Aleven & Koedinger,
  * 2002), and a required prompt is gamed with filler ("because it's right")
  * unless it is checked. This object owns the move, independently of the
- * pedagogy controller's strategy math, the same way C.13's hint ladder owns
+ * pedagogy controller's strategy math, the same way the hint ladder owns
  * escalation:
  *
  *   1. A FINANCIAL DECISION POINT is detected by the orchestrator: a graded
@@ -37,14 +37,14 @@ import {
  *      gets the reason stated once by the Mentor, and the lesson moves on —
  *      the move never loops.
  *
- * A reply that states a wrong idea is routed to C.18 (the orchestrator's
+ * A reply that states a wrong idea is routed to the honesty path (the orchestrator's
  * `statedMisconception` path): it is corrected, never praised, and recorded
  * as `misconception`. A help request while the question is open is honoured
- * by the C.13 hint ladder and recorded as `help`.
+ * by the hint ladder and recorded as `help`.
  *
  * Nothing here stores or reports what the learner said: the record is the
  * decision source, the concept family, the prompt variant and the quality
- * labels (Appendix F: Self-Explanation Quality-Check Pass Rate, diagnostic).
+ * labels (Self-Explanation Quality-Check Pass Rate, diagnostic).
  */
 
 export type SelfExplanationMode = 'act' | 'shadow' | 'off';
@@ -60,8 +60,8 @@ export type DecisionSource = (typeof DECISION_SOURCES)[number];
  * `why` after a correct or ungraded decision, `how` after a verified-wrong
  * one (asks for the thinking without implying it was a mistake to explain),
  * `scaffolded` (a sentence stem) for a learner whose disposition profile
- * shows explanations rarely name the idea (C.7) — the scaffolding Appendix D
- * §3.3 names for low-prior-knowledge learners.
+ * shows explanations rarely name the idea — the scaffolding
+ * used for low-prior-knowledge learners.
  */
 export const PROMPT_VARIANTS = ['why', 'how', 'scaffolded'] as const;
 export type PromptVariant = (typeof PROMPT_VARIANTS)[number];
@@ -292,7 +292,7 @@ export class SelfExplanation {
 
   /**
    * Reads the learner's reply to the open question. `misconception` and
-   * `help` are decided by the caller (C.18's reader and C.13's detector run
+   * `help` are decided by the caller (the misconception reader and the hint detector run
    * first); otherwise the quality check decides.
    */
   readReply(text: string, precheck: { misconception: boolean; help: boolean }): ExplanationReading | null {
@@ -349,7 +349,7 @@ export class SelfExplanation {
     }
   }
 
-  /** A safety stop, a closing sequence, the C.19 check-in or C.15 renegotiation took the moment. */
+  /** A safety stop, a closing sequence, the check-in or renegotiation took the moment. */
   supersede(): void {
     const c = this.current;
     if (c === undefined) return;

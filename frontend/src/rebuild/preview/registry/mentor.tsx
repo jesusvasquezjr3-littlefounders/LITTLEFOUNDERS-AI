@@ -10,11 +10,11 @@ import { MENTOR_CHARACTERS, MENTOR_NAMES, type MentorCharacter } from '../../des
 import { framed, standalone, type PreviewRegistry } from './types';
 
 /*
- * Lane 3 (mentor): the Mentor stage (Bible 08) and the Mentor's session
+ * Mentor: the Mentor stage and the Mentor's session
  * surfaces.
  */
 
-/** C.7 preview fixture: a profile with every row populated (closed labels only). */
+/** Preview fixture: a profile with every row populated (closed labels only). */
 const PREVIEW_PROFILE: DispositionSummaryData = {
   exists: true,
   current: true,
@@ -32,7 +32,7 @@ const PREVIEW_PROFILE: DispositionSummaryData = {
 const SCRIPTS = ['completed', 'interrupted', 'learner_left', 'safety_stop'];
 
 /*
- * One <h1> per page (03 §3.2). The session parts are mounted on the Mentor screen, under the top bar that names the
+ * One <h1> per page. The session parts are mounted on the Mentor screen, under the top bar that names the
  * Mentor, so each fixture shows that <h1> (data, as MentorScreen.tsx renders it; ?character=, default Dina). The
  * profile is the whole page here, so its own title is the page's <h1> (an <h2> under Settings or Mentor talks).
  */
@@ -43,14 +43,14 @@ const mentorOf = (params: URLSearchParams): MentorCharacter => {
 const MentorScreenTitle = ({ params }: { params: URLSearchParams }) => <h1 data-copy-role="data">{MENTOR_NAMES[mentorOf(params)]}</h1>;
 
 export const mentorPreviewScreens: PreviewRegistry = {
-  /* W2M.1: the one Mentor stage at full size, in the Mentor screen's stage region (08 §6, §7); see MentorStagePreview. */
+  /* The one Mentor stage at full size, in the Mentor screen's stage region; see MentorStagePreview. */
   'mentor-stage': standalone(({ locale, theme, ageBand, params }) => <MentorStagePreview locale={locale} theme={theme} ageBand={ageBand} params={params} />),
-  /* W2M.2: the Mentor screen (08 §2-§6) in every state from fixtures; see MentorScreenPreview. */
+  /* The Mentor screen in every state from fixtures; see MentorScreenPreview. */
   'mentor-screen': standalone(({ locale, theme, ageBand, params }) => <MentorScreenPreview locale={locale} theme={theme} ageBand={ageBand} params={params} />),
   'mentor-session-end': framed(({ t, locale, theme, params, go }) => <main className="lf-preview lf-preview--mentor-session-end" data-surface="app"
     data-screen="mentor-session-end"><div className="lf-preview-content">
     <MentorScreenTitle params={params} />
-    {/* C.8/C.12 + C.16 fixtures: the stop-or-continue choice and the closing state for ?script=&effort=. */}
+    {/* Fixtures: the stop-or-continue choice and the closing state for ?script=&effort=. */}
     <SessionEndChoice copy={t.mentorSessionEnd} locale={locale} dark={theme === 'dark'} onChoose={() => undefined} />
     <SessionClosing copy={t.mentorSessionEnd} locale={locale} dark={theme === 'dark'}
       script={(SCRIPTS.includes(params.get('script') ?? '') ? params.get('script') : 'completed') as ClosingScript}
@@ -60,19 +60,19 @@ export const mentorPreviewScreens: PreviewRegistry = {
   'mentor-check-in': framed(({ t, locale, theme, params }) => <main className="lf-preview lf-preview--mentor-check-in" data-surface="app"
     data-screen="mentor-check-in"><div className="lf-preview-content">
     <MentorScreenTitle params={params} />
-    {/* C.19 fixture: the two reply chips the stage shows under the Mentor's check-in turn. */}
+    {/* Fixture: the two reply chips the stage shows under the Mentor's check-in turn. */}
     <CheckInChoice copy={t.mentorCheckIn} locale={locale} dark={theme === 'dark'} onAnswer={() => undefined} />
   </div></main>),
   'mentor-goal-check': framed(({ t, locale, theme, params }) => <main className="lf-preview lf-preview--mentor-goal-check" data-surface="app"
     data-screen="mentor-goal-check"><div className="lf-preview-content">
     <MentorScreenTitle params={params} />
-    {/* C.15 fixture: the two chips under the Mentor's goal restatement. */}
+    {/* Fixture: the two chips under the Mentor's goal restatement. */}
     <GoalCheckChoice copy={t.mentorGoalCheck} locale={locale} dark={theme === 'dark'} onAnswer={() => undefined} />
   </div></main>),
   'mentor-alliance-check': framed(({ t, locale, theme, params }) => <main className="lf-preview lf-preview--mentor-alliance-check" data-surface="app"
     data-screen="mentor-alliance-check"><div className="lf-preview-content">
     <MentorScreenTitle params={params} />
-    {/* C.15 fixture: the end-of-session bond proxy for ?script=; ?result=failed shows the retry. */}
+    {/* Fixture: the end-of-session bond proxy for ?script=; ?result=failed shows the retry. */}
     <AllianceCheck copy={t.mentorAllianceCheck} locale={locale} dark={theme === 'dark'}
       script={(SCRIPTS.includes(params.get('script') ?? '')
         ? params.get('script') : 'completed') as 'completed' | 'interrupted' | 'learner_left' | 'safety_stop'}
@@ -80,7 +80,7 @@ export const mentorPreviewScreens: PreviewRegistry = {
   </div></main>),
   'mentor-profile': framed(({ t, locale, theme, params }) => <main className="lf-preview lf-preview--mentor-profile" data-surface="app"
     data-screen="mentor-profile"><div className="lf-preview-content">
-    {/* C.7 fixture: ?audience=own|child and ?state=ready|empty|loading|failed. */}
+    {/* Fixture: ?audience=own|child and ?state=ready|empty|loading|failed. */}
     <DispositionSummary copy={t.mentorProfile} locale={locale} dark={theme === 'dark'}
       audience={params.get('audience') === 'own' ? 'own' : 'child'}
       phase={params.get('state') === 'loading' ? 'loading' : params.get('state') === 'failed' ? 'failed' : 'ready'}

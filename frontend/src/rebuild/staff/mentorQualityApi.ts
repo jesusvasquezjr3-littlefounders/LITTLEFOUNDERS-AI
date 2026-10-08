@@ -1,5 +1,5 @@
 /*
- * The client API layer for C.24, the Mentor-quality dashboard (with C.21's
+ * The client API layer for the Mentor-quality dashboard (with its
  * anomaly flags), used by the rebuilt staff console.
  *
  * Every call goes to Core, the only service the frontend talks to, under the
@@ -8,10 +8,10 @@
  * review (the UI only hides actions a reader cannot take; it never
  * substitutes for that). Hand-mirrored from Core's `routes/admin.ts` and
  * `services/pedagogy/mentorQuality*.ts` (this repo shares no types across
- * packages); `npm run evaluation-loop:check` keeps the vocabularies below
+ * packages). The vocabularies below must stay
  * identical to Core's and the migration's.
  *
- * The rebuilt UI imports nothing from the legacy frontend (Bible 02 rule 23),
+ * The rebuilt UI imports nothing from the legacy frontend,
  * so this layer carries its own envelope-aware call: every response is
  * `{ data, error }`, and anything else is an error, never a guessed success.
  */
@@ -112,7 +112,7 @@ export interface DashboardFlag {
   resolutionNote: string | null;
 }
 
-/** GAP-FIX-R2: the per-release manual audits (Core mentorQuality.ts RELEASE_AUDIT_KINDS; release_audit_results.audit_kind). */
+/** The per-release manual audits (Core mentorQuality.ts RELEASE_AUDIT_KINDS; release_audit_results.audit_kind). */
 export const RELEASE_AUDIT_KINDS = ['dark_pattern', 'variable_ratio', 'reward_framing'] as const;
 export type ReleaseAuditKind = (typeof RELEASE_AUDIT_KINDS)[number];
 
@@ -131,9 +131,9 @@ export interface MentorQualityDashboardData {
   flags: { active: DashboardFlag[]; recentlyResolved: DashboardFlag[] };
   owners: { role: OwnerRole; userId: string; displayName: string | null; assignedAt: string }[];
   viewerOwnerRoles: OwnerRole[];
-  /** GAP-FIX-R2; absent from an older Core. */
+  /** Absent from an older Core. */
   releaseAudits?: ReleaseAuditSummary;
-  /** Signals taken off the registry, with the reason (GAP-FIX-R2); absent from an older Core. */
+  /** Signals taken off the registry, with the reason; absent from an older Core. */
   retiredSignals?: { id: string; requirement: string; reason: string }[];
   reviews: {
     week: string;

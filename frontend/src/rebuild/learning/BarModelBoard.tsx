@@ -13,8 +13,7 @@ import { BarModelVisual, type TapeRow, type TapeSegment } from './pizarron';
 import { solveBarModel } from './v2VisualScorer.generated';
 
 /*
- * M7 bar model (Appendix P Part 1 M7, Part 4.1 and 4.5; Bible 05 §4 Build and
- * §7 "Bar and schema models"; GAP-FIX-R3). The learner builds the bars from
+ * M7 bar model. The learner builds the bars from
  * the text: the board starts empty, the learner adds one bar in parts
  * (part-whole) or two bars to compare (comparison), adds a part or the total
  * bracket, and fills each slot from a slot-by-slot picker (Tab through the
@@ -93,7 +92,7 @@ export function BarModelBoard({ document, segment, onBack, onGrade, sequence }: 
   const index = document.segments.findIndex((item) => item.id === segment.id);
   const previous = document.segments[index - 1];
   const saved = !structure && previous ? builtStructures.get(`${lessonVersionKey(document)}:${previous.id}`) ?? null : null;
-  // Bible 05 §4 / §7: the board starts empty; the learner builds every bar.
+  // The board starts empty; the learner builds every bar.
   const [build, setBuild] = useState<BarBuild>(EMPTY);
   const [value, setValue] = useState(''); const [showTable, setShowTable] = useState(false); const [verdict, setVerdict] = useState<'met' | 'review' | 'unavailable' | null>(null);
   const { pending, grade } = useSingleActiveGrade();
@@ -109,7 +108,7 @@ export function BarModelBoard({ document, segment, onBack, onGrade, sequence }: 
     if (next === undefined) delete slots[slot]; else slots[slot] = next;
     change({ ...build, slots });
   };
-  // Bible 05 §5 / Appendix P Part 5 (GAP-FIX-R7): the typed answer is read for the lesson's locale and sent as its canonical
+  // The typed answer is read for the lesson's locale and sent as its canonical
   // whole number; the bound is the canonical scorer's (every unknown a bar model can hold is at most twice the quantities' sum).
   const domain = { whole: true, max: 2 * p.quantities.reduce((sum, item) => sum + item.value, 0) };
   const typed = readNumberAnswer(value, document.locale, domain).canonical;

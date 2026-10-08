@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { failureOf, type Failure } from './learnHome';
 
 /*
- * W2L.2 (L4): the placement flow's contract with Core (backend/src/routes/placement.ts).
+ * The placement flow's contract with Core (backend/src/routes/placement.ts).
  *
  * STATELESS BY DESIGN, as Core is: there is no quiz session on the server.
  * This flow holds the answers given so far and sends the whole list with
@@ -12,7 +12,7 @@ import { failureOf, type Failure } from './learnHome';
  * reaches the client) and writes nothing until /commit. So going back one
  * answer, a refresh or a dropped connection costs nothing.
  *
- * B.1: the commit is Core's atomic placement transaction. A commit whose
+ * The commit is Core's atomic placement transaction. A commit whose
  * answer was lost is retried with the IDENTICAL body (Core returns the normal
  * result for an identical retry); a different placement already stored is a
  * conflict, and the learner goes to the course, where it applies. Core
@@ -33,7 +33,7 @@ const askSchema = z.object({
   kind: z.literal('ask'), probe: probeSchema, questionNumber: z.number().int().positive(), questionsRemaining: z.number().int().nonnegative(),
   phase: z.enum(['search', 'confirm']),
 });
-/** The result Core describes (describeResult): a start, never a score. `framing` is B.15's closed frame, parsed by the outcome view. */
+/** The result Core describes (describeResult): a start, never a score. `framing` is a closed frame, parsed by the outcome view. */
 export const placementResultSchema = z.object({
   frontier: z.number().int().nonnegative(),
   startLessonId: z.string().nullable(),
@@ -58,7 +58,7 @@ export type PlacementScreen =
 
 /**
  * A step or a save that did not go through. The screen stays as it was, and the learner's own action sends the
- * same request again: the same answers for a step, the identical body for a save (B.1), so no second control
+ * same request again: the same answers for a step, the identical body for a save, so no second control
  * is needed to retry.
  */
 export type PlacementIssue = { kind: 'step' | 'save'; offline: boolean } | null;
@@ -182,7 +182,7 @@ export function usePlacementFlow({ slug, transport, neutralReflection, onPlaced 
     if (!alive.current) return;
     if (error) {
       setPending(null);
-      // B.1: a different placement is already stored for this course; it is the one that applies.
+      // A different placement is already stored for this course; it is the one that applies.
       if (error.code === 'PLACEMENT_ALREADY_COMPLETE') { latest.current.onPlaced(null); return; }
       const end = terminal(error.code);
       if (end) setScreen(end);

@@ -1,5 +1,5 @@
 // Inputs for `content:gates` — every place Forge content and system copy live
-// in the repository, read without any network call (OD-23, zero spend):
+// in the repository, read without any network call (zero spend):
 //
 //   catalog    coursegen/curriculum/<course>/*.yaml — learner-visible titles
 //              and descriptions (all three locales), parent_check coaching
@@ -37,14 +37,14 @@ export interface CatalogString {
 
 const BRIEF_KEYS = new Set([
   'concept', 'learning_objective', 'micro_objective', 'narrative_beat', 'narrative_arc', 'prior_knowledge', 'key_vocabulary', 'reason',
-  // S05.4b authoring contracts: B.11 episode briefs and B.16 market scenarios (generation inputs, never rendered).
+  // Authoring contracts: episode briefs and market scenarios (generation inputs, never rendered).
   'misjudgment', 'recovery', 'scenario', 'universal',
 ]);
 
 function catalogRole(key: string): CopyRole | 'brief' | undefined {
   if (key === 'title' || key === 'title_es') return 'heading';
   if (key === 'description') return 'body';
-  // A coaching tip on the parent's surface (Bible 06 §6 "Parent, coaching tip" is body copy).
+  // A coaching tip on the parent's surface.
   if (key === 'parent_check') return 'body';
   if (BRIEF_KEYS.has(key)) return 'brief';
   return undefined;
@@ -281,8 +281,8 @@ export interface UiString {
 /**
  * Namespaces that are not the product's voice to families. `admin` is the
  * staff console (internal tooling whose ledger/transaction vocabulary is
- * accurate for staff). Subtrees named `legal` are mandated disclosures
- * (Bible 06 §3.3): they are reviewed by Legal (OD-10), not rewritten by a
+ * accurate for staff). Subtrees named `legal` are mandated disclosures:
+ * they are reviewed by Legal, not rewritten by a
  * tone lexicon.
  */
 export const UI_EXCLUDED_NAMESPACES = new Set(['admin.json']);
@@ -335,7 +335,7 @@ export function loadUiSourceLiterals(sourceRoot: string): Array<Omit<UiString, '
   const literal = /'((?:[^'\\\n]|\\.)*)'|"((?:[^"\\\n]|\\.)*)"|`((?:[^`\\]|\\.)*)`/g;
   for (const file of listSourceFiles(sourceRoot)) {
     const source = readFileSync(file, 'utf8');
-    // The learner register policy (B.23/B.25/B.26, mirrored from Core) lists the phrases its detectors REFUSE as
+    // The learner register policy (mirrored from Core) lists the phrases its detectors REFUSE as
     // `word('...')` regular expressions; those patterns are never shown to anyone, so they are not UI copy.
     const detectorLexicon = /learnerRegisterPolicy\.generated\.ts$/.test(file);
     let match: RegExpExecArray | null;

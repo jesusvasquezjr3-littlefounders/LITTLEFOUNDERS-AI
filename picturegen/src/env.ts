@@ -15,12 +15,12 @@ import { z } from 'zod';
 const Env = z.object({
   PORT: z.coerce.number().int().positive().default(4007),
 
-  // Service-to-service auth (/AGENTS.md §1.5) — validates inbound x-internal-api-key.
+  // Service-to-service auth — validates inbound x-internal-api-key.
   INTERNAL_API_KEY: z.string().min(16, 'INTERNAL_API_KEY must be at least 16 chars'),
 
   // Image provider — Qwen-Image-Max on DashScope's synchronous multimodal
   // endpoint. Legacy Qwen-Image variants use async text2image. Decision
-  // RESOLVED (AGENTS.md): Gemini was discarded (image models quota-0).
+  // RESOLVED: Gemini was discarded (image models quota-0).
   IMAGE_API_BASE: z.url().default('https://dashscope-intl.aliyuncs.com'),
   IMAGE_API_KEY: z.string().min(1, 'IMAGE_API_KEY is required'),
   IMAGE_MODEL: z.string().min(1).default('qwen-image-max'),

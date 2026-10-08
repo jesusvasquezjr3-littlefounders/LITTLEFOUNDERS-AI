@@ -29,7 +29,7 @@ function nameKey(curve: GraphFamily, form: GraphForm, name: string): NameKey {
 }
 
 /*
- * F2.4, D14, D27, D12, T01: a curve (line, quadratic or exponential) with a slider for each parameter, drawn on the
+ * A curve (line, quadratic or exponential) with a slider for each parameter, drawn on the
  * Plano plane, and a few dots to bring it through. Each slider is a row of whole steps, so its value is an exact
  * decimal text, never a float. A quadratic in vertex form shows its vertex sliders and sends the standard parameters
  * (b = -2ah, c = ah^2 + k) so Core scores one shape. The browser only draws and counts the dots; Core holds the key.

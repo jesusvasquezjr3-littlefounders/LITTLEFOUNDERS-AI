@@ -57,7 +57,7 @@ export function createApp(): express.Express {
   // Telemetry sits ABOVE the global limiter with its own budget + json
   // parser (events.ts): beacon traffic must not drain the per-IP pool that
   // lessons and auth depend on, and a 429 here is invisible by design.
-  // A.1 (F3-identity-site): a paused child's still-valid access token is refused
+  // A paused child's still-valid access token is refused
   // on every product router, not only on /auth/me (middleware/accountAdmission.ts).
   app.use([...ACTIVE_ACCOUNT_PATHS], requireActiveAccount);
   app.use('/api/v1/events', eventsRouter());
@@ -69,14 +69,14 @@ export function createApp(): express.Express {
   // script (routes/analytics.ts). One call per browser session.
   app.use('/api/v1/analytics', analyticsRouter());
   // Public, unauthenticated: the legacy badge-link read a stranger's browser
-  // hits directly while pre-OD-20 links live (see routes/badgePublic.ts
+  // hits directly while legacy links live (see routes/badgePublic.ts
   // header); retired outright from BADGE_LINK_ROUTE_RETIRES_AT. The sweep
   // beside it is internal-key only.
   app.use('/api/v1/badges', badgePublicRouter());
   app.use('/api/v1/internal/badge-links', badgeLinkSweepRouter());
   app.use('/api/v1/internal/account-deletions', accountDeletionSweepRouter());
   app.use('/api/v1/internal/social-retention', socialRetentionSweepRouter());
-  // H.4: the backup and drift-probe heartbeats and their status (internal key only).
+  // The backup and drift-probe heartbeats and their status (internal key only).
   app.use('/api/v1/internal/ops', opsHeartbeatRouter());
   app.use('/api/v1/internal/learning-retention', learningRetentionSweepRouter());
   app.use('/api/v1/auth', authRouter());
@@ -88,7 +88,7 @@ export function createApp(): express.Express {
   app.use('/api/v1/tutor', tutorRouter());
   app.use('/api/v1/profile', ownProfileRouter());
   app.use('/api/v1/profiles', publicProfilesRouter());
-  // L-04 (OD-27 (1)): teen cooperative goals.
+  // Teen cooperative goals.
   app.use('/api/v1/coop-goals', coopGoalsRouter());
   app.use('/api/v1/admin', adminRouter());
 

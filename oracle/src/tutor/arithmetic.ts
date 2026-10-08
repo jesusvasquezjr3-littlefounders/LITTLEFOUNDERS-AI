@@ -8,7 +8,7 @@
  * in a single breath. Three times in one day of scripted lessons, with a prompt
  * rule against it in place.
  *
- * The blueprint's fourth differentiator is exactly this: correctness is decided
+ * The product's fourth differentiator is exactly this: correctness is decided
  * by computation, never by the model. "Nunca dejes que el LLM sea la fuente de
  * verdad de si una respuesta matemática es correcta." Activities already work
  * this way — a real grader runs against the item's own key. Conversation did
@@ -159,7 +159,7 @@ export function checkAnswer(tutorSaid: string, learnerReplied: string): Verdict 
 /**
  * A TURN THAT ASKS AND ANSWERS ITSELF.
  *
- * The blueprint's §9.4 states it as a hard rule with a number attached: never
+ * It is a hard rule with a number attached: never
  * give the final answer while asking, verified by an output classifier at ≥95%
  * precision. It is the single most self-defeating thing a tutor can do — the
  * child is handed the one act that would have done the teaching.

@@ -53,7 +53,7 @@ export interface SignupInput {
   parentIntent: boolean;
   /** ISO date. Core SCREENS on it and discards it; it is never persisted. */
   birthDate: string;
-  /** S-04 (OD-28): `YYYY-MM` of `birthDate`, sent only for a 13-17 date; Core keeps it so the teen moves to adult at 18. */
+  /** `YYYY-MM` of `birthDate`, sent only for a 13-17 date; Core keeps it so the teen moves to adult at 18. */
   birthMonth?: string;
 }
 
@@ -88,10 +88,10 @@ interface AuthContextValue {
   avatarOptions: Record<string, unknown>;
   /** true once profile+roles for the current session have been fetched (or there is no session) */
   meLoaded: boolean;
-  /** Whether the usage beacon may transmit for this account (/INSIGHTS.md). Kids: only with active guardian consent. */
+  /** Whether the usage beacon may transmit for this account. Kids: only with active guardian consent. */
   analyticsEnabled: boolean;
   /**
-   * A.2, Appendix M 1.1: Core stores the onboarding "how did you hear about us" answer only under the
+   * Core stores the onboarding "how did you hear about us" answer only under the
    * signup-attribution predicate (never an under-13 origin, a kid, or a teen without their own opt-in).
    * False until /auth/me says so, so the survey step is skipped when the answer would be discarded.
    */
@@ -100,11 +100,11 @@ interface AuthContextValue {
   isGuest: boolean;
   /** Whether this account has completed the onboarding wizard. Guest-only concept — a real account is always effectively "onboarded" via signup, never redirected to /onboarding regardless of this flag. */
   onboardingComplete: boolean;
-  /** A.1: Core answered /auth/me with ACCOUNT_SUSPENDED (last verified guardian link gone) — sessions were revoked; the shell shows the suspended screen. */
+  /** Core answered /auth/me with ACCOUNT_SUSPENDED (last verified guardian link gone) — sessions were revoked; the shell shows the suspended screen. */
   suspended: boolean;
-  /** A.1: Core answered /auth/me with ACCOUNT_DELETED (90-day suspension window ended). */
+  /** Core answered /auth/me with ACCOUNT_DELETED (90-day suspension window ended). */
   deleted: boolean;
-  /** E.6: a self-service deletion scheduled for this account (pending or held by a safety review); the shell shows the deletion screen with the date and the keep action. Display-only: Core decides. */
+  /** A self-service deletion scheduled for this account (pending or held by a safety review); the shell shows the deletion screen with the date and the keep action. Display-only: Core decides. */
   accountDeletion: PendingAccountDeletion | null;
   /** Start using the platform with zero signup friction (Duolingo-style guest). */
   startGuestSession(input?: { under13Origin: true }): Promise<{ error: ApiError | null; analyticsEnabled: boolean }>;
@@ -223,7 +223,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (sessionRef.current !== current) return null;
       // Let the caller surface a temporary API failure and retry; a missing
       // token would leave token-gated screens waiting indefinitely.
-      // A paused child's refresh is refused for good (A.1): drop it like an expired one.
+      // A paused child's refresh is refused for good: drop it like an expired one.
       if (error && error.code !== 'UNAUTHORIZED' && error.code !== 'ACCOUNT_SUSPENDED') return current;
       const next = data?.session ? toStored(data.session) : null;
       persist(next);
@@ -267,7 +267,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       accountDeletion?: unknown;
     }>('/auth/me', { token });
     if (stale()) return { newAccount: false, analyticsEnabled: false };
-    // A.1: Core already revoked the sessions for a suspended or purged kid —
+    // Core already revoked the sessions for a suspended or purged kid —
     // the shell must land on the dedicated screen, not a half-signed-in app.
     if (error && (error.code === 'ACCOUNT_SUSPENDED' || error.code === 'ACCOUNT_DELETED')) {
       persist(null);
@@ -342,7 +342,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
   }, [getToken, loadMe]);
 
-  // A.1 (F3-identity-site): any Core route may answer ACCOUNT_SUSPENDED; the
+  // Any Core route may answer ACCOUNT_SUSPENDED; the
   // session is dropped at once and the shell lands on the paused screen.
   useEffect(() => {
     const onSuspended = () => {
@@ -432,7 +432,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const signup = useCallback(
     async (input: SignupInput) => {
       // Attribution: carry the first-party visitor id so Core can link this
-      // signup to the channel that produced it (/INSIGHTS.md §7). Null
+      // signup to the channel that produced it. Null
       // without cookie consent — attribution is opt-in like everything else.
       const anonId = getAnonId() ?? undefined;
       const { data, error } = await api<{ session: SessionPayload | null; confirmationRequired: boolean }>(
@@ -495,7 +495,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // next account this one's shelf. The cache checks the user id too, but one
     // child seeing another's progress is not a thing to leave to a single guard.
     clearCoursesCache();
-    // GAP-FIX-R5: a pending second-Tutor invite belongs to whoever opened the link, never to the next account here.
+    // A pending second-Tutor invite belongs to whoever opened the link, never to the next account here.
     persist(null);
     setProfile(null);
     setRoles([]);

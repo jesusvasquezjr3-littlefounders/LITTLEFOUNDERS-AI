@@ -81,7 +81,7 @@ export type TutorFraming = LegacyFraming;
  * Where a character's head is, and which way they face.
  *
  * Solved by the placement pass rather than authored — the same reason a new
- * diorama needs no coordinates (§5). Structurally identical to the shot
+ * diorama needs no coordinates. Structurally identical to the shot
  * vocabulary's `ShotSubject`, and deliberately the same type: the placement
  * solver's output IS the camera's input, and two shapes that must agree are
  * better as one.
@@ -120,16 +120,16 @@ export interface TutorSceneProps {
   action?: CharacterAction;
   actionKey?: number;
   /**
-   * Class III `point_at` (2026-09-04): a resolved screen-position bias for
+   * `point_at` (2026-09-04): a resolved screen-position bias for
    * `action: "point"`, broadcast the same way `action` itself is — see
    * `Character3D.tsx`'s own comment on why this is pre-resolved rather than
    * read from the DOM inside the per-frame loop.
    */
   pointBearing?: PointBearing | null;
   /**
-   * Class III / S17 `roleplay`: a per-character OVERRIDE of `emotion`/
+   * `roleplay`: a per-character OVERRIDE of `emotion`/
    * `action`/`actionKey` above, keyed by character id. Absent (the default,
-   * every caller before S17) means every standing character keeps sharing
+   * every earlier caller) means every standing character keeps sharing
    * the one broadcast pose exactly as before — this is additive, not a
    * second system. Present only for the character(s) a roleplay scene is
    * currently driving independently; everyone else still reads the shared
@@ -139,7 +139,7 @@ export interface TutorSceneProps {
    */
   perCharacter?: Partial<Record<CharacterId, { emotion?: CharacterEmotion; action?: CharacterAction; actionKey?: number }>>;
   /**
-   * Class III / S17 `presence`: the learner's own DiceBear avatar
+   * `presence`: the learner's own DiceBear avatar
    * (`toDataUri()`, see `components/Avatar.tsx`), rendered as a small
    * camera-facing billboard beside the standing cast — see
    * `AvatarBillboard.tsx`'s own header for why a billboard rather than a
@@ -148,7 +148,7 @@ export interface TutorSceneProps {
    */
   presenceAvatarUri?: string | null;
   /**
-   * Class III / S18 `props`, generalized (2026-09-04): which props to place
+   * `props` (2026-09-04): which props to place
    * on the island, in solve order. Unlike `presence`, this DOES take a real
    * placement-solver pass per entry (`propPlacement.ts`'s `findPropSpot`) —
    * a prop has a real footprint a character must not stand inside, which a
@@ -158,7 +158,7 @@ export interface TutorSceneProps {
    * solve excludes all of them. Absent or empty (every caller before this
    * generalization) reproduces today's cast solve byte-for-byte: no prop is
    * solved, no exclusion is composed, nothing about where characters stand
-   * changes from before S18.
+   * changes from before props existed.
    */
   props?: readonly PropKind[];
   /**
@@ -176,7 +176,7 @@ export interface TutorSceneProps {
   characterSpeaking?: boolean;
   /**
    * Index into VISEMES (mouthAtlas.ts), for characters that have a mouth card.
-   * This is the seam lip-sync plugs into — see /TUTOR_3D.md §7.1.
+   * This is the seam lip-sync plugs into.
    */
   viseme?: number;
   /**
@@ -202,8 +202,8 @@ export interface TutorSceneProps {
    * Present means the personalization audition: the whole catalog stands on the
    * island at once, so that choosing a tutor is looking at people rather than
    * reading name plates hung over empty ground, which is what the stage marks
-   * were before this existed (/ORACLE.md §10 — "tapping the character on the
-   * island").
+   * were before this existed (tapping the character on the
+   * island).
    *
    * It is a BUDGET decision as well as a design one. Four characters measure
    * 106,208 triangles against a 220,000 per-frame ceiling, which fits on either
@@ -229,7 +229,7 @@ export interface TutorSceneProps {
    * instrument panel. This one fires only when a DECISION changes, because the
    * HUD outside the canvas has one of its own to make: the Lumen material's
    * `backdrop-filter` is compositor work, so it is the one quality setting the
-   * renderer cannot apply itself (/DESIGN.md §Lumen → The blur, profiled).
+   * renderer cannot apply itself.
    */
   onQuality?: (settings: QualitySettings) => void;
 }
@@ -490,9 +490,9 @@ function Cast({
   pointBearing?: PointBearing | null;
   /** See `TutorSceneProps.perCharacter`'s own comment. */
   perCharacter?: Partial<Record<CharacterId, { emotion?: CharacterEmotion; action?: CharacterAction; actionKey?: number }>>;
-  /** See `TutorSceneProps.presence`'s own comment (Class III / S17). */
+  /** See `TutorSceneProps.presence`'s own comment. */
   presenceAvatarUri?: string | null;
-  /** See `TutorSceneProps.props`'s own comment (Class III / S18, generalized). */
+  /** See `TutorSceneProps.props`'s own comment. */
   props: readonly PropKind[];
   characterSpeaking: boolean;
   viseme: number;
@@ -517,7 +517,7 @@ function Cast({
    * up once four people have to fit: Dina and Liruf genuinely need 2.61 m, and
    * applying that to Rho and Zara reserves three times the ground they occupy.
    * Measured on the 6.5 m island, that left two of the four candidates with NO
-   * SPOT FOUND (`npm run verify:placement`).
+   * SPOT FOUND.
    */
   const footprints = useMemo(
     () => standing.map((id) => characterFootprintM(CHARACTER_ASSETS[id])),
@@ -560,7 +560,7 @@ function Cast({
     if (!ground) return;
 
     /*
-     * Class III / S18 `props`, generalized: solved BEFORE the cast, and with
+     * `props`: solved BEFORE the cast, and with
      * the UNMODIFIED `isWalkable` — props answer to the island alone, never
      * to who happens to be standing on it, which is what keeps their spots
      * stable across an ordinary re-solve (a character joining or leaving
@@ -571,10 +571,10 @@ function Cast({
      * is empty for every caller before this generalization and for an
      * ordinary conversation today, and in that case this is a no-op — the
      * character solve below then runs against the plain `isWalkable`,
-     * byte-identical to every session before S18.
+     * byte-identical to every session without props.
      */
     /*
-     * 08 §2: the lead's face and hands are never behind the scenery in the
+     * The lead's face and hands are never behind the scenery in the
      * stage's close-ups. The island is one mesh, so the gate is a raycast from
      * each stage camera (`occlusion.ts`); not during an audition, whose shot is
      * the wide `approach` and whose cast is a ring.
@@ -644,8 +644,7 @@ function Cast({
          * `roleplay.active`, which only exists during `conversing`, a
          * different phase from `personalizing`'s audition entirely) — so
          * this is a real, checked boundary on a combination that cannot
-         * occur today, not a silent gap in the one this sprint's own
-         * acceptance bar actually asks for.
+         * occur today, not a silent gap.
          */
         isWalkable: audition ? isWalkable : propsIsWalkable,
         clearance: castClearanceM(footprints),
@@ -659,7 +658,7 @@ function Cast({
      * every unrelated re-render. Two primitive strings compare by VALUE, so
      * this is correct regardless of whether any given caller remembers to
      * memoize its own array — the same "reads nothing above the thing being
-     * measured" preference `/AGENTS.md` §1.14 already states for exactly
+     * measured" preference for exactly
      * this class of bug, applied here without requiring caller discipline.
      */
   }, [groundRef, standing, footprints, audition, isWalkable, activeProps.join(',')]);
@@ -678,11 +677,11 @@ function Cast({
    * each character radially OUTWARD from the island's centre, on the stated
    * theory that outward is "toward a camera orbiting outside it". The camera
    * does not orbit: it stands at ONE bearing, so outward faces the viewer only
-   * for the arc of the island nearest them. Measured with
-   * `npm run verify:placement`, three of the four personalization candidates
+   * for the arc of the island nearest them. Measured on the 6.5 m island,
+   * three of the four personalization candidates
    * stood with their BACKS to the learner on `diorama-a`, and an ordinary
    * two-person session on `diorama-b` turned the tutor 101 degrees away for the
-   * whole conversation. Moving it out bought the gate that now fails on it.
+   * whole conversation. Moving it out fixed it.
    *
    * `STAGE_BEARING` is a constant of the stage — the direction it is composed
    * to be seen from, derived from the placement solver's own `preferDirection`
@@ -756,7 +755,7 @@ function Cast({
       */}
       {posed.map(({ id, spot, facing }) => {
         // Undefined for every character a roleplay scene is not currently
-        // driving — same broadcast pose as before S17, per-field.
+        // driving — same broadcast pose as before, per-field.
         const override = perCharacter?.[id];
         return (
           <Suspense key={id} fallback={null}>
@@ -779,7 +778,7 @@ function Cast({
       {presenceAvatarUri &&
         (() => {
           /*
-           * Class III / S17 `presence`: a small, fixed offset from whoever is
+           * `presence`: a small, fixed offset from whoever is
            * LAST in `standing` (the companion, when one is set — the lead
            * otherwise, per `cast.ts`'s own `[character, companion]` order) —
            * not its own placement-solver pass. The solver is built around
@@ -804,7 +803,7 @@ function Cast({
         })()}
       {propSpots.map(([kind, spot]) => {
         /*
-         * Class III / S18 `props`, generalized: EVERY solved prop faces the
+         * `props`: EVERY solved prop faces the
          * SAME anchor `presence` already uses (the last posed cast member)
          * — same `atan2(dx, dz)` convention `facing.ts` itself uses to turn
          * a character toward a point, applied here so each prop's own front
@@ -889,7 +888,7 @@ function sameFocus(a: SpeakerFocus | null, b: SpeakerFocus | null): boolean {
  * The guard is not defensive tidiness. `Cast` builds a fresh array every time
  * its memo re-runs, and this state feeds props that feed other effects; without
  * it, a value that has not actually changed still produces a new identity,
- * which is precisely the render-loop generator frontend/AGENTS.md records.
+ * which is precisely a render-loop generator.
  */
 function samePlacements(a: readonly CastPlacement[], b: readonly CastPlacement[]): boolean {
   if (a === b) return true;
@@ -949,8 +948,7 @@ export function TutorScene({
   /*
    * The tier, announced OUTWARD, because one quality decision cannot be applied
    * in here: Lumen's `backdrop-filter` is compositor work on DOM that is a
-   * sibling of the canvas, not a three.js setting (/DESIGN.md §Lumen → The
-   * blur, profiled). Fires on a tier change, which is a handful of times a
+   * sibling of the canvas, not a three.js setting. Fires on a tier change, which is a handful of times a
    * session at most — `onStats` is the per-second telemetry feed and this is
    * not it.
    */
@@ -967,8 +965,7 @@ export function TutorScene({
 
   /*
    * WHO IS ON THE ISLAND, in the order their marks are assigned — the rule
-   * itself lives in `cast.ts` so `npm run verify:placement` can sweep the same
-   * one the product uses rather than its own copy of it.
+   * itself lives in `cast.ts` so there is one copy of it.
    */
   const auditionIds = audition && audition.length > 0 ? audition : null;
   const standing = useMemo<readonly CharacterId[]>(

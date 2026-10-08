@@ -1,7 +1,7 @@
 import type { Locale } from '../../design/copyBudget';
 
 /*
- * Horizonte F1.0: the words of the model for the twelve reading charts. The chart
+ * The words of the model for the twelve reading charts. The chart
  * model (chartModel.generated.ts) names a computed column or a read part with a
  * `~` prefix ("~median", "~low 80%"); the author's own labels never start with
  * one (chartProblem refuses it). The browser says each word in the learner's

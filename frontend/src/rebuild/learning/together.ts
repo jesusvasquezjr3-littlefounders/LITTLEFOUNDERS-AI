@@ -2,17 +2,15 @@ import { z } from 'zod';
 import { failureOf, type Failure } from './learnHome';
 
 /*
- * L-04 (owner decision OD-27 (1)): teen cooperative goals, the client side of
+ * Teen cooperative goals, the client side of
  * /api/v1/coop-goals. Core and the database decide everything: who may take
  * part (13 to 17, a Tutor's opt-in for a parent-created child), who may be
  * asked (mutual connections of every member), the group size, the group total.
  * The client validates the shape and renders it; it never re-derives a rule.
  * A malformed answer is unavailable, never partly shown. Transport is
- * injected, so this module imports nothing from the legacy app (Bible 02
- * rule 23).
+ * injected, so this module imports nothing from the legacy app.
  *
- * There is nothing here to send a person: no text field, no note, no message
- * (E.10). The only progress is the group total; no member has a number.
+ * There is nothing here to send a person: no text field, no note, no message. The only progress is the group total; no member has a number.
  */
 
 export interface TogetherTransport {

@@ -33,7 +33,7 @@ export interface SolidViewerProps {
 }
 
 /**
- * The OD-35 solids viewer: fixed views only, arrow keys and four buttons snap between them, and the SVG draws every view the 3D chunk can.
+ * The solids viewer: fixed views only, arrow keys and four buttons snap between them, and the SVG draws every view the 3D chunk can.
  * Other boards embed it by passing the state they own; it holds none, so a lesson can read or reset the view.
  */
 export function SolidViewer({ solid, view, onViewChange, labels, name, description, renderMode = 'auto', locale = 'en-US' }: SolidViewerProps) {

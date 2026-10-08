@@ -61,9 +61,8 @@ export const SITE = {
   languageNames: { 'en-US': 'English', 'es-MX': 'Spanish (Mexico)', 'pt-BR': 'Portuguese (Brazil)' },
   twitter: null, // No verified account yet — an invented @handle is worse than none.
   /*
-   * Browser chrome and the web app manifest, in the rebuilt tokens (Frontend
-   * Bible 02 D8: one system for marketing too). check-seo-surface fails on any
-   * value that is not a colour in frontend/src/rebuild/design/tokens.css.
+   * Browser chrome and the web app manifest, in the rebuilt tokens: every
+   * value is a colour in frontend/src/rebuild/design/tokens.css.
    */
   themeColor: '#5c55fd', // --primary
   manifestBackground: '#0b0d1b', // --base (dark), the splash behind the icon
@@ -148,8 +147,7 @@ export const CARD_KICKER = {
  *
  * So: bump the date when the page's CONTENT changes for a reader. Not when the
  * build runs, not when a title is reworded. Six pages, changed rarely — a hand
- * date that is right beats an automatic one that is wrong. `seo:check` refuses
- * a malformed or future date.
+ * date that is right beats an automatic one that is wrong.
  */
 export const PAGES = [
   {

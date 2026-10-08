@@ -1,4 +1,4 @@
-// Curriculum catalog loader — COURSE_ENGINE.md §3.
+// Curriculum catalog loader
 //
 // Loads taxonomy.yaml + facts.yaml + catalog.yaml from a course directory,
 // resolves the adventure files catalog.yaml points at (relative to
@@ -45,7 +45,7 @@ export interface CourseCatalog {
   taxonomy?: TaxonomyFile;
   facts?: FactsFile;
   catalog?: CatalogFile;
-  /** Optional concepts.yaml (B.17 concept registry). */
+  /** Optional concepts.yaml (concept registry). */
   concepts?: ConceptsFile;
   adventures: LoadedAdventure[];
 }
@@ -56,13 +56,13 @@ export interface LoadResult {
   course: CourseCatalog;
 }
 
-// Coverage-oracle quotas (COURSE_ENGINE.md §3 + §3.1 spaced-review layer) —
+// Coverage-oracle quotas (including the spaced-review layer) —
 // deviations are WARNINGS, never errors. Shape per adventure: 5 sagas
 // (4 teaching + 1 review); the review saga carries 6 review_quest topics;
 // every topic carries 4 lessons.
 //
 // Teaching-saga topic count is POSITION-AGNOSTIC breadth-generalized
-// (§3.1's "sanctioned teaching-breadth expansion"): a teaching saga carries
+// (a sanctioned teaching-breadth expansion): a teaching saga carries
 // EITHER 6 teaching topics (tier1 adventures 1-5, 152 lessons/adventure) OR
 // 8 teaching topics (tier2 adventures 6-8, 184 lessons/adventure) — in both
 // cases the 2 review topics (review_spaced then review_interleaved) are
@@ -75,14 +75,14 @@ const TEACHING_TOPIC_COUNT_OPTIONS = [6, 8] as const;
 const REVIEW_TOPICS_PER_TEACHING_SAGA = 2;
 const EXPECTED_REVIEW_SAGA_TOPICS = 6;
 const EXPECTED_LESSONS_PER_TOPIC = 4;
-// Course total (COURSE_ENGINE.md §3.1): 5 tier1 adventures × 152 + 3 tier2
+// Course total: 5 tier1 adventures × 152 + 3 tier2
 // adventures × 184 = 1,312 lessons (864 teaching + 448 review, ~34%
 // consolidation). The per-adventure total is no longer a hardcoded per-tier
 // lookup (that broke the moment a course introduces tier3 or any other age
 // tier, or simply structures an adventure differently) — it's COMPUTED from
 // the adventure's own actual saga/topic kinds below: (teaching-saga topics +
 // review-saga topics) × EXPECTED_LESSONS_PER_TOPIC. This reproduces 152/184
-// exactly for the tier1/tier2 shapes in §3.1 and generalizes to any tier.
+// exactly for the tier1/tier2 shapes and generalizes to any tier.
 
 function readYaml(filePath: string): { data: unknown; error?: string } {
   if (!existsSync(filePath)) return { data: undefined, error: 'file not found' };
@@ -128,7 +128,7 @@ export function loadCourseCatalog(courseDir: string): LoadResult {
     else issues.push(...zodIssuesToLoadIssues(factsPath, parsed.error.issues));
   }
 
-  // ---- concepts.yaml (optional, B.17 concept registry) ----
+  // ---- concepts.yaml (optional concept registry) ----
   const conceptsPath = path.join(courseDir, 'concepts.yaml');
   if (existsSync(conceptsPath)) {
     const conceptsRaw = readYaml(conceptsPath);
@@ -214,7 +214,7 @@ export function loadCourseCatalog(courseDir: string): LoadResult {
       }
     }
 
-    // ---- quota warning: sagas per adventure, kind-aware (COURSE_ENGINE §3.1) ----
+    // ---- quota warning: sagas per adventure, kind-aware ----
     if (data.sagas.length !== EXPECTED_SAGAS_PER_ADVENTURE) {
       issues.push({
         level: 'warning',
@@ -242,7 +242,7 @@ export function loadCourseCatalog(courseDir: string): LoadResult {
     }
 
     // ---- total lesson count: computed from actual saga/topic kinds, never
-    // a hardcoded per-tier table (§3.1b — that table breaks the instant a
+    // a hardcoded per-tier table (that table breaks the instant a
     // tier3 course lands, or any course structures an adventure
     // differently). expected = (teaching-saga topics + review-saga topics)
     // × EXPECTED_LESSONS_PER_TOPIC — reproduces 152/184 exactly for the
@@ -265,7 +265,7 @@ export function loadCourseCatalog(courseDir: string): LoadResult {
         message:
           `adventure "${data.adventure.slug}" (age_tier=${data.adventure.age_tier}) has ${totalLessonsInAdventure} ` +
           `total lesson blueprints (expected ${expectedTotalLessons} = ${teachingSagaTopicCount + reviewSagaTopicCount} ` +
-          `topics × ${EXPECTED_LESSONS_PER_TOPIC}, computed per COURSE_ENGINE.md §3.1)`,
+          `topics × ${EXPECTED_LESSONS_PER_TOPIC})`,
       });
     }
 
@@ -281,7 +281,7 @@ export function loadCourseCatalog(courseDir: string): LoadResult {
       sagaSlugsSeen.add(saga.slug);
 
       if (saga.kind === 'teaching') {
-        // Position-agnostic breadth generalization (§3.1): total topics is
+        // Position-agnostic breadth generalization: total topics is
         // EITHER 6 teaching + 2 review = 8, OR 8 teaching + 2 review = 10.
         const validTotals = TEACHING_TOPIC_COUNT_OPTIONS.map((n) => n + REVIEW_TOPICS_PER_TEACHING_SAGA);
         if (!validTotals.includes(saga.topics.length as (typeof validTotals)[number])) {
@@ -301,7 +301,7 @@ export function loadCourseCatalog(courseDir: string): LoadResult {
             file: adventurePath,
             message:
               `saga "${saga.slug}" (kind=teaching) has ${teachingTopicCount} teaching-kind topics ` +
-              `(expected ${TEACHING_TOPIC_COUNT_OPTIONS.join(' or ')} — tier2 sagas may use the wider breadth, COURSE_ENGINE.md §3.1)`,
+              `(expected ${TEACHING_TOPIC_COUNT_OPTIONS.join(' or ')} — tier2 sagas may use the wider breadth)`,
           });
         }
 
@@ -367,7 +367,7 @@ export function loadCourseCatalog(courseDir: string): LoadResult {
           });
         }
 
-        // ---- parent_check is teaching-topics territory (§3.2) — a review-kind
+        // ---- parent_check is teaching-topics territory — a review-kind
         // topic carrying one is a content-design smell, not a hard error.
         if (topic.parent_check !== undefined && topic.kind !== 'teaching') {
           issues.push({
@@ -413,8 +413,8 @@ export function loadCourseCatalog(courseDir: string): LoadResult {
             }
           }
 
-          // QA/authoring override (COURSE_ENGINE.md §4 addendum) — every
-          // forced_types entry must be a real LESSON_ENGINE segment type id.
+          // QA/authoring override — every
+          // forced_types entry must be a real lesson-contract segment type id.
           if (lesson.forced_types) {
             for (const type of lesson.forced_types) {
               if (!ALL_TYPES.includes(type)) {
@@ -436,10 +436,10 @@ export function loadCourseCatalog(courseDir: string): LoadResult {
   // adventure file loaded above) ----
   const sagaPaths = new Set<string>();
   const topicPaths = new Set<string>();
-  // Global ordering tuples — used ONLY by prerequisites' earlier-only check
-  // (§3.2). review_of does NOT get this check added retroactively here: it
+  // Global ordering tuples — used ONLY by prerequisites' earlier-only check.
+  // review_of does NOT get this check added retroactively here: it
   // predates `prerequisites`, ships in the currently-authored curriculum,
-  // and COURSE_ENGINE.md's backward-compat contract for this change is that
+  // and the backward-compat contract for this change is that
   // existing kind/review_of catalogs keep validating exactly as before.
   const sagaPosition = new Map<string, { advPosition: number; sagaPosition: number }>();
   const topicPosition = new Map<string, { advPosition: number; sagaPosition: number; topicPosition: number }>();
@@ -492,7 +492,7 @@ export function loadCourseCatalog(courseDir: string): LoadResult {
     }
   }
 
-  // ---- prerequisites: resolve + earlier-only rule (§3.2) — a topic may
+  // ---- prerequisites: resolve + earlier-only rule — a topic may
   // not list itself or later/same-position material as a prerequisite.
   for (const { file, data } of course.adventures) {
     for (const saga of data.sagas) {
@@ -546,7 +546,7 @@ export function loadCourseCatalog(courseDir: string): LoadResult {
     }
   }
 
-  // ---- B.17: once a concept registry exists, every declared concept id must be in it ----
+  // ---- once a concept registry exists, every declared concept id must be in it ----
   if (course.concepts) {
     const registry = course.concepts.concepts;
     for (const adventure of course.adventures) {
@@ -587,7 +587,7 @@ export function loadCourseCatalog(courseDir: string): LoadResult {
 // of every teaching topic they resolve to — a saga path expands to ALL of
 // that saga's topics, a topic path resolves to just that topic. Used by
 // pipeline/plan.ts + pipeline/write.ts to ground review lessons in their
-// sources (COURSE_ENGINE.md §3.1). Assumes `course` already passed
+// sources. Assumes `course` already passed
 // `loadCourseCatalog` with `ok: true` (paths resolve) — unresolved refs are
 // silently skipped here since loader-time validation already reports them.
 
@@ -627,19 +627,19 @@ export function resolveReviewSources(course: CourseCatalog, reviewOf: readonly s
   return sources;
 }
 
-// ---- cross-course `requires` validation (COURSE_ENGINE.md §3.1b) ----------
+// ---- cross-course `requires` validation ----------
 //
 // `catalog.yaml`'s optional `course.requires: [course-slug]` is the
 // course-level prerequisite edge for future placement/unlock (the course
-// SEQUENCE table in §3.1b: entrepreneurship requires financial-education;
+// sequence: entrepreneurship requires financial-education;
 // investing requires financial-education + entrepreneurship). A single
 // `loadCourseCatalog(courseDir)` call only ever sees ONE course directory,
 // so it cannot resolve this — it runs as a separate pass, over every
 // `LoadResult` the caller already collected by scanning
 // `coursegen/curriculum/` (or an explicit list of course dirs for tests).
 //
-// Sibling courses may be authored out of order or mid-flight (§3.1b's own
-// sequence table is a target end-state, not a same-commit guarantee) — a
+// Sibling courses may be authored out of order or mid-flight (the course
+// sequence is a target end-state, not a same-commit guarantee) — a
 // required course absent from the scanned set is a WARNING, never a crash
 // or a hard error. A cycle in the `requires` graph is also a warning: it's
 // not a runtime dependency today (nothing resolves/enforces it at
@@ -708,7 +708,7 @@ export function crossValidateRequires(results: readonly LoadResult[]): LoadIssue
   return issues;
 }
 
-// ---- multi-course scan orchestration (COURSE_ENGINE.md §3.1b) -------------
+// ---- multi-course scan orchestration -------------
 //
 // Pure — no filesystem discovery of `coursegen/curriculum/`, no console
 // output, no `process.exit`. `catalog/check.ts` (the CLI) does discovery +

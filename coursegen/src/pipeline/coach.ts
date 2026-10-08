@@ -6,9 +6,9 @@
 // Deliberately: offline, free (zero LLM calls), deterministic, and
 // PROPOSE-ONLY. The apply step is a human editing the playbook/prompts/gates
 // in a normal commit — the system never grades its own homework into
-// kid-facing content (§1.9), and judge scores are treated as defect POINTERS,
+// kid-facing content, and judge scores are treated as defect POINTERS,
 // never as an optimization target (their run-over-run noise floor is ±0.4
-// with binary flips on identical content — coursegen/AGENTS.md #15; a loop
+// with binary flips on identical content; a loop
 // that chases score deltas is Goodhart bait).
 
 import type { RunCheckpoint } from './checkpoint.js';

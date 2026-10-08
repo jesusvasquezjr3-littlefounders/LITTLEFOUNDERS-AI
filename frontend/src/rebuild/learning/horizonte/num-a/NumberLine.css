@@ -1,4 +1,4 @@
-/* A12 empty number line and A13 zoom number line: SVG ticks, jump arcs and a marker in the sky, mint and berry series hues. Tokens only. */
+/* Empty number line and zoom number line: SVG ticks, jump arcs and a marker in the sky, mint and berry series hues. Tokens only. */
 .lf-line { display: block; inline-size: 100%; min-inline-size: 26rem; max-inline-size: 44rem; }
 .lf-line-axis { stroke: var(--content-muted); stroke-width: 4; stroke-linecap: round; }
 .lf-line-tick { stroke: var(--edge); stroke-width: 3; }

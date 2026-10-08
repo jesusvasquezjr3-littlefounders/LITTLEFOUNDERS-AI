@@ -36,7 +36,7 @@ function Panel({ label, bars, step, values, mean, spread }: { label: string; bar
 }
 
 /*
- * H25: a population that is not a bell (weights on the values 1, 2, 3 and so on), and the spread of the mean of n draws.
+ * A population that is not a bell (weights on the values 1, 2, 3 and so on), and the spread of the mean of n draws.
  * The learner sets the sample size n and watches the distribution of the mean narrow while its centre stays put. The
  * distribution is the exact one, built by convolution, so the picture is the same every time and nothing is random.
  * The answer is the sample size; Core holds the n that makes the spread the stated number of times smaller.

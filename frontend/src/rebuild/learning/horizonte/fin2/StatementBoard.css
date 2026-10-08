@@ -1,4 +1,4 @@
-/* F2.13 statement board: named flow and holding bars in HTML, and a tick at the expenses total. Tokens only. */
+/* Statement board: named flow and holding bars in HTML, and a tick at the expenses total. Tokens only. */
 .lf-stmt-chart { display: grid; gap: var(--spacing-6); inline-size: 100%; max-inline-size: 28rem; }
 .lf-stmt-group { --goal: 0%; display: grid; gap: var(--spacing-3); }
 .lf-stmt-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; column-gap: var(--spacing-3); row-gap: var(--spacing-2); }

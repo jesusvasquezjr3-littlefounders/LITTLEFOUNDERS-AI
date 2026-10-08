@@ -8,7 +8,7 @@ import '../design/tokens.css';
 import '../design/system.css';
 
 /*
- * M8, the cookie choice, rebuilt (W2 Lane 1). Privacy-preserving by default:
+ * The cookie choice, rebuilt. Privacy-preserving by default:
  * nothing optional runs until the visitor accepts, rejecting is as easy and as
  * prominent as accepting (two equal buttons, neither pre-selected), and a
  * choice can be changed at any time from the site footer's "Cookie
@@ -23,10 +23,10 @@ import '../design/system.css';
  * decision covers both optional kinds (where a visit came from, and visit
  * measurement), so the preferences say so instead of drawing two switches
  * that could not be set apart. Separate choices per kind are an owner
- * question recorded in the lane record.
+ * question.
  *
  * The banner is a non-modal region docked at the bottom above the page's own
- * docked bar (02 §9.8 layer order), in its own body-level host that carries
+ * docked bar, in its own body-level host that carries
  * the site's mode and language; it never takes focus from the page. The
  * preferences are a modal sheet (focus trap, Escape, focus returns).
  */
@@ -57,7 +57,7 @@ export function CookieConsent({ locale, bannerVisible, choice, preferencesOpen, 
       <div className="lf-consent-inner">
         <div className="lf-consent-text">
           <h2 id={headingId} data-copy-role="heading">{copy.title}</h2>
-          {/* The consent disclosure itself: `legal` (06 §3.3 lists consent among mandated disclosures), so it never
+          {/* The consent disclosure itself: `legal` (consent is a mandated disclosure), so it never
               pushes a sign-in screen's own words past the first-view budget; the string still meets the site budget. */}
           <p data-copy-role="legal">{copy.body}</p>
         </div>

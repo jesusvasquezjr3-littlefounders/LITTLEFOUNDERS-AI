@@ -1,10 +1,9 @@
 /*
- * THE MENTOR NEVER DECLARES HOW THE LEARNER FEELS (Block C non-negotiable;
- * Appendix D §1.7).
+ * THE MENTOR NEVER DECLARES HOW THE LEARNER FEELS (non-negotiable).
  *
  * Affect detection from conversation is weak and biased evidence, and a
  * child told "you seem tired" or "you look frustrated" is being labelled by
- * a machine that cannot know. The session-end offer (C.8/C.12) is exactly the
+ * a machine that cannot know. The session-end offer is exactly the
  * turn where a helpful model reaches for that sentence, so the delivered text
  * is CHECKED rather than only instructed: a draft that attributes an
  * emotional or fatigue state to the learner is repaired once and never
@@ -13,7 +12,7 @@
  * NARROW BY DESIGN. It matches a second-person claim ("you seem/look/sound/
  * are/feel/get …", "I can tell you're …") followed by a state word within a
  * short span, in EN, es-MX and pt-BR. Questions are not claims — "are you
- * tired?" is not a declaration, and the humble check-in move (C.19) asks
+ * tired?" is not a declaration, and the humble check-in move asks
  * exactly that kind of thing — and neither is talk about a third party or
  * about the Mentor itself ("I get tired too"). Anything it cannot read as a
  * claim is left alone: a false positive costs one repair of a good turn.

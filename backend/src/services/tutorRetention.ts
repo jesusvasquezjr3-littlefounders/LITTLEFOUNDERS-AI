@@ -2,7 +2,7 @@ import { getConfig } from '../config.js';
 import { serviceRest } from './supabaseRest.js';
 
 /*
- * The 90-day retention sweep (/ORACLE.md §12, migration 0047).
+ * The 90-day retention sweep (migration 0047).
  *
  * "A retention policy nobody runs is not a retention policy" is written in the
  * migration, and this is the half that makes it true. It is called nightly by
@@ -88,7 +88,7 @@ export async function purgeExpiredTutorSessions(limit = 500): Promise<PurgeResul
  * audio and dies with the session, and `tutor-speech-shared` holds the closed,
  * human-written scripted set — the greetings, the safety lines, the closes —
  * which is identical for every learner, contains nothing about anybody, and is
- * pre-generated once and reused forever (/ORACLE.md §15).
+ * pre-generated once and reused forever.
  *
  * The guard matters because Depot is CONTENT-ADDRESSED: the same bytes are one
  * object, so a shared clip is a single file that thousands of transcripts

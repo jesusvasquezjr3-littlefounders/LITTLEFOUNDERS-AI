@@ -2,8 +2,7 @@ import { z } from 'zod';
 import { serviceRest, serviceRestRaw } from './supabaseRest.js';
 
 /*
- * L-04 (owner decision OD-27 (1)): teen cooperative goals, Core side.
- * Policy: docs/rebuild/policies/SOCIAL-TIERS.md section 1.2.
+ * Teen cooperative goals, Core side.
  *
  * The database owns every rule (migrations teen_cooperative_goals and
  * teen_cooperative_goal_actions): who may take part (the teen tier, or a
@@ -15,9 +14,9 @@ import { serviceRest, serviceRestRaw } from './supabaseRest.js';
  * passing the session as the actor, and validates what comes back. An
  * unreadable or malformed answer is `unavailable`, never an empty success.
  *
- * What does not exist, on purpose: a free-text field of any kind (E.10: no
+ * What does not exist, on purpose: a free-text field of any kind (no
  * name, note or message on a goal), a per-member number, a ranking, a public
- * view, a reward (coins, XP, badge) or a celebration (OD-7's list has no
+ * view, a reward (coins, XP, badge) or a celebration (the celebration list has no
  * group goal). The group total is the only progress, for members only.
  */
 
@@ -63,7 +62,7 @@ const REFUSALS: Record<string, CoopRefusal> = {
   COOP_INVITATION_NOT_FOUND: 'invitation-not-found',
   COOP_MEMBER_NOT_FOUND: 'member-not-found',
   COOP_NOT_ALLOWED: 'not-allowed',
-  // OD-9 4.2: a migrated child's Tutor has not consented to this sharing surface.
+  // A migrated child's Tutor has not consented to this sharing surface.
   DATA_PRACTICE_CONSENT_REQUIRED: 'practice-consent',
 };
 

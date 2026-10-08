@@ -11,12 +11,12 @@ import { readCoursesCache, writeCoursesCache } from './coursesCache';
 import { bandOf, useLearnerRegister, useLearnHost } from './learnHost';
 
 /*
- * /learn — the host of the rebuilt learner home (W2L.1, L1), inside the
+ * /learn — the host of the rebuilt learner home, inside the
  * learner shell. It reads, each on its own so one failure never blanks the
  * rest: the shelf (GET /learn/courses), the featured course's own entry (its
- * next step: the B.6 path or the tree), the learner's rhythm (B.21/B.24), whether
- * goals together are open to this learner (L-04, OD-27 (1)), and
- * the register (B.23: the Copy Budget band and a graduation owed).
+ * next step: the path or the tree), the learner's rhythm, whether
+ * goals together are open to this learner, and
+ * the register (the Copy Budget band and a graduation owed).
  *
  * STALE-WHILE-REVALIDATE, kept from the legacy home: the shelf a learner
  * already saw paints at once and a fresh read always goes out behind it, so
@@ -71,7 +71,7 @@ export function LearnHomeRoute() {
   useEffect(() => {
     let active = true;
     void fetchRhythm(transport).then((next) => { if (active) setRhythm(next); });
-    // L-04: quiet; a failure hides the card.
+    // Quiet; a failure hides the card.
     void fetchTogetherTeaser(transport).then((next) => { if (active) setTogether(next); });
     return () => { active = false; };
   }, [transport]);

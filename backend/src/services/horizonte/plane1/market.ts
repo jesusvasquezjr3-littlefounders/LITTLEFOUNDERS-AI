@@ -41,7 +41,7 @@ export function shiftedMarket(market: Market, shift: { curve: Curve; by: number 
 const isLinear = (value: unknown, first: string, second: string, firstMax: number, firstMin: number): value is Record<string, number> =>
   hasOnly(value, [first, second]) && inRange(value[first], firstMin, firstMax) && inRange(value[second], 1, SLOPE_MAX);
 
-/** N09, N13: a market and one shift of a curve; the learner says whether the price goes up or down and finds the new price. */
+/** A market and one shift of a curve; the learner says whether the price goes up or down and finds the new price. */
 export function solveMarketShift(payload: unknown): Solved<MarketAnswer> {
   if (!hasOnly(payload, ['pMax', 'qMax', 'demand', 'supply', 'shift', 'start'])) return broken('', 'The payload is a price limit, a quantity limit, demand, supply, a shift and a start');
   const { pMax, qMax, demand, supply, shift, start } = payload;
@@ -72,7 +72,7 @@ export function elasticPrice(demand: { a: number; b: number }, goal: { num: numb
   return bottom > 0 && top % bottom === 0 ? top / bottom : null;
 }
 
-/** N13: a demand line and an elasticity to reach; the learner slides the price until the elasticity is num over den. The answer is the whole price. */
+/** A demand line and an elasticity to reach; the learner slides the price until the elasticity is num over den. The answer is the whole price. */
 export function solveElasticity(payload: unknown): Solved<number> {
   if (!hasOnly(payload, ['pMax', 'demand', 'goal', 'start'])) return broken('', 'The payload is a price limit, demand, a goal and a start');
   const { pMax, demand, goal, start } = payload;

@@ -8,20 +8,20 @@
  * answers a question about a person by reasoning ACROSS potentially
  * conflicting evidence at query time, rather than trusting one flat,
  * pre-baked summary. This codebase's `learnerBrief` is architecturally the
- * opposite of that by design (§20.4 of /ORACLE.md): a small, curated,
+ * opposite of that by design: a small, curated,
  * SESSION-START-FROZEN prose note, precisely so the model's prompt prefix
  * stays cacheable and the live voice turn never waits on an extra reasoning
  * pass. Reimplementing Honcho's actual query-time agentic loop inside the
  * fast chamber would break that cache and add a live model call to the one
- * turn where latency IS the product (§19.1's "three clocks rule") — exactly
+ * turn where latency IS the product — exactly
  * the "large, speculative architecture" this backlog item is not asking for.
  *
  * What genuinely IS missing, and fits this codebase's own grain: `review.ts`
  * ALREADY asks the model for a dialectical synthesis in prose ("carry forward
  * what still holds... drop what it contradicted"), but nothing CHECKS that
  * synthesis before it is trusted forever — the exact "a rule the model is
- * only TOLD does not hold; a rule it is CHECKED on does" lesson oracle/
- * AGENTS.md keeps re-learning for other surfaces. This module is that check:
+ * only TOLD does not hold; a rule it is CHECKED on does" lesson
+ * this codebase keeps re-learning for other surfaces. This module is that check:
  * a free, deterministic, unit-testable comparison of the OLD note against the
  * PROPOSED replacement, run in `review.ts` immediately before the same
  * `updateLearnerMemory` call the 0059/0061 compare-and-swap protects — same
@@ -29,7 +29,7 @@
  * axis (semantic revision, not concurrent-writer detection).
  *
  * DELIBERATELY ADVISORY, NOT A GATE. Blocking on this heuristic would risk
- * exactly the failure mode §1.14 warns about elsewhere in this codebase: a
+ * exactly the failure mode warned about elsewhere in this codebase: a
  * bag-of-words overlap score cannot reliably tell "the model hallucinated a
  * reversal" apart from "the child genuinely changed, and this session found
  * out" — a shy learner who warms up, or a first substantial session after a
@@ -37,7 +37,7 @@
  * here would silently starve the one thing this whole memory system exists
  * to do (accumulate genuine learning), which is a worse failure than a
  * missed flag. So this never withholds a write; it only makes a drastic
- * revision LOUD (§1.0) for a human auditing the ledger or server logs,
+ * revision LOUD for a human auditing the ledger or server logs,
  * exactly the way every other soft-signal in review.ts already is
  * (`console.warn`, never a thrown error). See `runPostSessionReview`'s own
  * doc comment for where the natural, costed escalation to a real judge call
@@ -50,8 +50,8 @@
  *
  * PRIVACY: this module never sends anything to a model or over the network.
  * It runs entirely in-process on content that has ALREADY passed this same
- * file's moderation and §1.9 identifier checks, and its own log line never
- * prints the note text itself — only counts and ratios (§1.9's "no free-text
+ * file's moderation and identifier checks, and its own log line never
+ * prints the note text itself — only counts and ratios ("no free-text
  * history" instinct applied to our OWN server logs, which carry weaker access
  * control than the RLS-guarded `learner_memory` table itself).
  */

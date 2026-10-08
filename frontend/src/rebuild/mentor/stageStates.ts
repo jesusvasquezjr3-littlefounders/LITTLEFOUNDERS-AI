@@ -4,28 +4,26 @@ import { REGISTERS, registerForCopyBand } from '../design/learnerRegisterPolicy.
 import type { CharacterAction, CharacterEmotion } from './session/vocabulary';
 
 /*
- * What the learner sees the Mentor do (Frontend Bible 08 §3), as catalogue
+ * What the learner sees the Mentor do, as catalogue
  * poses. The UI requests a STATE; this module says which pose of the pose
  * catalogue (`tutor-scene/poseLibrary.ts`) plays it, for the learner's age band.
- * It never invents a pose: every id below is a catalogue row, and
- * `tutor-scene/__tests__/rebuildMentorParity.test.ts` checks each id exists and
- * that its emotion and action here are the catalogue's own.
+ * It never invents a pose: every id below is a catalogue row.
  *
- * Pure on purpose: the mapping is tested without a GPU, and the rebuilt Mentor
- * screen and the lesson's compact stage read the same table (08 §11).
+ * Pure on purpose: the mapping needs no GPU, and the rebuilt Mentor
+ * screen and the lesson's compact stage read the same table.
  */
 
-/** The eight states of 08 §3, plus 08 §11's neutral reaction to a met answer in a lesson. */
+/** The eight states, plus a neutral reaction to a met answer in a lesson. */
 export const MENTOR_STAGE_STATES = [
   'idle', 'listening', 'thinking', 'speaking', 'demonstrating', 'encouraging', 'celebrating', 'closing', 'acknowledging',
 ] as const;
 export type MentorStageState = (typeof MENTOR_STAGE_STATES)[number];
 
-/** How a session ended (C.16), which picks the closing gesture: the server's closing script. */
+/** How a session ended, which picks the closing gesture: the server's closing script. */
 export const CLOSING_SCRIPTS = ['completed', 'interrupted', 'learner_left', 'safety_stop'] as const;
 export type MentorClosingScript = (typeof CLOSING_SCRIPTS)[number];
 
-/** Idle and reaction animation level for the character, from the register policy (B.23). */
+/** Idle and reaction animation level for the character, from the register policy. */
 export type MentorAnimationLevel = 'lively' | 'moderate' | 'calm';
 
 /** One catalogue pose, as the stage plays it. */
@@ -42,16 +40,16 @@ const pose = (id: string, emotion: CharacterEmotion, action: CharacterAction): M
  * The catalogue rows the stage uses, named once. `use` in the catalogue says
  * why each fits:
  *   ambient.idle           "The resting state. Every surface's default."
- *   ambient.listen         "The Tutor while the learner is speaking or typing." (catalogue wording, pre-OD-6)
- *   think.ponder           "While the learner is deciding." A thinking pose, never typing dots (08 §3).
+ *   ambient.listen         "The Tutor while the learner is speaking or typing." (catalogue wording)
+ *   think.ponder           "While the learner is deciding." A thinking pose, never typing dots.
  *   teach.aside            thinking, held low: the calm register's thinking pose.
  *   ambient.idle.happy     resting and warm; the speaking animation (articulation and, with audio, the
  *                          mouth) is layered on top by the renderer.
  *   teach.explain          "Walking through a worked example." A pointing gesture toward the board.
- *   feedback.retry.gentle  a warm nod after a miss. Never disappointment, never a sad face (B.26).
- *   feedback.correct.quiet "Right, but the segment continues - no interruption." (08 §11)
+ *   feedback.retry.gentle  a warm nod after a miss. Never disappointment, never a sad face.
+ *   feedback.correct.quiet "Right, but the segment continues - no interruption."
  *   greet.nod              "Acknowledging the learner with no words." The calm register's met reaction.
- *   celebrate.with         "Celebrating WITH the learner rather than at them." D7 milestones only.
+ *   celebrate.with         "Celebrating WITH the learner rather than at them." Milestones only.
  *   celebrate.applaud      "Applauding the learner rather than themselves." The calm register's milestone.
  *   transition.close.warm  "A warm close to a segment that went well." A completed session.
  *   transition.exit        "Leaving a scene." A paused or left session: see you next time.
@@ -74,7 +72,7 @@ const P = {
   pause: pose('transition.pause', 'neutral', 'idle'),
 } as const;
 
-/** Every catalogue pose this module can return (for the parity test and the audit). */
+/** Every catalogue pose this module can return. */
 export const MENTOR_STAGE_POSES: readonly MentorPose[] = Object.values(P);
 
 type OpenState = Exclude<MentorStageState, 'closing'>;
@@ -91,7 +89,7 @@ const EXPRESSIVE: Record<OpenState, MentorPose> = {
   celebrating: P.celebrateWith,
 };
 
-/** The calm register (13–17 and adults): the same character, calmer animation, framing never childish (08 §9). */
+/** The calm register (13–17 and adults): the same character, calmer animation, framing never childish. */
 const CALM: Record<OpenState, MentorPose> = {
   ...EXPRESSIVE,
   thinking: P.aside,
@@ -115,9 +113,9 @@ export function animationLevelFor(ageBand: AgeBand): MentorAnimationLevel {
 export interface MentorPoseRequest {
   state: MentorStageState;
   ageBand: AgeBand;
-  /** Required for `celebrating`: the D7 milestone reached in this session (OD-7). */
+  /** Required for `celebrating`: the milestone reached in this session. */
   milestone?: Milestone | null;
-  /** How the session ended, for `closing` (C.16). Defaults to a completed session. */
+  /** How the session ended, for `closing`. Defaults to a completed session. */
   closing?: MentorClosingScript | null;
 }
 
@@ -125,7 +123,7 @@ export interface ResolvedMentorPose {
   /**
    * The state actually shown. Equal to the request except for a celebration
    * without a closed-list milestone, which is refused and shown as `idle`: the
-   * stage never celebrates outside D7, and never fakes a state.
+   * stage never celebrates outside the milestone list, and never fakes a state.
    */
   state: MentorStageState;
   pose: MentorPose;
@@ -139,7 +137,7 @@ export function resolveMentorPose({ state, ageBand, milestone = null, closing = 
   return { state: shown, pose: table[shown] };
 }
 
-/** A lesson verdict (08 §11): the compact stage introduces, then reacts. */
+/** A lesson verdict: the compact stage introduces, then reacts. */
 export type LessonVerdict = 'met' | 'review' | 'incomplete' | 'invalid' | null;
 
 /** The stage state for a lesson verdict: an encouraging reaction to a miss, a neutral one to a met answer. Never a celebration. */
@@ -148,11 +146,11 @@ export function lessonStateFor(verdict: LessonVerdict): MentorStageState {
 }
 
 /**
- * GAP-FIX-R5 (Bible 08 §11, §3, §4; B.8): what the lesson asks of the compact
+ * What the lesson asks of the compact
  * stage besides a verdict. `speaking` while the Mentor's narration plays (and
  * the short introduction hold when a segment opens), `demonstrating` while a
  * worked example or a step replay is on screen, `encouraging` while the
- * guided-review offer is open (08 §3: "when offering a guided review (D9)").
+ * guided-review offer is open ("when offering a guided review").
  */
 export interface LessonStageRequests {
   speaking: boolean;
@@ -163,10 +161,10 @@ export interface LessonStageRequests {
 export const NO_LESSON_STAGE_REQUESTS: LessonStageRequests = { speaking: false, demonstrating: false, encouraging: false };
 
 /**
- * The compact stage's state in a lesson. A verdict reaction wins (08 §11: the
+ * The compact stage's state in a lesson. A verdict reaction wins (the
  * stage reacts to answers), then an open offer, then the Mentor speaking (its
  * narration, or the introduction of a new segment), then a demonstration
- * beside the board; otherwise idle. No path returns `celebrating` (OD-7).
+ * beside the board; otherwise idle. No path returns `celebrating`.
  */
 export function lessonStageStateFor(verdict: LessonVerdict, { intro = false, requests = NO_LESSON_STAGE_REQUESTS }: {
   intro?: boolean; requests?: LessonStageRequests;

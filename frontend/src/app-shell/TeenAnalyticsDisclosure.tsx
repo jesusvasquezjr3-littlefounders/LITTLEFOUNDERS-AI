@@ -8,7 +8,7 @@ import { useTeenAnalyticsPreference } from './useTeenAnalyticsPreference';
 import { useShellLocale } from './ShellRoot';
 
 /*
- * H.1 and Appendix O 2.2(a) (F3-identity-site): the self-managed disclosure is
+ * The self-managed disclosure is
  * presented to every self-registered teen, not left in a Settings card a teen
  * may never open. On the first app session with no choice on file, this sheet
  * shows the whole disclosure (purpose, events, exclusions, safety) and two

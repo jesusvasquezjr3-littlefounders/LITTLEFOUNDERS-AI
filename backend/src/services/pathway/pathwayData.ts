@@ -16,7 +16,7 @@ import {
 } from './pathwayPolicy.js';
 
 /*
- * B.6 / S05.3b — every read and write the pathway engine needs, and nothing
+ * Every read and write the pathway engine needs, and nothing
  * else. coursePathway.ts stays pure; this module fetches its inputs.
  *
  * ONE BRAIN. The graph, the mastery and the review cards are the Mentor's own
@@ -25,14 +25,14 @@ import {
  * ends are active. A topic link to a draft KC does not exist for a learner
  * until the owner activates that KC, exactly as for the Mentor.
  *
- * FAILURE POSTURE (§1.14). Every reader returns null on an upstream failure
+ * FAILURE POSTURE. Every reader returns null on an upstream failure
  * and the routes answer 502. "Could not read the learner's mastery" is never
  * collapsed into "no mastery", which would re-lock work the learner has shown.
  */
 
 export type CourseEngine = 'linear' | 'pathway';
 
-/** COURSE_PATHWAY_ENGINE — the release switch OD-22 calls for. `linear` until the owner accepts the policy and the migrations are applied. */
+/** COURSE_PATHWAY_ENGINE — the release switch. `linear` until the owner accepts the policy and the migrations are applied. */
 export function courseEngine(): CourseEngine {
   return getConfig().COURSE_PATHWAY_ENGINE;
 }
@@ -55,13 +55,13 @@ export interface LearnerPathwayContext {
   completedCourseSlugs: Set<string>;
   /** course_pathway_placements stages, by course id. */
   placedStages: Map<string, Set<PathwayStage>>;
-  /** OD-25: chapters (adventure ids) the learner confirmed opening one stage early. */
+  /** Chapters (adventure ids) the learner confirmed opening one stage early. */
   earlyOpenedChapterIds: Set<string>;
-  /** OD-25: topics the learner accepted as done on Mentor mastery. */
+  /** Topics the learner accepted as done on Mentor mastery. */
   masteryCreditedTopicIds: Set<string>;
-  /** OD-25 (W3L.1): topics whose Mentor-mastery offer the learner declined; never offered again. */
+  /** Topics whose Mentor-mastery offer the learner declined; never offered again. */
   masteryDeclinedTopicIds: Set<string>;
-  /** OD-24: ACTIVE KC keys credited by completed legacy topics (legacy_kc_credits). */
+  /** ACTIVE KC keys credited by completed legacy topics (legacy_kc_credits). */
   legacyCreditedKcs: Set<string>;
 }
 
@@ -89,7 +89,7 @@ export async function readCompletedCourseSlugs(userId: string): Promise<Set<stri
  * Load one learner's pathway context. `ageScreen` is the server's own age
  * screening state (res.locals.ageScreen for the caller, readAgeScreen for a
  * guardian's kid); the birth date is read here with the service role and never
- * leaves Core — only the derived stage is ever served (S05.2a posture).
+ * leaves Core — only the derived stage is ever served (age evidence stays in Core).
  */
 export async function loadLearnerPathwayContext(userId: string, ageScreen: AgeScreenState, now = new Date()): Promise<LearnerPathwayContext | null> {
   if (!Uuid.safeParse(userId).success) return null;
@@ -207,7 +207,7 @@ export async function loadPathwayContent(adventureIds: string[], topicIds: strin
 }
 
 /**
- * The per-course inputs. Earned stages are the stored badges (B4/B5) plus,
+ * The per-course inputs. Earned stages are the stored badges plus,
  * when the live full-course rule grants the course badge today, the stage the
  * course's legacy chapters formed: a learner who holds the legacy badge is
  * never asked to earn the same stage twice.
@@ -246,7 +246,7 @@ export function coursePathwayInputs(
 }
 
 /**
- * Rule B4 — record an earned stage credential. Inserted once and never
+ * Record an earned stage credential. Inserted once and never
  * updated or deleted: a replay is ignored by the primary key.
  */
 export async function recordPathwayBadge(
@@ -295,7 +295,7 @@ export async function freezeLegacyCourseBadge(userId: string, course: { id: stri
 }
 
 /**
- * OD-25 — the learner's confirmation that opens a chapter one stage early,
+ * The learner's confirmation that opens a chapter one stage early,
  * with the prerequisite skills it was confirmed on. One row per learner and
  * chapter; a replay is ignored by the key. Core checked eligibility first.
  */
@@ -312,7 +312,7 @@ export async function recordEarlyChapterAccess(row: { userId: string; courseId: 
 }
 
 /**
- * OD-25 — the learner's acceptance that counts a topic as done on Mentor
+ * The learner's acceptance that counts a topic as done on Mentor
  * mastery, with the skills and the Mentor's estimates it was accepted on. One
  * row per learner and topic; never updated, never deleted by the pathway.
  */
@@ -329,7 +329,7 @@ export async function recordTopicMasteryCredit(row: { userId: string; courseId: 
 }
 
 /**
- * OD-25 (W3L.1) — the learner's "no" to a Mentor-mastery offer, with the
+ * The learner's "no" to a Mentor-mastery offer, with the
  * skills it was offered on. One row per learner and topic; the first answer is
  * final, so a replay is ignored by the key. Core checked the offer first.
  */
@@ -346,7 +346,7 @@ export async function recordTopicMasteryDecline(row: { userId: string; courseId:
 
 export type PathwayPlacementCommit = 'created' | 'replayed' | 'conflict';
 
-/** P6 — the stage-entry placement, written atomically with B.1's record and its credits. */
+/** The stage-entry placement, written atomically with the placement record and its credits. */
 export async function commitCoursePathwayPlacement(row: {
   user_id: string;
   course_id: string;

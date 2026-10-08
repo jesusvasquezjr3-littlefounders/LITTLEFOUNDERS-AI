@@ -1,4 +1,4 @@
-/* A14 clock, A15 ruler, A16 pan balance and F1.7 ruler reading: SVG faces and scales in the sky, mint and berry series hues. Tokens only. */
+/* Clock, ruler, pan balance and ruler reading: SVG faces and scales in the sky, mint and berry series hues. Tokens only. */
 .lf-clock { display: block; inline-size: 100%; min-inline-size: 14rem; max-inline-size: 20rem; }
 .lf-clock-face { fill: var(--surface); stroke: var(--content-muted); stroke-width: 4; }
 .lf-clock-mark { stroke: var(--edge); stroke-width: 2; }

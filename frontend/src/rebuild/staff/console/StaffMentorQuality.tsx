@@ -8,8 +8,8 @@ import { LoadFailure, StaffPage } from './ConsoleParts';
 import { useConsoleCopy } from './staffConsoleCopy';
 
 /*
- * C.24 on a real route (W2T.2): the Mentor-quality dashboard the
- * product/pedagogy team watches (Appendix E §3.1 Tier 3), with C.21's anomaly
+ * The Mentor-quality dashboard the
+ * product/pedagogy team watches, with the anomaly
  * flags. Core serves it behind `view_analytics` and allows a flag action or a
  * weekly sign-off only to the NAMED owner of that role; the dashboard shows
  * those actions only to a named owner, as a courtesy, never as the control.
@@ -19,11 +19,11 @@ import { useConsoleCopy } from './staffConsoleCopy';
  * refuses (the grant withdrawn) or cannot answer uses the console's failure
  * state with a retry, instead of the panel's bare banner.
  *
- * W2T.4: a viewer who also holds manage_users (the grant Core's
+ * A viewer who also holds manage_users (the grant Core's
  * /admin/mentor-quality/owners requires) names and removes the owners here;
  * no one else sees the roster form.
  *
- * GAP-FIX-R2: the per-release manual audits (B.25, B.22, B.20) with their
+ * The per-release manual audits with their
  * latest result; a named owner records the next one (ReleaseAudits).
  */
 

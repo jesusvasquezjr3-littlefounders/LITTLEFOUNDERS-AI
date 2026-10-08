@@ -4,7 +4,7 @@ import type { ChapterAccess, KcSatisfaction, PathwayBasis, PathwayStage } from '
 import type { AutonomyOffer } from '../learnerRegisterPolicy.js';
 
 /*
- * B.6 / S05.3b — GET /learn/courses/:slug/path. The rebuilt course path needs
+ * GET /learn/courses/:slug/path. The rebuilt course path needs
  * one learner-sized answer, not the whole tree (the financial-education tree
  * carries every lesson of every chapter): which chapters are theirs, what they
  * can start now and why, what waits and on what, and the skills the pathway
@@ -40,20 +40,20 @@ export interface CoursePathProjection {
     reason: PathwayItemReason; access: 'pathway' | 'optional'; estimatedMinutes: number; recommended: boolean;
   }>;
   /**
-   * GAP-FIX-R5 (B.24, Block B autonomy): the levers the learner's register
+   * The levers the learner's register
    * offers. With `path: 'binary'` (6-9) `items` carries two next steps to pick
    * between (the recommendation first), never the whole frontier.
    */
   autonomy: AutonomyOffer;
-  /** GAP-FIX-R5: "Explore further" — optional depth lessons, only where the register offers enrichment. */
+  /** "Explore further" — optional depth lessons, only where the register offers enrichment. */
   enrichment: CoursePathProjection['items'];
   blocked: Array<{ topicId: string; topicTitle: Json; chapterId: string; missingSkills: SkillRef[]; missingTopics: Array<{ id: string; title: Json }> }>;
   skills: Array<SkillRef & { shown: KcSatisfaction }>;
-  /** OD-25: a chapter one stage up that mastery can open (the learner confirms), or has opened. */
+  /** A chapter one stage up that mastery can open (the learner confirms), or has opened. */
   earlyAccess: Array<{ chapterId: string; chapterTitle: Json; stage: PathwayStage; state: 'eligible' | 'opened'; prerequisiteSkills: SkillRef[] }>;
-  /** OD-25: topics the learner may accept as done on what they showed with the Mentor. */
+  /** Topics the learner may accept as done on what they showed with the Mentor. */
   masteryOffers: Array<{ topicId: string; topicTitle: Json; chapterId: string; skills: SkillRef[] }>;
-  /** OD-25: topics already accepted as done on Mentor mastery. */
+  /** Topics already accepted as done on Mentor mastery. */
   masteryCreditedTopicIds: string[];
 }
 

@@ -82,7 +82,7 @@ jobs:
           # it a FAILED probe produced an empty probe.txt, the gate correctly
           # answered "the dry-run did not complete", and the workflow reported
           # SUCCESS having learned nothing - a broken probe wearing the same
-          # green tick as a healthy refusal (/AGENTS.md §1.14: failure must be
+          # green tick as a healthy refusal (failure must be
           # distinguishable from emptiness). Observed on run #1.
           set -euo pipefail
           bash database/scripts/railway-migrate.sh --dry-run | tee probe.txt
@@ -118,8 +118,8 @@ jobs:
       # thing that actually proves a dump exists. Reporting a restore point that
       # was never taken is the worst lie to tell before touching a schema.
       #
-      # H.5 (Appendix O 1.2): the dump holds every family's data and the
-      # Mentor's, so it is encrypted on the runner with the tested OD-9 tool
+      # The dump holds every family's data and the
+      # Mentor's, so it is encrypted on the runner with the tested tool
       # (AES-256-GCM, a manifest with the key fingerprint, the plaintext
       # deleted) before it is stored; no key, no dump, no migration.
       - name: Pre-migration dump
@@ -149,7 +149,7 @@ jobs:
           echo "Restore point: /data/backups/$FILE.lfbk ($(wc -c < "$FILE.lfbk") encrypted bytes)"
 
       # Encrypted restore points age out after 30 days, as the daily backups
-      # do. The plaintext pre-migration dumps written before H.5 was closed for
+      # do. The plaintext pre-migration dumps written before dumps were encrypted on
       # this path are removed once the encrypted point above is stored: the
       # daily encrypted Vault backups hold every later state.
       - name: Prune pre-migration restore points
@@ -193,7 +193,7 @@ jobs:
           echo "Core /health -> $code"
           [ "$code" = "200" ] || { echo "FAIL: Core is not healthy after the migration"; exit 1; }
 
-      # H.5: the key and every local dump (plaintext or ciphertext) leave the
+      # The key and every local dump (plaintext or ciphertext) leave the
       # runner on every outcome, the failed and the refused runs included.
       - name: Remove the backup key and any local dump
         if: always()

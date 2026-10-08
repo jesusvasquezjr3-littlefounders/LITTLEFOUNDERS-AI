@@ -6,7 +6,7 @@ import { ForgotPasswordScreen, type ForgotView } from '@/rebuild/identity/Recove
 import { failureCode } from './failureCode';
 
 /*
- * `/forgot-password` (A3): asks Core to send the recovery email. Core answers
+ * `/forgot-password`: asks Core to send the recovery email. Core answers
  * the same for every address (GoTrue never reveals whether one has an
  * account), so the confirmation is the same too. What the legacy page did not
  * do: when Core refuses the request (too many tries, an invalid address, no

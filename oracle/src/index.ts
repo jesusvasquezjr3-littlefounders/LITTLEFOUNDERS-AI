@@ -20,14 +20,14 @@ const config = getConfig();
  * FIRST call, and the only call sites were `orchestrator.ts`'s
  * `strategyInstruction()` (mid-turn, on essentially every graded turn) and
  * test/verify scripts. Nothing at boot ever called it, so a malformed skill
- * file shipped by any path that skips `npm test` — a hotfix, a CI flake, the
+ * file shipped by any path that skips a pre-deploy check — a hotfix, a CI flake, the
  * self-authoring pipeline this catalogue's own comment anticipates — would
  * boot "healthy" and throw inside `selectSkill()` on the first real child's
  * turn, caught by `ws/server.ts`'s message-handler `.catch()` and delivered
  * as a live in-session `{code:'INTERNAL', ...}` instead of a blocked deploy.
  *
- * This is the OPPOSITE posture from Redis/model/voice below (/AGENTS.md
- * §1.14): those are genuinely optional — every one has a supported degraded
+ * This is the OPPOSITE posture from Redis/model/voice below:
+ * those are genuinely optional — every one has a supported degraded
  * mode (rate limiting passes through, sessions run text-only or silent) — so
  * they warn and keep serving. A skill is not optional: `strategyInstruction`
  * calls `selectSkill` on essentially every graded turn, and there is no
@@ -38,8 +38,8 @@ const config = getConfig();
 skillCatalogue();
 
 /*
- * The listener opens FIRST, before any optional dependency is touched
- * (/AGENTS.md §1.14). Awaiting a client that retries its initial connect
+ * The listener opens FIRST, before any optional dependency is touched.
+ * Awaiting a client that retries its initial connect
  * forever — which node-redis does — means the listener never opens at all,
  * leaving the process alive, unhealthy, and never restarted.
  */
@@ -80,15 +80,15 @@ httpServer.listen(config.PORT, () => {
   /*
    * THE JUDGE MUST NOT BE THE AUTHOR.
    *
-   * Everything §6 and §7.3 claim rests on the judge being a genuinely
-   * independent second opinion — /ORACLE.md's own record is that an
+   * Everything the safety and content pipelines claim rests on the judge being a genuinely
+   * independent second opinion — the record is that an
    * independent judge caught twelve semantic defects across 544 lessons that
    * nine deterministic gates passed. A model grading its own work grades it
    * generously, so a deployment that points both at the same endpoint keeps
    * every moderation call and every content verdict while silently losing the
    * property that made them worth anything.
    *
-   * `check-provider-parity.mjs` pins these against Forge, not against each
+   * Nothing checks these against each
    * other, so nothing anywhere would have said a word. It is a warning rather
    * than a fatal error because refusing to boot would turn a misconfiguration
    * into an outage — but it names the exact variables to change.
@@ -123,7 +123,7 @@ function shutdown(): void {
   console.log(`[${SERVICE}] shutting down...`);
   // Sockets first: a live session gets a close frame and a reason rather than
   // a connection that simply stops answering mid-sentence. `closeAllSockets`
-  // itself (item 79 / RUNBOOK Round 119) parks and immediately finalizes
+  // itself parks and immediately finalizes
   // every session that is still live at this exact instant, synchronously —
   // it does not wait for each socket's own close handshake, which this
   // function's remaining ~250ms budget below is too short to guarantee.

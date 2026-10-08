@@ -109,7 +109,7 @@ MOUTHS = {
         # Re-measured against a front render at ortho 0.62 centred on (0.03,
         # 0.90): the grin actually runs -0.191 to 0.237, so the card was ~4 cm
         # short on each side. The ends are NOT symmetric because his model is
-        # not — the same asymmetry that leaves his rig without a mirror (§4.2).
+        # not — the same asymmetry that leaves his rig without a mirror.
         "curve": ((-0.205, 0.9180), (0.0309, 0.8450), (0.2500, 0.9180)),
         # Band height across the mouth line, in metres. The painted grin is
         # 0.084 m at its centre; the rest is the margin the feather fades over.

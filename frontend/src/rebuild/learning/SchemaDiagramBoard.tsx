@@ -73,7 +73,7 @@ export function SchemaDiagramBoard({ document, segment, onBack, onGrade, sequenc
   const phaseTitle = phase === 'structure' ? t.choose : phase === 'slots' ? t.fill : t.solve;
   const slotNames = schema ? SCHEMA_SLOTS[schema] as readonly SlotName[] : [];
   const slotsComplete = schema !== null && slotNames.every((slot) => typeof slots[slot] === 'string');
-  // Bible 05 §5 / Appendix P Part 5 (GAP-FIX-R7): the answer is read for the lesson's locale and sent as its canonical whole
+  // The answer is read for the lesson's locale and sent as its canonical whole
   // number, within the canonical scorer's bound for two story quantities (a times b, plus a, plus b).
   const [a, b] = [p.quantities[0]?.value ?? 0, p.quantities[1]?.value ?? 0];
   const domain = { whole: true, max: a * b + a + b };
@@ -81,7 +81,7 @@ export function SchemaDiagramBoard({ document, segment, onBack, onGrade, sequenc
   const response = phase === 'structure' ? schema === null ? null : { schema }
     : phase === 'slots' ? slotsComplete ? { schema, slots: Object.fromEntries(slotNames.map((slot) => [slot, slots[slot]])) } : null
       : typed !== null ? { value: typed } : null;
-  // Bible 05 §3: Reset restores the authored start (no schema chosen, empty slots and answer) and clears the verdict.
+  // Reset restores the authored start (no schema chosen, empty slots and answer) and clears the verdict.
   const pristine = schema === null && Object.keys(slots).length === 0 && answer === '' && verdict === null;
   const reset = () => { setSchema(null); setSlots({}); setAnswer(''); setVerdict(null); };
   const submit = () => { if (verdict === 'met') { sequence?.onAdvance(); return; } if (!response) return; grade(() => onGrade(response, segment.id), (value) => setVerdict(value === 'met' ? 'met' : 'review'), () => setVerdict('unavailable')); };
@@ -89,7 +89,7 @@ export function SchemaDiagramBoard({ document, segment, onBack, onGrade, sequenc
   const quantityValue = (value: string | undefined) => value === 'unknown' ? t.unknown : String(p.quantities.find((item) => item.id === value)?.value ?? t.unknown);
   const slotOf = (slot: SlotName) => ({ id: slot, label: t.slots[slot], value: phase === 'slots' ? quantityValue(slots[slot]) : t.unknown,
     ...(phase === 'slots' && slots[slot] ? { detail: quantityText(slots[slot]) } : {}) });
-  // The shared Pizarrón slot row (B.7 one component set); the name states the schema's shape.
+  // The shared Pizarrón slot row (one component set); the name states the schema's shape.
   const diagram = schema ? <SchemaSlotsVisual label={`${t.schemas[schema]}. ${t.shapes[schema]}`} schema={schema}
     slots={[slotOf(slotNames[0]!), slotOf(slotNames[1]!), slotOf(slotNames[2]!)]} operators={OPERATOR[schema]} /> : null;
   const change = (update: () => void) => { update(); setVerdict(null); };

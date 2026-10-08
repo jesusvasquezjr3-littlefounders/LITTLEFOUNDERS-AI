@@ -6,7 +6,7 @@
  * that verdict into: a misconception diagnosis (deterministic), a BKT update,
  * an FSRS review, and a kc_attempt evidence row.
  *
- * FAILURE POSTURE (§1.14): this is a read-modify-write on a learner's
+ * FAILURE POSTURE: this is a read-modify-write on a learner's
  * posterior. Any upstream read failure aborts the WHOLE pedagogy step with a
  * loud log and a null return — the grade itself still succeeds. Updating from
  * a default would silently reset mastery to the prior.
@@ -117,7 +117,7 @@ export interface AttemptInput {
   attemptNumber: number;
   source: 'segment_grade' | 'voice_check' | 'course_lesson';
   strategy: string | null;
-  /** GAP-FIX-R1 (P-09): a course-lesson receipt key ('v1:...' or 'v2:...'); required for source 'course_lesson'. */
+  /** A course-lesson receipt key ('v1:...' or 'v2:...'); required for source 'course_lesson'. */
   receiptKey?: string;
 }
 
@@ -224,7 +224,7 @@ export async function recordAttempt(input: AttemptInput, now = new Date()): Prom
   const pAfter = bktUpdate(pBefore, correct, params);
 
   /*
-   * C.11: the cross-session scheduler counts SPACED reviews only. An attempt
+   * The cross-session scheduler counts SPACED reviews only. An attempt
    * inside the short horizon of the card's last counted review is a
    * within-session re-exposure: the card is left as it is (see
    * `reviewCardTwoTier`), and the attempt row records which tier it was.
@@ -283,7 +283,7 @@ export async function recordAttempt(input: AttemptInput, now = new Date()): Prom
     ...(input.receiptKey ? { receipt_key: input.receiptKey } : {}),
   };
   /*
-   * C.11: the attempt row carries its review tier. On a schema without the
+   * The attempt row carries its review tier. On a schema without the
    * column (Core deployed before `*_mentor_spaced_review_and_dialogue_calibration.sql`)
    * PostgREST refuses the unknown field, so the row is written once more
    * without it: the evidence log must never be lost to a deploy order.
@@ -320,8 +320,7 @@ const round5 = (v: number): number => Math.round(v * 100_000) / 100_000;
  * verifies the signature before feeding the pedagogy event to its controller.
  * Without it, a client could fabricate correctness and steer the strategy
  * machine. Signed with TUTOR_SESSION_SECRET, which Core and Oracle already
- * share for the socket token — one shared secret, two closed formats, both
- * pinned by parity tests.
+ * share for the socket token — one shared secret, two closed formats.
  */
 export const GRADE_ECHO_TTL_SECONDS = 15 * 60;
 const ECHO_PREFIX = 'ge1';

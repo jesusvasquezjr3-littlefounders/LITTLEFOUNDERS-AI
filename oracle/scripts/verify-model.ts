@@ -144,7 +144,7 @@ async function diagnose(context: unknown): Promise<void> {
  * retries a malformed shape with an explicit correction, and that retry is why
  * a learner never sees it. A probe that exercises a WEAKER path than the
  * product reports failures the product does not have — the same harness
- * mistake §1.14 keeps naming, pointed the other way.
+ * mistake worth naming, pointed the other way.
  */
 async function completeLikeProduction(
   context: TutorContext,

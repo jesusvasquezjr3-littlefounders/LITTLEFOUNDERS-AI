@@ -1,7 +1,7 @@
 /*
- * The Generation section's wire shapes (S7, W2T.2): Forge's telemetry
+ * The Generation section's wire shapes: Forge's telemetry
  * (migrations 0017, 0018, 0020), read only through Core behind the
- * `manage_content` grant (G.1). Hand-mirrored from Core's `routes/admin.ts`
+ * `manage_content` grant. Hand-mirrored from Core's `routes/admin.ts`
  * and `services/adminData.ts` and checked on arrival: the console is the only
  * reader of these tables, and a payload of the wrong shape is an error state,
  * never a blank inspector.
@@ -178,12 +178,12 @@ export interface CoachReport {
   };
   cost: { totalUsd: number; totalTokens: number; cacheHitPct: number };
   images: { generated: number; billed: number; inherited: number };
-  /** Structured facts per action (F4-staff-ops); read them through isCoachAction, which drops a tag this console does not know. */
+  /** Structured facts per action; read them through isCoachAction, which drops a tag this console does not know. */
   proposedActions: unknown[];
 }
 
 /*
- * Bible 02 section 1.2 and rule 16 (F4-staff-ops): Core sends each proposed
+ * Core sends each proposed
  * action as a tag and numbers only; the console writes the proposal and its
  * evidence in the viewer's locale and formats the numbers with Intl.
  */

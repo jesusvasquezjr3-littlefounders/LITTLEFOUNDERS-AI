@@ -9,8 +9,7 @@
 # never writes.
 #
 # Scope: exactly the events this loop cares about (analytics event-tracking
-# work item + the shareable-achievement-badge loop, /AGENTS.md-adjacent
-# ROADMAP entry): lesson_complete, parent_report_viewed, badge_generated,
+# work item + the shareable-achievement-badge loop): lesson_complete, parent_report_viewed, badge_generated,
 # badge_shared, badge_link_click. NOT a general-purpose learning_events dump —
 # widen the WHERE list deliberately if another metric needs a new event, not
 # by relaxing it to "everything".
@@ -22,7 +21,7 @@
 # workflow) — narrower in scope and shorter-lived (14-day artifact retention,
 # set in the workflow) than the DB's own 400-day raw retention, but a change
 # from "never leaves Vault" all the same. Flagged for the owner in the PR/
-# commit body per /AGENTS.md §1.9's "list exactly which fields and why".
+# commit body.
 
 set -euo pipefail
 
@@ -56,8 +55,7 @@ QUERY_SQL="${QUERY_SQL/__DAYS__/$DAYS}"
 # Same shape as insights-maintenance.yml's run_sql: SQL travels base64-encoded
 # as ONE positional argument because `railway ssh` space-joins its args and
 # the remote shell re-parses them — any statement containing spaces would be
-# word-split into garbage otherwise. Failure is always printed (§1.14 /
-# §1.0 rule 5): a retry that swallows what it is retrying turned twelve
+# word-split into garbage otherwise. Failure is always printed: a retry that swallows what it is retrying turned twelve
 # nights of a different job silently stale before anyone noticed.
 b64=$(printf '%s' "$QUERY_SQL" | base64 | tr -d '\n')
 for attempt in $(seq 1 "$ATTEMPTS"); do

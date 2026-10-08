@@ -1,23 +1,23 @@
 /*
- * The Mentor-integrity monitor for Product C.10 and C.18 (Appendix F §1.1,
- * §1.2 and Part 3 Stage 7) — PURE summaries over rows the caller fetched, so
- * the thresholds and the defect logic are unit-tested without a database —
- * and the Extended Mastery Engine's Stage 7 AUTOMATIC ROLLBACK
+ * The Mentor-integrity monitor for the Extended Mastery Engine and the Mentor's
+ * turn honesty — PURE summaries over rows the caller fetched, so
+ * the thresholds and the defect logic need no database —
+ * and the Extended Mastery Engine's AUTOMATIC ROLLBACK
  * (`getMasteryKillSwitch`, at the end), which judges the same summaries per
  * knowledge component and logs every trip to `audit_logs`.
  * `npm run tutor:integrity-report` (src/scripts/mentor-integrity-report.ts)
  * is the operator entry point that reads the two tables and prints this.
  *
- *   C.10  Corroborating-Evidence Compliance Rate — every mastery declaration
+ *   Mastery: Corroborating-Evidence Compliance Rate — every mastery declaration
  *         and every remediation/rescue trigger in the Extended Mastery
  *         Engine event log (`tutor_trajectory_step`) must carry evidence
  *         meeting the requirement in force. A HARD INVARIANT: anything under
  *         100% is a defect, not a tuning choice.
  *         Mastery Declaration Reversal Rate — declarations later contradicted
  *         (an in-session revocation, or a corroborated remediation of the
- *         same KC) within the rolling window. Above the ceiling is the Stage 7
+ *         same KC) within the rolling window. Above the ceiling is the
  *         kill-switch condition.
- *   C.18  Answer-Reveal Rate, per SESSION and per PERSONA — unsanctioned
+ *   Honesty: Answer-Reveal Rate, per SESSION and per PERSONA — unsanctioned
  *         reveals over Mentor turns inside a hint-ladder / repair / open-
  *         activity sequence (`tutor_turn_honesty`). An elevated rate, or any
  *         upward drift against the prior window, is a CONTROLLER DEFECT
@@ -25,26 +25,25 @@
  *         Sycophancy audit — the zero-tolerance count of delivered false
  *         affirmations, plus the specific-vs-generic praise share.
  *
- * EVERY THRESHOLD BELOW IS "PROPOSED, PENDING CALIBRATION" (Appendix F
- * Part 1.4 / Stage 7). They are recorded, with their provenance, in
- * docs/rebuild/mentor/THRESHOLD-RECALIBRATION-LOG.md and change only through
- * that log's quarterly review — they are Tier 1/Tier 2 governance values
- * (C.22), not knobs.
+ * EVERY THRESHOLD BELOW IS "PROPOSED, PENDING CALIBRATION" They are recorded, with their provenance, in
+ * the threshold recalibration log and change only through
+ * that log's quarterly review — they are Tier 1/Tier 2 governance values,
+ * not knobs.
  */
 
 import { insertAuditLog, serviceRest } from '../supabaseRest.js';
 
 export const MENTOR_INTEGRITY_THRESHOLDS = {
-  /** Hard invariant (Appendix F §1.1): 100%. */
+  /** Hard invariant: 100%. */
   corroborationComplianceTarget: 1,
-  /** Appendix F Stage 7 provisional ceiling: 8%. */
+  /** Provisional rollback ceiling: 8%. */
   masteryReversalCeiling: 0.08,
-  /** Rolling post-mastery window (Appendix F §1.1, provisional): 90 days. */
+  /** Rolling post-mastery window (provisional): 90 days. */
   masteryReversalWindowDays: 90,
   /** Below this many declarations the reversal rate is reported as insufficient data. */
   masteryReversalMinDeclarations: 20,
   /**
-   * Answer-reveal ceiling per persona. Appendix F asks for it to be set from
+   * Answer-reveal ceiling per persona. It is meant to be set from
    * a human-rated baseline batch, which does not exist yet; 10% is the
    * provisional placeholder (MathDial's untutored baseline is 66%).
    */
@@ -57,7 +56,7 @@ export const MENTOR_INTEGRITY_THRESHOLDS = {
 
 export type Thresholds = typeof MENTOR_INTEGRITY_THRESHOLDS;
 
-// ── C.18: the per-turn honesty rows ─────────────────────────────────────────
+// ── The per-turn honesty rows ─────────────────────────────────────────
 
 export interface HonestyRow {
   session_id: string | null;
@@ -178,7 +177,7 @@ export function summarizeHonesty(
   };
 }
 
-// ── C.10: the Extended Mastery Engine event log ─────────────────────────────
+// ── The Extended Mastery Engine event log ─────────────────────────────
 
 export interface TrajectoryEvidenceRow {
   user_id: string;
@@ -192,13 +191,13 @@ export interface TrajectoryEvidenceRow {
   created_at: string;
 }
 
-/** The two consequential moves (and their re-declaration forms) C.10 governs. */
+/** The two consequential moves (and their re-declaration forms) the engine governs. */
 export function isConsequentialTrigger(row: TrajectoryEvidenceRow): boolean {
   if (row.strategy === 'CELEBRATE' || row.strategy === 'TRANSFER') return true;
   return (row.strategy === 'REMEDIATE' || row.strategy === 'RESCUE') && row.strategy_before !== row.strategy;
 }
 
-/** A trigger that carries evidence meeting the requirement in force (C.10). */
+/** A trigger that carries evidence meeting the requirement in force. */
 function isCompliant(r: TrajectoryEvidenceRow): boolean {
   return (
     r.evidence_rule !== null &&
@@ -216,7 +215,7 @@ function reversalStatusOf(declarations: number, reversals: number, t: Thresholds
 }
 
 /**
- * One knowledge component's share of the C.10 numbers. Appendix F Stage 7
+ * One knowledge component's share of the engine's numbers. The rollback
  * rolls back "for AFFECTED knowledge components", so the reversal rate and
  * the compliance are judged per KC as well as in aggregate; the 20-declaration
  * floor applies to each KC on its own.
@@ -239,7 +238,7 @@ export interface MasteryEvidenceSummary {
   triggers: number;
   compliant: number;
   complianceRate: number | null;
-  /** Triggers that executed under a Stage 7 rollback (requirement below the default). */
+  /** Triggers that executed under a rollback (requirement below the default). */
   underRollback: number;
   declarations: number;
   reversals: number;
@@ -338,16 +337,16 @@ export function summarizeMasteryEvidence(
   };
 }
 
-// ── Appendix F Part 3 Stage 7: the Extended Mastery Engine automatic rollback ──
+// ── The Extended Mastery Engine automatic rollback ──
 
 /*
- * The Stage 7 row for the Extended Mastery Engine: "Mastery Declaration
+ * The row for the Extended Mastery Engine: "Mastery Declaration
  * Reversal Rate exceeds 8% ... or the Corroborating-Evidence Compliance Rate
  * drops below 100%" → "Revert to single-observation BKT thresholds for
  * affected knowledge components until root-caused". Same pattern as the
  * Behavioral Telemetry Layer, Alliance Controller and spaced-review switches:
  * Core evaluates the condition, writes the trip to `audit_logs` (the
- * Kill-Switch Trigger Log, Appendix F §1.3), holds it until an operator
+ * Kill-Switch Trigger Log), holds it until an operator
  * resolves it (`tutor:integrity-report -- --resolve="…"`), and sends the
  * tripped `kc.key`s to Oracle as the negotiated context field
  * `corroborationRollbackKcKeys` (never part of the sealed model context).
@@ -359,7 +358,7 @@ export const MASTERY_KILL_SWITCH_TRIGGERED = 'mentor.kill_switch.mastery.trigger
 export const MASTERY_KILL_SWITCH_RESOLVED = 'mentor.kill_switch.mastery.resolved';
 export type MasteryKillSwitchCause = 'reversal_above_ceiling' | 'compliance_below_target';
 
-/** Engineering defaults for the automatic rollback (THRESHOLD-RECALIBRATION-LOG.md). */
+/** Engineering defaults for the automatic rollback. */
 export const MASTERY_KILL_SWITCH = {
   /** Compliance is judged over consequential moves in this trailing window. */
   complianceWindowDays: 14,
@@ -390,9 +389,9 @@ export interface MasteryKillSwitchVerdict {
 }
 
 /**
- * The Stage 7 condition, per KC (pure). `rows` is the reversal window (the
+ * The rollback condition, per KC (pure). `rows` is the reversal window (the
  * rows after the latest resolution); compliance is judged on the rows of the
- * trailing compliance window only, so a legacy row from before C.10 recorded
+ * trailing compliance window only, so a legacy row from before corroboration was recorded
  * its evidence does not trip anything months later.
  */
 export function evaluateMasteryKillSwitch(
@@ -516,8 +515,8 @@ export function resetMasteryKillSwitchCache(): void {
  * condition and never writes a trigger: tripping stays with
  * `getMasteryKillSwitch` on the session-context path. Reuses that verdict
  * while it is fresh, else reads the audit trail, cached for
- * `killSwitchCacheMs`. A FAILED read is not evidence (§1.14): it returns the
- * empty set (the stricter C.10 rule stays in force) and is not cached.
+ * `killSwitchCacheMs`. A FAILED read is not evidence: it returns the
+ * empty set (the stricter corroboration rule stays in force) and is not cached.
  */
 export async function getMasteryRollbackKcKeys(
   now: Date = new Date(),
@@ -547,7 +546,7 @@ export async function getMasteryRollbackKcKeys(
  *     cause and numbers (no learner ids, no text) and joins the set. A
  *     compliance miss with no KC opens a trip that rolls nothing back but is
  *     logged and held until resolved.
- *   - A FAILED read is not evidence (§1.14): nothing new trips, the verdict is
+ *   - A FAILED read is not evidence: nothing new trips, the verdict is
  *     not cached, and the KCs already in force (when the audit read answered)
  *     stay rolled back.
  */
@@ -652,7 +651,7 @@ export interface MasteryKillSwitchLogEntry {
   resolutionHours: number | null;
 }
 
-/** The Kill-Switch Trigger Log for the Extended Mastery Engine (Appendix F §1.3). */
+/** The Kill-Switch Trigger Log for the Extended Mastery Engine. */
 export function masteryKillSwitchLog(rows: readonly MasteryAuditRow[]): MasteryKillSwitchLogEntry[] {
   const ordered = [...rows].sort((a, b) => a.created_at.localeCompare(b.created_at));
   const out: MasteryKillSwitchLogEntry[] = [];

@@ -6,7 +6,7 @@ import { PROOF_CHOICES, proofPayloadProblem } from './proof.js';
 
 const pan = z.object({ x: z.number().int().min(0).max(BALANCE_MAX_X), u: z.number().int().min(0).max(BALANCE_MAX_UNITS) }).strict();
 
-/** F1.8: the scale that holds `a x + b = c x + d` and the operations offered; the answer (x) never ships in the payload. */
+/** The scale that holds `a x + b = c x + d` and the operations offered; the answer (x) never ships in the payload. */
 export const balancePayload = z.object({
   start: z.object({ l: pan, r: pan }).strict().refine(isStartScale, 'The equation needs x on at least one pan'),
   ops: z.array(z.enum(BALANCE_OPS)).min(1).max(BALANCE_OPS.length).refine(isOfferedOps, 'Offer distinct operations, at least one that moves the route'),
@@ -15,7 +15,7 @@ export const balancePayload = z.object({
 const int = (min: number, max: number) => z.number().int().min(min).max(max);
 const choices = z.array(z.enum(PROOF_CHOICES)).min(3).max(5);
 
-/** F1.15: one payload shape per visual; `choices` are the formulas offered for the prediction, never marked. */
+/** One payload shape per visual; `choices` are the formulas offered for the prediction, never marked. */
 export const proofPayload = z.union([
   z.object({ base: int(2, 20), height: int(1, 20), slant: int(1, 19), choices }).strict(),
   z.object({ base: int(1, 20), height: int(1, 20), apex: int(0, 20), choices }).strict(),

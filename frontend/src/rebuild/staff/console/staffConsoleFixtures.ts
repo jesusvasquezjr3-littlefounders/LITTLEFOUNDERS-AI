@@ -6,26 +6,26 @@ import type { StaffApi, StaffResult } from './staffConsoleApi';
 
 /*
  * Development fixtures for the rebuilt staff console (the development
- * preview's `staff-console-*` screens). The same JSON answers the audit's
- * synthetic Core on the real routes (scripts/audits/lanes/staff.mjs), so the
- * preview and the audited routes render the same data: a stress-length name
+ * preview's `staff-console-*` screens). The same JSON answers a synthetic
+ * Core on the real routes, so the
+ * preview and those routes render the same data: a stress-length name
  * and address, every verification status, an old grant due for review, a
  * pattern case, a failed email and one service down.
  *
- * W2T.2 adds the Content, Generation and Mentor-quality answers from
- * staffSectionFixtures.json: a stress-length course and lesson, a B.3
+ * It also holds the Content, Generation and Mentor-quality answers from
+ * staffSectionFixtures.json: a stress-length course and lesson, an
  * incident, a live activity with and without a risk category, packs, a run
  * with a failed, a salvaged and a skipped lesson, and a live run that trips
  * the cost, cache and failure alerts.
  *
- * W2T.3 adds Analytics & Health and Learning intel from
+ * It also holds Analytics & Health and Learning intel from
  * staffInsightFixtures.json: a web overview with a comparison, a country
  * list with a micro-state and a country the map cannot place, Mexico's
  * regions with one label no outline matches, a shared staff address, an
  * instrumented event that never fired, a stress-length course, experiment and
  * skill, and a staff share above half.
  *
- * W2T.4 adds the programme metrics, the Mentor retention sweep and the
+ * It also holds the programme metrics, the Mentor retention sweep and the
  * operations watchdog from staffProgrammeFixtures.json (the empty state: a
  * sweep that never ran).
  *
@@ -55,7 +55,7 @@ export function fixtureAnswer(path: string, state: FixtureState): StaffResult<un
   if (route === '/admin/roles') return ok(empty ? { holders: [], summary: { totalHolders: 0, totalRoleAssignments: 0, totalPermissionAssignments: 0, roleCounts: {}, permissionCounts: {}, lastChangedAt: null } } : fixtures.roles);
   if (route === '/admin/roles/candidates') return ok({ candidates: empty ? [] : fixtures.candidates });
   if (route === '/admin/roles/reviews') {
-    // G.4: the review log's view of the fixture holders (admin/superadmin roles and staff permissions only).
+    // The review log's view of the fixture holders (admin/superadmin roles and staff permissions only).
     const grants = empty ? [] : fixtures.roles.holders.flatMap((holder) => [
       ...holder.roleAssignments.filter((a) => a.role === 'admin' || a.role === 'superadmin').map((a) => ({ kind: 'role' as const, grant: a.role, grantedAt: a.grantedAt })),
       ...holder.permissionAssignments.map((a) => ({ kind: 'permission' as const, grant: a.permission, grantedAt: a.grantedAt })),
@@ -79,7 +79,7 @@ export function fixtureAnswer(path: string, state: FixtureState): StaffResult<un
   return sectionAnswer(route, query, empty) ?? insightAnswer(route, query, empty) ?? programmeAnswer(route, empty) ?? { ok: false, code: 'NOT_FOUND' };
 }
 
-/** W2T.4: the programme metrics and support tools (staffProgrammeFixtures.json; the audit's synthetic Core answers from the same file). */
+/** The programme metrics and support tools (staffProgrammeFixtures.json; the synthetic Core answers from the same file). */
 export function programmeAnswer(route: string, empty: boolean): StaffResult<unknown> | null {
   const emptyRoutes = programme.empty as Record<string, unknown>;
   const routes = programme.routes as Record<string, unknown>;
@@ -87,7 +87,7 @@ export function programmeAnswer(route: string, empty: boolean): StaffResult<unkn
   return route in routes ? { ok: true, data: routes[route] } : null;
 }
 
-/** W2T.3: Analytics & Health and Learning intel (staffInsightFixtures.json; the audit's synthetic Core answers from the same file). */
+/** Analytics & Health and Learning intel (staffInsightFixtures.json; the synthetic Core answers from the same file). */
 export function insightAnswer(route: string, query: URLSearchParams, empty: boolean): StaffResult<unknown> | null {
   const ok = (data: unknown): StaffResult<unknown> => ({ ok: true, data });
   const a = insight.analytics;
@@ -115,7 +115,7 @@ export function insightAnswer(route: string, query: URLSearchParams, empty: bool
   if (route === '/admin/intel/churn/risk') return ok(empty ? [] : i.churn);
   if (route === '/admin/intel/experiments') return ok(empty ? [] : i.experiments);
   if (route === '/admin/intel/alerts') return ok(empty ? [] : i.alerts);
-  // H.3 (GAP-FIX-R6): the delivery channels the warehouse has; a new deployment has none.
+  // The delivery channels the warehouse has; a new deployment has none.
   if (route === '/admin/intel/alerts/channels') return ok({ webhook: !empty, email: false });
   if (route === '/admin/intel/alerts/delivery') return ok(empty ? { ...i.alertDelivery, triggered: 0, delivered: 0, failed: 0, unconfigured: 0, pending: 0, rate: null } : i.alertDelivery);
   if (route === '/admin/analytics/consent-coverage') return ok(empty ? { ...i.disclosure, teens: { active: 0, disclosed: 0, optedIn: 0, optedOut: 0, protectedOrigin: 0, measuredWithoutOptIn: 0, covered: 0 }, guests: { active: 0, suppressed: 0, measured: 0 }, covered: 0, population: 0, coverage: null, status: 'no_data' } : i.disclosure);
@@ -126,8 +126,8 @@ export function insightAnswer(route: string, query: URLSearchParams, empty: bool
 }
 
 /**
- * W2T.2: Content, Generation and Mentor quality (staffSectionFixtures.json;
- * the audit's synthetic Core answers from the same file). Empty is a new
+ * Content, Generation and Mentor quality (staffSectionFixtures.json;
+ * the synthetic Core answers from the same file). Empty is a new
  * deployment: no courses, nothing to review, no runs, no generation data
  * (Core answers the analytics and coach reads with DATA_UNAVAILABLE then).
  */
@@ -138,7 +138,7 @@ export function sectionAnswer(route: string, query: URLSearchParams, empty: bool
   if (route === '/admin/moderation') return ok(empty ? { lessons: [], total: 0 } : sections.moderation);
   if (route.startsWith('/admin/moderation/')) {
     if (route.endsWith(sections.lessonDetail.id)) return ok(sections.lessonDetail);
-    // GAP-FIX-R6: the second lesson in the queue is a v2 lesson, previewed in the rebuilt lesson view.
+    // The second lesson in the queue is a v2 lesson, previewed in the rebuilt lesson view.
     const lesson = sections.moderation.lessons.find((entry) => route.endsWith(entry.id));
     return ok({ ...sections.lessonDetail, ...lesson, ...(lesson && lesson.id === sections.moderation.lessons[1]?.id ? { documents: sections.lessonDocumentsV2 } : {}) });
   }
@@ -146,13 +146,13 @@ export function sectionAnswer(route: string, query: URLSearchParams, empty: bool
   if (route === '/admin/tutor/live-content/status') return ok(sections.liveStatus);
   if (route === '/admin/tutor/packs') return ok(empty ? { packs: [], total: 0 } : sections.packs);
   if (route === '/admin/content/learning-quality') return ok(sections.learningQuality);
-  // G.2: new versions of live lessons waiting for a staff release, and the skipped release checks.
+  // New versions of live lessons waiting for a staff release, and the skipped release checks.
   if (route === '/admin/content/lesson-versions') return ok(empty ? { versions: [], total: 0 } : sections.lessonVersions);
-  // GAP-FIX-R6: a pending version's document, for its preview before the release.
+  // A pending version's document, for its preview before the release.
   if (/^\/admin\/content\/lessons\/[^/]+\/versions\/[^/]+$/.test(route)) {
     return ok({ ...sections.versionDocument, lessonId: route.split('/')[4], documentVersionId: route.split('/')[6] });
   }
-  // Appendix C Stage 3 (GAP-FIX-R6): the pedagogical review of a lesson, or of one version with ?versionId=.
+  // The pedagogical review of a lesson, or of one version with ?versionId=.
   if (route.endsWith('/pedagogical-review')) {
     const versionId = query.get('versionId');
     return ok(versionId ? { ...sections.stage3Review, subject: 'version', fingerprint: null, documentVersionId: versionId, locale: 'es-MX',

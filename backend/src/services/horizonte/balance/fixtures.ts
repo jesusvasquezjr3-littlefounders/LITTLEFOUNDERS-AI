@@ -4,7 +4,7 @@ const text = (en: string, es: string, pt: string): Record<HorizonteLocale, strin
 
 const ELIGIBLE_10_12 = { minimum_age: 10, maximum_age: 12 };
 
-/** F1.8: `a x + b = c x + d` as a scale; every fixture has a route the offered operations can walk. */
+/** `a x + b = c x + d` as a scale; every fixture has a route the offered operations can walk. */
 const balanceFixture = (
   id: string,
   title: Record<HorizonteLocale, string>,
@@ -27,7 +27,7 @@ const balanceFixture = (
   ladder: { invalid: { steps: [untouchable], answer: '' }, valid: { steps: [], answer: '' }, met: { steps: [...route], answer: String(x) } },
 });
 
-/** F1.15: one visual, the formulas offered for the prediction, and the key (right formula and exact value). */
+/** One visual, the formulas offered for the prediction, and the key (right formula and exact value). */
 const proofFixture = (
   id: string,
   visual: string,

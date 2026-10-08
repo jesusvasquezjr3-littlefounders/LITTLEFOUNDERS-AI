@@ -2,7 +2,7 @@ import { withConnection, type DuckConnection } from '../db/duckdb.js';
 import { ALL_TABLES, ERASURE_REAPPLY_JOB, ERASURE_TOMBSTONE_DAYS, logMaintenanceFailure, logMaintenanceRun } from './warehouseMaintenance.js';
 
 /*
- * Product 10 E.6 — the warehouse step of an account erasure.
+ * The warehouse step of an account erasure.
  *
  * Core erases the account in Vault first; this removes every row the
  * warehouse copied about it: first-party events by the account or by the
@@ -17,7 +17,7 @@ import { ALL_TABLES, ERASURE_REAPPLY_JOB, ERASURE_TOMBSTONE_DAYS, logMaintenance
  * read from Vault moments before the account was erased and written moments
  * after.
  *
- * GAP-FIX-R8 (H.4): every re-apply writes one `erasure_reapply` row to
+ * Every re-apply writes one `erasure_reapply` row to
  * warehouse_maintenance_log, in its own transaction when it succeeds and after
  * the rollback when it fails, and Core's `warehouse_retention` watched job
  * reads it (services/warehouseMaintenance.ts). A re-apply that fails or stops
@@ -29,7 +29,7 @@ import { ALL_TABLES, ERASURE_REAPPLY_JOB, ERASURE_TOMBSTONE_DAYS, logMaintenance
  * `textUser`: the experiment tables (services/experiments.ts) store the learner
  * id as TEXT, not UUID, so they are matched on the canonical lowercase text
  * form. They hold a learner's assignment and exposure, so an erasure removes
- * them too (H.2 / Appendix O 1.2 gap-fix round 6).
+ * them too.
  */
 const TABLES: { table: string; byUser: boolean; byAnon: boolean; textUser?: boolean }[] = [
   { table: 'fact_events_raw', byUser: true, byAnon: true },

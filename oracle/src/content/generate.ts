@@ -9,7 +9,7 @@ import { estimateCostUsd } from '../tutor/orchestrator.js';
 import { classifyGeneratedContent } from './contentRisk.js';
 
 /*
- * Ladder tier 3: authoring one activity in the moment (/ORACLE.md §7.3).
+ * Ladder tier 3: authoring one activity in the moment.
  *
  * WHY THIS EXISTS AT ALL. Tiers 1 and 2 serve human-approved content and carry
  * most turns. This tier exists for the case the owner argued for and that a
@@ -42,12 +42,12 @@ export interface GenerationRequest {
   allowedTypes: readonly string[];
   /** TUTOR lines already said this session, so the generator does not repeat. */
   recentTutorLines: readonly string[];
-  /** Whether the model safety pass is MANDATORY for this segment's text (§6). */
+  /** Whether the model safety pass is MANDATORY for this segment's text. */
   isMinor: boolean;
   /**
    * The turn's own interrupt signal (`ws/server.ts`'s `live.abort?.signal`).
    *
-   * Found by adversarial review, round 64 (2026-08-30, HIGH): a learner
+   * Found by adversarial review: a learner
    * interrupting mid-generation genuinely called `AbortController.abort()`
    * on the server's own controller, but nothing downstream ever read it —
    * confirmed directly: an already-aborted signal has ZERO effect on this
@@ -64,7 +64,7 @@ export interface GenerationRequest {
    * Reports the real cost of a call the moment it succeeds, regardless of
    * whether generation ultimately produces a segment.
    *
-   * Found by adversarial review, round 64 (2026-08-30, HIGH): tier-3's own
+   * Found by adversarial review: tier-3's own
    * author-model calls are the same paid model family
    * `orchestrator.ts`'s `produce()` already costs, and nothing added them
    * to the session's cost ledger — `modelUsd` had exactly one increment
@@ -170,9 +170,9 @@ export interface JudgeVerdict {
 }
 
 /**
- * C.5 — THE JUDGE'S IDENTITY, beside its model name: a SHA-256 over
+ * THE JUDGE'S IDENTITY, beside its model name: a SHA-256 over
  * everything the judge is told (its system prompt and the age-band rules
- * sent with every item). A calibration run (Appendix E §2.1/§3.2) is recorded
+ * sent with every item). A calibration run is recorded
  * against this hash, and Core refuses a live item approved by a judge whose
  * model or hash does not match the current passed calibration — so editing
  * this prompt, or pointing JUDGE_MODEL_NAME elsewhere, silently un-trusts
@@ -184,8 +184,8 @@ export const CONTENT_JUDGE_PROMPT_HASH = createHash('sha256')
 
 /**
  * The live-content judge, exported for the zero-spend calibration harness
- * (`scripts/content-judge-calibration.ts`), whose live mode is owner-run
- * (OD-23). Every other caller goes through `generateSegment`.
+ * (`scripts/content-judge-calibration.ts`), whose live mode is owner-run.
+ * Every other caller goes through `generateSegment`.
  */
 export async function judgeCandidate(segment: unknown, tier: 1 | 2 | 3, signal?: AbortSignal): Promise<JudgeVerdict> {
   return judge(segment, tier, signal);
@@ -195,8 +195,8 @@ async function judge(segment: unknown, tier: 1 | 2 | 3, signal?: AbortSignal): P
   const config = getConfig();
   if (!config.JUDGE_API_KEY) {
     // No judge configured means tier 3 does not run. It does not mean tier 3
-    // runs unjudged — /ORACLE.md §7.3 lists the judge as a required guard, and
-    // a missing guard is a reason to emit nothing (§1.14).
+    // runs unjudged — the judge is a required guard, and
+    // a missing guard is a reason to emit nothing.
     return { pass: false, reason: 'no independent judge is configured' };
   }
 
@@ -204,12 +204,12 @@ async function judge(segment: unknown, tier: 1 | 2 | 3, signal?: AbortSignal): P
   const response = await withTimeout(
     fetch(`${config.JUDGE_API_BASE}/chat/completions`, {
       method: 'POST',
-      // Found by adversarial review, round 24 (2026-08-30, HIGH, shared with
+      // Found by adversarial review (2026-08-30, HIGH, shared with
       // the pedagogical model and moderation judge calls): `withTimeout`
       // below only stops US from waiting on our own timeout — the real
       // request keeps running and can still be billed with nothing in our
       // ledger to show for it. The signal is what actually cancels it.
-      // round 64 additionally combines the CALLER's own interrupt signal
+      // This additionally combines the CALLER's own interrupt signal
       // (a learner cutting in mid-generation) the same way `complete()`
       // already does, so the judge call stops too, not only the timeout.
       signal: signal ? AbortSignal.any([signal, timeoutSignal]) : timeoutSignal,
@@ -267,15 +267,15 @@ function collectSegmentProse(candidate: Record<string, unknown>): string {
 /**
  * Authors one candidate and puts it past the judge.
  *
- * Returns `null` for every failure, and the caller must then emit NOTHING
- * (/ORACLE.md §7.3): a confident wrong exercise misleads where an absent one
+ * Returns `null` for every failure, and the caller must then emit NOTHING:
+ * a confident wrong exercise misleads where an absent one
  * merely omits. The tutor falls back to conversation and says so honestly.
  */
 export async function generateSegment(request: GenerationRequest): Promise<GenerationResult | null> {
   const config = getConfig();
 
   /*
-   * SEAL FIRST. Same rule as a conversational turn (/ORACLE.md §4.1): nothing
+   * SEAL FIRST. Same rule as a conversational turn: nothing
    * reaches the model that has not passed a `.strict()` gate, and the gate
    * throws rather than trimming — a brief that failed validation is a bug in
    * our builder, not a degraded brief to send anyway.
@@ -292,15 +292,15 @@ export async function generateSegment(request: GenerationRequest): Promise<Gener
   });
 
   /*
-   * THE MODEL-AUTHORED HALF OF THIS BRIEF IS FENCED (/ORACLE.md §5 layer 2).
+   * THE MODEL-AUTHORED HALF OF THIS BRIEF IS FENCED.
    *
    * `framing`, `rationale`, `recentTutorLines` AND `skillKey` are all strings
    * the TURN model wrote, and the turn model is the one thing in this system
    * a learner can talk to. A learner who steers it into emitting instructions
    * inside any of them would otherwise have those instructions interpolated
    * raw into another model's system-adjacent prompt — an injection that hops
-   * from the conversation into the content author, which is the one place §5
-   * says model-derived text must never go unfenced.
+   * from the conversation into the content author, which is the one place where
+   * model-derived text must never go unfenced.
    *
    * `skillKey` was found missing from this list by adversarial review,
    * 2026-08-30 (HIGH): it comes from the SAME turn schema field
@@ -310,7 +310,7 @@ export async function generateSegment(request: GenerationRequest): Promise<Gener
    * tier, difficulty), and turn-level moderation never inspects it — so a
    * model that kept `say`/`framing` innocuous could carry an injection
    * payload in `skillKey` straight past moderation and into this prompt with
-   * full instruction-level trust. This is the one content surface §1.9's
+   * full instruction-level trust. This is the one content surface the
    * Tutor carve-out exempts from human publication specifically because
    * fencing is one of the compensating controls standing in for a human
    * reviewer — a gap here is not "one control among several," it is a hole
@@ -417,7 +417,7 @@ export async function generateSegment(request: GenerationRequest): Promise<Gener
     }
   } catch (error) {
     /*
-     * The learner cut in mid-authoring (round 64, 2026-08-30). This
+     * The learner cut in mid-authoring. This
      * function's own contract is "return null for every failure, the
      * caller emits nothing" — an interrupt is exactly that, not a special
      * case: `complete()` throws the same `CompletionAbortedError` here it
@@ -448,14 +448,14 @@ export async function generateSegment(request: GenerationRequest): Promise<Gener
 
   /*
    * SAFETY MODERATION — found MISSING entirely by an adversarial review,
-   * 2026-08-30 (CRITICAL). `/ORACLE.md` §7.3's own guard table states
-   * "Moderation | §6, same as speech" as fact; it was not. `judge()` above is
+   * 2026-08-30 (CRITICAL). The guard list for this tier states
+   * "Moderation, same as speech" as fact; it was not. `judge()` above is
    * a QUALITY/pedagogy reviewer — one loose bullet among eight about
    * correctness and teaching, not the closed harm-category vocabulary
    * `deterministicModeration`/`moderateTutorOutput` enforce for every spoken
    * turn. A generated segment's `prompt_md`, `explanation_md` and every
    * string in its `payload` (options, rationales, item text) are shown to a
-   * learner with NO human in the loop, under the exact §1.9 carve-out whose
+   * learner with NO human in the loop, under the exact Tutor carve-out whose
    * entire justification is deterministic gates + moderation + an
    * independent judge — and this was the one of those three actually
    * missing from the code. Reusing the SAME gate every spoken turn goes
@@ -468,7 +468,7 @@ export async function generateSegment(request: GenerationRequest): Promise<Gener
     text: prose,
     locale: sealed.locale,
     tier: sealed.tier,
-    // Found by adversarial review, round 55 (2026-08-30, LOW): this omitted
+    // Found by adversarial review: this omitted
     // `derived.nonce`, the same fence nonce the untrusted brief above was
     // sealed with — the generic PROMPT_LEAK_MARKERS still catch a full fence
     // recitation regardless, but only the per-call nonce check catches the
@@ -482,7 +482,7 @@ export async function generateSegment(request: GenerationRequest): Promise<Gener
   }
 
   /*
-   * C.5: the content-risk category this item is judged and sampled under.
+   * The content-risk category this item is judged and sampled under.
    * Oracle reports what it can see (the item, the Mentor's brief, the
    * learner-input classifier); Core adds the session's safety flags, re-runs
    * the lexicon itself and takes the union, so this report can raise the

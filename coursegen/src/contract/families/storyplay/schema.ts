@@ -1,4 +1,4 @@
-// `storyplay` family — payload/answer Zod schemas (LESSON_ENGINE.md §5.7, types 46–50).
+// `storyplay` family — payload/answer Zod schemas (types 46–50).
 
 import { z } from 'zod'
 import {
@@ -44,7 +44,7 @@ export const storyBranch = segmentSchema(
 )
 
 // Reply qualities/reactions live ONLY in the answer (server-side) — the client
-// must never be able to read scores off the payload (§5.7 #47, security §3).
+// must never be able to read scores off the payload.
 export const dialogueChoice = segmentSchema(
   'dialogue_choice',
   z.object({

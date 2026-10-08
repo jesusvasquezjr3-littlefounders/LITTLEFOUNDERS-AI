@@ -142,7 +142,7 @@ export function assertCopyContract(copy: HorizonteCopy): void {
 }
 
 /**
- * The frontend contract every Horizonte board meets (RECIPE.md "Definition of done"). In each locale it renders the fixture
+ * The frontend contract every Horizonte board meets. In each locale it renders the fixture
  * through the real lesson player and checks: a declared ICAP level and chunk budget; every interactive element focusable and
  * named; every drag handle 64 px (declared and in CSS) with a Move to menu beside it; a table or text equivalent that opens;
  * motion only under no-preference and within the motion tokens; and a data-copy-role on every string, within budget.

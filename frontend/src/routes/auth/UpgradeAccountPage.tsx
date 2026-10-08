@@ -7,11 +7,11 @@ import { UpgradeAccountScreen } from '@/rebuild/identity/RecoveryScreens';
 import { failureCode } from './failureCode';
 
 /*
- * `/upgrade-account` (A6): attaches an email and password to the CURRENT guest
+ * `/upgrade-account`: attaches an email and password to the CURRENT guest
  * session in place, never /signup (which would create a second, empty
  * account). The account id stays the same, so the streak and progress carry
- * over with no migration, and so does a refused child's under-13 origin marker
- * (A.2): Core keeps it through the upgrade, and the age screen never asks
+ * over with no migration, and so does a refused child's under-13 origin marker:
+ * Core keeps it through the upgrade, and the age screen never asks
  * that account for a date again. A non-guest has nothing to save and goes to
  * Learn. Now on the sign-in shell (the legacy page was its own layer).
  */

@@ -1,4 +1,4 @@
-/* F2.4 function graph, F2.5 line system, F2.6 equation editor. Neutral board: lines and markers are told apart by shape, dash and label, never colour alone. Tokens only; text and outlines on the themed ground use --content and --edge, which flip in dark mode (--ink is a constant). */
+/* Function graph, line system, equation editor. Neutral board: lines and markers are told apart by shape, dash and label, never colour alone. Tokens only; text and outlines on the themed ground use --content and --edge, which flip in dark mode (--ink is a constant). */
 .lf-alg2 { display: grid; gap: var(--spacing-3); justify-items: start; }
 .lf-alg2 > .lf-plano { inline-size: 100%; max-inline-size: 42rem; }
 .lf-alg2-status { margin: 0; font-weight: 800; }

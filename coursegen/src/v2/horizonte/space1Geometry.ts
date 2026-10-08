@@ -1,7 +1,7 @@
 /*
  * A self-contained copy of the space1 model for the Forge solvability checkers. Forge ships on its own and cannot import Core, so the
  * voxel turns, the Platonic meshes with their plane sections, the market stall and the coin stacks are restated here without the
- * drawing code. The parity of this copy with Core is pinned by the space1 tests, which compare it to the pack fixtures.
+ * drawing code. Keep this copy in step with Core.
  */
 type Vec3 = readonly [number, number, number];
 const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -135,7 +135,7 @@ export const isSectionSolid = (value: unknown): value is SectionSolid => typeof 
 export interface PolyMesh { vertices: readonly Vec3[]; faces: readonly (readonly number[])[]; edges: readonly (readonly [number, number])[] }
 export interface PolyCounts { vertices: number; edges: number; faces: number }
 
-/** V, E, F of each Platonic solid: the numbers the Euler question reads; `polyCounts(mesh)` must agree (tested). */
+/** V, E, F of each Platonic solid: the numbers the Euler question reads; `polyCounts(mesh)` must agree. */
 export const PLATONIC_COUNTS: Readonly<Record<PlatonicId, PolyCounts>> = {
   tetrahedron: { vertices: 4, edges: 6, faces: 4 },
   cube: { vertices: 8, edges: 12, faces: 6 },
@@ -144,7 +144,7 @@ export const PLATONIC_COUNTS: Readonly<Record<PlatonicId, PolyCounts>> = {
   icosahedron: { vertices: 12, edges: 30, faces: 20 },
 };
 
-/** The same counts for the Archimedean solids the Euler question also uses (the meshes live in Core; their counts are pinned against these). */
+/** The same counts for the Archimedean solids the Euler question also uses (the meshes live in Core; their counts must agree with these). */
 export const ARCHIMEDEAN_COUNTS: Readonly<Record<ArchimedeanId, PolyCounts>> = {
   'truncated-tetrahedron': { vertices: 12, edges: 18, faces: 8 },
   cuboctahedron: { vertices: 12, edges: 24, faces: 14 },

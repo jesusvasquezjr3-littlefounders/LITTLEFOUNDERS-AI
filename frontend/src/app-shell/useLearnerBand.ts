@@ -5,13 +5,13 @@ import type { AgeBand } from '@/rebuild/design/copyBudget';
 import { fetchLearnerRegister, type RegisterTransport } from '@/rebuild/learning/learnerRegister';
 
 /*
- * GAP-FIX-R4 (Bible 06 §7, 06 §3.1, 02 D11 and rule 19): the Copy Budget band
+ * The Copy Budget band
  * of the signed-in learner, once, for the learner shell's design-system root.
- * 06 §7 says the root must carry `data-age-band` in production, so a 6-9
+ * The root must carry `data-age-band` in production, so a 6-9
  * child's every learner page (and the shell chrome around it) is budgeted at
  * the 6-9 limits, not only the pages that declare a band of their own.
  *
- * Core decides the band (GET /learn/register, B.23): the client never states
+ * Core decides the band (GET /learn/register): the client never states
  * an age. While the answer is unknown, or when Core cannot give one, the band
  * is the youngest (the most protective reading, as `bandOf` in the learner
  * page hosts reads it). The last answer per account is remembered, so a shell

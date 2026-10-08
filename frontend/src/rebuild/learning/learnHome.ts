@@ -1,16 +1,16 @@
 import { z } from 'zod';
 
 /*
- * W2L.1 (L1): the learner home's data, the client side of GET /learn/courses.
+ * The learner home's data, the client side of GET /learn/courses.
  *
  * Core decides everything on the shelf: which courses are published and open
  * to this learner, the progress of each (real passes and placement credit),
- * the B.6 pathway frontier when the pathway engine is on (the learner's stage,
- * how the course serves it and the recommended lesson) and, for B.3, the
+ * the pathway frontier when the pathway engine is on (the learner's stage,
+ * how the course serves it and the recommended lesson) and the
  * featured course that could not be assembled. The client validates the shape
  * and renders it; it never re-derives a lock or an age. A malformed shelf is
  * unavailable, never partly shown. Transport is injected, so this module
- * imports nothing from the legacy app (Bible 02 rule 23).
+ * imports nothing from the legacy app.
  */
 
 const stage = z.enum(['child', 'tween', 'teen', 'adult']);
@@ -25,13 +25,13 @@ export const shelfCourseSchema = z.object({
   badgeAsset: z.string().nullable().optional(),
   inProgress: z.boolean().optional(),
   progress,
-  /** B.6 pathway mode only. `unavailable` is the age safeguard: listed so nothing vanishes, never offered (OD-16). */
+  /** Pathway mode only. `unavailable` is the age safeguard: listed so nothing vanishes, never offered. */
   pathway: z.object({
     learnerStage: stage,
     pathwayStage: stage.nullable(),
     basis: z.enum(['own-stage', 'younger-bridge', 'older-early', 'unavailable']),
     recommendedLessonId: z.string().nullable(),
-    /** OD-25: mastery can open (or opened) a chapter one stage early, so a course with no chapter for this age is still offered. */
+    /** Mastery can open (or opened) a chapter one stage early, so a course with no chapter for this age is still offered. */
     earlyAccess: z.boolean().optional(),
   }).optional(),
 });
@@ -39,7 +39,7 @@ export type ShelfCourse = z.infer<typeof shelfCourseSchema>;
 
 export const shelfSchema = z.object({
   courses: z.array(shelfCourseSchema),
-  /** B.3: the learner's featured course could not be assembled right now. */
+  /** The learner's featured course could not be assembled right now. */
   unavailableFeaturedCourse: z.object({ slug: z.string().min(1), title: localized }).optional(),
 });
 export type Shelf = z.infer<typeof shelfSchema>;
@@ -74,7 +74,7 @@ export async function fetchShelf(request: LearnTransport): Promise<ShelfState> {
   return parsed.success ? { status: 'ready', shelf: parsed.data } : { status: 'error' };
 }
 
-/** A course the age safeguard closes for this learner: listed, never offered (OD-16, B.6). */
+/** A course the age safeguard closes for this learner: listed, never offered. */
 export const isClosedByAge = (course: ShelfCourse) => course.pathway?.basis === 'unavailable' && course.pathway.earlyAccess !== true;
 export const isStarted = (course: ShelfCourse) => course.progress.passed > 0;
 export const isDone = (course: ShelfCourse) => course.progress.total > 0 && course.progress.passed >= course.progress.total;
@@ -98,11 +98,10 @@ export function shelfOrder(courses: readonly ShelfCourse[], featured: ShelfCours
 }
 
 /*
- * Course identity (Bible 02 §4.3): each course is told apart three ways at
+ * Course identity: each course is told apart three ways at
  * once, by hue, by its own icon and by its title. The four published courses
  * map onto the four identity slots; a course with no slot yet gets a neutral
- * card and no icon rather than a borrowed identity (proposal for the owner in
- * docs/rebuild/sprints/W2-LEARNER.md).
+ * card and no icon rather than a borrowed identity.
  */
 export type CourseHue = 'primary' | 'mint' | 'berry' | 'sky';
 export interface CourseIdentity { hue: CourseHue; iconAssetId: string }

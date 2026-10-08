@@ -1,15 +1,14 @@
 /**
- * The v2 lesson's answer cues (OD-28, owner review item L-02; B.26).
+ * The v2 lesson's answer cues.
  *
  * A correct answer plays the product's success cue; a "not yet" plays the
  * gentle not-yet cue (synthesised in-house by
  * `scripts/synthesize-not-yet-sound.mjs`, zero spend), never an error buzzer.
  * The v2 lesson's feedback row and the Mentor's live activity both play it.
  * Only answer verdicts sound: an invalid or incomplete answer and a failed check
- * stay silent, and no cue is ever a celebration (D7).
+ * stay silent, and no cue is ever a celebration.
  *
- * The rebuilt tree may not import the legacy sound modules (the UI boundary in
- * `check-product-spec.mjs`), so this file honours the same persisted off switch
+ * The rebuilt tree may not import the legacy sound modules, so this file honours the same persisted off switch
  * the platform's sound module writes (`lf_sound_muted`) by reading it directly.
  * Fire-and-forget: autoplay refusals and missing assets are swallowed; a sound
  * is an enhancement, never information on its own.
@@ -36,7 +35,7 @@ export function lessonSoundMuted(): boolean {
 }
 
 /*
- * B.18 (GAP-FIX-R3): the lesson's one narration channel. The Mentor's
+ * The lesson's one narration channel. The Mentor's
  * differentiated narration plays only when the learner asks (never autoplay,
  * so it never talks over the learner's own audio), never with the sound off
  * switch on, and one line at a time: a new line stops the previous one.

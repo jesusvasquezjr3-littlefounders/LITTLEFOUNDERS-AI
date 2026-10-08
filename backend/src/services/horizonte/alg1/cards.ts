@@ -1,7 +1,7 @@
 import { isRecord, exactKeys, oneOf, sameMultiset, type ArrangePiece, type ClassState, type Solution } from './arrange.js';
 
 /**
- * F2.2: an equation made of cards, `x + 3 = 7`. A card is the unknown, minus the unknown, a positive or a negative
+ * An equation made of cards, `x + 3 = 7`. A card is the unknown, minus the unknown, a positive or a negative
  * number. Only additive moves exist: a supply card goes onto both sides at once, and a card meets its opposite on one
  * side and both leave. The goal is the unknown alone on one side, every other card reduced.
  */

@@ -12,27 +12,26 @@ import '../design/system.css';
 import './account.css';
 
 /*
- * P1, THE LEARNER'S OWN PROFILE (Product 10 Block E; Frontend Bible 02 §4.5,
- * 03 §3.3, 06, 07).
+ * THE LEARNER'S OWN PROFILE.
  *
- * A dashboard-style page: a neutral page with cards (02 §4.5). The cover and
+ * A dashboard-style page: a neutral page with cards. The cover and
  * the cartoon avatar are the person's own presets, drawn from our sprites
- * (E.12: never an upload). What the page shows:
+ * (never an upload). What the page shows:
  *
  *   - the name, the handle (or the way to choose one), "member since", the
- *     Tutor pill for a verified parent looking at their own profile (E.5:
- *     the owner may always see it);
- *   - E.13: the notice that says which field keeps a minor's profile hidden;
+ *     Tutor pill for a verified parent looking at their own profile (the
+ *     owner may always see it);
+ *   - the notice that says which field keeps a minor's profile hidden;
  *   - progress (streak, lessons, XP, minutes) and the course badges;
- *   - connections as two plain links with NO number anywhere (E.9: the one
+ *   - connections as two plain links with NO number anywhere (the one
  *     comparison-to-others metric is not on the wire), in the supporting
  *     column, never in the same block as the progress numbers;
- *   - a self-registered teen's own connection requests (E.8, the rebuilt
+ *   - a self-registered teen's own connection requests (the rebuilt
  *     panel the route passes in);
  *   - an invite link for the tiers that manage their own connections (adult,
- *     independent teen). A child's connections are approved by their Tutor
- *     (E.1), so a child is never handed a link to spread (conservative
- *     default, recorded as an owner proposal).
+ *     independent teen). A child's connections are approved by their Tutor,
+ * so a child is never handed a link to spread (conservative
+ *     default).
  *
  * Presentation only: the route owns the data and passes a view.
  */
@@ -44,7 +43,7 @@ export interface OwnProfileCopy {
   badgesTitle: string; badgeEarned: string; badgeEarnedUndated: string; badgesEmpty: string;
   peopleTitle: string; followers: string; following: string; peopleManaged: string;
   inviteTitle: string; inviteBody: string; inviteNeedsUsername: string; copyLink: string; copied: string; copyFailed: string; inviteMessage: string;
-  /** Bible 08 §8 (GAP-FIX-R1): the Mentor row. */
+  /** The Mentor row. */
   mentorTitle: string; mentorChange: string;
 }
 
@@ -63,7 +62,7 @@ export interface OwnProfileData {
   cover: CoverId;
   stats: { streakDays: number; lessonsCompleted: number; xpPoints: number; minutesLearned: number };
   badges: OwnProfileBadge[];
-  /** E.8: the account's own tier, as Core read it (null when it could not). */
+  /** The account's own tier, as Core read it (null when it could not). */
   tier: SocialTier;
   /** A verified parent's own profile shows the Tutor pill (roles; display only). */
   tutor: boolean;
@@ -85,7 +84,7 @@ export function OwnProfile({ copy, locale, dark, ageBand, view, origin, invite =
   copy: OwnProfileCopy;
   locale: string;
   dark: boolean;
-  /** Set for a child's account, so the youngest copy budget applies (06 §3.1). */
+  /** Set for a child's account, so the youngest copy budget applies. */
   ageBand?: '6-9';
   view: OwnProfileView;
   /** The site the profile link points at (the page's own origin). */
@@ -93,14 +92,14 @@ export function OwnProfile({ copy, locale, dark, ageBand, view, origin, invite =
   invite?: InviteStatus;
   safetyNotice?: ReactNode;
   connections?: ReactNode;
-  /** GAP-FIX-R1: the Mentor row and the streak strip; null when the rhythm read failed or is not the learner's. */
+  /** The Mentor row and the streak strip; null when the rhythm read failed or is not the learner's. */
   rhythm?: OwnProfileRhythm | null;
   onNavigate: (href: string) => void;
   onRetry: () => void;
   onCopyInvite: (text: string) => void;
 }) {
   const root = useRef<HTMLDivElement>(null);
-  // The loading heading gives way to the person's name: route focus follows it (W2P.2).
+  // The loading heading gives way to the person's name: route focus follows it.
   useCarryHeadingFocus(root, view.kind);
   return <div ref={root} className="lf-rebuild lf-account-screen" data-screen="own-profile" data-theme={dark ? 'dark' : 'light'} lang={locale}
     data-age-band={ageBand} aria-busy={view.kind === 'loading'}>
@@ -142,7 +141,7 @@ function Ready({ copy, locale, dark, data, origin, invite, safetyNotice, connect
     {rhythm?.week && (locale === 'en-US' || locale === 'es-MX' || locale === 'pt-BR') ? <StreakStrip week={rhythm.week} locale={locale} /> : null}
   </Card>;
 
-  // Bible 08 §8 (GAP-FIX-R1): the chosen Mentor fills its profile row: the real render, the name and "Change".
+  // The chosen Mentor fills its profile row: the real render, the name and "Change".
   const avatar = rhythm ? findMentorAvatar(rhythm.character, dark ? 'dark' : 'light') : null;
   const mentor = rhythm ? <Card heading={copy.mentorTitle}>
     <div className="lf-profile-mentor" data-character={rhythm.character}>
@@ -166,7 +165,7 @@ function Ready({ copy, locale, dark, data, origin, invite, safetyNotice, connect
       </Stagger>}
   </Card>;
 
-  // E.9: the lists stay reachable, with no number, away from the progress block.
+  // The lists stay reachable, with no number, away from the progress block.
   const people = data.tier === 'closed' ? null : <Card heading={copy.peopleTitle}>
     {data.tier === 'guardian' ? <p className="lf-account-muted" data-copy-role="body">{copy.peopleManaged}</p> : null}
     <div className="lf-account-actions">

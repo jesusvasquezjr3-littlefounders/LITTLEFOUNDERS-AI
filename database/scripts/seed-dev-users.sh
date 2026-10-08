@@ -9,7 +9,7 @@
 #   kid@email.com                  → kid
 #   bigfounder@email.com           → bigfounder
 #   admin@email.com                → admin
-#   superadmin@littlefounders.ai   → superadmin  (NOT @email.com — the §1.3
+#   superadmin@littlefounders.ai   → superadmin  (NOT @email.com — the
 #                                    domain trigger rejects anything else)
 #
 # Testing Tutor ↔ Testing Niño are linked: one "Testing Family" with both as

@@ -16,27 +16,26 @@ import { courseIdentity, featuredCourse, isClosedByAge, isDone, isStarted, shelf
 import type { RhythmState } from './motivation';
 
 /*
- * W2L.1 — L1, the learner home at /learn, inside the learner shell.
+ * The learner home at /learn, inside the learner shell.
  *
- * A dashboard of independent pieces (Bible 02 rule 15: a neutral page with
+ * A dashboard of independent pieces (a neutral page with
  * coloured cards; DashboardLayout's 7:5 split from an 840 px container):
  *
- *   primary    the next step of the featured course (B.6: the pathway
+ *   primary    the next step of the featured course (the pathway
  *              frontier's recommended lesson when that engine is on, the
  *              tree's next lesson otherwise, the entry placement first when
  *              one is owed), then the course shelf, every course told apart
- *              by hue, icon and title (02 §4.3). A course the age safeguard
- *              closes is listed and never offered (OD-16). B.3: a featured
+ *              by hue, icon and title. A course the age safeguard
+ *              closes is listed and never offered. A featured
  *              course that could not load is said, never silently dropped.
- *   secondary  the habit streak with its rest days and the learner's own pace
- *              (B.21, B.24), the learner's Mentor, and for a 13-to-17
- *              participant, goals together (L-04, OD-27 (1)).
+ *   secondary  the habit streak with its rest days and the learner's own pace, the learner's Mentor, and for a 13-to-17
+ *              participant, goals together.
  *
  * Presentation only: the host (routes/app/learn/LearnHomeRoute.tsx, or the
  * preview) owns transport and navigation. Nothing here decides a lock or sees
  * an age. No lives, no celebration (the milestones celebrate on the lesson
- * result, D7), no loss or guilt copy on the streak (02 §9.6), and no counter
- * of anything missed (B.25).
+ * result), no loss or guilt copy on the streak, and no counter
+ * of anything missed.
  */
 
 export interface LearnHomeProps {
@@ -53,9 +52,9 @@ export interface LearnHomeProps {
    */
   featured: { slug: string; state: CourseState } | null;
   rhythm: RhythmState;
-  /** L-04 (OD-27 (1)): goals together, shown only when Core says this learner may take part. */
+  /** Goals together, shown only when Core says this learner may take part. */
   together?: { eligible: boolean; asked: boolean } | null;
-  /** The one-time register graduation card (B.23), when Core says one is owed. */
+  /** The one-time register graduation card, when Core says one is owed. */
   graduation?: ReactNode;
   links: LearnLinks;
   onNavigate: LearnNavigate;
@@ -112,13 +111,13 @@ function Shelf({ locale, shelf, courses, lead, ...props }: LearnHomeProps & { co
   </>;
 }
 
-/** The featured course's next step: the one call to action on the page (02 §9.1 breathing CTA). */
+/** The featured course's next step: the one call to action on the page. */
 function NextStepHero({ locale, course, featured, links, onNavigate }: LearnHomeProps & { course: ShelfCourse }) {
   const t = learnCopy[locale].home;
   const headingId = useId();
   const title = localizedText(course.title, locale) || course.slug;
   const read = featured && featured.slug === course.slug && featured.state.status === 'ready' ? nextStep(featured.state.detail) : null;
-  // Without the course's own read, the shelf's B.6 recommendation still opens the next lesson directly.
+  // Without the course's own read, the shelf's pathway recommendation still opens the next lesson directly.
   const recommended = course.pathway?.recommendedLessonId ?? null;
   const step: NextStep | null = read ?? (recommended ? { kind: 'lesson', lessonId: recommended, title: {}, minutes: null } : null);
   const heading = step?.kind === 'lesson' ? localizedText(step.title, locale) || title
@@ -175,7 +174,7 @@ function CourseCard({ locale, course, links, onNavigate }: LearnHomeProps & { co
   </div>;
 }
 
-/** The streak in the page header, as a reward chip: the run's length only (02 §4.2 reward gold is the streak). */
+/** The streak in the page header, as a reward chip: the run's length only (reward gold is the streak). */
 function StreakChip({ rhythm, locale }: { rhythm: RhythmState; locale: Locale }) {
   if (rhythm.status !== 'ready') return null;
   const { streak } = rhythm.rhythm;
@@ -186,9 +185,9 @@ function StreakChip({ rhythm, locale }: { rhythm: RhythmState; locale: Locale })
 }
 
 /**
- * B.21: the habit streak with its rest days; the learner's own pace (B.24) is
+ * The habit streak with its rest days; the learner's own pace is
  * one press away on the rhythm, which keeps the first view within the Copy
- * Budget (06 §3.1). Never a loss, never a guilt line.
+ * Budget. Never a loss, never a guilt line.
  */
 function StreakCard({ locale, rhythm, links, onNavigate }: LearnHomeProps) {
   const t = learnCopy[locale].home;
@@ -209,7 +208,7 @@ function StreakCard({ locale, rhythm, links, onNavigate }: LearnHomeProps) {
         <span data-copy-role="body">{plural(locale, streak.current, t.daysOne, t.daysOther)}</span></p>
       : null}
     {status ? <p data-copy-role="body">{status}</p> : null}
-    {/* 02 §9.6 rule 2 and 4: the best streak is permanent and stays in view while the streak rests. */}
+    {/* The best streak is permanent and stays in view while the streak rests. */}
     {streak?.status === 'resting' ? <p className="lf-learn-streak-count"><span data-copy-role="body">{t.best}</span>
       <strong data-copy-role="data">{new Intl.NumberFormat(locale).format(streak.best)}</strong>
       <span data-copy-role="body">{plural(locale, streak.best, t.daysOne, t.daysOther)}</span></p> : null}
@@ -220,7 +219,7 @@ function StreakCard({ locale, rhythm, links, onNavigate }: LearnHomeProps) {
 }
 
 /**
- * Bible 08 §8 (GAP-FIX-R1): the chosen Mentor fills its home card: the real
+ * The chosen Mentor fills its home card: the real
  * render, the name and one ask that opens the Mentor. The character comes
  * from Core's rhythm payload; without it (loading, a failed read) there is
  * no card rather than a guessed character.
@@ -242,7 +241,7 @@ function MentorCard({ locale, rhythm, dark, links, onNavigate }: LearnHomeProps)
   </section>;
 }
 
-/** L-04 (OD-27 (1)): goals together, offered only to a learner Core lets take part. No count, no rank. */
+/** Goals together, offered only to a learner Core lets take part. No count, no rank. */
 function TogetherCard({ locale, links, together, onNavigate }: LearnHomeProps) {
   const t = learnCopy[locale].home;
   const headingId = useId();

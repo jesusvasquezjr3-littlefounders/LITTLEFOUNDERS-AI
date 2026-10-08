@@ -5,7 +5,7 @@
  *
  * Two independent limits, both optional at this level:
  *  - a call count (AUDIOGEN_MAX_TTS_CALLS_PER_RUN);
- *  - OD-28 (owner review D-03): the owner-approved USD ceiling of a
+ *  - the owner-approved USD ceiling of a
  *    `narrate:all` run, priced per character at AUDIOGEN_USD_PER_1K_CHARS
  *    (Qwen3-TTS bills by input characters). A reservation that would take the
  *    run past the ceiling is refused, never partially admitted, and once one

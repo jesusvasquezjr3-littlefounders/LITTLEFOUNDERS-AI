@@ -1,6 +1,6 @@
 /* The teen memory gate card: surface fill + soft shadow on a neutral page
-   (Bible 02 §4.4 - separation by fill/shadow, never an outline). Dark mode
-   steps the surface and keeps a soft shadow (OD-28, V-04). */
+   (separation by fill/shadow, never an outline). Dark mode
+   steps the surface and keeps a soft shadow. */
 .lf-rebuild.lf-memory-self-review {
   margin-block-start: 1.5rem;
   padding: var(--spacing-6);
@@ -72,7 +72,7 @@
   min-inline-size: 0;
 }
 .lf-memory-note-actions > * { flex: 1 1 auto; }
-/* GAP-FIX-R5: the secondary "Delete this note" action under the current note. */
+/* The secondary "Delete this note" action under the current note. */
 .lf-memory-current-actions {
   display: flex;
   flex-wrap: wrap;

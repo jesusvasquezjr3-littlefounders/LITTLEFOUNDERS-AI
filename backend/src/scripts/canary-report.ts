@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 /*
- * `npm run tutor:canary-report` — the Stage 5 reader's tool for Product C.22
- * (Appendix E 3.1: Tier 2 "released via canary rollout"; Appendix F Part 3
- * Stage 5 and 1.4 Canary Regression Rate).
+ * `npm run tutor:canary-report` — the reader's tool for the Mentor canary
+ * (a Tier 2 change "released via canary rollout"; Canary Regression Rate).
  *
  *   Arms        the proposal's canary and control sessions in the window, how
  *               many were rules-scored, and the share that failed any rules
@@ -13,7 +12,7 @@
  *               and records the outcome in the proposal's `stage5`
  *               (`reader`, `date`, `transcriptsRead`, `outcome`).
  *   Transcripts `--transcripts` prints the sampled sessions' turns. Canary
- *               arms hold verified adults only (OD-23); each learner is
+ *               arms hold verified adults only; each learner is
  *               re-checked here and a session whose learner now reads as a
  *               minor is skipped, never printed.
  *

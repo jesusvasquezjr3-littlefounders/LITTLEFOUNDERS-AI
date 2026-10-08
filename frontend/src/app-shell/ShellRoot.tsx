@@ -8,7 +8,7 @@ import type { AgeBand, Locale } from '@/rebuild/design/copyBudget';
 
 /*
  * The bridge between the application's providers and the rebuilt design
- * system (W2 Lane 0). Every mounted shell renders inside it: the design-system
+ * system. Every mounted shell renders inside it: the design-system
  * root (tokens, the `app` container the layouts query, the mode, the page
  * language) and the provider (overlay environment, announcer, toasts), fed by
  * the app's own i18n language and theme context, so a person's choice of
@@ -25,7 +25,7 @@ export function useShellLocale(): Locale {
   return LOCALES.find((locale) => locale === language) ?? LOCALES.find((locale) => locale.slice(0, 2) === language.slice(0, 2)) ?? 'en-US';
 }
 
-/** Lane 0's own copy (`rebuild-core.json`) in the application's language. */
+/** The shell's own copy (`rebuild-core.json`) in the application's language. */
 export function useShellCopy() {
   return rebuildNamespaceCopy[useShellLocale()].core;
 }
@@ -66,8 +66,8 @@ function useRouteFocusAcrossRemount() {
 }
 
 /**
- * `ageBand`: the Copy Budget band of the person the shell serves (Bible 06 §7:
- * in production the root carries `data-age-band`). The signed-in shells pass
+ * `ageBand`: the Copy Budget band of the person the shell serves (in production
+ * the root carries `data-age-band`). The signed-in shells pass
  * it (AppLayouts.tsx); a session-less or state screen whose reader's age is
  * unknown passes none.
  */

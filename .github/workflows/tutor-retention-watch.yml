@@ -1,7 +1,7 @@
 name: Tutor retention watch
 
 # THE OTHER HALF OF THE RETENTION PROMISE: somebody has to notice when the
-# sweep STOPS running (/ORACLE.md §15.2 item 4).
+# sweep STOPS running.
 #
 # `tutor-retention.yml` deletes the rows and the audio, and fails loudly when
 # it cannot. What it structurally cannot do is report its own ABSENCE: a
@@ -15,7 +15,7 @@ name: Tutor retention watch
 # how it thinks it did. Core writes `tutor.retention.swept` to `audit_logs` on
 # every purge that reaches the database — INCLUDING one that deleted nothing,
 # deliberately, so "ran and found nothing due" can never be confused with
-# "never ran" (/AGENTS.md §1.14). This job reads that trail back and fails when
+# "never ran". This job reads that trail back and fails when
 # it is stale.
 #
 # WHY IT DOES NOT COMPUTE STALENESS ITSELF. `RETENTION_STALE_HOURS` (36 — a
@@ -23,9 +23,8 @@ name: Tutor retention watch
 # missed night passes) lives in `backend/src/services/tutorData.ts`, and
 # `getTutorRetentionStatus()` is the one thing that applies it. Re-deriving "36
 # hours" in bash would be a second copy of a tuned constant that drifts from
-# the first the day either moves — the failure §1.14 records for
-# independently-tuned values. This job asks the route and reads its `stale`
-# boolean; the threshold has exactly one home.
+# the first the day either moves, as independently-tuned values do. This job asks the
+# route and reads its `stale` boolean; the threshold has exactly one home.
 #
 # WHY IT CALLS CORE FROM INSIDE CORE. Identical reasoning to
 # `tutor-retention.yml`'s own header, and the same two secrets: the admin-facing
@@ -34,8 +33,8 @@ name: Tutor retention watch
 # container and calling 127.0.0.1 with the `INTERNAL_API_KEY` already in that
 # process's environment copies nothing anywhere.
 #
-# WHO IS TOLD. A failed scheduled run alone notifies nobody (Appendix O 1.3
-# requires an external notification to a human). The notification path is
+# WHO IS TOLD. A failed scheduled run alone notifies nobody (an external
+# notification to a human is required). The notification path is
 # ops-job-watch.yml (10:00 UTC): Core's /internal/ops/job-status carries this
 # same status as the `tutor_retention` watched job, and a stale sweep there
 # opens or comments on the `ops-watchdog` GitHub issue. This run stays as the
@@ -135,8 +134,7 @@ jobs:
           if [ "$stale" = "true" ]; then
             # Deliberately an ERROR and a failed job, not a warning: a warning
             # in a scheduled run is something nobody is subscribed to. This is
-            # a retention promise with a legal document behind it
-            # (/LEGAL/AI_TUTOR_LEGAL_REVIEW.md §3).
+            # a retention promise with a legal document behind it.
             echo "::error::the tutor retention sweep is STALE (last run ${hours:-never} hour(s) ago) — a child's conversation may be outliving its 90-day window"
             exit 1
           fi

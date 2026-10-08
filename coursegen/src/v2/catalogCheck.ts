@@ -8,7 +8,7 @@
 //
 // Errors block (exit 1); warnings are for a human to read. The checks are the
 // ones a structure can get wrong that a lesson plan cannot show: a KC that does
-// not exist, a lesson over the B.17 concept ceiling, a chapter of the wrong
+// not exist, a lesson over the concept ceiling, a chapter of the wrong
 // size, a prerequisite taught after its dependent, and a KC the whole catalog
 // never teaches (pathway policy G3).
 
@@ -28,7 +28,7 @@ export const KC_GRAPH_FILE = path.resolve(PACKAGE_ROOT, '..', 'database', 'seeds
 /** Courses the catalog covers, in the order a learner meets them (database/seeds/dev_seed.sql positions). */
 export const CATALOG_COURSES = ['financial-education', 'entrepreneurship', 'investing', 'first-lemonade-stand'] as const;
 
-/** The two topics the KC graph names and no existing lesson taught (B.6 G3): the catalog must add them. */
+/** The two topics the KC graph names and no existing lesson taught: the catalog must add them. */
 export const GAP_KCS = ['money.fraction-of-amount', 'biz.goods-vs-services'] as const;
 
 export const BAND_AGES: Readonly<Record<(typeof V2_AGE_BANDS)[number], readonly [number, number]>> = { '6-9': [6, 9], '10-12': [10, 12], '13-17': [13, 17], adult: [18, 119] };

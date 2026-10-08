@@ -2,7 +2,7 @@
  * WHEN THE LEARNER'S HANDS ARE OFF THE ACTIVITY.
  *
  * Four unrelated reasons an open activity stops accepting input, condensed
- * into one boolean inside a component with no test file. Each is a real rule
+ * into one boolean inside a component. Each is a real rule
  * about someone's answer, and each fails differently:
  *
  *  - MID-SUBMIT. Changing a draft while it is being graded means the verdict

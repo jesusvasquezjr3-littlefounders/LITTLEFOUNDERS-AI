@@ -6,7 +6,7 @@ import { z } from 'zod';
  * Express /health service and all offline commands (catalog:check,
  * contract:check, tests) must never require paid-API keys to run.
  * `requireGenerationKeys()` is the lazy gate the CLI calls right before it
- * would spend money (COURSE_ENGINE.md §4/§5).
+ * would spend money.
  */
 const Env = z.object({
   PORT: z.coerce.number().int().positive().default(4001),
@@ -25,7 +25,7 @@ const Env = z.object({
    * so the string "false" (or "0"/"no") parsed as TRUE and an operator could
    * not actually disable the PAID Qwen fallback. `z.stringbool()` accepts
    * true/false/1/0/yes/no/on/off (case-insensitive) and REJECTS anything else
-   * (§1.14: reject, don't coerce).
+   * (reject, don't coerce).
    */
   FORGE_DEEPSEEK_FALLBACK_TO_QWEN: z.stringbool().default(true),
 
@@ -49,7 +49,7 @@ const Env = z.object({
   INTERNAL_API_KEY: z.string().min(8).optional(),
   BACKEND_INTERNAL_URL: z.url().default('http://localhost:4000'),
 
-  // ---- run budgets / concurrency (COURSE_ENGINE.md §4) ----
+  // ---- run budgets / concurrency ----
   /*
    * Budget kill switches. These are FLOORS, not the whole story: run.ts scales the
    * effective cap with the amount of work enumerated (see `effectiveBudget`), because

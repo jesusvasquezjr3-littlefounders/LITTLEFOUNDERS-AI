@@ -5,8 +5,7 @@ import type { Locale } from '../design/copyBudget';
 import { AccountDeletion, type AccountDeletionView } from './AccountDeletion';
 
 /*
- * Fixture-only preview of the E.6 deletion surface for the real-Chrome matrix
- * (scripts/verify-rebuild-account-deletion.mjs): every state at a chosen
+ * Fixture-only preview of the account deletion surface: every state at a chosen
  * layout. No transport, no session, no spend.
  */
 

@@ -95,7 +95,7 @@ function feeTerms(t: SpaceText, locale: Locale, route: GlobeRoute): string {
 }
 
 /*
- * F4.8: routes on a globe. The learner turns an orthographic globe (arrow keys or four buttons), compares remittance routes
+ * Routes on a globe. The learner turns an orthographic globe (arrow keys or four buttons), compares remittance routes
  * by the great circle each one follows and by its fee, and picks the one the question asks for. A route chip also turns the
  * globe to look at that route. The answer is { choice }; Core holds the key and the browser never says met.
  */

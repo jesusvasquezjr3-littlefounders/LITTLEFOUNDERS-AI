@@ -4,7 +4,7 @@ import { v2ScorerPayload } from './v2ScorerPayload.generated';
 import { scoreV2Visual, type V2VisualKind } from './v2VisualScorer.generated';
 
 /**
- * Appendix P Part 8 scorer parity (GAP-FIX-R2): the browser's advisory reading
+ * Scorer parity: the browser's advisory reading
  * of an answer with the same canonical scorer and semantic payload Core uses,
  * without a rubric (the browser never has one). Core records whether it
  * agreed and never grades with it. Undefined for kinds the visual scorer does

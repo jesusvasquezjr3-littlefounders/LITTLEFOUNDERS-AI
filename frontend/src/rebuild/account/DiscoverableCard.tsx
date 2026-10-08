@@ -1,18 +1,18 @@
 import { Card, ConfirmDialog, Copy, InlineNotice, Switch } from '../design/controls';
 
 /*
- * P3, a 16- or 17-year-old's choice to be found (OD-27 (2), S-03; Product 10 E.8).
+ * A 16- or 17-year-old's choice to be found.
  *
  * Private stays the default for every teen. Core offers the choice
  * (`social.discoverable.canChoose`) only to a teen whose age evidence proves
- * 16 and whose profile is not flagged (E.13); this card is shown only then,
+ * 16 and whose profile is not flagged; this card is shown only then,
  * or while the choice is on (turning it off always works). Turning it on
  * widens who can see a minor, so it asks first and states the consequence;
  * turning it off is one press. What does not change is said on the card:
- * people still ask before they follow (the teen decides, E.8), and nobody can
- * write to them (E.10). Copy-only, no transport: the route owns the data plane.
+ * people still ask before they follow (the teen decides), and nobody can
+ * write to them. Copy-only, no transport: the route owns the data plane.
  *
- * OD-9 section 4.2 (GAP-FIX-R3): for a migrated teen, being discoverable is a
+ * For a migrated teen, being discoverable is a
  * data practice a Tutor must consent to first. Core names that reason
  * (`reason: 'consentRequired'`) only when it is the one thing missing; the
  * card then shows, without a switch, that a Tutor must allow it first.
@@ -26,7 +26,7 @@ export interface DiscoverableCopy {
 
 export type DiscoverableStatus = 'saved' | 'failed' | 'offline' | 'notEligible' | 'consentRequired' | null;
 
-/** Why an otherwise eligible teen is not offered the choice (OD-9 4.2). */
+/** Why an otherwise eligible teen is not offered the choice. */
 export type DiscoverableReason = 'consentRequired' | null;
 
 export interface DiscoverableView {

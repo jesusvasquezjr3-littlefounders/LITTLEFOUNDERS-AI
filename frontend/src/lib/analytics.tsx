@@ -5,10 +5,10 @@ import { BASE_URL } from '@/lib/api';
 import { hasCookieConsent } from '@/lib/visitor';
 
 /*
- * Pulse tracker mounting — the §1.9 fence, enforced in ONE place.
+ * Pulse tracker mounting — the kid-session fence, enforced in ONE place.
  *
  * Plausible: cookieless, no PII, no persistent identifiers, raw IP/UA never
- * stored (verified against its data policy before adoption — WALKTHROUGH.md
+ * stored (verified against its data policy before adoption,
  * 2026-07-20). It measures PUBLIC ACQUISITION ONLY: an identified user,
  * authentication callback, product route, or /admin route must never create
  * a Plausible pageview. This prevents OAuth redirects (accounts.google.com)
@@ -23,8 +23,8 @@ import { hasCookieConsent } from '@/lib/visitor';
  * inline <script>) so a strict CSP can't block it.
  *
  * Umami: behavioral capture (events; heatmaps/replay ship with its recorder).
- * NON-NEGOTIABLE (§1.9 + pulse/AGENTS.md #4): it must NEVER observe a
- * kid-role session. Policy (WALKTHROUGH.md decision log 2026-07-20):
+ * NON-NEGOTIABLE: it must NEVER observe a
+ * kid-role session. Policy (decided 2026-07-20):
  *   - guests → marketing pages only (never the auth trust surfaces),
  *   - signed-in parent → parent product surfaces only,
  *   - /admin/* → never (operator work is not customer behavior),
@@ -36,7 +36,7 @@ import { hasCookieConsent } from '@/lib/visitor';
  * Umami — both cookieless/no-PII — GA4 sets cookies and shares data with Google,
  * so its scope is the NARROWEST of the three and enforced here:
  *   - marketing/public paths ONLY — never the app, never the auth trust surfaces,
- *   - never a kid-role session (§1.9),
+ *   - never a kid-role session,
  *   - a hard `ga-disable-<id>` kill-switch is re-asserted on every route change and
  *     page_views are fired MANUALLY (send_page_view:false), so GA4 can never
  *     observe an app/kid pathname even if its script stays resident across an SPA
@@ -124,7 +124,7 @@ const EXCLUSION_FLAG = 'lf_analytics_excluded';
  * genuinely re-enable measurement rather than being a one-way door. It also
  * makes it useless for the case that actually bit us: staff browsing through a
  * consumer VPN, whose exit IP rotates and whose exclusion would silently
- * remove every other visitor behind that same exit (RUNBOOK, 2026-08-14).
+ * remove every other visitor behind that same exit (2026-08-14).
  *
  * This flag is set only by an explicit human action and cleared only by
  * another one. No server answer touches it. It costs nothing, cannot affect
@@ -266,7 +266,7 @@ export function useTrackingDecision(): TrackingDecision {
   return decision;
 }
 
-/** New-format Plausible: async per-site script + a CSP-safe programmatic init stub. Exported for the auto-capture test. */
+/** New-format Plausible: async per-site script + a CSP-safe programmatic init stub. */
 export function mountPlausible(): void {
   if (!PLAUSIBLE_SRC || document.getElementById('lf-plausible')) return;
   const el = document.createElement('script');
@@ -296,7 +296,7 @@ export function mountPlausible(): void {
    * landed on a marketing page carried Plausible with them into /signup,
    * /learn and /admin/* — verified in production on 2026-08-14, where a single
    * day's native pageviews included /admin/analytics and /admin/users, which
-   * the boundary in pulse/AGENTS.md forbids outright.
+   * the boundary this file enforces forbids outright.
    *
    * Pageviews are therefore fired MANUALLY, once per navigation the gate has
    * already approved. This is exactly the treatment GA4 received here
@@ -376,7 +376,7 @@ export function mountGa4(): void {
   document.head.appendChild(el);
   window.gtag('js', new Date());
   // send_page_view:false — pageviews are fired manually, only on marketing paths,
-  // so GA4 never records an app/kid pathname (module header §1.9 scope).
+  // so GA4 never records an app/kid pathname (see the module header).
   window.gtag('config', GA4_ID, { send_page_view: false });
 }
 
@@ -388,7 +388,7 @@ export function mountGa4(): void {
  * The funnel that used to answer that lives in GA4-imported history; nothing
  * in the running product emitted a single custom event.
  *
- * SCOPE IS DELIBERATELY NARROW, and it is a §1.9 boundary decision rather
+ * SCOPE IS DELIBERATELY NARROW, and it is a boundary decision rather
  * than a limitation: only actions taken ON a public marketing surface by an
  * anonymous, consented visitor are reported. Product events (onboarding
  * steps, placement answers, lesson activity) are NOT sent here — they belong
@@ -475,7 +475,7 @@ export function AnalyticsScripts({ consentVersion = 0 }: { consentVersion?: numb
   }, [session, roles, meLoaded, analyticsEnabled, pathname, measurable]);
 
   /*
-   * GA4 — public marketing pages only, never app/kid (module header §1.9 scope).
+   * GA4 — public marketing pages only, never app/kid (see the module header).
    *
    * The session check is load-bearing and was MISSING: GA4 gated only on
    * "marketing path + not a kid", so every signed-in visitor — including staff

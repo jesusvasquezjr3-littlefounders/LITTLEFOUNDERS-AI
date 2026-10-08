@@ -18,12 +18,12 @@ import type { WordTiming } from './provider.js';
  *                      recorded in `speech.pregenerated.json`. Free.
  *   2. CACHE           a line we have paid for before, in this voice. Free.
  *   3. SYNTHESIZE      the provider, then Depot. Billed, and recorded in the
- *                      session ledger (/ORACLE.md §15).
+ *                      session ledger.
  *
  * Before all three there is a check that costs nothing and prevents the worst
  * outcome: if the provider has no voice for this character in this locale, we
  * stop here. Silence over a stranger's voice, exactly as the adapter does
- * (/ORACLE.md §3.3) — and stopping BEFORE the cache means we never key
+ * — and stopping BEFORE the cache means we never key
  * anything on an absent voice.
  *
  * ── HOW FAR A CLIP MAY BE REUSED, AND WHY IT IS NOT SIMPLY "ALWAYS" ─────────
@@ -31,7 +31,7 @@ import type { WordTiming } from './provider.js';
  * Reuse and deletion are the same question asked twice. A clip reused across
  * sessions is ONE Depot object that many transcripts point at (Depot is
  * content-addressed), and Core's nightly sweep deletes a session's audio at 90
- * days (/ORACLE.md §12) — so a clip shared between sessions either outlives
+ * days — so a clip shared between sessions either outlives
  * the retention promise or gets deleted out from under everyone who still
  * points at it. There is no third option, and picking the wrong one silently
  * is how a privacy promise or a replay quietly stops being true.
@@ -52,7 +52,7 @@ import type { WordTiming } from './provider.js';
  * `SPEECH_CACHE_SCOPE=all` widens the second class to the first class's terms.
  * It is a real switch and it is OFF, because turning it on gives a child's
  * session audio a life longer than their session — a change to a documented
- * privacy promise (/ORACLE.md §12), which is an owner decision with counsel in
+ * privacy promise, which is an owner decision with counsel in
  * it, not an engineering one. Same shape as `TUTOR_VOICE_FOR_MINORS`: a named
  * flag, a default, and a sign-off to record when it flips.
  */
@@ -110,7 +110,7 @@ export interface SpeechScope {
    * coalescing must not be either).
    *
    * ALREADY CORRECT AT N>1 REPLICAS, by construction rather than by luck —
-   * examined 2026-09-01 (round 142) and recorded here so the next person
+   * examined 2026-09-01 and recorded here so the next person
    * asking "which of these maps blocks scaling?" does not have to re-derive
    * it. A `SpeechScope` has exactly one production constructor
    * (`ws/server.ts`'s `resumed?.speech ?? newSpeechScope(session)`) and
@@ -149,12 +149,12 @@ export function newSpeechScope(session: {
  * cache's own docstring promises "pay once, ever". Scoped per-process, which
  * covers every session that can actually race on the same instance — and
  * which stayed per-process on PURPOSE once Oracle stopped requiring a single
- * replica (§16, round 143), for the measured reason set out immediately
+ * replica, for the measured reason set out immediately
  * below, not because nobody revisited it.
  *
- * ── WHAT THIS ACTUALLY COSTS AT N>1 REPLICAS, MEASURED (round 142) ──────────
+ * ── WHAT THIS ACTUALLY COSTS AT N>1 REPLICAS, MEASURED ──────────
  *
- * This is the map ORACLE.md §16 named as blocking a second replica, and the
+ * This is the map that blocked a second replica, and the
  * exposure was measured rather than assumed before deciding anything. With the
  * shipped default `SPEECH_CACHE_SCOPE=scripted`, "reusable" IS the closed
  * catalogue and nothing else: 144 keys (12 texts x 4 characters x 3 locales),
@@ -194,7 +194,7 @@ const inFlightShared = new Map<string, Promise<SynthesisOutcome>>();
 /** What one paid synthesis attempt produced, for the leader AND every follower coalesced onto it. */
 interface SynthesisOutcome {
   url: string | null;
-  /** Whether the provider call itself succeeded — true even if storage then failed (§15: billed and lost, never billed and free). */
+  /** Whether the provider call itself succeeded — true even if storage then failed (billed and lost, never billed and free). */
   billed: boolean;
   /**
    * The provider's timing for these exact bytes, or `null`. Shared with every
@@ -228,7 +228,7 @@ export function isReusableText(text: string): boolean {
  * Speaks one line, spending money only if it has to.
  *
  * Never throws: the caller is mid-session and a lost voice costs the sound,
- * not the lesson (/ORACLE.md §14).
+ * not the lesson.
  */
 export async function speakLine(text: string, scope: SpeechScope): Promise<SpeechResult> {
   const provider = getVoiceProvider();
@@ -267,15 +267,13 @@ export async function speakLine(text: string, scope: SpeechScope): Promise<Speec
   // call, and reports its own cost as zero — only the leader's `speak()`
   // call, which actually caused the spend, is billed for it.
   /*
-   * WHICH MAP, AND WHY IT IS NOT ONE MAP (round 142, 2026-09-01).
+   * WHICH MAP, AND WHY IT IS NOT ONE MAP.
    *
    * Collapsing this ternary to `inFlightShared` is the cheapest-looking way to
    * make speech coalescing replica-safe, and it is a PRIVACY regression: a
    * follower in session B would receive the URL of an object
    * `synthesizeAndStore` wrote to the SESSION bucket under session A's own
-   * name, on A's 90-day retention clock (/ORACLE.md §12). Fenced by
-   * `speech.test.ts`'s "never coalesces two CONCURRENT sessions ... for a
-   * GENERATED line", which was confirmed to fail against exactly that change.
+   * name, on A's 90-day retention clock.
    */
   const inFlightMap = reusable ? inFlightShared : scope.inFlight;
   let promise = inFlightMap.get(key);

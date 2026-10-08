@@ -1,5 +1,5 @@
 /*
- * Appendix C Part 3 Stage 3 (Pedagogical Human Review), GAP-FIX-R6 learning:
+ * Pedagogical Human Review:
  * the wire shapes of Core's
  *
  *   GET  /admin/content/lessons/:lessonId/pedagogical-review[?versionId=]
@@ -15,7 +15,7 @@ const isString = (value: unknown): value is string => typeof value === 'string';
 const isNullableString = (value: unknown): value is string | null => value === null || isString(value);
 const isNumber = (value: unknown): value is number => typeof value === 'number' && Number.isFinite(value);
 
-/** The six Block B checks, then the four Stage 3 questions; `allowsNotApplicable` mirrors Vault's stage3_review_items(). */
+/** The six content checks, then the four pedagogical questions; `allowsNotApplicable` mirrors Vault's stage3_review_items(). */
 export const STAGE3_ITEMS = [
   { id: 'working_memory', group: 'check', allowsNotApplicable: false },
   { id: 'feedback_scope', group: 'check', allowsNotApplicable: false },

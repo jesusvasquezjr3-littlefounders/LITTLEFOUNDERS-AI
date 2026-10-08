@@ -7,8 +7,7 @@
  * the entire behaviour the product exists to cause — releases the button and
  * loses the rest of their sentence.
  *
- * This is the blueprint's §6.2 turn policy and differentiator #1 of its
- * fourteen. The rule it encodes is the opposite of the one a voice assistant
+ * This is the turn policy. The rule it encodes is the opposite of the one a voice assistant
  * uses: in customer service you close a turn fast, and in tutoring the silence
  * is the valuable part. So the budget is not a constant — it arrives per turn
  * from the pedagogical strategy in force (`LISTEN_SILENCE_MS` in
@@ -19,7 +18,7 @@
  * WHY THIS IS A PURE FUNCTION OVER SAMPLES. It takes a level and a timestamp
  * and returns a verdict; it owns no timers, no audio graph and no React state.
  * That is what lets the whole policy — including the failure modes that only
- * appear after four seconds of silence — be tested in microseconds with no
+ * appear after four seconds of silence — be exercised in microseconds with no
  * microphone, no permission prompt and no fake clock. The half of this feature
  * that is easy to get wrong is the arithmetic, not the plumbing.
  */

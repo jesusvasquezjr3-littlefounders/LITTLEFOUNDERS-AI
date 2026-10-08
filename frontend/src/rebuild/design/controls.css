@@ -1,7 +1,7 @@
 /*
- * Shared control set (Frontend Bible 02 §3 components, §4.4, §7, §8, §9; S03.1).
+ * Shared control set.
  * Tokens only: every colour, radius, space, type step, elevation, focus and
- * motion value is a custom property generated from Bible 02 (tokens.css).
+ * motion value is a custom property generated into tokens.css.
  * Logical properties only. No ellipsis, clamp or hidden overflow on text.
  * Transitions and animations exist only inside a no-preference motion query,
  * so reduced motion removes the travel and keeps every state change.
@@ -9,7 +9,7 @@
  * Selectors carry `.lf-rebuild` so they outrank the root's element resets in
  * system.css regardless of stylesheet order; the first-generation `.lf-button`
  * base, accent, success and disabled rules stay in system.css unchanged (the
- * first-generation field was retired in S03.6), and the new colour roles apply
+ * first-generation field was retired), and the new colour roles apply
  * only while enabled so the shared disabled treatment always wins.
  */
 
@@ -28,7 +28,7 @@
 .lf-rebuild .lf-button--lg { min-block-size: var(--target-lg); padding: var(--spacing-3) var(--spacing-8); font: var(--type-button-lg); }
 .lf-rebuild .lf-button--pending { cursor: progress; }
 .lf-rebuild .lf-button.lf-button--pending:active { transform: none; }
-/* OD-28 (V-04): the pending spinner beside the changed label, a ring in the label's own colour; it turns only in motion.css. */
+/* The pending spinner beside the changed label, a ring in the label's own colour; it turns only in motion.css. */
 .lf-rebuild .lf-button-spinner { display: inline-block; flex-shrink: 0; inline-size: 1em; block-size: 1em; margin-inline-end: var(--spacing-2); border: 2px solid currentColor; border-block-start-color: transparent; border-radius: var(--rounded-full); }
 .lf-rebuild .lf-button-group { display: flex; flex-wrap: wrap; gap: var(--spacing-3); }
 .lf-rebuild .lf-button-group > * { flex: 1 1 auto; }
@@ -51,7 +51,7 @@
 .lf-rebuild .lf-icon-button--inverse { background: var(--surface); color: var(--content); box-shadow: none; }
 .lf-rebuild .lf-icon-button:disabled { background: var(--sunken); color: var(--content-disabled); box-shadow: none; cursor: default; }
 
-/* ---- Fields: label, help above, control, error directly under (02 §9.8) ---- */
+/* ---- Fields: label, help above, control, error directly under ---- */
 .lf-rebuild .lf-input-field { display: grid; gap: var(--spacing-2); min-inline-size: 0; }
 .lf-rebuild .lf-input-label { font: var(--type-label); letter-spacing: var(--type-label-tracking); color: var(--content); }
 .lf-rebuild .lf-input-help { font: var(--type-caption); color: var(--content-muted); }
@@ -124,7 +124,7 @@
 .lf-rebuild .lf-check-label { min-inline-size: 0; font: var(--type-body); }
 .lf-rebuild .lf-check:has(.lf-check-input:disabled) { color: var(--content-disabled); cursor: default; }
 
-/* ---- Choose one: radio rows and the segmented control (02 §9.5 shape table) ---- */
+/* ---- Choose one: radio rows and the segmented control ---- */
 .lf-rebuild .lf-radio-group, .lf-rebuild .lf-segmented { display: grid; gap: var(--spacing-2); min-inline-size: 0; margin: 0; padding: 0; border: 0; }
 .lf-rebuild .lf-radio-group > legend, .lf-rebuild .lf-segmented > legend { padding: 0; margin-block-end: var(--spacing-2); }
 .lf-rebuild .lf-radio-options { display: grid; gap: var(--spacing-3); }
@@ -178,12 +178,12 @@
   font: var(--type-label);
   cursor: pointer;
 }
-/* Never narrower than a target, even for a one-character option such as "2" (02 §8): the words keep a floor inside the padding. */
+/* Never narrower than a target, even for a one-character option such as "2": the words keep a floor inside the padding. */
 .lf-rebuild .lf-segmented-option > span[data-copy-role] { min-inline-size: calc(var(--target-min) - var(--spacing-4) * 2); text-align: center; }
 .lf-rebuild .lf-segmented-input { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; margin: 0; opacity: 0; cursor: pointer; }
 .lf-rebuild .lf-segmented-option:has(.lf-segmented-input:checked) { background: var(--primary); color: var(--on-primary); }
 /*
- * OD-28 (V-13): the compact size, for a phone-width container only. Less padding, a smaller gap and a 16 px check,
+ * The compact size, for a phone-width container only. Less padding, a smaller gap and a 16 px check,
  * so the control shares a row with the action beside it; every option keeps the 48 px target in both directions.
  */
 @container app (max-width: 639px) {
@@ -248,7 +248,7 @@
 .lf-rebuild .lf-slider-value { font: var(--type-numeral); font-variant-numeric: tabular-nums; }
 .lf-rebuild .lf-slider-input { inline-size: 100%; block-size: var(--target-lg); margin: 0; accent-color: var(--primary-strong); cursor: pointer; }
 .lf-rebuild .lf-slider-input:disabled { cursor: default; }
-/* The discrete −/+ alternative keeps the 8 px tap gap from the range above it (03 §3): the grid gives 4 px, this adds 4. */
+/* The discrete −/+ alternative keeps the 8 px tap gap from the range above it: the grid gives 4 px, this adds 4. */
 .lf-rebuild .lf-slider-steps { display: flex; justify-content: space-between; gap: var(--spacing-2); margin-block-start: var(--spacing-1); }
 
 .lf-rebuild .lf-stepper { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--spacing-3); min-inline-size: 0; }
@@ -272,8 +272,8 @@
 .lf-rebuild .lf-stepper-button { flex: none; }
 /*
  * Value under the label, both buttons at the end: one compact row. The words never get less than their longest
- * word (02 §7 rule 4): when the row cannot hold the words and the buttons, the buttons wrap under them
- * (found by the S03.5 route audit: "Compartilhar" beside the Mentor stage at 768 px with WCAG 1.4.12 spacing).
+ * word: when the row cannot hold the words and the buttons, the buttons wrap under them
+ * ("Compartilhar" beside the Mentor stage at 768 px with WCAG 1.4.12 spacing).
  */
 .lf-rebuild .lf-stepper--labelled { display: block; container: lf-stepper / inline-size; }
 .lf-rebuild .lf-stepper-layout { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; column-gap: var(--spacing-3); row-gap: var(--spacing-2); }
@@ -296,7 +296,7 @@
 .lf-rebuild .lf-status-chip--sky { background: var(--sky-soft); color: var(--sky-strong); }
 .lf-rebuild .lf-status-chip--primary { background: var(--primary-soft); color: var(--primary-strong); }
 .lf-rebuild .lf-status-chip--reward { background: var(--reward); color: var(--on-reward); }
-/* Coins (07 §1 class B `money.coin`; 02 §9.5): the coin art, the number and the word, only for money. The art keeps its ridge outline on any ground. */
+/* Coins (`money.coin`): the coin art, the number and the word, only for money. The art keeps its ridge outline on any ground. */
 .lf-rebuild .lf-coin-mark { display: block; flex: none; inline-size: var(--spacing-5); block-size: var(--spacing-5); }
 .lf-rebuild .lf-coin-amount { display: inline-flex; align-items: center; gap: var(--spacing-2); min-inline-size: 0; font-variant-numeric: tabular-nums; }
 .lf-rebuild .lf-coin-amount > span { min-inline-size: 0; overflow-wrap: anywhere; }
@@ -307,7 +307,7 @@
   align-items: center;
   gap: var(--spacing-1);
   min-block-size: var(--target-min);
-  /* GAP-FIX-R4: a one-character chip (an L1 card "8") still gives a 48 px target (02 §8). */
+  /* A one-character chip (an L1 card "8") still gives a 48 px target. */
   min-inline-size: var(--target-min);
   justify-content: center;
   padding: var(--spacing-2) var(--spacing-4);
@@ -320,7 +320,7 @@
 }
 .lf-rebuild .lf-choice-chip[aria-pressed='true'] { background: var(--primary); color: var(--on-primary); }
 .lf-rebuild .lf-choice-chip:disabled { background: var(--sunken); color: var(--content-disabled); cursor: default; }
-/* Reply chip (08 §2): the button base with a sunken fill, so it keeps a boundary on a surface panel in both themes. */
+/* Reply chip: the button base with a sunken fill, so it keeps a boundary on a surface panel in both themes. */
 .lf-rebuild .lf-reply-chip { background: var(--sunken); overflow-wrap: anywhere; }
 .lf-rebuild .lf-pill { display: inline-flex; align-items: center; max-inline-size: 100%; padding: var(--spacing-1) var(--spacing-3); border-radius: var(--rounded-full); font: var(--type-chip); }
 .lf-rebuild .lf-pill--primary { background: var(--primary); color: var(--on-primary); }
@@ -358,7 +358,7 @@
   text-align: start;
 }
 .lf-rebuild .lf-list-row--pressable { cursor: pointer; }
-/* Dark mode has no shadow, so a row inside a card steps up a surface instead of vanishing into it (02 §5). */
+/* Dark mode has no shadow, so a row inside a card steps up a surface instead of vanishing into it. */
 .lf-rebuild[data-theme='dark'] .lf-card .lf-list-row { background: var(--raised); }
 .lf-rebuild .lf-list-row-leading, .lf-rebuild .lf-list-row-trailing, .lf-rebuild .lf-list-row-chevron { flex: none; }
 .lf-rebuild .lf-list-row-text { display: grid; flex: 1 1 12em; gap: var(--spacing-1); min-inline-size: 0; }
@@ -367,7 +367,7 @@
 .lf-rebuild .lf-list-row-trailing { font: var(--type-label); font-variant-numeric: tabular-nums; }
 .lf-rebuild .lf-list-row-chevron { color: var(--content-muted); }
 
-/* ---- Banners and inline notices (02 §9.2 feedback grammar) ---- */
+/* ---- Banners and inline notices ---- */
 .lf-rebuild .lf-banner { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-3); padding: var(--spacing-4); border-radius: var(--rounded-md); font: var(--type-label); }
 .lf-rebuild .lf-banner-text { flex: 1 1 12em; min-inline-size: 0; }
 .lf-rebuild .lf-banner-action { flex: none; }
@@ -394,7 +394,7 @@
 
 .lf-rebuild .lf-skeleton { display: grid; gap: var(--spacing-2); }
 .lf-rebuild .lf-skeleton-line { position: relative; display: block; overflow: hidden; block-size: var(--spacing-4); border-radius: var(--rounded-full); background: var(--sunken); }
-/* OD-28 (V-04): the shimmer's soft band, invisible and still here; it sweeps only in motion.css (reduced motion keeps the shapes still). */
+/* The shimmer's soft band, invisible and still here; it sweeps only in motion.css (reduced motion keeps the shapes still). */
 .lf-rebuild .lf-skeleton-line::after { content: ''; position: absolute; inset-block: 0; inset-inline-start: 0; inline-size: 40%; background: var(--surface); opacity: 0; }
 .lf-rebuild .lf-skeleton-line:nth-child(3n + 2) { inline-size: 85%; }
 .lf-rebuild .lf-skeleton-line:nth-child(3n) { inline-size: 60%; }
@@ -407,7 +407,7 @@
 .lf-rebuild .lf-state-action { display: flex; flex-wrap: wrap; gap: var(--spacing-3); }
 .lf-rebuild .lf-state--error .lf-state-glyph { display: grid; place-items: center; inline-size: var(--target-min); block-size: var(--target-min); border-radius: var(--rounded-full); background: var(--error-soft); color: var(--error-strong); }
 .lf-rebuild .lf-state--empty .lf-state-art { inline-size: var(--spacing-24); block-size: auto; }
-/* Own class B art (07 §3): a 48 px icon reads at the size its form language is drawn for; `lg` for a card's lead. */
+/* Own class B art: a 48 px icon reads at the size its form language is drawn for; `lg` for a card's lead. */
 .lf-rebuild .lf-art { display: block; flex: none; inline-size: var(--target-min); block-size: var(--target-min); }
 .lf-rebuild .lf-art--lg { inline-size: var(--spacing-16); block-size: var(--spacing-16); }
 
@@ -418,7 +418,7 @@
 .lf-rebuild .lf-avatar--lg { inline-size: var(--spacing-24); block-size: var(--spacing-24); }
 .lf-rebuild .lf-avatar img { display: block; inline-size: 100%; block-size: 100%; object-fit: cover; }
 
-/* ---- Motion: press feedback and in-place state changes only (02 §9.1, 04 §2) ---- */
+/* ---- Motion: press feedback and in-place state changes only ---- */
 @media (prefers-reduced-motion: no-preference) {
   .lf-rebuild :is(.lf-icon-button, .lf-choice-chip, .lf-stepper-button, .lf-list-row--pressable, .lf-segmented-option, .lf-radio-option, .lf-input-reveal) {
     transition: transform var(--dur-micro) var(--ease-standard), background-color var(--dur-micro) var(--ease-standard), color var(--dur-micro) var(--ease-standard);
@@ -461,10 +461,10 @@
 .lf-rebuild[data-theme='dark'] .lf-picture-option { background: var(--raised); }
 .lf-rebuild .lf-picture-option--text { padding-inline: var(--spacing-4); font: var(--type-label); }
 .lf-rebuild .lf-picture-option--swatch { border-radius: var(--rounded-full); padding: var(--spacing-2); }
-/* A pale colour (a light skin tone, silver, light yellow) would vanish into its well: every swatch keeps a thin functional edge (02 §4.4 (1)). */
+/* A pale colour (a light skin tone, silver, light yellow) would vanish into its well: every swatch keeps a thin functional edge. */
 .lf-rebuild .lf-picture-swatch { display: block; inline-size: var(--spacing-12); block-size: var(--spacing-12); border-radius: var(--rounded-full); box-shadow: inset 0 0 0 2px var(--edge); }
 .lf-rebuild .lf-picture-input { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; margin: 0; opacity: 0; cursor: pointer; }
-/* "The one currently selected" is a real interaction state (02 §4.4 (2)): a ring, a soft fill and a check, never colour alone. */
+/* "The one currently selected" is a real interaction state: a ring, a soft fill and a check, never colour alone. */
 .lf-rebuild .lf-picture-option:has(.lf-picture-input:checked) { background: var(--primary-soft); box-shadow: inset 0 0 0 var(--focus-width) var(--primary-strong); }
 .lf-rebuild .lf-picture-check {
   position: absolute;
@@ -492,7 +492,7 @@
   .lf-rebuild .lf-picture-option:has(.lf-picture-input:checked) { border-color: Highlight; }
 }
 
-/* GAP-FIX-R4 (Bible 05 §4): a chip the learner can drag onto a board region; the page does not scroll under the finger. */
+/* A chip the learner can drag onto a board region; the page does not scroll under the finger. */
 .lf-rebuild .lf-choice-chip--drag { touch-action: none; cursor: grab; }
 .lf-rebuild .lf-choice-chip--drag[aria-pressed='true'] { cursor: grabbing; }
 

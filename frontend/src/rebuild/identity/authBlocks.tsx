@@ -6,18 +6,18 @@ import { follow, type Navigate } from '../site/blocks';
 import './identity.css';
 
 /*
- * Shared pieces of the rebuilt sign-in, recovery and verification screens (A1–A7,
- * W2 Lane 1, checkpoint W2S.2). They render inside the sign-in shell's one
+ * Shared pieces of the rebuilt sign-in, recovery and verification screens.
+ * They render inside the sign-in shell's one
  * column (app-shell AuthLayout, the design system's AuthShell): the shell owns
  * the root, the <main>, the skip link, the document title and language; a
- * screen owns exactly one <h1>. Everything comes from the shared controls (02
- * rule 23); nothing here reads the session, the router or the API: the route
+ * screen owns exactly one <h1>. Everything comes from the shared controls;
+ * nothing here reads the session, the router or the API: the route
  * bridges in routes/auth/ do, and pass state and callbacks in.
  */
 
 export type IdentityCopy = (typeof rebuildNamespaceCopy)['en-US']['site'];
 
-/** Lane 1's strings (rebuild-site.json) in a locale. */
+/** The site strings (rebuild-site.json) in a locale. */
 export function identityCopy(locale: Locale): IdentityCopy {
   return rebuildNamespaceCopy[locale].site;
 }
@@ -58,8 +58,8 @@ export function AuthLink({ label, href, onNavigate, ...data }: { label: string; 
 }
 
 /**
- * Google sign-in (A1, A2), shown only while Core reports the provider enabled.
- * A plain secondary button with the words only: 07 forbids a third-party brand
+ * Google sign-in, shown only while Core reports the provider enabled.
+ * A plain secondary button with the words only: a third-party brand
  * likeness in our interface (the Google "G" is an owner question). A failed
  * start is said beside it, and the button can be pressed again.
  */
@@ -74,7 +74,7 @@ export function GoogleSignIn({ copy, google }: { copy: IdentityCopy; google: Goo
   </div>;
 }
 
-/** A password field with its reveal control and the 8-character rule, said before and after (A2, A4, A6). */
+/** A password field with its reveal control and the 8-character rule, said before and after. */
 export function PasswordField({ copy, label, value, onChange, autoComplete, showRule = false, ruleHelp = true, disabled }: {
   copy: IdentityCopy; label: string; value: string; onChange: (value: string) => void; autoComplete: 'current-password' | 'new-password';
   showRule?: boolean;
@@ -87,7 +87,7 @@ export function PasswordField({ copy, label, value, onChange, autoComplete, show
     error={short ? copy.authCommon.passwordShort : undefined} revealLabels={{ show: copy.authCommon.showPassword, hide: copy.authCommon.hidePassword }} />;
 }
 
-/** A date typed as day, month and year (the SPEC's "day/month/year"), each its own labelled number. */
+/** A date typed as day, month and year ("day/month/year"), each its own labelled number. */
 export interface DateParts { day: string; month: string; year: string }
 export const EMPTY_DATE: DateParts = { day: '', month: '', year: '' };
 
@@ -126,7 +126,7 @@ export function AuthForm({ onSubmit, children, busy, ...data }: { onSubmit: () =
 
 /**
  * The server's answer to a submit, announced once where it happened: a new
- * error moves no focus (the person keeps their place, 02 rule 13) and is read
+ * error moves no focus (the person keeps their place) and is read
  * out by the live notice.
  */
 export function AuthError({ copy, code }: { copy: IdentityCopy; code: string | null }) {

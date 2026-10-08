@@ -83,8 +83,8 @@ function findAll(bones: Map<string, Bone>, prefix: string): Bone[] {
  * MEASURED: stepping the pose lab through sixteen poses and returning to the
  * first one did not return to the first POSE - Dina came back with her head
  * cocked and her body twisted, and by the fortieth she was a ball with no face.
- * It compounds, so the first mount is always right and every screenshot and
- * every test exercises exactly that one.
+ * It compounds, so the first mount is always right and every screenshot
+ * exercises exactly that one.
  *
  * The fix is to remember what the model looked like when it was LOADED, and to
  * restore that before capturing. The snapshot covers every bone rather than the

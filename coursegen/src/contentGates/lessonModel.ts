@@ -2,7 +2,7 @@
 //
 // Two models of one document, both deterministic:
 //
-//  1. SCREEN BLOCKS — every learner-visible string, classified into a Bible 06
+//  1. SCREEN BLOCKS — every learner-visible string, classified into a
 //     copy role (budgets.ts) by where it sits in the contract. The classifier
 //     is total over the contract: a coverage test walks every string field of
 //     all 56 segment schemas and fails when a new field has no role, so a new
@@ -10,8 +10,8 @@
 //
 //  2. NARRATION UNITS — the exact units audiogen/src/narrate/extractNarratables.ts
 //     produces (same unit ids, same fields, same choice-type roll-up and the same
-//     B.18 channel rule), each linked to the on-screen block(s) it voices.
-//     agent/tools/check-narration-parity.mjs keeps this mirror in step with Echo.
+//     Channel rule), each linked to the on-screen block(s) it voices. This
+//     mirrors Echo's extraction.
 
 import { NON_VISIBLE_KEYS } from '../pipeline/gates.js';
 import { plainText } from './text.js';
@@ -38,7 +38,7 @@ export interface NarrationUnit {
   text: string;
   /** Screen block paths this unit voices (empty when the unit reads a script that is not on screen). */
   voices: string[];
-  /** The unit reads an author-declared script (B.18 differentiated channel). */
+  /** The unit reads an author-declared script (differentiated channel). */
   script: boolean;
 }
 
@@ -98,7 +98,7 @@ const ANSWER_FEEDBACK_KEYS: Readonly<Record<string, CopyRole>> = {
   reactions: 'mentor',
 };
 
-/** Containers whose items are data (table headers, chart legends): Bible 06 §3.3 does not count them. */
+/** Containers whose items are data (table headers, chart legends): the copy budget does not count them. */
 const DATA_CONTAINERS = new Set(['rows', 'cols', 'series']);
 /** Containers whose items are a character speaking on the stage. */
 const MENTOR_CONTAINERS = new Set(['lines', 'nodes']);

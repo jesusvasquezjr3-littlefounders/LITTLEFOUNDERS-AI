@@ -1,22 +1,21 @@
 import { query, execute, type DuckConnection } from '../db/duckdb.js';
 
 /*
- * H.4 and the Block H non-negotiables (GAP-FIX-R8): the warehouse's two
+ * The warehouse's two
  * maintenance steps that keep a promise to families are watched, not only
  * logged.
  *
  *   warehouse_retention  services/warehouseRetention.ts: the 400-day window
- *                        over the raw event copy and the experiment rows (H.2,
- *                        Appendix O 1.2)
+ *                        over the raw event copy and the experiment rows
  *   erasure_reapply      services/erasure.ts applyErasureTombstones: an erased
- *                        account's rows never come back with a later sync (E.6)
+ *                        account's rows never come back with a later sync
  *
  * Both run after every sync (db/sync.ts). Every run writes to
  * warehouse_maintenance_log, a failed run included (ok = FALSE, the error
  * text, removed = 0): a successful run's rows commit in the same transaction
  * as its deletes, a failed run's row is written after the rollback.
  *
- * H.3 ("no job may be built to record without a real consumer"): the log's
+ * No job may be built to record without a real consumer: the log's
  * consumer is GET /api/v1/intel/maintenance/status (internal key), which
  * Core's services/warehouseMaintenance.ts reads into the `warehouse_retention`
  * watched job of GET /internal/ops/job-status. ops-job-watch.yml fails and

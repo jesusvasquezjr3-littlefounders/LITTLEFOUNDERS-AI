@@ -5,8 +5,8 @@ import { join } from 'node:path';
 import { getConfig } from '../config.js';
 
 /*
- * Content-addressed object store — no database, no S3 SDK (/AGENTS.md §1.2:
- * this service keeps deps minimal on purpose). Layout:
+ * Content-addressed object store — no database, no S3 SDK (this service keeps deps
+ * minimal on purpose). Layout:
  *
  *   <FILEBASE_ROOT>/<bucket>/<sha256[0:2]>/<sha256>.<ext>      the object bytes
  *   <FILEBASE_ROOT>/<bucket>/<sha256[0:2]>/<sha256>.json       metadata sidecar

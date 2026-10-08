@@ -5,7 +5,7 @@ import '../design/system.css';
 import './alliance.css';
 
 /*
- * C.7 THE LEARNER DISPOSITION PROFILE, READABLE (Appendix D §2.6: what the
+ * THE LEARNER DISPOSITION PROFILE, READABLE (what the
  * Mentor adapts must be interpretable to a parent, never a black box).
  *
  * The learner sees their own; a verified Tutor sees their child's. Every line

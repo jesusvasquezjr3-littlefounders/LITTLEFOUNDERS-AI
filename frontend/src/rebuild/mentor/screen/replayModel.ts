@@ -2,9 +2,9 @@ import type { CharacterAction, CharacterEmotion } from '../session/vocabulary';
 import type { SessionTranscript, TranscriptSegment, TranscriptTurn, TutorWhiteboardWire } from '../session/types';
 
 /*
- * A saved conversation as a replay (T1e): the lines in the order they
+ * A saved conversation as a replay: the lines in the order they
  * happened, each one a beat the stage performs. Pure: no React, no audio, no
- * timer, so "what happened, in what order" is checked in a unit test.
+ * timer, so "what happened, in what order" can be checked on its own.
  *
  * What is replayed is what Core kept, and nothing is invented:
  *   - the Mentor's lines, with the emotion, action, voice clip and board they

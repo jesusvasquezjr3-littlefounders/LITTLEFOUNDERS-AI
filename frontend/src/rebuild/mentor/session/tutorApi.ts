@@ -27,10 +27,10 @@ import type {
 } from './types';
 
 /*
- * Core is the only service the browser calls for Tutor DATA (/AGENTS.md §1.5).
+ * Core is the only service the browser calls for Tutor DATA.
  *
  * The one exception is the websocket, which goes straight to Oracle carrying a
- * token Core minted — the fourth documented §1.5 exception. Even there, the
+ * token Core minted — the one documented exception. Even there, the
  * URL comes from THIS file's `startSession`: the client never builds it, never
  * sees the raw token as a separate value, and cannot point it somewhere else.
  */
@@ -64,7 +64,7 @@ export interface StartSessionInput {
   courseId?: string | null;
   topicId?: string | null;
   skillKey?: string | null;
-  /** OD-43: a guided review opened FROM a lesson carries its id; Core resolves the topic/course. */
+  /** A guided review opened FROM a lesson carries its id; Core resolves the topic/course. */
   lessonId?: string | null;
   wantsVoice: boolean;
 }
@@ -171,12 +171,12 @@ export function getMap(token: string): Promise<ApiResult<TutorMapResponse>> {
   return api<TutorMapResponse>('/tutor/map', { token });
 }
 
-/** GAP-FIX-R2: what the Mentor decided about this learner, and on what evidence (validated by the caller). */
+/** What the Mentor decided about this learner, and on what evidence (validated by the caller). */
 export function getMastery(token: string): Promise<ApiResult<unknown>> {
   return api<unknown>('/tutor/mastery', { token });
 }
 
-// ── Consent (/ORACLE.md §4.3) ───────────────────────────────────────────────
+// ── Consent ───────────────────────────────────────────────
 
 export interface ConsentState {
   active: boolean;
@@ -184,7 +184,7 @@ export interface ConsentState {
   locale: string | null;
   /**
    * Whether policy currently permits a minor's microphone AT ALL — the DPA
-   * gate (`TUTOR_VOICE_FOR_MINORS`, /ORACLE.md §16), which is a separate fact
+   * gate (`TUTOR_VOICE_FOR_MINORS`), which is a separate fact
    * from whether this guardian has consented. While it is `blocked` there is
    * nothing to consent TO, and the control must not offer it.
    */
@@ -221,8 +221,7 @@ export function revokeVoiceConsent(token: string, userId: string): Promise<ApiRe
 export interface KidTutorHistory {
   sessions: (SessionSummary & { narrative: SessionNarrative | null })[];
   /**
-   * True when at least one more session exists past this page (round 110,
-   * 2026-08-31) — the guardian list used to hardcode 30 sessions with no way
+   * True when at least one more session exists past this page — the guardian list used to hardcode 30 sessions with no way
    * back to anything older, even though the row was still there and still
    * inside the 90-day retention window.
    */
@@ -237,7 +236,7 @@ export interface KidTutorHistory {
     created_at: string;
   }[];
   /**
-   * The SECOND flag provenance (migration 0065, /ORACLE.md §4.1b): a flag
+   * The SECOND flag provenance (migration 0065): a flag
    * raised while the learner was choosing a course, before any `tutor_sessions`
    * row existed for `safetyFlags` above to reference.
    *
@@ -273,7 +272,7 @@ export function getKidTutorHistory(
 }
 
 /*
- * THE PARENTAL APPROVAL GATE (/ORACLE.md §20, migration 0068).
+ * THE PARENTAL APPROVAL GATE (migration 0068).
  *
  * What the tutor believes about a child no longer writes itself. Every note a
  * session proposes about a `kid` parks until a verified guardian decides, and
@@ -281,7 +280,7 @@ export function getKidTutorHistory(
  */
 export interface PendingMemoryNote {
   id: string;
-  /** Which of the Mentor's two notes this replaces (C.4, OD-18). */
+  /** Which of the Mentor's two notes this replaces. */
   store: 'learner' | 'pedagogy';
   /** The note as proposed: what the tutor would hold about this child. */
   proposed: string;
@@ -311,7 +310,7 @@ export function getPendingMemoryNotes(
 }
 
 /*
- * OD-18 (24 September 2026, C.4): the CALLER'S OWN queue. A self-reviewing
+ * The CALLER'S OWN queue. A self-reviewing
  * teen (13-17, no linked guardian) decides their own parked notes; Core
  * answers 403 FORBIDDEN for anyone whose notes are not self-reviewed, so a
  * kid or adult asking for this gets told rather than shown an empty queue.
@@ -333,7 +332,7 @@ export function decideMemoryNote(
 }
 
 /*
- * GAP-FIX-R5 (C.4, OD-18): delete the caller's own STORED note. `expected` is
+ * Delete the caller's own STORED note. `expected` is
  * the text the teen was shown; Core deletes only while the note still reads
  * exactly that (409 NOTE_OUT_OF_DATE otherwise), and admits only an account
  * whose notes are self-reviewed (or an adult's own).
@@ -350,7 +349,7 @@ export function deleteOwnMemoryNote(
   });
 }
 
-// ── Class V artifacts: plan & notebook (migration 0069, /TUTOR_INSTRUMENTS.md §3.6) ──
+// ── Class V artifacts: plan & notebook (migration 0069) ──
 
 export interface TutorPlan {
   /** A whiteboard JSONB snapshot — the SAME shape any live turn's board already is. */

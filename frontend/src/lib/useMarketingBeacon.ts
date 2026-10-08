@@ -15,7 +15,7 @@ const FLUSH_MS = 30_000;
 const SCROLL_MARKS = [25, 50, 75, 100] as const;
 
 /*
- * Anonymous acquisition beacon (/INSIGHTS.md §7) — the funnel BEFORE signup.
+ * Anonymous acquisition beacon — the funnel BEFORE signup.
  *
  * Runs only when: there is no session (an authenticated visitor is covered by
  * the product beacon instead), the route is a marketing surface, and the

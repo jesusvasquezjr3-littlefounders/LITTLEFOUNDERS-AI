@@ -9,7 +9,7 @@
  * below is IMPORTED from the module that owns it — never paraphrased — for the
  * same reason `src/contract/**` is byte-diffed against the frontend: a second,
  * hand-maintained copy of a rule does not fail loudly when it drifts, it just
- * quietly stops being the rule (coursegen/AGENTS.md, "Contract-copy parity").
+ * quietly stops being the rule.
  *
  * The author does plan AND write in one pass, so the brief carries BOTH the
  * MIX RULES (which govern the segment skeleton) and the HARD RULES (which
@@ -53,7 +53,7 @@ function parseArgs(argv: string[]): Args {
   const args: Partial<Args> & { slots: string[]; exclude: string[] } = { slots: [], exclude: [] };
   for (let i = 0; i < argv.length; i++) {
     const flag = argv[i];
-    // §1.14: a value-taking flag must never swallow the NEXT flag as its value.
+    // A value-taking flag must never swallow the NEXT flag as its value.
     const takeValue = (name: string): string => {
       const value = argv[i + 1];
       if (value === undefined || value.startsWith('--')) throw new Error(`author-briefs: ${name} requires a value`);
@@ -285,7 +285,7 @@ function main(): void {
 
   const all = enumerateSlots(load.course.adventures);
   const selected = filterSlots(all, args.slots.length > 0 ? args.slots : undefined);
-  // §1.14 / mass-generation #9: a pattern that matches nothing is a typo, not
+  // A pattern that matches nothing is a typo, not
   // a successful run of zero lessons.
   if (selected.length === 0) throw new Error(`author-briefs: --slots matched 0 of ${all.length} slots`);
 
@@ -300,7 +300,7 @@ function main(): void {
   }
   if (slots.length === 0) throw new Error('author-briefs: --exclude removed every selected slot — nothing to author');
 
-  // 'kid' is the production register for this catalog (COURSE_ENGINE.md §3.3):
+  // 'kid' is the production register for this catalog:
   // vocabulary gates on, tier-restricted palette. Never widen it here silently.
   const register = resolveRegister(taxonomy, 'kid');
   const graph = buildCompetencyGraph(load.course);

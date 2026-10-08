@@ -13,7 +13,7 @@ export interface RegisterVoiceInput {
 export interface VoiceCloneClientOptions {
   apiUrl: string;
   apiKey: string;
-  /** The synthesis model this voice will be bound to (COURSE_ENGINE.md §7 — a cloned voice can ONLY be used with the exact model it was enrolled under). */
+  /** The synthesis model this voice will be bound to (a cloned voice can ONLY be used with the exact model it was enrolled under). */
   targetModel: string;
   fetchImpl?: typeof fetch;
   timeoutMs?: number;

@@ -5,8 +5,8 @@ import { api } from '@/lib/api';
 import { configureInsights } from '@/lib/insights';
 
 /*
- * The data plane of a self-managed teen's optional-analytics choice (H.1),
- * shared by the Settings card and the first-session step (F3-identity-site):
+ * The data plane of a self-managed teen's optional-analytics choice,
+ * shared by the Settings card and the first-session step:
  * GET/PUT /auth/analytics-preference. Core decides who may manage it
  * (`canManage`: a screened 13-17 account that is not a guest, not a kid-role
  * account and not an under-13 origin) and whether a choice is on file
@@ -14,7 +14,7 @@ import { configureInsights } from '@/lib/insights';
  * shown; a policy signal from another tab re-reads.
  */
 
-// `dialogueExperiment` (M-12, OD-26): this choice is also the consent for the Mentor's hint-style test; absent = not said.
+// `dialogueExperiment`: this choice is also the consent for the Mentor's hint-style test; absent = not said.
 export interface AnalyticsPreference { canManage: boolean; enabled: boolean; disclosed: boolean; dialogueExperiment?: boolean }
 const valid = (value: AnalyticsPreference | null): value is AnalyticsPreference => !!value && typeof value.canManage === 'boolean'
   && typeof value.enabled === 'boolean' && typeof value.disclosed === 'boolean';

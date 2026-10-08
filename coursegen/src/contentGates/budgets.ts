@@ -1,11 +1,9 @@
-// OD-13 Copy Budget, as numbers (Frontend Bible 06 §3.1 and §4).
+// Copy Budget, as numbers.
 //
-// Bible 06 is the source: English word budgets per copy role, ages 6–9 lower,
-// Spanish and Portuguese ×1.25 rounded up. The owner decision (OD-13) makes
-// lesson prompts, options and Mentor turns a Forge content gate "next to B.17
-// and B.18". The remaining roles below are the same Bible 06 limits applied to
-// the other strings a lesson renders; see the sprint record S05.4a for why
-// they are gated too and the owner question raised about it.
+// English word budgets per copy role, ages 6–9 lower, Spanish and Portuguese
+// ×1.25 rounded up. Lesson prompts, options and Mentor turns are a Forge
+// content gate; the remaining roles below apply the same limits to the other
+// strings a lesson renders.
 
 import type { TaxonomyFile } from '../catalog/schema.js';
 
@@ -13,20 +11,20 @@ export type ContentLocale = 'en-US' | 'es-MX' | 'pt-BR';
 
 /**
  * The roles Forge content can take on screen. Names follow `data-copy-role`
- * (Bible 06 §3.1) where one exists:
+ * where one exists:
  *   heading  — segment/lesson/card title
  *   prompt   — the lesson question or instruction (context + question)
  *   option   — anything the learner taps or drags: answer options, items, tokens
  *   mentor   — one character turn on the stage (story lines, scene narration)
  *   body     — card text and immediate feedback banners (explanation, rationale, recap)
- *   detail   — text behind a tap (hints, tap-to-explain notes): a layered sheet (§4)
- *   data     — table cells, chart labels, names, numbers: never counted (§3.3)
+ *   detail   — text behind a tap (hints, tap-to-explain notes): a layered sheet
+ *   data     — table cells, chart labels, names, numbers: never counted
  */
 export type CopyRole = 'heading' | 'prompt' | 'option' | 'mentor' | 'body' | 'narrative' | 'detail' | 'data';
 
 export interface RoleBudget {
   words: number;
-  /** Ages 6–9 limit (Bible 06 §3.1); absent means the same as `words`. */
+  /** Ages 6–9 limit; absent means the same as `words`. */
   youngWords?: number;
   /** Maximum sentences; absent means not sentence-checked. */
   sentences?: number;
@@ -39,14 +37,14 @@ export const COPY_BUDGETS: Readonly<Record<Exclude<CopyRole, 'data'>, RoleBudget
   mentor: { words: 20, youngWords: 12, sentences: 2 },
   body: { words: 12, sentences: 2 },
   narrative: { words: 30, sentences: 2 },
-  // Bible 06 §4.4: "The sheet may hold up to 60 words, in short paragraphs."
+  // A detail sheet may hold up to 60 words, in short paragraphs.
   detail: { words: 60 },
 };
 
-/** Roles OD-13 names explicitly for the Forge gate. */
+/** Roles named explicitly for the Forge gate. */
 export const OD13_ROLES: readonly CopyRole[] = ['prompt', 'option', 'mentor'];
 
-/** Bible 06 §3: "ES and PT get ×1.25, rounded up". */
+/** ES and PT get ×1.25, rounded up. */
 export const LOCALE_FACTOR: Readonly<Record<ContentLocale, number>> = { 'en-US': 1, 'es-MX': 1.25, 'pt-BR': 1.25 };
 
 export interface Audience {
@@ -63,10 +61,10 @@ export function wordLimit(role: Exclude<CopyRole, 'data'>, locale: ContentLocale
 }
 
 /**
- * The speech-plate caption limit (Frontend 08 §2 and §5): one Mentor turn.
+ * The speech-plate caption limit: one Mentor turn.
  * A narrated block no longer than this may appear verbatim on screen — the
  * plate keeps a caption for accessibility and muted devices — so it is the
- * B.18 boundary between "a caption" and "long on-screen text duplicating
+ * Boundary between "a caption" and "long on-screen text duplicating
  * narration".
  */
 export function captionLimit(locale: ContentLocale, audience: Audience): { words: number; sentences: number } {
@@ -79,7 +77,7 @@ function lowestAge(ages: string): number | null {
   return match ? Number(match[1]) : null;
 }
 
-/** Bible 06 "ages 6–9": a tier whose youngest age is at most this gets the young limits. */
+/** Ages 6–9: a tier whose youngest age is at most this gets the young limits. */
 export const YOUNG_AUDIENCE_MAX_AGE = 9;
 
 /**

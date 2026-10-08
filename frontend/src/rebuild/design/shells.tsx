@@ -12,8 +12,7 @@ import { rebuildNamespaceCopy } from '../../i18n/rebuild';
 import { EntryArt } from './EntryArt';
 
 /*
- * Shared shells (Frontend Bible 02 §1.1, §4.5, §7 rule 9, §9.7, §9.8; 03 §3.4;
- * S03.2). One design system, separate experiences (OD-3, OD-4): the learner
+ * Shared shells. One design system, separate experiences: the learner
  * app, the parent (Tutor) console, the staff console, the public site and the
  * sign-in flow each get their own navigation from the same components. Every
  * shell provides a skip link, one <main>, route-level focus (a route change
@@ -29,7 +28,7 @@ export interface ShellNavItem {
   id: string;
   label: string;
   href: string;
-  /** A class B navigation icon from the asset manifest (07 §1). Generic glyphs never stand for a place. */
+  /** A class B navigation icon from the asset manifest. Generic glyphs never stand for a place. */
   iconAssetId?: string;
 }
 
@@ -70,7 +69,7 @@ export function useDocumentMeta(pageTitle: string, appName: string, locale: Loca
  * On a route change (never on the first render and never on an in-place
  * re-render): scroll to the top and move focus to the new page's <h1>, or to
  * <main> when there is none, so a keyboard or screen-reader user starts on the
- * new content instead of on the link they pressed (02 rule 13).
+ * new content instead of on the link they pressed.
  */
 export function useRouteFocus(routeKey: string, main: React.RefObject<HTMLElement>) {
   // The key the page last settled on, not a "first render" flag: React's development StrictMode runs every
@@ -130,13 +129,13 @@ interface NavEntry extends ShellNavItem {
   labelRole?: 'action' | 'data';
   /**
    * The entry keeps its visible word in the compact tab bar. Only the Mentor tab before a character is chosen:
-   * it has no picture (never a stand-in, 02 rule 21), so its word is its only visible mark.
+   * it has no picture (never a stand-in), so its word is its only visible mark.
    */
   keepLabel?: boolean;
 }
 
 /**
- * `data-icons='all'` switches on the compact phone tab bar below a 360 px container (02 section 7 rule 9): every
+ * `data-icons='all'` switches on the compact phone tab bar below a 360 px container: every
  * entry has its own mark, or is the unchosen Mentor, which keeps its word. The current entry is marked on its
  * list item, so the compact rule needs no `:has()`.
  */
@@ -181,27 +180,27 @@ function useShellFrame({ pageTitle, appName, locale, routeKey }: Pick<ShellCommo
  * ------------------------------------------------------------------------- */
 
 export interface LearnerShellProps extends ShellCommonProps {
-  /** Learn, Tasks, Wallet, Profile… as this learner is entitled to them (a teen without a parent has no Tasks, OD-3). */
+  /** Learn, Tasks, Wallet, Profile… as this learner is entitled to them (a teen without a parent has no Tasks). */
   items: readonly ShellNavItem[];
   /**
-   * The Mentor tab (02 §1.1, §9.7, OD-6): the chosen character's own name
+   * The Mentor tab: the chosen character's own name
    * (from `MENTOR_NAMES`, so the name can never disagree with the picture) and
    * a render of the real model. `name` is the translated generic word
    * "Mentor", shown only before a character is chosen, with no stand-in picture.
    */
   mentor: { href: string; name: string; character: MentorCharacter | null };
-  /** Where the Mentor tab sits among the items (the mockup's order puts it second). */
+  /** Where the Mentor tab sits among the items. */
   mentorIndex?: number;
   current: string;
 }
 
 /**
  * The learner app: a bottom tab bar docked in the thumb zone on phones and
- * tablets (03 §3.4), a side rail from an 840 px container. Below 360 px, when
+ * tablets, a side rail from an 840 px container. Below 360 px, when
  * every tab has its own icon, inactive tabs become 48 px icons and only the
- * current tab keeps a visible label (02 §7 rule 9); the name of every tab
+ * current tab keeps a visible label; the name of every tab
  * stays in the accessibility tree. The Mentor tab before a character is chosen
- * has no picture (02 rule 21), so it keeps its word too. Without icons the
+ * has no picture, so it keeps its word too. Without icons the
  * labels wrap instead of shrinking.
  */
 export function LearnerShell({ items, mentor, mentorIndex = 1, current, labels, onNavigate, children, utilities, ...frame }: LearnerShellProps) {
@@ -237,7 +236,7 @@ export function LearnerShell({ items, mentor, mentorIndex = 1, current, labels, 
 
 export interface ConsoleShellProps extends ShellCommonProps {
   kind: 'tutor' | 'staff';
-  /** The role pill: "Tutor" (the verified parent, OD-6) or the staff role name. */
+  /** The role pill: "Tutor" (the verified parent) or the staff role name. */
   roleLabel: string;
   items: readonly ShellNavItem[];
   current: string;
@@ -278,7 +277,7 @@ export function ConsoleShell({ kind, roleLabel, items, current, labels, onNaviga
   </div>;
 }
 
-/** The verified parent's console. "Tutor" names the parent, never the AI (OD-6). */
+/** The verified parent's console. "Tutor" names the parent, never the AI. */
 export function TutorShell(props: Omit<ConsoleShellProps, 'kind'>) {
   return <ConsoleShell {...props} kind="tutor" />;
 }
@@ -286,7 +285,7 @@ export function TutorShell(props: Omit<ConsoleShellProps, 'kind'>) {
 /**
  * Staff permissions, mirrored by hand from Core's `requireAdminPermission`
  * (backend/src/middleware/auth.ts). There are no shared types across packages
- * by design; a unit test fails when the two lists drift.
+ * by design; keep the two lists in step.
  */
 export const STAFF_PERMISSIONS = ['manage_users', 'manage_content', 'view_analytics', 'manage_support'] as const;
 export type StaffPermission = typeof STAFF_PERMISSIONS[number];
@@ -325,7 +324,7 @@ export interface SiteShellProps extends ShellCommonProps {
   secondaryAction?: ShellLinkAction;
   /** "Start free": the one accent call to action in the header. */
   primaryAction?: ShellLinkAction;
-  /** On phones, a bar with this action docks at the bottom after the first screen (03 §3.4). */
+  /** On phones, a bar with this action docks at the bottom after the first screen. */
   stickyAction?: ShellLinkAction;
   footer?: ReactNode;
   labels: ShellCommonProps['labels'] & { menu: string; close: string };
@@ -333,7 +332,7 @@ export interface SiteShellProps extends ShellCommonProps {
 
 /**
  * The public site: a sticky header (z 30); links inline from a 1120 px
- * container (02 §11 item 8), a menu sheet below it (z 50); the call to action
+ * container, a menu sheet below it (z 50); the call to action
  * inline from 640 px and in the menu below it.
  */
 export function SiteShell({ homeHref, links, current = '', secondaryAction, primaryAction, stickyAction, footer, labels, onNavigate, children, utilities, ...frame }: SiteShellProps) {
@@ -405,11 +404,11 @@ export function AuthShell({ homeHref, back, footer, labels, onNavigate, children
  * ------------------------------------------------------------------------- */
 
 /**
- * A dashboard page (02 §4.5: a neutral page with coloured cards). From an
- * 840 px container of its own it splits 7:5 (03 §3.3: asymmetry with a reason,
+ * A dashboard page (a neutral page with coloured cards). From an
+ * 840 px container of its own it splits 7:5 (asymmetry with a reason,
  * the main task wide and the supporting column narrow); below that it is one
  * reading column in source order. Without a supporting column the main task
- * keeps the full width (a data table needs it to stay a table, 02 §9.8).
+ * keeps the full width (a data table needs it to stay a table).
  */
 export function DashboardLayout({ primary, secondary }: { primary: ReactNode; secondary?: ReactNode }) {
   return <div className="lf-dashboard">
@@ -424,7 +423,7 @@ export type SingleStateHue = 'primary' | 'accent' | 'success' | 'sky' | 'mint' |
 
 /**
  * A screen that is one state (a lesson, a result, an onboarding step) fills
- * its whole background with one hue (02 §4.5, rule 15). Text and controls use
+ * its whole background with one hue. Text and controls use
  * that hue's `on-*` colour, and so does the focus ring. Actions dock at the
  * bottom, in the thumb zone, above the safe area.
  */
@@ -444,13 +443,12 @@ export interface TableColumn<Row> {
   key: string;
   label: string;
   value: (row: Row) => ReactNode;
-  /** Names, nicknames and emails wrap anywhere (02 §7 rule 8). */
+  /** Names, nicknames and emails wrap anywhere. */
   ugc?: boolean;
 }
 
 /**
- * A data table that becomes one card per row below an 840 px container
- * (02 §9.8). Each cell keeps its label visible as "label: value", nothing is
+ * A data table that becomes one card per row below an 840 px container. Each cell keeps its label visible as "label: value", nothing is
  * truncated, and explicit table roles keep the semantics when CSS changes the
  * display of the table elements.
  */

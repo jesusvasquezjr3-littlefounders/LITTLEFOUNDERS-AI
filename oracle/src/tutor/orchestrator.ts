@@ -204,7 +204,7 @@ import type { WordTiming } from '../voice/provider.js';
 /*
  * One live session, as a state machine over turns.
  *
- * THE PIPELINE, in the order /ORACLE.md §5 and §6 require, with the reason each
+ * THE PIPELINE, in the order the safety rules require, with the reason each
  * step is where it is:
  *
  *   budget      → an over-budget session must not spend a model call to find
@@ -308,7 +308,7 @@ const TURN_HISTORY_WINDOW = 20;
  * The windows a retry uses after the provider returned whitespace, indexed by
  * how many empties this turn has already collected.
  *
- * `model:probe-empty` rounds 74-75 measured the rate as a function of exactly
+ * `model:probe-empty` measured the rate as a function of exactly
  * this number — 7/12 at twenty alternating turns, 3/12 at ten, 0/12 at three —
  * so each successive empty steps further down that curve rather than asking
  * the same question again. That matters because production's empties are
@@ -351,7 +351,7 @@ export interface TurnEmission {
   audio: Promise<SpokenAudio>;
   moderation: Record<string, unknown>;
   /**
-   * C.18: the per-turn honesty facts (feedbackHonesty.ts), persisted with the
+   * The per-turn honesty facts (feedbackHonesty.ts), persisted with the
    * transcript row so Core can score the answer-reveal rate against the real
    * key. Set on every turn `produce()` settles (model, or the scripted line
    * that replaced a rejected draft); absent on a purely scripted outcome
@@ -359,19 +359,19 @@ export interface TurnEmission {
    */
   honesty?: TurnHonesty | null;
   /**
-   * C.8/C.12: this turn carries the stop-or-continue offer. The server sends
+   * This turn carries the stop-or-continue offer. The server sends
    * `session_end_offer` after the turn so the stage can show two equal
-   * choices (Frontend Bible 08 §4).
+   * choices.
    */
   sessionEndOffer?: boolean;
   /**
-   * C.19: this turn IS the system's check-in ("are we on the same page?").
+   * This turn IS the system's check-in ("are we on the same page?").
    * The server sends `check_in` after it so the stage can show the two reply
-   * chips (Frontend Bible 08 §4: "a turn with chips, not a modal").
+   * chips ("a turn with chips, not a modal").
    */
   checkIn?: boolean;
   /**
-   * C.15: this turn restates the session goal as one confirming question.
+   * This turn restates the session goal as one confirming question.
    * The server sends `goal_check` after it so the stage can show two equal
    * chips ("Yes, that's it" / "Something else").
    */
@@ -379,7 +379,7 @@ export interface TurnEmission {
 }
 
 /**
- * How a learner's words reached the server (C.9 reply latency): typed, or
+ * How a learner's words reached the server (reply latency): typed, or
  * spoken — with the moment they started answering (the message's arrival,
  * or the microphone press), or null when that moment is unknown.
  */
@@ -404,7 +404,7 @@ export interface TurnOutcome {
   /** Set when the session must end after this turn is delivered. */
   closeReason: 'completed' | 'hard_budget' | 'turn_cap' | 'safety_stop' | null;
   /**
-   * C.16: a scripted line the system adds AFTER this turn — the completed
+   * A scripted line the system adds AFTER this turn — the completed
    * close's effort line after the Mentor's recap reflection, the interrupted
    * close after the budget's grace turn, or the recap question after the
    * Mentor wrapped up. `ws/server.ts` delivers this turn first (with its
@@ -447,7 +447,7 @@ const TrajectoryStepSchema = z
     kcId: z.string().nullable(),
     kcMode: z.enum(['new', 'review', 'probe', 'remediation']).nullable(),
     /*
-     * C.10 evidence (see `DecisionEvidence`). Defaulted so a step logged by
+     * Evidence (see `DecisionEvidence`). Defaulted so a step logged by
      * the previous build restores as "no evidence recorded" — which the
      * compliance report counts AGAINST compliance for a consequential move,
      * the honest reading of a missing record.
@@ -462,7 +462,7 @@ const TrajectoryStepSchema = z
 
 /**
  * A park record read back out of a shared store is an INPUT, so it is
- * Zod-validated at the edge like every other one (/AGENTS.md §1.6) — and
+ * Zod-validated at the edge like every other one — and
  * `.strict()`, so a record written by a replica running different code is
  * rejected outright instead of being restored with whatever happens to line
  * up. "Reject, don't coerce silently" matters more here than almost anywhere
@@ -502,14 +502,14 @@ export const OrchestratorSnapshotSchema = z
     segmentServedAt: z.array(z.tuple([z.string(), z.number()])),
     minorPosture: z.boolean(),
     /*
-     * C.13: the hint ladder rides the snapshot too — a learner must never
+     * The hint ladder rides the snapshot too — a learner must never
      * lose their place in the escalation to a cross-replica resume.
      * Defaulted like `modelDownCount`: a session parked by the previous
      * build has no ladder and restores as a fresh one.
      */
     hintLadder: HintLadderSnapshotSchema.default({ levels: [], told: [] }),
     /*
-     * C.8/C.12 and C.16: the session-end signal (baseline, window, offers)
+     * The session-end signal (baseline, window, offers)
      * and the closing sequence (phase and the observed effort facts) ride
      * the snapshot — a resume must neither restart the learner's baseline
      * nor forget that the recap question is already open. Defaulted for
@@ -518,14 +518,14 @@ export const OrchestratorSnapshotSchema = z
     sessionEndSignal: SessionEndSignalSnapshotSchema.default(EMPTY_SESSION_END_SIGNAL),
     sessionClosing: SessionClosingSnapshotSchema.default(EMPTY_SESSION_CLOSING),
     /*
-     * C.9/C.19: the Behavioral Telemetry Layer (the learner's own baselines,
+     * The Behavioral Telemetry Layer (the learner's own baselines,
      * the rolling window and the check-in lifecycle) rides the snapshot — a
      * resume must neither restart the baseline nor forget an open check-in.
      * Defaulted for records parked by the previous build.
      */
     behavioralTelemetry: BehavioralTelemetrySnapshotSchema.default(EMPTY_BEHAVIORAL_TELEMETRY),
     /*
-     * C.15 / C.14 / C.7: the Alliance Controller (goal, task, bond and the
+     * The Alliance Controller (goal, task, bond and the
      * renegotiation windows), the self-explanation move (an open "why did
      * you pick that?" must survive a resume) and this session's disposition
      * observations ride the snapshot. Defaulted for records parked by the
@@ -535,7 +535,7 @@ export const OrchestratorSnapshotSchema = z
     selfExplanation: SelfExplanationSnapshotSchema.default(EMPTY_SELF_EXPLANATION),
     dispositionObserver: DispositionObserverSnapshotSchema.default(EMPTY_DISPOSITION_OBSERVER),
     /*
-     * C.11 / C.17: the spaced-review router (queued re-exposures, hand-offs
+     * The spaced-review router (queued re-exposures, hand-offs
      * and every routing decision) and the dialogue-calibration counts ride
      * the snapshot — a resume must not forget a shaky answer waiting for its
      * re-check. The calibration itself is pinned in the session context.
@@ -555,31 +555,31 @@ interface ProduceOptions {
   signal?: AbortSignal;
   finalTurn?: boolean;
   /**
-   * C.18: what this turn is reacting to, when the SERVER knows it — a
+   * What this turn is reacting to, when the SERVER knows it — a
    * verified-wrong answer or a stated wrong idea/unsound decision is what
    * the anti-sycophancy check is run against.
    */
   verdict?: VerdictContext;
   /**
-   * C.16: `completed_final` is the goodbye after the recap answer — the
+   * `completed_final` is the goodbye after the recap answer — the
    * scripted effort line follows it (`after`) and carries the close.
    */
   closing?: 'completed_final';
-  /** C.8/C.12: this turn is meant to carry the stop-or-continue offer. */
+  /** This turn is meant to carry the stop-or-continue offer. */
   sessionEndOffer?: boolean;
-  /** C.19: the system's check-in follows this turn (the telemetry layer fired). */
+  /** The system's check-in follows this turn (the telemetry layer fired). */
   checkIn?: boolean;
-  /** C.19: this turn is the repair after the learner said the help is not working. */
+  /** This turn is the repair after the learner said the help is not working. */
   repair?: boolean;
-  /** C.15: this turn restates the session goal as one confirming question (the goal chips follow). */
+  /** This turn restates the session goal as one confirming question (the goal chips follow). */
   goalProposal?: boolean;
-  /** C.15: the system's renegotiation question follows this turn. */
+  /** The system's renegotiation question follows this turn. */
   renegotiation?: boolean;
-  /** C.14: the system's self-explanation question follows this turn. */
+  /** The system's self-explanation question follows this turn. */
   selfExplanationPrompt?: boolean;
-  /** C.14: this turn is the targeted follow-up after a low-quality explanation. */
+  /** This turn is the targeted follow-up after a low-quality explanation. */
   selfExplanationFollowup?: boolean;
-  /** C.13: this turn carries the "just tell me" directive (counted when delivered, C.24 tell_honored). */
+  /** This turn carries the "just tell me" directive (counted when delivered, tell_honored). */
   tellRequested?: boolean;
 }
 
@@ -603,7 +603,7 @@ export class TutorOrchestrator {
    * Discarded synthesis promises — paid for, delivered to nobody — that
    * have not yet SETTLED, so their cost has not yet reached `voiceUsd`.
    *
-   * Found by adversarial review, round 24 (2026-08-30, MEDIUM): a blocked
+   * Found by adversarial review: a blocked
    * turn's speculative synthesis is fired concurrently with the judge and
    * discarded on a block (`void speculative` used to be the whole of it) —
    * `speak()` only adds its cost to the ledger when ITS OWN promise
@@ -652,7 +652,7 @@ export class TutorOrchestrator {
    * UNGRADED — cleared the moment it grades, unlike `openActivity` (which is
    * deliberately kept so a later reaction turn can still describe it).
    *
-   * Found by adversarial review, round 60 (2026-08-30, HIGH): the whiteboard
+   * Found by adversarial review: the whiteboard
    * is client-rendered only when `socket.segment` is empty — a graded
    * segment stays in that slot until ANOTHER one replaces it, by the exact
    * design `openActivity`'s own comment describes. Nothing server-side ever
@@ -674,37 +674,37 @@ export class TutorOrchestrator {
    * already returned.
    */
   private readonly usedSkillNames = new Set<string>();
-  /** C.13: the hint ladder owns hint escalation per sub-step — policy, not per-turn LLM judgment. */
-  /** C.13 × C.17: its rungs follow this session's dialogue policy (shorter for the younger-child register). */
+  /** The hint ladder owns hint escalation per sub-step — policy, not per-turn LLM judgment. */
+  /** Its rungs follow this session's dialogue policy (shorter for the younger-child register). */
   private readonly hintLadder: HintLadder;
-  /** C.11: the two-tier spaced-review router (`spacedReview.ts`). */
+  /** The two-tier spaced-review router (`spacedReview.ts`). */
   private readonly spacedReview: SpacedReviewRouter;
-  /** C.17: this session's dialogue policy (pinned, from the session context) and its record. */
+  /** This session's dialogue policy (pinned, from the session context) and its record. */
   private readonly dialoguePolicy: DialoguePolicy;
   private readonly dialogueCalibration: DialogueCalibrationRecorder;
-  /** C.8/C.12: the behavioral-signature session-end signal (`sessionEndSignal.ts`). */
+  /** The behavioral-signature session-end signal (`sessionEndSignal.ts`). */
   private readonly sessionEndSignal: SessionEndSignal;
-  /** C.16: the closing sequence and the observed facts a completed close names. */
+  /** The closing sequence and the observed facts a completed close names. */
   private readonly sessionClosing = new SessionCloser();
-  /** C.9/C.19: the Behavioral Telemetry Layer and the check-in lifecycle (`behavioralTelemetry.ts`). */
+  /** The Behavioral Telemetry Layer and the check-in lifecycle (`behavioralTelemetry.ts`). */
   private readonly behavioralTelemetry: BehavioralTelemetry;
-  /** C.15: the Alliance Controller — bond, goal and task agreement (`allianceController.ts`). */
+  /** The Alliance Controller — bond, goal and task agreement (`allianceController.ts`). */
   private readonly alliance: AllianceController;
-  /** C.14: the self-explanation move after financial decisions (`selfExplanation.ts`). */
+  /** The self-explanation move after financial decisions (`selfExplanation.ts`). */
   private readonly selfExplanation: SelfExplanation;
   /**
-   * C.22 Stage 5: the Tier 2 configs this session runs with — the approved
+   * The Tier 2 configs this session runs with — the approved
    * defaults, or a canary arm's overrides clamped to the registry bounds
    * (`mentorCanary.ts`). Derived at construction from the pinned context.
    */
   private readonly canary: CanaryConfigs;
-  /** C.7: what this session contributes to the persistent disposition profile. */
+  /** What this session contributes to the persistent disposition profile. */
   private readonly dispositionObserver: DispositionObserver;
-  /** C.7: what the learner's disposition profile changes this session (derived from the pinned context). */
+  /** What the learner's disposition profile changes this session (derived from the pinned context). */
   private readonly dispositionEffects: DispositionEffects;
   /**
-   * The V4 harness backlog's TRAJECTORY LOG (ROADMAP.md "Remaining harness
-   * phases", /ORACLE.md §20): one entry per real `controller.decide()` call
+   * The TRAJECTORY LOG:
+   * one entry per real `controller.decide()` call
    * this session, in order. A plain in-memory push, no I/O — see
    * `recordTrajectoryStep`. Flushed as ONE batch by `session/trajectory.ts`,
    * fire-and-forget, from the same seam `runPostSessionReview` already uses
@@ -727,7 +727,7 @@ export class TutorOrchestrator {
    * grading), and a fabricated id was previously accepted without question.
    */
   private readonly servedSegmentSkills = new Map<string, string>();
-  /** When each open segment went on screen, for the §8.3 latency signal. */
+  /** When each open segment went on screen, for the latency signal. */
   private readonly segmentServedAt = new Map<string, number>();
   /**
    * THE ONE FIELD OF `session` THAT IS LIVE RATHER THAN PINNED — the
@@ -746,15 +746,14 @@ export class TutorOrchestrator {
    *
    * `isMinor` is the exception, because it is not a preference — it is the
    * ONLY input to `requireModelPass`, which decides whether a turn no judge
-   * could clear is refused or delivered (/ORACLE.md §6). Every sibling gate on
+   * could clear is refused or delivered. Every sibling gate on
    * the SAME reconnect already reads a freshly re-verified value: the door's
    * `moderationReadiness(session.isMinor)`, the microphone gate, and
    * `refreshMicConsent`'s live per-turn call to Core. Leaving this one pinned
    * made the orchestrator's own moderation decision the last stale reader of a
    * value everything around it had already updated — the same "state read back
-   * out of a kept object is the previous holder's state" class `/AGENTS.md`
-   * §1.14 already names. Found by adversarial review as round 56's deferred
-   * MEDIUM, closed as round 77 (2026-08-30).
+   * out of a kept object is the previous holder's state" class of bug
+   * this codebase already names. Found by adversarial review (2026-08-30).
    */
   private minorPosture: boolean;
 
@@ -770,12 +769,12 @@ export class TutorOrchestrator {
     const config = getConfig();
     this.sessionEndSignal = new SessionEndSignal(config.TUTOR_SESSION_END_SIGNAL);
     /*
-     * The stricter of the operator's switch and Core's Stage 7 automatic
+     * The stricter of the operator's switch and Core's automatic
      * rollback verdict (off > shadow > act): Core can only ever make the
      * layer quieter, never louder than the operator set it.
      */
     /*
-     * C.22 Stage 5: a canary arm moves registered Tier 2 parameters only,
+     * A canary arm moves registered Tier 2 parameters only,
      * clamped to their approved bounds; an unknown key refuses the whole
      * canary (the approved defaults run and no arm is reported).
      */
@@ -789,14 +788,14 @@ export class TutorOrchestrator {
       this.canary.telemetry,
     );
     /*
-     * C.7: the learner's persistent disposition profile, read beside the
+     * The learner's persistent disposition profile, read beside the
      * mastery values (never instead of them). Server-side only.
      */
     this.dispositionEffects = dispositionEffects(session.dispositionProfile ?? null);
     /*
-     * C.10 Appendix F Stage 7: the Extended Mastery Engine rollback is the
-     * union of Core's automatic kill switch (audit-logged in Core's
-     * Kill-Switch Trigger Log) and the operator's env list. Logged ONCE per
+     * The Extended Mastery Engine rollback is the
+     * union of Core's automatic kill switch (audit-logged in Core)
+     * and the operator's env list. Logged ONCE per
      * session when a rolled-back KC is in this session's plan — the only case
      * in which it can change a mastery or remediation decision.
      */
@@ -828,8 +827,8 @@ export class TutorOrchestrator {
     this.dispositionObserver = new DispositionObserver(session.dispositionProfile != null, this.dispositionEffects);
     this.minorPosture = session.isMinor;
     /*
-     * C.17: the register Core assigned (band from its own age evidence; the
-     * variant from the adults-only experiment or the SPEC's calibrated
+     * The register Core assigned (band from its own age evidence; the
+     * variant from the adults-only experiment or the calibrated
      * default), or the tier fallback for an older Core. The operator's `off`
      * forces the uniform control register for everyone.
      */
@@ -837,7 +836,7 @@ export class TutorOrchestrator {
     this.dialoguePolicy = dialoguePolicy(calibration.band, calibration.variant);
     this.dialogueCalibration = new DialogueCalibrationRecorder(calibration, this.dialoguePolicy);
     this.hintLadder = new HintLadder(this.dialoguePolicy.ladder);
-    // C.11: the stricter of the operator's switch and Core's Stage 7 verdict.
+    // The stricter of the operator's switch and Core's verdict.
     this.spacedReview = new SpacedReviewRouter(
       strictestSpacedReviewMode(config.TUTOR_SPACED_REVIEW, session.spacedReviewMode ?? 'act'),
     );
@@ -858,12 +857,10 @@ export class TutorOrchestrator {
    */
   /**
    * EVERY mutable field, as plain JSON, so a dropped session can be resumed on
-   * a DIFFERENT replica (`ws/parkStore.ts`, `RUNBOOK.md` Round 143).
+   * a DIFFERENT replica (`ws/parkStore.ts`).
    *
    * Three fields are deliberately absent, each for its own reason rather than
-   * by oversight — `snapshot-fence.test.ts` enumerates this class's real
-   * runtime fields and goes RED if a future round adds one without deciding
-   * which of these buckets it belongs in:
+   * by oversight:
    *
    *   - `synthesize` is a CLOSURE bound to one socket's `SpeechScope`. A
    *     closure cannot cross a process, so `restore` takes a freshly built one
@@ -879,8 +876,8 @@ export class TutorOrchestrator {
    *     calling this, which folds every outstanding discard into `voiceUsd`
    *     and leaves the array legitimately empty. `snapshot()` asserts that
    *     rather than trusting it: a snapshot taken with costs still in flight
-   *     is a silently wrong ledger, which is exactly the failure /AGENTS.md
-   *     §1.0 counts as money leaving.
+   *     is a silently wrong ledger, which is exactly the failure that
+   *     counts as money leaving.
    */
   snapshot(): OrchestratorSnapshot {
     if (this.pendingDiscardedAudio.length > 0) {
@@ -1030,7 +1027,7 @@ export class TutorOrchestrator {
   get idleNudgeMs(): number | null {
     if (!this.controller.active) return null;
     const base = IDLE_NUDGE_MS[this.controller.currentStrategy];
-    // C.7: a learner whose typical reply takes longer is not nudged before their own pace.
+    // A learner whose typical reply takes longer is not nudged before their own pace.
     const floor = this.dispositionEffects.idleNudgeFloorMs;
     if (floor !== null && floor > base) {
       this.dispositionObserver.noteIdleNudgePaced();
@@ -1055,7 +1052,7 @@ export class TutorOrchestrator {
      * WHILE THE V3/V4 CONTROLLER IS STEERING, IT OWNS THE UNIT THIS BADGE
      * SHOULD COUNT — a knowledge component, not a macro-phase step.
      *
-     * Found live, 2026-08-31 (AGENTS.md item 81): `plan.ts`'s own short,
+     * Found live, 2026-08-31: `plan.ts`'s own short,
      * fixed arc (3-5 steps: warmup/explain/practice/check/stretch) is built
      * ONCE per session and has no cross-reference to `controller.ts`'s
      * independent knowledge-component cursor (`advanceEntry()`) at all. A
@@ -1134,7 +1131,7 @@ export class TutorOrchestrator {
   }
 
   /**
-   * What this session cost us, model AND voice (/ORACLE.md §15).
+   * What this session cost us, model AND voice.
    *
    * Voice used to be missing from this number entirely, which meant the ledger
    * confidently reported the cheap half of the most expensive surface in the
@@ -1172,7 +1169,7 @@ export class TutorOrchestrator {
    * Cost incurred OUTSIDE this class's own `produce()` loop, folded into the
    * same `modelUsd` bucket `totalCostUsd` already sums.
    *
-   * Found by adversarial review, round 64 (2026-08-30, HIGH): tier-3 live
+   * Found by adversarial review: tier-3 live
    * content generation (`content/generate.ts`'s `generateSegment`, called
    * from `ws/server.ts`'s `serveSegment`) makes its own real, paid author
    * model calls — the SAME model family `produce()` already costs — and
@@ -1187,10 +1184,10 @@ export class TutorOrchestrator {
 
   /**
    * The ONE place `modelUsd` is ever incremented, so the platform-wide
-   * circuit breaker (`session/spend-guard.ts`, /ORACLE.md §15.2 item 1) sees
+   * circuit breaker (`session/spend-guard.ts`) sees
    * every dollar this session's own ledger sees, with no second call site to
    * forget the next time one is added — `noteGenerationCost` used to be that
-   * second site, found missing entirely (round 64's own comment above).
+   * second site, found missing entirely (its own comment above).
    */
   private addModelCost(usd: number): void {
     this.modelUsd += usd;
@@ -1285,14 +1282,14 @@ export class TutorOrchestrator {
      * WHEN IT WENT ON SCREEN, so the grade that comes back can be read as more
      * than right-or-wrong.
      *
-     * The blueprint's §8.3 is the argument: "correcto + latencia alta → dominio
+     * The argument: "correcto + latencia alta → dominio
      * frágil, NO PROMOVER". A correct answer that took a long time is weaker
      * evidence than the same answer given fluently, and promoting on it is how a
      * learner gets moved off something they can only just barely do.
      *
      * It costs nothing and adds no data about the child: both ends of the
      * interval are server-side clocks, so nothing new is asked of the client,
-     * nothing new is stored about the learner, and §1.9 is untouched.
+     * nothing new is stored about the learner, and the privacy rule is untouched.
      */
     this.segmentServedAt.set(segmentId, Date.now());
     if (segmentType && TutorOrchestrator.CHECKABLE_TYPES.has(segmentType)) {
@@ -1316,7 +1313,7 @@ export class TutorOrchestrator {
      * we asked for, and the controller's whole adaptive state is relative to
      * the band it believes the learner is on. This is the one moment we learn
      * what actually happened, so it is the one moment the belief can be
-     * corrected. Round 74 (2026-08-30, MEDIUM).
+     * corrected.
      */
     this.controller.reconcileServedDifficulty(servedDifficulty);
   }
@@ -1344,12 +1341,12 @@ export class TutorOrchestrator {
 
   /**
    * The learner accepted an offered adaptation. Applied only on acceptance
-   * (§11) — AND only when it names the adaptation the tutor's own most
+   * — AND only when it names the adaptation the tutor's own most
    * recent turn actually offered. Found by adversarial review, 2026-08-30
    * (MEDIUM): this used to apply WHATEVER value the client sent, with no
    * check that anything had been offered at all — a stray, replayed or
    * hand-crafted `adaptation_response` could silently steer every
-   * subsequent turn, which is exactly what "offered, never imposed" (§11)
+   * subsequent turn, which is exactly what "offered, never imposed"
    * exists to rule out. Consumed on use, the same way a one-time offer
    * should be: a second `adaptation_response` for the same offer, or one
    * that arrives after the tutor has already moved on, is refused.
@@ -1358,7 +1355,7 @@ export class TutorOrchestrator {
     if (adaptation !== this.lastOfferedAdaptation) return;
     this.lastOfferedAdaptation = null;
     if (!this.adaptations.includes(adaptation)) this.adaptations.push(adaptation);
-    // C.15 task agreement (the pattern of declines resets) and C.7.
+    // Task agreement (the pattern of declines resets) and the disposition profile.
     this.alliance.noteAccepted();
     this.dispositionObserver.noteAdaptation(adaptation, true);
   }
@@ -1366,13 +1363,13 @@ export class TutorOrchestrator {
   /**
    * The learner DECLINED an offered adaptation — the decline-side sibling of
    * `applyAdaptation` above, checked the same way and for the same reason
-   * (§11 is "offered, never imposed" in both directions: an unoffered
+   * ("offered, never imposed" in both directions: an unoffered
    * acceptance must not silently apply, and a decline of something never
    * offered must not silently exclude a style nobody offered). Consumed on
    * use like an acceptance is, so a second `adaptation_response` for the same
    * now-closed offer — accept or decline — is a no-op either way.
    *
-   * Found by adversarial review, round 67 (2026-08-30, MEDIUM): a decline
+   * Found by adversarial review: a decline
    * used to leave zero trace anywhere (`ws/server.ts`'s own comment on that
    * branch was "local state only, no upstream call, so no slot to claim"),
    * so `stuckInstruction` re-issued the identical free-choice offer on the
@@ -1385,7 +1382,7 @@ export class TutorOrchestrator {
     this.lastOfferedAdaptation = null;
     recordDeclinedAdaptation(this.plan, adaptation);
     /*
-     * C.15: a decline is ALLIANCE DATA, not only a style to skip. A defined
+     * A decline is ALLIANCE DATA, not only a style to skip. A defined
      * pattern of them (`renegotiateAfterDeclines` in a row) makes the next
      * Mentor turn carry the renegotiation question instead of persisting
      * silently with the same plan.
@@ -1404,21 +1401,21 @@ export class TutorOrchestrator {
    * (`voice/pregenerated.ts`), so the session opens as fast as the socket.
    *
    * It is a scripted outcome in the full sense — no model call, no moderation
-   * pass (a scripted line is already reviewed text, §2.4), and recorded in the
+   * pass (a scripted line is already reviewed text), and recorded in the
    * transcript as `source: 'scripted'` like every other written line.
    */
   async greet(nowMs: number, opening: SessionOpening = 'greeting'): Promise<TurnOutcome> {
     /*
-     * C.16: a learner returning after a silent dropout or a budget
+     * A learner returning after a silent dropout or a budget
      * interruption hears the re-engagement message that ending queued
      * (decided by Core, `opening`), instead of an opening that pretends
      * nothing happened.
      */
     /*
-     * C.15 persona continuity: when this persona has never worked with the
+     * Persona continuity: when this persona has never worked with the
      * learner (a first meeting or a persona switch) or not for a long time,
      * the honest written introduction replaces a greeting that assumes a
-     * shared history. A queued re-engagement (C.16) is persona-neutral and
+     * shared history. A queued re-engagement is persona-neutral and
      * keeps precedence; the model's turns then carry the continuity note.
      */
     this.alliance.noteOpening();
@@ -1456,11 +1453,11 @@ export class TutorOrchestrator {
     // that as "no measurement", never as a fast answer.
     const latencyMs = servedAt === undefined ? null : Math.max(0, Date.now() - servedAt);
     this.segmentServedAt.delete(segmentId);
-    // C.14: the graded activity's own type, read before the slot is cleared —
+    // The graded activity's own type, read before the slot is cleared —
     // a decision type is a financial decision point.
     const decisionFamilies =
       this.openUngradedSegmentId === segmentId ? familiesForDecision(this.openActivity?.type) : null;
-    // C.8/C.12: read BEFORE any of this answer's evidence is applied (the
+    // Read BEFORE any of this answer's evidence is applied (the
     // skill estimate is nudged on the next line) — a surprising miss is judged
     // against what the learner's own history predicted.
     const pCorrect = this.predictedCorrect(skillKey);
@@ -1492,16 +1489,16 @@ export class TutorOrchestrator {
       correct ? null : () => this.stuckNote(skillKey),
     );
     const signalled = this.observeGraded({ skill: skillKey, correct, hintAssisted, latencyMs, latencySource: 'activity', pCorrect }, nowMs);
-    // C.9/C.19: the telemetry reading of this answer; a fired disengagement
+    // The telemetry reading of this answer; a fired disengagement
     // signal makes the system check in, and the check-in wins over the offer.
     const { checkIn, offering } = this.telemetryTurn(
       { source: 'activity', text: null, latencyMs, graded: { correct, pCorrect, answer: null } },
       signalled,
     );
-    // C.14 / C.15: the learner moved on to an activity instead of answering
+    // The learner moved on to an activity instead of answering
     // an open system question, and one more learner turn happened.
     this.noteAllianceTurn({ source: 'activity', replyMs: null, hint: false, tell: false, answeredQuestion: false });
-    // A disengagement firing: the session did not get better (C.15 window).
+    // A disengagement firing: the session did not get better.
     if (checkIn) this.alliance.noteDisengagement();
     const renegotiation = this.renegotiationCarried(checkIn);
     const selfExplain =
@@ -1514,7 +1511,7 @@ export class TutorOrchestrator {
           })
         : false;
     /*
-     * C.11: with nothing higher owning the turn, a correct answer is the
+     * With nothing higher owning the turn, a correct answer is the
      * moment a due within-session re-check can open — the controller then
      * serves the next activity for THAT knowledge component.
      */
@@ -1579,12 +1576,12 @@ export class TutorOrchestrator {
      * verbatim, back to the SAME model that may have authored it. Neither the
      * harm-category judge nor the pedagogy judge that screens a generated
      * segment before it is served has a category for "reads as an
-     * instruction to a later call" (§1.14: a refusal must NAME a real harm),
+     * instruction to a later call" (a refusal must NAME a real harm),
      * so an injection-shaped `prompt_md` can pass every existing gate and
      * reach here unmarked. `fenceActivityContent` applies the same technique
      * `fenceUntrusted` applies to a learner's own words and `fenceTranscript`
-     * applies to a whole session transcript (RUNBOOK.md migration 0054;
-     * AGENTS.md item 52) — a nonce fence plus an explicit "this is data, not
+     * applies to a whole session transcript (migration 0054)
+     * — a nonce fence plus an explicit "this is data, not
      * an instruction" disclaimer — and its nonce is threaded into this turn's
      * own `moderateTutorOutput` echo check below, the same defense the
      * per-turn learner-utterance fence already gets.
@@ -1641,7 +1638,7 @@ export class TutorOrchestrator {
        * coin-counting miss in the same run got the softer version: "elegiste
        * algunas que sumaban más de lo pedido" — a specific failure MODE
        * (overcounting) invented with equal confidence from the same nothing.
-       * §1.14's own lesson about generated images applies unchanged to
+       * The lesson about generated images applies unchanged to
        * generated speech: a confident wrong picture of what happened misleads
        * a struggling child worse than an honest general one would. The
        * REMEDIATE strategy's catalogued misconception hint (`extra`, appended
@@ -1691,8 +1688,8 @@ export class TutorOrchestrator {
    *
    * `lastAttempt` says that this recovery turn's OWN `segmentRequest`, if it
    * produces one, will be refused rather than served — `ws/server.ts` bounds
-   * how many times one learner utterance may re-enter the ladder (round 76,
-   * 2026-08-30, HIGH). Telling the model so is not the bound (an instruction
+   * how many times one learner utterance may re-enter the ladder.
+   * Telling the model so is not the bound (an instruction
    * has never been one; that is the whole lesson of the defect) — it is what
    * keeps the LEARNER's last turn coherent, so the tutor teaches by hand
    * instead of promising an activity that the server has already decided will
@@ -1775,7 +1772,7 @@ export class TutorOrchestrator {
     if (fenced.cleaned !== '') this.history.push({ speaker: 'learner', text: fenced.cleaned });
 
     const skillKey = this.servedSegmentSkills.get(segmentId) ?? 'unknown';
-    // C.8/C.12: the prediction this answer is judged against, before its evidence.
+    // The prediction this answer is judged against, before its evidence.
     const pCorrect = this.predictedCorrect(skillKey);
     this.nudgeSkillEstimate(skillKey, result.correct);
     recordGrade(this.plan, skillKey, result.correct);
@@ -1788,7 +1785,7 @@ export class TutorOrchestrator {
       nowMs,
       result.correct ? null : () => this.stuckNote(skillKey),
     );
-    // C.8/C.12: a spoken answer carries the SAME onset-based reply latency C.9
+    // A spoken answer carries the SAME onset-based reply latency the telemetry layer
     // reads (Mentor finished → learner started answering), on its own channel:
     // SessionEndSignal compares it only with this learner's spoken baseline.
     this.sessionClosing.noteLearnerTurn();
@@ -1803,7 +1800,7 @@ export class TutorOrchestrator {
       },
       nowMs,
     );
-    // C.9: a spoken (or short typed) answer carries its REPLY latency — from
+    // A spoken (or short typed) answer carries its REPLY latency — from
     // when the Mentor finished to when the learner started answering.
     const { checkIn, offering } = this.telemetryTurn(
       {
@@ -1823,7 +1820,7 @@ export class TutorOrchestrator {
     });
     if (checkIn) this.alliance.noteDisengagement();
     const renegotiation = this.renegotiationCarried(checkIn);
-    // C.11: a due within-session re-check, when nothing higher owns the turn.
+    // A due within-session re-check, when nothing higher owns the turn.
     const reviewLead = !checkIn && !renegotiation && !offering && reviewOpenable ? this.openDueReview(nowMs) : null;
     const extra = checkIn
       ? CHECK_IN_LEAD_INSTRUCTION
@@ -1888,7 +1885,7 @@ export class TutorOrchestrator {
     nowMs: number,
     legacy: (() => string | null) | null,
   ): { text: string | null; skillName: string | null; reviewOpenable: boolean } {
-    // C.11: every learner event is one learner turn for the review gap.
+    // Every learner event is one learner turn for the review gap.
     this.spacedReview.noteLearnerTurn();
     if (!this.controller.active) return { text: legacy ? legacy() : null, skillName: null, reviewOpenable: false };
 
@@ -1899,9 +1896,9 @@ export class TutorOrchestrator {
     const decision = this.controller.decide(event, nowMs);
     const graded = event.kind === 'activity_result' || event.kind === 'voice_result';
     /*
-     * C.11: every graded answer on a knowledge component goes to the
-     * spaced-review router — a miss is routed to its tier by the Appendix D
-     * §2.4 rule (belief BEFORE the miss, budget left), a spaced answer on a
+     * Every graded answer on a knowledge component goes to the
+     * spaced-review router — a miss is routed to its tier by the rule
+     * (belief BEFORE the miss, budget left), a spaced answer on a
      * queued KC moves its running count. The router reads ids and numbers,
      * never the learner's words.
      */
@@ -1935,7 +1932,7 @@ export class TutorOrchestrator {
       decision.review !== null && decision.review.outcome !== 'abandoned'
         ? reviewResultInstruction(decision.review.outcome === 'correct', decision.review.objective)
         : null;
-    // C.17: what this register adds to the strategy (ask first; do it together).
+    // What this register adds to the strategy (ask first; do it together).
     const overlay = this.dialoguePolicy.strategyOverlay(decision.strategy);
     const decorate = (text: string | null): string | null => {
       const parts = [reviewNote, text, overlay].filter((part): part is string => part !== null && part !== '');
@@ -1968,8 +1965,8 @@ export class TutorOrchestrator {
      */
     const body = `${skill.body}\n\n${SKILL_WORDING_RULE}`;
     /*
-     * The instruments THIS move needs, and no others
-     * (/TUTOR_INSTRUMENTS.md §4.4). The system prompt lists every board SHAPE
+     * The instruments THIS move needs, and no others.
+     * The system prompt lists every board SHAPE
      * because the model cannot emit valid JSON for a kind it has never seen,
      * and that list is prefix-cached; the per-instrument GUIDANCE is what
      * would not scale, so it rides here — beside the procedure that calls for
@@ -1981,7 +1978,7 @@ export class TutorOrchestrator {
     return { text: decorate(hint ? `${withGuidance}\n\n${hint}` : withGuidance), skillName: skill.name, reviewOpenable };
   }
 
-  /** C.11: the budget a within-session re-exposure still has (turns to the cap, time to wrap-up). */
+  /** The budget a within-session re-exposure still has (turns to the cap, time to wrap-up). */
   private reviewHeadroom(nowMs: number): ReturnType<typeof budgetHeadroom> {
     return budgetHeadroom(
       { startedAtMs: this.startedAtMs, nowMs, turnCount: this.seq, isStaff: this.session.isStaff === true },
@@ -1990,7 +1987,7 @@ export class TutorOrchestrator {
   }
 
   /**
-   * C.11: opens the most overdue within-session re-exposure, when one is due
+   * Opens the most overdue within-session re-exposure, when one is due
    * and the controller accepts the detour (never during a repair or a probe,
    * never for the KC being taught right now). Returns the turn's lead, or
    * null when nothing opened. The caller only asks when no higher directive
@@ -2015,7 +2012,7 @@ export class TutorOrchestrator {
 
   /**
    * The legacy stuck move (controller dormant), in this session's register:
-   * the ask-first register (C.17: teens, adults) offers an adaptation instead
+   * the ask-first register (teens, adults) offers an adaptation instead
    * of changing the approach on its own. Counted for the calibration record.
    */
   private stuckNote(skillKey: string): string | null {
@@ -2027,7 +2024,7 @@ export class TutorOrchestrator {
   /**
    * Appends one decision to this session's trajectory log — a plain
    * in-memory push, no I/O (see `trajectoryLog`'s own comment for why this
-   * must stay that way; §2.7 of oracle/AGENTS.md is the rule this obeys).
+   * must stay that way).
    *
    * Recorded unconditionally, unlike `usedSkillNames` (`commitSkillUse`'s own
    * "committed only once truly DELIVERED" rule): the controller's internal
@@ -2049,7 +2046,7 @@ export class TutorOrchestrator {
     decision: ControllerDecision,
     skillName: string | null,
   ): void {
-    // C.16: a corroborated mastery declaration is the session's peak — the
+    // A corroborated mastery declaration is the session's peak — the
     // completed close names it.
     if (decision.evidence?.rule === 'mastery') this.sessionClosing.noteCorroboratedMastery();
     this.trajectoryLog.push({
@@ -2066,7 +2063,7 @@ export class TutorOrchestrator {
        * The KC the decision was ABOUT. `activeKcId` read after `decide()`
        * names the NEXT knowledge component whenever the decision advanced
        * the plan (CELEBRATE/TRANSFER), which filed every mastery declaration
-       * under the wrong KC — fatal for the C.10 Mastery Declaration Reversal
+       * under the wrong KC — fatal for the Mastery Declaration Reversal
        * Rate, which joins declarations to later contradictions by KC.
        */
       kcId: decision.kcId,
@@ -2075,7 +2072,7 @@ export class TutorOrchestrator {
       // Clamped to Core's wire bound (0..100): one oversized count must never cost the session its whole trajectory batch.
       evidenceObservations: decision.evidence ? Math.min(decision.evidence.observations, 100) : null,
       evidenceRequired: decision.evidence?.required ?? null,
-      // GAP-FIX-R2: which correct answers the chain set aside, for the parent's evidence view (Appendix D §2.6).
+      // Which correct answers the chain set aside, for the parent's evidence view.
       evidenceDiscounted: decision.evidence ? (decision.evidence.discounted ?? 'none') : null,
       masteryRevoked: decision.masteryRevoked,
     });
@@ -2152,7 +2149,7 @@ export class TutorOrchestrator {
      */
     const { graceTurn, finalNote } = this.graceTurnFor(budget);
 
-    // C.16: a stopped (safety) session never hears the positive template.
+    // A stopped (safety) session never hears the positive template.
     if (this.stopped) return this.scriptedOutcome(safetyStopCloseResponse(this.session.locale), budget, 'safety_stop', null);
 
     /*
@@ -2160,13 +2157,13 @@ export class TutorOrchestrator {
      *
      * The classifier used to run only after the ended-budget check, so a
      * disclosure typed in the last second of a session was answered with the
-     * cheerful time-is-up line. Safety wins over every closing script (C.16).
+     * cheerful time-is-up line. Safety wins over every closing script.
      */
     const classification = classifyLearnerInput(raw, this.session.locale);
     if (classification.category !== null && classification.action !== 'allow') {
       const stopping = classification.action === 'session_stopped';
       if (stopping) this.stopped = true;
-      // Safety wins over every open system question (C.14, C.15).
+      // Safety wins over every open system question.
       this.supersedeSystemQuestions();
       // The learner's turn IS recorded (a guardian must be able to read what
       // was said), but it is recorded by the caller against the transcript —
@@ -2187,7 +2184,7 @@ export class TutorOrchestrator {
 
     const fenced = fenceUntrusted(raw, config.TURN_MAX_INPUT_CHARS);
 
-    // C.16: the answer to the co-constructed recap question closes the session.
+    // The answer to the co-constructed recap question closes the session.
     if (this.sessionClosing.phase === 'recap_asked' && fenced.cleaned !== '') {
       this.sessionClosing.noteLearnerTurn();
       return this.finishCompletedClose(fenced, nowMs, signal);
@@ -2203,13 +2200,13 @@ export class TutorOrchestrator {
     }
 
     /*
-     * C.8/C.12: the learner answered the open stop-or-continue offer in words.
+     * The learner answered the open stop-or-continue offer in words.
      * Only an explicit stop accepts; anything else continues the lesson —
      * the offer is never a default-accepted path.
      */
     /*
      * A reply that only answers one of the system's own questions ("keep
-     * going", "yes, we're good") is not a learner observation for the C.9
+     * going", "yes, we're good") is not a learner observation for the telemetry
      * layer: it is short by nature and says nothing about the lesson.
      */
     let metaReply = false;
@@ -2225,7 +2222,7 @@ export class TutorOrchestrator {
     }
 
     /*
-     * C.19: the learner answered the open check-in in words. "Not really"
+     * The learner answered the open check-in in words. "Not really"
      * starts the repair; "yes" continues the plan; anything else is answered
      * as an ordinary turn (they may simply have answered the lesson).
      */
@@ -2237,12 +2234,12 @@ export class TutorOrchestrator {
         checkInReply = reply;
         metaReply = true;
       }
-      // "Not really" at a check-in: the session did not get better (C.15 window).
+      // "Not really" at a check-in: the session did not get better.
       if (reply === 'misaligned') this.alliance.noteDisengagement();
     }
 
     /*
-     * C.15 GOAL AGREEMENT, answered in words. "Yes" settles the goal and the
+     * GOAL AGREEMENT, answered in words. "Yes" settles the goal and the
      * lesson starts; "something else" asks what they want instead; anything
      * else is recorded as unconfirmed and answered as an ordinary turn (the
      * move never loops). After "something else", the learner's own words ARE
@@ -2260,7 +2257,7 @@ export class TutorOrchestrator {
       this.alliance.adoptLearnerGoal();
       goalDirective = GOAL_ADOPT_INSTRUCTION;
     }
-    // C.15: the learner answered the renegotiation question in their own words.
+    // The learner answered the renegotiation question in their own words.
     let renegotiationFollow = false;
     if (fenced.cleaned !== '' && this.alliance.renegotiationOpen) {
       this.alliance.answerRenegotiation(true);
@@ -2274,7 +2271,7 @@ export class TutorOrchestrator {
     }
 
     /*
-     * CORRECTNESS IS COMPUTED, NOT ASKED FOR — the blueprint's fourth
+     * CORRECTNESS IS COMPUTED, NOT ASKED FOR — the product's fourth
      * differentiator, and the last place the model was still the judge.
      *
      * Activities have always been graded deterministically against the item's
@@ -2373,7 +2370,7 @@ export class TutorOrchestrator {
            * all, which fencing alone cannot do — a fence stops the MODEL
            * from OBEYING replayed text as a command, it does not stop PII
            * from simply being present in the request body a third party
-           * receives, which is the harm §1.9 actually names.
+           * receives, which is the harm the privacy rule actually names.
            */
           const fencedRecall = fenceUntrusted(quoted, config.TURN_MAX_INPUT_CHARS);
           recallNote =
@@ -2419,8 +2416,8 @@ export class TutorOrchestrator {
       skillName: strategySkill,
       reviewOpenable,
     } = this.strategyInstruction(pedagogyEvent, nowMs, null);
-    // A verified conversational answer is a graded observation for C.8/C.12
-    // too, with the per-channel reply latency C.9 reads (typed or spoken; the
+    // A verified conversational answer is a graded observation for the session-end signal
+    // too, with the per-channel reply latency the telemetry layer reads (typed or spoken; the
     // signal keeps a separate baseline per channel, so channels never mix).
     const signalled =
       verdict !== null && pedagogyEvent.kind === 'voice_result'
@@ -2437,7 +2434,7 @@ export class TutorOrchestrator {
           )
         : false;
     /*
-     * C.9: every learner turn that is not a reply to one of the system's own
+     * Every learner turn that is not a reply to one of the system's own
      * questions is a telemetry observation — its words, its reply latency,
      * and the verified answer when there was one.
      */
@@ -2459,9 +2456,9 @@ export class TutorOrchestrator {
     if (checkIn) this.alliance.noteDisengagement();
     const renegotiation = !repair && this.renegotiationCarried(checkIn);
     /*
-     * C.14: the reply to an open "why did you pick that?" is quality-checked.
-     * A stated wrong idea goes to C.18's unsound path; a help request to the
-     * C.13 ladder; otherwise the check decides between a SPECIFIC
+     * The reply to an open "why did you pick that?" is quality-checked.
+     * A stated wrong idea goes to the unsound path; a help request to the
+     * hint ladder; otherwise the check decides between a SPECIFIC
      * acknowledgement, ONE targeted follow-up, or (on a second miss) the
      * Mentor stating the reason once.
      */
@@ -2479,10 +2476,10 @@ export class TutorOrchestrator {
       } else if (reading?.kind === 'explain') explanationDirective = explainInstruction(reading.family);
     }
     /*
-     * C.14: a conversational FINANCIAL DECISION POINT — the learner just
+     * A conversational FINANCIAL DECISION POINT — the learner just
      * answered the Mentor's own money-decision question ("would you save it
      * or spend it?") with a choice, not a question, a help request or an
-     * unsound claim (C.18 owns that turn).
+     * unsound claim (the unsound path owns that turn).
      */
     const conversationalDecision =
       !metaReply &&
@@ -2499,11 +2496,11 @@ export class TutorOrchestrator {
     const goalProposal =
       !metaReply && goalDirective === null && !repair && !checkIn && !renegotiation && !offering && this.alliance.goalPromptDue;
     /*
-     * One directive per turn, in this order: the C.19 repair after "not
+     * One directive per turn, in this order: the repair after "not
      * really" (the plan does not continue as if nothing happened), the
-     * system's check-in, the C.15 renegotiation, the stop-or-continue offer,
-     * the C.15 goal agreement (its answer, then the opening move), the C.14
-     * explanation reading, the answer to a renegotiation, the C.14 prompt
+     * system's check-in, the renegotiation, the stop-or-continue offer,
+     * the goal agreement (its answer, then the opening move), the
+     * explanation reading, the answer to a renegotiation, the prompt
      * lead, then the controller's maneuver — with a note that the learner
      * confirmed, after "yes".
      */
@@ -2526,7 +2523,7 @@ export class TutorOrchestrator {
         scaffolded: this.dispositionEffects.scaffoldedExplanations,
       });
     /*
-     * C.11: a due within-session re-check opens only on a turn nothing else
+     * A due within-session re-check opens only on a turn nothing else
      * owns — no directive above, no explanation reading, no answer to a
      * renegotiation, no self-explanation lead, no "yes" to a check-in, and
      * not while the learner is asking for help (the ladder owns that turn).
@@ -2578,7 +2575,7 @@ export class TutorOrchestrator {
         ? null
         : strategySkill;
     /*
-     * C.13: the hint ladder advances on the learner's own words and its
+     * The hint ladder advances on the learner's own words and its
      * directive rides the same instruction the model receives — escalation
      * and the "just tell me" escape are policy here, never a request the
      * model may weigh against being "helpful". A reply to one of the
@@ -2588,7 +2585,7 @@ export class TutorOrchestrator {
     const tellRequested = ladderNote !== '' && isTellRequest(fenced.cleaned);
     const maneuverNote = `${maneuver === null ? '' : `\n\n${maneuver}`}${ladderNote}`;
     /*
-     * C.18: a stated wrong idea — very often a money decision ("me lo gasto
+     * A stated wrong idea — very often a money decision ("me lo gasto
      * todo en dulces y ya") — is exactly the moment a sycophantic model
      * agrees because the child sounds pleased. Said to the model as a fact
      * the SYSTEM detected, and checked on the way out (`isSycophantic`).
@@ -2622,7 +2619,7 @@ export class TutorOrchestrator {
         tellRequested,
       },
     );
-    // The learner cut in before the answer turn landed: withdrawn, not ignored (C.24 tell_honored).
+    // The learner cut in before the answer turn landed: withdrawn, not ignored (tell_honored).
     if (tellRequested && outcome === null) this.dialogueCalibration.noteTellWithdrawn();
     this.commitSkillUse(skillName, outcome);
     this.commitGraceTurn(graceTurn, outcome);
@@ -2632,13 +2629,13 @@ export class TutorOrchestrator {
     return outcome;
   }
 
-  /** C.13: the ladder sub-step the learner is on — the active KC's skill, else the conversation. */
+  /** The ladder sub-step the learner is on — the active KC's skill, else the conversation. */
   private ladderStepKey(): string {
     return this.controller.activeEntry?.skillKey ?? 'conversation';
   }
 
   /**
-   * C.10 × C.13: reads whether the answer being graded was HINT-ASSISTED on
+   * Reads whether the answer being graded was HINT-ASSISTED on
    * its sub-step (the corroboration signal the controller weighs), and — on
    * a correct answer — closes that sub-step so the next item starts at the
    * top of the ladder. A wrong answer keeps the sub-step open: the learner is
@@ -2653,7 +2650,7 @@ export class TutorOrchestrator {
     return assisted;
   }
 
-  /** C.13: maps the learner's utterance to the ladder and returns the directive (or ''). */
+  /** Maps the learner's utterance to the ladder and returns the directive (or ''). */
   private ladderNoteFor(cleaned: string, stepKey: string): string {
     if (isTellRequest(cleaned)) {
       this.hintLadder.registerTellRequest(stepKey);
@@ -2663,7 +2660,7 @@ export class TutorOrchestrator {
     if (isHintRequest(cleaned)) {
       const level = this.hintLadder.registerHintRequest(stepKey);
       this.dialogueCalibration.noteHintRequest();
-      // C.17: the wording of each rung follows this session's register.
+      // The wording of each rung follows this session's register.
       return `\n\nThe learner asked for help again. This is the next step of the hint ladder: ${this.dialoguePolicy.levelWording[level]}. Never repeat a level you already gave.`;
     }
     return '';
@@ -2707,10 +2704,10 @@ export class TutorOrchestrator {
   /**
    * Ends the session in character — the learner asked to (`end_session`).
    *
-   * C.16: the script follows how the session ended. A stopped session gets
+   * The script follows how the session ended. A stopped session gets
    * the calm safety close, never the positive one. A learner who chooses to
    * leave gets the completed close naming the act the server observed. Since
-   * OD-28 (M-04) a first press of "end" on the Mentor screen asks the recap
+   * a first press of "end" on the Mentor screen asks the recap
    * question first (`recapOnEnd`); this is the close that follows a second
    * press, a start-over, or a client that asks to leave at once. `hard` is
    * the budget variant.
@@ -2738,9 +2735,9 @@ export class TutorOrchestrator {
   }
 
   /**
-   * OD-28 (owner review M-04): the learner pressed "end" on the Mentor screen
+   * The learner pressed "end" on the Mentor screen
    * (`end_session` with `recapFirst`). While the session is running normally
-   * the Mentor asks the C.16 recap question first (scripted, no model call)
+   * the Mentor asks the recap question first (scripted, no model call)
    * and the session stays open for one answer: the answer closes it through
    * `finishCompletedClose`, and a second `end_session` closes it at once with
    * the completed close. Returns null when the recap cannot be asked (a
@@ -2756,7 +2753,7 @@ export class TutorOrchestrator {
   }
 
   /**
-   * C.8/C.12: the learner answered the stop-or-continue offer with the stage's
+   * The learner answered the stop-or-continue offer with the stage's
    * two equal choices (`session_end_response`). Refused (null) unless an
    * offer is actually open — a replayed or forged response steers nothing.
    */
@@ -2780,7 +2777,7 @@ export class TutorOrchestrator {
   }
 
   /**
-   * C.19: the learner answered the check-in with the stage's two equal chips
+   * The learner answered the check-in with the stage's two equal chips
    * (`check_in_response`). Refused (null) unless a check-in is actually open
    * — a replayed or forged frame steers nothing. "Yes" continues the plan;
    * "not really" is the repair, routed through the adaptation offer.
@@ -2799,13 +2796,13 @@ export class TutorOrchestrator {
     });
   }
 
-  /** C.19: whether the system's check-in is waiting for the learner's answer. */
+  /** Whether the system's check-in is waiting for the learner's answer. */
   get checkInOpen(): boolean {
     return this.behavioralTelemetry.checkInOpen;
   }
 
   /**
-   * C.15: the learner answered the goal restatement with the stage's two
+   * The learner answered the goal restatement with the stage's two
    * equal chips (`goal_response`). Refused (null) unless the goal check is
    * actually open — a replayed or forged frame steers nothing. "Yes" starts
    * the lesson on the agreed goal; "something else" asks what they want.
@@ -2819,13 +2816,13 @@ export class TutorOrchestrator {
     });
   }
 
-  /** C.15: whether the goal restatement is waiting for the learner's answer. */
+  /** Whether the goal restatement is waiting for the learner's answer. */
   get goalCheckOpen(): boolean {
     return this.alliance.goalCheckOpen;
   }
 
   /**
-   * C.14/C.15: one learner turn for the Alliance Controller, the
+   * One learner turn for the Alliance Controller, the
    * self-explanation move and the disposition observations. A turn that
    * moves on past an open system question closes it as unanswered.
    */
@@ -2844,7 +2841,7 @@ export class TutorOrchestrator {
   }
 
   /**
-   * C.15: whether THIS turn carries a due renegotiation. The C.19 check-in
+   * Whether THIS turn carries a due renegotiation. The check-in
    * wins (it is itself a renegotiation of the task) and supersedes it.
    */
   private renegotiationCarried(checkIn: boolean): boolean {
@@ -2856,14 +2853,14 @@ export class TutorOrchestrator {
     return !this.stopped && this.sessionClosing.phase === 'none';
   }
 
-  /** A safety line or a closing took the moment of every open system question (C.14, C.15). */
+  /** A safety line or a closing took the moment of every open system question. */
   private supersedeSystemQuestions(): void {
     this.selfExplanation.supersede();
     this.alliance.supersedeRenegotiation();
   }
 
   /**
-   * C.9/C.19: feeds one learner turn to the Behavioral Telemetry Layer and
+   * Feeds one learner turn to the Behavioral Telemetry Layer and
    * says whether the reacting turn must carry the check-in (a firing on this
    * turn, or one still pending from a turn that could not carry it). The
    * check-in wins over the stop-or-continue offer, which then re-arms. An
@@ -2884,7 +2881,7 @@ export class TutorOrchestrator {
     return { checkIn, offering };
   }
 
-  /** The lesson's own words right now, for C.9 off-topic drift: recent Mentor lines, topic, activity. */
+  /** The lesson's own words right now, for off-topic drift: recent Mentor lines, topic, activity. */
   private topicText(): string {
     const tutorLines = this.history
       .filter((h) => h.speaker === 'tutor')
@@ -2894,7 +2891,7 @@ export class TutorOrchestrator {
   }
 
   /**
-   * C.16 completed close, step 1: the co-constructed recap question. Scripted
+   * Completed close, step 1: the co-constructed recap question. Scripted
    * (pre-generated audio, no model call); the session stays open for one
    * answer, which `finishCompletedClose` turns into the goodbye.
    */
@@ -2904,7 +2901,7 @@ export class TutorOrchestrator {
   }
 
   /**
-   * C.16 completed close, step 2: the Mentor reflects the learner's answer
+   * Completed close, step 2: the Mentor reflects the learner's answer
    * in one sentence (a model turn with every honesty check), then the
    * scripted line names the act the server observed and frames next time.
    * `finalTurn` lets it through an ended budget: this IS the goodbye.
@@ -2915,7 +2912,7 @@ export class TutorOrchestrator {
     signal?: AbortSignal,
   ): Promise<TurnOutcome | null> {
     this.history.push({ speaker: 'learner', text: fenced.cleaned });
-    // A recap that states a wrong idea must not be praised (C.18).
+    // A recap that states a wrong idea must not be praised.
     const stated = classifyStatedMisconception(fenced.cleaned);
     const outcome = await this.produce(`${fenced.block}\n\n${RECAP_REFLECTION_INSTRUCTION}`, nowMs, {
       nonce: fenced.nonce,
@@ -2929,7 +2926,7 @@ export class TutorOrchestrator {
   }
 
   /**
-   * C.8/C.12: feeds one graded observation to the session-end signal and the
+   * Feeds one graded observation to the session-end signal and the
    * closing facts, and says whether the reacting turn should carry the offer.
    * No offer while the session is already closing or stopped.
    */
@@ -2970,13 +2967,13 @@ export class TutorOrchestrator {
     return state ? predictedCorrectFrom(state.masteryProbability) : null;
   }
 
-  /** C.16: the closing script this session ends with, for a given close reason. */
+  /** The closing script this session ends with, for a given close reason. */
   closingScriptFor(reason: CloseReason): ClosingScript {
     return closingScriptFor(reason);
   }
 
   /**
-   * C.16 / C.8 / C.12: what Core records at close, beside the close reason —
+   * What Core records at close, beside the close reason —
    * the closing script, the opening the session began with, and the
    * session-end signal's record.
    */
@@ -2996,48 +2993,48 @@ export class TutorOrchestrator {
       closingScript: closingScriptFor(reason),
       opening: this.session.opening ?? 'greeting',
       endSignal: this.sessionEndSignal.report(),
-      // C.9/C.19: nothing is reported while the layer is switched off.
+      // Nothing is reported while the layer is switched off.
       ...(this.behavioralTelemetry.mode === 'off' ? {} : { behavioralTelemetry: this.behavioralTelemetry.report() }),
-      // C.15 / C.14: likewise while each is switched off.
+      // Likewise while each is switched off.
       ...(this.alliance.mode === 'off' ? {} : { alliance: this.alliance.report() }),
       ...(this.selfExplanation.mode === 'off' ? {} : { selfExplanation: this.selfExplanation.report() }),
-      // C.7: what this session contributes to the persistent profile.
+      // What this session contributes to the persistent profile.
       disposition: this.dispositionObserver.report(),
-      // C.11: every routing decision and its outcome (nothing while off).
+      // Every routing decision and its outcome (nothing while off).
       ...(this.spacedReview.mode === 'off' ? {} : { spacedReview: this.spacedReview.report() }),
-      // C.17: the register this session ran and what it did.
+      // The register this session ran and what it did.
       dialogueCalibration: this.dialogueCalibration.report(),
-      // C.22 Stage 5: the canary arm this session ran (nothing when none applied).
+      // The canary arm this session ran (nothing when none applied).
       ...(this.canary.report === null ? {} : { canary: this.canary.report }),
     };
   }
 
-  /** C.11: the spaced-review router's record (tests and diagnostics). */
+  /** The spaced-review router's record (tests and diagnostics). */
   get spacedReviewReport(): SpacedReviewReport {
     return this.spacedReview.report();
   }
 
-  /** C.17: the dialogue-calibration record (tests and diagnostics). */
+  /** The dialogue-calibration record (tests and diagnostics). */
   get dialogueCalibrationReport(): DialogueCalibrationReport {
     return this.dialogueCalibration.report();
   }
 
-  /** C.15: the Alliance Controller's record (tests and diagnostics). */
+  /** The Alliance Controller's record (tests and diagnostics). */
   get allianceReport(): AllianceReport {
     return this.alliance.report();
   }
 
-  /** C.14: the self-explanation move's record (tests and diagnostics). */
+  /** The self-explanation move's record (tests and diagnostics). */
   get selfExplanationReport(): SelfExplanationReport {
     return this.selfExplanation.report();
   }
 
-  /** C.9/C.19: the layer's record for Core (Default-to-Inaction and Repair Initiation Rates). */
+  /** The layer's record for Core (Default-to-Inaction and Repair Initiation Rates). */
   get telemetryReport(): BehavioralTelemetryReport {
     return this.behavioralTelemetry.report();
   }
 
-  /** C.16: what the client's closing state shows (Frontend Bible 08 §3–4). */
+  /** What the client's closing state shows. */
   closingSummary(reason: CloseReason): ClosingSummary {
     const script = closingScriptFor(reason);
     return {
@@ -3049,7 +3046,7 @@ export class TutorOrchestrator {
     };
   }
 
-  /** C.8/C.12: the signal's record for Core (Early-Warning Signal Trigger Rate). */
+  /** The signal's record for Core (Early-Warning Signal Trigger Rate). */
   get sessionEndReport(): SessionEndSignalReport {
     return this.sessionEndSignal.report();
   }
@@ -3091,7 +3088,7 @@ export class TutorOrchestrator {
    * the activity (both already do, before calling this) and then never
    * acknowledging it: the exact "promised something and abandoned" defect
    * class `handleSegmentUnavailable`'s own doc comment names. Found by
-   * adversarial review, round 33, 2026-08-30 (HIGH).
+   * adversarial review, 2026-08-30 (HIGH).
    *
    * Returns the flag to pass as `finalTurn` and the instruction text to
    * append to the model prompt when it fires. Does NOT mark the ticket
@@ -3109,7 +3106,7 @@ export class TutorOrchestrator {
   /**
    * Marks the one grace ticket spent — but only once it was actually
    * DELIVERED (`outcome !== null`), never merely attempted. Found by
-   * adversarial review, round 33, 2026-08-30 (HIGH): this used to be set the
+   * adversarial review, 2026-08-30 (HIGH): this used to be set the
    * instant the grace turn was GRANTED, before `produce()` even started — so
    * a learner who interrupted that one attempt (the same ordinary interrupt
    * path every turn allows) burned the ticket on a turn that delivered
@@ -3144,7 +3141,7 @@ export class TutorOrchestrator {
       planState: planState(this.plan),
       previousSessions: (this.session.previousSessions ?? []).slice(0, 3),
       // The v3 controller's strict projection; null while the brain is off,
-      // which renders exactly the v2 context (§4.1 row + legal §2.2 item 12).
+      // which renders exactly the v2 context.
       pedagogy: this.controller.active ? this.controller.state() : null,
       openActivity: this.openActivity,
       learnerBrief: this.session.learnerBrief ?? null,
@@ -3207,7 +3204,7 @@ export class TutorOrchestrator {
   }
 
   /**
-   * Every model turn goes through here. C.8/C.12: a turn that was meant to
+   * Every model turn goes through here. A turn that was meant to
    * carry the stop-or-continue offer and did NOT (any early return — a
    * context-seal failure, an interrupt, a scripted replacement) records the
    * firing as not offered and re-arms the signal, so an offer is never left
@@ -3216,13 +3213,13 @@ export class TutorOrchestrator {
   private async produce(userContent: string, nowMs: number, opts: ProduceOptions = {}): Promise<TurnOutcome | null> {
     let outcome: TurnOutcome | null = null;
     /*
-     * C.15 persona continuity: a Mentor meeting this learner for the first
+     * Persona continuity: a Mentor meeting this learner for the first
      * time (or after a long gap) is told on its turns not to claim a shared
      * history — a fixed system sentence, never anything about the learner.
      */
     const continuityNote = this.alliance.continuityNote();
     /*
-     * C.17: this session's register note — a fixed, band-free style
+     * This session's register note — a fixed, band-free style
      * instruction (never the learner's age), like the continuity note above.
      * The uniform control register has none.
      */
@@ -3236,7 +3233,7 @@ export class TutorOrchestrator {
         this.stopped ||
         this.sessionClosing.phase !== 'none' ||
         (outcome !== null && (outcome.closeReason !== null || (outcome.after?.closeReason ?? null) !== null));
-      // C.14: a prompt or follow-up this turn could not carry — the moment has passed.
+      // A prompt or follow-up this turn could not carry — the moment has passed.
       if (opts.selfExplanationPrompt === true && this.selfExplanation.promptDue) {
         if (closingNow) this.selfExplanation.supersede();
         else this.selfExplanation.markPromptNotDelivered();
@@ -3245,7 +3242,7 @@ export class TutorOrchestrator {
         if (closingNow) this.selfExplanation.supersede();
         else this.selfExplanation.markFollowupNotDelivered();
       }
-      // C.15: a renegotiation still due stays due for the next learner turn;
+      // A renegotiation still due stays due for the next learner turn;
       // a Mentor turn that went out without it is counted (a real miss if the
       // session then ends with it undelivered). A closing supersedes it.
       if (this.alliance.renegotiationDue) {
@@ -3256,7 +3253,7 @@ export class TutorOrchestrator {
         this.sessionEndSignal.markOfferNotDelivered();
       }
       /*
-       * C.19: a check-in this turn could not carry. A safety stop or a
+       * A check-in this turn could not carry. A safety stop or a
        * closing sequence wins over it (superseded, never asked on the way
        * out); otherwise it stays pending for the next learner turn, and the
        * delivered-but-missed turn is counted so an unanswered end of session
@@ -3346,7 +3343,7 @@ export class TutorOrchestrator {
 
     /*
      * COMPUTED HERE, ONCE, AND REUSED AS THE TURN'S FINAL BUDGET VERDICT
-     * BELOW — never recomputed a second time (round 85, 2026-08-31, MEDIUM).
+     * BELOW — never recomputed a second time.
      * `currentBudget` is a pure function of `nowMs` (fixed for this whole
      * call) and `this.seq` (just reserved above and never touched again
      * before this turn returns), so its answer here is byte-identical to
@@ -3415,7 +3412,7 @@ export class TutorOrchestrator {
     let transportFailure: unknown = null;
     /** Set when attempt 0 produced a valid turn we want re-authored, and why. */
     let turnCorrection: string | null = null;
-    /** OD-13: attempt 0's budget overflow, carried into a correction another fault took. */
+    /** Attempt 0's budget overflow, carried into a correction another fault took. */
     let budgetNote: string | null = null;
     /**
      * Attempt 0's turn when it was valid but imperfect — kept so a failed
@@ -3433,13 +3430,13 @@ export class TutorOrchestrator {
      * certainty, not a degraded-but-different turn. Confirmed live via a
      * debug trace: `repeated` was correctly non-null at attempt 0, the retry
      * came back an empty completion (a measured, common DeepSeek failure
-     * mode — see /AGENTS.md's empty-completion history — not a rare edge
+     * mode — empty-completion history — not a rare edge
      * case), and the fallback delivered the flagged turn verbatim.
      */
     let repairableIsRepeat = false;
     /**
      * The sibling of `repairableIsRepeat`, for `falsePraise`/`falseCorrection`
-     * — and, as of round 55, forbidden tier vocabulary too.
+     * — and forbidden tier vocabulary too.
      * Found live, testing as a struggling learner, 2026-08-30: the ONE retry
      * can swap one contradiction for the other rather than removing it — a
      * correction telling the model "the learner was right, confirm it
@@ -3453,7 +3450,7 @@ export class TutorOrchestrator {
      * worse than the scripted line, the same reasoning as the repeat
      * carve-out above, so it gets the same treatment.
      *
-     * FOUND LIVE AGAIN, round 55 (2026-08-30, HIGH): a tier-2 vocabulary
+     * FOUND LIVE AGAIN: a tier-2 vocabulary
      * violation ("interés compuesto") was originally grouped with the
      * "deliver the clumsy original" bucket instead — reasoning that it was
      * merely "imperfect but still teaches something new," the same as a
@@ -3481,7 +3478,7 @@ export class TutorOrchestrator {
      * value, not merely imperfect value. It belongs in this bucket too.
      *
      * AN OFFER STACKED WITH A SECOND QUESTION JOINS THE SAME BUCKET
-     * (2026-09-01) — the deterministic check /ORACLE.md §11 named as missing
+     * (2026-09-01) — the deterministic check that was named as missing
      * when this bucket was last written: "not yet backed by a deterministic
      * check ... this one is prompt-only". Reasoning is the wrong-language/
      * unkept-promise shape, not the vocabulary/number one: the frontend
@@ -3492,7 +3489,7 @@ export class TutorOrchestrator {
      * imperfect value, same as the two entries directly above it.
      */
     let repairableIsFalseVerdict = false;
-    /** C.18: whether ANY attempt of this turn affirmed a verified-wrong answer or an unsound idea. */
+    /** Whether ANY attempt of this turn affirmed a verified-wrong answer or an unsound idea. */
     let falseAffirmationCaught = false;
     /*
      * AN EMPTY COMPLETION IS NOT A REPAIR ATTEMPT, so it must not spend one.
@@ -3571,7 +3568,7 @@ export class TutorOrchestrator {
          * unanswered call from the budget also meant a provider refusing every
          * request got hammered the full ceiling instead of twice — doubling the
          * cost and the latency of every turn during an outage, which is the
-         * "money leaves directly" case /AGENTS.md §1.0 #5 names first.
+         * "money leaves directly" case that is named first.
          *
          * And it is narrower still than "we have a repairable turn", because
          * the extra call is only worth money where the ALTERNATIVE is bad. The
@@ -3669,7 +3666,7 @@ export class TutorOrchestrator {
              * A RETRY AFTER AN EMPTY COMPLETION SEES A SHORTER CONVERSATION,
              * and that is the one intervention with a measurement behind it.
              *
-             * `model:probe-empty` rounds 74-75, against the live provider,
+             * `model:probe-empty`, against the live provider,
              * varying ONLY how many alternating turns precede the request:
              *
              *     3 turns   0/12        10 turns   3/12        20 turns  7/12
@@ -3769,7 +3766,7 @@ export class TutorOrchestrator {
             if (parsed.turn.whiteboard !== null && parsed.turn.whiteboard !== undefined) {
               if (this.openUngradedSegmentId !== null) {
                 /*
-                 * Found by adversarial review, round 60 (2026-08-30, HIGH):
+                 * Found by adversarial review:
                  * the client only renders `whiteboard` when the live segment
                  * panel is empty (`ConversationView.tsx`), and a served
                  * segment occupies that panel until IT grades — regardless of
@@ -3832,7 +3829,7 @@ export class TutorOrchestrator {
             const brokenPromise =
               parsed.turn.next !== 'segment' && promisesAnActivity(parsed.turn.say);
             /*
-             * THE OFFER MUST STAND ALONE IN ITS TURN (/ORACLE.md §11, found
+             * THE OFFER MUST STAND ALONE IN ITS TURN (found
              * live 2026-08-29) — CHECKED rather than merely told, closing the
              * gap that section named explicitly at the time: "not yet backed
              * by a deterministic check ... this one is prompt-only until
@@ -3841,7 +3838,7 @@ export class TutorOrchestrator {
              * brand-new arithmetic question in the same `say` ("¿te ayudaría
              * otro ejemplo? Si tienes 9 monedas y das 4, ¿cuántas te
              * quedan?"); the frontend deliberately hides the typing box while
-             * an offer is open, so a text-only learner (§12: typing is the
+             * an offer is open, so a text-only learner (typing is the
              * ONLY channel with no voice provider configured) had no control
              * that could ever answer the second half — only "sí"/"no" to the
              * offer itself.
@@ -3944,8 +3941,8 @@ export class TutorOrchestrator {
             const missedWhiteboard = narratesUnshownGrowth(parsed.turn.say, parsed.turn.whiteboard);
             const wrongUnit = whiteboardUnitMismatch(parsed.turn.say, sequenceBoard);
             /*
-             * THE BOARD'S OWN NUMBERS CONTRADICTING WHAT WAS JUST SAID
-             * (round 65, 2026-08-30, HIGH). `missedWhiteboard`/`wrongUnit`
+             * THE BOARD'S OWN NUMBERS CONTRADICTING WHAT WAS JUST SAID.
+             * `missedWhiteboard`/`wrongUnit`
              * above catch a board that never got drawn or was drawn on the
              * wrong axis; neither one asks whether the numbers the story
              * tells out loud are the numbers `computeSequence` actually
@@ -3954,7 +3951,7 @@ export class TutorOrchestrator {
              * first week you have 5, after the second 10...") paired with
              * `whiteboard.start` set to the per-week amount instead of zero,
              * shifting the whole drawn sequence one period ahead of the
-             * narration. Round 67 (2026-08-30, HIGH) found the SAME defect
+             * narration. A later review found the SAME defect
              * again a day later under a different phrasing this check's
              * ordinal-anchored patterns could not see — a bare comma list
              * ("3, then 6, then 9, then 12") ending in a bald conclusion
@@ -4012,7 +4009,7 @@ export class TutorOrchestrator {
             const boardContradiction =
               numberMismatch || comparisonMismatch || markedLineMismatch || categoryMismatch;
             /*
-             * §9.4 of the blueprint, stated as a hard rule: never give the
+             * Stated as a hard rule: never give the
              * final answer while asking. Detected by computing the question's
              * answer and looking for it in the lead-in, which is exact where a
              * classifier would be probabilistic.
@@ -4093,7 +4090,7 @@ export class TutorOrchestrator {
              */
             const falseAffordability = contradictsItsOwnShortfall(parsed.turn.say);
             /*
-             * C.18 — THE ANTI-SYCOPHANCY CHECK. A turn reacting to an answer
+             * THE ANTI-SYCOPHANCY CHECK. A turn reacting to an answer
              * the SERVER verified as wrong (graded activity, voice check, or
              * the arithmetic verdict) must not tell the learner they were
              * right; a turn reacting to a stated wrong idea or unsound money
@@ -4106,8 +4103,8 @@ export class TutorOrchestrator {
             const sycophantic = isSycophantic(parsed.turn.say, opts.verdict);
             if (sycophantic) falseAffirmationCaught = true;
             /*
-             * THE MENTOR NEVER DECLARES HOW THE LEARNER FEELS (Block C
-             * non-negotiable, C.9/C.8 — `affectClaims.ts`). Checked on every
+             * THE MENTOR NEVER DECLARES HOW THE LEARNER FEELS (non-negotiable;
+             * `affectClaims.ts`). Checked on every
              * model turn, not only on the session-end offer where a helpful
              * model reaches for "you seem tired": the constraint applies
              * regardless of which strategy is active. Bucketed with the false
@@ -4115,17 +4112,17 @@ export class TutorOrchestrator {
              */
             const affectClaim = claimsLearnerAffect(parsed.turn.say);
             /*
-             * C.15: A FIRST MEETING OR A PERSONA SWITCH IS NEVER FALSELY
+             * A FIRST MEETING OR A PERSONA SWITCH IS NEVER FALSELY
              * FAMILIAR. "Last time we…", "I remember you" or "good to see you
              * again" from a persona that has never worked with this learner
-             * is manufactured intimacy (Appendix D §3.4). Bucketed with the
+             * is manufactured intimacy. Bucketed with the
              * false verdicts: repaired once, never delivered.
              */
             const falseFamiliarity = this.alliance.requiresFreshStart && claimsSharedHistory(parsed.turn.say);
             /*
-             * C.17: TO A TEEN OR AN ADULT THE MENTOR NEVER ORDERS, IN EITHER
+             * TO A TEEN OR AN ADULT THE MENTOR NEVER ORDERS, IN EITHER
              * ARM OF THE EXPERIMENT (the gate follows the band, not the
-             * variant: OD-26 lets a teen reach the control arm). "You need
+             * variant: a teen can reach the control arm). "You need
              * to", "you have to", "you must", "you should" and their
              * es-MX/pt-BR forms (Reeve & Jang's controlling-language markers)
              * are caught on every model turn, across all four personas, and
@@ -4136,11 +4133,11 @@ export class TutorOrchestrator {
             const controlling = this.dialoguePolicy.controllingGate && controllingLanguage(parsed.turn.say) !== null;
             if (controlling && attempt === 0) this.dialogueCalibration.noteControllingCaught();
             /*
-             * OD-6: THE MENTOR NEVER CALLS ITSELF A TUTOR, BOT OR ASSISTANT
-             * ("Tutor" is the verified parent). OD-13: THE MENTOR TURN'S COPY
-             * BUDGET (06 role `mentor`: 2 sentences, 20 words, 12 for ages
+             * THE MENTOR NEVER CALLS ITSELF A TUTOR, BOT OR ASSISTANT
+             * ("Tutor" is the verified parent). THE MENTOR TURN'S COPY
+             * BUDGET (2 sentences, 20 words, 12 for ages
              * 6-9, one question). Both are style faults: repaired once, and a
-             * survival is delivered, counted and flagged (M-13), never hidden.
+             * survival is delivered, counted and flagged, never hidden.
              * The budget is the lowest-priority repair: when a higher fault
              * takes the one retry, its correction carries the budget too.
              */
@@ -4170,7 +4167,7 @@ export class TutorOrchestrator {
               repairable = parsed.turn;
               repairableIsRepeat = repeated !== null;
               /*
-               * Round 55 (2026-08-30, HIGH): this used to read
+               * This used to read
                * `falsePraise || falseCorrection` only, so a vocabulary
                * violation at attempt 0 whose RETRY then transport-failed
                * (an empty completion, not merely "still violates") fell
@@ -4183,7 +4180,7 @@ export class TutorOrchestrator {
                * gets ZERO value from the turn, not a "clumsy but still
                * teaches something" one.
                *
-               * `numberMismatch` (round 65) joins the same bucket for the
+               * `numberMismatch` joins the same bucket for the
                * same reason falseCorrection does: a wrong number taught to
                * a child learning arithmetic is actively wrong, not a
                * stylistic imperfection a child can still learn from — the
@@ -4202,7 +4199,7 @@ export class TutorOrchestrator {
                * the live reproduction. This is also the SAME flag this
                * turn's `repairable` capture needs: if attempt 0 broke its
                * promise and the retry then transport-failed outright (an
-               * empty completion, the same failure mode round 55 hit),
+               * empty completion, the same failure mode seen earlier),
                * `repairable` — the broken-promise turn itself — must not
                * be the thing delivered.
                *
@@ -4602,8 +4599,8 @@ export class TutorOrchestrator {
     }
 
     /*
-     * A SEGMENT REQUEST THIS TURN WILL NEVER DELIVER (round 85, 2026-08-31,
-     * MEDIUM) — see `afterBudget`'s own doc comment above for the two
+     * A SEGMENT REQUEST THIS TURN WILL NEVER DELIVER
+     * — see `afterBudget`'s own doc comment above for the two
      * reachable triggers and why a retry cannot be trusted to catch this the
      * way the rest of the repair loop catches a model's other mistakes.
      *
@@ -4633,7 +4630,7 @@ export class TutorOrchestrator {
     }
 
     /*
-     * ── C.16 AND C.8/C.12: WHAT THIS TURN IS FOR DECIDES ITS SHAPE ──────────
+     * ── WHAT THIS TURN IS FOR DECIDES ITS SHAPE ──────────
      *
      * The closing script is the SYSTEM's, never the model's. A model turn that
      * ends the session is followed by a scripted line (`TurnOutcome.after`)
@@ -4696,21 +4693,21 @@ export class TutorOrchestrator {
       opts.selfExplanationPrompt === true ||
       opts.selfExplanationFollowup === true
     ) {
-      // An offer stands alone (Frontend Bible 08 §4: two equal choices), a
-      // closing turn introduces nothing new (Appendix D §3.5), the turn
+      // An offer stands alone (two equal choices), a
+      // closing turn introduces nothing new, the turn
       // before the system's check-in, renegotiation or self-explanation
-      // question only reacts (C.19, C.15, C.14), and the goal restatement
+      // question only reacts, and the goal restatement
       // and the explanation follow-up are questions that must stand alone.
       // The system's own chips (the offer, the check-in, the goal) are the reply chips of such a turn.
       turn = { ...turn, next: 'ask', segmentRequest: null, offerAdaptation: null, replies: null };
     }
 
     /*
-     * GAP-FIX-R2 — REPLY CHIPS (Frontend Bible 08 §2 layer 5, §4, §9). A
+     * REPLY CHIPS. A
      * model's likely answers are screened here (the `option` Copy Budget, no
      * answer statement, at most three: `screenReplyChips`); a failing chip is
      * dropped, never retried. A scripted turn's chips are system-written
-     * (C.14's sentence stems) and pass as written. Chips belong to a turn that
+     * (the self-explanation sentence stems) and pass as written. Chips belong to a turn that
      * asks: a turn that opens an activity or closes has nothing to answer.
      */
     const replyChips = turn.next !== 'ask'
@@ -4759,7 +4756,7 @@ export class TutorOrchestrator {
      * The separator is a blank line so the judge reads two sentences rather
      * than one run-on, which is what it would otherwise score.
      */
-    // GAP-FIX-R2: the reply chips are learner-visible free text too, so they are judged in the same call.
+    // The reply chips are learner-visible free text too, so they are judged in the same call.
     const visibleText = [turn.say, turn.segmentRequest?.framing, ...whiteboardVisibleText(turn.whiteboard), ...(turn.replies ?? [])]
       .filter((s): s is string => typeof s === 'string')
       .join('\n\n');
@@ -4782,17 +4779,17 @@ export class TutorOrchestrator {
         // after the client gave up protects nobody and costs the turn. The
         // deadline itself is passed through, re-checked live right before
         // the retry fires inside `moderateTutorOutput` — not frozen into a
-        // boolean here before this attempt has even started (round 24,
-        // 2026-08-30 — see `ModerationInput.retryDeadlineMs`'s doc comment).
+        // boolean here before this attempt has even started (
+        // see `ModerationInput.retryDeadlineMs`'s doc comment).
         retryDeadlineMs,
         // A minor's session always requires the model pass. An adult's may
-        // run on the deterministic pass alone (/ORACLE.md §6).
+        // run on the deterministic pass alone.
         //
         // `minorPosture`, NOT `this.session.isMinor`: on a resume the socket
         // re-attaches this same orchestrator, and the pinned context is the
         // one the FIRST connection fetched. See `minorPosture`'s own comment.
         requireModelPass: this.minorPosture,
-        // TRAJECTORY CONTEXT (round 104, 2026-08-31): the SAME already-spoken
+        // TRAJECTORY CONTEXT: the SAME already-spoken
         // tutor lines the generator's own "do not repeat this" hint already
         // reads (never the learner's words — see `ModerationInput
         // .recentTutorLines`'s own doc comment for why). Read here BEFORE
@@ -4825,7 +4822,7 @@ export class TutorOrchestrator {
          * hand-written line and keep today's generic behavior unchanged
          * below, deliberately — inventing one for "violence" or "hate" on
          * an unverified guess would be exactly the kind of un-measured
-         * fix AGENTS.md §1.0 warns costs more than no fix at all.
+         * fix that costs more than no fix at all.
          */
         const isSelfHarm = verdict.category === 'self_harm';
         if (isSelfHarm) this.stopped = true;
@@ -4876,19 +4873,19 @@ export class TutorOrchestrator {
     this.lastTurn = { turn, seq: this.seq };
     /*
      * THIS turn's seq, captured before a scripted line that follows it (the
-     * C.16 closing line, the C.19 check-in) reserves the next one. The
+     * closing line, the check-in) reserves the next one. The
      * emission used to read `this.seq` after that line was built, so the
      * model turn and its follower went out under the same seq.
      */
     const turnSeq = this.seq;
-    // C.9: when this turn will have finished playing, for the next reply latency.
+    // When this turn will have finished playing, for the next reply latency.
     this.behavioralTelemetry.noteTutorTurn(Date.now(), estimateSpeechMs(turn.say));
     /*
      * THE ONE ADAPTATION THIS TURN ACTUALLY OFFERED, and nothing else counts
      * as accepted. Found by adversarial review, 2026-08-30 (MEDIUM):
      * `ws/server.ts`'s `adaptation_response` handler applied WHATEVER
      * `adaptation` value the client sent, with no check that the tutor had
-     * offered it — or offered anything at all. §11 states "offered, never
+     * offered it — or offered anything at all. The rule states "offered, never
      * imposed"; a `WS` message is not privileged over any other client input,
      * so nothing stopped a stray, replayed or hand-crafted `adaptation_response`
      * from silently steering every subsequent turn. A fresh turn with no offer
@@ -4902,7 +4899,7 @@ export class TutorOrchestrator {
     // comment for why a second read here would always agree with the first
     // and why an intervening disagreement would itself be the bug).
     /*
-     * C.8/C.12: the offer reached the learner only if THIS model turn carried
+     * The offer reached the learner only if THIS model turn carried
      * it — not a blocked turn's replacement, not a closing turn. Otherwise the
      * firing is recorded as not offered and the signal re-arms at once.
      */
@@ -4917,7 +4914,7 @@ export class TutorOrchestrator {
     }
 
     /*
-     * C.16: the scripted line that follows this turn. A safety stop raised by
+     * The scripted line that follows this turn. A safety stop raised by
      * this very turn wins over every closing script — its own line is the
      * close, and it never reuses a positive one.
      */
@@ -4945,7 +4942,7 @@ export class TutorOrchestrator {
     }
 
     /*
-     * C.19: THE SYSTEM'S CHECK-IN follows this model turn — a written line,
+     * THE SYSTEM'S CHECK-IN follows this model turn — a written line,
      * so the repair-initiation move happens on every firing and never
      * depends on the model choosing to ask. Only after a delivered model
      * turn: a scripted replacement leaves it pending for the next turn
@@ -4965,7 +4962,7 @@ export class TutorOrchestrator {
       after.emission.checkIn = true;
       this.behavioralTelemetry.markCheckInDelivered();
     }
-    // C.19: whether the repair after "not really" reached the adaptation offer.
+    // Whether the repair after "not really" reached the adaptation offer.
     if (opts.repair === true && source === 'model' && safety === null) {
       this.behavioralTelemetry.markRepairOffered(turn.offerAdaptation != null);
     }
@@ -4978,7 +4975,7 @@ export class TutorOrchestrator {
       !this.stopped &&
       afterBudget.state !== 'ended';
     /*
-     * C.15: THE SYSTEM'S RENEGOTIATION QUESTION follows this model turn — a
+     * THE SYSTEM'S RENEGOTIATION QUESTION follows this model turn — a
      * written line, so a defined pattern of declines always produces the
      * renegotiation and never depends on the model choosing to ask.
      */
@@ -4987,7 +4984,7 @@ export class TutorOrchestrator {
       this.alliance.markRenegotiationDelivered();
     }
     /*
-     * C.14: THE SYSTEM'S SELF-EXPLANATION QUESTION follows the reacting turn
+     * THE SYSTEM'S SELF-EXPLANATION QUESTION follows the reacting turn
      * after a financial decision — written, pre-generatable, and asked on
      * every selected decision.
      */
@@ -4998,31 +4995,31 @@ export class TutorOrchestrator {
         this.selfExplanation.markPromptDelivered();
       }
     }
-    // C.14: the targeted follow-up IS this model turn.
+    // The targeted follow-up IS this model turn.
     if (opts.selfExplanationFollowup === true && source === 'model' && safety === null && closingPlan === null) {
       this.selfExplanation.markFollowupDelivered();
     }
-    // C.15: the goal restatement IS this model turn; the chips follow it.
+    // The goal restatement IS this model turn; the chips follow it.
     let goalCheck = false;
     if (opts.goalProposal === true && source === 'model' && safety === null && closingPlan === null && !this.stopped) {
       this.alliance.markGoalProposed();
       goalCheck = true;
     }
-    // C.15 task and bond: an adaptation this turn offered, and whether it
-    // referenced something specific the learner did (C.18's classification).
+    // Task and bond: an adaptation this turn offered, and whether it
+    // referenced something specific the learner did (the honesty classification).
     const honesty = this.turnHonesty(turn.say, opts.verdict ?? null, falseAffirmationCaught);
     if (source === 'model' && safety === null) {
       if (turn.offerAdaptation != null) this.alliance.noteOfferDelivered();
-      // C.17: a controlling phrase that survived the retry reached the learner — counted, never hidden.
+      // A controlling phrase that survived the retry reached the learner — counted, never hidden.
       if (this.dialoguePolicy.controllingGate && controllingLanguage(turn.say) !== null) {
         this.dialogueCalibration.noteControllingDelivered();
       }
-      // OD-13 / OD-6: a budget overflow or a self-naming that survived the retry — counted, never hidden.
+      // A budget overflow or a self-naming that survived the retry — counted, never hidden.
       if (mentorTurnBudget(turn.say, this.session.tier, this.session.locale).over !== null) {
         this.dialogueCalibration.noteBudgetDelivered();
       }
       if (selfNamingViolation(turn.say) !== null) this.dialogueCalibration.noteSelfNamingDelivered();
-      // C.13 / C.24 rubric.tell_honored: the turn that answered an explicit "just tell me".
+      // rubric.tell_honored: the turn that answered an explicit "just tell me".
       if (opts.tellRequested === true) this.dialogueCalibration.noteTellDelivered();
       this.alliance.notePraise(honesty.praise);
     } else if (opts.tellRequested === true && safety !== null) {
@@ -5074,9 +5071,9 @@ export class TutorOrchestrator {
   }
 
   /**
-   * C.18: the honesty facts of one DELIVERED model turn — the per-turn row
-   * behind the Answer-Reveal Rate and the Sycophancy Audit Score (Appendix F
-   * §1.2). Pure reads of state this turn already settled; no I/O, nothing
+   * The honesty facts of one DELIVERED model turn — the per-turn row
+   * behind the Answer-Reveal Rate and the Sycophancy Audit Score.
+   * Pure reads of state this turn already settled; no I/O, nothing
    * stored on the instance (so nothing new for the park snapshot).
    *
    * The SEQUENCE a reveal is judged inside, most specific first: the learner
@@ -5084,7 +5081,7 @@ export class TutorOrchestrator {
    * repairing (REMEDIATE/RESCUE/PROBE) or the turn reacts to a verified-wrong
    * answer (`repair`); an ungraded activity is on screen (`open_activity`).
    * A reveal is SANCTIONED once the ladder reached "tell" — the learner asked,
-   * or exhausted the ladder (C.13) — and is then not a defect.
+   * or exhausted the ladder — and is then not a defect.
    */
   private turnHonesty(say: string, verdict: VerdictContext | null, caught: boolean): TurnHonesty {
     const stepKey = this.ladderStepKey();
@@ -5114,7 +5111,7 @@ export class TutorOrchestrator {
 
   /**
    * Synthesis is best-effort, never throws upward, and is BILLED INTO THE
-   * LEDGER when it was actually paid for (/ORACLE.md §15).
+   * LEDGER when it was actually paid for.
    *
    * The free paths — a pre-generated scripted line, a cache hit — add nothing,
    * which is what makes the ledger able to show the cache working: two
@@ -5148,9 +5145,9 @@ export class TutorOrchestrator {
     this.history.push({ speaker: 'tutor', text: turn.say });
     this.seq += 1;
     this.lastTurn = { turn, seq: this.seq };
-    // C.9: when this line will have finished playing, for the next reply latency.
+    // When this line will have finished playing, for the next reply latency.
     this.behavioralTelemetry.noteTutorTurn(Date.now(), estimateSpeechMs(turn.say));
-    // C.19: a session that closes on this line is never asked a pending check-in.
+    // A session that closes on this line is never asked a pending check-in.
     if (closeReason !== null) this.behavioralTelemetry.supersedeCheckIn();
     // A scripted line never offers an adaptation — clears whatever the
     // previous MODEL turn offered, so accepting a stale offer after the
@@ -5170,7 +5167,7 @@ export class TutorOrchestrator {
 }
 
 /*
- * Rough cost, for the per-session ledger (/ORACLE.md §15).
+ * Rough cost, for the per-session ledger.
  *
  * Deliberately an ESTIMATE with the rates in one place, and deliberately not
  * presented as an invoice. The point is to notice a session that cost ten
@@ -5184,7 +5181,7 @@ const USD_PER_1K_COMPLETION = 0.0011;
 /*
  * And the same for VOICE, which was missing from this ledger entirely.
  *
- * §15 says cost is recorded per session "so the economics are measurable
+ * Cost is recorded per session "so the economics are measurable
  * before they are a surprise", and the most expensive surface in the product
  * contributed nothing to the number. A session could synthesise forty turns
  * and report the price of its tokens.

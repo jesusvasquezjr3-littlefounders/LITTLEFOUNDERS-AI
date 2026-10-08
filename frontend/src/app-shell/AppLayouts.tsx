@@ -11,14 +11,14 @@ import { useMentorCharacter } from './useMentorCharacter';
 import { TeenAnalyticsDisclosure } from './TeenAnalyticsDisclosure';
 
 /*
- * The signed-in shells on real routes (W2 Lane 0), replacing the legacy
+ * The signed-in shells on real routes, replacing the legacy
  * AppLayout. RequireAuth and RequireOnboarded stay in App.tsx around these
  * layouts, and every page keeps its own guard; the shells only choose what
  * navigation a person sees:
  *
  *   AppShellLayout  the learner app (LearnerShell) for learners, teens, adults
  *                   and staff learning; the Tutor console (TutorShell) for a
- *                   verified parent (OD-6).
+ *                   verified parent.
  *   StaffShellLayout  /admin: the staff console (StaffShell), its items
  *                   filtered by the same grants the route guards check.
  */
@@ -31,7 +31,7 @@ function useShellAccount(): ShellAccount {
   return { roles, adminPermissions };
 }
 
-/** A.1: a suspended or purged kid never sees an app shell; the language of record follows the profile. */
+/** A suspended or purged kid never sees an app shell; the language of record follows the profile. */
 function useSignedInFrame(): ReactNode | null {
   const { suspended, deleted, profile } = useAuth();
   const { i18n } = useTranslation();
@@ -61,7 +61,7 @@ export function AppShellLayout() {
   const account = useShellAccount();
   const kind = appShellKind(account);
   const character = useMentorCharacter(kind === 'learner' && !redirect);
-  // Bible 06 §7 (GAP-FIX-R4): the learner's band on the shell root, so every learner page and the shell chrome
+  // The learner's band on the shell root, so every learner page and the shell chrome
   // are budgeted at the learner's age; the Tutor console serves a verified parent, always an adult.
   const learnerBand = useLearnerBand(kind === 'learner' && !redirect);
   const copy = useShellCopy().appShell;
@@ -78,7 +78,7 @@ export function AppShellLayout() {
     appName: APP_NAME, pageTitle: pageTitleFor(pathname, items, current, copy.nav.profile), routeKey: pathname, locale,
     onNavigate: navigate, current, items, utilities: <ShellPreferences />,
   };
-  // Every page is rebuilt (02 rule 23, D13): the shell's <main> owns the content box and the route entrance.
+  // Every page is rebuilt: the shell's <main> owns the content box and the route entrance.
   // The key keeps a page's own state from surviving a move to another address on the same route.
   const body = <Fragment key={pathname}><Outlet /></Fragment>;
   return <ShellRoot ageBand={kind === 'tutor' ? 'adult' : learnerBand}>
@@ -87,7 +87,7 @@ export function AppShellLayout() {
         labels={{ skip: copy.skip, navigation: copy.navigation, menu: copy.menu, close: copy.close }}>{body}</TutorShell>
       : <LearnerShell {...common} labels={{ skip: copy.skip, navigation: copy.navigation }}
         mentor={{ href: MENTOR_PATH, name: copy.mentor, character }}>{body}</LearnerShell>}
-    {/* H.1, Appendix O 2.2(a) (F3-identity-site): a self-registered teen's first-session analytics choice. */}
+    {/* A self-registered teen's first-session analytics choice. */}
     {kind === 'learner' ? <TeenAnalyticsDisclosure /> : null}
   </ShellRoot>;
 }
@@ -117,7 +117,7 @@ export function StaffShellLayout() {
     ...(grant ? { permission: grant as StaffPermission | readonly StaffPermission[] } : {}),
   }));
   const current = currentSlot(pathname, entries.map(({ slot }) => slot));
-  // The staff console serves staff, adults only (Bible 06 §7: the root carries the band).
+  // The staff console serves staff, adults only (the root carries the band).
   return <ShellRoot ageBand="adult">
     <StaffShell appName={APP_NAME} pageTitle={items.find((item) => item.id === current)?.label ?? copy.staffRole} routeKey={pathname}
       utilities={<ShellPreferences />} locale={locale} onNavigate={navigate} current={current} items={items} grants={staffGrants(roles, adminPermissions)}

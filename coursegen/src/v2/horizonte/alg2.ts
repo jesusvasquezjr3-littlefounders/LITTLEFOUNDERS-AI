@@ -89,7 +89,7 @@ function visit(document: { segments?: unknown }, answerKeys: Record<string, unkn
 const isZero = (value: Dec): boolean => value.n === 0n;
 
 /**
- * F2.4. The payload plays (sliders, start, window, marks), and a key is one curve of the payload's family: on the sliders,
+ * The payload plays (sliders, start, window, marks), and a key is one curve of the payload's family: on the sliders,
  * through every mark, away from the start. With no marks the learner has nothing to aim at, so the prompt writes the numbers.
  */
 const graphGate: Check = (segment, payload, key, report) => {
@@ -118,7 +118,7 @@ const graphGate: Check = (segment, payload, key, report) => {
 const isPoint = (value: unknown): value is PlanePoint =>
   hasOnly(value, ['x', 'y']) && typeof value.x === 'number' && typeof value.y === 'number' && Number.isFinite(value.x) && Number.isFinite(value.y);
 
-/** F2.5. The payload plays (lines, grid, one marker for each crossing), and a key is exactly the crossings, away from the start. */
+/** The payload plays (lines, grid, one marker for each crossing), and a key is exactly the crossings, away from the start. */
 const systemGate: Check = (_segment, payload, key, report) => {
   const system = readSystemPayload(payload);
   if (typeof system === 'string') return report(system);
@@ -134,7 +134,7 @@ const systemGate: Check = (_segment, payload, key, report) => {
 
 const isVariableLetter = (value: string): boolean => value.length === 1 && value >= 'a' && value <= 'z';
 
-/** F2.6. The task plays (it parses as the right kind and is not finished), and a key is the finished line, equal in value to the given. */
+/** The task plays (it parses as the right kind and is not finished), and a key is the finished line, equal in value to the given. */
 const expressionGate: Check = (segment, payload, key, report) => {
   if (!hasOnly(payload, ['task', 'given', 'form', 'variable']) || !isExpressionTask(payload) || !isVariableLetter(payload.variable)) {
     return report('The payload is a task (rewrite or solve), a given, a form that fits the task and one lowercase variable letter');
@@ -151,7 +151,7 @@ const expressionGate: Check = (segment, payload, key, report) => {
   if (written.length >= 3 && typeof segment.prompt === 'string' && commaToPoint(withoutSpaces(segment.prompt)).includes(commaToPoint(written))) report('The prompt must not write the reference answer');
 };
 
-/** Gate 4 (solvability), over the shared model and engine (copied from Core, pinned by a test): every key is one answer the payload allows. */
+/** Gate 4 (solvability), over the shared model and engine (copied from Core): every key is one answer the payload allows. */
 function alg2Gates(document: { segments?: unknown }, answerKeys?: Record<string, unknown>): GateProblem[] {
   return [
     ...visit(document, answerKeys, GRAPH, 'function-graph', graphGate),

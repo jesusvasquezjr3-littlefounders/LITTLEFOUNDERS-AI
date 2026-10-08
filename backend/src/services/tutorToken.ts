@@ -3,18 +3,17 @@ import { getConfig } from '../config.js';
 
 /*
  * Minting the live-session token the browser carries to Oracle
- * (/ORACLE.md §3.2, /AGENTS.md §1.5 Oracle exception).
+ * (the Oracle exception).
  *
  * The FORMAT IS DUPLICATED between here and `oracle/src/session/token.ts`, and
  * that is a deliberate choice rather than an oversight. This repository has no
- * npm workspaces (§1.2), so a shared package does not exist; the alternatives
- * were a copied file with a drift test — which is what the lesson graders do —
+ * npm workspaces, so a shared package does not exist; the alternatives
+ * were a copied file kept in sync by hand — which is what the lesson graders do —
  * or a runtime call to Oracle to mint, which would put Oracle on the critical
  * path of starting a session it might then refuse.
  *
- * The parity test (`backend/src/__tests__/tutor-token.test.ts`) pins the wire
- * format against the same vectors Oracle's own test uses. If the two ever
- * disagree, that test fails before a learner sees a socket that will not open.
+ * If the two formats ever
+ * disagree, a learner sees a socket that will not open.
  *
  * Three properties the token must have, and why each one:
  *

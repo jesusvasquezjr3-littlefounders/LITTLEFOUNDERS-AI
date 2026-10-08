@@ -4,7 +4,7 @@ import { requireInternalKey } from '../middleware/auth.js';
 import { getOpsJobStatus, HEARTBEAT_JOBS, OpsHeartbeatBody, recordOpsHeartbeat } from '../services/opsJobs.js';
 
 /*
- * H.4 (Appendix O 1.3, 2.3): the internal half of the operations watchdog.
+ * The internal half of the operations watchdog.
  *
  *   POST /api/v1/internal/ops/heartbeat {job, ok, bytes?, pending?}
  *     called at the end of vault-backup.yml, pulse-backup.yml,

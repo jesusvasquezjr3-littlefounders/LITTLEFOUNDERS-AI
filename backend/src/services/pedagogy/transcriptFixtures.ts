@@ -1,5 +1,5 @@
 /*
- * Product C.21: THE RUBRIC FIXTURE SET (zero spend).
+ * THE RUBRIC FIXTURE SET (zero spend).
  *
  * Synthetic Mentor sessions, written by hand in the three locales, each with
  * the rubric outcome its author intends for every criterion. Two uses:
@@ -15,7 +15,7 @@
  *      "fixture scorer"); a live run compares the real judge with them.
  *
  * The intended labels are the AUTHOR's, never a human panel's rating: they
- * prove the plumbing and the rules, and are not a calibration (C.23).
+ * prove the plumbing and the rules, and are not a calibration.
  * No real learner, no real transcript: every line was written for this file.
  */
 
@@ -301,7 +301,7 @@ export const TRANSCRIPT_FIXTURES: TranscriptFixture[] = [
       firings: [],
       alliance: { learner_turns: 4, goal_agreement: 'unconfirmed' },
       selfExplanation: [{ mode: 'act', first_quality: 'filler' }],
-      // Gap-fix round 6: a teen in the control arm is gated and scored like the calibrated arm.
+      // A teen in the control arm is gated and scored like the calibrated arm.
       dialogue: { variant: 'control', band: 'teen', controlling_delivered: 0 },
     },
     expected: {

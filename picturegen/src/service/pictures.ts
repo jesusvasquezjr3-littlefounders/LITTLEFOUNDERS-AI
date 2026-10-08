@@ -21,7 +21,7 @@ function getImageGate(limit: number): ConcurrencyGate {
 }
 
 /*
- * Prism's one job (COURSE_ENGINE.md consumers call this): turn a label into a
+ * Prism's one job: turn a label into a
  * stored, Depot-hosted illustration — CACHE-FIRST. The flow is:
  *
  *   judge → hash(model,size,prompt) → cache lookup

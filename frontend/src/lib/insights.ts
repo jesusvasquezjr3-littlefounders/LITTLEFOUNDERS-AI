@@ -10,7 +10,7 @@ import {
 } from './visitor';
 
 /*
- * First-party usage beacon (/INSIGHTS.md). Batches closed-vocabulary events
+ * First-party usage beacon. Batches closed-vocabulary events
  * to Core's POST /api/v1/events — never to Pulse, never to any third party.
  *
  * The privacy posture is layered and this file is the OUTERMOST layer:
@@ -39,9 +39,9 @@ export type InsightEvent =
   | 'profile_edit' | 'avatar_edit' | 'tutor_open'
   | 'streak_extend' | 'territory_view' | 'consent_grant' | 'consent_revoke'
   // parent report + achievement sharing (0072). All require a signed-in
-  // caller. badge_link_click (viewer reach) is retired under OD-20.
+  // caller. badge_link_click (viewer reach) is retired.
   | 'parent_report_viewed' | 'badge_generated' | 'badge_shared'
-  // B.5 (S05.3d): the result screen showed "your saved best is still X". Its
+  // The result screen showed "your saved best is still X". Its
   // denominator, replay_below_best, is written by Core only and is not listed.
   | 'replay_notice_view';
 

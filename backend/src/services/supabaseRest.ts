@@ -354,7 +354,7 @@ async function hydrateUsers(ids: string[]): Promise<ListedUser[] | null> {
         userId: id,
         displayName: p.display_name,
         username: p.username,
-        // E.12: a legacy off-schema avatar is served as the default cartoon.
+        // A legacy off-schema avatar is served as the default cartoon.
         avatarOptions: projectAvatarOptions(avatarById.get(id)),
         isTutor: tutorIds.has(id),
       };
@@ -364,7 +364,7 @@ async function hydrateUsers(ids: string[]): Promise<ListedUser[] | null> {
 
 const LIST_LIMIT = 60;
 
-/** Whitelisted cards for ids an authorized route already resolved (E.8 teen request queue). */
+/** Whitelisted cards for ids an authorized route already resolved (teen request queue). */
 export async function getSocialCards(ids: string[]): Promise<ListedUser[] | null> {
   return hydrateUsers([...new Set(ids)]);
 }
@@ -402,8 +402,8 @@ export async function requestSocialConnection(requesterId: string, kidId: string
 }
 
 /*
- * E.3 from a request queue (GAP-FIX-R5 social; OD-8's "report action for
- * unwanted contact"; D-19). An inbound connection request is the first
+ * From a request queue ("report action for
+ * unwanted contact"). An inbound connection request is the first
  * unwanted-contact event, so the person deciding it can report the requester
  * (and a teen can block them) from the queue itself: while the request is
  * pending, and for 30 days after it was closed without a connection (the
@@ -462,7 +462,7 @@ export async function unblockUser(accessToken: string, blockerId: string, blocke
   return res.ok;
 }
 
-// ── Report escalation (0108, E.3) ──────────────────────────────
+// ── Report escalation (0108) ──────────────────────────────
 
 export const SOCIAL_REPORT_CATEGORIES = ['unwanted_contact', 'harassment', 'inappropriate_content', 'impersonation', 'other'] as const;
 export type SocialReportCategory = (typeof SOCIAL_REPORT_CATEGORIES)[number];
@@ -497,7 +497,7 @@ export async function submitSocialReport(reporterId: string, subjectId: string, 
   return error.success ? 'invalid' : 'unavailable';
 }
 
-// ── Course hierarchy (0007, COURSE_ENGINE.md §2) ─────────────
+// ── Course hierarchy (0007) ─────────────
 // courses -> adventures -> sagas -> topics -> lessons -> lesson_documents.
 // All hierarchy reads use the USER's own token — RLS's "published + every
 // ancestor published" chain (0007) already does the filtering; Core layers
@@ -517,7 +517,7 @@ export interface CourseHierarchyRow {
   badge_asset: string | null;
   /** 0048 — true while the course is live but still missing narration/illustrations. */
   in_progress: boolean;
-  /** 0008 course-level prerequisite edges: slugs of courses that must be completed first (B.2). */
+  /** 0008 course-level prerequisite edges: slugs of courses that must be completed first. */
   requires?: string[];
 }
 
@@ -644,7 +644,7 @@ export interface TopicHierarchyRow {
   review_of: string[];
   /** Competency-graph projection (0042): non-obvious prerequisite edges beyond the implicit "previous lesson" one. */
   prerequisites: PrerequisiteEdge[];
-  /** Competency-graph projection (0042): null until Forge authors one for this topic (COURSE_ENGINE.md §3.2). */
+  /** Competency-graph projection (0042): null until Forge authors one for this topic. */
   placement_probe: Partial<Record<'en-US' | 'es-MX' | 'pt-BR', PlacementProbeContent>> | null;
 }
 
@@ -671,7 +671,7 @@ export interface LessonHierarchyRow {
   difficulty: number;
   xp_total: number;
   estimated_minutes: number;
-  /** GAP-FIX-R5 (B.24, Block B autonomy): depth/enrichment, never required for progress, badges or OD-25 unlocks. */
+  /** Depth/enrichment, never required for progress, badges or early-access unlocks. */
   optional_enrichment?: boolean;
 }
 
@@ -731,7 +731,7 @@ export interface LessonDocumentRow {
   updated_at: string;
 }
 
-/** Every locale row for one lesson (≤3) — used for the caller-locale → es-MX → any fallback (LESSON_ENGINE.md §3). */
+/** Every locale row for one lesson (≤3) — used for the caller-locale → es-MX → any fallback. */
 export function getLessonDocumentLocales(lessonId: string): Promise<LessonDocumentRow[] | null> {
   return rest<LessonDocumentRow[]>(
     `/lesson_documents?lesson_id=eq.${eu(lessonId)}&select=lesson_id,locale,schema_version,document,answer_keys,audio,updated_at`,
@@ -822,7 +822,7 @@ export interface V2LessonRunInsert {
   locale: string;
   document_version_id: string;
   expires_at: string;
-  /** GAP-FIX-R2 (Appendix P Part 4.4): where a mastery-faded M1 progression starts this run. */
+  /** Where a mastery-faded CPA progression starts this run. */
   cpa_entry_stage?: 'concrete' | 'pictorial' | 'abstract';
 }
 
@@ -861,7 +861,7 @@ export interface V2LessonRunRecoveryRow {
   expires_at: string;
   completed_at: string | null;
   cpa_entry_stage?: 'concrete' | 'pictorial' | 'abstract' | null;
-  /** GAP-FIX-R5 (B.24): the approach chain the learner pinned on this run, or null before choosing. */
+  /** The approach chain the learner pinned on this run, or null before choosing. */
   approach_id?: string | null;
 }
 
@@ -876,7 +876,7 @@ export async function getV2LessonRunForRecovery(userId: string, lessonId: string
   return row && row.id === runId && row.user_id === userId && row.lesson_id === lessonId ? row : null;
 }
 
-/** GAP-FIX-R2 (Part 4.4): the latest stage at which this learner first succeeded unaided on a fading group, any version. */
+/** The latest stage at which this learner first succeeded unaided on a fading group, any version. */
 export async function getV2PriorFirstUnaidedStage(userId: string, fadingGroupId: string): Promise<'concrete' | 'pictorial' | 'abstract' | null> {
   const rows = await rest<Array<{ stage: string }>>(
     `/lesson_v2_first_unaided_stages?user_id=eq.${eu(userId)}&fading_group_id=eq.${eu(fadingGroupId)}&select=stage&order=created_at.desc&limit=1`,
@@ -916,9 +916,9 @@ export function getV2MetSegmentReceiptsForRecovery(userId: string, runId: string
 
 const V2GradeReceipt = z.union([
   z.object({ replayed: z.boolean(), verdict: z.object({ correct: z.boolean(), score: z.number().int().min(0).max(100),
-    // B.12: present only on a reasoning answer; the database CHECK pins the shape.
+    // Present only on a reasoning answer; the database CHECK pins the shape.
     judgment: z.object({ quality: z.enum(['sound', 'partial', 'unsupported']) }).strict().optional(),
-    // GAP-FIX-R1: the closed diagnostic code and the help-ladder steps used (the SQL CHECK pins both). One list with the scorer.
+    // The closed diagnostic code and the help-ladder steps used (the SQL CHECK pins both). One list with the scorer.
     diagnostic: z.enum(V2_DIAGNOSTIC_CODES).optional(),
     hints_used: z.number().int().min(0).max(2).optional() }), retry_jti: z.string().optional() }),
   z.object({ blocked: z.literal(true) }),
@@ -931,14 +931,14 @@ export interface V2StoredVerdict {
   detection?: { hits: number; misses: number; false_alarms: number; correct_rejections: number };
 }
 
-/** GAP-FIX-R1: Core's record that the learner acted on a non-scored segment of a pinned run (0205). */
+/** Core's record that the learner acted on a non-scored segment of a pinned run (0205). */
 export async function recordV2SegmentView(payload: { p_user_id: string; p_run_id: string; p_document_version_id: string; p_segment_id: string }): Promise<boolean> {
   const result = await rest<unknown>('/rpc/record_v2_segment_view', serviceToken(), { method: 'POST', body: JSON.stringify(payload) });
   return result === true;
 }
 
 /**
- * Appendix C 1.2 / Appendix P Part 7.5 (GAP-FIX-R4): the learner's time on a
+ * The learner's time on a
  * v2 step, an analytics field only. Set once, after the receipt (by jti) or
  * the view (jti null) exists; nothing that grades or completes reads it.
  */
@@ -948,7 +948,7 @@ export async function recordV2TimeOnTask(payload: { p_user_id: string; p_run_id:
 }
 
 /**
- * GAP-FIX-R5 (B.24): pin the learner's approach on the run (pin_v2_run_approach,
+ * Pin the learner's approach on the run (pin_v2_run_approach,
  * service role). Answers the pinned approach (an earlier pin wins), null when
  * the database refused the choice, undefined when it could not be reached.
  */
@@ -980,7 +980,7 @@ export async function recordV2LessonGrade(payload: {
   return parsed.success ? parsed.data : null;
 }
 
-/** M1 requires an earlier representation to have been attempted, not mastered. */
+/** CPA requires an earlier representation to have been attempted, not mastered. */
 export async function recordV2CpaGrade(payload: {
   p_user_id: string; p_run_id: string; p_document_version_id: string; p_segment_id: string; p_jti: string;
   p_required_attempted_segment_id: string | null;
@@ -993,7 +993,7 @@ export async function recordV2CpaGrade(payload: {
   return parsed.success ? parsed.data : null;
 }
 
-/** M1 is diagnostic-only: an unavailable diagnostic writer must never discard a valid lesson receipt. */
+/** CPA is diagnostic-only: an unavailable diagnostic writer must never discard a valid lesson receipt. */
 export async function recordV2FirstUnaidedStage(payload: {
   p_user_id: string; p_document_version_id: string; p_fading_group_id: string;
   p_stage: 'concrete' | 'pictorial' | 'abstract'; p_receipt_jti: string;
@@ -1077,7 +1077,7 @@ export async function hasRole(userId: string, role: string): Promise<boolean> {
 }
 
 /**
- * E.5: the Tutor badge is a verified-adult signal, not a platform-wide
+ * The Tutor badge is a verified-adult signal, not a platform-wide
  * public badge. It is shown only when the subject is a currently ID-verified
  * parent AND the viewer has an established relationship: the subject's own
  * verified-linked kid, a mutual follow (the approved-connection gate), the
@@ -1086,7 +1086,7 @@ export async function hasRole(userId: string, role: string): Promise<boolean> {
  * closed — an absence is safer than an unearned trust signal).
  */
 export async function tutorBadgeVisible(viewerId: string, subjectId: string): Promise<boolean> {
-  // OD-6: "Tutor" is only a currently ID-verified parent, for every viewer:
+  // "Tutor" is only a currently ID-verified parent, for every viewer:
   // the subject themself and staff included (W2P.3 found the self and staff
   // shortcuts ran before this check, so anyone saw the badge on their own
   // /@username).
@@ -1185,7 +1185,7 @@ export function isRefusal(value: unknown): value is Refusal {
   return typeof value === 'object' && value !== null && 'refused' in value;
 }
 
-/** B.3's operational counter is written only by Core after it isolates one bad course. */
+/** The operational counter is written only by Core after it isolates one bad course. */
 export async function recordCourseAssemblyIncident(courseId: string): Promise<boolean> {
   const result = await rest<unknown>('/rpc/record_course_assembly_incident', serviceToken(), {
     method: 'POST',
@@ -1196,7 +1196,7 @@ export async function recordCourseAssemblyIncident(courseId: string): Promise<bo
 
 /* A role or staff-permission revocation is never a service-role DELETE: the
  * trigger could not name the revoking superadmin. It goes through Vault's
- * revoke_staff_grant (services/adminData.ts revokeStaffGrant, GAP-FIX-R5). */
+ * revoke_staff_grant (services/adminData.ts revokeStaffGrant). */
 
 // ── Guardian links ──────────────────────────────────────────────────────────
 
@@ -1206,7 +1206,7 @@ export interface GuardianLinkRow {
   verification_status: string;
 }
 
-/** The caller's VERIFIED kid links. Service role: guardian_links has no parent SELECT policy; the route layer is the guard (§1.3 app-layer half). */
+/** The caller's VERIFIED kid links. Service role: guardian_links has no parent SELECT policy; the route layer is the guard. */
 export function getVerifiedKidLinks(parentUserId: string): Promise<GuardianLinkRow[] | null> {
   return serviceRest<GuardianLinkRow[]>(
     `/guardian_links?parent_user_id=eq.${eu(parentUserId)}&verification_status=eq.verified&select=parent_user_id,kid_user_id,verification_status`,
@@ -1335,7 +1335,7 @@ export async function commitCoursePlacement(row: {
 
 // ── Achievement sharing (0073 legacy links; legacy rows only) ─────────────
 //
-// badge_shares holds ONLY the legacy links issued before the OD-20 cutover;
+// badge_shares holds ONLY the legacy links issued before the cutover;
 // the database refuses new rows (migration close_badge_share_links)
 // and Core has no insert path. What remains here reads, revokes and sweeps
 // those legacy rows until the dated removal drops the table.
@@ -1354,9 +1354,9 @@ export interface BadgeShareRow {
   /** The exact URL Depot returned — NOT reconstructed from bucket/hash/ext (see 0073's column comment). */
   image_url: string;
   created_at: string;
-  /** F.2 (0109): the window end. Enforced by Core on every public read. */
+  /** (0109): the window end. Enforced by Core on every public read. */
   expires_at: string;
-  /** F.2 (0109): NULL = live; non-NULL = revoked and unreachable. */
+  /** (0109): NULL = live; non-NULL = revoked and unreachable. */
   revoked_at: string | null;
 }
 
@@ -1407,7 +1407,7 @@ export async function getBadgeShareByToken(token: string): Promise<BadgeShareRow
  * deduplicated to one object — before purging a dead share's image the
  * caller must confirm nothing live still needs it. Once the route is retired
  * nothing is live. Returns null on a transport failure: the caller must treat
- * that as "still referenced" and skip the delete (§1.14 — never destroy on an
+ * that as "still referenced" and skip the delete (never destroy on an
  * ambiguous read).
  */
 export async function badgeShareImageStillReferencedElsewhere(
@@ -1442,7 +1442,7 @@ export function listDeadBadgeShares(limit: number, offset: number): Promise<Badg
 // ── Lesson completion receipts ──────────────────────────────────────────────
 
 /**
- * B.5 (S05.3d): the server-authored replay facts complete_lesson stores on the
+ * The server-authored replay facts complete_lesson stores on the
  * receipt. Optional only because a receipt written before that migration is
  * replayed as it was stored.
  */
@@ -1455,7 +1455,7 @@ export const ReplayReceipt = z.object({
 }).strict();
 export type ReplayReceipt = z.infer<typeof ReplayReceipt>;
 
-/** B.21: what a completion did to the habit streak, server-authored (habit_streak_advance). */
+/** What a completion did to the habit streak, server-authored (habit_streak_advance). */
 export const CompletionStreak = z.object({
   model: z.literal('rest-days-v1'),
   outcome: z.enum(['first', 'same_day', 'extended', 'bridged', 'restarted', 'earlier_date', 'not_practised']),
@@ -1464,7 +1464,7 @@ export const CompletionStreak = z.object({
   milestone: z.union([z.literal(7), z.literal(30), z.literal(100)]).nullable(),
   days_practiced: z.number().int().nonnegative(),
   best: z.number().int().nonnegative(),
-  /** The stored run before this completion (the Appendix C restart signal). */
+  /** The stored run before this completion (the restart signal). */
   run_before: z.number().int().nonnegative(),
 });
 export type CompletionStreak = z.infer<typeof CompletionStreak>;
@@ -1476,17 +1476,17 @@ const LessonCompletionResult = z.object({
   minutes_learned: z.number(), lessons_completed: z.number(),
   first_completion: z.boolean(), replayed: z.boolean(),
   replay: ReplayReceipt.optional(),
-  // v2 only (complete_v2_lesson): first-try accuracy and the B.12 judgment summary.
+  // v2 only (complete_v2_lesson): first-try accuracy and the judgment summary.
   first_try_correct: z.number().int().nonnegative().optional(),
   graded_count: z.number().int().nonnegative().optional(),
-  // GAP-FIX-R1 (complete_v2_mixed_lesson): non-scored steps acted on and help-ladder steps used.
+  // (complete_v2_mixed_lesson): non-scored steps acted on and help-ladder steps used.
   viewed_count: z.number().int().nonnegative().optional(),
   hints_used: z.number().int().nonnegative().optional(),
   judgment: z.object({
     assessed: z.number().int().nonnegative(), sound: z.number().int().nonnegative(),
     partial: z.number().int().nonnegative(), unsupported: z.number().int().nonnegative(),
   }).strict().optional(),
-  // B.21 / B.24 (S05.3e, *_habit_streak_completion_and_pause.sql). Optional: a receipt
+  // (*_habit_streak_completion_and_pause.sql). Optional: a receipt
   // stored before that migration is replayed as it was stored.
   streak: CompletionStreak.optional(),
   pace: z.object({ lessons_passed_today: z.number().int().nonnegative() }).optional(),
@@ -1494,7 +1494,7 @@ const LessonCompletionResult = z.object({
 export type LessonCompletionResult = z.infer<typeof LessonCompletionResult>;
 
 /**
- * GAP-FIX-R1 (OD-17, B.7): version-pinned completion of a mixed v2 document.
+ * Version-pinned completion of a mixed v2 document.
  * Graded segments need met receipts; non-scored segments need view receipts.
  */
 export async function completeV2MixedLesson(input: {
@@ -1521,7 +1521,7 @@ export async function completeV2Lesson(input: {
 }
 
 
-// ── B.21 / B.24 (S05.3e): habit streak state, holiday pauses and pace ──────
+// ── Habit streak state, holiday pauses and pace ──────
 
 /** The streak model's stored state (learning_stats), read with the service role. Null when Vault did not answer. */
 export interface HabitStreakRow {
@@ -1562,7 +1562,7 @@ export async function getStreakPauses(userId: string, fromDate: string): Promise
   return parsed.success ? parsed.data : null;
 }
 
-/** GAP-FIX-R1: the learner's recorded local practice days in [fromDate, toDate] (0208), service role. Null when the read fails. */
+/** The learner's recorded local practice days in [fromDate, toDate] (0208), service role. Null when the read fails. */
 export async function getPracticeDays(userId: string, fromDate: string, toDate: string): Promise<string[] | null> {
   const rows = await serviceRest<unknown[]>(
     `/learning_practice_days?user_id=eq.${eu(userId)}&local_date=gte.${es(fromDate)}&local_date=lte.${es(toDate)}&select=local_date&order=local_date.asc&limit=14`,

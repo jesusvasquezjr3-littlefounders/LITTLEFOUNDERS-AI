@@ -1,16 +1,14 @@
 import { z } from 'zod';
 
 /*
- * Canonical chart model for the v2 teaching-chart segment (GAP-FIX-R1
- * learning; B.7 part 1, Appendix A Part 1, Bible 05 V1/V6). Core validates
- * every delivered chart with it, and the browser draws from the generated
- * copy (frontend/src/rebuild/learning/charts/chartModel.generated.ts,
- * agent/tools/sync-v2-chart-model.mjs, spec:check), so the numbers a learner
+ * Canonical chart model for the v2 teaching-chart segment. Core validates
+ * every delivered chart with it, and the browser draws from a copy
+ * (frontend/src/rebuild/learning/charts/chartModel.generated.ts), so the numbers a learner
  * reads, the Show-as-table rows and the accessible description are computed
  * once. Self-contained (zod only): the file is copied byte for byte.
  */
 
-/** Appendix A Part 1 "Core" types: every one ships in the first release. */
+/** The "Core" chart types: every one ships in the first release. */
 export const CORE_CHART_KINDS = [
   'bar', 'column', 'grouped-bar', 'stacked-bar', 'diverging-bar', 'pie', 'donut', 'waterfall', 'radar', 'bullet',
   'line', 'area', 'stacked-area', 'time-series', 'sparkline', 'calendar-heatmap', 'scatter', 'bubble', 'sankey',
@@ -18,19 +16,19 @@ export const CORE_CHART_KINDS = [
 ] as const;
 
 /**
- * Appendix A Part 1 "Situational" types, each gated by age pathway and course
- * subject (SITUATIONAL_CHART_GATES). GAP-FIX-R2 (B.7 part 1) adds the learner-
+ * "Situational" types, each gated by age pathway and course
+ * subject (SITUATIONAL_CHART_GATES). The learner-
  * facing situational kinds the first round left out: candlestick (OHLC),
  * Marimekko, treemap, sunburst, icicle, box plot, connected scatter, bump,
  * org chart, swimlane, Venn (as a counted chart; the Euler placement task
  * stays `logic.euler.v2`), Ishikawa (fishbone) and mind map. Strip plot and
- * funnel stay out: Appendix A names no learner use for them.
+ * funnel stay out: they have no learner use.
  */
 export const SITUATIONAL_CHART_KINDS = ['stacked-bar-100', 'stacked-area-100', 'lollipop', 'slope', 'step', 'histogram', 'pareto', 'gauge',
   'candlestick', 'marimekko', 'treemap', 'sunburst', 'icicle', 'box-plot', 'connected-scatter', 'bump', 'org-chart', 'swimlane', 'venn',
   'ishikawa', 'mind-map'] as const;
 /**
- * Horizonte F1.0: twelve reading charts. Each one answers a question a learner
+ * Horizonte: twelve reading charts. Each one answers a question a learner
  * asks of a table of numbers (which row is biggest, how far did it move, how
  * unequal is it, how sure is the forecast, what shape do the samples take).
  * They live in their own list so the 46 earlier kinds and their gates stay
@@ -49,7 +47,7 @@ export function isReadingChart(kind: string): kind is ReadingChartKind {
 
 type AgeBand = '6-9' | '10-12' | '13-17' | 'adult';
 type ChartGate = { bands: readonly AgeBand[]; subjects: readonly string[] | null };
-/** Appendix A's gate for each situational type: the age pathways and course subjects it may appear in (null: any subject). */
+/** The gate for each situational type: the age pathways and course subjects it may appear in (null: any subject). */
 export const SITUATIONAL_CHART_GATES: Readonly<Record<(typeof SITUATIONAL_CHART_KINDS)[number], ChartGate>> = {
   'stacked-bar-100': { bands: ['13-17', 'adult'], subjects: null }, // teens comparing allocation strategies
   'stacked-area-100': { bands: ['13-17', 'adult'], subjects: null }, // teens, longer horizons
@@ -76,7 +74,7 @@ export const SITUATIONAL_CHART_GATES: Readonly<Record<(typeof SITUATIONAL_CHART_
 
 const FROM_TEN: readonly AgeBand[] = ['10-12', '13-17', 'adult'];
 const FROM_THIRTEEN: readonly AgeBand[] = ['13-17', 'adult'];
-/** F1.0 gates: none of the twelve opens to 6-9; the plain comparisons start at 10, the statistical readings at 13. */
+/** Gates: none of the twelve opens to 6-9; the plain comparisons start at 10, the statistical readings at 13. */
 export const READING_CHART_GATES: Readonly<Record<ReadingChartKind, ChartGate>> = {
   'dot-plot': { bands: FROM_TEN, subjects: null }, // ranking many rows without a bar's ink
   dumbbell: { bands: FROM_TEN, subjects: null }, // before and after, or me and the class
@@ -112,33 +110,33 @@ export const chartDataSchema = z.object({
   unit: z.enum(['coins', 'local', 'percent', 'count', 'days', 'points']),
   categories: z.array(z.object({ id, label }).strict()).max(12).default([]),
   /** Up to three series: sky, mint and berry, each also carried by a pattern. */
-  series: z.array(z.object({ id, label, values: z.array(finite).max(12), /** F1.0 error bars: the half-width of each value's whisker. */ error: z.array(z.number().finite().min(0).max(1_000_000_000)).max(12).optional() }).strict()).max(3).default([]),
+  series: z.array(z.object({ id, label, values: z.array(finite).max(12), /** Error bars: the half-width of each value's whisker. */ error: z.array(z.number().finite().min(0).max(1_000_000_000)).max(12).optional() }).strict()).max(3).default([]),
   target: finite.optional(),
   bands: z.array(finite).max(3).optional(),
   points: z.array(z.object({ id, label, x: finite, y: finite, size: z.number().finite().positive().max(1_000_000).optional() }).strict()).max(30).optional(),
-  // GAP-FIX-R2: a hierarchy leaf's value (treemap, sunburst, icicle) and a node's lane (swimlane, a category id).
+  // A hierarchy leaf's value (treemap, sunburst, icicle) and a node's lane (swimlane, a category id).
   nodes: z.array(z.object({ id, label, kind: z.enum(['start', 'step', 'question', 'outcome']).optional(),
     value: z.number().finite().positive().max(1_000_000_000).optional(), lane: id.optional() }).strict()).max(16).optional(),
   links: z.array(z.object({ from: id, to: id, value: z.number().finite().positive().max(1_000_000_000).optional(), label: z.string().trim().min(1).max(20).optional() }).strict()).max(24).optional(),
   days: z.array(z.object({ date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/), value: z.number().int().min(0).max(1_000) }).strict()).max(42).optional(),
   icon_value: z.number().int().positive().max(1_000).optional(),
   stat: z.object({ value: finite, delta: finite.optional() }).strict().optional(),
-  /** GAP-FIX-R2 candlestick: open, high, low and close per period. */
+  /** Candlestick: open, high, low and close per period. */
   ohlc: z.array(z.object({ id, label, open: finite, high: finite, low: finite, close: finite }).strict()).max(20).optional(),
-  /** GAP-FIX-R2 box plot: the five-number summary per group. */
+  /** Box plot: the five-number summary per group. */
   boxes: z.array(z.object({ id, label, min: finite, q1: finite, median: finite, q3: finite, max: finite }).strict()).max(6).optional(),
-  /** GAP-FIX-R2 Venn: the count in each region, named by the category (set) ids it belongs to. */
+  /** Venn: the count in each region, named by the category (set) ids it belongs to. */
   regions: z.array(z.object({ sets: z.array(id).min(1).max(3), value: z.number().int().min(0).max(1_000_000) }).strict()).max(7).optional(),
-  /** F1.0 XY heatmap: the categories are the columns, `rows` the other axis, `cells` one value per column and row pair. */
+  /** XY heatmap: the categories are the columns, `rows` the other axis, `cells` one value per column and row pair. */
   rows: z.array(z.object({ id, label }).strict()).max(8).optional(),
   cells: z.array(z.object({ col: id, row: id, value: finite }).strict()).max(96).optional(),
-  /** F1.0 fan chart: nested ranges (a confidence level in percent) around the one central series, one low and high per category. */
+  /** Fan chart: nested ranges (a confidence level in percent) around the one central series, one low and high per category. */
   ranges: z.array(z.object({ level: z.number().int().min(50).max(99), low: z.array(finite).max(12), high: z.array(finite).max(12) }).strict()).max(2).optional(),
-  /** F1.0 density and violin plots: the raw sample of each group (the browser smooths it). */
+  /** Density and violin plots: the raw sample of each group (the browser smooths it). */
   samples: z.array(z.object({ id, label, values: z.array(finite).min(5).max(60) }).strict()).max(3).optional(),
-  /** F1.0 timeline: a day, or a span when `end` is set; calendar days, in date order. */
+  /** Timeline: a day, or a span when `end` is set; calendar days, in date order. */
   events: z.array(z.object({ id, label, date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/), end: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional() }).strict()).max(12).optional(),
-  /** F1.0 parallel coordinates: one record per line, one value per axis (the categories are the axes). */
+  /** Parallel coordinates: one record per line, one value per axis (the categories are the axes). */
   records: z.array(z.object({ id, label, values: z.array(finite).max(6) }).strict()).max(8).optional(),
 }).strict();
 export type ChartData = z.infer<typeof chartDataSchema>;
@@ -250,7 +248,7 @@ export function chartProblem(kind: ChartKind, data: ChartData): string | null {
   if (isReadingChart(kind) && [...data.categories, ...data.series, ...(data.rows ?? []), ...(data.samples ?? []), ...(data.events ?? []), ...(data.records ?? []), ...(data.points ?? [])].some((item) => item.label.startsWith('~'))) return 'a label does not start with ~';
   switch (kind) {
     case 'pie': case 'donut':
-      // Appendix A: a pie reads for at most five or six parts; more goes to a bar chart.
+      // A pie reads for at most five or six parts; more goes to a bar chart.
       if (n < 2 || n > 6 || data.series.length !== 1 || values.some((v) => v < 0) || values.reduce((a, b) => a + b, 0) <= 0) return 'a pie needs 2-6 non-negative parts of one series';
       return null;
     case 'waffle':
@@ -464,7 +462,7 @@ export function chartTable(kind: ChartKind, data: ChartData): ChartTableModel {
 export interface ChartTableModel { columns: string[]; rows: Array<{ id: string; cells: Array<string | number> }> }
 
 /*
- * F1.0: a column, a table cell or a read part name that starts with `~` is a
+ * a column, a table cell or a read part name that starts with `~` is a
  * word of the model ("change", "median", "low 80%"), not the author's copy: the
  * browser translates it (charts/readingWords.ts). Every other string is a
  * label the author wrote per locale, and chartProblem refuses a label that
@@ -598,7 +596,7 @@ export function valueExtent(kind: ChartKind, data: ChartData): [number, number] 
 }
 
 /*
- * Bible 05 §5 and 02 D1 (GAP-FIX-R3): a chart never shortens a word label.
+ * A chart never shortens a word label.
  * Words are HTML over the drawing and wrap; when there is no room the
  * renderer draws fewer labels and the Show-as-table rows carry every one.
  */

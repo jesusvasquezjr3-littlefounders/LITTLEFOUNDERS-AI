@@ -1,4 +1,4 @@
-// `arrange` family — payload/answer Zod schemas (LESSON_ENGINE.md §5.4, types 20–29).
+// `arrange` family — payload/answer Zod schemas (types 20–29).
 
 import { z } from 'zod'
 import {

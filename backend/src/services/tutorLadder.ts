@@ -5,11 +5,11 @@ import { pickLessonLocale, stripAnswers } from './lessonDocument.js';
 import { findPublishedPack } from './tutorData.js';
 
 /*
- * The three-tier content ladder (/ORACLE.md §7).
+ * The three-tier content ladder.
  *
  *   tier 1  catalog  — a segment from a PUBLISHED lesson. Free, instant, and a
  *                      human approved it. This should carry most turns.
- *   tier 2  bank     — a curated activity pack (C.6): hand-authored or
+ *   tier 2  bank     — a curated activity pack: hand-authored or
  *                      generated offline by Forge, checked against the
  *                      tutor-pack.v1 contract (services/tutorPacks.ts) and
  *                      PUBLISHED BY A HUMAN. Personalization happens at
@@ -21,7 +21,7 @@ import { findPublishedPack } from './tutorData.js';
  *                      verification means re-running the real graders and the
  *                      real graders live on this side of the boundary. Its
  *                      governance (a calibrated judge, risk-scaled dynamic
- *                      staff sampling, the Stage 7 suspension) is C.5's:
+ *                      staff sampling, the suspension) lives in
  *                      services/pedagogy/liveContentGovernance.ts.
  *
  * WHY VERIFICATION IS HERE AND GENERATION IS NOT. Oracle holds the model, the
@@ -113,7 +113,7 @@ export async function resolveSkill(skillKey: string): Promise<ResolvedSkill | nu
 
 /**
  * Orders candidates for both tier 1 and tier 2: difficulty distance, with an
- * optional TYPE preference (ROADMAP.md V4 sprint 2 backlog) tried first.
+ * optional TYPE preference (V4 sprint 2 backlog) tried first.
  *
  * A hard filter would have been the wrong shape — most skills have no
  * `interest_peek`/`number_line` segment yet, and refusing to serve anything
@@ -244,7 +244,7 @@ export async function serveFromBank(input: {
     lessonId: null,
     segment: chosen,
     answer: shape.answers?.[chosen.id] ?? (chosen as { answer?: Record<string, unknown> }).answer ?? null,
-    // C.6: which pack VERSION (and content) served this, so a defect found
+    // Which pack VERSION (and content) served this, so a defect found
     // later is traceable to every learner who saw that exact text. Absent
     // on a row stored before the curated-pack migration.
     provenance: {
@@ -263,7 +263,7 @@ export async function serveFromBank(input: {
 
 export interface VerificationResult {
   ok: boolean;
-  /** Whether the key survived re-execution — the gate on XP (/ORACLE.md §8). */
+  /** Whether the key survived re-execution — the gate on XP. */
   keyVerified: boolean;
   failures: string[];
 }
@@ -272,7 +272,7 @@ export interface VerificationResult {
  * Tier vocabulary bands, mirroring the Piaget gate Forge already applies.
  *
  * MIRRORS `TIER_FORBIDDEN` in oracle/src/tutor/prompt.ts byte-for-byte in
- * intent — the two services share no library (§1.5), so this is a
+ * intent — the two services share no library, so this is a
  * deliberate copy. `/\d+,\d{2,}/` was added 2026-08-30 (adversarial
  * review, HIGH): pt-BR (and es-MX prose) writes a decimal with a COMMA, not
  * a period, and the period-only pattern let a decimal sail through on two
@@ -427,7 +427,7 @@ function collectProse(segment: SegmentBase): string {
  * Re-derives the answer with the REAL grader.
  *
  * `false` does not mean the segment is unusable — it means the segment cannot
- * pay XP (/ORACLE.md §8). A generated exercise whose key we cannot confirm
+ * pay XP. A generated exercise whose key we cannot confirm
  * still teaches; it simply must not be able to award progress the server could
  * not verify.
  */
@@ -491,7 +491,7 @@ function reExecuteKey(segment: SegmentBase, failures: string[]): boolean {
  * all without anything going red.
  *
  * Explicit per type, checked against the graders in
- * `backend/src/lesson-contract/families/*`, and pinned by a test.
+ * `backend/src/lesson-contract/families/*`.
  */
 export function submissionFromKey(segment: SegmentBase): unknown {
   const key = segment.answer as Record<string, unknown>;

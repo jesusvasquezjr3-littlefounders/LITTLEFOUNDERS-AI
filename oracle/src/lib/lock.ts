@@ -10,12 +10,12 @@ import { redisClient } from './redis.js';
  * `redis.ts`'s own header comment is a contract every caller relies on:
  * "Nothing here throws. Both helpers answer 'no' on any failure, and every
  * caller must treat 'no' as a MISS rather than as an error." That is exactly
- * right for a cache or a rate limiter (§1.14: an availability control fails
+ * right for a cache or a rate limiter (an availability control fails
  * OPEN, because a degraded limiter must never be able to take the platform
  * down) and exactly wrong for a lock, whose entire job is to be trustworthy
  * on failure — and there is no single right answer to "the store is
- * unreachable" that works for every lock. `oracle/AGENTS.md` item 79 /
- * `RUNBOOK.md` Round 119 found this precisely: retrofitting `redisGet`/
+ * unreachable" that works for every lock. 
+ * Retrofitting `redisGet`/
  * `redisSetEx` as-is into a lock would silently inherit "unreachable → miss →
  * proceed" (fail OPEN) without anyone deciding that was right for THIS
  * control. So this module reports what actually happened — acquired, held by
@@ -27,7 +27,7 @@ import { redisClient } from './redis.js';
  *
  * ── WHY A CLAIM HAS A TTL AND IS RENEWED, NOT HELD FOREVER ──────────────────
  *
- * Round 119 point 4: `oracle/railway.json`'s `restartPolicyMaxRetries: 10`
+ * `oracle/railway.json`'s `restartPolicyMaxRetries: 10`
  * treats crash-and-restart as routine, and TODAY a crash simply erases the
  * crashed process's in-memory state with it, so a legitimate resume against
  * the freshly-restarted (necessarily empty) process succeeds immediately. A
@@ -53,8 +53,7 @@ import { redisClient } from './redis.js';
  * fire on, because there is no network partition to have. The REDIS-BACKED
  * functions are exported on their own (`redisAcquireLock`/`redisRenewLock`/
  * `redisReleaseLock`) precisely so they can be unit-tested directly against a
- * mocked `lib/redis.js`, the same way `speech.test.ts` already does — see
- * `lock.test.ts`.
+ * mocked `lib/redis.js`, .
  */
 
 const COMMAND_TIMEOUT_MS = 250;
@@ -111,8 +110,8 @@ export async function redisAcquireLock(key: string, ttlMs: number): Promise<Lock
  * make "check the owner, THEN act" atomic (a plain GET-then-SET/DEL from JS
  * has a window in which a DIFFERENT owner could legitimately acquire the key
  * in between, and the second command would then stomp THEIR claim instead of
- * ours — see `lock.test.ts`'s "never touches a different owner's claim"
- * tests, verified against a real Redis before this shipped). `ttlMs > 0`
+ * ours).
+ *  `ttlMs > 0`
  * means renew (extend); `ttlMs === 0` means release (delete). One script
  * halves the surface area to get right rather than two nearly-identical ones.
  */

@@ -1,4 +1,4 @@
-/* F2.15 schedule board: task rows by period or step, arrows for what must come first, and kanban columns. Words are HTML; the SVG keeps numerals. Tokens only. */
+/* Schedule board: task rows by period or step, arrows for what must come first, and kanban columns. Words are HTML; the SVG keeps numerals. Tokens only. */
 .lf-sched-drawing { max-inline-size: 24rem; }
 .lf-sched-chart text { fill: var(--content); font-size: 18px; font-weight: 700; }
 .lf-sched-grid { stroke: var(--outline); stroke-width: 1; }

@@ -11,27 +11,27 @@ import { ConsoleLink, CopyId, Facts, LoadFailure, Loading, Metrics, ShareBars, s
 import { fill, labelOf, useConsoleCopy } from './staffConsoleCopy';
 
 /*
- * S10 Roles & Access (superadmin only: the route guard, the staff navigation
+ * Roles & Access (superadmin only: the route guard, the staff navigation
  * and Core's superadminOnly on every /admin/roles path).
  *
- *   - A.5: granting the parent role (the Tutor) needs a justification of
+ *   - Granting the parent role (the Tutor) needs a justification of
  *     10-200 characters; Core refuses the grant without it and writes it to
  *     its own audit row, so a staff-granted Tutor can always be explained.
- *     OD-3 section 2: an account whose age record is a minor's (kid role,
+ *     An account whose age record is a minor's (kid role,
  *     under-13 origin, declared band under 18) is refused by the database
- *     (409 AGE_RECORD_MINOR); the notice points to the E.4 age-correction
+ *     (409 AGE_RECORD_MINOR); the notice points to the age-correction
  *     queue, the only place that record changes.
- *   - G.1: the four staff grants are switches only for an admin, the one role
+ *   - The four staff grants are switches only for an admin, the one role
  *     they restrict. A superadmin opens every section, so no switch is shown
  *     for them: a label that restricts nothing is never displayed.
- *   - G.4 (Appendix N 1.1): the access-review card lists the elevated grants
+ *   - The access-review card lists the elevated grants
  *     past their 90-day review (admin and superadmin roles and the four staff
  *     permissions, never a family role), aged from the later of the grant and
  *     its last kept review. "Keep access" records the review (audited by
  *     Core in the same transaction); the card shows the on-time share and the
  *     stale count from the review log. Removing an elevated grant here is
  *     also a review decision: Vault's revoke_staff_grant records 'revoked'
- *     in that log, with this superadmin as the audit actor (GAP-FIX-R5).
+ *     in that log, with this superadmin as the audit actor.
  *
  * Removing a role is destructive and always behind a keep-first confirmation.
  * The database's role triggers are the last word: a refusal says so.

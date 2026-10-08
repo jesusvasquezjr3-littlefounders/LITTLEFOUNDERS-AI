@@ -2,7 +2,7 @@ name: NSM weekly export
 
 # Weekly RAW export of the events the North Star Metric is computed from
 # (lesson_complete, parent_report_viewed, badge_generated, badge_shared,
-# badge_link_click — /AGENTS.md-adjacent ROADMAP entry, growth workstream).
+# badge_link_click-adjacent ROADMAP entry, growth workstream).
 # Read-only against Vault: database/scripts/export-nsm-weekly.sh runs one
 # `\copy ... TO STDOUT` over the same railway-ssh mechanism
 # insights-maintenance.yml uses nightly, never a write.
@@ -10,7 +10,7 @@ name: NSM weekly export
 # Mechanics mirror insights-maintenance.yml deliberately: one `railway ssh`
 # per command with args as distinct tokens (never a quoted script string —
 # Railway space-joins and the remote re-parses), SSH key + config written the
-# same way, and failures printed rather than swallowed (§1.14 / §1.0 rule 5).
+# same way, and failures printed rather than swallowed.
 #
 # Output lands as a private, org-scoped GitHub Actions artifact — NOT
 # committed, NOT public. This is the one part of this job that is a genuine

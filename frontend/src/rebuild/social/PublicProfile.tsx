@@ -13,30 +13,29 @@ import '../account/account.css';
 import './people.css';
 
 /*
- * P6, ANOTHER PERSON'S PROFILE at /@username (Product 10 Block E; Frontend
- * Bible 02 §4.5, §9.8; 06; 07).
+ * ANOTHER PERSON'S PROFILE at /@username.
  *
- * Core decides everything this page may show and offer (E.1, E.5, E.8, E.13):
+ * Core decides everything this page may show and offer:
  *
- *   - `private`  an independent teen who has not accepted this viewer (E.8):
+ *   - `private`  an independent teen who has not accepted this viewer:
  *                only the handle the viewer typed, the cartoon avatar and the
  *                cover preset, a sentence that says the teen decides, and one
  *                way to ask (never for a child viewer: its Tutor manages its
  *                connections);
  *   - `full`     the name, handle, "member since", the Tutor pill exactly as
- *                Core's relationship-bound verdict says (E.5), progress and
+ *                Core's relationship-bound verdict says, progress and
  *                course badges; how this viewer may connect (follow, a request
  *                the child's Tutor or the teen decides, or the child viewer's
  *                "your Tutor handles your connections"); the followers and
  *                following lists as plain links with no number, in their own
- *                card away from the progress numbers (E.9).
+ *                card away from the progress numbers.
  *
- * E.13, minimised content: the page renders only the fields listed in the
+ * Minimised content: the page renders only the fields listed in the
  * view; nothing about a person's activity date, school, place or contact
- * exists here. E.10: there is no way to write to anyone. The report's
+ * exists here. There is no way to write to anyone. The report's
  * optional note goes to the safety team only, and the dialog says so.
- * E.3: Report and Block are on every profile but one's own; Block is behind
- * a confirmation that names its consequence (02 §9.8).
+ * Report and Block are on every profile but one's own; Block is behind
+ * a confirmation that names its consequence.
  *
  * Presentation only: the route owns the data and passes a view.
  */
@@ -49,16 +48,16 @@ export interface PublicPerson {
   memberSince: string | null;
   look: AvatarLook;
   cover: CoverId;
-  /** E.5: Core's verdict, shown exactly as served. */
+  /** Core's verdict, shown exactly as served. */
   tutor: boolean;
   stats: { streakDays: number; lessonsCompleted: number; xpPoints: number; minutesLearned: number };
   badges: { slug: string; title: string; completedAt: string | null }[];
 }
 
-/** `handle`: the viewer has no @username yet, and a teen decides only about someone it can identify (GAP-FIX-R8 social). */
+/** `handle`: the viewer has no @username yet, and a teen decides only about someone it can identify. */
 export type RequestStatus = 'idle' | 'saving' | 'pending' | 'failed' | 'cooldown' | 'limit' | 'connected' | 'review' | 'handle';
 
-/** How this viewer may connect, from Core's `connection` mode (E.1, E.8). */
+/** How this viewer may connect, from Core's `connection` mode. */
 export type ConnectView =
   | { kind: 'self' }
   | { kind: 'none' }
@@ -80,7 +79,7 @@ export function PublicProfile({ copy, reportCopy, locale, dark, ageBand, homeHre
   reportCopy: ReportCopy;
   locale: string;
   dark: boolean;
-  /** Set for a child viewer, so the youngest copy budget applies (06 §3.1). */
+  /** Set for a child viewer, so the youngest copy budget applies. */
   ageBand?: '6-9';
   /** Where "Go to Learn" leads when the profile is not available. */
   homeHref: string;
@@ -143,7 +142,7 @@ function Profile({ copy, reportCopy, locale, young, view, safety, onFollow, onUn
   </header>;
 
   const safetyCard = self ? null : <Card heading={copy.safetyTitle}>
-    {/* The youngest register leaves out the helper line: the two named buttons say it (06 §3.1 first view). */}
+    {/* The youngest register leaves out the helper line: the two named buttons say it (first view). */}
     {young ? null : <p data-copy-role="body">{copy.safetyBody}</p>}
     <div className="lf-account-actions">
       <ReportDialog copy={reportCopy} triggerLabel={copy.report} onSend={onReport} />
@@ -157,7 +156,7 @@ function Profile({ copy, reportCopy, locale, young, view, safety, onFollow, onUn
   </Card>;
 
   if (!person) {
-    // E.8: a private teen. Nothing but the handle, the cartoon avatar and the cover is on the wire.
+    // A private teen. Nothing but the handle, the cartoon avatar and the cover is on the wire.
     return <>
       {hero}
       <DashboardLayout primary={<Card heading={copy.privateTitle}><p data-copy-role="body">{copy.privateBody}</p></Card>} secondary={safetyCard} />
@@ -188,14 +187,14 @@ function Profile({ copy, reportCopy, locale, young, view, safety, onFollow, onUn
           <div className="lf-profile-badge-text">
             <p className="lf-profile-badge-title ugc" data-copy-role="data">{badge.title}</p>
             {/* The youngest register shows the badge and its name only: the earned date is not first-view
-                copy a 6-9 reader needs (06 §3.1), and the art already says it was earned. */}
+                copy a 6-9 reader needs, and the art already says it was earned. */}
             {young ? null : <p className="lf-account-muted" data-copy-role="body">{badge.completedAt && Number.isFinite(Date.parse(badge.completedAt))
               ? copy.badgeEarned.replace('{date}', day.format(new Date(badge.completedAt))) : copy.badgeEarnedUndated}</p>}
           </div>
         </li>)}
       </Stagger>}
   </Card>;
-  // E.9: the lists stay reachable, with no number, away from the progress block.
+  // The lists stay reachable, with no number, away from the progress block.
   const people = <Card heading={copy.peopleTitle}>
     <div className="lf-account-actions">
       <AppLink href={`/@${person.username}/followers`} onNavigate={onNavigate}>{copy.followers}</AppLink>

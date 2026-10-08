@@ -35,8 +35,7 @@ export const CLIP_LIBRARY_URL = sceneAssetUrl('clips-biped.glb');
 
 /**
  * Clips that loop. Must agree with LOOPING in `scripts/author-clips.py` and
- * with LOOPING_ACTIONS in `characterActions.ts` — three sources, one truth,
- * and the test below is what keeps them from drifting.
+ * with LOOPING_ACTIONS in `characterActions.ts` — three sources, one truth.
  */
 export const LOOPING_CLIPS: ReadonlySet<string> = new Set(['idle', 'celebrate', 'dance']);
 

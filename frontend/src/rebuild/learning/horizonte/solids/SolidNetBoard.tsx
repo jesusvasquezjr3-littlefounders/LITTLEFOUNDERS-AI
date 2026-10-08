@@ -33,7 +33,7 @@ function SolidAreaBoard(props: Omit<HorizonteBoardProps, 'segment'> & { segment:
 }
 
 /*
- * F4.2 for the solids that are not cubes: one segment type, three modes. The payload is read and the solid and net are built once here,
+ * For the solids that are not cubes: one segment type, three modes. The payload is read and the solid and net are built once here,
  * so a segment the model cannot build renders nothing rather than a broken board; Core re-validates the same payload on every grade.
  */
 export default function SolidNetBoard(props: HorizonteBoardProps) {

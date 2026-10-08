@@ -1,7 +1,7 @@
 import type { DashboardSignal, MentorQualityDashboardData, OwnerRole, SignalCategory, SignalReading, SignalStatus } from './mentorQualityApi';
 
 /*
- * C.24 preview fixtures for the isolated staff surface (`?screen=staff-mentor-quality`).
+ * Preview fixtures for the isolated staff surface (`?screen=staff-mentor-quality`).
  * The signal list mirrors Core's registry (id, category, owner, whether it is
  * instrumented); the readings are invented to show every status the surface
  * must render. No real learner, no real number.
@@ -101,7 +101,7 @@ const READINGS: Record<string, [SignalStatus, number | null, number]> = {
   'engagement.autonomy_adoption': ['insufficient_data', null, 0],
 };
 
-/** GAP-FIX-R4 (Appendix C 1.1): the per-KC / window and per-age-band rows the dashboard lists. */
+/** The per-KC / window and per-age-band rows the dashboard lists. */
 const BREAKDOWNS: Record<string, { rows: SignalReading['breakdown']; detail?: SignalReading['detail'] }> = {
   'learning.delayed_retention': {
     detail: { baselineRelease: '2026.09.1' },
@@ -112,7 +112,7 @@ const BREAKDOWNS: Record<string, { rows: SignalReading['breakdown']; detail?: Si
       { key: 'kc:entrepreneurship.pricing-a-product/days:30', value: 0.77, sample: 38, status: 'ok' },
     ],
   },
-  // GAP-FIX-R7 (Appendix C 1.1, B.9): coverage next to the resurfacing rate, release-1 baseline.
+  // Coverage next to the resurfacing rate, release-1 baseline.
   'learning.decision_journal': {
     detail: { decisionsMade: 176, decisionsJournaled: 158, coverage: 0.8977, coverageBaseline: 'release-1' },
     rows: [

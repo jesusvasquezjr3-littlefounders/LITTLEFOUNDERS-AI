@@ -66,7 +66,7 @@ export function stateOf(placement: ReadonlyMap<string, string>, pieces: readonly
 
 export const untouched = (placement: ReadonlyMap<string, string>, pieces: readonly ArrangePiece[]): boolean => pieces.every((piece) => placement.get(piece.id) === piece.home);
 
-/** A rubric as the F0.3 arrangement shape holds it: one to eight solutions, each slot a list of class ids; null when malformed. */
+/** A rubric as the arrangement shape holds it: one to eight solutions, each slot a list of class ids; null when malformed. */
 export function readSolutions(rubric: unknown, slotIds: readonly string[]): Solution[] | null {
   if (!isRecord(rubric) || !exactKeys(rubric, ['solutions'], ['ordered']) || !Array.isArray(rubric.solutions) || (rubric.ordered !== undefined && rubric.ordered !== false)) return null;
   if (rubric.solutions.length < 1 || rubric.solutions.length > MAX_SOLUTIONS) return null;
@@ -84,7 +84,7 @@ export function readSolutions(rubric: unknown, slotIds: readonly string[]): Solu
   return solutions;
 }
 
-/** The F0.3 arrangement grade of a class-level state against a rubric whose solutions name classes, not pieces. */
+/** The arrangement grade of a class-level state against a rubric whose solutions name classes, not pieces. */
 export function gradeClasses(state: ClassState, classIds: readonly string[], slotIds: readonly string[], rubric: unknown): V2Grade {
   const slots = Object.fromEntries(slotIds.filter((slot) => (state[slot] ?? []).length > 0).map((slot) => [slot, [...state[slot]!]]));
   return gradeArrangement({ slots }, rubric, {

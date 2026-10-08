@@ -1,4 +1,4 @@
-// npm run v2:emit — the zero-spend v2 lesson dry-run (S05.4c; OD-17, OD-23).
+// npm run v2:emit — the zero-spend v2 lesson dry-run.
 //
 //   npm run v2:emit                                  fixture plans → runs/v2-emit/<run>/
 //   npm run v2:emit -- --plans <dir> --out <dir> --run-id <id>

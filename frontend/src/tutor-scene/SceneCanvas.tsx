@@ -185,7 +185,7 @@ export function SceneCanvas({ children, className, onStats, onSettings, camera, 
    * canvas had been sized at a wide viewport, the column could never get
    * narrower again. Growing a window worked; SHRINKING one left the canvas
    * stuck at its old width and pushed a horizontal scrollbar onto the page,
-   * which /DESIGN.md and /AGENTS.md §1.11 forbid outright. It reproduced every
+   * which the design rules forbid outright. It reproduced every
    * time: 1540 px viewport → 659 px left a 760 px canvas and a 780 px document.
    *
    * A phone rotating to portrait is the same event.
@@ -232,7 +232,7 @@ export function SceneCanvas({ children, className, onStats, onSettings, camera, 
         /*
          * `preserveDrawingBuffer` IN DEV ONLY, so the stage can be screenshotted.
          *
-         * /AGENTS.md §1.11 requires every UI change to be verified in-browser at
+         * Every UI change must be verified in-browser at
          * 375 px and 1280 px WITH SCREENSHOTS, and on this project looking has
          * repeatedly found what the tests missed. Without this flag WebGL clears
          * the drawing buffer on composite, so `canvas.toDataURL()` returns a

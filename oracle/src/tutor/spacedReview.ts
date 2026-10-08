@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 /*
- * C.11: the two-tier spaced-review router (Appendix D §2.4).
+ * The two-tier spaced-review router.
  *
  * Two distinct problems, two distinct mechanisms, and one explicit rule that
  * decides which of them owns a given wrong answer:
@@ -18,7 +18,7 @@ import { z } from 'zod';
  *   CROSS-SESSION TIER (Core, `backend/src/services/pedagogy/fsrs.ts`). The
  *   existing activation/half-life-style memory card per (learner, KC):
  *   stability grows as successful SPACED reviews accumulate. Core's half of
- *   C.11 stops massed in-session repetition from inflating that interval
+ *   this feature stops massed in-session repetition from inflating that interval
  *   (the short-horizon rule), and applies this router's hand-offs at close.
  *
  * THE DECISION RULE (`routeWrongAnswer`): keep the answer in-session only when
@@ -28,7 +28,7 @@ import { z } from 'zod';
  * spaced sequence into the last minutes of a session about to hit its cap.
  * The rule is pure and deterministic, its inputs are recorded on every
  * decision, and Core re-evaluates it over the recorded inputs (Spaced-Review
- * Routing Accuracy, Appendix F §1.1) — so a misroute is a visible,
+ * Routing Accuracy) — so a misroute is a visible,
  * re-computable fact, never a judgement call.
  *
  * WHAT IT NEVER DOES. It never grades, never changes mastery, and never reads
@@ -38,17 +38,16 @@ import { z } from 'zod';
  * orchestrator when this router says an item is due and no higher directive
  * owns the turn.
  *
- * Every number below is PROPOSED, pending calibration: see
- * docs/rebuild/mentor/THRESHOLD-RECALIBRATION-LOG.md (C.11 rows). Core's copy
- * of the rule (`services/pedagogy/spacedReview.ts`) is kept identical by
- * `npm run review-calibration:check`.
+ * Every number below is PROPOSED, pending calibration.
+ * Core's copy
+ * of the rule (`services/pedagogy/spacedReview.ts`) is hand-mirrored.
  */
 
 export const SPACED_REVIEW_RULE_VERSION = 'c11.v1';
 export const SPACED_REVIEW_MODES = ['act', 'shadow', 'off'] as const;
 export type SpacedReviewMode = (typeof SPACED_REVIEW_MODES)[number];
 
-/** The stricter of the operator's switch and Core's Stage 7 verdict (off > shadow > act). */
+/** The stricter of the operator's switch and Core's verdict (off > shadow > act). */
 export function strictestSpacedReviewMode(operator: SpacedReviewMode, core: 'act' | 'shadow'): SpacedReviewMode {
   if (operator === 'off') return 'off';
   return operator === 'shadow' || core === 'shadow' ? 'shadow' : 'act';
@@ -127,7 +126,7 @@ export interface RoutingInput {
   queued: number;
 }
 
-/** THE decision rule (Appendix D §2.4). Pure; Core re-evaluates it over the recorded inputs. */
+/** THE decision rule. Pure; Core re-evaluates it over the recorded inputs. */
 export function routeWrongAnswer(
   input: RoutingInput,
   t: SpacedReviewThresholds = SPACED_REVIEW_THRESHOLDS,

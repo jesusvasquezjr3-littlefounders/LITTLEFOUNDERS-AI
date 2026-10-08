@@ -2,11 +2,11 @@ import { z } from 'zod';
 import { requestStillActionable, serviceRest, serviceRestRaw } from './supabaseRest.js';
 
 /*
- * E.8 — the age-tiered social layer, Core side.
+ * The age-tiered social layer, Core side.
  *
  * The tier is decided by the database (public.social_tier, migration
  * social_age_tiers) from service-owned age evidence, never from anything the
- * caller says about itself and never from the role alone (OD-3: every minor
+ * caller says about itself and never from the role alone (every minor
  * safeguard follows age):
  *
  *   guardian  parent-created child, or a linked under-13 origin: strictest
@@ -17,7 +17,7 @@ import { requestStillActionable, serviceRest, serviceRestRaw } from './supabaseR
  * Core asks the same function the database's own follow trigger and
  * visibility policy use, so the two cannot disagree about who is who. A
  * failed or malformed read is null, and every caller treats null as "no
- * access" (§1.14: an unreadable tier must not become an adult).
+ * access" (an unreadable tier must not become an adult).
  */
 
 export const SOCIAL_TIERS = ['guardian', 'teen', 'adult', 'closed'] as const;
@@ -118,7 +118,7 @@ export async function getPendingTeenRequests(subjectId: string, offset: number):
 export const TEEN_REQUEST_CLOSED = ['declined', 'removed', 'withdrawn'] as const;
 
 /**
- * E.3 from the teen's own queue (GAP-FIX-R5 social, D-19): the requester of a
+ * From the teen's own queue: the requester of a
  * request addressed to THIS session that the teen may report or block,
  * whatever the requester's profile visibility: pending, or closed without a
  * connection in the last 30 days. 'not-found' for anything else (someone
@@ -152,7 +152,7 @@ export async function hasPendingTeenRequest(requesterId: string, subjectId: stri
 export interface OwnConnection { follower: boolean; following: boolean; teenAccepted: boolean }
 
 /**
- * E.3 and E.8 by user id (GAP-FIX-R8 social): how `otherId` is connected to
+ * By user id: how `otherId` is connected to
  * the session. `follower` (they follow the session), `following` (the session
  * follows them) and `teenAccepted` (an accepted teen consent in either
  * direction). The session's own id routes act only on such a connection, so an
@@ -203,7 +203,7 @@ export const SocialSafetyMetrics = z.object({
 }).strict();
 export type SocialSafetyMetrics = z.infer<typeof SocialSafetyMetrics>;
 
-/** Appendix J counts (E.8 tier coverage, E.13 review coverage). Counts only; a malformed answer is a failure. */
+/** Counts (tier coverage, review coverage). Counts only; a malformed answer is a failure. */
 export async function readSocialSafetyMetrics(): Promise<SocialSafetyMetrics | null> {
   const parsed = SocialSafetyMetrics.safeParse(await serviceRest<unknown>('/rpc/social_safety_metrics', { method: 'POST', body: '{}' }));
   return parsed.success ? parsed.data : null;

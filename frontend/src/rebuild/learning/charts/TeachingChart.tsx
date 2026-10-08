@@ -8,15 +8,14 @@ import './charts.css';
 const ReadingPlot = lazy(() => import('./readingCharts'));
 
 /*
- * B.7 part 1 (GAP-FIX-R1 learning; Appendix A Part 1; Bible 05 V1/V6): the
- * in-house SVG teaching charts. Every kind draws from the canonical chart
+ * The in-house SVG teaching charts. Every kind draws from the canonical chart
  * model Core validated (chartModel.generated.ts), so the drawing, the
  * Show-as-table rows and the accessible description carry the same numbers.
  * Each chart is one role="img" with a name and a description, can be read as
  * a table, draws up to three series in sky, mint and berry with a pattern as
  * a second channel (solid, stripes, dots). No stock chart library, no animation.
  *
- * GAP-FIX-R3 (Bible 02 D1 and rule 1; 05 §5): words are never cut. Every word
+ * Words are never cut. Every word
  * label (categories, lanes, nodes, bones, point labels) is HTML placed over
  * the SVG in the viewBox's proportions, at caption size, and wraps within the
  * room its mark gives it. The SVG carries marks, numerals and single symbols
@@ -98,7 +97,7 @@ export function TeachingChart({ kind, data, title, locale, embedded = false }: {
     </table> : reading ? <Suspense fallback={<div className="lf-chart-plot" aria-busy="true" data-copy-role="data"><div className="lf-chart-canvas" /></div>}>
       <ReadingPlot kind={kind as ReadingChartKind} data={data} title={title} locale={locale} id={id} description={facts} />
     </Suspense> : <div className="lf-chart-plot" role="img" aria-label={title} aria-describedby={`${id}-desc`} data-copy-role="data">
-      {/* 05 §5: words are HTML over the SVG (`labels`), the SVG itself carries marks, numerals and symbols. */}
+      {/* Words are HTML over the SVG (`labels`), the SVG itself carries marks, numerals and symbols. */}
       <div ref={canvas} className="lf-chart-canvas"><svg viewBox={`0 0 ${W} ${H}`} aria-hidden="true" focusable="false"><Patterns prefix={id} />{drawing}</svg>
         {labels.map((label) => <ChartLabel key={label.key} label={label} />)}</div>
       <p id={`${id}-desc`} className="lf-visually-hidden">{facts}</p>
@@ -164,7 +163,7 @@ export function useFittedTags(canvas: React.RefObject<HTMLDivElement>) {
     const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(fit);
     observer?.observe(host);
     void document.fonts?.ready.then(fit);
-    // GAP-FIX-R4 (WCAG 1.4.12): a user style sheet that widens letter or word spacing changes no box size, so a
+    // WCAG 1.4.12: a user style sheet that widens letter or word spacing changes no box size, so a
     // style added to the page (or a style on the root) re-measures the labels too.
     const styles = typeof MutationObserver === 'undefined' ? null : new MutationObserver(fit);
     styles?.observe(document.head, { childList: true, subtree: true, characterData: true });
@@ -341,13 +340,13 @@ function draw(kind: ChartKind, data: ChartData, prefix: string, locale: Locale, 
   }
 }
 
-/* ── GAP-FIX-R2 (B.7 part 1): the remaining Appendix A situational kinds ─── */
+/* ── The remaining situational kinds ─── */
 
 function situational(kind: ChartKind, data: ChartData, prefix: string, extent: [number, number], out: Tags): ReactNode {
   const n = Math.max(1, data.categories.length);
   switch (kind) {
     case 'candlestick': {
-      // A rising candle is hollow with the sky outline, a falling one filled berry: never colour alone (05 §2).
+      // A rising candle is hollow with the sky outline, a falling one filled berry: never colour alone.
       const rows = data.ohlc ?? []; const band = (W - 2 * PAD) / Math.max(1, rows.length);
       return <>{rows.map((r, i) => { const x = PAD + (i + 0.5) * band; const up = r.close >= r.open;
         const top = scaleY(Math.max(r.open, r.close), extent); const bottom = scaleY(Math.min(r.open, r.close), extent);
@@ -458,7 +457,7 @@ function swimlane(data: ChartData, out: Tags): ReactNode {
   const box = { w: 64, h: Math.min(32, laneH - 6) }; const colW = (W - 70 - box.w) / Math.max(1, nodes.length - 1);
   const at = (id: string) => { const node = nodes.find((item) => item.id === id)!; const lane = lanes.findIndex((l) => l.id === node.lane);
     return { x: 62 + order.get(id)! * colW, y: 4 + lane * laneH + laneH / 2 - box.h / 2 }; };
-  // The lane bands are the ground the steps sit on, not data marks (05 §2): decoration for the board audit.
+  // The lane bands are the ground the steps sit on, not data marks: decoration.
   return <>{lanes.map((lane, i) => <g key={lane.id}><rect x={2} y={4 + i * laneH} width={W - 4} height={laneH - 2} className="lf-chart-lane" data-board-decoration="lane" />
     {tag(out, { key: `lane:${lane.id}`, text: lane.label, x: 6, y: 4 + i * laneH + laneH / 2, room: 52, align: 'start', lines: Math.max(1, Math.floor((laneH - 4) / 15)) })}</g>)}
     {links.map((l, i) => { const a = at(l.from); const b = at(l.to);

@@ -11,7 +11,7 @@ import es from '@/i18n/es-MX/rebuild-profile.json';
 import pt from '@/i18n/pt-BR/rebuild-profile.json';
 
 /*
- * Product 10 E.6's one public deletion screen, on the rebuild design system.
+ * The one public deletion screen, on the rebuild design system.
  *
  *  - Signed in with a scheduled deletion (RequireAuth sends every app route
  *    here): the date, "Keep account" (Core cancels and audits it) and
@@ -22,9 +22,6 @@ import pt from '@/i18n/pt-BR/rebuild-profile.json';
  *  - Anything else (a direct visit): back to the app or to sign-in.
  *
  * It renders on the standalone single-state screen (app-shell/StandaloneState).
- *
- * Deliberately NOT named *Page.tsx: the AuthRecipe gate scans that suffix
- * for the login/signup trust-surface recipe, which this state screen is not.
  */
 
 type Handoff = { deletion?: { kind: 'scheduled'; scheduledFor: string } | { kind: 'deleted'; finishing: boolean } };
@@ -60,7 +57,7 @@ export function AccountDeletionStatus() {
     view = { kind: 'scheduled', status: accountDeletion.status, scheduledFor: accountDeletion.scheduledFor, signedOut: false, keeping, keepFailed };
   }
   // A signed-in visit (a reload, a bookmark) waits for Core's /auth/me: the scheduled deletion is only known after
-  // it, and leaving before then sent the holder to the public landing page (GAP-FIX-R4, found by the audit).
+  // it, and leaving before then sent the holder to the public landing page.
   if (!view && session && !meLoaded) return null;
   if (!view) return <Navigate to={session ? '/' : '/login'} replace />;
 

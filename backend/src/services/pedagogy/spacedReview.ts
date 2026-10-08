@@ -1,7 +1,6 @@
 /*
- * Core's half of Product C.11 — the two-tier spaced review (Appendix D §2.4),
- * instrumented for Appendix F §1.1 (Spaced-Review Routing Accuracy) and
- * Part 3 Stage 7.
+ * Core's half of the two-tier spaced review,
+ * instrumented for Spaced-Review Routing Accuracy and its rollback.
  *
  *   1. THE ROUTING LOG. Oracle's router (`oracle/src/tutor/spacedReview.ts`)
  *      reports every routing decision at close, WITH the inputs the rule read.
@@ -14,16 +13,16 @@
  *      cross-session scheduler: its memory card is made due no later than
  *      `handoffHours` after the close, so the NEXT session's plan brings it
  *      back as review debt (`sessionPlan.ts`). The card is only ever brought
- *      FORWARD, never pushed later. The other half of the scheduler's C.11
+ *      FORWARD, never pushed later. The other half of the scheduler's
  *      change is the short-horizon rule in `fsrs.ts`.
  *   3. THE AUDIT. The rule is pure and mirrored here (`routeWrongAnswer`,
- *      kept identical to Oracle's by `npm run review-calibration:check`), so
+ *      kept identical to Oracle's by hand), so
  *      every recorded decision can be RE-EVALUATED from its recorded inputs:
  *      a decision the rule does not reproduce is a misroute, visible and
  *      countable. The quarterly spot check (`npm --prefix backend run
  *      tutor:spaced-review-report -- --sample=N`) draws a reproducible sample
  *      for the human auditor beside the automatic re-evaluation.
- *   4. STAGE 7. The automatic rollback: a recorded decision the rule does not
+ *   4. ROLLBACK. The automatic rollback: a recorded decision the rule does not
  *      reproduce (a bug — the Routing Accuracy target is "no systematic
  *      misrouting"), or within-session routings that mostly never get their
  *      re-check before the session ends (the budget prediction failing
@@ -31,8 +30,7 @@
  *      shadow (decisions recorded, no re-check detours, no hand-offs) until an
  *      operator records the resolution.
  *
- * Every threshold is PROPOSED, pending calibration:
- * docs/rebuild/mentor/THRESHOLD-RECALIBRATION-LOG.md (C.11 rows).
+ * Every threshold is PROPOSED, pending calibration.
  */
 
 import crypto from 'crypto';
@@ -62,7 +60,7 @@ export type ReviewTier = (typeof REVIEW_TIERS)[number];
 export type RoutingReason = (typeof ROUTING_REASONS)[number];
 export type RoutingOutcome = (typeof ROUTING_OUTCOMES)[number];
 
-/** The rule's thresholds — identical to Oracle's `SPACED_REVIEW_THRESHOLDS` (parity-checked). */
+/** The rule's thresholds — identical to Oracle's `SPACED_REVIEW_THRESHOLDS`. */
 export const SPACED_REVIEW_THRESHOLDS = {
   nearThresholdFloor: 0.5,
   minTurnsRemaining: 8,
@@ -75,15 +73,15 @@ export const SPACED_REVIEW_THRESHOLDS = {
   maxDecisions: 40,
 } as const;
 
-/** Core-only operational numbers (Stage 7, the hand-off). */
+/** Core-only operational numbers (rollback, the hand-off). */
 export const SPACED_REVIEW_OPERATIONS = {
   /** A handed-off KC is due again no later than this long after the close. */
   handoffHours: 12,
-  /** Stage 7: the latest act-mode decisions re-evaluated against the rule. */
+  /** The latest act-mode decisions re-evaluated against the rule. */
   complianceSample: 200,
-  /** Stage 7: the latest act-mode within-session decisions with a final outcome. */
+  /** The latest act-mode within-session decisions with a final outcome. */
   deliverySample: 100,
-  /** Stage 7: above this share of them ending without their re-check, the budget prediction is failing. */
+  /** Above this share of them ending without their re-check, the budget prediction is failing. */
   undeliveredCeiling: 0.5,
   killSwitchCacheMs: 10 * 60_000,
   /** Report: fewer decisions than this is "insufficient data", never "healthy". */
@@ -100,7 +98,7 @@ export interface RoutingInputs {
   queued_before: number;
 }
 
-/** THE decision rule, mirrored from Oracle (Appendix D §2.4). Pure. */
+/** THE decision rule, mirrored from Oracle. Pure. */
 export function routeWrongAnswer(
   input: RoutingInputs,
   t = SPACED_REVIEW_THRESHOLDS,
@@ -311,9 +309,9 @@ export function summarizeRouting(rows: RoutingRow[], t = SPACED_REVIEW_OPERATION
 }
 
 /**
- * The quarterly manual spot check (Appendix F §1.1): a REPRODUCIBLE sample of
+ * The quarterly manual spot check: a REPRODUCIBLE sample of
  * decisions (the same seed draws the same rows), stratified so both tiers are
- * represented, for a human to read against the Appendix D §2.4 rule.
+ * represented, for a human to read against the routing rule.
  */
 export function drawAuditSample(rows: RoutingRow[], size: number, seed: string): RoutingRow[] {
   const rank = (r: RoutingRow) =>
@@ -326,7 +324,7 @@ export function drawAuditSample(rows: RoutingRow[], size: number, seed: string):
   return out;
 }
 
-// ── 4. Stage 7 ───────────────────────────────────────────────────────────────
+// ── 4. Rollback ───────────────────────────────────────────────────────────────
 
 export const SPACED_REVIEW_KILL_SWITCH_TRIGGERED = 'mentor.kill_switch.spaced_review.triggered';
 export const SPACED_REVIEW_KILL_SWITCH_RESOLVED = 'mentor.kill_switch.spaced_review.resolved';
@@ -378,7 +376,7 @@ export { ROUTING_SELECT };
  * The kill-switch state for a new session's context (cached per process).
  * A trip in force → shadow; otherwise the condition is evaluated over the
  * decisions recorded after the latest resolution, and a trip is written to
- * `audit_logs` (counts only). A FAILED read is not evidence (§1.14): `act`
+ * `audit_logs` (counts only). A FAILED read is not evidence: `act`
  * with `degraded`, not cached.
  */
 export async function getSpacedReviewKillSwitch(now: Date = new Date(), t = SPACED_REVIEW_OPERATIONS): Promise<SpacedReviewKillSwitchState> {
@@ -422,7 +420,7 @@ export async function resolveSpacedReviewKillSwitch(note: string): Promise<boole
   return insertAuditLog(null, SPACED_REVIEW_KILL_SWITCH_RESOLVED, 'tutor', { component: 'spaced_review_router', note: note.slice(0, 500) });
 }
 
-/** The Kill-Switch Trigger Log for the router (Appendix F §1.3). */
+/** The Kill-Switch Trigger Log for the router. */
 export function spacedReviewKillSwitchLog(rows: AuditRow[]): {
   triggeredAt: string;
   causes: SpacedReviewKillSwitchCause[];
@@ -450,7 +448,7 @@ export function spacedReviewKillSwitchLog(rows: AuditRow[]): {
   return out;
 }
 
-// ── 5. the quarterly human spot check (Appendix F §1.1) ──────────────────────
+// ── 5. the quarterly human spot check ──────────────────────
 
 /** A completed human audit of a drawn sample, recorded by the auditor. */
 export const ROUTING_AUDIT_RECORDED = 'mentor.review_routing.quarterly_audit';

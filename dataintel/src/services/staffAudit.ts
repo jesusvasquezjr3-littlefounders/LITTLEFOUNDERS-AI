@@ -1,8 +1,8 @@
 import { query } from '../db/duckdb.js';
 
 /*
- * The ONE place allowed to read the physical `*_raw` tables (see
- * staff-exclusion.test.ts, which fails the build if any other service does).
+ * The ONE place allowed to read the physical `*_raw` tables (no other
+ * service may).
  *
  * Two jobs, both about trust rather than analysis:
  *
@@ -43,7 +43,7 @@ const num = (rows: CountRow[]): number => Number(rows[0]?.n ?? 0);
 /**
  * Null on any failure — the caller answers 502 rather than rendering a
  * confident "0% excluded", which would be indistinguishable from a filter that
- * has stopped working (§1.14).
+ * has stopped working.
  */
 export async function getStaffExclusionReport(windowDays: number): Promise<StaffExclusionReport | null> {
   try {

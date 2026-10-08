@@ -9,7 +9,7 @@ import { TtsCallBudget } from './ttsBudget.js';
 
 /*
  * Batch narration — OPERATOR-OPT-IN (AUDIOGEN_RUN_ON_START / narrate:all), a
- * paid action per /AGENTS.md BOUNDARIES. Narrates every published
+ * paid action. Narrates every published
  * lesson_documents row whose audio manifest is missing OR incomplete
  * (partial manifests are unversioned, so they re-enter this batch and only
  * their missing units are retried — succeeded units reuse by content hash).
@@ -23,7 +23,7 @@ import { TtsCallBudget } from './ttsBudget.js';
  * calls TTS, Depot, speech_assets, or a PATCH; it is the audio equivalent of
  * Forge's free catalog dry-run.
  *
- * OD-28 (owner review D-03): a paid batch refuses to start without the
+ * A paid batch refuses to start without the
  * owner-approved USD ceiling (`maxUsd`, `--max-usd <n>` on narrate:all,
  * AUDIOGEN_RUN_ON_START_MAX_USD for the start-up batch) and a configured
  * per-character price (AUDIOGEN_USD_PER_1K_CHARS) to enforce it with. The
@@ -34,7 +34,7 @@ export interface BatchNarrationOptions {
   dryRun?: boolean;
   /** Test/operator override; production uses AUDIOGEN_MAX_TTS_CALLS_PER_RUN. */
   maxTtsCalls?: number;
-  /** OD-28: the owner-approved USD ceiling. Required unless dryRun. */
+  /** The owner-approved USD ceiling. Required unless dryRun. */
   maxUsd?: number;
   /** Test/operator override; production uses AUDIOGEN_USD_PER_1K_CHARS. */
   usdPer1kChars?: number;
@@ -106,7 +106,7 @@ export async function runBatchNarration(
   deps: BatchNarrationDeps = DEFAULT_DEPS,
 ): Promise<BatchNarrationSummary> {
   const dryRun = options.dryRun === true;
-  // OD-28 (D-03): refuse before the pending query, so a refused run touches nothing.
+  // Refuse before the pending query, so a refused run touches nothing.
   const configuredPrice = dryRun || options.usdPer1kChars !== undefined ? undefined : getConfig().AUDIOGEN_USD_PER_1K_CHARS;
   const refusal = narrationSpendRefusal(options, configuredPrice);
   if (refusal) throw new Error(refusal);
@@ -159,7 +159,7 @@ export async function runBatchNarration(
     // every remaining row (Vault read + manifest PATCH + one noise failure per
     // un-cached unit — thousands of entries against a production set, burying
     // the real failures). Untouched rows stay pending; the skip is tallied
-    // once below so it is visible, never silent (§1.12). A row already inside
+    // once below so it is visible, never silent. A row already inside
     // narrateLesson when the budget runs dry keeps the per-unit behavior.
     if (ttsBudget && ttsBudget.exhausted) {
       summary.budgetSkippedLessons = pending.length - index;

@@ -11,7 +11,7 @@ import es from '@/i18n/es-MX/rebuild-profile.json';
 import pt from '@/i18n/pt-BR/rebuild-profile.json';
 
 /*
- * Product 10 E.6 in Settings: the legacy page mounts the rebuilt deletion
+ * Account deletion in Settings: the legacy page mounts the rebuilt deletion
  * surface as a self-contained block (no restyle of the legacy screen). This
  * wrapper only moves data: Core's GET decides the state, the POST decides
  * the outcome, and a malformed answer is "unavailable", never a guess.

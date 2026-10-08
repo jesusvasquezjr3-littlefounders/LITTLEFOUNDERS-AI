@@ -8,13 +8,10 @@ import type { KcState, SessionPlanEntry } from '../core/client.js';
  *
  * A parked session can be adopted by a DIFFERENT replica (`ws/parkStore.ts`),
  * so every mutable field below has to survive as plain JSON and come back
- * IDENTICAL. This is the part /AGENTS.md §1.14 warns loudest about: a field
+ * IDENTICAL. This is the part to be most careful about: a field
  * silently left out of the snapshot restores as its constructor default,
  * which looks like a perfectly healthy controller and is in fact a learner
- * whose struggle the tutor has just forgotten. `snapshot-fence.test.ts`
- * enumerates this class's real runtime fields and fails the moment one is
- * added without a decision recorded here, so omission is a broken build
- * rather than a quiet regression on somebody's reconnect.
+ * whose struggle the tutor has just forgotten.
  *
  * TWO fields are deliberately NOT in the snapshot, and both are constructor
  * arguments rather than session state: `plan` (the `SessionPlanEntry[]` Core
@@ -42,20 +39,20 @@ const ControllerSnapshotSchema = z
     celebratedKcIds: z.array(z.string()),
     masteryRevokedKcIds: z.array(z.string()),
     /*
-     * C.10: the corroborating-evidence chains. Defaulted rather than
+     * The corroborating-evidence chains. Defaulted rather than
      * required, like the orchestrator's `hintLadder`: a session parked by
      * the previous build has no chains and restores with empty ones, which
      * is the conservative direction — a fresh chain can only DELAY a
      * mastery or remediation decision by one observation, never fire one.
      */
     masteryEvidence: z.array(z.tuple([z.string(), z.number().int().min(0)])).default([]),
-    /* GAP-FIX-R2: correct answers the chain set aside, per KC (defaulted: an older snapshot recorded none). */
+    /* Correct answers the chain set aside, per KC (defaulted: an older snapshot recorded none). */
     discountedCorrect: z.array(z.tuple([z.string(), z.boolean(), z.boolean()])).default([]),
     remediationEvidence: z
       .array(z.tuple([z.string(), z.string().nullable(), z.number().int().min(0)]))
       .default([]),
     /*
-     * C.11: the in-session review detour (a spaced re-exposure of a plan KC
+     * The in-session review detour (a spaced re-exposure of a plan KC
      * the within-session tier brought back). Defaulted: a session parked by
      * the previous build has no detour open, which is exactly its state.
      */
@@ -71,22 +68,22 @@ export { ControllerSnapshotSchema };
 export type ControllerSnapshot = z.infer<typeof ControllerSnapshotSchema>;
 
 /**
- * C.10 — HOW MANY CONSECUTIVE QUALIFYING OBSERVATIONS the controller needs
+ * HOW MANY CONSECUTIVE QUALIFYING OBSERVATIONS the controller needs
  * before it executes either of its two most consequential moves: declaring
  * a knowledge component mastered (CELEBRATE/TRANSFER), or triggering
  * remediation/rescue (REMEDIATE/RESCUE).
  *
- * Two is the SPEC's number ("a minimum of two consecutive observations",
- * Product C.10) and is marked there as PROPOSED, PENDING DATA-DRIVEN
- * VALIDATION: it is recorded in the Block C Threshold Recalibration Log
- * (`docs/rebuild/mentor/THRESHOLD-RECALIBRATION-LOG.md`) and must be
+ * Two is the default ("a minimum of two consecutive observations")
+ * and is marked as PROPOSED, PENDING DATA-DRIVEN
+ * VALIDATION: it
+ * must be
  * recalibrated together with the compliance metric that watches it, never
  * separately. The operator can raise it, or roll individual knowledge
- * components back to the pre-C.10 single-observation baseline (Appendix F
- * Part 3 Stage 7, the Extended Mastery Engine kill switch), through
+ * components back to the single-observation baseline (
+ * the Extended Mastery Engine kill switch), through
  * `ControllerOptions` — never lower the default in code.
  *
- * WHY THE RULE EXISTS (Appendix D §2.6): with the mirror's slip at 0.10 a
+ * WHY THE RULE EXISTS: with the mirror's slip at 0.10 a
  * fully-mastered skill still misses one answer in ten, and with guess at
  * 0.20 a learner who does not know it hits one in five. A single response
  * is not evidence the controller may act on consequentially.
@@ -95,7 +92,7 @@ export const CORROBORATION_MIN_OBSERVATIONS = 2;
 
 /**
  * Below this pre-evidence belief a CORRECT answer is "surprising" — the
- * lucky-guess shape Appendix D §2.6 names. A surprising correct that also
+ * lucky-guess shape. A surprising correct that also
  * arrived too fast to have been read (the same self-calibrated latency test
  * `answeredWithoutReading` uses) is not trusted as mastery evidence: it
  * neither extends nor breaks the chain (Wise 2017: a rapid guess is
@@ -106,9 +103,9 @@ export const CORROBORATION_MIN_OBSERVATIONS = 2;
 const SURPRISING_CORRECT_BELOW = 0.5;
 
 /**
- * The Appendix F Stage 7 Extended Mastery Engine rollback in force for one
+ * The Extended Mastery Engine rollback in force for one
  * session: the UNION of the keys Core's automatic kill switch sends
- * (`corroborationRollbackKcKeys`, logged in Core's Kill-Switch Trigger Log)
+ * (`corroborationRollbackKcKeys`, logged in Core's audit log)
  * and the operator's manual TUTOR_CORROBORATION_ROLLBACK_KC_KEYS. `inPlan`
  * names the rolled-back KCs this session can actually decide on, so the
  * orchestrator logs a rollback exactly when it can change a decision.
@@ -131,23 +128,23 @@ export function corroborationRollback(
   return { keys, inPlan };
 }
 
-/** Operator configuration for the C.10 rule — see `CORROBORATION_MIN_OBSERVATIONS`. */
+/** Operator configuration for the rule — see `CORROBORATION_MIN_OBSERVATIONS`. */
 export interface ControllerOptions {
   /**
    * Integer in [2, 5]; out-of-range or non-integer values fall back to the
-   * default. Never 1: a single observation is exactly what C.10 forbids, and
+   * default. Never 1: a single observation is exactly what the corroboration rule forbids, and
    * the per-KC rollback below is the only sanctioned way back to it.
    */
   corroborationMinObservations?: number;
   /**
-   * `kcKey`s rolled back to the pre-C.10 single-observation baseline by the
-   * Appendix F Stage 7 kill switch, until root-caused: the union computed by
+   * `kcKey`s rolled back to the single-observation baseline by the
+   * kill switch, until root-caused: the union computed by
    * `corroborationRollback` (Core's automatic trip + the operator's env
    * list). Empty by default.
    */
   corroborationRollbackKcKeys?: readonly string[];
   /**
-   * C.7: questioning turns without progress after which SOCRATIC/FLUENCY
+   * Questioning turns without progress after which SOCRATIC/FLUENCY
    * degrade to FADED — 3 by default, lowered for a learner whose persistent
    * disposition profile shows early disengagement or an early "just tell
    * me" habit (`dispositionProfile.ts`). Integer in [1, 3]; anything else
@@ -159,10 +156,10 @@ export interface ControllerOptions {
 /**
  * The evidence behind a consequential decision, carried on the decision and
  * into the trajectory log so the Corroborating-Evidence Compliance Rate
- * (Appendix F §1.1) and the parent-facing explanation can read WHAT the
- * controller saw rather than only what it concluded (Appendix D §2.6:
+ * and the parent-facing explanation can read WHAT the
+ * controller saw rather than only what it concluded:
  * "moved on after 2 correct responses" is auditable, "the AI decided" is
- * not). Null on every non-consequential decision, and on a turn where a
+ * not. Null on every non-consequential decision, and on a turn where a
  * guardrail HELD the previous strategy instead of executing the proposal.
  */
 export interface DecisionEvidence {
@@ -172,7 +169,7 @@ export interface DecisionEvidence {
   /** The corroboration requirement in force for this KC at decision time. */
   required: number;
   /**
-   * GAP-FIX-R2 (Appendix D §2.6, C.10): whether any correct answer on this KC
+   * Whether any correct answer on this KC
    * this session was NOT counted as evidence — too fast to have been read (a
    * surprising correct), or given with the hint ladder's help. Shown to the
    * parent beside the count ("a quick answer did not count"). Filled in by
@@ -186,7 +183,7 @@ export type DiscountedEvidence = 'none' | 'too_fast' | 'hint_assisted' | 'too_fa
 export const DISCOUNTED_EVIDENCE = ['none', 'too_fast', 'hint_assisted', 'too_fast_and_hint_assisted'] as const;
 
 /*
- * The v3 pedagogical controller (/ORACLE.md, Tutor v3; blueprint §9).
+ * The v3 pedagogical controller.
  *
  * NOT a prompt — a policy. It receives state (the session plan Core computed,
  * the local mastery mirror, the events the server witnessed) and emits a
@@ -229,9 +226,9 @@ export function mirrorBktUpdate(pKnown: number, correct: boolean): number {
 }
 
 /**
- * C.8/C.12: the predicted probability of a CORRECT answer from a mastery
+ * The predicted probability of a CORRECT answer from a mastery
  * belief — P(L)(1 − slip) + (1 − P(L))·guess, on the mirror's own
- * parameters. A miss is "surprising" (Appendix D §2.5) when this is high.
+ * parameters. A miss is "surprising" when this is high.
  */
 export function predictedCorrectFrom(pKnown: number): number {
   const p = Math.min(1, Math.max(0, pKnown));
@@ -256,23 +253,23 @@ export interface ControllerDecision {
   idleNudgeMs: number;
   /**
    * How much silence, after the learner has actually spoken, means their turn
-   * is over — the blueprint's §6.2 turn policy, per strategy.
+   * is over — the turn policy, per strategy.
    */
   listenSilenceMs: number;
   /** The knowledge component this decision was ABOUT (null when none was active). */
   kcId: string | null;
-  /** C.10: what a consequential trigger rested on — see `DecisionEvidence`. */
+  /** What a consequential trigger rested on — see `DecisionEvidence`. */
   evidence: DecisionEvidence | null;
-  /** C.10: this decision's evidence withdrew a mastery declared earlier this session. */
+  /** This decision's evidence withdrew a mastery declared earlier this session. */
   masteryRevoked: boolean;
   /**
-   * C.11: the belief about `kcId` BEFORE this event's evidence — what the
+   * The belief about `kcId` BEFORE this event's evidence — what the
    * spaced-review router judges "close to the mastery threshold" against.
    * Null when no KC was active.
    */
   pKnownBefore: number | null;
   /**
-   * C.11: this decision CLOSED an in-session review detour — answered
+   * This decision CLOSED an in-session review detour — answered
    * (correct or wrong), or abandoned after `REVIEW_OPEN_TURNS` learner turns
    * with no graded answer. Null on every other decision.
    */
@@ -280,9 +277,9 @@ export interface ControllerDecision {
 }
 
 /**
- * C.11: learner turns an opened in-session review may stay open without a
+ * Learner turns an opened in-session review may stay open without a
  * graded answer before the controller closes it (mirrors the router's
- * `reviewOpenTurns`; `npm run review-calibration:check` keeps them equal).
+ * `reviewOpenTurns`).
  */
 export const REVIEW_OPEN_TURNS = 3;
 
@@ -301,9 +298,9 @@ export type PedagogyEvent =
        */
       latencyMs?: number | null;
       /**
-       * C.10: the learner asked for (and received) hint-ladder help on this
+       * The learner asked for (and received) hint-ladder help on this
        * item before answering. A scaffolded success is not independent
-       * evidence of mastery (Appendix D §2.6's hint-request corroboration).
+       * evidence of mastery.
        */
       hintAssisted?: boolean;
     }
@@ -336,8 +333,8 @@ const MAX_STRATEGY_CHANGES_PER_MINUTE = 3;
  * How many assessed opportunities a knowledge component needs before mastery
  * can be declared, however confident the posterior is.
  *
- * Three is the blueprint's own number for a diagnosis ("2-3 ítems de sondeo",
- * §640) and the conventional minimum in mastery learning. It is deliberately
+ * Three is the number for a diagnosis ("2-3 ítems de sondeo",
+ * and the conventional minimum in mastery learning. It is deliberately
  * small: this gates CELEBRATING and MOVING ON, not the teaching itself, and a
  * learner who genuinely knows something answers three questions quickly.
  */
@@ -345,7 +342,7 @@ export const MASTERY_MIN_OPPORTUNITIES = 3;
 
 /**
  * How much slower than their own median a correct answer must be to read as
- * hesitant rather than fluent (blueprint §8.3).
+ * hesitant rather than fluent.
  *
  * Two is wide on purpose. This guard HOLDS a promotion, and holding a fluent
  * learner back is a worse error than promoting a hesitant one a turn late.
@@ -354,7 +351,7 @@ const HESITATION_FACTOR = 2;
 
 /**
  * How much FASTER than their own median a wrong answer must be to read as a
- * guess rather than an attempt (blueprint §8.3).
+ * guess rather than an attempt.
  *
  * Three is deliberately conservative in the same direction as its sibling: the
  * cost of missing a guess is one wasted remediation, and the cost of calling a
@@ -393,7 +390,7 @@ const LATENCY_BASELINE_SIZE = 3;
  *
  * Originally just SOCRATIC and FLUENCY — "the strategies that ASK rather than
  * TEACH" — because a learner making no progress must not be left in one of
- * them, and fixing only SOCRATIC (the one the blueprint names) left the
+ * them, and fixing only SOCRATIC (the one named explicitly) left the
  * identical defect in FLUENCY.
  *
  * Widened to include DIRECT, WORKED and FADED, found live, testing as a
@@ -411,7 +408,7 @@ const LATENCY_BASELINE_SIZE = 3;
  * So they share the same counter, and `propose()`'s rule 1b spends it on
  * RESCUE instead — the response actually built for "frustrated, no progress".
  *
- * Widened again to include SPACED, found by adversarial review, round 22
+ * Widened again to include SPACED, found by adversarial review
  * (2026-08-30, HIGH): `baseStrategy` returns SPACED unconditionally for a
  * due review (`entry.reason === 'review_due'`), with no `stuck` check at
  * all — unlike the mastery-band branch just below it, which always checks
@@ -467,10 +464,10 @@ export class PedagogicalController {
   /**
    * Consecutive turns spent ASKING that produced no correct answer.
    *
-   * The blueprint's guardrail is a COUNT, not a band: three questions with no
+   * The guardrail is a COUNT, not a band: three questions with no
    * progress means questions are not working, whatever the mastery estimate
    * says about them — which is why this counts every questioning strategy and
-   * not only the one the blueprint happens to name.
+   * not only the one that happens to be named.
    */
   private questioningWithoutProgress = 0;
   /**
@@ -485,13 +482,13 @@ export class PedagogicalController {
    * How many assessed opportunities this session has produced per KC, seeded
    * from the learner's persisted history.
    *
-   * The blueprint's own schema carries `n_opportunities` beside the posterior
+   * The schema carries `n_opportunities` beside the posterior
    * for a reason: a Bayesian belief says how confident we are, not how much we
    * have seen. Mastery needs both.
    */
   private opportunities = new Map<string, number>();
   /**
-   * How long each CORRECT answer took, per KC — the §8.3 fluency signal.
+   * How long each CORRECT answer took, per KC — the fluency signal.
    *
    * Kept per KC because pace is not comparable across skills: counting coins is
    * slower than recalling a fact, and a learner who is careful about one is not
@@ -545,7 +542,7 @@ export class PedagogicalController {
    * nothing anywhere in this codebase that revisited the decision if worse
    * evidence followed. The pedagogy gym's `fragile hesitant` archetype named
    * the consequence precisely: a learner is promoted on three fast, correct
-   * answers, and a later run of slow-but-correct ones — the blueprint §8.3
+   * answers, and a later run of slow-but-correct ones — the
    * signal for FRAGILE mastery, "correcto + latencia alta → no promover" —
    * had no way to reach the decision it should have changed.
    *
@@ -563,13 +560,13 @@ export class PedagogicalController {
    * ever": both halves are read from the SAME two signals the promotion
    * itself was judged on, so the bar to lose mastery is the bar to gain it,
    * read in reverse. Anything looser would make a single unlucky tap undo a
-   * genuinely learned skill; anything tighter would leave §8.3 unenforced,
+   * genuinely learned skill; anything tighter would leave the latency rule unenforced,
    * which is the gap this closes.
    */
   private readonly masteryRevokedKcIds = new Set<string>();
 
   /**
-   * C.10 — the MASTERY chain: consecutive qualifying correct observations
+   * The MASTERY chain: consecutive qualifying correct observations
    * per KC, this session. A qualifying correct is unassisted by the hint
    * ladder, not fragile (hesitant, before a revocation), and not a
    * surprising-and-rapid possible guess (neutral). Any graded miss or a
@@ -583,7 +580,7 @@ export class PedagogicalController {
    */
   private readonly masteryEvidence = new Map<string, number>();
 
-  /** GAP-FIX-R2: per KC this session, whether a correct answer was set aside as too fast / hint-assisted. */
+  /** Per KC this session, whether a correct answer was set aside as too fast / hint-assisted. */
   private readonly discountedCorrect = new Map<string, { fast: boolean; hint: boolean }>();
 
   private discountedFor(kcId: string): DiscountedEvidence {
@@ -593,7 +590,7 @@ export class PedagogicalController {
   }
 
   /**
-   * C.10 — the REMEDIATION chain: consecutive qualifying incorrect
+   * The REMEDIATION chain: consecutive qualifying incorrect
    * observations per KC that AGREE on the diagnosis (the same catalogued
    * misconception code, or both undiagnosed). A graded miss that looked like
    * a guess is neutral — a guess is not a diagnosis; a stated wrong idea
@@ -606,10 +603,10 @@ export class PedagogicalController {
 
   /** Operator configuration (constructor-derived, never session state). */
   private readonly corroboration: { min: number; rollbackKcKeys: ReadonlySet<string> };
-  /** C.7: the learner's disposition, read beside mastery (constructor-derived from the session context). */
+  /** The learner's disposition, read beside mastery (constructor-derived from the session context). */
   private readonly disposition: { stuckDegradeAfter: 1 | 2 | 3 };
   /**
-   * C.11 — THE IN-SESSION REVIEW DETOUR. A spaced re-exposure of a plan KC
+   * THE IN-SESSION REVIEW DETOUR. A spaced re-exposure of a plan KC
    * the within-session tier (`spacedReview.ts`) brought back after a short
    * gap. While it is open the active entry is that KC, served and graded as
    * a review (`reason: 'review_due'`, SPACED), and the plan pointer does NOT
@@ -737,8 +734,8 @@ export class PedagogicalController {
   }
 
   /**
-   * The C.10 requirement in force for one KC: the configured minimum, or the
-   * pre-C.10 single-observation baseline for a KC the Stage 7 kill switch
+   * The corroboration requirement in force for one KC: the configured minimum, or the
+   * single-observation baseline for a KC the kill switch
    * rolled back.
    */
   private requiredObservationsFor(entry: SessionPlanEntry): number {
@@ -761,7 +758,7 @@ export class PedagogicalController {
 
   /** Whether the controller has anything to control. False = v2 behaviour. */
   get active(): boolean {
-    // C.11: a review detour keeps the controller active even after the plan
+    // A review detour keeps the controller active even after the plan
     // completed — the re-check of a KC it already moved past is still its job.
     return this.plan.length > 0 && (this.entryIndex < this.plan.length || this.inSessionReview !== null);
   }
@@ -778,23 +775,23 @@ export class PedagogicalController {
     return this.plan[this.entryIndex] ?? null;
   }
 
-  /** C.11: the KC an open in-session review detour is re-checking, or null. */
+  /** The KC an open in-session review detour is re-checking, or null. */
   get inSessionReviewKcId(): string | null {
     return this.reviewEntry()?.kcId ?? null;
   }
 
-  /** C.11: whether a knowledge component has a plan entry a review detour can bring back. */
+  /** Whether a knowledge component has a plan entry a review detour can bring back. */
   isPlannedKc(kcId: string): boolean {
     return this.plan.some((entry) => entry.kcId === kcId);
   }
 
-  /** C.11: the objective text of a planned KC (our catalog), for the review instructions. */
+  /** The objective text of a planned KC (our catalog), for the review instructions. */
   objectiveFor(kcId: string): string | null {
     return this.plan.find((entry) => entry.kcId === kcId)?.objective ?? null;
   }
 
   /**
-   * C.11: opens an in-session review detour for a planned KC the
+   * Opens an in-session review detour for a planned KC the
    * within-session tier says is due. Refused (false) while a probe is open,
    * while the controller is repairing (REMEDIATE / RESCUE / PROBE — a
    * re-check must never interrupt a repair), when a detour is already open,
@@ -802,9 +799,9 @@ export class PedagogicalController {
    * its re-exposures), or for a KC with no plan entry.
    *
    * Also refused while the strategy-change ceiling (3 per minute) is spent:
-   * the Block C standard keeps that ceiling as the governing constraint, and
+   * that ceiling stays the governing constraint, and
    * the new signals choose WHICH strategy runs within it, never add decision
-   * velocity (S06.15 lane review). The KC stays due, so the detour opens on a
+   * velocity. The KC stays due, so the detour opens on a
    * later turn once the ceiling allows it.
    */
   openInSessionReview(kcId: string, nowMs: number): boolean {
@@ -820,7 +817,7 @@ export class PedagogicalController {
     return true;
   }
 
-  /** C.11: the review detour's synthetic entry — the plan KC, served as a review. */
+  /** The review detour's synthetic entry — the plan KC, served as a review. */
   private reviewEntry(): SessionPlanEntry | null {
     if (this.inSessionReview === null) return null;
     const planned = this.plan[this.inSessionReview.entryIndex];
@@ -834,7 +831,7 @@ export class PedagogicalController {
 
   /** The difficulty band the next activity should carry. */
   get targetDifficulty(): 1 | 2 | 3 | 4 | 5 {
-    // C.11: a re-check is served at the reviewed KC's own planned band; the
+    // A re-check is served at the reviewed KC's own planned band; the
     // main entry's ratchet is not the reviewed KC's and is left untouched.
     const review = this.probingKcId === null ? this.reviewEntry() : null;
     if (review) return band(review.targetDifficulty);
@@ -853,7 +850,7 @@ export class PedagogicalController {
    * band 2 is ordinary, correct behaviour there. Without this, the ratchet
    * kept adjusting from its own guess rather than from the thing the child was
    * actually looking at, and the gap survived for the rest of the session.
-   * Found by adversarial review, round 59, deferred; fixed round 74
+   * Found by adversarial review, deferred; since fixed
    * (2026-08-30, MEDIUM).
    *
    * It corrects the MEMORY, not the plan. `decide()` re-bases on
@@ -873,10 +870,10 @@ export class PedagogicalController {
     // first place (`ws/server.ts` sends the model's own asked-for band), so
     // the served value says nothing about a number nothing reads.
     if (!this.active) return;
-    // C.11: a re-check's band is the reviewed KC's, not the main ratchet's.
+    // A re-check's band is the reviewed KC's, not the main ratchet's.
     if (this.inSessionReview !== null && this.probingKcId === null) return;
     // `null` is "the segment declared no difficulty" — a real answer, and not
-    // one that licenses moving the ratchet anywhere (§1.14).
+    // one that licenses moving the ratchet anywhere.
     if (typeof served !== 'number' || !Number.isInteger(served) || served < 1 || served > 5) return;
     const requested = this.lastDifficulty;
     if (served === requested) return;
@@ -905,7 +902,7 @@ export class PedagogicalController {
    * `plan.ts`'s own fixed macro-phase arc (warmup/explain/practice/…),
    * which has no idea a knowledge component ever changed.
    *
-   * Found live, 2026-08-31 (AGENTS.md item 81): a direct drive of the real
+   * Found live, 2026-08-31: a direct drive of the real
    * orchestrator showed `activeKcId` change to a brand-new knowledge
    * component on a CELEBRATE — genuine teaching progress — in the very same
    * turn `plan.ts`'s own step counter happened to cap out, and the badge
@@ -924,7 +921,7 @@ export class PedagogicalController {
 
   /** The kcId a served activity should be stamped with right now. */
   /**
-   * C.8/C.12: the predicted probability that the learner answers the ACTIVE
+   * The predicted probability that the learner answers the ACTIVE
    * knowledge component correctly, read from the local mastery mirror BEFORE
    * the next piece of evidence is applied (the belief the answer is judged
    * against). Null while the controller is dormant.
@@ -946,8 +943,8 @@ export class PedagogicalController {
    * Exposed as a copy rather than the live Set: this is read by the pedagogy
    * gym and by tests as an OBSERVATION of what the controller concluded, and
    * handing out the internal Set would let a reader mutate the decision it
-   * came to ask about — the same shared-mutable-state hazard AGENTS.md §1.14
-   * records twice for 3D scene objects, in a much smaller place.
+   * came to ask about — the same shared-mutable-state hazard
+   * seen in 3D scene objects, in a much smaller place.
    */
   get revokedMasteryKcIds(): readonly string[] {
     return [...this.masteryRevokedKcIds];
@@ -979,12 +976,12 @@ export class PedagogicalController {
     if (p < 0.65) return 'FADED';
     /*
      * "NEVER MORE THAN 3 SOCRATIC WITHOUT PROGRESS → DEGRADE TO FADED"
-     * (blueprint §9.2), applied to the CLASS rather than to the one strategy it
+     * applied to the CLASS rather than to the one strategy it
      * names.
      *
      * The band alone decided this before, so a learner who kept getting nowhere
      * stayed in whichever questioning strategy their mastery implied,
-     * indefinitely. The blueprint names SOCRATIC, and fixing only SOCRATIC left
+     * indefinitely. SOCRATIC is named explicitly, and fixing only SOCRATIC left
      * the identical defect one band up: a learner who had mastered something and
      * then went quiet was given FLUENCY — timed drills — seven turns running,
      * after six answers of "no sé". Same failure, different label, and it was
@@ -995,7 +992,7 @@ export class PedagogicalController {
      * learner straight back to the band. This one changes the TEACHING — a faded
      * example gives them the shape of the answer and asks for the last step.
      */
-    // C.7: the learner's disposition lowers this for an early disengager or
+    // The learner's disposition lowers this for an early disengager or
     // an early "just tell me" asker (3 by default; see ControllerOptions).
     const stuck = this.questioningWithoutProgress >= this.disposition.stuckDegradeAfter;
     if (p < 0.85) return stuck ? 'FADED' : 'SOCRATIC';
@@ -1027,7 +1024,7 @@ export class PedagogicalController {
    */
   decide(event: PedagogyEvent, nowMs: number): ControllerDecision {
     /*
-     * C.11: an open review detour that the learner talks past instead of
+     * An open review detour that the learner talks past instead of
      * answering is abandoned after `REVIEW_OPEN_TURNS` learner turns — the
      * re-check is not pushed at a learner who is not doing it; the router
      * hands the KC to the cross-session scheduler instead.
@@ -1086,7 +1083,7 @@ export class PedagogicalController {
     if (event.kind === 'activity_result' || event.kind === 'voice_result') {
       const kcId = entry.kcId;
       // Read BEFORE this event can revoke anything below: the fragile-answer
-      // test in the C.10 chain must judge this answer by the state it was
+      // test in the chain must judge this answer by the state it was
       // given in, or the revocation it causes would excuse it.
       const revokedBefore = this.masteryRevokedKcIds.has(kcId);
       this.opportunities.set(kcId, (this.opportunities.get(kcId) ?? 0) + 1);
@@ -1127,7 +1124,7 @@ export class PedagogicalController {
        * lost on exactly the evidence that would have prevented it. A
        * hesitant answer counts precisely BECAUSE it is correct: a learner
        * who still gets there, but now takes more than twice their own
-       * established pace, is the fragile-mastery case §8.3 names, and it is
+       * established pace, is the fragile-mastery case, and it is
        * invisible to any check that only watches for wrong answers.
        */
       /*
@@ -1183,7 +1180,7 @@ export class PedagogicalController {
       this.guessedLastTurn = this.answeredWithoutReading(kcId, event);
 
       /*
-       * C.10 — THE CORROBORATING-EVIDENCE CHAINS (see `masteryEvidence` and
+       * THE CORROBORATING-EVIDENCE CHAINS (see `masteryEvidence` and
        * `remediationEvidence` for the full qualifying rules). Updated here,
        * in the evidence handler, for the same reason revocation is: this is
        * what the session BELIEVES, independent of which strategy wins.
@@ -1205,7 +1202,7 @@ export class PedagogicalController {
       }
 
       /*
-       * A DIAGNOSIS IS ACTED ON ONLY ONCE IT IS CORROBORATED (C.10). Before,
+       * A DIAGNOSIS IS ACTED ON ONLY ONCE IT IS CORROBORATED. Before,
        * the code of a single wrong answer went straight into
        * `misconceptionCode` — REMEDIATE, the catalogued hint in the model's
        * context and the whole repair catalogue — off one response that a
@@ -1239,7 +1236,7 @@ export class PedagogicalController {
     let statedRemediation = false;
     if (event.kind === 'stated_misconception') {
       /*
-       * C.10: a stated belief is an OBSERVATION of that belief — it breaks
+       * A stated belief is an OBSERVATION of that belief — it breaks
        * the mastery chain and extends the remediation chain — but it opens
        * REMEDIATE only once corroborated: the same idea stated twice, or a
        * graded miss carrying the same code next to it. One sentence is one
@@ -1285,10 +1282,10 @@ export class PedagogicalController {
     }
 
     /*
-     * C.11 — THE REVIEW DETOUR ANSWERS EXACTLY ONE GRADED ITEM. The evidence
+     * THE REVIEW DETOUR ANSWERS EXACTLY ONE GRADED ITEM. The evidence
      * above already landed on the reviewed KC (its belief, its chains, and —
-     * for a KC celebrated earlier this session — the C.10 revocation, which
-     * makes a failed re-check the Khan-style demotion Appendix D §2.3 asks
+     * for a KC celebrated earlier this session — the revocation, which
+     * makes a failed re-check the Khan-style demotion that is called
      * for). What it must never do is what the plan rules would do next:
      * celebrate and ADVANCE the plan pointer, or open a probe from a KC the
      * session already moved past. So the detour closes here, whatever the
@@ -1334,7 +1331,7 @@ export class PedagogicalController {
     const executed = strategy === proposal.strategy;
     this.applyStrategy(strategy, nowMs);
     /*
-     * C.10: a correct probe whose original KC has NOT yet corroborated a
+     * A correct probe whose original KC has NOT yet corroborated a
      * remediation returns to that KC's ordinary teaching (rule 4) rather
      * than remediating it on the one miss that opened the probe. The probe
      * has answered its question either way, so it closes here — the same
@@ -1371,9 +1368,8 @@ export class PedagogicalController {
      * documents, correctly, that a content-ladder substitution ("asked for
      * band 4, the topic only has band 1-2 content") must NOT pin a learner
      * at the substituted band forever — that correction is about content
-     * AVAILABILITY, not the learner's ability, and the existing test
-     * "does not pin the learner: the plan's own target still drives the
-     * next turn" exists specifically to protect it. `lastDifficultyFromContent`
+     * AVAILABILITY, not the learner's ability, and the plan's own target must still drive the next turn.
+     * `lastDifficultyFromContent`
      * (set by that method, cleared below) is what lets this default case
      * tell the two apart: climb back to the plan's own target when the
      * last move was a content fact, hold in place when it was a pedagogical
@@ -1381,7 +1377,7 @@ export class PedagogicalController {
      */
     let difficulty = this.lastDifficultyFromContent ? band(entry.targetDifficulty) : this.lastDifficulty;
     /*
-     * A probe closed by C.10's rule 4 (back to ordinary teaching instead of
+     * A probe closed by rule 4 of the corroboration chain (back to ordinary teaching instead of
      * REMEDIATE) holds difficulty exactly as the REMEDIATE it replaces did:
      * the learner's last answer on the ORIGINAL KC was a miss, and "never
      * raise difficulty after a failure" does not lapse because the next turn
@@ -1427,7 +1423,7 @@ export class PedagogicalController {
   }
 
   /**
-   * The strategy proposal, with the C.10 evidence a consequential proposal
+   * The strategy proposal, with the evidence a consequential proposal
    * rests on. Every consequential return below goes through a rule that
    * checks its chain against `required` first — there is no other path to
    * CELEBRATE, TRANSFER, REMEDIATE or RESCUE.
@@ -1458,7 +1454,7 @@ export class PedagogicalController {
     /*
      * RESCUE's two rules were already multi-observation (two consecutive
      * graded failures; three turns without progress). They keep their own
-     * floors — the pre-C.10 baseline — and rise with the requirement if the
+     * floors — the single-observation baseline — and rise with the requirement if the
      * operator ever raises it above them, never fall below them.
      */
     const rescueFailures = Math.max(2, required);
@@ -1466,7 +1462,7 @@ export class PedagogicalController {
     const p = this.pKnown.get(entry.kcId) ?? entry.pKnown;
 
     /*
-     * 1) Safety rules always win (blueprint §9.3): frustration first.
+     * 1) Safety rules always win: frustration first.
      *
      * THE COOLDOWN IS THE RULE, NOT THE "NEVER TWICE IN A ROW".
      *
@@ -1520,7 +1516,7 @@ export class PedagogicalController {
 
     /*
      * 2) A diagnosed wrong idea outranks everything except rescue — once it
-     * is CORROBORATED (C.10). `misconceptionCode` is only ever set from a
+     * is CORROBORATED. `misconceptionCode` is only ever set from a
      * chain that met the requirement (see the evidence handler), so a
      * non-null code here already carries its evidence.
      */
@@ -1541,7 +1537,7 @@ export class PedagogicalController {
 
     /*
      * 4) While probing: a correct probe means the prerequisite holds and the
-     * gap is in the original KC. Pre-C.10 that remediated the original KC
+     * gap is in the original KC. Before corroboration that remediated the original KC
      * outright — on the ONE miss that opened the probe. It now remediates
      * only when the original KC's own chain is corroborated; otherwise the
      * probe closes and the original KC is taught normally until a second
@@ -1554,7 +1550,7 @@ export class PedagogicalController {
       const interruptedRequired = interrupted ? this.requiredObservationsFor(interrupted) : required;
       if (interrupted && chain.count >= interruptedRequired) {
         // The evidence is the ORIGINAL KC's, so is the requirement it is
-        // judged against: a Stage 7 rollback on either KC alone must not
+        // judged against: a rollback on either KC alone must not
         // make a compliant decision read as a violation (or the reverse).
         return {
           strategy: 'REMEDIATE',
@@ -1582,8 +1578,8 @@ export class PedagogicalController {
      * That is the shallowness the product was accused of, expressed as a
      * threshold.
      *
-     * The fix is the one the blueprint's schema already implies by carrying
-     * `n_opportunities` beside the posterior, and that §640 states directly when
+     * The fix is the one a schema implies by carrying
+     * `n_opportunities` beside the posterior, and that is stated directly when
      * it asks for "2-3 ítems de sondeo": confidence is not evidence. A belief
      * above the bar on one observation means we have not looked enough, so
      * mastery now also requires having actually asked.
@@ -1596,7 +1592,7 @@ export class PedagogicalController {
       /*
        * FRAGILITY IS CHECKED ONCE, AND MUST NOT BECOME A CAGE (2026-09-01,
        * found by running the gym immediately after adding revocation — the
-       * fix for one defect creating its mirror image, which AGENTS.md §1.14
+       * fix for one defect creating its mirror image, which
        * names as its own class: "a value derived to correct an
        * under-measurement must be checked against every case the ORIGINAL fix
        * was protecting").
@@ -1620,7 +1616,7 @@ export class PedagogicalController {
        */
       (!this.answeredHesitantly(entry.kcId, event) || this.masteryRevokedKcIds.has(entry.kcId)) &&
       /*
-       * C.10: AND a chain of consecutive qualifying correct answers at or
+       * AND a chain of consecutive qualifying correct answers at or
        * above the requirement. The opportunity count above is LIFETIME
        * (seeded from persisted history), so before this a returning learner
        * with old attempts could be declared master of a KC on one lucky
@@ -1720,7 +1716,7 @@ export class PedagogicalController {
   /**
    * THE PREREQUISITE THEY ARE ACTUALLY WEAKEST AT.
    *
-   * The blueprint calls this the product's "wow" moment — walk the graph
+   * This is the product's "wow" moment — walk the graph
    * backwards and find the gap from two years ago, rather than reteaching the
    * step they just failed. Taking the FIRST prerequisite is not that: array
    * order is authoring order, so it probed whichever idea the curriculum
@@ -1733,7 +1729,7 @@ export class PedagogicalController {
    * a hidden gap hides.
    */
   /**
-   * "CORRECTO + LATENCIA ALTA → DOMINIO FRÁGIL. NO PROMOVER" (blueprint §8.3).
+   * "CORRECTO + LATENCIA ALTA → DOMINIO FRÁGIL. NO PROMOVER".
    *
    * A right answer that took far longer than this learner's own right answers
    * usually take is a learner working it out rather than knowing it. Promoting
@@ -1772,9 +1768,9 @@ export class PedagogicalController {
   }
 
   /**
-   * "INCORRECTO + LATENCIA MUY BAJA → ADIVINANZA O DESENGANCHE" (blueprint §8.3).
+   * "INCORRECTO + LATENCIA MUY BAJA → ADIVINANZA O DESENGANCHE".
    *
-   * This matters more here than the blueprint's own framing suggests, because of
+   * This matters more here than a plain reading suggests, because of
    * how our content is authored. The content playbook's rule 7 requires that
    * "every wrong option encodes ONE specific, common kid misconception" and that
    * a wrong choice be "tempting AND diagnostic" — so in 475 published lessons,
@@ -1800,7 +1796,7 @@ export class PedagogicalController {
 
   /**
    * The latency half of `answeredWithoutReading`, regardless of correctness —
-   * C.10 reuses it for the SURPRISING correct (a possible lucky guess). Same
+   * The corroboration rule reuses it for the SURPRISING correct (a possible lucky guess). Same
    * self-calibrated threshold and the same refusal to judge without two
    * prior measurements.
    */
@@ -1867,7 +1863,7 @@ export class PedagogicalController {
         : template;
     if (!this.guessedLastTurn) return base;
     /*
-     * "Bajar dificultad, cambiar de modalidad" (§8.3). Difficulty already drops
+     * "Bajar dificultad, cambiar de modalidad". Difficulty already drops
      * on any failure; this is the other half. The instruction says what was
      * OBSERVED rather than what to conclude, because the tutor is better at
      * choosing words for a disengaged child than a rule is — and it must not
@@ -1900,8 +1896,8 @@ export class PedagogicalController {
 }
 
 /**
- * How long the client waits before a gentle nudge, PER STRATEGY (blueprint
- * §6.2, adapted to push-to-talk): thinking time is the most valuable part of
+ * How long the client waits before a gentle nudge, PER STRATEGY (adapted
+ * to push-to-talk): thinking time is the most valuable part of
  * a Socratic beat, so those wait long; fluency work wants pace.
  */
 export const IDLE_NUDGE_MS: Record<Strategy, number> = {
@@ -1922,8 +1918,8 @@ export const IDLE_NUDGE_MS: Record<Strategy, number> = {
 /**
  * HOW LONG A PAUSE MEANS "I'M DONE TALKING", PER STRATEGY.
  *
- * This is the blueprint's §6.2 turn policy, and it is differentiator #1 of the
- * fourteen for a reason: in customer service you want to close a turn fast, and
+ * This is the turn policy, and it is the first differentiator of the
+ * product, for a reason: in customer service you want to close a turn fast, and
  * in TUTORING you want the opposite. The silence of a child who is thinking is
  * the most valuable part of the session, and a tutor that talks into it has
  * destroyed the thing it was there to cause.
@@ -1976,7 +1972,7 @@ export const NEW_TO_SKILL_OPPORTUNITIES = 2;
  * component, as a FRACTION of the strategy's own budget rather than a
  * second hand-authored table — derived, so it cannot drift out of ratio
  * with `LISTEN_SILENCE_MS` the way two independently-tuned tables would
- * (`/AGENTS.md` item 32's lesson).
+ * do.
  *
  * THE GAP THIS CLOSES. `LISTEN_SILENCE_MS` above is a fixed, strategy-only
  * lookup — the identical pause budget for a learner meeting a knowledge
@@ -1992,7 +1988,7 @@ export const NEW_TO_SKILL_OPPORTUNITIES = 2;
  *
  * NOT keyed off a partial or interim transcript, because none exists
  * anywhere in this pipeline. Audio is transcribed exactly once, on COMMIT
- * (`/AGENTS.md` §2.7 — the streamed `learner_audio_begin`/`_chunk` frames
+ * (the streamed `learner_audio_begin`/`_chunk` frames
  * claim nothing; only `learner_audio_commit` "claims, transcribes and
  * pays"), and that commit is triggered BY the client's own amplitude-based
  * turn detector (`frontend/src/tutor/turnDetector.ts`) deciding the turn

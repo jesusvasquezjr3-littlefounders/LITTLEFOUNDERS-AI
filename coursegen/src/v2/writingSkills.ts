@@ -129,7 +129,7 @@ export const EXAMPLES_FIRST_SKILL: readonly string[] = [
   'Never grade a case whose answer a previous segment already showed: keep the characters and the setting, change the data (followability rule 3).',
 ];
 
-/** What the pilot reviewers kept finding in rounds 1-2, as rules to apply the first time (docs/content/FORGE-V2-PILOT-ROUNDS.md). */
+/** What the pilot reviewers kept finding in rounds 1-2, as rules to apply the first time. */
 export const PILOT_LESSONS: readonly string[] = [
   'THE EXAMPLE SHOWS WHAT THE EXERCISE GRADES. Before writing a practice or transfer item, name the criterion it grades (a decimal comparison, a "nothing is wrong here" case, "do not reply", spoilage). The example must already have demonstrated that exact criterion, with numbers of the same kind (decimals when the exercise uses decimals) and never with the exercise\'s own answer.',
   'THE WHY IS ON SCREEN. A reason that lives only in `narration.script` is never heard, because narration audio is not generated: put it in the visible line, in one clause, and mark the turn `text_only`. Keep `differentiated` narration for a turn whose plate would otherwise carry nothing the learner can read.',

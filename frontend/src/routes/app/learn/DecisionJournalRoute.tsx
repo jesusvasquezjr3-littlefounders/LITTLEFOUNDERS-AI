@@ -11,17 +11,16 @@ import { DecisionJournalView } from '@/rebuild/learning/DecisionJournalView';
 
 /*
  * /learn/journal — the thin transport wrapper around the rebuilt decision
- * journal (B.9, S05.3c). Core decides which entries are the caller's own.
+ * journal. Core decides which entries are the caller's own.
  * The rebuilt surface imports
- * nothing from the legacy app (Bible 02 rule 23); wave 2 composes it into the
- * finished learner navigation.
+ * nothing from the legacy app.
  */
 export function DecisionJournalRoute() {
   const navigate = useNavigate();
   const { i18n } = useTranslation();
   const { isDark } = useTheme();
   const { getToken } = useAuth();
-  // Bible 06 §7 (GAP-FIX-R4): the band the learner shell resolved once from Core's register; the youngest outside it.
+  // The band the learner shell resolved once from Core's register; the youngest outside it.
   const ageBand = useRebuildEnvironment().ageBand ?? '6-9';
   const [state, setState] = useState<JournalState>({ status: 'loading' });
   const [revision, setRevision] = useState(0);

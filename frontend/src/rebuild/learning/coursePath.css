@@ -1,5 +1,4 @@
-/* B.6 / S05.3b course path. Dashboard-style: a neutral page with coloured cards
-   (Bible 02 rule 15). Tokens only; separation by fill, never by outline (4.4). */
+/* Course path. Dashboard-style: a neutral page with coloured cards. Tokens only; separation by fill, never by outline. */
 .lf-course-path { min-block-size: 100dvh; padding: var(--spacing-4); background: var(--base); color: var(--content); }
 .lf-course-path-inner { display: grid; gap: var(--spacing-6); max-inline-size: 760px; margin-inline: auto; }
 .lf-course-path-inner > * { min-inline-size: 0; }
@@ -18,7 +17,7 @@
 .lf-course-path-hero-action > span { font-weight: 800; font-variant-numeric: tabular-nums; }
 .lf-course-path-hero .lf-button { min-inline-size: min(100%, 200px); min-block-size: var(--target-lg); font-size: 1.125rem; }
 
-/* A finished path is a state, so it takes the first view on its own (rule 15); it is stated, never celebrated here. */
+/* A finished path is a state, so it takes the first view on its own; it is stated, never celebrated here. */
 .lf-course-path-done { display: grid; align-content: center; gap: var(--spacing-3); min-block-size: min(60dvh, 440px); padding: var(--spacing-6); border-radius: var(--rounded-xl); background: var(--success-soft); color: var(--content); }
 .lf-course-path-done h2 { font-size: 1.5rem; color: var(--success-strong); }
 .lf-course-path-earned { display: inline-flex; align-items: center; gap: var(--spacing-3); font-weight: 800; color: var(--success-strong); }
@@ -57,8 +56,8 @@
 .lf-course-path-missing { inline-size: 100%; max-inline-size: 480px; }
 .lf-course-path-state .lf-actions { inline-size: 100%; max-inline-size: 480px; }
 
-/* W2L.1: the linear engine's chapters open to their lessons (a disclosure on the shared Button and List). */
-/* A sunken well, so the disclosure (a surface button) and the lesson rows (surface) keep a boundary in both modes (02 §4.4). */
+/* The linear engine's chapters open to their lessons (a disclosure on the shared Button and List). */
+/* A sunken well, so the disclosure (a surface button) and the lesson rows (surface) keep a boundary in both modes. */
 .lf-course-path-chapter--linear { grid-template-columns: minmax(0, 1fr) auto; background: var(--sunken); }
 .lf-course-path-chapter-toggle { grid-column: 1 / -1; display: flex; flex-wrap: wrap; }
 .lf-course-path-lessons { grid-column: 1 / -1; min-inline-size: 0; }
@@ -71,12 +70,12 @@
   .lf-course-path-hero, .lf-course-path-done { padding: var(--spacing-8); }
   .lf-course-path-hero h2, .lf-course-path-done h2 { font-size: 2rem; }
 }
-/* OD-25: an offer the learner answers (a chapter one stage early, a topic shown with the Mentor). */
+/* An offer the learner answers (a chapter one stage early, a topic shown with the Mentor). */
 .lf-rebuild .lf-course-path-offer { display: grid; gap: var(--spacing-3); padding: var(--spacing-5); border-radius: var(--rounded-lg); background: var(--mint-soft); color: var(--content); }
 .lf-rebuild .lf-course-path-offer--early { background: var(--sky-soft); }
 .lf-course-path-offer-topic { justify-self: start; padding: var(--spacing-1) var(--spacing-3); border-radius: var(--rounded-full); background: var(--surface); font-weight: 800; overflow-wrap: anywhere; }
 .lf-rebuild .lf-course-path-offer .lf-actions { max-inline-size: 480px; }
-/* W3L.1: what the answer means, the skills it rests on; the card takes focus after an answer. */
+/* What the answer means, the skills it rests on; the card takes focus after an answer. */
 .lf-rebuild .lf-course-path-offer-means, .lf-rebuild .lf-course-path-offer-skills { margin: 0; overflow-wrap: anywhere; }
 .lf-rebuild .lf-course-path-offer-skill-list { margin: 0; padding-inline-start: var(--spacing-5); display: grid; gap: var(--spacing-2); overflow-wrap: anywhere; }
 .lf-rebuild .lf-course-path-offer:focus-visible { outline: var(--focus-width) solid var(--focus-color); outline-offset: var(--spacing-1); }

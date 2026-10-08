@@ -1,12 +1,12 @@
 import type { Vec3 } from '../solids/model.js';
 
 /*
- * F4.9: the "see it on your table" pilot. A real object is shown at its true size, either through the device's own WebXR
+ * The "see it on your table" pilot. A real object is shown at its true size, either through the device's own WebXR
  * (the learner points the phone at a table) or, everywhere else, as a flat turnable drawing with the same measurements.
  * The step is not scored. The pilot is closed unless a flag is on, the learner is at least 13 and consent is recorded
  * (a guardian's consent for a minor). Nothing here reads, stores or sends a camera frame.
  *
- * It must not be turned on before the legal and pediatric review recorded in docs/rebuild/sprints/horizonte/space2.md.
+ * It must not be turned on before the legal and pediatric review is recorded.
  */
 
 export type ArShape = 'box' | 'cylinder';

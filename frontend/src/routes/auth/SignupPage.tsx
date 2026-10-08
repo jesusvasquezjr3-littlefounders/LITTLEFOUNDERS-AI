@@ -11,7 +11,7 @@ import { useGoogleSignIn } from './useGoogleSignIn';
 import { failureCode } from './failureCode';
 
 /*
- * `/signup` (A2): the rebuilt screen fed the session. Kept from the legacy page:
+ * `/signup`: the rebuilt screen fed the session. Kept from the legacy page:
  *
  *   - every account starts `universal` (Core enforces it); the parent-or-
  *     guardian box records intent only and `?intent=tutor` (the family pages'
@@ -19,13 +19,13 @@ import { failureCode } from './failureCode';
  *   - the funnel: `signup_start` on the first focus inside the form (intent,
  *     not a page view), `signup_submit`, `signup_complete` with the permission
  *     Core just resolved;
- *   - A.2: under 13, Core refuses (AGE_RESTRICTED); the form's name, email,
+ *   - Under 13, Core refuses (AGE_RESTRICTED); the form's name, email,
  *     password and date are dropped, the first-party analytics buffer is
  *     turned off, and the one way on is a guest session carrying only the
  *     under-13 origin marker. It navigates to onboarding only once Core
  *     confirms that protected session; a failure stays here with a retry.
  *
- * GAP-FIX-R5: an account made here continues to the page that asked for it
+ * An account made here continues to the page that asked for it
  * (router state `from`, e.g. a Tutor invite's landing), else a pending
  * invite's landing, else verification (parent intent) or Learn. When Core
  * asks for email confirmation, the pending invite is kept for the sign-in

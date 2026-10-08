@@ -1,4 +1,4 @@
-// `money` family — payload/answer Zod schemas (LESSON_ENGINE.md §5.5, types 30–38).
+// `money` family — payload/answer Zod schemas (types 30–38).
 
 import { z } from 'zod'
 import { idSchema, idText, markdownLite, segmentSchema, iconName, imageUrl } from '../../core/schemaBase.js'
@@ -35,7 +35,7 @@ export const piggySplit = segmentSchema(
   'piggy_split',
   z.object({
     income: moneyAmount,
-    /** ISO currency code of the income (named `unit` in §5.5). */
+    /** ISO currency code of the income. */
     unit: currencySchema,
     jars: z
       .array(

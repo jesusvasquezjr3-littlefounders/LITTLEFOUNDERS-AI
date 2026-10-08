@@ -4,15 +4,15 @@ import { getConfig } from '../env.js';
 import { withTimeout } from '../lib/http.js';
 
 /*
- * C.21 — THE LIVE TRANSCRIPT JUDGE, behind a dry-run path (Appendix E §2.1,
- * §3.2; OD-23 zero spend).
+ * THE LIVE TRANSCRIPT JUDGE, behind a dry-run path
+ * (zero spend).
  *
  * Core owns the rubric and the deterministic, zero-spend scorer that scores
  * every session continuously. Some criteria need a semantic judgement no rule
  * can make ("did the Mentor honour 'just tell me'?", "did it scaffold rather
- * than stall?"): those belong to an AI judge. Appendix E is explicit that no
+ * than stall?"): those belong to an AI judge. No
  * judge may be trusted for any decision until it has been calibrated against
- * a human panel (C.23), so this module is ONLY a harness:
+ * a human panel, so this module is ONLY a harness:
  *
  *   dry_run  the batch's intended labels stand in for the judge (the
  *            "fixture scorer"): proves the plumbing, prints the plan and the
@@ -26,17 +26,16 @@ import { withTimeout } from '../lib/http.js';
  * refuses judge-scored rows. The batch comes from Core and carries the rubric
  * with its hash, which is re-verified here:
  *   npm --prefix backend run tutor:evaluate -- --export-judge-batch=<file>        (fixtures)
- *   npm --prefix backend run tutor:judge-calibration -- --export-gold-batch=<file> (C.23 gold set)
+ *   npm --prefix backend run tutor:judge-calibration -- --export-gold-batch=<file> (gold set)
  *
- * C.23 (S06.14). A LIVE run over the gold set is the judge half of a
+ * A LIVE run over the gold set is the judge half of a
  * calibration: Core recomputes it against the human panel's blind ratings
  * (`tutor:judge-calibration -- --record`), and only a recorded, passed and
- * fresh calibration lets this judge gate Stage 3 of a Tier 2 change, and
+ * fresh calibration lets this judge gate a change to the Mentor, and
  * only on the criteria in its calibrated scope. The run carries the judge
  * identity (model + SHA-256 of everything it is told except the transcript)
- * and the author model, for the self-enhancement check. This file is Tier 1
- * (it defines what the judge is told): `npm run governance:check` refuses a
- * change without a Tier 1 change-record row, and any prompt change makes the
+ * and the author model, for the self-enhancement check.
+ * Any prompt change makes the
  * identity differ, so a calibration never carries over to a changed judge.
  */
 
@@ -145,7 +144,7 @@ export interface JudgeRun {
   mode: 'dry_run' | 'replay' | 'live';
   calibration: 'uncalibrated';
   tier: 'tier_3_information_only';
-  /** authorModel: the model whose output the judge scores (C.23 self-enhancement check). */
+  /** authorModel: the model whose output the judge scores (self-enhancement check). */
   judge: { model: string; promptHash: string; authorModel: string | null };
   rubric: { version: string; hash: string };
   /** Which batch was judged: Core re-checks the transcript ids against its own gold set. */
@@ -248,7 +247,7 @@ export async function runTranscriptJudge(input: {
   judge?: JudgeCall;
 }): Promise<HarnessOutcome> {
   if (input.mode === 'live') {
-    // The refusal comes first, before anything else is read (OD-23).
+    // The refusal comes first, before anything else is read.
     if (input.env.TRANSCRIPT_JUDGE_LIVE !== 'approved') {
       return { ok: false, code: 'refused', why: 'live mode makes one PAID judge call per transcript. Set TRANSCRIPT_JUDGE_LIVE=approved (owner approval, OD-23).' };
     }

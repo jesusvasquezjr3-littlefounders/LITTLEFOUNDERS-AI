@@ -28,9 +28,9 @@ export interface CharacterActorProps {
  * transcript are ten draws in one WebGL context, not ten contexts. Outside a
  * provider, or while the layer is not drawing, the placeholder shows a
  * manifest-registered still of the same character's real model
- * (`tutor-scene/slotStill.ts`; Frontend Bible 02 rule 21, 07 §4, 08 §7). The
+ * (`tutor-scene/slotStill.ts`). The
  * legacy hand-drawn 2D characters, their bubble and their mouse-tracking
- * pupils were look-alikes and are gone (gap-fix round 8).
+ * pupils were look-alikes and are gone.
  *
  * `speaking` IS expressed, as ARTICULATION rather than lip-sync. Neither rig
  * has a jaw bone, and the viseme card is fitted for only two of the four
@@ -60,7 +60,7 @@ export interface CharacterActorProps {
  *   scene   the character IS the screen's subject — a story beat
  *   cast    the company, standing together at the open and at the close
  *
- * Every step is defined at both breakpoints, because §1.11 makes both
+ * Every step is defined at both breakpoints, because both are
  * non-negotiable and a character that only works at 1280 is half a character.
  */
 export type CharacterPresence = 'inline' | 'talk' | 'scene' | 'cast'

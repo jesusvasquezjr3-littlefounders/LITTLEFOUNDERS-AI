@@ -5,13 +5,12 @@ import type { LessonSequenceControl } from './lessonSequence';
 import { BoardShell, playerCopy } from './segmentKit';
 
 /*
- * B.24 / Product 10 Block B "Age-band registers", autonomy column (GAP-FIX-R5):
- * "choice of approach/strategy, not just topic order" from 10-12. A lesson that
+ * Choice of approach or strategy, not just topic order, for ages 10-12. A lesson that
  * declares `approaches` asks the learner, before its practice chain, which of
  * two or three equally valid strategies to practise. Core pins the pick on the
  * run and grades that chain only; the first option is the suggestion, but
  * nothing marks it as the right one (both chains are complete and graded).
- * No celebration: choosing is not a milestone (OD-7).
+ * No celebration: choosing is not a milestone.
  */
 export function ApproachChoiceBoard({ document, onBack, sequence, onChoose }: {
   document: LessonClientDocument & { approaches: NonNullable<LessonClientDocument['approaches']> };

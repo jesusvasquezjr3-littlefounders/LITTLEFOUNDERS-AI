@@ -5,7 +5,7 @@ import { POSES } from './poseLibrary';
 /*
  * WHAT A CHARACTER SLOT SHOWS WHEN THE 3D LAYER IS NOT DRAWING.
  *
- * Frontend Bible 02 rule 21 and D12, 07 §4 and 08 §7: a Mentor character is
+ * A Mentor character is
  * only ever a render of its real 3D model, and the fallback while the model
  * loads, without WebGL, after a lost context or in a background tab is a
  * pre-rendered still of the SAME model in a catalogue pose. There is no

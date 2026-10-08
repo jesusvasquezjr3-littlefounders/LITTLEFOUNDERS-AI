@@ -1,8 +1,6 @@
 name: Tutor deploy (operator)
 
 # One-shot operator steps for bringing the AI Tutor (Oracle) online.
-# RUNBOOK.md "Deploying the AI Tutor (Oracle)" is the narrative; this is the
-# hands.
 #
 # WHY A WORKFLOW AND NOT A LAPTOP. The Railway credentials for this project
 # live as repository secrets and nowhere else, which is correct — but it means
@@ -157,7 +155,7 @@ jobs:
           echo ""
           echo "== Provider keys: presence and shape only, never a value =="
           # Without DeepSeek the tutor is live and cannot teach; without Qwen no
-          # minor's session starts at all (/ORACLE.md §16).
+          # minor's session starts at all.
           for svc in coursegen littlefounders-backend; do
             echo "-- $svc"
             railway variable list --service "$svc" --environment "$ENVIRONMENT" --json 2>/dev/null \
@@ -237,8 +235,8 @@ jobs:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
         run: |
           set -euo pipefail
-          # H.5 (Appendix O 1.2): the dump holds every family's data and the
-          # Mentor's; it is encrypted on the runner with the tested OD-9 tool
+          # The dump holds every family's data and the
+          # Mentor's; it is encrypted on the runner with the tested tool
           # before it is stored. No key, no dump, no migration.
           printf '%s' "${{ secrets.BACKUP_ENCRYPTION_KEY }}" > "$RUNNER_TEMP/backup.key"
           chmod 600 "$RUNNER_TEMP/backup.key"
@@ -265,7 +263,7 @@ jobs:
           echo "Restore point: /data/backups/$FILE.lfbk ($(wc -c < "$FILE.lfbk") encrypted bytes)"
 
       # Encrypted restore points age out after 30 days, as the daily backups
-      # do; the plaintext pre-migration dumps written before H.5 was closed for
+      # do; the plaintext pre-migration dumps written before dumps were encrypted on
       # this path are removed once the encrypted point above is stored.
       - name: Prune pre-migration restore points
         if: inputs.step == 'migrate'
@@ -280,7 +278,7 @@ jobs:
           railway ssh --service filebase -i ~/.ssh/railway_key -- \
             find /data/backups -name 'pre-migration-*.dump' -delete
 
-      # H.5: the key and every local dump leave the runner on every outcome.
+      # The key and every local dump leave the runner on every outcome.
       - name: Remove the backup key and any local dump
         if: always()
         run: rm -f "$RUNNER_TEMP/backup.key" ./*.dump ./*.dump.lfbk ./*.dump.lfbk.manifest.json
@@ -306,14 +304,14 @@ jobs:
       # Content, not schema: migration 0052 creates the tables and this fills
       # them from database/seeds/kc_graph.v1.json through the backend's own
       # loader — idempotent upsert by kc.key, cycle-checked, so re-dispatching
-      # is always safe (/ORACLE.md §19). It runs HERE for the same reason
+      # is always safe. It runs HERE for the same reason
       # migrate does: the credentials live as Railway service variables and
       # nowhere else. The six env values are read straight into the
-      # environment and never printed; SUPABASE_URL is the public gateway
-      # (database/DEPLOYMENT.md), which is what makes a runner able to reach
+      # environment and never printed; SUPABASE_URL is the public gateway,
+      # which is what makes a runner able to reach
       # PostgREST at all.
       #
-      # RUNBOOK.md Round 112: this used to read only FIVE variables, missing
+      # This used to read only FIVE variables, missing
       # `TUTOR_SESSION_SECRET` — `backend/src/config.ts`'s env schema has six
       # required-with-no-default fields, and importing the backend's config
       # module (which `npm run seed:kc` does transitively) validates all six
@@ -565,7 +563,6 @@ jobs:
           # learner waiting. Copying it here would silently undo the fix every
           # time someone re-ran provision — the worst kind of regression,
           # because re-running provision is what you do when something is wrong.
-          # agent/tools/check-provider-parity.mjs records the divergence.
           # Same shape as voice_provider, and for the same reason: the guard
           # below correctly preserves an explicit choice, and the choice it is
           # preserving was written by the earlier run that copied Forge's
@@ -662,8 +659,8 @@ jobs:
 
           # The minor gate stays exactly as strict, and stays SEPARATE. It is
           # false until a data-processing agreement covering children's audio
-          # exists (/LEGAL/AI_TUTOR_LEGAL_REVIEW.md §6); flipping it is an owner
-          # decision to record in /ORACLE.md §16, never a side effect of a
+          # exists; flipping it is an owner
+          # decision to record, never a side effect of a
           # deploy. Same rule: an explicit choice is never overwritten.
           MINOR_VOICE="$(read_var oracle TUTOR_VOICE_FOR_MINORS)"
           if [ -n "$MINOR_VOICE" ]; then
@@ -781,7 +778,7 @@ jobs:
           echo "STILL AN OWNER DECISION, never a deploy side effect:"
           echo "  oracle/TUTOR_VOICE_FOR_MINORS  false until a data-processing"
           echo "  agreement covering children's audio exists"
-          echo "  (/LEGAL/AI_TUTOR_LEGAL_REVIEW.md §6, recorded in /ORACLE.md §16)"
+          echo "  (recorded as an owner decision)"
 
       # ── DOMAIN — the browser opens a websocket straight to Oracle ────────
       - name: Give oracle a public domain
@@ -930,7 +927,7 @@ jobs:
 
           echo ""
           echo "== The internal API must refuse an unauthenticated caller =="
-          # A public domain on an internal-key service is the fourth §1.5
+          # A public domain on an internal-key service is the fourth internal-key
           # exception, granted for the learner's websocket ONLY. If the REST
           # surface behind that same domain answered without a key, the
           # exception would have quietly become an open door.

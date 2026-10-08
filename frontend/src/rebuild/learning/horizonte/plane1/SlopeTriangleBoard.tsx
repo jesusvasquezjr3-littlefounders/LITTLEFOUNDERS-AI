@@ -9,7 +9,7 @@ import { Fraction, PlaneBoard, PlaneFigure, fmt, tickEvery, usePlaneGrade, whole
 type SlopeSegment = Extract<HorizonteSegment, { type: 'alg.slope-triangle.v2' }>;
 
 /*
- * D15: a rising line and the run of a slope triangle. The learner sets the rise of the triangle (the top corner, a
+ * A rising line and the run of a slope triangle. The learner sets the rise of the triangle (the top corner, a
  * handle locked to its column) until the slanted side lies on the line. The answer is the rise; Core holds it.
  */
 function SlopeTriangle({ document, segment, onBack, sequence, onGrade }: Omit<HorizonteBoardProps, 'segment'> & { segment: SlopeSegment }) {

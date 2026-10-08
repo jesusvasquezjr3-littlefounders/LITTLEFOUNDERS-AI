@@ -3,7 +3,7 @@ import { AR_OBJECTS, type ArObjectId } from '../ar.generated';
 import { arSessionInit, type ArSessionHandle, type ArStartInput } from './arPilot';
 
 /*
- * F4.9: the one lazy AR session, loaded only after the learner has allowed it in the app. The object is drawn at its true size
+ * The one lazy AR session, loaded only after the learner has allowed it in the app. The object is drawn at its true size
  * in metres and set down on the table where a reticle finds it (hit-test). The browser draws the device's view itself; this
  * module only draws the object and the reticle on top, and it keeps no image, sends nothing and stores nothing. Leaving AR
  * (the browser's own control, or the learner's end) releases the session, the animation loop and every GPU resource. If the

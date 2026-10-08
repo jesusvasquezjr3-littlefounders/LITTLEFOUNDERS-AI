@@ -1,7 +1,7 @@
 /*
  * `npm run verify:pedagogy` — DRIVE THE CONTROLLER, DON'T READ IT.
  *
- * WHY THIS EXISTS. Every §9.2 guardrail was a pure function with a passing
+ * WHY THIS EXISTS. Every guardrail was a pure function with a passing
  * unit test, and two of them were wrong in a way no unit test could see. A unit
  * test asks "given this state, is the next strategy correct?" — and the answer
  * was yes, every time. The defect was in the SEQUENCE:
@@ -75,7 +75,7 @@ interface Profile {
   /**
    * Strategies the sequence MUST contain. A rule that makes a strategy
    * unreachable reads like protection and is dead code — this file's own
-   * founding lesson — so a new gate on a strategy (C.10) is paired with a
+   * founding lesson — so a new gate on a strategy is paired with a
    * profile proving the gated strategy still fires when it should.
    */
   mustReach?: string[];
@@ -124,7 +124,7 @@ const PROFILES: Profile[] = [
       RIGHT,
     ],
     plan: [entry({ pKnown: 0.7 })],
-    // C.10: ONE diagnosed miss is a single observation; the later misses
+    // ONE diagnosed miss is a single observation; the later misses
     // carry no diagnosis, so nothing ever corroborates it.
     mustNotReach: ['REMEDIATE'],
   },
@@ -210,7 +210,7 @@ function run(profile: Profile): {
 const graded = (e: PedagogyEvent): boolean => e.kind === 'activity_result' || e.kind === 'voice_result';
 
 /**
- * C.10, recomputed INDEPENDENTLY of the controller's own bookkeeping: how
+ * Recomputed INDEPENDENTLY of the controller's own bookkeeping: how
  * many consecutive observations of one kind end at turn `i`. Conversation
  * turns are not observations and are skipped, exactly as the rule reads.
  */
@@ -232,7 +232,7 @@ function check(profile: Profile): Problem[] {
   const push = (detail: string): void => void problems.push({ profile: profile.name, detail });
 
   /*
-   * C.10 — NO CONSEQUENTIAL MOVE ON A SINGLE OBSERVATION. Checked two ways:
+   * NO CONSEQUENTIAL MOVE ON A SINGLE OBSERVATION. Checked two ways:
    * the decision must carry evidence meeting its own requirement, and the
    * event script itself must show at least two consecutive observations of
    * the right kind ending on that turn (recomputed here, not trusted).

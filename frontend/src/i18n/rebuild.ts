@@ -18,31 +18,29 @@ import ptProfile from './pt-BR/rebuild-profile.json';
 import ptStaff from './pt-BR/rebuild-staff.json';
 
 /*
- * The rebuilt UI's copy, one namespace per wave-2 lane (W2 "Shells and
- * routing"). Rebuilt surfaces do not go through i18next: each imports the JSON
+ * The rebuilt UI's copy, one namespace per area. Rebuilt surfaces do not go through i18next: each imports the JSON
  * of the namespace that owns it (`i18n/<locale>/rebuild-<namespace>.json`) and
  * receives typed strings, so a missing key is a type error, not a raw key on
  * screen.
  *
  *   core     design system, gallery, preview index, shells and navigation,
- *            standalone states (Lane 0)
- *   site     public site, sign-in, recovery, verification, onboarding (Lane 1)
- *   learn    learner home, courses, placement, lessons, results (Lane 2)
- *   mentor   the Mentor stage and its session surfaces (Lane 3)
- *   profile  profile, social, settings, account (Lane 5)
- *   staff    the staff console (Lane 6)
+ *            standalone states
+ *   site     public site, sign-in, recovery, verification, onboarding
+ *   learn    learner home, courses, placement, lessons, results
+ *   mentor   the Mentor stage and its session surfaces
+ *   profile  profile, social, settings, account
+ *   staff    the staff console
  *
- * A key lives in exactly one namespace (`rebuildNamespaces.test.ts`). A lane
+ * A key lives in exactly one namespace. An area
  * adds keys only to its own file; adding a namespace means adding it here and
- * to REBUILD_NAMESPACES, which the parity gate (agent/tools/check-i18n.sh)
- * and the glossary contract then cover automatically.
+ * to REBUILD_NAMESPACES.
  */
 export const REBUILD_NAMESPACES = ['core', 'site', 'learn', 'mentor', 'profile', 'staff'] as const;
 export type RebuildNamespace = typeof REBUILD_NAMESPACES[number];
 
 const en = { ...enCore, ...enSite, ...enLearn, ...enMentor, ...enProfile, ...enStaff };
 
-/** Every rebuilt namespace merged, for the few consumers that span lanes (the preview entry). */
+/** Every rebuilt namespace merged, for the few consumers that span areas (the preview entry). */
 export type RebuildCopy = typeof en;
 
 export const rebuildCopy: Record<'en-US' | 'es-MX' | 'pt-BR', RebuildCopy> = {
@@ -51,7 +49,7 @@ export const rebuildCopy: Record<'en-US' | 'es-MX' | 'pt-BR', RebuildCopy> = {
   'pt-BR': { ...ptCore, ...ptSite, ...ptLearn, ...ptMentor, ...ptProfile, ...ptStaff },
 };
 
-/** Each namespace's own strings, by locale (for per-namespace contract tests). */
+/** Each namespace's own strings, by locale. */
 export const rebuildNamespaceCopy = {
   'en-US': { core: enCore, site: enSite, learn: enLearn, mentor: enMentor, profile: enProfile, staff: enStaff },
   'es-MX': { core: esCore, site: esSite, learn: esLearn, mentor: esMentor, profile: esProfile, staff: esStaff },

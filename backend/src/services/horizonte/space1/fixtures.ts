@@ -10,7 +10,7 @@ const STALL = { type: 'money.market-stall.v2', visual: { type: 'market-stall' } 
 const STACK = { type: 'money.coin-stack.v2', visual: { type: 'coin-stack' } } as const;
 
 export const SPACE1_FIXTURES: readonly HorizonteFixture[] = [
-  /* ── F4.4 mental rotation ── */
+  /* ── mental rotation ── */
   {
     id: 'turn-the-l',
     title: text('Turn the L', 'Gira la L', 'Gire o L'),
@@ -82,7 +82,7 @@ export const SPACE1_FIXTURES: readonly HorizonteFixture[] = [
     rubric: { pick: 'c', angles: [270] },
     ladder: { invalid: { pick: 'a', angle: 45 }, valid: { pick: 'c', angle: 0 }, met: { pick: 'c', angle: 270 } },
   },
-  /* ── F4.5 plane sections, Platonic solids, Euler ── */
+  /* ── plane sections, Platonic solids, Euler ── */
   {
     id: 'cube-hexagon',
     title: text('Slice the cube', 'Corta el cubo', 'Corte o cubo'),
@@ -168,7 +168,7 @@ export const SPACE1_FIXTURES: readonly HorizonteFixture[] = [
     rubric: { target: '60' },
     ladder: { invalid: { value: '5000' }, valid: { value: '' }, met: { value: '60' } },
   },
-  /* ── F4.5 fix round: the cone, the cylinder, Archimedean solids and a plane the learner slides ── */
+  /* ── the cone, the cylinder, Archimedean solids and a plane the learner slides ── */
   {
     id: 'cone-third',
     title: text('A third of the cylinder', 'Un tercio del cilindro', 'Um terço do cilindro'),
@@ -322,7 +322,7 @@ export const SPACE1_FIXTURES: readonly HorizonteFixture[] = [
     rubric: { pick: 'ellipse' },
     ladder: { invalid: { offset: 99 }, valid: { offset: 14 }, met: { offset: 0 } },
   },
-  /* ── F4.6 market stall and to-scale stacks ── */
+  /* ── market stall and to-scale stacks ── */
   {
     id: 'exact-basket',
     title: text('A basket for $2.50', 'Una canasta de $2.50', 'Uma cesta de $2,50'),

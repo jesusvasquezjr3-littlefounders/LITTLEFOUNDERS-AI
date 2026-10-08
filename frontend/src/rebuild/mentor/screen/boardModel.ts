@@ -2,7 +2,7 @@ import type { Locale } from '../../design/copyBudget';
 import type { TutorWhiteboardWire } from '../session/types';
 
 /*
- * The Mentor's board on demand (Frontend Bible 08 §2 layer 4, 05), as data.
+ * The Mentor's board on demand, as data.
  *
  * Oracle sends one of its closed whiteboard shapes with every server-computed
  * field already filled in (the running values, the difference, each mark's
@@ -16,7 +16,7 @@ import type { TutorWhiteboardWire } from '../session/types';
  */
 
 /*
- * Frontend Bible 05 §2: only sky, mint and berry encode a series, in that
+ * Only sky, mint and berry encode a series, in that
  * order; a fourth or later series is the neutral overflow (crosshatch, direct
  * label). `primary` (selection) and `accent` (the call to action) never
  * encode data, so they are not tones here.
@@ -56,7 +56,7 @@ export interface BoardWords {
   frame: string;
   jump: string;
   each: string;
-  /** The quantity line of a unit-price board (B.7 ratio lines). */
+  /** The quantity line of a unit-price board (ratio lines). */
   units: string;
   cells: string;
   best: string;

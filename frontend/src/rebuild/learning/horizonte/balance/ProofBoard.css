@@ -1,4 +1,4 @@
-/* F1.15 visual proofs: neutral figure. Sky and mint pieces, berry for the one thing to look at; the frame is plain ink. Tokens only. */
+/* Visual proofs: neutral figure. Sky and mint pieces, berry for the one thing to look at; the frame is plain ink. Tokens only. */
 .lf-proof { display: grid; gap: var(--spacing-3); justify-items: start; }
 .lf-proof-stage { inline-size: 100%; max-inline-size: 28rem; padding: var(--spacing-2); border-radius: var(--rounded-sm); background: var(--sunken); outline: 2px solid transparent; }
 .lf-proof-stage[data-drop-armed='true'] { outline-color: var(--primary-strong); outline-style: dashed; }

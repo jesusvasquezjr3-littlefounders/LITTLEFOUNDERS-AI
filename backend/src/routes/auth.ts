@@ -26,7 +26,7 @@ type OAuthProvider = (typeof OAUTH_PROVIDERS)[number];
  * Discord/Facebook…) will add GET /auth/providers + the GoTrue /authorize
  * redirect flow here without changing existing shapes.
  *
- * Every new signup is `universal` (/AGENTS.md §1.4) — enforced by the DB
+ * Every new signup is `universal` — enforced by the DB
  * trigger (migration 0003), not by anything the client sends. `parentIntent`
  * only records that the user wants the Tutor upgrade; the ONLY path to the
  * `parent` role is Guardian verification (/api/v1/verification/parent).
@@ -55,7 +55,7 @@ const USERNAME_RE = /^[a-z0-9_]{3,20}$/;
  * A child under the threshold is not turned away from the product: the guest
  * path collects nothing at all. They are turned away from GIVING US AN EMAIL.
  */
-// A.4 retains the minimum age band in service-owned storage, not the date.
+// Only the minimum age band is retained in service-owned storage, not the date.
 
 /*
  * A child's `auth.users` identifier. `.invalid` is reserved by RFC 2606 so
@@ -89,10 +89,9 @@ function kidEmail(username: string): string {
  *
  * It never let an under-13 through — the drift only ever ran conservative —
  * and that is exactly why it survived: it cost signups, not safety, and a
- * refused signup does not page anybody. The one test covering this gate built
- * its fixture date with `9 * 365.25 * 24 * 3600 * 1000`, the same expression
- * as the implementation, so it agreed with the bug by construction. A test
- * written in the units of the code under test can only ever confirm it.
+ * refused signup does not page anybody. A check written in the units of the
+ * code under test (the same `365.25 * 24 * 3600 * 1000` expression) can only
+ * ever confirm it.
  */
 export function yearsOld(isoDate: string, now: number): number {
   const bornMs = Date.parse(isoDate);
@@ -116,7 +115,7 @@ const SignupBody = z.object({
   /** The date is discarded; its age band is persisted after account creation. */
   birthDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'A date of birth is required'),
   /**
-   * S-04 (OD-28): optional `YYYY-MM`; when sent it must be the month of
+   * Optional `YYYY-MM`; when sent it must be the month of
    * `birthDate`. For a 13-to-17 band Core keeps the month derived from the date
    * either way, so the account moves to the adult tier at 18. Old clients never send it.
    */
@@ -128,7 +127,7 @@ const SignupBody = z.object({
 /*
  * ONE FIELD, TWO KINDS OF ACCOUNT. An adult signs in with an email; a child
  * signs in with the handle their parent chose, because a child has no mailbox
- * and we do not collect one (§1.9). Rather than a second endpoint or a mode
+ * and we do not collect one. Rather than a second endpoint or a mode
  * toggle a nine-year-old has to understand, the identifier is accepted either
  * way and disambiguated by the one character that cannot appear in a username:
  * `@` is excluded by the `^[a-z0-9_]{3,20}$` constraint on `profiles.username`
@@ -185,7 +184,7 @@ function sessionPayload(s: Partial<gotrue.GotrueSession>) {
 }
 
 /**
- * A.1 (F3-identity-site): a session GoTrue has just issued (sign-in or
+ * A session GoTrue has just issued (sign-in or
  * refresh) reaches the client only for an active account. A paused child's
  * sessions are all revoked; when the marker cannot be read, only the new
  * session ends and the caller retries (fail closed, never a pass).
@@ -212,12 +211,12 @@ export function authRouter(): Router {
     const user = authedUser(res);
     const [age, roles] = await Promise.all([readAgeScreen(user.id), getRolesForGate(user.id)]);
     if (!age || !roles || roles.length === 0) return null;
-    // S-04 (OD-28): a teen who moved to the adult tier by birth month keeps the
+    // A teen who moved to the adult tier by birth month keeps the
     // toggle, because their teen choice still decides (allowsSelfManagedAnalytics).
     const teenChoiceApplies = age.ageBand === '13_to_17' || age.adultByBirthMonth === true;
     const eligible = !user.isGuest && !age.required && !age.protectedOrigin && teenChoiceApplies && !roles.includes('kid');
-    // M-12 (OD-26): this toggle is also the consent that admits the account to
-    // the C.17 dialogue-style experiment; the screen says so only when it does.
+    // This toggle is also the consent that admits the account to
+    // the dialogue-style experiment; the screen says so only when it does.
     return { eligible, dialogueExperiment: eligible && ownOptInEnrols(age, getConfig().MENTOR_DIALOGUE_EXPERIMENT_BANDS) };
   }
   router.get('/analytics-preference', requireAuth, async (_req, res) => {
@@ -249,7 +248,7 @@ export function authRouter(): Router {
   });
 
   router.post('/age-screen', requireAuth, authRateLimiter, async (req, res) => {
-    // S-04 (OD-28): `birthMonth` is optional; old clients send `{ birthDate }` only.
+    // `birthMonth` is optional; old clients send `{ birthDate }` only.
     // When sent it must be the month of the birth date. The band is kept; for a
     // teen, also the birth month derived from the date, never the day.
     const parsed = z.object({ birthDate: z.string(), birthMonth: z.string().optional() }).strict().safeParse(req.body);
@@ -259,7 +258,7 @@ export function authRouter(): Router {
       return fail(res, 400, 'VALIDATION_ERROR', 'The birth month must be the month of the birth date');
     }
     const id = authedUser(res).id;
-    // A.4 (OD-3): a parent-created child never declares their own age; the
+    // A parent-created child never declares their own age; the
     // verified Tutor gives it. Refused before any write.
     const roles = await getRolesForGate(id);
     if (roles === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve the account role');
@@ -290,7 +289,7 @@ export function authRouter(): Router {
 
     // `birthDate` is deliberately NOT forwarded: signUp takes what it needs and
     // Core derives and stores only its minimum age band below (for a teen,
-    // also the birth month so the band moves to adult at 18, OD-28).
+    // also the birth month so the band moves to adult at 18).
     const { data, error } = await gotrue.signUp(parsed.data);
     if (error) return fail(res, error.status >= 500 ? 502 : error.status, error.code, error.message);
     const newUserId = data.user?.id ?? data.id;
@@ -298,7 +297,7 @@ export function authRouter(): Router {
       return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not record age screening');
     }
 
-    // Attribution: which channel produced this signup (/INSIGHTS.md §7).
+    // Attribution: which channel produced this signup.
     // Every fresh signup is `universal` by DB trigger AND has now passed the
     // age screen above — the previous version of this comment claimed the
     // account was adult "by construction", which was an assumption about the
@@ -325,7 +324,7 @@ export function authRouter(): Router {
     if (error) return fail(res, error.status >= 500 ? 502 : error.status, error.code, error.message);
     if (origin.data.under13Origin) {
       const flagged = Boolean(data.user?.id) && await markUnder13Origin(data.user!.id);
-      // Appendix M 1.1 Guest-Session Origin-Flag Coverage (target 100%): every
+      // Guest-session origin-flag coverage: every
       // age-refusal guest request leaves an event with whether its flag was
       // confirmed. Read by public.identity_metrics; no detail beyond that.
       if (data.user?.id) await insertAuditLog(data.user.id, 'auth.guest.age_refusal', data.user.id, { flagged });
@@ -383,7 +382,7 @@ export function authRouter(): Router {
     // username is not editable (see kidEmail).
     const identifier = parsed.data.identifier;
     /*
-     * E.1 probing boundary: an identifier without `@` is a kid handle, and the
+     * Probing boundary: an identifier without `@` is a kid handle, and the
      * DB constraint on `profiles.username` is `^[a-z0-9_]{3,20}$` (migration
      * 0005). Reject any other shape here instead of handing GoTrue an
      * arbitrarily long synthetic address, so every well-formed handle probe
@@ -397,7 +396,7 @@ export function authRouter(): Router {
     const { data, error } = await gotrue.signInWithPassword(email, parsed.data.password);
     if (error) {
       /*
-       * A.1 + E.1: GoTrue refuses a paused child's account BEFORE it checks the
+       * GoTrue refuses a paused child's account BEFORE it checks the
        * password, so its "banned" answer proves nothing about the caller. It
        * gets the same uniform INVALID_CREDENTIALS as every other failed probe;
        * naming the pause here would tell anyone holding a username that the
@@ -429,7 +428,7 @@ export function authRouter(): Router {
     return ok(res, { signedOut: true });
   });
 
-  // Sends the recovery.html email (email-server/AGENTS.md). Always answers
+  // Sends the recovery.html email. Always answers
   // 200 — GoTrue itself never reveals whether the address has an account, so
   // this route doesn't either. The link lands on /reset-password carrying
   // `type=recovery` fragment tokens, which the frontend must exchange for a
@@ -495,7 +494,7 @@ export function authRouter(): Router {
       return fail(res, 400, 'VALIDATION_ERROR', parsed.error.issues[0]?.message ?? 'Invalid input');
     }
     const user = authedUser(res);
-    // A.6: a child account has a synthetic, non-deliverable sign-in address
+    // A child account has a synthetic, non-deliverable sign-in address
     // BY DESIGN (data minimization — see kidEmail). Attaching a
     // real email would quietly hand the child an independent recovery path
     // outside the guardian's sight, so the capability is removed for the
@@ -503,7 +502,7 @@ export function authRouter(): Router {
     const roles = await getRolesForGate(user.id);
     if (roles === null) return fail(res, 502, 'INTERNAL', 'Could not verify account roles');
     if (roles.includes('kid')) {
-      // Appendix M 1.3: every refused attempt is counted (identity_metrics
+      // Every refused attempt is counted (identity_metrics
       // reads 'auth.kid_email_change.refused'); the address is never logged.
       await insertAuditLog(user.id, 'auth.kid_email_change.refused', user.id, {});
       return fail(res, 403, 'KID_EMAIL_FORBIDDEN', 'A child account has no email to change');
@@ -523,7 +522,7 @@ export function authRouter(): Router {
   // Which social providers are actually enabled server-side (GoTrue). The
   // frontend shows a provider's button only when it appears here, so enabling
   // Google is a pure server-side config step — no frontend redeploy needed.
-  // Cheap public reads (no credentials) → covered by the global limiter (§1.14),
+  // Cheap public reads (no credentials) → covered by the global limiter,
   // not the strict auth limiter reserved for credential attempts.
   router.get('/oauth/providers', async (_req, res) => {
     const { data } = await gotrue.getSettings();
@@ -533,7 +532,7 @@ export function authRouter(): Router {
   });
 
   // Hand the browser the GoTrue /authorize URL for a provider. Core owns the
-  // redirect_to (the frontend never needs the auth host — §1.5). The browser
+  // redirect_to (the frontend never needs the auth host). The browser
   // follows this to GoTrue → the provider → back to /auth/callback.
   router.get('/oauth/:provider', (req, res) => {
     const provider = String(req.params.provider);
@@ -555,12 +554,12 @@ export function authRouter(): Router {
     if (!profiles || !roles) return fail(res, 502, 'INTERNAL', 'Profile service unreachable');
     const roleNames = roles.map((r) => r.role);
     /*
-     * A.1 suspension enforcement at session admission: a kid whose last
+     * Suspension enforcement at session admission: a kid whose last
      * verified guardian link disappeared is suspended (migration 0110). The
      * enforcement is session revocation — once this reads the marker, every
      * live session dies, so the account is unusable rather than merely
      * warned. The lazy 90-day purge runs at the same boundary. A failed
-     * marker read never revokes or deletes (§1.14).
+     * marker read never revokes or deletes.
      */
     if (roleNames.includes('kid')) {
       const suspension = await enforceKidSuspensionAtAdmission(user.id);
@@ -569,13 +568,13 @@ export function authRouter(): Router {
     }
     // Display-only (routes the client to /onboarding, nothing is written from
     // it) — a transient Vault miss collapses to false rather than 502ing the
-    // whole /me call over a non-critical field (backend/AGENTS.md READ-MODIFY-
+    // whole /me call over a non-critical field (READ-MODIFY-
     // WRITE rule applies to writers, not this kind of reader).
     const onboardingComplete = (onboarding?.length ?? 0) > 0;
     const staffPermissions = roleNames.some((role) => role === 'admin' || role === 'superadmin')
       ? await getOwnAdminPermissions(user.accessToken, user.id)
       : [];
-    // Whether the usage beacon may transmit for this account (/INSIGHTS.md).
+    // Whether the usage beacon may transmit for this account.
     // Kids: only while guardian consent is active — fail-closed, so a Vault
     // hiccup silences the beacon rather than defaulting it on. Adults are
     // covered by the platform terms; independent teens require their stored
@@ -589,7 +588,7 @@ export function authRouter(): Router {
       : roleNames.includes('kid')
         ? (await hasActiveAnalyticsConsent(user.id)) === true
         : await allowsSelfManagedAnalytics(user.id, screening);
-    // A.2, Appendix M 1.1: whether the onboarding survey may ask "how did you
+    // Whether the onboarding survey may ask "how did you
     // hear about us". Core stores the answer only under this same predicate
     // (POST /onboarding/complete); the flag lets the flow skip a question whose
     // answer would be discarded. False once onboarding is done.
@@ -609,7 +608,7 @@ export function authRouter(): Router {
      * data-loss or access decision.
      */
     /*
-     * E.6: a self-service deletion scheduled for this account. Signing back in
+     * A self-service deletion scheduled for this account. Signing back in
      * during the waiting period lands here; the shell shows the deletion
      * screen (date + "Keep my account") instead of the app. Display-only: an
      * unreadable state omits the screen rather than failing admission, and
@@ -625,7 +624,7 @@ export function authRouter(): Router {
 
     return ok(res, {
       user: { id: user.id, email: user.email },
-      // E.12: a legacy cover that is not a preset is never served, not even to its owner.
+      // A legacy cover that is not a preset is never served, not even to its owner.
       profile: profiles[0] ? { ...profiles[0], cover: projectCover(profiles[0].cover) } : null,
       roles: roleNames,
       adminPermissions: staffPermissions?.map((row) => row.permission) ?? [],

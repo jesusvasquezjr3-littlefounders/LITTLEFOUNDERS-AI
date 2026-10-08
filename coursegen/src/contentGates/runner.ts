@@ -1,10 +1,9 @@
 // content:gates runner — pure over already-loaded inputs, so tests drive it
 // with fixtures and the CLI (cli.ts) only does discovery and I/O.
 //
-// The report doubles as the Appendix C Part 1.3 "Forge Gate Pass Rate (per
+// The report doubles as the "Forge Gate Pass Rate (per
 // gate)" data point: the share of lesson documents passing each gate, tracked
-// separately per gate. It is diagnostic (no fixed target) by the appendix's
-// own definition; the release check fails on any blocking finding.
+// separately per gate. It is diagnostic (no fixed target); the release check fails on any blocking finding.
 
 import type { TaxonomyFile } from '../catalog/schema.js';
 import { audienceForTier, type Audience, type ContentLocale } from './budgets.js';
@@ -23,7 +22,7 @@ export interface DocumentResult {
   audience: string;
   passed: { redundancy: boolean; tone: boolean; copyBudget: boolean; conceptCap: boolean; misjudgment: boolean; regional: boolean };
   report: Omit<LessonContentReport, 'problems'>;
-  /** Gates 14-16 over the document (S05.4b). */
+  /** Gates 14-16 over the document. */
   policy: { conceptCap: GateProblem[]; misjudgment: GateProblem[]; regional: GateProblem[]; hasCatalogPolicy: boolean };
   /** Units recorded in the seed audio manifest that this model does not produce, and vice versa. */
   narrationDrift?: { missing: string[]; extra: string[] };
@@ -216,7 +215,7 @@ export function runContentGates(input: RunnerInput): ContentGatesReport {
   };
 }
 
-/** Human-readable summary: what failed, where, and what to do — the Appendix C "itemized, specific failure report". */
+/** Human-readable summary: what failed, where, and what to do — an itemized, specific failure report. */
 export function formatReport(report: ContentGatesReport, maxPerSection = 15): string {
   const lines: string[] = [];
   const s = report.summary;

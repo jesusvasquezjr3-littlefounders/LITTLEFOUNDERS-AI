@@ -75,7 +75,7 @@ function Controls({ target }: { target: Vector3 }) {
 }
 
 /**
- * Stand-in geometry at the scale the spec asks for: a 1.2 m figure on a ground
+ * Stand-in geometry at the scale of a real character: a 1.2 m figure on a ground
  * plane. Deliberately trivial — if the placeholder does not hold 60fps, the
  * problem is the renderer setup, not the art.
  */
@@ -220,15 +220,15 @@ function SceneLabPageContent() {
    * than as the product's own budget decision would be the wrong conclusion.
    */
   const [audition, setAudition] = useState(false);
-  /** Class III / S18 `props`: the market stall, solved and placed live. */
+  /** `props`: the market stall, solved and placed live. */
   const [showStall, setShowStall] = useState(false);
   /**
-   * Class III / S18 amendment `props` generality (2026-09-04): the second
+   * `props` generality (2026-09-04): the second
    * prop kind, toggled independently so both can be shown TOGETHER here —
    * the one place in the product that exercises the multi-prop solve
    * (`propPlacement.ts`'s sequential exclusion) with a human actually
    * watching the render, the same role this toggle played for the stall
-   * alone in S18.
+   * alone.
    */
   const [showCrate, setShowCrate] = useState(false);
   const activeProps = useMemo(
@@ -300,7 +300,7 @@ function SceneLabPageContent() {
           onEnded={() => setSpeaking(false)}
         />
 
-        {/* Desktop uses the freed width for a viewport + inspector split; mobile stacks (§1.11). */}
+        {/* Desktop uses the freed width for a viewport + inspector split; mobile stacks. */}
         <div className="lf-authoring-grid">
           {/* min-w-0: the desktop template already says minmax(0,1fr), but at
               mobile this is a single-column grid whose item still defaults to

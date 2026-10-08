@@ -12,18 +12,18 @@ import { getHabitStreakRow, getPacePreference, getPracticeDays, getStreakPauses,
 import { getTutorPreferences } from '../services/tutorData.js';
 
 /*
- * /api/v1/learn/rhythm and /api/v1/learn/pace (S05.3e). Mounted inside
+ * /api/v1/learn/rhythm and /api/v1/learn/pace. Mounted inside
  * learnRouter, behind its requireAuth + requireAgeScreen. Only ever the
  * caller's own data: there is no id in any path.
  *
- * B.21 — the learner's habit streak as the model reads it today (practised
+ * The learner's habit streak as the model reads it today (practised
  *        today, open, paused, resting), with the best streak, the days
  *        practised and the rest days left this week. A read never rewrites
- *        the stored streak (OD-9).
- * B.24 — the learner's autonomy levers: path (the course path's
- *        frontier, B.6), Mentor (the character they chose) and pace (their
+ *        the stored streak.
+ * The learner's autonomy levers: path (the course path's
+ *        frontier), Mentor (the character they chose) and pace (their
  *        own daily plan, which only they can set; a guardian cannot), plus
- *        the register's own mechanism (GAP-FIX-R5, Product 10 Block B): the
+ *        the register's own mechanism: the
  *        binary next-topic pick for 6-9, the approach choice from 10-12 and
  *        optional enrichment for 13-17 and adults. `levers` lists what the
  *        caller's register offers, never what another band gets.
@@ -40,7 +40,7 @@ const serverToday = () => new Date().toISOString().slice(0, 10);
 export interface StreakView extends StreakReadModel {
   /** The open or upcoming holiday pause a verified guardian set, if any. */
   pause: { startsOn: string; endsOn: string } | null;
-  /** GAP-FIX-R1 (Bible 04 §4.3): the current week's seven days, Monday first, in the learner's calendar. */
+  /** The current week's seven days, Monday first, in the learner's calendar. */
   week: StreakDay[];
 }
 

@@ -3,15 +3,15 @@ import { parseCoursePath, type CoursePath } from './coursePath';
 import { failureOf, type Failure, type LearnTransport } from './learnHome';
 
 /*
- * W2L.1 (L2): one course screen for both course engines.
+ * One course screen for both course engines.
  *
- * Core runs the B.6 pathway engine behind a switch (COURSE_PATHWAY_ENGINE,
- * `linear` until the owner accepts the policy, OD-22). With the pathway engine
+ * Core runs the pathway engine behind a switch (COURSE_PATHWAY_ENGINE,
+ * `linear` until the owner accepts the policy). With the pathway engine
  * on, GET /learn/courses/:slug/path is the learner's frontier; with the linear
  * engine it answers PATHWAY_ENGINE_DISABLED and the course is the tree
  * (GET /learn/courses/:slug/tree). The legacy app had two screens for this,
  * one per engine; this module reads whichever Core serves and hands the one
- * rebuilt screen a single state. Both entries enforce B.2 (P7 under the
+ * rebuilt screen a single state. Both entries enforce the prerequisite-course rule (under the
  * pathway engine, the stored badges under the linear one) and the age
  * safeguard, so each refusal has its own state. Core decides every lock; the
  * client never re-derives one and never receives an age.
@@ -100,7 +100,7 @@ export async function fetchCourse(slug: string, request: LearnTransport): Promis
   return parsed ? { status: 'ready', detail: { engine: 'linear', tree: parsed } } : { status: 'error' };
 }
 
-/** A write to Core (OD-25's two confirmations); the learner host's transport takes a method and a body. */
+/** A write to Core (the two confirmations); the learner host's transport takes a method and a body. */
 export interface LearnWriteTransport {
   (path: string, init: { method: 'POST'; body: unknown }): Promise<{ data: unknown; error: { code: string } | null }>;
 }
@@ -121,17 +121,17 @@ async function write(request: LearnWriteTransport, path: string, body: unknown):
     ? 'refused' : 'error';
 }
 
-/** OD-25: the learner confirms opening a chapter one stage early. */
+/** The learner confirms opening a chapter one stage early. */
 export function openChapterEarly(request: LearnWriteTransport, slug: string, chapterId: string): Promise<CourseAnswer> {
   return write(request, `/learn/courses/${encodeURIComponent(slug)}/early-access`, { chapterId });
 }
 
-/** OD-25: the learner accepts counting a topic as done on what they showed with the Mentor. */
+/** The learner accepts counting a topic as done on what they showed with the Mentor. */
 export function acceptMasteryCredit(request: LearnWriteTransport, slug: string, topicId: string): Promise<CourseAnswer> {
   return write(request, `/learn/courses/${encodeURIComponent(slug)}/mastery-credit`, { topicId });
 }
 
-/** OD-25 (W3L.1): the learner says no; Core remembers it and never asks about this topic again. */
+/** The learner says no; Core remembers it and never asks about this topic again. */
 export function declineMasteryCredit(request: LearnWriteTransport, slug: string, topicId: string): Promise<CourseAnswer> {
   return write(request, `/learn/courses/${encodeURIComponent(slug)}/mastery-credit`, { topicId, decision: 'decline' });
 }
@@ -164,7 +164,7 @@ export function nextStep(detail: CourseDetail): NextStep {
   return total > 0 && passed >= total ? { kind: 'done' } : { kind: 'none' };
 }
 
-/** The course's progress as the learner's own path counts it (pathway completion under B.6). */
+/** The course's progress as the learner's own path counts it (pathway completion). */
 export function courseProgress(detail: CourseDetail): { passed: number; total: number; pct: number } {
   return detail.engine === 'pathway' ? detail.path.pathway.progress : detail.tree.course.progress;
 }

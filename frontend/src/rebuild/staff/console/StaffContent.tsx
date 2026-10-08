@@ -19,38 +19,38 @@ import { CopyId, Facts, LoadFailure, Loading, Metrics, ShareBars, StaffPage, use
 import { fill, useConsoleCopy, type ConsoleCopy } from './staffConsoleCopy';
 
 /*
- * S2 Content (manage_content), W2T.2. Everything a content reviewer decides
+ * Content (manage_content). Everything a content reviewer decides
  * before a child sees it, in four views of one page:
  *
  *   Courses            publish, move to draft or archive a course. Publishing
- *                      is a release: Core runs release_course (G.2, S05.4c)
+ *                      is a release: Core runs release_course
  *                      and each refusal is named with its next step.
  *   Lesson review      the human review queue: inspect a lesson in each
  *                      language (the learner's own player, its parts, audio,
- *                      images and client-safe document), record its Appendix
- *                      C Stage 3 pedagogical review (Stage3Review.tsx), then
+ *                      images and client-safe document), record its
+ *                      pedagogical review (Stage3Review.tsx), then
  *                      approve (a release through release_lesson, refused
  *                      without a passing review) or send it back.
- *   Live updates       G.2: a new Forge version of a lesson that is already
+ *   Live updates       a new Forge version of a lesson that is already
  *                      live waits here for a staff release (Core re-runs the
  *                      course verification) or a rejection with a reason,
- *                      after the reviewer has played it (GAP-FIX-R6);
+ *                      after the reviewer has played it;
  *                      below it, every skipped release check with its 30-day
- *                      retroactive check and Appendix N 1.2's two rates.
- *   Mentor activities  C.5's live-content status, the sampled live Mentor
+ *                      retroactive check and the two bypass rates.
+ *   Mentor activities  the live-content status, the sampled live Mentor
  *                      activities with three equal verdicts (each one also in
- *                      the audit log, G.3), and C.6's activity packs waiting
+ *                      the audit log), and the activity packs waiting
  *                      for a human release.
- *   Learning quality   S05.3d's panel (B.19, B.12, B.5).
+ *   Learning quality   the learning-quality panel.
  *
- * B.3: a course that failed to assemble for a learner is listed at the top
+ * A course that failed to assemble for a learner is listed at the top
  * until the structure is fixed. Core checks the grant on every read and write;
  * the page never substitutes for that.
  */
 
 /**
  * The learner's own lesson renderer, handed in by the route host (the rebuilt
- * console never imports a player itself). OD-31 retires the legacy player:
+ * console never imports a player itself). The legacy player is retired:
  * only a v2 document plays in the rebuilt lesson view. Other schemas have no
  * preview, matching the learner route's refusal.
  */
@@ -66,7 +66,7 @@ export type LessonPreviewRenderer = (request: LessonPreviewRequest) => ReactNode
 /** Only the current rebuilt document format has a preview. */
 export const PREVIEW_SCHEMAS: readonly number[] = [2];
 
-/** GAP-FIX-R6: the preview's grader, bound to one document (the named version, or the served document in its locale). */
+/** The preview's grader, bound to one document (the named version, or the served document in its locale). */
 function previewGrader(api: StaffApi, lessonId: string, row: Pick<LessonDocumentRow, 'locale' | 'documentVersionId'>) {
   return async (segmentId: string, answer: unknown): Promise<PreviewVerdict> => {
     const result = await api.post<unknown>(previewGradePath(lessonId), {
@@ -127,7 +127,7 @@ function useFocusRescue(target: RefObject<HTMLElement>, load: { state: string; r
 }
 
 /* ------------------------------------------------------------------------- */
-/*  Release refusals (G.2)                                                   */
+/*  Release refusals                                                   */
 /* ------------------------------------------------------------------------- */
 
 type Outcome = { kind: 'done'; message: string } | { kind: 'refused'; key: ReleaseRefusalKey | 'versionNotPending'; code: string } | { kind: 'failed' };
@@ -433,7 +433,7 @@ function ReviewView({ api, onChanged, renderLessonPreview }: { api: StaffApi; on
 }
 
 /* ------------------------------------------------------------------------- */
-/*  Live updates (G.2, Appendix N 1.2)                                       */
+/*  Live updates                                       */
 /* ------------------------------------------------------------------------- */
 
 function VersionSheet({ api, version, onClose, onDecided, renderLessonPreview }: {
@@ -442,7 +442,7 @@ function VersionSheet({ api, version, onClose, onDecided, renderLessonPreview }:
   const { copy, locale } = useConsoleCopy();
   const format = useFormats(locale);
   const t = copy.content;
-  // GAP-FIX-R6: the version is played before it is released or rejected (G.2, Appendix C Part 3 Stage 3).
+  // The version is played before it is released or rejected.
   const read = useStaffRead(api, versionDocumentPath(version.lessonId, version.documentVersionId), isVersionDocument);
   const versionDocument = read.load.state === 'ready' ? read.load.data : null;
   const [previewing, setPreviewing] = useState(false);
@@ -589,7 +589,7 @@ function UpdatesView({ api, renderLessonPreview }: { api: StaffApi; renderLesson
 }
 
 /* ------------------------------------------------------------------------- */
-/*  Mentor activities (C.5, C.6, G.3)                                        */
+/*  Mentor activities                                        */
 /* ------------------------------------------------------------------------- */
 
 type Verdict = 'recorded' | 'already' | 'failed';
@@ -622,7 +622,7 @@ function ActivitySheet({ api, segment, onClose, onDecided }: { api: StaffApi; se
         <blockquote className="lf-staff-quote ugc" data-copy-role="data">{prompt}</blockquote>
       </> : null}
       {done ? <InlineNotice tone={state === 'recorded' ? 'success' : 'info'} live>{state === 'recorded' ? live.decided : live.alreadyDecided}</InlineNotice> : <>
-        {/* Three equal verdicts (C.5): the reviewer is never nudged toward approving. */}
+        {/* Three equal verdicts: the reviewer is never nudged toward approving. */}
         <div className="lf-staff-decisions" role="group" aria-label={live.reviewLabel}>
           {(['approve', 'quality', 'safety'] as const).map((decision) => <Button key={decision} data-decision={decision} disabled={state === 'saving'}
             onClick={() => void decide(decision)}>{live[decision]}</Button>)}
@@ -660,7 +660,7 @@ function LiveView({ api }: { api: StaffApi }) {
   ];
   const close = () => {
     setSelected(null);
-    // A verdict can raise a category's rate or suspend it (C.5): both reads follow it.
+    // A verdict can raise a category's rate or suspend it: both reads follow it.
     if (dirty) { setDirty(false); armRescue(); queue.reload(); status.reload(); }
   };
   const onPackStatus = async (packId: string, next: PackStatus): Promise<PackResult> => {
@@ -698,7 +698,7 @@ function LiveView({ api }: { api: StaffApi }) {
 }
 
 /* ------------------------------------------------------------------------- */
-/*  Learning quality (S05.3d)                                                */
+/*  Learning quality                                                */
 /* ------------------------------------------------------------------------- */
 
 const isAnyRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);

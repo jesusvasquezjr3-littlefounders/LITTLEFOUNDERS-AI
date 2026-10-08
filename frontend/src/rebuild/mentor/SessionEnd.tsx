@@ -6,7 +6,7 @@ import '../design/system.css';
 import './sessionEnd.css';
 
 /*
- * C.8/C.12 and C.16 on the Mentor stage (Frontend Bible 08 §3–4):
+ * The stop-or-continue choice and the closing state on the Mentor stage:
  *
  *   SessionEndChoice   the Mentor has just asked "stop here for today, or one
  *                      more?". Two EQUAL choices — same weight, same variant,
@@ -18,7 +18,7 @@ import './sessionEnd.css';
  *                      chosen from HOW the session ended (the server's closing
  *                      script), the lesson the next session picks up from as
  *                      data, and one action back to the learning path. It
- *                      never celebrates (no celebration outside the OD-7
+ *                      never celebrates (no celebration outside the
  *                      milestone list) and a safety stop gets its own calm
  *                      wording with no topic and no praise.
  *
@@ -110,7 +110,7 @@ export function SessionClosing({ copy, locale, dark, script, effort, topic, summ
     <h2 id={titleId} data-copy-role="heading">{line.title}</h2>
     <Copy role="body">{line.body}</Copy>
     {/* The line is one body block (its label and the lesson name, which is data): declared on the paragraph, so the
-        label is not counted a second time on its own (06 §3.1). */}
+        label is not counted a second time on its own. */}
     {line.topic !== null && <p className="lf-session-closing-topic" data-copy-role="body">
       {copy.nextLabel}{' '}
       <strong data-copy-role="data">{line.topic}</strong>

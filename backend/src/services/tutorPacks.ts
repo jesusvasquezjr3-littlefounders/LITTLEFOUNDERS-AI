@@ -7,7 +7,7 @@ import { serviceRest, serviceRestRaw } from './supabaseRest.js';
 import { verifyGeneratedSegment } from './tutorLadder.js';
 
 /*
- * Product C.6 — the curated activity-pack tier (ladder tier 2).
+ * The curated activity-pack tier (ladder tier 2).
  *
  * `tutor_packs` has existed since migration 0047 with a reader
  * (`serveFromBank`) and no content, no authoring contract, no loader and no
@@ -16,8 +16,7 @@ import { verifyGeneratedSegment } from './tutorLadder.js';
  * human may publish it, the canonical form it is stored and hashed in, and
  * the staff-side reads and writes.
  *
- * THE AUTHORING CONTRACT (`tutor-pack.v1`, written out in
- * docs/rebuild/mentor/LIVE-CONTENT-GOVERNANCE-POLICY.md §5):
+ * THE AUTHORING CONTRACT (`tutor-pack.v1`):
  *
  *   target      a knowledge component (`kc_key`) or a catalog skill key, one
  *               age tier (never below the KC's `tier_min`) and one locale
@@ -57,8 +56,7 @@ const idText = z.object({ id, text_md: markdown }).strict();
 /*
  * Per-type payload contracts. MIRRORS the frontend Lesson Engine's own
  * schemas for these five types (frontend/src/lesson-engine/families/*
- * /schema.ts); `frontend/src/lesson-engine/curatedPacks.test.ts` parses every
- * seed pack item with the REAL frontend schema, so a drift fails there.
+ * /schema.ts); every seed pack item must parse with the REAL frontend schema.
  */
 const PAYLOADS: Record<(typeof PACK_TYPES)[number], z.ZodTypeAny> = {
   quiz_mcq: z
@@ -172,7 +170,7 @@ export interface PackValidation {
 
 /**
  * The whole contract for one pack. `tierMin` is the target KC's `tier_min`
- * when known (the loader test reads it from the seed graph; the publish route
+ * when known (the loader reads it from the seed graph; the publish route
  * from the live `kc` table).
  */
 export function validatePack(
@@ -371,7 +369,7 @@ export async function setTutorPackStatus(input: {
     contentHash = hash;
   }
 
-  // G.3: the status change and its 'admin.tutor_pack.status' audit row commit
+  // The status change and its 'admin.tutor_pack.status' audit row commit
   // in ONE transaction (set_tutor_pack_status, migration
   // audited_staff_decisions). The `from` guard makes a stale second decision
   // a no-op (NULL), never an overwrite.

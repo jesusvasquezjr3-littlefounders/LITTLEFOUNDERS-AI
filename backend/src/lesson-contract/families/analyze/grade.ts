@@ -1,4 +1,4 @@
-// `analyze` family — pure validators (LESSON_ENGINE.md §5.6, §6).
+// `analyze` family — pure validators.
 // Malformed answers → score 0, never throw. Tier microcopy is the UI's job (i18n).
 
 import type { FamilyGrader, GradeOutcome } from '../../core/types.js'
@@ -128,7 +128,7 @@ const gradeRedFlags: FamilyGrader = (segment, answer) => {
   const selected = a ? strArray(a.selected) : null
   const redflagIds = key ? strArray(key.redflag_ids) : null
   if (!selected || !redflagIds) return MALFORMED
-  // Signal detection: flag-everything gets punished (§5.6 #44) — the scorer needs
+  // Signal detection: flag-everything gets punished — the scorer needs
   // the TOTAL item count to compute a false-alarm RATE, otherwise "tap every card"
   // can clear the threshold when there are few innocent lines.
   const flags = Array.isArray(segment.payload.flags) ? (segment.payload.flags as unknown[]) : []

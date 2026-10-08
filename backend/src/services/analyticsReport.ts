@@ -6,15 +6,15 @@ import type { PlausibleBreakdownRow, PlausibleDimensionKey, PlausibleReportData 
 /*
  * Branded analytics report PDF (staff console → Export). Pure pdfkit
  * vector/text — NO image fetches, NO headless browser — so rendering stays
- * Railway-light and offline-safe. Colours are Frontend Bible 02 section 3
- * tokens and type is Fredoka (headings) and Nunito (body), per 02 D3, D4 and
- * D8: one design system for every surface, the staff console included.
+ * Railway-light and offline-safe. Colours are design-system
+ * tokens and type is Fredoka (headings) and Nunito (body):
+ * one design system for every surface, the staff console included.
  *
  * The report is localised. It used to be English-only with `en-US` number and
  * date formatters hardwired, which meant a Spanish-speaking operator exported
  * a document reading "Aug 14, 2026" and "1,234" to send to Spanish-speaking
  * stakeholders — the one artefact that leaves the building was the only
- * surface exempt from §1.8. Strings live here rather than in the frontend
+ * surface exempt from localisation. Strings live here rather than in the frontend
  * i18n bundle because this is server-rendered and never reaches i18next.
  */
 
@@ -181,12 +181,11 @@ function contextFor(locale: ReportLocale): ReportContext {
 }
 
 /*
- * Frontend Bible 02 section 3 tokens (light mode: a PDF is printed on
+ * Design-system tokens (light mode: a PDF is printed on
  * paper), resolved to hex because a PDF has no CSS variables. The source of
- * truth is frontend/src/rebuild/design/tokens.css; `analyticsReportTokens.test.ts`
- * fails on any colour in this file or analyticsExport.ts that is not one of
- * them. The retired indigo, violet and slate palette of the deleted DESIGN.md was
- * replaced by D4; the decorative violet is gone (02 section 10).
+ * truth is frontend/src/rebuild/design/tokens.css; every colour in this file
+ * and in analyticsExport.ts must be one of them. The retired indigo, violet
+ * and slate palette was replaced; the decorative violet is gone.
  */
 export const REPORT_TOKENS = {
   primary: '#5c55fd', // --primary
@@ -242,8 +241,8 @@ const MARGIN = 48;
 const BOTTOM_MARGIN = 64; // reserves the footer band
 const ROW_H = 22;
 /*
- * The smallest text the report sets: 10.5 pt is the 14 px floor of Bible 02
- * rule 11 (1 px = 0.75 pt). Every body line, label, axis tick, caveat and
+ * The smallest text the report sets: 10.5 pt is the 14 px floor
+ * (1 px = 0.75 pt). Every body line, label, axis tick, caveat and
  * footer uses it; headings and figures are larger.
  */
 export const TEXT = 10.5;
@@ -333,7 +332,7 @@ function drawHeader(doc: PDFKit.PDFDocument, ctx: ReportContext, data: Plausible
  * own 64-unit geometry, beside the product name set as text. The report used
  * to inline the legacy raster wordmark (gradient lettering), the last outbound
  * document still wearing it after the site, icons and share cards moved to
- * the mark (Bible 02 D3, D4, D8; 07 sections 1 and 3). Vectors keep the
+ * the mark. Vectors keep the
  * report free of any file read or fetch, as before.
  */
 export const LOGO_MARK_SIZE = 32;
@@ -655,7 +654,7 @@ function drawBreakdownSection(doc: PDFKit.PDFDocument, ctx: ReportContext, title
  * to be somewhere they will still be reading. Leaving it out produced two
  * confident and entirely wrong conclusions in an outside review on
  * 2026-08-25, both of which named tracking failures that never happened
- * (WALKTHROUGH, 2026-08-27).
+ * (2026-08-27).
  */
 /*
  * Our own audience, on the page that leaves the building.

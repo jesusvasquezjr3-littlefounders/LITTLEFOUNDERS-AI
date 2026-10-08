@@ -5,7 +5,7 @@ import {
 } from './comShared.js';
 
 /*
- * F2.16 networks and counting. Hand-mirrored from backend/src/services/horizonte/com/network.ts.
+ * Networks and counting. Hand-mirrored from backend/src/services/horizonte/com/network.ts.
  * The board is graded by rule (an arrangement that meets the task), so the key lists examples and each must meet the rule.
  */
 

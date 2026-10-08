@@ -11,9 +11,9 @@ import { bandOf, useLearnerRegister, useLearnHost } from './learnHost';
 import { coursePath } from './paths';
 
 /*
- * /learn/:courseSlug — the host of the one rebuilt course screen (W2L.1, L2),
+ * /learn/:courseSlug — the host of the one rebuilt course screen,
  * inside the learner shell. It reads the course the way Core serves it now
- * (the B.6 path when that engine is on, the tree otherwise; see
+ * (the path when that engine is on, the tree otherwise; see
  * rebuild/learning/course.ts) and owns navigation. The placement quiz is
  * offered, not forced: the page shows "Find your start" where the legacy page
  * redirected into the quiz (every lesson endpoint still refuses with
@@ -41,7 +41,7 @@ export function CourseRoute() {
     return () => { active = false; };
   }, [courseSlug, transport, revision]);
 
-  // B.2: the missing prerequisites are named by their titles, from the shelf the learner already has (or one read).
+  // The missing prerequisites are named by their titles, from the shelf the learner already has (or one read).
   const needsTitles = state.status === 'prerequisite' && !shelf;
   useEffect(() => {
     if (!needsTitles) return undefined;
@@ -62,13 +62,13 @@ export function CourseRoute() {
   return <CourseView key={courseSlug} state={state} slug={courseSlug} locale={locale} dark={dark} ageBand={bandOf(register)}
     courseTitles={titles} inProgress={inProgress} links={links} onNavigate={onNavigate} retrying={retrying}
     onRetry={() => { setRetrying(true); setRevision((n) => n + 1); }}
-    // OD-25: each confirmation is re-derived by Core; the course is read again after it, so what opened shows at once.
+    // Each confirmation is re-derived by Core; the course is read again after it, so what opened shows at once.
     onOpenEarly={async (chapterId) => { const answer = await openChapterEarly(transport, courseSlug, chapterId); if (answer === 'done' || answer === 'refused') setRevision((n) => n + 1); return answer; }}
     onAcceptMastery={async (topicId) => { const answer = await acceptMasteryCredit(transport, courseSlug, topicId); if (answer === 'done' || answer === 'refused') setRevision((n) => n + 1); return answer; }}
     onDeclineMastery={async (topicId) => { const answer = await declineMasteryCredit(transport, courseSlug, topicId); if (answer === 'done' || answer === 'refused') setRevision((n) => n + 1); return answer; }} />;
 }
 
-/** B.6's course path moved into the one course screen: the old address keeps working. */
+/** The course path moved into the one course screen: the old address keeps working. */
 export function CoursePathRedirect() {
   const { courseSlug = '' } = useParams();
   return <Navigate to={coursePath(courseSlug)} replace />;

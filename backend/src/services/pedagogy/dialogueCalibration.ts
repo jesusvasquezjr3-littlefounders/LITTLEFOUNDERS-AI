@@ -1,45 +1,43 @@
 /*
- * Core's half of Product C.17 — age-band-differentiated dialogue calibration
- * (Appendix D §3.6), instrumented for Appendix F §1.2's "Age-Band Calibration
- * A/B Outcome" and Part 3 Stage 7.
+ * Core's half of age-band-differentiated dialogue calibration,
+ * instrumented for the "Age-Band Calibration A/B Outcome" and its rollback.
  *
  *   1. THE BAND. Derived HERE, from Core's own age evidence (the declared age
  *      band, the birth date, the confirmed teaching tier) — the birth date
  *      never leaves Core, and neither band nor age ever enters the sealed
- *      model context. Four registers, the B.23 ones: young_child (6–9),
+ *      model context. Four registers: young_child (6–9),
  *      tween (10–12), teen (13–17), adult (18+). Without age evidence finer
  *      than the tier, a tier-3 learner is a tween: never the teen or adult
  *      register on a guess.
- *   2. THE VARIANT. C.17 requires the calibration to be A/B tested, not
- *      assumed correct. The experiment runs on the H.7 runtime (dataintel,
+ *   2. THE VARIANT. The calibration is A/B tested, not
+ *      assumed correct. The experiment runs on the experiment runtime (dataintel,
  *      surface `tutor`, target `mentor.dialogue-register`; variant A = the
- *      uniform `control` register, B = `calibrated`). OD-26 (owner review
- *      M-12, 27 September 2026) opens C.17, and only C.17, beyond OD-23's
+ *      uniform `control` register, B = `calibrated`). Since 27 September 2026 this
+ *      experiment, and only this one, goes beyond the
  *      adults-only rule: adults; teens 13–17 with their OWN analytics opt-in;
  *      tweens 10–12 with a verified guardian's analytics consent, and only
  *      on an exact age from a birth date (a tier guess could be a younger
  *      child); young children 6–9 never, whatever the configuration says
  *      (`MENTOR_DIALOGUE_EXPERIMENT_BANDS`, default `adult,teen,tween`, can
- *      only narrow this). Every learner not enrolled receives the SPEC's
+ *      only narrow this). Every learner not enrolled receives the
  *      calibrated register. A runtime
  *      that cannot answer is never a guess: the calibrated default, recorded
  *      as `runtime_unavailable`. Exposure is recorded when the session starts
  *      with the treatment (the register applies from the first turn).
  *   3. THE RECORD. Oracle reports at close what the register did; one row of
  *      `tutor_dialogue_calibration` per session (labels and counts only).
- *   4. THE OUTCOME. Per band and variant: the Alliance Bond Proxy Score (C.15)
- *      and the closing outcome (C.16 — a completed close versus a silent
+ *   4. THE OUTCOME. Per band and variant: the Alliance Bond Proxy Score
+ *      and the closing outcome (a completed close versus a silent
  *      dropout), with Welch / two-proportion 95% intervals on the
  *      calibrated − control difference. Sessions outside the experiment are
  *      reported separately and labelled UNCONTROLLED (calibrated default
- *      versus the pre-C.17 baseline): observational, never causal.
- *   5. STAGE 7. If the calibrated arm is significantly WORSE than control on
+ *      versus the pre-calibration baseline): observational, never causal.
+ *   5. ROLLBACK. If the calibrated arm is significantly WORSE than control on
  *      either outcome for any band with enough sessions, the rollback puts
  *      every new session on the control register until an operator records
  *      the resolution (`audit_logs`, counts only).
  *
- * Every threshold is PROPOSED, pending calibration:
- * docs/rebuild/mentor/THRESHOLD-RECALIBRATION-LOG.md (C.17 rows).
+ * Every threshold is PROPOSED, pending calibration.
  */
 
 import { z } from 'zod';
@@ -67,7 +65,7 @@ export const DIALOGUE_ASSIGNMENTS = [
 ] as const;
 export type DialogueAssignment = (typeof DIALOGUE_ASSIGNMENTS)[number];
 
-/** The H.7 runtime target of the C.17 experiment (variant A = control, B = calibrated). */
+/** The experiment-runtime target of the dialogue experiment (variant A = control, B = calibrated). */
 export const DIALOGUE_EXPERIMENT_TARGET = 'mentor.dialogue-register';
 
 export const DIALOGUE_THRESHOLDS = {
@@ -79,7 +77,7 @@ export const DIALOGUE_THRESHOLDS = {
   closingMargin: 0.05,
   /** Two-sided 95% normal quantile. */
   z: 1.96,
-  /** Window the Stage 7 verdict reads (days). */
+  /** Window the rollback verdict reads (days). */
   killSwitchDays: 90,
   killSwitchCacheMs: 10 * 60_000,
 } as const;
@@ -110,7 +108,7 @@ const bandOfAge = (age: number): DialogueBand => (age <= 9 ? 'young_child' : age
  * adult) wins; otherwise a birth date gives an exact age (parent-created
  * accounts); otherwise the confirmed teaching tier (1–2 → young child,
  * 3 → tween — never teen or adult on a guess). Returns the exact age too, for
- * the experiment runtime's H.7 age bounds — only when a birth date AGREES
+ * the experiment runtime's age bounds — only when a birth date AGREES
  * with the band; null otherwise.
  */
 export function dialogueBandFor(input: {
@@ -135,15 +133,15 @@ export function dialogueBandFor(input: {
 // ── 2. the variant ───────────────────────────────────────────────────────────
 
 /**
- * OD-26 (owner review M-12): the only bands the C.17 experiment may ever
+ * The only bands the dialogue experiment may ever
  * enrol. young_child (6–9) is not here, so no configuration can enrol it.
  */
 export const DIALOGUE_EXPERIMENT_OPENABLE_BANDS: readonly DialogueBand[] = ['adult', 'teen', 'tween'];
 
 /**
- * OD-26: whose consent admits this learner to C.17, by band (not by role):
+ * Whose consent admits this learner to the experiment, by band (not by role):
  *   adult  the adult analytics rule (a parent-created adult still needs the
- *          guardian's consent, as every kid-role account does under H.1);
+ *          guardian's consent, as every kid-role account does);
  *   teen   the teen's OWN analytics opt-in; a parent-created teen, who has no
  *          opt-in of their own today, also needs the guardian's consent, so
  *          in practice stays out until a teen-owned choice exists for them;
@@ -173,7 +171,7 @@ async function dialogueExperimentConsent(input: {
 
 /**
  * The variant this session runs. Never throws and never guesses: every path
- * that is not an enrolled, exposed assignment is the SPEC's calibrated
+ * that is not an enrolled, exposed assignment is the calibrated
  * default with the reason recorded.
  */
 export async function resolveDialogueCalibration(input: {
@@ -192,13 +190,13 @@ export async function resolveDialogueCalibration(input: {
     experimentId: null,
   });
   if (input.rollback) return { band: input.band, variant: 'control', assignment: 'rollback', experimentId: null };
-  // OD-26 / H.7: only the configured bands, never outside the openable set
+  // Only the configured bands, never outside the openable set
   // (so never a young child), and a tween only on an exact age of 10 to 12.
   if (!input.eligibleBands.includes(input.band) || !DIALOGUE_EXPERIMENT_OPENABLE_BANDS.includes(input.band)) {
     return calibrated('not_eligible');
   }
   if (input.band === 'tween' && (input.age === null || input.age < 10 || input.age > 12)) return calibrated('not_eligible');
-  // Experiment participation follows the band's consent (OD-26).
+  // Experiment participation follows the band's consent.
   if (!(await dialogueExperimentConsent(input))) return calibrated('no_consent');
   const assignments = await getExperimentAssignments({
     userId: input.userId,
@@ -242,8 +240,7 @@ export const DialogueCalibrationReportBody = z
     pacingOffers: z.number().int().min(0).max(10_000),
     unilateralStyleChanges: z.number().int().min(0).max(10_000),
     /*
-     * Gap-fix round 1 (C.24 rubric.tell_honored; OD-13 Mentor turn budget;
-     * OD-6 self-naming). OPTIONAL so an Oracle that predates them still
+     * Rubric tell_honored, the Mentor turn budget and self-naming. OPTIONAL so an Oracle that predates them still
      * closes; deploy Core before an Oracle that sends them (the body is strict).
      */
     tellDelivered: z.number().int().min(0).max(10_000).optional(),
@@ -305,7 +302,7 @@ export async function recordDialogueCalibrationClose(input: {
 
 // ── 4. the outcome ───────────────────────────────────────────────────────────
 
-/** One session with its calibration (null: before C.17) and its C.15/C.16 outcomes. */
+/** One session with its calibration (null: before the calibration) and its alliance and closing outcomes. */
 export interface CalibrationOutcomeRow {
   band: DialogueBand | null;
   variant: DialogueVariant | null;
@@ -372,7 +369,7 @@ export function closingDifference(cal: ArmStats, ctl: ArmStats, t = DIALOGUE_THR
 
 export type ArmVerdict = 'improvement' | 'non_regression' | 'inconclusive' | 'regression' | 'insufficient_data';
 
-/** Appendix F: "statistically significant improvement, or at minimum non-regression". */
+/** "statistically significant improvement, or at minimum non-regression". */
 export function verdictFor(estimate: DifferenceEstimate | null, margin: number): ArmVerdict {
   if (estimate === null) return 'insufficient_data';
   if (estimate.high < 0) return 'regression';
@@ -392,7 +389,7 @@ export interface BandOutcome {
 }
 
 /**
- * The Age-Band Calibration A/B Outcome (Appendix F §1.2): enrolled sessions
+ * The Age-Band Calibration A/B Outcome: enrolled sessions
  * only (`assignment = experiment`), per band.
  */
 export function summarizeCalibrationExperiment(rows: CalibrationOutcomeRow[], t = DIALOGUE_THRESHOLDS): BandOutcome[] {
@@ -416,7 +413,7 @@ export function summarizeCalibrationExperiment(rows: CalibrationOutcomeRow[], t 
 
 /**
  * The UNCONTROLLED view: sessions outside the experiment (every minor, by
- * OD-23) on the calibrated default, per band, beside the pre-C.17 baseline
+ * the adults-only rule) on the calibrated default, per band, beside the pre-calibration baseline
  * (sessions with no calibration row). Observational — confounded by time,
  * content and cohort — and labelled so in every output.
  */
@@ -435,8 +432,8 @@ export function summarizeObservational(rows: CalibrationOutcomeRow[]): {
 
 /**
  * The auditable style constraint: controlling language that reached a teen or
- * an adult. Gap-fix round 6: the gate follows the band in BOTH arms (OD-26
- * put teens in the control arm), so a control-arm delivery is a defect too,
+ * an adult. The gate follows the band in BOTH arms (teens
+ * are in the control arm), so a control-arm delivery is a defect too,
  * and the per-arm counts make the two arms comparable. Sessions recorded
  * before that change carry 0 for the control arm (it was never checked).
  */
@@ -458,7 +455,7 @@ export function summarizeControllingLanguage(rows: CalibrationOutcomeRow[]): {
   return { sessions: autonomy.length, delivered, status: autonomy.length === 0 ? 'insufficient_data' : delivered > 0 ? 'defect' : 'ok', byVariant };
 }
 
-// ── 5. Stage 7 ───────────────────────────────────────────────────────────────
+// ── 5. Rollback ───────────────────────────────────────────────────────────────
 
 export const DIALOGUE_KILL_SWITCH_TRIGGERED = 'mentor.kill_switch.dialogue_calibration.triggered';
 export const DIALOGUE_KILL_SWITCH_RESOLVED = 'mentor.kill_switch.dialogue_calibration.resolved';
@@ -503,7 +500,7 @@ interface CalibrationRow {
   created_at: string;
 }
 
-/** Reads the calibration rows in a window and joins the C.15 bond proxy and the C.16 closing script. */
+/** Reads the calibration rows in a window and joins the alliance bond proxy and the closing script. */
 export async function readCalibrationOutcomes(since: Date): Promise<{ rows: CalibrationOutcomeRow[]; calibrated: number } | null> {
   const iso = encodeURIComponent(since.toISOString());
   const [calibration, alliance, sessions] = await Promise.all([

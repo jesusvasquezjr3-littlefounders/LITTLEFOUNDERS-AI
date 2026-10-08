@@ -12,7 +12,7 @@ import { redisClient } from '../lib/redis.js';
  *
  * `ws/server.ts`'s `parkedSessions` holds a dropped session's LIVE
  * `TutorOrchestrator` and `SpeechScope` for `SESSION_RESUME_GRACE_MS`. That
- * map is process memory, and `RUNBOOK.md` Round 142 established it was the
+ * map is process memory, and it was the
  * last structure pinning Oracle to one replica — and, crucially, that the
  * session lock does NOT already cover it: the close handler releases the
  * claim BEFORE parking (deliberately, so a genuine resume need not wait out
@@ -49,7 +49,7 @@ import { redisClient } from '../lib/redis.js';
  * `lib/redis.ts`'s contract is "nothing throws, and every caller treats 'no'
  * as a MISS" — right for a cache, wrong here for the same reason `lock.ts`
  * spells out at length: collapsing "the store said no" into "the store could
- * not be asked" is exactly the §1.14 failure-is-not-emptiness shape. So every
+ * not be asked" is exactly the failure-is-not-emptiness shape. So every
  * function below reports what actually happened and THE CALLER decides. The
  * decisions themselves are written down at each call site in `ws/server.ts`,
  * not here.
@@ -85,7 +85,7 @@ const PARK_RECORD_TTL_MARGIN_MS = 5 * 60_000;
 /**
  * How long the transcript floor outlives its session.
  *
- * A session is capped at twenty-five minutes and two a day (/ORACLE.md §15.2),
+ * A session is capped at twenty-five minutes and two a day,
  * so six hours is several times any real session's life while still being a
  * bounded key rather than a permanent one. It only has to survive longer than
  * the session it protects: once Core has closed the session, no token is ever
@@ -174,7 +174,7 @@ return 1`;
  * under `isTestOrDev` and therefore NEVER reaches this half, so without a
  * direct seam the mapping from a Redis reply to this module's own three-way
  * outcomes would be unexercised until production. The Lua itself was verified
- * against a real Redis 7 (RUNBOOK Round 143); these tests cover the JS that
+ * against a real Redis 7; this export covers the JS that
  * interprets what it returns, which is the part a future edit can break
  * silently.
  */
@@ -249,7 +249,7 @@ export async function redisReadFloor(sessionId: string): Promise<SeqFloorOutcome
     const parsed = Number(raw);
     /*
      * A key we cannot parse is NOT a zero floor. That default is the exact
-     * "failure collapsed into emptiness" shape §1.14 forbids, and here it
+     * "failure collapsed into emptiness" shape that is forbidden, and here it
      * would silently reopen the transcript-collision bug the floor exists to
      * close — a resumed session would start numbering at 1 over rows that
      * already exist, and `ignore-duplicates` would delete them without a word.
@@ -349,7 +349,7 @@ export function publishParkedSession(sessionId: string, json: string, graceMs: n
  * `{ ok: true, record: null }` and `{ ok: false, reason: 'unreachable' }` are
  * deliberately different answers: the first says this session has no parked
  * conversation waiting (an ordinary first connection), the second says we
- * could not find out. Collapsing them is the §1.14 mistake this whole module
+ * could not find out. Collapsing them is the mistake this whole module
  * is shaped around.
  */
 export function claimParkedSession(sessionId: string): Promise<ParkClaimOutcome> {

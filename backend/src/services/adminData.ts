@@ -111,12 +111,12 @@ export interface AdminUser {
   createdAt: string;
   birthDate: string | null;
   roles: string[];
-  /** A.5: null = no verification row; 'id-verified' = latest row is local-ocr verified; 'staff-granted' = latest verified row via another method (or parent role with no verification row — distinguished where it matters); 'revoked' = latest row revoked. */
+  /** Null = no verification row; 'id-verified' = latest row is local-ocr verified; 'staff-granted' = latest verified row via another method (or parent role with no verification row — distinguished where it matters); 'revoked' = latest row revoked. */
   verification: 'id-verified' | 'staff-granted' | 'revoked' | null;
   /**
-   * A.2, A.5, OD-3 section 2 (F3-identity-site): true when the account holds
+   * True when the account holds
    * the parent role while its own age record says a minor. Staff review it
-   * (revoke, or settle an E.4 age correction); it is never demoted silently.
+   * (revoke, or settle an age correction); it is never demoted silently.
    */
   ageRecordMinor: boolean;
 }
@@ -136,7 +136,7 @@ export async function listAdminUsers(): Promise<AdminUser[] | null> {
     '/user_roles?select=user_id,role&order=user_id.asc,role.asc',
   );
   if (!roleRows) return null;
-  // A.5: the latest verification row per user — read ALL rows ordered newest
+  // The latest verification row per user — read ALL rows ordered newest
   // first and keep the first per user. Volume is bounded (one row per
   // verified/revoked parent, never per session).
   const verificationRows = await listAllServiceRows<{
@@ -145,7 +145,7 @@ export async function listAdminUsers(): Promise<AdminUser[] | null> {
     method: string;
   }>('/parent_verifications?select=user_id,status,method&order=created_at.desc,id.desc');
   if (!verificationRows) return null;
-  // A.2/A.5: a Tutor whose age record says a minor is flagged for review; an
+  // A Tutor whose age record says a minor is flagged for review; an
   // unreadable answer fails the directory rather than hiding the flag.
   const minorRecord = await listMinorRecordTutors();
   if (!minorRecord) return null;
@@ -161,7 +161,7 @@ export async function listAdminUsers(): Promise<AdminUser[] | null> {
   return profiles.map((p) => {
     const latest = latestVerification.get(p.user_id);
     const roles = byUser.get(p.user_id) ?? [];
-    // A.5: a parent role with no verification row is a staff grant — the
+    // A parent role with no verification row is a staff grant — the
     // console must say so rather than showing an empty verification slot.
     const verification = latest === undefined
       ? roles.includes('parent') ? 'staff-granted' as const : null
@@ -328,7 +328,7 @@ export interface CourseAssemblyIncident {
   lastSeenAt: string;
 }
 
-/** Persistent B.3 signals, deliberately without a raw parsing error or learner data. */
+/** Persistent course-assembly signals, deliberately without a raw parsing error or learner data. */
 export async function listCourseAssemblyIncidents(): Promise<CourseAssemblyIncident[] | null> {
   const rows = await serviceRest<{
     course_id: string;
@@ -345,7 +345,7 @@ export async function listCourseAssemblyIncidents(): Promise<CourseAssemblyIncid
   }));
 }
 
-// ── Report escalation queue (0108, E.3 — manage_support) ──────────────────
+// ── Report escalation queue (0108, manage_support) ──────────────────
 
 const SocialReportCaseRow = z.object({
   subject_id: z.string().uuid(),
@@ -484,7 +484,7 @@ export async function resolveSocialReviewCase(subjectId: string, actorId: string
 }
 
 /**
- * A.5's real revocation trigger path: a staff action following a fraud
+ * The real revocation trigger path: a staff action following a fraud
  * report writes a NEW parent_verifications row with status 'revoked' and
  * method 'staff-revoked' (0111 relaxes the applicant columns so no fake
  * identity data is invented). The resolver reads the latest row, so the
@@ -494,7 +494,7 @@ export async function resolveSocialReviewCase(subjectId: string, actorId: string
  * the audit row carrying the reason.
  */
 /*
- * A.5 (Appendix M 1.2): the staff writes of the parent-verification tier go
+ * The staff writes of the parent-verification tier go
  * through database functions (migration parent_grant_integrity) that commit
  * the row and its audited reason in ONE transaction. A refusal the database
  * names (a reason out of bounds, an actor without the role, a role trigger)
@@ -509,13 +509,13 @@ function dbRefusal(body: unknown): { code: string; message: string } | null {
 }
 
 /*
- * 'minor_record' (F4-staff-ops, OD-3 section 2): the target's age record is a
+ * 'minor_record': the target's age record is a
  * minor's (kid role, under-13 origin, or an effective band under 13 or 13 to
  * 17). The database refuses before any write (staff_parent_grant_age_guard);
- * the age record is corrected through the E.4 review, never by a grant.
+ * the age record is corrected through the age review, never by a grant.
  */
 /*
- * 'revoked' (GAP-FIX-R6 identity-site, A.5): staff revoked this adult's
+ * 'revoked': staff revoked this adult's
  * verification; the database refuses the parent role on every path, the
  * staff grant included (tutor_revocation_cascade, PARENT_ROLE_REVOKED).
  */
@@ -551,9 +551,9 @@ export async function revokeParentVerification(userId: string, actorId: string, 
   return body === 'revoked' || body === 'not_found' ? body : 'unavailable';
 }
 
-// ── G.4: the access-review log (migration staff_access_reviews) ─────────────
+// ── The access-review log (migration staff_access_reviews) ─────────────
 
-/** The quarterly cadence G.4 names; Appendix N measures compliance against it. */
+/** The quarterly review cadence; compliance is measured against it. */
 export const ACCESS_REVIEW_CADENCE_DAYS = 90;
 export const STAFF_REVIEW_ROLES = ['admin', 'superadmin'] as const;
 export const STAFF_REVIEW_PERMISSIONS = ['manage_users', 'manage_content', 'view_analytics', 'manage_support'] as const;
@@ -578,7 +578,7 @@ export type AccessReviewGrant = z.infer<typeof ReviewGrant>;
 export interface AccessReviewStatus {
   cadenceDays: number;
   grants: (AccessReviewGrant & { displayName: string; username: string | null })[];
-  /** Appendix N: Access-Review Cadence Compliance (target 100%) and Stale-Grant Rate (trend to zero). */
+  /** Access-Review Cadence Compliance (target 100%) and Stale-Grant Rate (trend to zero). */
   metrics: { total: number; stale: number; reviewedEver: number; compliance: number | null; staleRate: number | null };
 }
 
@@ -610,7 +610,7 @@ export async function getAccessReviewStatus(cadenceDays = ACCESS_REVIEW_CADENCE_
 }
 
 /**
- * G.4 (Appendix N 1.1): how many elevated grants are held (`total`) and how
+ * How many elevated grants are held (`total`) and how
  * many are past the review cadence (`due`), for the operations watchdog and
  * the quarterly review issue (services/opsJobs.ts). The same database verdict
  * the Roles & Access card lists; null when the read failed, never 0.
@@ -708,9 +708,9 @@ function statusReceipt(rows: StatusMoveRow[] | null): CourseStatusResult {
 }
 
 /**
- * A release RPC's receipt. GAP-FIX-R6 (Appendix C Part 3 Stage 3): Vault's
+ * A release RPC's receipt. Vault's
  * release gate raises STAGE3_REVIEW_REQUIRED, rolling the whole release back,
- * when a lesson would go live without a passing Stage 3 pedagogical review of
+ * when a lesson would go live without a passing pedagogical review of
  * its current content; that refusal is a named 'blocked', any other failure
  * stays 'unavailable'.
  */
@@ -730,7 +730,7 @@ async function releaseReceipt(fn: 'release_course' | 'release_lesson', body: Rec
  * invisible to learners. The Vault RPC preflights locale completeness and
  * lesson readiness before any state changes.
  *
- * G.3 (GAP-FIX-R5): every course decision names its staff actor and Vault
+ * Every course decision names its staff actor and Vault
  * writes the central audit row in the SAME transaction ('admin.course.release'
  * from release_course, 'admin.course.set_status' from set_course_status), and
  * refuses an actor without the content permission (FORBIDDEN). Vault also
@@ -802,7 +802,7 @@ export async function listReviewLessons(): Promise<AdminReviewLesson[] | null> {
     });
 }
 
-/** GAP-FIX-R6: the document the learner is served, as the staff preview renders it (staffLessonPreview.ts). */
+/** The document the learner is served, as the staff preview renders it (staffLessonPreview.ts). */
 export type AdminLessonDocument = StaffLessonDocument;
 
 export interface AdminReviewLessonDetail extends AdminReviewLesson {
@@ -810,7 +810,7 @@ export interface AdminReviewLessonDetail extends AdminReviewLesson {
 }
 
 /**
- * GAP-FIX-R6: the review reads the documents a learner would be served (the
+ * The review reads the documents a learner would be served (the
  * same selection as GET /learn/lessons/:id: an activated v2 version wins,
  * otherwise the v1 row), so the reviewer approves what a child will see.
  */
@@ -860,13 +860,13 @@ interface LessonReleaseRow {
 
 /**
  * Lesson status changes from the staff moderation queue. Publishing is a
- * RELEASE, never a status write (Product G.2, S05.4c): `release_lesson` runs
+ * RELEASE, never a status write: `release_lesson` runs
  * the same verification preflight as the course release (a fresh Forge
  * verify:course attesting every required release gate), and Vault refuses a
  * direct API-role status write. A rejection back to draft, a return to
  * review and a takedown go through `set_lesson_status`. Both name the staff
  * actor and write 'admin.lesson.release' / 'admin.lesson.set_status' in the
- * same transaction (G.3, GAP-FIX-R5); an unconfirmed write is 'unavailable'.
+ * same transaction; an unconfirmed write is 'unavailable'.
  */
 export async function setLessonStatus(lessonId: string, status: LessonStatus, actorId: string): Promise<CourseStatusResult> {
   if (status === 'published') {
@@ -1139,7 +1139,7 @@ export async function grantAdminPermissionChecked(userId: string, permission: st
 }
 
 /*
- * G.1 / G.4 (GAP-FIX-R5): a role or staff-permission revocation goes through
+ * A role or staff-permission revocation goes through
  * Vault's revoke_staff_grant, never a service-role DELETE. The function
  * checks the superadmin actor, removes the grant with that actor on the
  * trigger's audit row ('user_roles.delete' / 'admin_permissions.delete'; a
@@ -1703,7 +1703,7 @@ export async function getGenerationAnalytics(
 // ── Coach report (forge:coach surfaced in the admin dashboard) ─────────────
 
 /*
- * Bible 02 section 1.2 and rule 16 (F4-staff-ops): Core returns each proposed
+ * Core returns each proposed
  * action as structured facts only, never prose. The staff console composes
  * the proposal and its evidence in the viewer's locale (en-US, es-MX, pt-BR)
  * and formats every number with Intl.

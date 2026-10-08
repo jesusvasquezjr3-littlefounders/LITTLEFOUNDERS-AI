@@ -6,7 +6,7 @@ import { useHorizonteReadiness } from './horizonte/useHorizonteReadiness';
 const supportedLocales = new Set<Locale>(['en-US', 'es-MX', 'pt-BR']);
 
 /**
- * The lesson layer's frame for a delivered v2 document (W2L.3): the document's
+ * The lesson layer's frame for a delivered v2 document: the document's
  * own language and audience band when it parses, otherwise the response's
  * language and no band (the refusal screen reads in the youngest budget).
  */
@@ -23,18 +23,18 @@ export function lessonDocumentFrame(raw: unknown, responseLocale: string): { loc
  * `mentor_stage` projection (learner's chosen character + document scene,
  * resolved server-side); a missing or malformed projection renders the lesson
  * without the stage — it is cosmetic and never blocks learning. The host
- * mounts it inside the lesson layer (`LessonLayer`, W2L.3), which carries the
+ * mounts it inside the lesson layer (`LessonLayer`), which carries the
  * design system's root, the document title, the skip link and route focus.
  */
 export function AuthenticatedLessonDocument({ raw, responseLocale, mentorStage, adventureTheme, narrationAudio, theme = 'light', onBack, onGrade, onGradeNumberLine, onGradeFractionArea, onGradeBarModel, onGradeSchemaDiagram, onGradeWorkedExample, onGradeReasoning, onGradeAny, onView, onHelpUsed, onComplete, metSegmentIds, attemptedSegmentIds, viewedSegmentIds, approachId, onChooseApproach, attemptSeeds }: {
   raw: unknown;
   responseLocale: string;
   mentorStage?: unknown;
-  /** B.8 (GAP-FIX-R1): Core's closed-enum adventure theme; malformed means no scene band. */
+  /** Core's closed-enum adventure theme; malformed means no scene band. */
   adventureTheme?: unknown;
-  /** B.18 (GAP-FIX-R3): Core's narration map; anything malformed is dropped (text-only plates). */
+  /** Core's narration map; anything malformed is dropped (text-only plates). */
   narrationAudio?: unknown;
-  /** The application's current mode; the lesson follows it (02 §5). */
+  /** The application's current mode; the lesson follows it. */
   theme?: 'light' | 'dark';
   onBack: () => void;
   onGrade?: OnGrade;
@@ -51,10 +51,10 @@ export function AuthenticatedLessonDocument({ raw, responseLocale, mentorStage, 
   metSegmentIds?: string[];
   attemptedSegmentIds?: string[];
   viewedSegmentIds?: string[];
-  /** GAP-FIX-R5 (B.24): the run's pinned approach (null before choosing) and Core's pin. */
+  /** The run's pinned approach (null before choosing) and Core's pin. */
   approachId?: string | null;
   onChooseApproach?: OnChooseApproach;
-  /** F3.0: Core's per-segment attempt seeds for the seeded Horizonte boards. */
+  /** Core's per-segment attempt seeds for the seeded Horizonte boards. */
   attemptSeeds?: Readonly<Record<string, string>>;
 }) {
   // Re-renders this frame, which reads the document's own language and band, once its Horizonte packs have arrived.

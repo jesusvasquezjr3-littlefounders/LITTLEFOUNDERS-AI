@@ -1,6 +1,6 @@
-/* B.23 and B.26 (S05.3f). Tokens only; separation by fill, never by outline (Bible 02 §4.4). */
+/* Tokens only; separation by fill, never by outline. */
 
-/* The graduation card: information on a soft identity fill. No motion (not an OD-7 milestone). */
+/* The graduation card: information on a soft identity fill. No motion (not a milestone). */
 /* Embedded in a host page: never the full-viewport height every .lf-rebuild root has by default. */
 .lf-rebuild.lf-graduation { min-block-size: 0; display: grid; align-content: start; gap: var(--spacing-3); padding: var(--spacing-5); border-radius: var(--rounded-lg); background: var(--primary-soft); color: var(--content); }
 .lf-graduation > * { min-inline-size: 0; }
@@ -10,7 +10,7 @@
 .lf-graduation .lf-button { justify-self: start; }
 .lf-graduation-failed { min-inline-size: 0; }
 
-/* The guided-review offer (B.26): an offer on the neutral surface, never the error hue, never a lock. */
+/* The guided-review offer: an offer on the neutral surface, never the error hue, never a lock. */
 /* The host is the fixed bottom band and the `app` container; the sheet inside it is what the learner sees. */
 .lf-rebuild.lf-guided-review-host { position: fixed; inset-inline: 0; inset-block-end: 0; z-index: var(--layer-sheet); min-block-size: 0; background: transparent; pointer-events: none; }
 .lf-guided-review { pointer-events: auto; max-block-size: 100dvh; overflow-y: auto; display: grid; align-content: start; gap: var(--spacing-3);

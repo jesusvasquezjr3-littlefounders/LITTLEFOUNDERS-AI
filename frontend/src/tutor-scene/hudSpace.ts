@@ -143,8 +143,8 @@ export interface EscapeOptions {
  * most of the way out is the worst of the three available outcomes: still
  * covered, and no longer pointing at anything. The caller then falls back to
  * whatever it does about occlusion — `WorldChip` hides itself, and the caption,
- * which may never hide because it is the deaf learner's whole channel
- * (/ORACLE.md §1 step 4), stays where it is and stays readable.
+ * which may never hide because it is the deaf learner's whole channel,
+ * stays where it is and stays readable.
  */
 export function escapeReserved(
   box: HudRect,
@@ -252,7 +252,7 @@ function staysInFrame(box: HudRect, move: Displacement, viewport: ViewportPx): b
  * Measured on `/dev/tutor-lab` at 375x812 in `conversing`, with the ambient
  * orbit stopped, which is what a reduced-motion learner sees permanently: the
  * caption landed at (55, 8, 265, 112) against a way out at (16, 16, 48, 48).
- * /DESIGN.md → Screen Recipes → Tutor forbids that outright and names this very
+ * The Tutor screen design forbids that outright and names this very
  * pair among the three collisions it was written to close; a moving camera had
  * been hiding it, because at most bearings the crown projects far enough right
  * that the plate clears the chip on its own.

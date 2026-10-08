@@ -1,4 +1,4 @@
-/* D02/B27 algebra tiles, D06 algebra cards, D09-D11 area model. Neutral board; a minus is a drawn minus and a dashed outline, never colour alone. Tokens only. */
+/* Algebra tiles, algebra cards, area model. Neutral board; a minus is a drawn minus and a dashed outline, never colour alone. Tokens only. */
 .lf-alg { display: grid; gap: var(--spacing-4); justify-items: start; }
 .lf-alg-notation { margin: 0; font-size: 1.25rem; }
 .lf-alg-zones { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); gap: var(--spacing-4); inline-size: 100%; }

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Encrypted database backups for the cutover (H.5: backups hold family and
+// Encrypted database backups for the cutover (backups hold family and
 // Mentor data and must be encrypted at rest). A `pg_dump -Fc` file is
 // encrypted with AES-256-GCM before it is stored anywhere, and the plaintext
 // is deleted; a restore decrypts it and checks both the authentication tag

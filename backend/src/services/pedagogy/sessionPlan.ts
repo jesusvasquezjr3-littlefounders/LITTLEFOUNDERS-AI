@@ -1,7 +1,7 @@
 /*
  * The daily session plan — what the Tutor should teach THIS session.
  *
- * Two motors compete for session time (blueprint §8.4): review debt (memory
+ * Two motors compete for session time: review debt (memory
  * cards due) and the learning frontier (KCs whose hard prerequisites are met
  * and whose predicted P(correct) sits in the zone of proximal development,
  * target ≈ 0.75). Review first, capped, then frontier — a learner drowning in
@@ -67,7 +67,7 @@ export interface SessionPlanResult {
 
 const MAX_REVIEW = 2;
 const MAX_FRONTIER = 4;
-/** The Mentor aims its next item at this predicted success (B.19 pins it inside the practice band). */
+/** The Mentor aims its next item at this predicted success (it stays inside the practice band). */
 export const ZPD_TARGET = 0.75;
 
 function pickLocale(text: Localized, locale: string): string {
@@ -124,7 +124,7 @@ function prereqsMet(graph: Graph, kcId: string): boolean {
 }
 
 /**
- * The frontier ranking (blueprint §8.5): distance to the ZPD target first,
+ * The frontier ranking: distance to the ZPD target first,
  * then how many KCs this one unlocks. Deterministic, no randomness.
  */
 function frontierScore(graph: Graph, kc: KcRow, unlocks: Map<string, number>): number {
@@ -136,12 +136,12 @@ function frontierScore(graph: Graph, kc: KcRow, unlocks: Map<string, number>): n
 }
 
 /**
- * The review+frontier ranking (blueprint §8.4-8.5), PURE over rows the
+ * The review+frontier ranking, PURE over rows the
  * caller already fetched — no I/O, cannot fail. Extracted so a caller that
  * has ALREADY read these four tables never has to fetch them a SECOND time
  * just to ask "what would today's session open with".
  *
- * Found by adversarial review, round 37 (2026-08-30, MEDIUM): `buildTutorMap`
+ * Found by adversarial review (2026-08-30, MEDIUM): `buildTutorMap`
  * (the learning-map route) used to call `buildSessionPlan` for exactly this
  * — its OWN first-planned pick, to fill `continueTarget` — which
  * independently re-fetched the SAME four tables `buildTutorMap` had just
@@ -161,14 +161,14 @@ export function rankPlanKcs(
   cards: Array<{ kc_id: string; due_at: string; reps: number }>,
   tier: number,
   /**
-   * C.10: trailing consecutive-correct streak per KC (`getCorrectStreaks`).
+   * Trailing consecutive-correct streak per KC (`getCorrectStreaks`).
    * When given, a KC above the mastery bar on an UNCORROBORATED streak stays
    * on the frontier — the planner does not move on from a KC on one answer.
-   * Omitted = the pre-C.10 posterior-only rule (callers without the read).
+   * Omitted = the older posterior-only rule (callers without the read).
    */
   streaks?: ReadonlyMap<string, number>,
   /**
-   * Appendix F Stage 7: the `kc.key`s the Extended Mastery Engine's kill
+   * The `kc.key`s the Extended Mastery Engine's kill
    * switch holds on the single-observation baseline (`corroborationMinFor`).
    * Omitted = none rolled back.
    */
@@ -229,11 +229,11 @@ export async function buildSessionPlan(
   tier: number,
   locale: string,
   /**
-   * Appendix F Stage 7: the `kc.key`s the calling Oracle will judge on the
+   * The `kc.key`s the calling Oracle will judge on the
    * single-observation baseline (Core's mastery kill switch, sent to an Oracle
    * that announced `corroborationRollbackKcKeys`). The planner applies the same
    * set, so it does not keep a KC on the frontier that the session declares
-   * mastered. Omitted = the C.10 rule for every KC.
+   * mastered. Omitted = the corroboration rule for every KC.
    */
   rolledBackKcKeys?: ReadonlySet<string>,
 ): Promise<SessionPlanResult | null> {

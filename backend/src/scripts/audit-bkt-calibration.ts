@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /*
- * `npm run audit:bkt-calibration` — INSTRUMENTATION for ORACLE.md §19.5's
+ * `npm run audit:bkt-calibration` — INSTRUMENTATION for the
  * "per-learner BKT parameters" backlog item, not a mastery-model change.
  * See `services/pedagogy/bktCalibration.ts`'s own header for the full case;
  * in one line: BKT already runs on FIXED, shared-per-KC parameters, and
@@ -27,7 +27,7 @@ function fmt(n: number | null): string {
 
 async function main(): Promise<void> {
   const [kcs, attemptRows] = await Promise.all([getActiveKcs(), getKcAttemptsForCalibration()]);
-  // A null read is a FAILED fetch, never "zero evidence" (/AGENTS.md §1.14)
+  // A null read is a FAILED fetch, never "zero evidence"
   // — collapsing the two would report a calibration verdict on an
   // unanswered query, exactly the silent-miss shape this audit exists to
   // avoid in the first place.

@@ -9,10 +9,9 @@ export type GalleryCopy = typeof en.designGallery;
 export type SystemCopy = typeof en.designSystem;
 
 /**
- * Preview-only catalogue of every overlay and out-of-flow feedback state
- * (S03.2). The page is deliberately long, so the matrix can open each overlay
- * after scrolling and prove it is fixed to the viewport and that the page does
- * not move (02 rules 12 and 13).
+ * Preview-only catalogue of every overlay and out-of-flow feedback state. The page is deliberately long, so each overlay can be opened
+ * after scrolling to show it is fixed to the viewport and that the page does
+ * not move.
  */
 export function OverlayGallery({ t, s, onBack }: { t: GalleryCopy; s: SystemCopy; onBack: () => void }) {
   const toast = useToast();
@@ -22,7 +21,7 @@ export function OverlayGallery({ t, s, onBack }: { t: GalleryCopy; s: SystemCopy
   const [removing, setRemoving] = useState(false);
   const [sheet, setSheet] = useState(false);
   const [sheetConfirm, setSheetConfirm] = useState(false);
-  // Audit hook (preview only): lets the browser matrix raise a toast while a dialog is open, to prove the 02 §9.8 order (toast 70 above scrim 65).
+  // Preview-only hook: lets a browser raise a toast while a dialog is open, to show the order (toast 70 above scrim 65).
   useEffect(() => {
     const hook = window as unknown as { __lfGalleryToast?: (message: string) => void };
     hook.__lfGalleryToast = (message) => { toast.show({ tone: 'info', message }); };

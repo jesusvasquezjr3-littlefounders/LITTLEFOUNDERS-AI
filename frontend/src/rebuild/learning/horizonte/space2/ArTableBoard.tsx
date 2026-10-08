@@ -29,7 +29,7 @@ function WireSvg({ object, view, name }: { object: ArObjectId; view: SolidView; 
 }
 
 /*
- * F4.9: the "see it on your table" pilot. Ungraded: there is no answer, no scorer and no verdict. Everyone gets a turnable
+ * The "see it on your table" pilot. Ungraded: there is no answer, no scorer and no verdict. Everyone gets a turnable
  * drawing of a real object with its true measurements in a table. Only when the pilot is open (flag on, a learner whose real age
  * is 13 or more, consent recorded; a guardian's for a minor) AND the browser has WebXR does the learner also get "See on table", and then
  * only an in-app consent panel comes first: the browser's own camera prompt appears only after the learner taps "Allow camera".

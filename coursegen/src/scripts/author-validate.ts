@@ -80,7 +80,7 @@ function main(): void {
 
   const register = resolveRegister(taxonomy, 'kid');
   const slotsById = new Map<string, Slot>(enumerateSlots(load.course.adventures).map((s) => [s.slotId, s]));
-  // Lesson-policy gates 14-16 (S05.4b): catalog declarations plus the per-lesson document checks.
+  // Lesson-policy gates 14-16: catalog declarations plus the per-lesson document checks.
   const coursePolicy = buildCoursePolicy(load.course, { register: register.register });
 
   const manifest = JSON.parse(readFileSync(join(dir, 'manifest.json'), 'utf8')) as { slots: ManifestEntry[] };

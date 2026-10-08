@@ -10,12 +10,12 @@ import { bandOf, useLearnerRegister, useLearnHost } from './learnHost';
 import { coursePath, lessonPath } from './paths';
 
 /*
- * /learn/:courseSlug/placement — the host of the rebuilt placement flow
- * (W2L.2, L4): a full-screen layer of its own (no app navigation, like the
+ * /learn/:courseSlug/placement — the host of the rebuilt placement flow:
+ * a full-screen layer of its own (no app navigation, like the
  * lesson player), on the shared single-state screen in the sky hue. It owns
  * Core's transport, the learner's register (the Copy Budget band), the chosen
  * Mentor and navigation; the flow and the screens are rebuilt code with no
- * legacy import (Bible 02 rule 23).
+ * legacy import.
  *
  * Once Core has stored the start, the learner lands on the lesson it chose
  * (with the course to return to) or, when there is none, on the course. The

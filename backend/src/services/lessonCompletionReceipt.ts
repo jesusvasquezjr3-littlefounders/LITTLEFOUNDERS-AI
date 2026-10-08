@@ -4,7 +4,7 @@ import type { LessonCompletionResult } from './supabaseRest.js';
 import type { V2PublicLesson } from './v2LessonDocument.js';
 
 /*
- * B.5 (S05.3d): the authenticated completion receipt the rebuilt result
+ * The authenticated completion receipt the rebuilt result
  * screen renders. Every number in it comes from the database transaction
  * (complete_lesson / complete_v2_lesson); the browser supplies nothing but the
  * run it finished and the wall-clock time it measured. The receipt carries no
@@ -24,7 +24,7 @@ export interface V2CompletionReceipt {
   locale: V2PublicLesson['locale'];
   first_try_correct: number;
   graded_count: number;
-  /** GAP-FIX-R1: non-scored steps acted on, and help-ladder steps used (0 for a lesson stored before 0205). */
+  /** Non-scored steps acted on, and help-ladder steps used (0 for a lesson stored before 0205). */
   viewed_count: number;
   hints_used: number;
   awarded_xp: number;
@@ -38,10 +38,10 @@ export interface V2CompletionReceipt {
   };
   judgment: { assessed: number; sound: number; partial: number; unsupported: number };
   /*
-   * S05.3e. B.20: the closed OD-7 list this completion reached (the result
+   * The closed celebration list this completion reached (the result
    * screen celebrates nothing else) and what was figured out, so the XP tally
-   * reads as information about a skill rather than payment. B.21: the streak
-   * after this run, and its milestone if it reached one. B.24: today's passed
+   * reads as information about a skill rather than payment; the streak
+   * after this run, and its milestone if it reached one; and today's passed
    * lessons against the learner's own pace.
    */
   celebrations: CelebrationMilestone[];
@@ -50,14 +50,14 @@ export interface V2CompletionReceipt {
   pace?: { goal: number; passed_today: number; goal_met: boolean };
 }
 
-/** True when the result screen must say the saved best is unaffected (B.5). */
+/** True when the result screen must say the saved best is unaffected. */
 export function replayNoticeRequired(completion: Pick<LessonCompletionResult, 'replay'>): boolean {
   return completion.replay?.notice === 'best_kept';
 }
 
 /**
  * Projects a v2 completion into the rebuilt receipt. Returns null for a
- * receipt stored before the S05.3d migration (no first-try facts), so the
+ * receipt stored before the first-try-facts migration (no first-try facts), so the
  * client falls back to its plain "saved" state instead of inventing numbers.
  */
 export function buildV2CompletionReceipt(input: {

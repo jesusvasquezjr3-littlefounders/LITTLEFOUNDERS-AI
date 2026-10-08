@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /*
- * `npm run tutor:live-content-report` — Product C.5 and C.6, read by a human.
+ * `npm run tutor:live-content-report` — live-content governance and curated packs, read by a human.
  *
  * Read-only by default (no model call, zero spend). It prints:
  *   - the judge's calibration (state, age, model, agreement per category)
@@ -8,8 +8,8 @@
  *     or elevated, and how many clean decisions restore the baseline),
  *     whether live generation is suspended and why, the Judge
  *     Approval-Quality Concordance Rate, the review coverage against the
- *     Appendix E floor, and the backlog past the review SLA
- *   - the content ladder (C.6): the share of served activities per rung, the
+ *     review floor, and the backlog past the review SLA
+ *   - the content ladder: the share of served activities per rung, the
  *     weekly live share (it must fall as curated packs land), and the unmet
  *     demand ranked by request pattern — the next packs to author
  *   - the Kill-Switch Trigger Log for the live-content judge
@@ -18,12 +18,12 @@
  *
  * Operator writes (service role; each prints what it did):
  *   --resolve=<standard|sensitive>:<concordance_below_floor|review_rate_below_floor> --note="…"
- *       closes a Stage 7 trip. Refused while the condition still holds, and a
+ *       closes a rollback trip. Refused while the condition still holds, and a
  *       concordance trip only after a PASSED calibration recorded after it.
  *   --record-calibration=<file> --recorded-by="…" --note="…"
  *       records a judge calibration run produced by
- *       `npm --prefix oracle run content-judge:calibrate` (Appendix E
- *       §2.1/§3.2). Core recomputes every number from the raw verdicts and
+ *       `npm --prefix oracle run content-judge:calibrate`.
+ *       Core recomputes every number from the raw verdicts and
  *       labels and REFUSES a dry run, a replay, or ratings not from the human
  *       panel.
  */
@@ -75,7 +75,7 @@ export function calibrationInputFrom(file: CalibrationFile): CalibrationInput {
     seedSet: {
       version: file.seedSet.version,
       hash: seedSetHash(file.seedSet.items),
-      // The judged text's length feeds the verbosity-bias check (C.23).
+      // The judged text's length feeds the verbosity-bias check.
       items: file.seedSet.items.map((i) => ({ id: i.id, category: i.category, length: JSON.stringify(i.segment ?? i).length })),
     },
     ratings: file.ratings,

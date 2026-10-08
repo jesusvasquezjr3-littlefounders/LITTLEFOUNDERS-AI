@@ -12,19 +12,19 @@ import { DailyChart } from './DailyChart';
 import { fill, labelOf, useConsoleCopy, type ConsoleCopy } from './staffConsoleCopy';
 
 /*
- * S3 Users (manage_users; Core refuses /admin/users/* without it).
+ * Users (manage_users; Core refuses /admin/users/* without it).
  *
- * A.5: the verification Core projects per account is shown as three distinct
+ * The verification Core projects per account is shown as three distinct
  * statuses, never one badge: ID-verified (passed the document check),
  * staff-granted (the parent role granted through Roles & Access, with its
- * audited justification) and revoked. Revoking is the real trigger path the
- * requirement asks for: a mandatory reason (Core: 10-300 characters) and a
+ * audited justification) and revoked. Revoking is the real trigger path:
+ * a mandatory reason (Core: 10-300 characters) and a
  * keep-first confirmation; Core writes the reason and the deciding staff
  * member to the audit log before the revoked row.
  *
  * The visitors-to-accounts funnel reads analytics endpoints, so it is shown
  * (and requested) only with view_analytics. Opening a person's details
- * changes nothing (G.6: no impersonation, no account operation here beyond
+ * changes nothing (no impersonation, no account operation here beyond
  * the audited revocation).
  */
 
@@ -38,7 +38,7 @@ export function verificationChip(copy: ConsoleCopy, verification: Verification) 
 }
 
 /**
- * A.2, A.5, OD-3 section 2 (F3-identity-site): a Tutor whose own age record
+ * A Tutor whose own age record
  * says a minor (verified before the database refused such checks). Staff
  * review it: revoke here, or settle an age correction. Never demoted silently.
  */

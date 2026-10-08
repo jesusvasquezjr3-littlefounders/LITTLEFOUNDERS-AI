@@ -4,7 +4,7 @@ import { getTutorPreferences } from './tutorData.js';
 import { GUIDED_REVIEW_MAX_TRACKED, offersGuidedReview } from './learnerRegisterPolicy.js';
 
 /*
- * B.26 and OD-1 (S05.3f): the guided review.
+ * The guided review.
  *
  * A wrong answer costs nothing: no lives, no hearts, no counter, no lockout.
  * After GUIDED_REVIEW_MISS_THRESHOLD consecutive misses on the same skill (3,
@@ -30,7 +30,7 @@ export interface GuidedReviewOffer {
   skill: string | null;
   /** Consecutive misses that produced the offer. */
   misses: number;
-  /** The learner's own Mentor character, who makes the offer (Bible 02: the chosen character fills every Mentor slot). */
+  /** The learner's own Mentor character, who makes the offer (the chosen character fills every Mentor slot). */
   character: 'rho' | 'zara' | 'liruf' | 'dina';
 }
 

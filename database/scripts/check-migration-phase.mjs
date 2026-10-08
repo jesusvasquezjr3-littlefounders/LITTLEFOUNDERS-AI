@@ -25,7 +25,7 @@
 // ONLY UNAPPLIED MIGRATIONS CARRY THE HEADER, and that is not a convenience.
 // `railway-migrate.sh` records a SHA-256 of each applied file and REFUSES to
 // run when a recorded checksum no longer matches ("migration drift detected").
-// An applied migration is immutable (/AGENTS.md §1.3) down to its comments:
+// An applied migration is immutable down to its comments:
 // stamping a header on the 48 files already in production changed every one of
 // those checksums and would have bricked the migrator on its next run. It was
 // caught here by diffing the hashes, not in production.

@@ -2,12 +2,12 @@ import { z } from 'zod';
 import type { CloseReason } from '../core/client.js';
 
 /*
- * C.16 — FOUR END-REASON-SPECIFIC CLOSING SCRIPTS (Appendix D §3.5).
+ * FOUR END-REASON-SPECIFIC CLOSING SCRIPTS.
  *
  * The peak-end rule (meta-analytic r≈0.58) says how a session ENDS drives how
  * the whole of it is remembered, so one generic "great work today!" for every
  * ending is the likely mechanism of the "no aprendí nada" aftertaste. The
- * Alliance Controller part of the Block C standard therefore owns four
+ * Alliance Controller therefore owns four
  * distinct scripts, chosen from how the session actually ended:
  *
  *   completed     A normal completion. The full sequence: a CO-CONSTRUCTED
@@ -28,7 +28,7 @@ import type { CloseReason } from '../core/client.js';
  *   safety_stop   Its own, non-cheerful design: the category's safety line,
  *                 calm posture, and a closing state with no praise, no
  *                 summary counts and no celebration. It NEVER reuses the
- *                 positive template (Block C non-negotiable).
+ *                 positive template (non-negotiable).
  *
  * The positive template that used to serve every ending ("We did great work
  * today") is gone: no path can reach it for a safety stop or an interruption.
@@ -41,10 +41,9 @@ export const CLOSING_SCRIPTS = ['completed', 'interrupted', 'learner_left', 'saf
 export type ClosingScript = (typeof CLOSING_SCRIPTS)[number];
 
 /**
- * The close reason → closing script mapping. Appendix F's "Session-Closing
+ * The close reason → closing script mapping. The "Session-Closing
  * Script Accuracy" (target 100%) is measured against exactly this table, and
- * Core holds a hand-mirrored copy (`services/pedagogy/sessionEnd.ts`) kept
- * identical by `npm run session-end:check`.
+ * Core holds a hand-mirrored copy (`services/pedagogy/sessionEnd.ts`).
  */
 export const CLOSING_SCRIPT_FOR_REASON: Record<CloseReason, ClosingScript> = {
   completed: 'completed',
@@ -66,15 +65,15 @@ export function closingScriptFor(reason: CloseReason): ClosingScript {
  * from what the server itself observed, most specific first:
  *
  *   corroborated     the controller declared mastery on corroborated evidence
- *                    (C.10: the same idea right twice in a row) — the peak.
+ *                    (the same idea right twice in a row) — the peak.
  *   recovered        a correct answer on a skill right after a miss on it.
- *   hint_then_solved a correct answer after hint-ladder help (C.13).
+ *   hint_then_solved a correct answer after hint-ladder help.
  *   kept_going       worked through graded activities.
  *   talked_through   an open conversation with no graded work.
  *   none             the learner never said or answered anything — the line
  *                    thanks them for coming and claims no act at all.
  *
- * Specific-over-generic praise is also the C.18 measure; the line never says
+ * Specific-over-generic praise is also the measure; the line never says
  * "great job" about nothing.
  */
 export const EFFORT_ACTS = ['corroborated', 'recovered', 'hint_then_solved', 'kept_going', 'talked_through', 'none'] as const;
@@ -84,7 +83,7 @@ export type EffortAct = (typeof EFFORT_ACTS)[number];
  * THE OPENING LINE a session is greeted with. `greeting` is the character's
  * own scripted hello; the four `reengage_*` openings deliver the message a
  * silent dropout (`left`) or a budget interruption (`interrupted`) QUEUED
- * for the learner's return (C.16). Core decides it once per session from the
+ * for the learner's return. Core decides it once per session from the
  * learner's previous closed session (`GET /tutor/internal/sessions/:id/opening`)
  * and records it on the session row, so a resume never re-delivers it.
  */
@@ -166,7 +165,7 @@ export class SessionCloser {
     this.state.learnerTurns += 1;
   }
 
-  /** The controller declared mastery on corroborated evidence (C.10). */
+  /** The controller declared mastery on corroborated evidence. */
   noteCorroboratedMastery(): void {
     this.state.corroborated = true;
   }
@@ -181,8 +180,8 @@ export class SessionCloser {
 }
 
 /**
- * What the client needs to draw the closing state (Frontend Bible 08 §3
- * "Closing" and §4 "Session end"): which script, the act the Mentor named,
+ * What the client needs to draw the closing state:
+ * which script, the act the Mentor named,
  * and the lesson topic it will pick up from. Our own catalog text only —
  * never the learner's words.
  */
@@ -202,7 +201,7 @@ export const RECAP_REFLECTION_INSTRUCTION = [
   'NOT request or promise an activity: the system adds the closing line after yours.',
 ].join(' ');
 
-/** Instruction carried by the turn that makes the C.8/C.12 stop-or-continue offer. */
+/** Instruction carried by the turn that makes the stop-or-continue offer. */
 export const SESSION_END_OFFER_INSTRUCTION = [
   'SESSION-END OFFER — decided by the system from how this session is going, not by you. After',
   'reacting to this answer in ONE short sentence, ask the learner to choose: stop here for today, or do',

@@ -1,15 +1,13 @@
 /*
- * Product C.24 (with C.21's anomaly flags): THE CONSOLIDATED MENTOR-QUALITY
+ * THE CONSOLIDATED MENTOR-QUALITY
  * AND ENGAGEMENT-HEALTH SIGNALS, their regression thresholds and their named
  * owners. PURE: the evaluation loop (`evaluationLoop.ts`) fetches the rows
  * and stores what this decides; the staff dashboard reads the stored result.
  *
- * One registry (`SIGNALS`) is the single place Appendix C's engagement-health
- * and learning-outcome metrics and this Block's Mentor signals converge
- * (Appendix E §3.1 Tier 3). Every entry names:
- *   - the requirement it verifies, and its Appendix C/F category;
- *   - the OWNER ROLE whose named person must review it (Appendix F §1.4
- *     "named owners"); a breach is not a display, it opens a flag assigned
+ * One registry (`SIGNALS`) is the single place the engagement-health
+ * and learning-outcome metrics and the Mentor signals converge. Every entry names:
+ *   - the requirement it verifies, and its category;
+ *   - the OWNER ROLE whose named person must review it ("named owners"); a breach is not a display, it opens a flag assigned
  *     to that role, and only a person named for that role can acknowledge or
  *     resolve it (`mentorQualityDashboard.ts`);
  *   - its threshold, or "diagnostic" (no fixed target: a baseline and a trend);
@@ -18,7 +16,7 @@
  *     requirement that must instrument it, never silently left off, and one
  *     read by another service is `external`.
  *
- * ANOMALY FLAGS (C.21, Appendix E §3.1 Tier 3): a spike (a rate over its
+ * ANOMALY FLAGS: a spike (a rate over its
  * ceiling or drifting up), a drop (a floor missed, the bond proxy falling
  * against its own baseline), a zero-tolerance or hard-invariant violation,
  * and DISPARITIES: a persona clearly worse than the other personas, or, within
@@ -29,11 +27,10 @@
  * GOVERNANCE. Everything here is Tier 3 (fully automated measurement and
  * flagging): its output is information for a human, never a live decision
  * that reaches a child. Every numeric threshold is "proposed, pending
- * calibration" and recorded in docs/rebuild/mentor/THRESHOLD-RECALIBRATION-LOG.md.
+ * calibration" and recorded in the threshold recalibration log.
  *
  * Vocabularies (owner roles, flag kinds, categories) are HAND-MIRRORED in
- * the migration CHECKs and the rebuilt staff client; `npm run
- * evaluation-loop:check` keeps them identical.
+ * the migration CHECKs and the rebuilt staff client, and must be kept identical by hand.
  */
 
 import { TRANSCRIPT_RUBRIC, RULES_CRITERIA, rubricCriterion, type CriterionKind } from './transcriptRubric.js';
@@ -82,8 +79,8 @@ export type FlagStatus = (typeof FLAG_STATUSES)[number];
 
 export type SignalStatus = 'ok' | 'breach' | 'insufficient_data' | 'diagnostic' | 'unavailable' | 'not_instrumented' | 'external';
 
-/** 'trend': Appendix C's "hold steady or improve" metrics, judged by classifyTrend (engagementHealth.ts). */
-/** 'release_non_decline': Appendix C 1.1 Delayed Retention, per KC against the latest recorded release (release 1 is the baseline). */
+/** 'trend': the "hold steady or improve" metrics, judged by classifyTrend (engagementHealth.ts). */
+/** 'release_non_decline': Delayed Retention, per KC against the latest recorded release (release 1 is the baseline). */
 export type ThresholdKind = CriterionKind | 'relative_drop' | 'band' | 'trend' | 'release_non_decline' | 'none';
 
 export interface SignalDefinition {
@@ -102,15 +99,15 @@ export interface SignalDefinition {
 }
 
 /**
- * EVERY THRESHOLD IS "PROPOSED, PENDING CALIBRATION" (Appendix F Part 1.4).
- * See docs/rebuild/mentor/THRESHOLD-RECALIBRATION-LOG.md.
+ * EVERY THRESHOLD IS "PROPOSED, PENDING CALIBRATION".
+ * See the threshold recalibration log.
  */
 export const MENTOR_QUALITY_THRESHOLDS = {
   /** The dashboard's current window, and the equal window before it for drift (days). */
   windowDays: 30,
   /** The bond proxy's own baseline: the days before the current window. */
   bondBaselineDays: 90,
-  /** Appendix F Stage 7 relative drop of the bond proxy (the SPEC's proposed 15%). */
+  /** Rollback relative drop of the bond proxy (the proposed 15%). */
   bondDropShare: ALLIANCE_THRESHOLDS.bondDropShare,
   bondBaselineMinAnswers: 50,
   bondCurrentMinAnswers: 30,
@@ -124,22 +121,22 @@ export const MENTOR_QUALITY_THRESHOLDS = {
   disparityMinSample: 30,
   /** A persona's bond score below this share of the other personas' mean is a disparity. */
   bondDisparityShare: 0.85,
-  /** Evaluation Pipeline Coverage floor (Appendix F §1.4 "near 100%"). */
+  /** Evaluation Pipeline Coverage floor ("near 100%"). */
   coverageFloor: 0.95,
   coverageMinSessions: 20,
   /** Sessions that ended less than this long ago are not yet due for scoring (their close writes may still land). */
   scoringGraceMinutes: 10,
-  /** Appendix F §1.4 freshness SLA: every consolidated signal updated within 24 hours. */
+  /** Freshness SLA: every consolidated signal updated within 24 hours. */
   freshnessHours: 24,
-  /** Appendix F §1.4 named-owner review cadence (days). */
+  /** Named-owner review cadence (days). */
   reviewCadenceDays: 7,
-  /** Appendix C §1.1 Desirable-Difficulty band (B.19). */
+  /** Desirable-Difficulty band. */
   practiceBand: { low: 0.7, high: 0.85 },
   practiceMinAttempts: 30,
   /** Mastery for Time-to-Mastery: the Mentor's mastery display posterior. */
   masteryPosterior: 0.85,
   /**
-   * Appendix C 1.1 Delayed Retention (GAP-FIX-R4): "no decline release over
+   * Delayed Retention: "no decline release over
    * release". A KC x window whose correct share falls more than this
    * (absolute) below the latest recorded release is a decline, judged only
    * when both periods saw at least `retentionMinLearners` learners in it.
@@ -147,24 +144,23 @@ export const MENTOR_QUALITY_THRESHOLDS = {
   retentionDeclineTolerance: 0.05,
   retentionMinLearners: 20,
   /**
-   * B.28 engagement health (Appendix C §1.2): the last 4 weeks against the 4
+   * Engagement health: the last 4 weeks against the 4
    * before; a move of more than 10% in the metric's bad direction is a
    * regression (engagementHealth.ts owns the numbers; mirrored here for the reader).
    */
   engagementTrendTolerance: TREND_TOLERANCE,
   engagementTrendMinWeeklySample: TREND_MIN_WEEKLY_SAMPLE,
-  /** B.9 / B.13 / B.21 / B.24 diagnostics: below this many opportunities the reading is insufficient_data. */
+  /** Diagnostics: below this many opportunities the reading is insufficient_data. */
   narrativeMinSample: 20,
   restDayMinLapses: 20,
   autonomyMinOffers: 20,
   /**
-   * Appendix C 1.2 per-release manual audits (B.25, B.22, B.20; GAP-FIX-R2):
+   * Per-release manual audits:
    * the latest recorded audit must be a pass and no older than this. 45 days
-   * is the release cadence docs/rebuild/DARK-PATTERN-AUDIT.md already binds
-   * `release:readiness` to.
+   * is the release cadence.
    */
   releaseAuditCadenceDays: 45,
-  /** Appendix C 1.2 Parent Time-to-Value, "proposed: 3 minutes": the median, signup to first insight. */
+  /** Parent Time-to-Value, "proposed: 3 minutes": the median, signup to first insight. */
   parentTimeToValueSeconds: 180,
   parentTimeToValueMinSample: 20,
 } as const;
@@ -214,7 +210,7 @@ export const RELEASE_AUDIT_SIGNAL: Record<ReleaseAuditKind, string> = {
 };
 
 export const SIGNALS: readonly SignalDefinition[] = [
-  // ── Appendix F §1.1 real-time pedagogical effectiveness ──
+  // ── Real-time pedagogical effectiveness ──
   { id: 'mastery.corroboration_compliance', category: 'pedagogy', requirement: 'C.10', owner: 'pedagogical_lead', threshold: { kind: 'hard_invariant', value: 1 }, minSample: 1, source: 'tutor_trajectory_step', instrumented: 'yes' },
   { id: 'mastery.reversal_rate', category: 'pedagogy', requirement: 'C.10', owner: 'pedagogical_lead', threshold: { kind: 'ceiling', value: MENTOR_INTEGRITY_THRESHOLDS.masteryReversalCeiling }, minSample: MENTOR_INTEGRITY_THRESHOLDS.masteryReversalMinDeclarations, source: 'tutor_trajectory_step (90-day reversal window)', instrumented: 'yes' },
   rubricSignal('hint_repeat'),
@@ -223,7 +219,7 @@ export const SIGNALS: readonly SignalDefinition[] = [
   { id: 'spaced_review.routing', category: 'pedagogy', requirement: 'C.11', owner: 'pedagogical_lead', threshold: { kind: 'hard_invariant', value: 1 }, minSample: 1, source: 'tutor_review_routing (rule re-evaluation)', instrumented: 'yes' },
   { id: 'disposition.completeness', category: 'pedagogy', requirement: 'C.7', owner: 'pedagogical_lead', threshold: { kind: 'diagnostic', value: null }, minSample: 1, source: 'learner_disposition_profile, tutor_sessions', instrumented: 'yes' },
   { id: 'session_end.trigger_rate', category: 'pedagogy', requirement: 'C.8', owner: 'pedagogical_lead', threshold: { kind: 'diagnostic', value: null }, minSample: 50, source: 'tutor_session_end_signal, tutor_sessions', instrumented: 'yes' },
-  // ── Appendix F §1.2 relational and affective health ──
+  // ── Relational and affective health ──
   { id: 'alliance.bond_proxy', category: 'relational', requirement: 'C.15', owner: 'pedagogical_lead', threshold: { kind: 'relative_drop', value: T.bondDropShare }, minSample: T.bondCurrentMinAnswers, source: 'tutor_session_alliance.bond_proxy', instrumented: 'yes' },
   rubricSignal('goal_agreement'),
   { id: 'alliance.renegotiation', category: 'relational', requirement: 'C.15', owner: 'pedagogical_lead', threshold: { kind: 'diagnostic', value: null }, minSample: 1, source: 'tutor_alliance_renegotiation', instrumented: 'yes' },
@@ -236,41 +232,41 @@ export const SIGNALS: readonly SignalDefinition[] = [
   rubricSignal('closing_script'),
   { id: 'dialogue.ab_outcome', category: 'relational', requirement: 'C.17', owner: 'pedagogical_lead', threshold: { kind: 'hard_invariant', value: 0 }, minSample: 1, source: 'tutor_dialogue_calibration (enrolled sessions)', instrumented: 'yes' },
   rubricSignal('controlling_language'),
-  // ── Appendix F §1.3 safety and governance ──
+  // ── Safety and governance ──
   rubricSignal('emotion_label'),
   { id: 'judge.content_calibration', category: 'safety_governance', requirement: 'C.5', owner: 'safety_trust_lead', threshold: { kind: 'hard_invariant', value: 1 }, minSample: 1, source: 'tutor_content_judge_calibration, the live-content gate', instrumented: 'yes' },
   { id: 'kill_switch.open', category: 'safety_governance', requirement: 'C.21', owner: 'safety_trust_lead', threshold: { kind: 'hard_invariant', value: 0 }, minSample: 1, source: 'audit_logs mentor.kill_switch.* (every Stage 7 rollback)', instrumented: 'yes' },
   { id: 'bias_audit.coverage', category: 'safety_governance', requirement: 'C.20', owner: 'safety_trust_lead', threshold: { kind: 'floor', value: 1 }, minSample: 1, source: 'Oracle bias audit', pending: 'npm --prefix oracle run bias-audit; .github/workflows/mentor-bias-audit.yml', instrumented: 'external' },
   { id: 'transcript_judge.agreement', category: 'safety_governance', requirement: 'C.23', owner: 'safety_trust_lead', threshold: { kind: 'hard_invariant', value: 1 }, minSample: 1, source: 'mentor_judge_calibration (the transcript judge: latest calibration and spot checks)', instrumented: 'yes' },
   { id: 'governance.tier_compliance', category: 'safety_governance', requirement: 'C.22', owner: 'safety_trust_lead', threshold: { kind: 'zero_tolerance', value: 0 }, minSample: 0, source: 'the repository gate (Tier 1 change record, automated-origin fence)', pending: 'npm run governance:check -- --release (release-readiness); the repo-gates workflow on every push', instrumented: 'external' },
-  // GAP-FIX-R3 (Appendix F 1.3): the only Part 1 metrics for C.1-C.4.
+  // The only metrics for the minor safeguards.
   { id: 'safety.fracture_closure', category: 'safety_governance', requirement: 'C.2', owner: 'safety_trust_lead', threshold: { kind: 'zero_tolerance', value: 0 }, minSample: 0, source: 'the per-release Fracture-Closure Verification: every C.2/C.3/C.4 safeguard keys off the minor indicator or a guardian link, never the kid role alone', pending: 'npm run minor-safeguards:check -- --report=<file> (release-readiness); the repo-gates workflow on every push', instrumented: 'external' },
   { id: 'safety.age_tier_calibration', category: 'safety_governance', requirement: 'C.1', owner: 'safety_trust_lead', threshold: { kind: 'hard_invariant', value: 1 }, minSample: 1, source: 'mentor_age_calibration_coverage: unknown-age sessions with the explicit calibration before they started', instrumented: 'yes' },
-  // Gap-fix round 6 (Appendix D 3.7; C.18; C.20 Law 5): praise and leniency must not drift with the identity cues a learner presents.
+  // Praise and leniency must not drift with the identity cues a learner presents.
   { id: 'safety.equity_drift', category: 'safety_governance', requirement: 'C.18', owner: 'safety_trust_lead', threshold: { kind: 'zero_tolerance', value: 0 }, minSample: 0, source: 'the Oracle equity-drift audit: identical scripted sessions replayed with only the nickname and locale varied; the spread of praise, generic praise, sycophantic drafts, corrections and reveals between name groups against pre-registered tolerances', pending: 'npm --prefix oracle run equity-audit -- --check (monthly, .github/workflows/mentor-equity-audit.yml; release-readiness); the live run is owner-run (OD-23)', instrumented: 'external' },
-  // ── Appendix F §1.4 QA and pipeline ──
+  // ── QA and pipeline ──
   { id: 'evaluation.coverage', category: 'pipeline', requirement: 'C.21', owner: 'engineering_lead', threshold: { kind: 'floor', value: T.coverageFloor }, minSample: T.coverageMinSessions, source: 'tutor_sessions.evaluation_rubric_hash', instrumented: 'yes' },
   { id: 'content_ladder.distribution', category: 'pipeline', requirement: 'C.6', owner: 'pedagogical_lead', threshold: { kind: 'diagnostic', value: null }, minSample: 1, source: 'tutor_content_ladder_events', instrumented: 'yes' },
   { id: 'simulated_student.pass_rate', category: 'pipeline', requirement: 'C.21', owner: 'engineering_lead', threshold: { kind: 'diagnostic', value: null }, minSample: 0, source: 'Oracle pedagogy gym', pending: 'npm --prefix oracle run gym:pedagogy (CI)', instrumented: 'external' },
   { id: 'canary.regression_rate', category: 'pipeline', requirement: 'C.22', owner: 'engineering_lead', threshold: { kind: 'diagnostic', value: null }, minSample: 0, source: 'Stage 5 outcomes in the change-proposal records', pending: 'npm run governance:check -- --report (docs/rebuild/mentor/governance/proposals)', instrumented: 'external' },
-  // Gap-fix round 6 (Appendix F 1.4, Part 3 Stage 7): the quarterly human review of the Block C Threshold Recalibration Log.
+  // The quarterly human review of the Threshold Recalibration Log.
   { id: 'governance.threshold_review', category: 'pipeline', requirement: 'C.10', owner: 'pedagogical_lead', threshold: { kind: 'zero_tolerance', value: 0 }, minSample: 0, source: 'the review schedule of docs/rebuild/mentor/THRESHOLD-RECALIBRATION-LOG.md: an overdue quarterly human review (Pedagogical Reviewer and Safety/Trust Lead)', pending: 'node agent/tools/check-mentor-thresholds.mjs --strict (release-readiness); .github/workflows/mentor-thresholds-quarterly.yml opens the review issue each quarter', instrumented: 'external' },
-  // GAP-FIX-R3 (Appendix F Stage 5): each running canary against its matched control, so a person reads canary-arm transcripts before release.
+  // Each running canary against its matched control, so a person reads canary-arm transcripts before release.
   { id: 'canary.arm_comparison', category: 'pipeline', requirement: 'C.22', owner: 'pedagogical_lead', threshold: { kind: 'diagnostic', value: null }, minSample: T.disparityMinSample, source: 'tutor_sessions.canary_arm with the rules-scored transcripts of each arm (npm run tutor:canary-report draws the reading sample)', instrumented: 'yes' },
-  // ── Appendix C §1.1 learning outcomes ──
-  // GAP-FIX-R4: the SPEC's definition (review cards 30/60/90 days after first mastery, per KC), judged release over release.
+  // ── Learning outcomes ──
+  // The definition (review cards 30/60/90 days after first mastery, per KC), judged release over release.
   { id: 'learning.delayed_retention', category: 'learning_outcome', requirement: 'B.6', owner: 'pedagogical_lead', threshold: { kind: 'release_non_decline', value: T.retentionDeclineTolerance }, minSample: T.retentionMinLearners, source: 'learning_delayed_retention: first spaced review 30/60/90 days after first mastery, per KC; against learning_retention_release_baseline (the latest recorded release)', instrumented: 'yes' },
   { id: 'learning.practice_success_band', category: 'learning_outcome', requirement: 'B.19', owner: 'pedagogical_lead', threshold: { kind: 'band', value: T.practiceBand.low, upper: T.practiceBand.high }, minSample: T.practiceMinAttempts, source: 'kc_attempt (Mentor practice)', instrumented: 'yes' },
   { id: 'learning.time_to_mastery', category: 'learning_outcome', requirement: 'B.19', owner: 'pedagogical_lead', threshold: { kind: 'diagnostic', value: null }, minSample: 1, source: 'kc_attempt, every evidence source (attempts to the mastery posterior), per KC and per age band (learning_kc_learner_age_bands)', instrumented: 'yes' },
   { id: 'learning.transfer_success', category: 'learning_outcome', requirement: 'B.7', owner: 'pedagogical_lead', threshold: { kind: 'diagnostic', value: null }, minSample: 1, source: 'v2 grade receipts tagged practice or transfer (learning_transfer_success)', instrumented: 'yes' },
-  // Appendix C: "the two signals should meaningfully diverge" — a floor on the divergent share (learningQuality.ts).
+  // "the two signals should meaningfully diverge" — a floor on the divergent share (learningQuality.ts).
   { id: 'learning.judgment_quality', category: 'learning_outcome', requirement: 'B.12', owner: 'pedagogical_lead', threshold: { kind: 'floor', value: JUDGMENT_DIVERGENCE_FLOOR }, minSample: JUDGMENT_MIN_ATTEMPTS, source: 'learning_judgment_differentiation (0129)', instrumented: 'yes' },
   { id: 'learning.decision_journal', category: 'learning_outcome', requirement: 'B.9', owner: 'pedagogical_lead', threshold: { kind: 'diagnostic', value: null }, minSample: T.narrativeMinSample, source: 'learning_narrative_metrics: story decisions made and journaled (coverage), entries recorded and resurfaced', instrumented: 'yes' },
-  // ── Appendix C §1.2 engagement health ──
+  // ── Engagement health ──
   { id: 'engagement.session_efficiency', category: 'engagement_health', requirement: 'B.28', owner: 'pedagogical_lead', threshold: { kind: 'trend', value: T.engagementTrendTolerance }, minSample: T.engagementTrendMinWeeklySample, source: 'learning_session_efficiency (0136), weekly; higher is better', instrumented: 'yes' },
   { id: 'engagement.mentor_resolution', category: 'engagement_health', requirement: 'B.28', owner: 'pedagogical_lead', threshold: { kind: 'trend', value: T.engagementTrendTolerance }, minSample: T.engagementTrendMinWeeklySample, source: 'mentor_resolution_efficiency (0136), weekly median turns; lower is better', instrumented: 'yes' },
   { id: 'engagement.rest_day_use', category: 'engagement_health', requirement: 'B.21', owner: 'pedagogical_lead', threshold: { kind: 'diagnostic', value: null }, minSample: T.restDayMinLapses, source: 'learning_rest_day_utilization (0134)', instrumented: 'yes' },
-  // Per-release manual audits (Appendix C Part 3 Stage 3), recorded by the named owner (release_audit_results).
+  // Per-release manual audits, recorded by the named owner (release_audit_results).
   { id: 'engagement.dark_pattern_audit', category: 'engagement_health', requirement: 'B.25', owner: 'safety_trust_lead', threshold: { kind: 'zero_tolerance', value: 0 }, minSample: 1, source: 'release_audit_results (dark_pattern): findings in the latest release audit', instrumented: 'yes' },
   { id: 'engagement.variable_ratio_audit', category: 'engagement_health', requirement: 'B.22', owner: 'safety_trust_lead', threshold: { kind: 'hard_invariant', value: 1 }, minSample: 1, source: 'release_audit_results (variable_ratio): the latest release audit passed', instrumented: 'yes' },
   { id: 'engagement.reward_framing', category: 'engagement_health', requirement: 'B.20', owner: 'pedagogical_lead', threshold: { kind: 'hard_invariant', value: 1 }, minSample: 1, source: 'release_audit_results (reward_framing): the latest release audit passed', instrumented: 'yes' },
@@ -355,31 +351,31 @@ export interface QualitySources {
   dialogue: CalibrationOutcomeRow[] | null;
   ladder: LadderEventRow[] | null;
   liveGate: { calibration: string; suspended: { category: string; reasons: string[] }[] } | null;
-  /** C.23: every judge's recorded calibration runs and spot checks. */
+  /** Every judge's recorded calibration runs and spot checks. */
   judgeCalibrations: CalibrationRecordRow[] | null;
   killSwitchAudit: AuditRow[] | null;
   completeness: { active: number; current: number } | null;
   kcAttempts: KcAttemptRow[] | null;
-  /** Appendix C 1.1 Delayed Retention (0237) over the current period: since the latest recorded release (or the window). */
+  /** Delayed Retention (0237) over the current period: since the latest recorded release (or the window). */
   retention: RetentionCell[] | null;
-  /** GAP-FIX-R4: the latest recorded release's frozen cells (null: no release recorded yet, or the read failed). */
+  /** The latest recorded release's frozen cells (null: no release recorded yet, or the read failed). */
   retentionBaseline?: { releaseId: string; cells: RetentionCell[] } | null;
-  /** GAP-FIX-R4: each learner's age band (0237 learning_kc_learner_age_bands) for Time-to-Mastery. Optional. */
+  /** Each learner's age band (0237 learning_kc_learner_age_bands) for Time-to-Mastery. Optional. */
   ageBands?: { user_id: string; age_band: string }[] | null;
   /**
-   * Appendix C 1.1 / 1.2 sources the Learning Quality tab already reads
+   * Sources the Learning Quality tab already reads
    * (learningQuality.ts, engagementHealth.ts); each is null when its read failed.
    */
   learning: LearningSignalSources;
-  /** GAP-FIX-R1 (Appendix C 1.1): first-try success per KC and item role, from v2 receipts (0207). Optional: absent before the loop reads it. */
+  /** First-try success per KC and item role, from v2 receipts (0207). Optional: absent before the loop reads it. */
   transfer?: { kc: string; item_role: 'practice' | 'transfer'; first_attempts: number; successes: number }[] | null;
-  /** GAP-FIX-R2 (Appendix C 1.2): the recorded per-release audits, newest first. Optional: absent before the loop reads it. */
+  /** The recorded per-release audits, newest first. Optional: absent before the loop reads it. */
   releaseAudits?: ReleaseAuditRow[] | null;
-  /** GAP-FIX-R2 (Appendix C 1.2): parent_time_to_value over the window. Optional: absent before the loop reads it. */
+  /** parent_time_to_value over the window. Optional: absent before the loop reads it. */
   parentTimeToValue?: { signups: number; reached: number; medianSeconds: number | null; p75Seconds: number | null; withinTarget: number } | null;
-  /** GAP-FIX-R3 (C.22 Stage 5): sessions of the window that ran a canary arm. Optional: absent before the loop reads it. */
+  /** Sessions of the window that ran a canary arm. Optional: absent before the loop reads it. */
   canaryArms?: CanaryArmRow[] | null;
-  /** GAP-FIX-R3 (C.1, Appendix F 1.3): mentor_age_calibration_coverage over the window. Optional: absent before the loop reads it. */
+  /** mentor_age_calibration_coverage over the window. Optional: absent before the loop reads it. */
   ageCalibration?: AgeCalibrationCoverage | null;
 }
 
@@ -409,7 +405,7 @@ export interface LearningSignalSources {
   judgment: { lesson_id: string; attempts: number; correct_not_sound: number; incorrect_sound: number }[] | null;
   narrative: {
     journal_entries_recorded: number; journal_entries_resurfaced: number;
-    /** GAP-FIX-R7 (Appendix C 1.1): the coverage denominator; undefined before its migration. */
+    /** The coverage denominator; undefined before its migration. */
     story_decisions_made?: number | undefined; story_decisions_journaled?: number | undefined; story_decisions_without_consent?: number | undefined;
   } | null;
   sessionEfficiency: { week_start: string; learners: number; efficiency_ratio: number | null }[] | null;
@@ -497,7 +493,7 @@ function groupBy<R>(rows: readonly R[], key: (r: R) => string): Map<string, R[]>
   return map;
 }
 
-// ── The rubric signals (C.21 transcript scoring, aggregated) ────────────────
+// ── The rubric signals (transcript scoring, aggregated) ────────────────
 
 function rubricReading(def: SignalDefinition, criterion: string, scores: ScoreRow[], prior: ScoreRow[] | null, anomalies: Anomaly[]): SignalReading {
   const c = rubricCriterion(criterion)!;
@@ -546,7 +542,7 @@ function rubricReading(def: SignalDefinition, criterion: string, scores: ScoreRo
       if (b.status === 'breach') anomalies.push(anomalyFor(def, 'threshold_breach', b.key, b.value, c.target, { opportunities: b.sample }));
     }
     if (status === 'breach') anomalies.push(anomalyFor(def, 'threshold_breach', 'all', rate, c.target, { opportunities: den }));
-    // Upward drift of a ceiling rate against the prior window, per persona (Appendix F "any upward drift").
+    // Upward drift of a ceiling rate against the prior window, per persona ("any upward drift").
     if (c.kind === 'ceiling' && prior !== null) {
       const priorRows = prior.filter((r) => r.criterion === criterion && r.outcome !== 'not_applicable');
       for (const [character, rs] of groupBy(rows, (r) => r.character)) {
@@ -711,7 +707,7 @@ function evaluateOne(
       if (src.judgeCalibrations === null) return unavailable(def);
       const trust = judgeTrust('transcript_judge', src.judgeCalibrations, src.now);
       const trusted = trust.state === 'passed';
-      // Appendix F §1.3: below threshold, or not re-checked on the cadence, is
+      // Below threshold, or not re-checked on the cadence, is
       // a breach (a spot check below threshold also requires recalibration).
       if (!trusted) anomalies.push(anomalyFor(def, 'threshold_breach', 'all', 0, 1, { calibration: trust.state }));
       return reading(def.id, {
@@ -780,7 +776,7 @@ function evaluateOne(
     case 'engagement.mentor_resolution':
       return trendReading(def, src.learning, anomalies, unavailable);
     case 'learning.transfer_success': {
-      // Appendix C 1.1: success on transfer items, beside practice success on the same KCs.
+      // Success on transfer items, beside practice success on the same KCs.
       // null = the read failed (unavailable); undefined = a source set built before 0207 (no evidence yet).
       if (src.transfer === null) return unavailable(def);
       const all = src.transfer ?? [];
@@ -844,7 +840,7 @@ function evaluateOne(
 }
 
 /**
- * GAP-FIX-R3 (C.22, Appendix F Part 3 Stage 5): each running canary against
+ * Each running canary against
  * its matched control arm, on the rules-scored transcripts of each arm (a
  * session that failed any rules criterion counts once). A canary arm clearly
  * worse than its control (the disparity rule: ratio, gap and sample on both
@@ -893,7 +889,7 @@ function canaryReading(def: SignalDefinition, src: QualitySources, anomalies: An
 }
 
 /**
- * Appendix C 1.2's per-release manual audits (B.25, B.22, B.20). The latest
+ * The per-release manual audits. The latest
  * recorded audit of the kind decides: a fail breaches (a dark-pattern finding
  * is zero-tolerance), and so does an audit older than the release cadence or
  * none at all (a promise not currently kept reads as a breach, never as calm).
@@ -950,7 +946,7 @@ function bondReading(def: SignalDefinition, src: QualitySources, anomalies: Anom
     }
     breakdown.push({ key: `persona:${character}`, value: p.score, sample: p.answered, status });
   }
-  // A persona clearly below the other personas (Appendix F: "a persona scoring meaningfully below the others").
+  // A persona clearly below the other personas ("a persona scoring meaningfully below the others").
   const judged = breakdown.filter((b) => b.value !== null && b.sample >= T.bondCurrentMinAnswers);
   for (const b of judged) {
     const others = judged.filter((o) => o.key !== b.key);
@@ -1000,7 +996,7 @@ function frictionReading(def: SignalDefinition, src: QualitySources, anomalies: 
 }
 
 /**
- * Appendix C 1.1 Delayed Retention Rate (GAP-FIX-R4): the share of learners
+ * Delayed Retention Rate: the share of learners
  * answering the review card correctly 30 / 60 / 90 days after first mastery,
  * per KC. Target: the first recorded release is the baseline, then no decline
  * release over release. Each KC x window of the current period is compared
@@ -1047,7 +1043,7 @@ function retentionReading(def: SignalDefinition, src: QualitySources, anomalies:
   });
 }
 
-/** Age bands Time-to-Mastery is segmented by (Appendix C 1.1), in display order. */
+/** Age bands Time-to-Mastery is segmented by, in display order. */
 export const MASTERY_AGE_BANDS = ['6-9', '10-12', '13-17', 'adult', 'unknown'] as const;
 
 const median = (values: number[]): number | null => {
@@ -1061,7 +1057,7 @@ function practiceReading(def: SignalDefinition, src: QualitySources, anomalies: 
   if (src.kcAttempts === null) return unavailable(def);
   const sourceLatestAt = latest(src.kcAttempts.map((r) => r.created_at));
   if (def.id === 'learning.practice_success_band') {
-    // B.19's band is about practice exercises: the Mentor's graded practice, not course-lesson evidence.
+    // The band is about practice exercises: the Mentor's graded practice, not course-lesson evidence.
     const practice = src.kcAttempts.filter((r) => (r.source ?? 'segment_grade') === 'segment_grade');
     const n = practice.length;
     const correct = practice.filter((r) => r.correct).length;
@@ -1076,10 +1072,10 @@ function practiceReading(def: SignalDefinition, src: QualitySources, anomalies: 
     if (status === 'breach') anomalies.push(anomalyFor(def, 'threshold_breach', 'all', rate, rate! < T.practiceBand.low ? T.practiceBand.low : T.practiceBand.high, { attempts: n }));
     return reading(def.id, { status, value: rate, sample: n, breakdown: outside.slice(0, 20), detail: { kcsOutsideBand: outside.length }, sourceLatestAt });
   }
-  // Time-to-Mastery (Appendix C 1.1, diagnostic): attempts until the
+  // Time-to-Mastery (diagnostic): attempts until the
   // posterior first reaches the bar, per learner x KC in the window, from
-  // every evidence source (B.6: one mastery model). The median overall, and
-  // per KC and per age band (GAP-FIX-R4), to be read beside the practice band.
+  // every evidence source (one mastery model). The median overall, and
+  // per KC and per age band, to be read beside the practice band.
   const bands = new Map((src.ageBands ?? []).map((r) => [r.user_id, r.age_band]));
   const pairs = groupBy([...src.kcAttempts].sort((a, b) => a.created_at.localeCompare(b.created_at)), (r) => `${r.user_id}|${r.kc_id}`);
   const counts: number[] = [];
@@ -1108,7 +1104,7 @@ function practiceReading(def: SignalDefinition, src: QualitySources, anomalies: 
   });
 }
 
-// ── Appendix C 1.1 / 1.2 signals the Learning Quality tab already computes ─
+// ── Signals the Learning Quality tab already computes ─
 
 function learningReading(def: SignalDefinition, l: LearningSignalSources, anomalies: Anomaly[], unavailable: (d: SignalDefinition) => SignalReading): SignalReading {
   const rate = (num: number, den: number) => (den === 0 ? null : num / den);
@@ -1156,16 +1152,16 @@ function learningReading(def: SignalDefinition, l: LearningSignalSources, anomal
   }
 }
 
-/** Appendix C 1.1: the first release window of the coverage is its baseline (diagnostic, no fixed target yet). */
+/** The first release window of the coverage is its baseline (diagnostic, no fixed target yet). */
 export const DECISION_JOURNAL_BASELINE = 'release-1';
 
 /**
- * Appendix C 1.1 "Decision Journal Coverage & Resurfacing Rate" (B.9): the %
+ * "Decision Journal Coverage & Resurfacing Rate": the %
  * of meaningful in-story choices the journal recorded, and of those, the %
  * later resurfaced. The value stays the resurfacing rate; the coverage
  * (journaled / made) sits next to it in the breakdown and the detail. The
  * journal write is best-effort, so a coverage below 100% is the lost entries
- * made visible. Decisions of a learner without the journal's consent (OD-9)
+ * made visible. Decisions of a learner without the journal's consent
  * are reported apart, never as lost. Before the coverage migration the
  * denominator is absent and only the resurfacing half reads.
  */
@@ -1193,7 +1189,7 @@ export function decisionJournalReading(def: SignalDefinition, n: NonNullable<Lea
 }
 
 /**
- * Appendix C 1.2's two B.28 metrics: "hold steady or improve". The weekly
+ * The two resolution-efficiency metrics: "hold steady or improve". The weekly
  * series is judged by classifyTrend (the Learning Quality tab's own rule);
  * a regression in the bad direction is a breach for the named owner.
  */
@@ -1221,7 +1217,7 @@ function trendReading(def: SignalDefinition, l: LearningSignalSources, anomalies
   });
 }
 
-/** Every Stage 7 rollback whose latest event is a trigger (still in force). */
+/** Every rollback whose latest event is a trigger (still in force). */
 export function openKillSwitches(rows: readonly AuditRow[]): { key: string; triggeredAt: string }[] {
   const ordered = [...rows].sort((a, b) => a.created_at.localeCompare(b.created_at));
   const open = new Map<string, string>();
@@ -1252,7 +1248,7 @@ export function freshness(computedAt: string | null, now: Date): { ageHours: num
 }
 
 /**
- * Dashboard Usage Rate (Appendix F §1.4): the share of named owners who
+ * Dashboard Usage Rate: the share of named owners who
  * signed their weekly review. The CURRENT week is still open, so the rate is
  * judged on the last complete week; the current week is shown for progress.
  */

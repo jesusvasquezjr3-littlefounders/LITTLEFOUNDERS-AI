@@ -1,10 +1,10 @@
-// Lesson-policy gates 14–16 (S05.4b): B.17 concept cap, B.11 mentor
-// misjudgment, B.16 regional adaptation.
+// Lesson-policy gates 14–16: concept cap, mentor
+// misjudgment, regional adaptation.
 //
 // Unlike gates 11–13, which read a document alone, these need the CATALOG: a
-// lesson's declared density and its place in course order (B.17), whether it
-// is a flagged mentor-misjudgment episode (B.11) and its market scenarios
-// (B.16). `buildCoursePolicy` derives one LessonPolicy per lesson from a loaded
+// lesson's declared density and its place in course order, whether it
+// is a flagged mentor-misjudgment episode and its market scenarios.
+// `buildCoursePolicy` derives one LessonPolicy per lesson from a loaded
 // course, plus the catalog-level findings; `runLessonPolicyGates` checks a
 // generated document against its policy.
 //
@@ -56,12 +56,12 @@ export interface CoursePolicy {
   findings: PolicyFinding[];
   metrics: {
     lessons: number;
-    /** B.17: lessons whose density is declared. */
+    /** Lessons whose density is declared. */
     densityDeclared: number;
-    /** B.11: Mentor-Misjudgment Content Coverage for this course. */
+    /** Mentor-Misjudgment Content Coverage for this course. */
     misjudgmentEpisodes: number;
     misjudgmentMinimum: number;
-    /** B.16: lessons that need market scenarios, and how many declare them. */
+    /** Lessons that need market scenarios, and how many declare them. */
     regionalRequired: number;
     regionalDeclared: number;
   };
@@ -181,7 +181,7 @@ export function documentText(document: LessonDocumentLike): string {
 
 export interface PolicyGateReport {
   problems: GateProblem[];
-  /** Concepts a lesson uses ahead of the lesson that introduces them (B.17). */
+  /** Concepts a lesson uses ahead of the lesson that introduces them. */
   earlyConcepts: string[];
 }
 
@@ -196,7 +196,7 @@ export function runLessonPolicyGates(
   const problems: GateProblem[] = [];
   const earlyConcepts: string[] = [];
 
-  // Gate 14 — B.17: a later lesson's concept used here is an undeclared new concept.
+  // Gate 14 — a later lesson's concept used here is an undeclared new concept.
   if (policy) {
     const { concepts } = policy;
     for (const future of concepts.future) {
@@ -218,7 +218,7 @@ export function runLessonPolicyGates(
     }
   }
 
-  // Gate 15 — B.11: a flagged episode really stages the misjudgment and the recovery, without shame.
+  // Gate 15 — a flagged episode really stages the misjudgment and the recovery, without shame.
   if (policy?.misjudgment) {
     const { character } = policy.misjudgment;
     const cast = (document as { meta?: { cast?: string[] } }).meta?.cast ?? [];
@@ -242,7 +242,7 @@ export function runLessonPolicyGates(
     }
   }
 
-  // Gate 16 — B.16: translated, not localized.
+  // Gate 16 — translated, not localized.
   for (const finding of checkRegionalDocument(text, locale, policy?.regional, markets)) {
     problems.push({ gate: 16, message: finding.message });
   }

@@ -7,18 +7,17 @@ import { isMilestone, type Milestone } from './milestones';
 import './motion.css';
 
 /*
- * Motion patterns of the rebuilt frontend (Frontend Bible 02 §9.1, §9.2, §9.4;
- * 04 §2–§3; 07 §5; S03.7). Every animation lives in `motion.css` inside a
+ * Motion patterns of the rebuilt frontend. Every animation lives in `motion.css` inside a
  * `prefers-reduced-motion: no-preference` query, so reduced motion keeps every
  * state change and removes only the travel. The celebration curve and duration
  * (`--ease-spring`, `--dur-celebration`) exist only under `.lf-celebration`,
- * and `Celebration` renders only for an OD-7 milestone.
+ * and `Celebration` renders only for a milestone.
  */
 
 /**
- * The three idle-motion slots of 02 §9.4. `hero` is the hero object's float or,
- * on a screen with the Mentor stage, the character's catalogue idle loop (08
- * §3): one of the three, never a fourth.
+ * The three idle-motion slots. `hero` is the hero object's float or,
+ * on a screen with the Mentor stage, the character's catalogue idle loop:
+ * one of the three, never a fourth.
  */
 export type IdleMotionKind = 'hero' | 'streak-flame' | 'breathing-cta';
 export const IDLE_MOTION_KINDS: readonly IdleMotionKind[] = ['hero', 'streak-flame', 'breathing-cta'];
@@ -42,19 +41,18 @@ export function releaseIdleMotion(kind: IdleMotionKind, holder: symbol) {
 }
 
 /**
- * Busy motion (OD-28, owner review item V-04): the loading placeholder's
+ * Busy motion: the loading placeholder's
  * shimmer and the pending button's spinner. They are progress indicators, not
- * idle "the scene is alive" loops, so they take no slot of the three (02 §9.4)
+ * idle "the scene is alive" loops, so they take no slot of the three
  * and are budgeted separately by this contract:
  *
  *   - they run only while work is in flight: a shimmer only on the shared
  *     loading placeholder (`Skeleton`), a spinner only on a pending button
  *     (`aria-busy="true"`, beside its changed label), and each is gone the
  *     moment the request settles;
- *   - every busy loop is marked `data-busy-motion` with its kind, so the audit
- *     driver can tell it from an unbudgeted loop, and no other loop may carry
- *     the mark;
- *   - they are small and in place (no travel across the screen, 04 §3) and,
+ *   - every busy loop is marked `data-busy-motion` with its kind, and no other
+ *     loop may carry the mark;
+ *   - they are small and in place (no travel across the screen) and,
  *     like every animation here, exist only under
  *     `prefers-reduced-motion: no-preference`: with reduced motion the
  *     placeholder is still and the spinner is a still ring beside the label.
@@ -62,7 +60,7 @@ export function releaseIdleMotion(kind: IdleMotionKind, holder: symbol) {
 export type BusyMotionKind = 'shimmer' | 'spinner';
 export const BUSY_MOTION_KINDS: readonly BusyMotionKind[] = ['shimmer', 'spinner'];
 
-/** The slots in use right now (tests and the audit driver read this). */
+/** The slots in use right now. */
 export function activeIdleMotion(): IdleMotionKind[] {
   return IDLE_MOTION_KINDS.filter((kind) => holders.has(kind));
 }
@@ -70,7 +68,7 @@ export function activeIdleMotion(): IdleMotionKind[] {
 /**
  * Asks for one idle loop. It returns true only while this component holds the
  * slot, so at most one breathing call to action, one hero and one flame move at
- * once: three things, the budget (02 §9.4). A refused claimant waits and takes
+ * once: three things, the budget. A refused claimant waits and takes
  * the slot when its holder leaves.
  */
 export function useIdleMotion(kind: IdleMotionKind, wanted = true): boolean {
@@ -109,7 +107,7 @@ export function useOneShot(trigger: string | false | null | undefined): [boolean
 }
 
 /**
- * The shell's route entrance (02 rule 14; 04 §2, `--dur-transition` on
+ * The shell's route entrance (`--dur-transition` on
  * `--ease-enter`): replays the `data-route-enter` animation on <main> for a
  * real route change. The shell calls it from its route-focus effect, which
  * never runs on the first render or on an in-place re-render, and the mark is
@@ -164,19 +162,19 @@ const CelebrationContext = createContext<CelebrationState | null>(null);
 /**
  * The state of the milestone celebration around a component, or null outside
  * one. A celebration motion asset (`MotionAsset`) plays only while this is
- * `playing` and is refused outside a closed-list milestone (07 §5, OD-7).
+ * `playing` and is refused outside a closed-list milestone.
  */
 export function useCelebrationState(): CelebrationState | null {
   return useContext(CelebrationContext);
 }
 
 /**
- * The only celebration in the rebuilt frontend (02 §9.2, D7, OD-7): a milestone
+ * The only celebration in the rebuilt frontend: a milestone
  * on the closed list celebrates once per moment. Children mark their parts with
  * `celebrationPart(...)`: the medal pops on the spring curve, tiles rise in
  * sequence and bars fill. Anything that is not a milestone, a moment that has
  * already celebrated and reduced motion all render the settled final frame, the
- * designated static frame of 07 §5, with every value already in place.
+ * designated static frame, with every value already in place.
  */
 export function Celebration({ milestone, momentId, children, className, onStateChange }: {
   milestone: Milestone; momentId: string; children: ReactNode; className?: string;
@@ -214,10 +212,10 @@ export function celebrationPart(part: CelebrationPart, order = 0): { className: 
 
 /**
  * Counts a number up during a celebration with fixed-width digits, so nothing
- * reflows (02 §9.2). The final value is what reduced motion, tests and a
+ * reflows. The final value is what reduced motion and a
  * revisit get. The count runs only while the surrounding milestone
  * `Celebration` plays; there is deliberately no way to start it anywhere
- * else, because a counting reward is a celebration effect (D7, OD-7): outside
+ * else, because a counting reward is a celebration effect: outside
  * a playing celebration it always shows the final value.
  */
 export function CountUp({ value, format }: { value: number; format: (value: number) => string }) {
@@ -245,17 +243,16 @@ export function CountUp({ value, format }: { value: number; format: (value: numb
 }
 
 /* ---------------------------------------------------------------------------
- * Orchestrated patterns (Frontend Bible 04 §4.1-§4.4; 02 §9.9, rule 14).
+ * Orchestrated patterns.
  * The scene's own elements move: an exercise slides out as the next slides
  * in, an approved row is covered by a success panel that wipes away, the
  * streak strip's days rise in a wave and badge grids stagger in. None is a
- * celebration (no spring, no celebration duration; celebrationBudget.test.ts
- * lists them as non-celebration motion), every one lives in motion.css under
+ * celebration (no spring, no celebration duration), every one lives in motion.css under
  * `prefers-reduced-motion: no-preference`, and with reduced motion the final
  * state is simply there.
  * ------------------------------------------------------------------------- */
 
-/** The non-celebration orchestrated patterns, by keyframe name (the in-page motion audit reads the same list). */
+/** The non-celebration orchestrated patterns, by keyframe name. */
 export const ORCHESTRATED_MOTION = ['lf-route-enter', 'lf-sequence-in', 'lf-sequence-out', 'lf-success-wipe', 'lf-wave-rise', 'lf-stagger-rise', 'lf-press-ring'] as const;
 
 let routeEpoch = 0;
@@ -273,7 +270,7 @@ export function resetRouteEntriesForTest() {
 }
 
 /**
- * True only on the first render of `key` after a route change (02 rule 14):
+ * True only on the first render of `key` after a route change:
  * a surface that mounts on a new route enters; a re-render, or a remount on
  * the same route after an unrelated interaction, does not enter again. The
  * initialiser is pure (StrictMode runs it twice) and the entry is recorded
@@ -297,7 +294,7 @@ function indexed(children: ReactNode): ReactNode {
 type Collection = 'ul' | 'ol' | 'div';
 
 /**
- * The streak strip's wave (04 §4.3): its days rise left to right, each
+ * The streak strip's wave: its days rise left to right, each
  * `index x 60ms` after the one before, on the enter easing, only on real
  * route entry. Reserved for the streak strip: a collection with no sequence
  * of its own uses `Stagger`.
@@ -310,7 +307,7 @@ export function Wave({ entryKey, as: Tag = 'ol', className, children, ...rest }:
 }
 
 /**
- * A badge grid's staggered reveal (04 §4.4): each item fades and rises
+ * A badge grid's staggered reveal: each item fades and rises
  * `min(index, 10) x 45ms` after the first, only on real route entry.
  */
 export function Stagger({ entryKey, as: Tag = 'ul', className, children, ...rest }: {
@@ -321,7 +318,7 @@ export function Stagger({ entryKey, as: Tag = 'ul', className, children, ...rest
 }
 
 /**
- * The success wipe (04 §4.2): when `active` turns on, a solid success panel
+ * The success wipe: when `active` turns on, a solid success panel
  * with the check glyph and the item's own title covers the row from the top
  * edge, holds, then clears downwards, revealing the row already updated
  * underneath; `onDone` follows. Render it as the last child of the row. With reduced motion the panel never shows and
@@ -351,7 +348,7 @@ export function SuccessWipe({ active, label, onDone }: { active: boolean; label:
 type Snapshot = { clone: HTMLElement; top: number; left: number; width: number; height: number } | null;
 
 /**
- * The exercise slide (04 §4.1): when `step` changes, the outgoing card (the
+ * The exercise slide: when `step` changes, the outgoing card (the
  * element matched by `selector`, `.lf-learning-content` by default) is cloned
  * before the swap and slides out 14% of the track on the exit easing while the
  * incoming card slides in from 18% on the enter easing, both over
@@ -408,7 +405,7 @@ export class SequenceTransition extends Component<{ step: string; selector?: str
 }
 
 /* ---------------------------------------------------------------------------
- * Press feedback (02 §9.1): a soft ring ripples from the touch point and a
+ * Press feedback: a soft ring ripples from the touch point and a
  * haptic tick plays where supported. The scale press itself is CSS
  * (`--press-scale`).
  * ------------------------------------------------------------------------- */

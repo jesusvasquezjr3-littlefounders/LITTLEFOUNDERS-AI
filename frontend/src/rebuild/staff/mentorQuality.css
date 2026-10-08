@@ -1,4 +1,4 @@
-/* C.24 staff panels (the Mentor-quality dashboard). They reuse the alliance
+/* Staff panels (the Mentor-quality dashboard). They reuse the alliance
    panel's surface (alliance.css) and the profile's label / value rows; this
    file only lays out what is new. Tokens only; no animation of its own, so
    reduced motion needs no override. */
@@ -59,7 +59,7 @@
 
 .lf-preview--staff-mentor-quality .lf-preview-content { max-inline-size: 56rem; gap: var(--spacing-6); }
 
-/* GAP-FIX-R4 (Appendix C 1.1): a learning signal's breakdown rows (per KC and
+/* A learning signal's breakdown rows (per KC and
    window, per age band), one wrapping row each so a phone never scrolls sideways. */
 .lf-quality-breakdown { flex-basis: 100%; display: grid; gap: var(--spacing-2); justify-items: start; min-inline-size: 0; }
 .lf-quality-breakdown > div { display: grid; gap: var(--spacing-2); inline-size: 100%; }

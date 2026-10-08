@@ -2,9 +2,9 @@ import { z } from 'zod';
 import { isRefusal, rpc, UNAVAILABLE } from './supabaseRest.js';
 
 /*
- * S10.3 — OD-9 section 4.2: parental consent carries over only for the
+ * Parental consent carries over only for the
  * practices it covered. Every data practice the rebuild introduced is listed
- * in public.data_practices; a migrated child (marked by the OD-9 consent step
+ * in public.data_practices; a migrated child (marked by the consent step
  * at the cutover) is subject to one only with a fresh, specific consent. The
  * database decides everything: who may say yes (a verified Tutor; a
  * self-registered 13-17 with no Tutor for the analytics classes only), whether

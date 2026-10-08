@@ -12,7 +12,7 @@ import './TenFrameBoard.css';
 type TenFrameSegment = Extract<HorizonteSegment, { type: 'math.ten-frame.v2' }>;
 
 /*
- * A03/A04: one or two ten frames. The learner adds counters (one frame) or moves them between frames (two frames,
+ * One or two ten frames. The learner adds counters (one frame) or moves them between frames (two frames,
  * total unchanged) by dragging a chip, tapping a chip then a frame, or tapping cells; "Move to" is the keyboard path.
  * The answer is the integer count per frame; Core holds the target.
  */

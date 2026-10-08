@@ -10,8 +10,8 @@ import './systemGallery.css';
 export type SystemGalleryCopy = typeof en.designSystem;
 
 /**
- * Preview-only catalogue of the shared control set in every state (S03.1).
- * It exists so the browser matrix can measure each control in three locales,
+ * Preview-only catalogue of the shared control set in every state.
+ * It exists so each control can be measured in three locales,
  * both modes and every width. It is not a product screen: its first-view word
  * count is not budgeted, every individual string is.
  */
@@ -137,7 +137,7 @@ export function SystemGallery({ t, theme, onBack }: { t: SystemGalleryCopy; them
           <p data-copy-role="body">{t.cardBody}</p>
           <ProgressBar label={t.progress} value={3} max={5} valueText={t.progressValue} />
         </Card>
-        {/* First assets of the course-icon, pocket and empty-state families, awaiting the owner's style review (07 §7, OD-14). */}
+        {/* First assets of the course-icon, pocket and empty-state families, awaiting the owner's style review. */}
         <Card tone="mint" heading={t.courseTitle} headingLevel={3}><Art assetId="course.money-basics.icon" size="lg" /><p data-copy-role="body">{t.courseBody}</p></Card>
         <List label={t.pocket}>
           <ListRow title={t.pocketSave} leading={<Art assetId="pocket.save.icon" />} />
@@ -170,14 +170,14 @@ export function SystemGallery({ t, theme, onBack }: { t: SystemGalleryCopy; them
 
       <section className="lf-system-section" aria-labelledby="system-motion">
         <h2 id="system-motion" data-copy-role="heading">{t.motion}</h2>
-        {/* Armed: the call to action bumps once when the checkbox makes it usable (02 §9.1). */}
+        {/* Armed: the call to action bumps once when the checkbox makes it usable. */}
         <Checkbox label={t.armLabel} checked={planChecked} onChange={(event) => setPlanChecked(event.target.checked)} />
         <ButtonGroup>
           <Button variant="success" disabled={!planChecked}>{t.approve}</Button>
-          {/* The one breathing call to action of this screen (02 §9.4). */}
+          {/* The one breathing call to action of this screen. */}
           <Button variant="accent" breathing>{t.continue}</Button>
         </ButtonGroup>
-        {/* A milestone on the OD-7 list celebrates once per moment; reduced motion shows this settled frame. */}
+        {/* A milestone celebrates once per moment; reduced motion shows this settled frame. */}
         <Celebration key={moment} milestone="badge-earned" momentId={`gallery-${visit}-${moment}`}>
           <Card heading={t.badgeEarned} headingLevel={3}>
             <div className="lf-system-row">

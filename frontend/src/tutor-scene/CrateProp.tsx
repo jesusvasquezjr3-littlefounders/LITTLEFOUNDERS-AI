@@ -1,5 +1,5 @@
 /*
- * Class III / S18 amendment `props` generality (2026-09-04): the SECOND
+ * `props` generality (2026-09-04): the SECOND
  * object on the island, built to prove `TutorScene.tsx`'s multi-prop solve
  * is a real mechanism and not a stall-shaped special case. Procedural,
  * lit (`meshStandardMaterial`), built once per mount — the same three

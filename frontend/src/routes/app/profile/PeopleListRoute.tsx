@@ -8,19 +8,19 @@ import { resolveLook } from '@/rebuild/account/avatar/avatarKit';
 import { isOffline, useProfileScreenEnvironment } from './profileRouteKit';
 
 /*
- * The data plane of the four people lists (P4 /profile/followers, P5
- * /profile/following, P7 /@username/followers, P8 /@username/following).
+ * The data plane of the four people lists (/profile/followers,
+ * /profile/following, /@username/followers, /@username/following).
  *
  * Core already filtered each list to the people this viewer may discover and
- * bound each Tutor pill to a relationship (E.1, E.5, E.8, E.13); a malformed
+ * bound each Tutor pill to a relationship; a malformed
  * answer is a failure with a retry, never a guessed list. The viewer's own
  * lists also read the viewer's tier from GET /profile, only to decide what the
  * page offers: a child's lists say its Tutor approves its connections, a guest
- * has none, and an independent teen may remove a follower (E.8). If the tier
+ * has none, and an independent teen may remove a follower. If the tier
  * cannot be read, the list still shows and offers only what every tier may do.
  * Core decides every action again.
  *
- * GAP-FIX-R8 social (E.3, E.8): the viewer's own rows are addressed by the
+ * The viewer's own rows are addressed by the
  * user id Core sends, never the handle, so an account without a @username is
  * unfollowed, removed, reported and blocked like any other. Report and Block
  * are on every row of the viewer's own lists; another person's lists stay
@@ -101,7 +101,7 @@ function PeopleListData({ list, owner }: { list: 'followers' | 'following'; owne
     return () => { cancelled = true; };
   }, [getToken, list, own, owner, attempt]);
 
-  // P5: the viewer's own edges. P4: only an independent teen removes a follower (E.8).
+  // Following: the viewer's own edges. Followers: only an independent teen removes a follower.
   const action: RowAction = !own ? null : list === 'following' ? 'unfollow' : tier === 'teen' ? 'remove' : null;
 
   const act = useCallback(async (person: PersonRow) => {
@@ -125,7 +125,7 @@ function PeopleListData({ list, owner }: { list: 'followers' | 'following'; owne
 
   const dropRow = (userId: string) => setView((current) => current.kind === 'ready' ? { ...current, people: current.people.filter((row) => row.userId !== userId) } : current);
 
-  // E.3 on a list entry (GAP-FIX-R8 social): true only on Core's receipt naming this account; the dialog keeps the choice otherwise.
+  // On a list entry: true only on Core's receipt naming this account; the dialog keeps the choice otherwise.
   const safety: RowSafety | undefined = own ? {
     reportCopy: copy.report,
     onReport: async (person, category, note) => {
@@ -158,7 +158,7 @@ function PeopleListData({ list, owner }: { list: 'followers' | 'following'; owne
   } : undefined;
 
   return <PeopleList copy={strings} locale={locale} dark={dark} ageBand={ageBand} list={list} owner={owner} view={view}
-    // E.1: a child's connections are its Tutor's to approve; an unfollow it might not undo on its own asks first (W2P.3).
+    // A child's connections are its Tutor's to approve; an unfollow it might not undo on its own asks first.
     // An unread tier might be a child's, so it asks too (the conservative side: one extra press for an adult).
     action={action} confirmUnfollow={own && tier !== 'adult' && tier !== 'teen'} safety={safety} busyId={busyId} notice={notice} onAct={(person) => void act(person)} onNavigate={(href) => navigate(href)}
     onRetry={() => { setView({ kind: 'failed', offline: false, retrying: true }); setAttempt((value) => value + 1); }} />;

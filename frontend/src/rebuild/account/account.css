@@ -1,9 +1,9 @@
 /*
- * The profile lane's screens (W2): own profile (P1), the look editor (P2) and
- * Settings (P3). A neutral dashboard page with cards (02 §4.5); tokens only;
- * spacing on the 4 px scale (03 §3.1); layouts by container width, never by
- * the viewport (02 §6, §7 rule 9); separation by fill and soft elevation,
- * never an outline (02 §4.4).
+ * The profile screens: own profile, the look editor and
+ * Settings. A neutral dashboard page with cards; tokens only;
+ * spacing on the 4 px scale; layouts by container width, never by
+ * the viewport; separation by fill and soft elevation,
+ * never an outline.
  */
 .lf-rebuild.lf-account-screen {
   /* A screen inside the shell's content area, not a page root. */
@@ -41,7 +41,7 @@
 .lf-account-header { display: grid; gap: var(--spacing-2); justify-items: start; min-inline-size: 0; }
 .lf-rebuild .lf-account-header h1 { font: var(--type-display-lg); letter-spacing: var(--type-display-lg-tracking); }
 
-/* ---------------------------------------------------------------- P1 */
+/* ---------------------------------------------------------------- Own profile */
 .lf-profile-hero {
   display: grid;
   min-inline-size: 0;
@@ -98,7 +98,7 @@
 .lf-rebuild[data-theme='dark'] .lf-profile-stat { background: var(--raised); }
 .lf-profile-stat dt { grid-row: 2; font: var(--type-caption); color: var(--content-muted); overflow-wrap: anywhere; }
 .lf-profile-stat dd { grid-row: 1; margin: 0; font: var(--type-numeral); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
-/* 02 §4.2: gold is for coins, XP and the streak, so those two numbers carry it (with their word, never alone). */
+/* Gold is for coins, XP and the streak, so those two numbers carry it (with their word, never alone). */
 .lf-profile-stat--streak dd, .lf-profile-stat--xp dd { color: var(--reward-strong); }
 
 .lf-profile-badges { display: grid; gap: var(--spacing-3); margin: 0; padding: 0; list-style: none; }
@@ -117,7 +117,7 @@
 .lf-profile-badge-title { font: var(--type-label); overflow-wrap: anywhere; }
 .lf-profile-link { font: var(--type-label); color: var(--primary-strong); overflow-wrap: anywhere; }
 
-/* ---------------------------------------------------------------- P2 */
+/* ---------------------------------------------------------------- Look editor */
 .lf-look-layout { display: grid; gap: var(--spacing-6); min-inline-size: 0; align-items: start; }
 .lf-look-preview {
   display: grid;
@@ -156,7 +156,7 @@
   .lf-look-preview { position: sticky; inset-block-start: var(--spacing-6); }
 }
 
-/* ---------------------------------------------------------------- P3 */
+/* ---------------------------------------------------------------- Settings */
 .lf-settings-column { display: grid; gap: var(--spacing-6); min-inline-size: 0; max-inline-size: 44rem; }
 .lf-account-panels { display: grid; gap: var(--spacing-6); min-inline-size: 0; }
 /* Wide screens give identity and account controls separate readable lanes;
@@ -193,10 +193,10 @@
 .lf-rebuild :is(.lf-account-panels, .lf-account-slot) .lf-rebuild h2 { font: var(--type-title); }
 
 /*
- * Dark mode has no elevation (02 §5), so a secondary button (surface fill) on a
+ * Dark mode has no elevation, so a secondary button (surface fill) on a
  * surface card would have no edge at all: it steps up to the raised surface on a
- * card, and down to the page's base inside a raised row. Recorded for Lane 0 as
- * a design-system item; applied here to this lane's screens.
+ * card, and down to the page's base inside a raised row. Applied here to these screens;
+ * a design-system item.
  */
 .lf-account-screen[data-theme='dark'] :where(.lf-card, .lf-profile-hero, .lf-look-preview, .lf-account-panels > .lf-rebuild) .lf-button--secondary:not(:disabled) { background: var(--raised); }
 .lf-account-screen[data-theme='dark'] :where(.lf-settings-row, .lf-social-tier-list > li, .lf-memory-note) .lf-button--secondary:not(:disabled) { background: var(--base); }
@@ -204,6 +204,6 @@
 /* The development-only preview page around a screen: the shell's content area, without the shell. */
 .lf-account-preview-page { display: grid; min-inline-size: 0; max-inline-size: 70rem; margin-inline: auto; padding: var(--spacing-6) var(--spacing-4) var(--spacing-10); }
 @container app (min-width: 640px) { .lf-account-preview-page { padding-inline: var(--spacing-8); } }
-/* Bible 08 §8 (GAP-FIX-R1): the Mentor row on the learner's own profile. */
+/* The Mentor row on the learner's own profile. */
 .lf-profile-mentor { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-3); }
 .lf-profile-mentor-name { font-weight: 800; flex: 1; }

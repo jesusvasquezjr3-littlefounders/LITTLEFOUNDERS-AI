@@ -5,7 +5,7 @@ import { canPick, stepValue, thresholdIndex, tokensLeft } from './operationsMode
 import './operations.css';
 
 /*
- * GAP-FIX-R1 learning (Appendix A Part 2; B.7 part 2): the eight interaction
+ * The eight interaction
  * primitives the first release lacked, plus the drag point they share, as
  * reusable `operation.*.v1` components. Each one:
  *   - starts in its simplest state and carries meaning in every mark;
@@ -59,7 +59,7 @@ export function GuidedSandbox({ goalLabel, goal, cues, children }: {
 }
 
 /**
- * Bible 05 §3 and §6 (GAP-FIX-R4): every chart has "Show as table", one press
+ * Every chart has "Show as table", one press
  * away and formatted by the board for its locale. The chart and the table are
  * the same data; the button says which view comes next.
  */
@@ -74,8 +74,8 @@ export function ChartOrTable({ chart, table, labels }: { chart: ReactNode; table
 
 /**
  * Pattern 10: a continuous series with a marker that appears exactly where it
- * first reaches the threshold. GAP-FIX-R4 (B.7): drawn with the shared
- * Pizarrón growth lines, the threshold's word an HTML label (Bible 05 §5).
+ * first reaches the threshold. Drawn with the shared
+ * Pizarrón growth lines, the threshold's word an HTML label.
  */
 export function ThresholdPlot({ values, threshold, max, revealed, title, labels }: {
   values: readonly number[]; threshold: number; max: number; revealed: boolean; title: string;
@@ -118,7 +118,7 @@ export function TradeOffChooser({ legend, tokens, options, picked, onChange, lab
 
 /**
  * Pattern 2: a point dragged along one axis (or moved with the arrow keys), stepping on the grid.
- * `presentational` (GAP-FIX-R4, Bible 05 §6): drawn inside an `aria-hidden` Pizarrón picture whose
+ * `presentational`: drawn inside an `aria-hidden` Pizarrón picture whose
  * accessible path is the board's own HTML steppers, the handle is pointer-only and out of the tab order.
  */
 export function DragPoint({ x, y, value, min, max, step = 1, axis, length, label, valueText, onChange, disabled, presentational = false }: {
@@ -187,7 +187,7 @@ export function useGhost<T>(key: string, run: T): T | null {
   }
   return state.ghost;
 }
-/** GAP-FIX-R4 (B.7): the run and its ghost drawn with the shared Pizarrón growth lines on one fixed frame. */
+/** The run and its ghost drawn with the shared Pizarrón growth lines on one fixed frame. */
 export function GhostTracePlot({ current, ghost, max, count, title, labels }: {
   current: readonly number[]; ghost: readonly number[] | null; max: number; count: number; title: string; labels: { current: string; ghost: string; summary: string };
 }) {

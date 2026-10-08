@@ -29,7 +29,7 @@ export function RequireAgeScreen({ children }: { children: ReactNode }) {
   const [attempt, setAttempt] = useState(0);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<'invalid' | 'unavailable' | undefined>();
-  // A.4 (OD-3): a parent-created child's age comes from their Tutor; Core refuses the child's own answer (KID_AGE_BY_TUTOR).
+  // A parent-created child's age comes from their Tutor; Core refuses the child's own answer (KID_AGE_BY_TUTOR).
   const [tutorGivesAge, setTutorGivesAge] = useState(false);
   const kid = roles.includes('kid') || tutorGivesAge;
   useEffect(() => {
@@ -59,7 +59,7 @@ export function RequireAgeScreen({ children }: { children: ReactNode }) {
         const token = await getToken();
         if (stale()) return;
         if (!token) { setSaving(false); setError('unavailable'); return; }
-        // S-04 (OD-28): the month travels only for a 13-17 date, after the screen said why it is kept.
+        // The month travels only for a 13-17 date, after the screen said why it is kept.
         const response = await api<Screening>('/auth/age-screen', { token, body: birthMonth ? { birthDate, birthMonth } : { birthDate } });
         if (stale()) return;
         setSaving(false);

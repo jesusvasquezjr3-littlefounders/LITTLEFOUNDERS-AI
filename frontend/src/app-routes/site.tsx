@@ -14,8 +14,8 @@ import { UpgradeAccountPage } from '@/routes/auth/UpgradeAccountPage';
 import { OnboardingPage } from '@/routes/onboarding/OnboardingPage';
 
 /*
- * Lane 1 (site): the public site, sign-in, recovery, verification and
- * onboarding. App.tsx (Lane 0) mounts each group inside its layout; this
+ * Site routes: the public site, sign-in, recovery, verification and
+ * onboarding. App.tsx mounts each group inside its layout; this
  * module owns only the child routes and their guards.
  */
 
@@ -50,7 +50,7 @@ export const siteAccountRoutes = (
     <Route path="verify-parent" element={<RequireAuth><VerifyParentPage /></RequireAuth>} />
     {/* Attach a permanent identity to the current guest session in
         place — never /signup, which would mint a second blank identity.
-        On the sign-in shell since W2S.2 (A6 is a sign-in screen). */}
+        On the sign-in shell. */}
     <Route path="upgrade-account" element={<RequireAuth><UpgradeAccountPage /></RequireAuth>} />
   </>
 );

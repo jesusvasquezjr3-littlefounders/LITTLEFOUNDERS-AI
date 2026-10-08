@@ -9,7 +9,7 @@ import { PlaneBoard, PlaneFigure, fmt, niceCeil, slots, tickEvery, usePlaneGrade
 type BreakEvenSegment = Extract<HorizonteSegment, { type: 'fin.break-even.v2' }>;
 
 /*
- * N08, N09: revenue and cost against the units sold. The learner moves the units (a handle locked to its row, or a
+ * Revenue and cost against the units sold. The learner moves the units (a handle locked to its row, or a
  * slider) to the point where the two lines meet. The answer is the whole number of units; Core holds it.
  */
 function BreakEven({ document, segment, onBack, sequence, onGrade }: Omit<HorizonteBoardProps, 'segment'> & { segment: BreakEvenSegment }) {

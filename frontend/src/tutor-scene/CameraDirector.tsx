@@ -24,10 +24,9 @@ import { arc } from './characterActions';
 import type { CharacterAction } from '@/components/characters/control/types';
 
 /**
- * Class III / S16 `beat` (TUTOR_INSTRUMENTS.md §3.4): "the camera responds to
+ * The `beat` shot: "the camera responds to
  * a teaching moment, not only a phase change." `phases.ts`'s `shotForPhase`
- * documents a hardened, three-document invariant (/ORACLE.md §9.3, §16,
- * /DESIGN.md) that a `conversing` shot may change for exactly one reason
+ * documents a hardened invariant that a `conversing` shot may change for exactly one reason
  * (`adaptationOffered`) — a prior feature (`segmentLive`) violated this and
  * was removed 2026-08-21 after shipping a real defect (the character's own
  * head filling the frame on a phone). `beat` must therefore never touch

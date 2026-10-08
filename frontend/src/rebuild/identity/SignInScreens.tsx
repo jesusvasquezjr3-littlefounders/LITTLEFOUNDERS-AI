@@ -8,18 +8,18 @@ import {
 import { ageFromParts } from './ageFromParts';
 
 /*
- * A1 Log in and A2 Sign up, rebuilt on the sign-in shell (W2S.2). Every
+ * Log in and Sign up, rebuilt on the sign-in shell. Every
  * capability of the legacy screens is kept and nothing is added that Core
- * does not back (Law 5, A.1):
+ * does not back:
  *
- *   A1  email OR username (a child signs in with the username a parent chose,
- *       OD-3), password with show/hide, Google when Core has it enabled, the
+ *   Log in  email OR username (a child signs in with the username a parent chose),
+ *       password with show/hide, Google when Core has it enabled, the
  *       forgotten-password link, the way to sign up; the specific reason on a
  *       failure (wrong details, email not confirmed, too many tries).
- *   A2  name, email, password (8+), date of birth checked and not kept, the
+ *   Sign up  name, email, password (8+), date of birth checked and not kept, the
  *       parent-or-guardian intent (it records intent only: the Tutor role comes
- *       from ID verification alone, A.5), Google; "check your inbox" when Core
- *       asks for confirmation; the under-13 refusal (A.2), whose one way on is a
+ *       from ID verification alone), Google; "check your inbox" when Core
+ *       asks for confirmation; the under-13 refusal, whose one way on is a
  *       protected guest session, never a closed door.
  */
 
@@ -49,13 +49,13 @@ export function LoginScreen({ locale, google, pending, errorCode, onSubmit, onNa
   </div>;
 }
 
-/** `birthMonth` (`YYYY-MM`, S-04) only for a 13-17 date, after the form said what it is kept for. */
+/** `birthMonth` (`YYYY-MM`) only for a 13-17 date, after the form said what it is kept for. */
 export interface SignupValues { displayName: string; email: string; password: string; birthDate: string; birthMonth?: string; parentIntent: boolean }
 
 export type SignupView =
   | { kind: 'form'; pending: boolean; errorCode: string | null }
   | { kind: 'confirm'; email: string }
-  /** Under 13 (A.2): the protected guest start, its pending state and a failure beside it. */
+  /** Under 13: the protected guest start, its pending state and a failure beside it. */
   | { kind: 'refused'; starting: boolean; failed: boolean };
 
 export function SignupScreen({ locale, google, view, initialParentIntent, onSubmit, onFirstEdit, onStartGuest, onNavigate }: {
@@ -98,8 +98,8 @@ export function SignupScreen({ locale, google, view, initialParentIntent, onSubm
 /*
  * The sign-up form owns what was typed. It is its own component so that the
  * refused and confirmation views unmount it: a refused child's name, email,
- * password and date of birth are discarded with it (A.2), not kept in memory
- * behind the refusal (W2S.3; the legacy page cleared them by hand).
+ * password and date of birth are discarded with it, not kept in memory
+ * behind the refusal (the legacy page cleared them by hand).
  */
 function SignupForm({ copy, google, view, initialParentIntent, onSubmit, onFirstEdit, onNavigate }: {
   copy: ReturnType<typeof identityCopy>; google: GoogleState; view: Extract<SignupView, { kind: 'form' }>; initialParentIntent: boolean;
@@ -113,7 +113,7 @@ function SignupForm({ copy, google, view, initialParentIntent, onSubmit, onFirst
   const birthDate = isoDate(birth);
   const birthTyped = birth.year.length === 4 && birth.day !== '' && birth.month !== '';
   const ready = displayName.trim() !== '' && email.trim() !== '' && password.length >= 8 && birthDate !== null;
-  // S-04 (OD-28): a 13-17 date keeps its month so the account moves to adult at 18; the form says so first.
+  // A 13-17 date keeps its month so the account moves to adult at 18; the form says so first.
   const age = birthDate === null ? null : ageFromParts(birth.day, birth.month, birth.year);
   const teen = age !== null && age >= 13 && age <= 17;
   return <div className="lf-auth-page" data-screen="signup" data-surface="app">

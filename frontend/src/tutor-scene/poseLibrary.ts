@@ -66,7 +66,7 @@ export interface Pose {
    * (`LOOPING_ACTIONS`) while the 2D one does not (`LOOPABLE_ACTIONS`), so a
    * looping `think` pose would repeat in a lesson and fire once in a
    * marketing capture - the same content behaving differently depending on
-   * who drew it. The catalog takes the INTERSECTION and the test enforces it.
+   * who drew it. The catalog takes the INTERSECTION.
    */
   loop?: boolean;
   /** Y rotation in radians. Non-zero when the pose reads better off-axis. */
@@ -113,7 +113,7 @@ export const POSES: readonly Pose[] = Object.freeze([
   { id: 'feedback.correct.proud', category: 'feedback', emotion: 'proud', action: 'celebrate', use: 'A right answer on a hard item.' },
   { id: 'feedback.correct.streak', category: 'feedback', emotion: 'excited', action: 'jump', use: 'Several right in a row.' },
   { id: 'feedback.correct.quiet', category: 'feedback', emotion: 'happy', action: 'idle', use: 'Right, but the segment continues - no interruption.' },
-  { id: 'feedback.retry', category: 'feedback', emotion: 'encouraging', action: 'shake', use: 'Wrong answer. Never scolding (LESSON_ENGINE.md).' },
+  { id: 'feedback.retry', category: 'feedback', emotion: 'encouraging', action: 'shake', use: 'Wrong answer. Never scolding.' },
   { id: 'feedback.retry.gentle', category: 'feedback', emotion: 'encouraging', action: 'nod', use: 'A second miss, softer than the first.' },
   { id: 'feedback.almost', category: 'feedback', emotion: 'surprised', action: 'think', use: 'Close but not right - the answer was reasonable.' },
   { id: 'feedback.hint', category: 'feedback', emotion: 'thinking', action: 'point', use: 'Offering a hint the learner asked for.' },
@@ -197,7 +197,7 @@ export const POSES: readonly Pose[] = Object.freeze([
  * HOW MANY DIFFERENT THINGS THIS LIBRARY CAN ACTUALLY SHOW.
  *
  * Not the same number as `POSES.length`, and the difference is the point.
- * /AGENTS.md §1.14 was written after a coverage metric counted PRESENCE and
+ * A rule was written after a coverage metric counted PRESENCE and
  * reported 100% while a thousand lessons opened with the same picture: "make a
  * coverage metric count DISTINCTNESS, not presence".
  *

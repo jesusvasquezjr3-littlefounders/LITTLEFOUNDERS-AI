@@ -6,9 +6,9 @@ import {
 } from './solidsPolynet.js';
 
 /*
- * The Forge side of F4.2 for the solids that are not cubes (`geometry.solid-net.v2`). It mirrors the authoring rules of Core
+ * The Forge side of the net rules for the solids that are not cubes (`geometry.solid-net.v2`). It mirrors the authoring rules of Core
  * (`backend/src/services/horizonte/solids/rules.ts`) but reports a reason instead of a bare null, so an author can fix a piece.
- * The geometry itself is the pinned copy in solidsPolynet.ts.
+ * The geometry itself is the copy in solidsPolynet.ts.
  */
 
 const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);

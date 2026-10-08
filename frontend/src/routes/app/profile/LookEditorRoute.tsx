@@ -9,8 +9,8 @@ import { lookToStored, resolveCover, resolveLook, type AvatarLook, type CoverId 
 import { isOffline, useProfileScreenEnvironment } from './profileRouteKit';
 
 /*
- * /profile/avatar (P2): the data plane of the rebuilt look editor. It reads
- * the stored avatar and cover from Core (served through Core's E.12
+ * /profile/avatar: the data plane of the rebuilt look editor. It reads
+ * the stored avatar and cover from Core (served through Core's
  * projection), keeps the person's edits locally, and on save writes the avatar
  * (PUT /profile/avatar: exactly the closed option set) and, only when it
  * changed, the cover (PUT /profile/cover: a preset id). Nothing is written
@@ -82,7 +82,7 @@ function ScopedLookEditor() {
   return <LookEditor copy={copy.lookEditor} locale={locale} dark={dark} ageBand={ageBand} view={view}
     onChange={(look) => { setError(null); setLoaded((current) => current && { ...current, look }); }}
     onCover={(cover) => { setError(null); setLoaded((current) => current && { ...current, cover }); }}
-    // A cosmetic draw (B.22 allowlist: lib/avatarOptions.ts); nothing is earned or unlocked.
+    // A cosmetic draw (lib/avatarOptions.ts); nothing is earned or unlocked.
     onRandom={() => { setError(null); setLoaded((current) => current && { ...current, look: resolveLook({ ...randomAvatarOptions() }, fallbackSeed) }); }}
     onSave={() => void save()}
     onRetry={() => { setFailed({ offline: false, retrying: true }); setAttempt((value) => value + 1); }}

@@ -3,7 +3,7 @@
  * generate-mouth-atlas — draws the viseme atlas for a character's mouth card.
  *
  * WHY A CARD AND NOT THE MODEL'S OWN MOUTH:
- * Not one jaw, mouth, brow or eye bone exists on any export (/TUTOR_3D.md §3),
+ * Not one jaw, mouth, brow or eye bone exists on any export,
  * and the mouths are PAINTED INTO THE TEXTURE rather than modelled — so there
  * is no geometry to deform and blendshapes would only stretch a decal. The
  * handoff proposed sliding the mouth region's UV offset instead, but that is

@@ -17,7 +17,7 @@ const PLOT_H = 200;
 const SAMPLES = 160;
 
 /*
- * H22: a normal curve with a mean and a spread, and a band of values the curve must fit by the 68-95-99.7 rule. The two
+ * A normal curve with a mean and a spread, and a band of values the curve must fit by the 68-95-99.7 rule. The two
  * sliders move the mean and the spread; the edges of the curve (mean plus and minus the band's number of spreads) are drawn
  * dashed next to the band's own solid edges. The picture is scaled from the axis alone, so it never shows the answer.
  * The answer is the whole mean and spread; Core holds the pair.

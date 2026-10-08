@@ -1,5 +1,5 @@
 /*
- * F4.8: routes on a globe. Each route joins two places on the Earth and carries a remittance fee, and the learner picks the
+ * Routes on a globe. Each route joins two places on the Earth and carries a remittance fee, and the learner picks the
  * route that is shortest, longest or cheapest. Distances are great-circle kilometres from a fixed gazetteer, rounded to the
  * whole kilometre; fees are whole cents computed with integers. A question whose answer rests on a distance must win by at
  * least 2 percent, so a rounding or engine difference can never change which route is right.

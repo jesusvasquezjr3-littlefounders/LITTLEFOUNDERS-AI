@@ -2,10 +2,9 @@ import type { Locale } from '../design/copyBudget';
 import { pluralUnit } from '../design/plural';
 
 /*
- * GAP-FIX-R1 learning (B.7 part 2): the fixed UI words of the Appendix A
- * Part 3 concept boards (conceptBoards.tsx). Authored lesson text (prompts,
+ * The fixed UI words of the concept boards (conceptBoards.tsx). Authored lesson text (prompts,
  * option and asset names, labels) comes from the document; these are only the
- * boards' own labels, budgeted in conceptBoards.test.tsx. "{n}" and "{x}" are
+ * boards' own labels. "{n}" and "{x}" are
  * filled at render time.
  */
 export interface ConceptCopy {

@@ -1,12 +1,9 @@
 /*
  * `npm run gym:pedagogy` — RUN REACTIVE SIMULATED STUDENTS AGAINST THE REAL
- * CONTROLLER (V4 harness backlog, ROADMAP.md "Remaining harness phases").
+ * CONTROLLER.
  *
  * This is a thin CLI shell. All the real logic — the student archetypes, the
- * driving loop, the checks — lives in `src/tutor/pedagogyGym.ts` (a real
- * `src/` module, unlike `verify-pedagogy.ts`'s all-in-one script) so it has
- * an actual vitest suite (`src/__tests__/pedagogyGym.test.ts`) rather than
- * being provable only by running the CLI and reading its output.
+ * driving loop, the checks — lives in `src/tutor/pedagogyGym.ts`.
  *
  * `--json` prints a machine-readable report instead of the human one — for a
  * future consumer that wants to diff two runs (before/after a threshold
@@ -41,26 +38,26 @@ function main(): void {
   const controller = runPedagogyGym();
   const { reports } = controller;
   /*
-   * C.8/C.12: the behavioral-signature session-end signal against Appendix F
-   * Part 3 Stage 2's simulated learners (`src/tutor/sessionEndGym.ts`).
+   * The behavioral-signature session-end signal against
+   * the simulated learners (`src/tutor/sessionEndGym.ts`).
    */
   const sessionEnd = runSessionEndGym();
   /*
-   * C.9/C.19: the Behavioral Telemetry Layer and its check-in against the
-   * same Stage 2 learners (`src/tutor/telemetryGym.ts`), with the suite-wide
+   * The Behavioral Telemetry Layer and its check-in against the
+   * same simulated learners (`src/tutor/telemetryGym.ts`), with the suite-wide
    * Default-to-Inaction floor and the no-emotion-label check.
    */
   const telemetry = runTelemetryGym();
   /*
-   * C.15/C.14: the Alliance Controller (goal agreement, the renegotiation
+   * The Alliance Controller (goal agreement, the renegotiation
    * trigger, persona continuity) and the self-explanation move against the
-   * same Stage 2 learners (`src/tutor/allianceGym.ts`).
+   * same simulated learners (`src/tutor/allianceGym.ts`).
    */
   const alliance = runAllianceGym();
   /*
-   * C.11/C.17: the two-tier spaced-review router (with the controller's
+   * The two-tier spaced-review router (with the controller's
    * re-check detour) and the age-band dialogue calibration against the same
-   * Stage 2 learners (`src/tutor/reviewCalibrationGym.ts`).
+   * simulated learners (`src/tutor/reviewCalibrationGym.ts`).
    */
   const reviewCalibration = runReviewCalibrationGym();
   const ok = controller.ok && sessionEnd.ok && telemetry.ok && alliance.ok && reviewCalibration.ok;

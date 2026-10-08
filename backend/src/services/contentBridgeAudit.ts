@@ -28,8 +28,8 @@ import { resolveSkill } from './tutorLadder.js';
  * topic's lessons archived, a lesson's skill tags edited — none of those touch
  * `database/seeds/kc_graph.v1.json`, so none of them would ever prompt anyone
  * to re-seed. Found by adversarial review sweep tutor-review-sweep-101
- * (content-ladder-correctness dimension), MEDIUM, closed round 105
- * (2026-08-31) — see RUNBOOK.md.
+ * (content-ladder-correctness dimension), MEDIUM, closed
+ * (2026-08-31).
  *
  * It is now called from two places, both idempotent and read-mostly:
  *  1. `seed-kc-graph.ts`'s `main()`, right after the seed's own upserts land —
@@ -191,7 +191,7 @@ export async function suggestAlternatives(alreadyMapped: Set<string>): Promise<v
    * ~200 UUIDs made a URL long enough for PostgREST to reject, the result was
    * null, and the function returned having printed NOTHING — a diagnostic that
    * failed silently while diagnosing a defect whose whole nature was failing
-   * silently (§1.14). Hence the course-scoped query below instead of a giant
+   * silently. Hence the course-scoped query below instead of a giant
    * id list, and hence a printed reason on every path that gives up.
    */
   const courses = await serviceRest<{ id: string }[]>(

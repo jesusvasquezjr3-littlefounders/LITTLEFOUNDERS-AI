@@ -1,12 +1,11 @@
 /*
- * Pure unlock-rule computation — COURSE_ENGINE.md §2: "the course-tree
+ * Pure unlock-rule computation — "the course-tree
  * endpoint returns locked/available/current/passed per node. No client
  * re-derivation." Core is the SINGLE SOURCE OF TRUTH for this; the frontend
  * only ever renders whatever state this module computes.
  *
  * Kept dependency-free and side-effect-free on purpose (no PostgREST/fetch
- * here) so it is unit-testable with plain fixtures — see
- * src/__tests__/unlockRules.test.ts.
+ * here) so it is unit-testable with plain fixtures.
  *
  * State-assignment precedence (per lesson, walking the GLOBAL order —
  * adventure.position, saga.position, topic.position, lesson.position):

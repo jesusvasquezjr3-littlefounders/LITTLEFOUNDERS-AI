@@ -18,7 +18,7 @@ const TOP = 28;
 const PLOT_H = 120;
 
 /*
- * H20: a coin, a die or a spinner, run from a seed Core issued with the attempt. The learner picks how many trials to run from the
+ * A coin, a die or a spinner, run from a seed Core issued with the attempt. The learner picks how many trials to run from the
  * authored stops and watches the share of the event settle on its chance (the law of large numbers). The run is a prefix of one
  * seeded stream, so a longer run only adds trials. Core replays the same stream to grade; this board is the picture of it.
  */

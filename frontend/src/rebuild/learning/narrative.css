@@ -1,6 +1,6 @@
-/* B.9 / S05.3c. Tokens only; separation by fill, never by outline (Bible 02 §4.4). */
+/* Tokens only; separation by fill, never by outline. */
 
-/* The recall is a single-state moment: one dominant hue, full bleed (rule 15). */
+/* The recall is a single-state moment: one dominant hue, full bleed. */
 .lf-recall { min-block-size: 100dvh; padding: var(--spacing-4); background: var(--primary); color: var(--on-primary); display: grid; align-items: center; }
 .lf-recall-inner { display: grid; gap: var(--spacing-5); inline-size: 100%; max-inline-size: 640px; margin-inline: auto; }
 .lf-recall-inner > * { min-inline-size: 0; }
@@ -18,7 +18,7 @@
 .lf-recall .lf-button { min-block-size: var(--target-lg); font-size: 1.125rem; }
 .lf-recall :is(button):focus-visible { outline-color: var(--on-primary); }
 
-/* The journal is a dashboard: a neutral page with coloured cards (rule 15). */
+/* The journal is a dashboard: a neutral page with coloured cards. */
 .lf-journal { min-block-size: 100dvh; padding: var(--spacing-4); background: var(--base); color: var(--content); }
 .lf-journal-inner { display: grid; gap: var(--spacing-6); max-inline-size: 760px; margin-inline: auto; }
 .lf-journal-inner > * { min-inline-size: 0; }

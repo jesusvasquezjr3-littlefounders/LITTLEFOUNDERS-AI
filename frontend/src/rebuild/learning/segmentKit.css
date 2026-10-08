@@ -1,4 +1,4 @@
-/* GAP-FIX-R1 learning: shared v2 board pieces (segmentKit.tsx). Tokens only; light and dark come from the token layer. */
+/* Shared v2 board pieces (segmentKit.tsx). Tokens only; light and dark come from the token layer. */
 .lf-prompt-label { display: inline-flex; align-items: center; gap: var(--spacing-2); font-weight: 800; color: var(--on-primary); }
 .lf-prompt-label .lf-mentor-avatar { flex: none; }
 .lf-segment-help { display: grid; gap: var(--spacing-2); justify-items: start; }
@@ -15,5 +15,5 @@
 .lf-learning-update { display: grid; gap: var(--spacing-3); }
 .lf-learning-update-actions { display: flex; flex-wrap: wrap; gap: var(--spacing-3); }
 @media (prefers-reduced-motion: reduce) { .lf-speech-plate { transition: none; } }
-/* GAP-FIX-R3 (B.18): the Mentor's narration on request, beside its caption plate. */
+/* The Mentor's narration on request, beside its caption plate. */
 .lf-narration-control { justify-self: start; }

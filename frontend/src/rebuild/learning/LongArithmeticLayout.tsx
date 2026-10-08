@@ -3,7 +3,7 @@ import type { LongArithmetic } from './v2SegmentFamilies.generated';
 import './longArithmetic.css';
 
 /*
- * M9 (Appendix P Part 1, GAP-FIX-R1): the written algorithm behind a worked
+ * M9: the written algorithm behind a worked
  * example, drawn the way each market writes it, chosen by the lesson's
  * locale profile:
  *   en-US  bracket  divisor left of a bracket, quotient above, every product and remainder written;

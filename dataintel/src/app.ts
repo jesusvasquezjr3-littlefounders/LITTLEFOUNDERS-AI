@@ -20,7 +20,7 @@ export function createApp(): express.Express {
 
   app.get('/health', async (_req, res) => {
     // getSyncHealth() never throws and never touches duckdb while it's down
-    // (AGENTS.md §1.14 — liveness must not depend on optional infrastructure).
+    // (liveness must not depend on optional infrastructure).
     const sync = await getSyncHealth();
     res.json({
       data: {

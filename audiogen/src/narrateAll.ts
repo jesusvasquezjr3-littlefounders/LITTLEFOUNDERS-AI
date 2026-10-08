@@ -6,7 +6,7 @@
 // units), rows left untouched because the TTS budget ran out, a refused run,
 // or a Vault/batch error.
 //
-// OD-28 (owner review D-03): a paid run (no --dry-run) refuses to start without
+// A paid run (no --dry-run) refuses to start without
 // the owner-approved USD ceiling `--max-usd <n>`, mirroring Forge's
 // generate/generate:track. The refusal comes before any config, Vault or
 // provider is touched. The ceiling binds per character at

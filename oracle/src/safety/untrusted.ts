@@ -1,5 +1,5 @@
 /*
- * Layer 2 of the injection stack (/ORACLE.md §5): the learner's words go into
+ * Layer 2 of the injection stack: the learner's words go into
  * a delimited, explicitly-labelled untrusted block positioned AFTER the system
  * instructions, never interpolated into them.
  *
@@ -129,16 +129,16 @@ export interface FencedActivityContent {
  * pedagogy judge both screen a generated segment's prose before it is ever
  * served, but neither has a category for "reads as an instruction to a
  * LATER call" — `moderation.ts`'s `HARM_CATEGORIES` is a closed harm
- * vocabulary by design (§1.14: a refusal must NAME a real harm), and an
+ * vocabulary by design (a refusal must NAME a real harm), and an
  * injection-shaped `prompt_md` is not sexual, violent, self-harm or any
  * other listed category. So it can pass every existing gate, be stored
  * verbatim in `openActivity.prompt`, and be read back to the SAME model,
  * UNFENCED, on every turn the activity stays open
  * (`prompt.ts`'s `buildContextMessage`, "ON THE LEARNER'S SCREEN RIGHT NOW")
  * and a second time in the turn that reacts to its grade
- * (`orchestrator.ts`'s `activityFact`) — exactly the shape RUNBOOK.md's
- * episodic-recall incident (migration 0054) and `AGENTS.md` item 52 (the
- * session-transcript fence) already found and fenced on their own paths:
+ * (`orchestrator.ts`'s `activityFact`) — exactly the shape the
+ * episodic-recall incident (migration 0054) and the
+ * session-transcript fence already found and fenced on their own paths:
  * the model's own past output, replayed as trusted context, is a live
  * injection surface.
  *

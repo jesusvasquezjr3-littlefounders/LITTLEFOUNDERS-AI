@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /*
- * `npm run tutor:evaluate` — Product C.21 / C.24, the evaluation loop by hand.
+ * `npm run tutor:evaluate` — the evaluation loop by hand.
  *
  *   (no flag)                  DRY RUN against the configured database: scores
  *                              the backlog and computes every consolidated
@@ -19,7 +19,7 @@
  *                                npm --prefix oracle run transcript-judge -- --batch=FILE
  *   --json                     machine-readable output.
  *
- * No model call, ever: zero spend (OD-23). Operator tool:
+ * No model call, ever: zero spend. Operator tool:
  *   SUPABASE_URL=… SUPABASE_ANON_KEY=… SUPABASE_SERVICE_ROLE_KEY=… npm run tutor:evaluate -- [--record]
  */
 

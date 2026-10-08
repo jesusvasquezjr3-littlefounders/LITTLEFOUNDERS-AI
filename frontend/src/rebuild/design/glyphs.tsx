@@ -1,20 +1,18 @@
 import manifest from '../assets/manifest.json';
 
 /**
- * Class A system glyphs (Frontend Bible 07 §2): the closed list, drawn in-house
+ * Class A system glyphs: the closed list, drawn in-house
  * to one spec — 24 px grid, 2 px live-area padding, 2 px stroke, round caps
  * and joins, currentColor, no fills. Everything that carries meaning or
  * identity is a class B asset in the manifest instead, never a glyph.
  *
  * ONE SOURCE. The drawings live only in `src/rebuild/assets/manifest.json`, as
  * class A rows that all declare the same `source`; this module reads them and
- * holds no path data of its own. `scripts/check-rebuild-assets.mjs` (part of
- * `spec:check` and every build) enforces the budget, the single source, the
- * glyph spec, that `GLYPH_NAMES` below mirrors the manifest exactly, and that
- * no rebuilt file draws a 24 px icon or imports an icon pack.
+ * holds no path data of its own. `GLYPH_NAMES` below mirrors the manifest
+ * exactly, and no rebuilt file draws a 24 px icon or imports an icon pack.
  *
  * The product may hold at most 24 glyphs. `show` and `hide` are one glyph
- * family (07 §2), so the budget counts families (manifest rows), not names.
+ * family, so the budget counts families (manifest rows), not names.
  */
 export const GLYPH_NAMES = [
   'close', 'back', 'menu', 'chevron', 'check', 'cross', 'plus', 'minus', 'show', 'hide',
@@ -36,7 +34,7 @@ export const GLYPH_FAMILIES: readonly (readonly GlyphName[])[] = rows.map((row) 
 
 export const GLYPH_BUDGET = 24;
 
-/** Always decorative: the adjacent word or the control's accessible name carries the meaning (02 rule 6). */
+/** Always decorative: the adjacent word or the control's accessible name carries the meaning. */
 export function Glyph({ name, className = 'lf-system-glyph' }: { name: GlyphName; className?: string }) {
   return <svg viewBox="0 0 24 24" aria-hidden="true" className={className} fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     {SYSTEM_GLYPHS[name].map((d) => <path key={d} d={d} />)}

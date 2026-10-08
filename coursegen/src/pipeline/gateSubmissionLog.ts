@@ -1,7 +1,6 @@
 // Per-run first-submission gate log — runs/<run-id>/gate-submissions.jsonl
-// (S05.4c; Appendix C Part 1.3 "Forge Gate Pass Rate (per gate)": "% of
-// authored lessons passing each individual gate on FIRST submission, tracked
-// separately per gate", data source "Forge pipeline logs").
+// "Forge Gate Pass Rate (per gate)": "% of authored lessons passing each
+// individual gate on FIRST submission, tracked separately per gate".
 //
 // verify:course reports the release-time pass rate; this is the other half:
 // what the author (a model in a live run) got right before any corrective
@@ -28,7 +27,7 @@ export interface GateSubmissionEntry {
   /** Gates that reported a problem on the first submission (gate 1 when unparseable). */
   failedGates: GateNumber[];
   /**
-   * GAP-FIX-R7 (OD-17, OD-24): which authoring path wrote the draft. Absent on
+   * Which authoring path wrote the draft. Absent on
    * the legacy v1 pipeline's lines (and on every line written before this
    * field existed); 'v2' on `v2:author`'s, where slotId is the lesson_id.
    */
@@ -111,9 +110,8 @@ export function firstSubmissionPassRates(entries: readonly GateSubmissionEntry[]
 
 /**
  * The per-gate first-submission lines of a run, one per authoring path that
- * wrote into it (Appendix C Part 1.3: tracked separately per gate; GAP-FIX-R7:
- * the v2 catalog OD-17/OD-24 make the only path for new lessons is reported
- * apart from the legacy v1 drafts). Only gates that ran at least once.
+ * wrote into it (tracked separately per gate; the v2 catalog is the only path
+ * for new lessons and is reported apart from the legacy v1 drafts). Only gates that ran at least once.
  */
 export function formatFirstSubmissionPassRates(entries: readonly GateSubmissionEntry[]): string[] {
   const lines: string[] = [];

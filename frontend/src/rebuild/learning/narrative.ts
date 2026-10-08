@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 /*
- * B.9 / B.13 (S05.3c) — the learner's side of the narrative layer.
+ * The learner's side of the narrative layer.
  *
  *   narrative_recall   an earlier story decision Core resurfaced when this
  *                      lesson opened (GET /learn/lessons/:id). Core chose it,
@@ -10,8 +10,7 @@ import { z } from 'zod';
  *   /learn/journal     the learner's own decision journal: read and clear.
  *
  * A malformed payload is unavailable, never partially shown. Transport is
- * injected, so this module imports nothing from the legacy app (Bible 02
- * rule 23).
+ * injected, so this module imports nothing from the legacy app.
  */
 
 const localized = z.record(z.string(), z.unknown());

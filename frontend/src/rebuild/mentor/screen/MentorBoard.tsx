@@ -9,11 +9,11 @@ import '../../learning/learning.css';
 import './mentorScreen.css';
 
 /*
- * The board on demand (Frontend Bible 08 §2 layer 4; 05): what the Mentor is
+ * The board on demand: what the Mentor is
  * demonstrating, drawn in the shared Pizarrón board frame the lesson player
  * uses (`learning/TeachingChartBoard`: the title, the picture, and the same
  * data as a table one press away), with the picture drawn by the shared
- * Pizarrón visual for that concept (`boardVisuals.tsx`, product B.7). The board holds the visual; the character
+ * Pizarrón visual for that concept (`boardVisuals.tsx`). The board holds the visual; the character
  * holds the voice. Every value is Oracle's own server-computed figure
  * (`boardModel.ts`); nothing here recalculates.
  *

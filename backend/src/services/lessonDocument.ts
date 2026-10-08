@@ -9,7 +9,7 @@ import type { LessonDocumentRow } from './supabaseRest.js';
 
 type Json = Record<string, unknown>;
 
-/** Caller's profile locale → es-MX (authoring locale) → whatever's there (LESSON_ENGINE.md §3, COURSE_ENGINE.md §4 "es-MX is the authoring locale"). */
+/** Caller's profile locale → es-MX (authoring locale) → whatever's there (es-MX is the authoring locale). */
 export function pickLessonLocale(rows: readonly LessonDocumentRow[], callerLocale: string | null | undefined): LessonDocumentRow | null {
   if (rows.length === 0) return null;
   const byLocale = new Map(rows.map((r) => [r.locale, r]));
@@ -19,10 +19,9 @@ export function pickLessonLocale(rows: readonly LessonDocumentRow[], callerLocal
 }
 
 /**
- * The single sanctioned answer-key stripper (LESSON_ENGINE.md §3) — server
+ * The single sanctioned answer-key stripper — server
  * mirror of the frontend's core/strip.ts. `document` is already stored
- * stripped (Forge's publish step splits document/answer_keys, COURSE_ENGINE.md
- * §4), so this is defense in depth, not the primary control.
+ * stripped (Forge's publish step splits document/answer_keys), so this is defense in depth, not the primary control.
  */
 export function stripAnswers(document: Json): Json {
   const segments = document.segments;

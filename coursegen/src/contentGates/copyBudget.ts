@@ -1,10 +1,10 @@
-// OD-13 — Copy Budget content gate (Frontend Bible 06).
+// Copy Budget content gate.
 //
 // Measures every classified on-screen string of a lesson (or catalog) against
 // its role budget. Blocks over budget fail with the exact numbers and the
-// Bible 06 §4 remedy order (cut, show it, say it, put it behind a tap). A
+// Remedy order (cut, show it, say it, put it behind a tap). A
 // translation that cannot meet ×1.25 is not truncated: the source is rewritten
-// shorter (Bible 06 §5.9), which is why the gate re-runs on every locale.
+// shorter, which is why the gate re-runs on every locale.
 
 import { COPY_BUDGETS, wordLimit, type Audience, type ContentLocale, type CopyRole } from './budgets.js';
 import { countSentences, countWords, excerpt } from './text.js';
@@ -71,7 +71,7 @@ export function checkCopyBudget(strings: readonly BudgetedString[], locale: Cont
 
 /**
  * Advisory only: the words a segment shows at once (title + prompt + options +
- * the longest single stage turn) against Bible 06's first-view budget (40,
+ * the longest single stage turn) against the first-view budget (40,
  * ages 6–9: 25; ×1.25 es/pt). The real first view depends on layout, so the
  * rendered-app copy-budget audit is the authority; this is an early warning.
  */

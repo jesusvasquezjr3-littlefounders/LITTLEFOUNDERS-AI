@@ -1,5 +1,5 @@
 /*
- * `npm run content-judge:calibrate` — C.5 / Appendix E §2.1/§3.2: compare the
+ * `npm run content-judge:calibrate` — compare the
  * live-content judge with the human panel on the seed set.
  *
  *   (no flag)            DRY RUN, zero spend: checks the seed set, uses the
@@ -16,7 +16,7 @@
  *   --live               OWNER-RUN ONLY: one paid judge call per seed item
  *                        (44 today). Refuses unless
  *                        CONTENT_JUDGE_CALIBRATION_LIVE=approved and a judge
- *                        key is configured (OD-23).
+ *                        key is configured.
  *   --out=<file>         write the calibration file for Core:
  *                        npm --prefix backend run tutor:live-content-report --
  *                          --record-calibration=<file> --recorded-by="…" --note="…"

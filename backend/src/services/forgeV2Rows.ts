@@ -1,10 +1,10 @@
-// Core's strict v2 contract applied to rows Forge emitted (S05.4c).
+// Core's strict v2 contract applied to rows Forge emitted.
 //
 // Forge's zero-spend emitter produces `lesson_document_versions`-shaped rows
 // ({lesson_id, locale, schema_version, version_id, document, answer_keys}).
 // Each must pass the exact function Core runs before delivering or grading a
 // v2 lesson, so Forge can never target a looser copy of the contract.
-// Used by scripts/forge-v2-check.ts (npm run forge-v2:check) and its test.
+// Used by scripts/forge-v2-check.ts (npm run forge-v2:check).
 
 import { checkV2Behaviour } from './forgeV2Behaviour.js';
 import { isGenericPraise } from './learnerRegisterPolicy.js';
@@ -41,7 +41,7 @@ export function checkForgeV2Rows(rows: unknown): string[] {
     if (!document || document.version_id !== row.version_id) problems.push(`${where}: row version_id must match the document's`);
     const parsed = validateV2LessonForGrading(row.document, row.answer_keys, { lessonId: row.lesson_id, locale: row.locale });
     if (!parsed) { problems.push(`${where}: refused by Core's v2 contract (validateV2LessonForGrading)`); continue; }
-    // GAP-FIX-R6 (B.20, B.23, Bible 02 §9.2): authored feedback names what was done right from age 10, never
+    // Authored feedback names what was done right from age 10, never
     // praises with nothing named, and gives no answer away.
     for (const problem of v2FeedbackProblems(parsed)) problems.push(`${where}: feedback, ${problem}`);
     if (parsed.age_band !== '6-9') {
@@ -49,7 +49,7 @@ export function checkForgeV2Rows(rows: unknown): string[] {
         if (segment.feedback?.met && isGenericPraise(segment.feedback.met)) problems.push(`${where}: feedback, ${segment.id}: "${segment.feedback.met}" praises with nothing named (B.20, B.23)`);
       }
     }
-    // GAP-FIX-R1: the interactive-behaviour gate over the full permitted input range, on the authoritative scorer.
+    // The interactive-behaviour gate over the full permitted input range, on the authoritative scorer.
     for (const report of checkV2Behaviour(parsed, row.answer_keys as Record<string, unknown>)) {
       for (const problem of report.problems) problems.push(`${where}: interactive-behaviour gate, ${report.segmentId} (${report.type}): ${problem}`);
     }
@@ -57,7 +57,7 @@ export function checkForgeV2Rows(rows: unknown): string[] {
   return problems;
 }
 
-/** Appendix C 1.3: the interactive-behaviour gate's pass rate over the graded segments of valid rows. */
+/** The interactive-behaviour gate's pass rate over the graded segments of valid rows. */
 export function forgeV2BehaviourPassRate(rows: unknown): { segments: number; passed: number; states: number; passRate: number | null } {
   let segments = 0; let passed = 0; let states = 0;
   for (const raw of Array.isArray(rows) ? rows : []) {

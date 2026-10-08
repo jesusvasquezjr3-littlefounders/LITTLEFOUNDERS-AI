@@ -7,9 +7,8 @@ import { TeenConnections } from './TeenConnections';
 import { ProfileSafetyNotice } from './ProfileSafetyNotice';
 
 /*
- * Fixture-only preview of the S08.6 surfaces (E.8 private card and teen
- * connections, E.13 safety notice) for the real-Chrome matrix
- * (scripts/verify-rebuild-social-tiers.mjs). No transport, no session, no spend.
+ * Fixture-only preview of the private card, the teen
+ * connections and the safety notice. No transport, no session, no spend.
  * Fixture names are long on purpose, to prove wrapping at 320 px.
  */
 
@@ -17,7 +16,7 @@ const REQUESTS = [
   { requestId: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa', requestedAt: '2026-09-24T10:00:00Z', username: 'omar_valdes_rios', displayName: 'Omar Alejandro Valdés' },
   { requestId: 'bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb', requestedAt: '2026-09-23T18:30:00Z', username: 'luz', displayName: 'Luz' },
 ];
-// GAP-FIX-R8 social: a follower without a @username is listed and actionable like any other.
+// A follower without a @username is listed and actionable like any other.
 const FOLLOWERS = [
   { userId: 'cccccccc-cccc-4ccc-8ccc-cccccccccccc', username: 'maria_fernanda_22', displayName: 'María Fernanda de la Cruz' },
   { userId: 'dddddddd-dddd-4ddd-8ddd-dddddddddddd', username: null, displayName: 'Patricia Guadalupe Hernández Solís' },

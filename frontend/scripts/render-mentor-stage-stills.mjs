@@ -5,22 +5,22 @@ import { launchBrowser, openPage, warmDevServer } from './lesson-engine/browser.
 import { STAGE_STILL_POSES } from './lib/mentorStagePoses.mjs';
 
 /*
- * The Mentor stage's per-state stills (Frontend Bible 08 §3, §7; 07 §4), locally
+ * The Mentor stage's per-state stills, locally
  * and at zero spend: no image model, no paid service.
  *
- * 08 §7: in the fallback (low-power device, no WebGL, data saver, a device that
+ * In the fallback (low-power device, no WebGL, data saver, a device that
  * cannot hold 30 fps, a failed renderer) the stage shows "pre-rendered stills
  * and short sequences from the same models and catalogue poses", and while the
  * live model loads "a pre-rendered still of the same character and pose". Each
  * picture here is the rebuilt Mentor stage itself (`MentorStage`), rendering the
  * character's runtime model (`/scenes/<character>.glb`) in ONE catalogue pose,
  * standing on its Diorama, in both colour modes: one still per pose the full
- * stage can play (`stageStates.ts`: the nine states of 08 §3 and §11 in the expressive
- * and the calm register, and the closing gesture for each C.16 script).
+ * stage can play (`stageStates.ts`: the nine states in the expressive
+ * and the calm register, and the closing gesture for each script).
  *
  * The pose is captured HELD: the capture tab asks for reduced motion, so the
  * engine holds each gesture at its one representative frame (the same frame a
- * learner with reduced motion sees; 08 §7), instead of catching a moving clip
+ * learner with reduced motion sees), instead of catching a moving clip
  * at an arbitrary instant.
  *
  * A VIRTUAL CLOCK, as in render-mentor-chooser.mjs: under the software
@@ -33,7 +33,7 @@ import { STAGE_STILL_POSES } from './lib/mentorStagePoses.mjs';
  * for Dina there, framed in a landscape viewport and cut from its centre (as
  * the chooser does). The files are drafts: `src/rebuild/assets/manifest.json`
  * registers them (`mentor.stageStill`) with `reviewStatus: "draft"` until the
- * owner approves the character-render family (07 §7, OD-14).
+ * owner approves the character-render family.
  *
  * Prerequisites (gitignored): the runtime models in `public/scenes/` and the
  * Basis transcoder in `public/basis/`; a Vite dev server:

@@ -1,5 +1,5 @@
 // Mass-run coordinator ("track") — bookkeeping over runGeneration, never an
-// LLM orchestrator (COURSE_ENGINE.md §4). A full course is too big for one
+// LLM orchestrator. A full course is too big for one
 // invocation, so the track shards it PER ADVENTURE (~hundreds of slots: big
 // enough that the proportional budget term dominates the per-run floor),
 // executes the shards sequentially — concurrency stays INSIDE each run via

@@ -12,24 +12,23 @@ import '../account/account.css';
 import './people.css';
 
 /*
- * P4 MY FOLLOWERS, P5 WHO I FOLLOW, P7 and P8 ANOTHER PERSON'S FOLLOWERS AND
- * FOLLOWING (Product 10 Block E; Frontend Bible 02 §4.5, §7, §8; 06; 07).
+ * MY FOLLOWERS, WHO I FOLLOW, and ANOTHER PERSON'S FOLLOWERS AND
+ * FOLLOWING.
  *
- * One screen for the four lists: people, never a number (E.9). Core has
- * already filtered every list to the people this viewer may discover (E.1,
- * E.8, E.13) and bound each Tutor pill to an established relationship (E.5);
+ * One screen for the four lists: people, never a number. Core has
+ * already filtered every list to the people this viewer may discover and bound each Tutor pill to an established relationship;
  * this screen shows exactly that. Each person opens their profile, where
- * Report and Block live (E.3).
+ * Report and Block live.
  *
- *   - Who I follow (P5): each row can be unfollowed (the viewer's own edge).
- *     A child whose connections its Tutor manages is asked first (W2P.3): it
+ *   - Who I follow: each row can be unfollowed (the viewer's own edge).
+ *     A child whose connections its Tutor manages is asked first: it
  *     may not be able to follow again on its own.
- *   - My followers (P4): read-only, except for an independent teen, who
- *     manages their own connections (E.8) and can remove a follower.
- *   - A child's own lists say who approves their connections (E.1).
- *   - A guest has no social layer (OD-3): the list says so.
- *   - Another person's lists (P7, P8) are read-only and name whose they are.
- *   - GAP-FIX-R8 social (E.3 on a list entry, E.8): on the viewer's own lists
+ *   - My followers: read-only, except for an independent teen, who
+ *     manages their own connections and can remove a follower.
+ *   - A child's own lists say who approves their connections.
+ *   - A guest has no social layer: the list says so.
+ *   - Another person's lists are read-only and name whose they are.
+ *   - On the viewer's own lists
  *     every row, one without a @username included, also carries Report and
  *     Block (behind a confirmation). They reach Core by user id, so a
  *     connection is always manageable by the person it connects to, even when
@@ -52,7 +51,7 @@ export type PeopleView =
 /** What a row's one action does: unfollow (own following), remove (a teen's own followers), or nothing. */
 export type RowAction = 'unfollow' | 'remove' | null;
 export interface PeopleNotice { tone: 'success' | 'error'; text: string }
-/** E.3 on the viewer's own lists: report (true only on Core's receipt) and block (after the confirmation). */
+/** On the viewer's own lists: report (true only on Core's receipt) and block (after the confirmation). */
 export interface RowSafety {
   reportCopy: ReportCopy;
   onReport: (person: PersonRow, category: ReportCategory, note: string | null) => Promise<boolean>;
@@ -69,7 +68,7 @@ export function PeopleList({ copy, locale, dark, ageBand, list, owner, view, act
   owner: 'self' | string;
   view: PeopleView;
   action: RowAction;
-  /** Ask before an unfollow (a child whose connections its Tutor manages, E.1). */
+  /** Ask before an unfollow (a child whose connections its Tutor manages). */
   confirmUnfollow?: boolean;
   /** Report and Block on each row; offered on the viewer's own lists only. */
   safety?: RowSafety;
@@ -153,7 +152,7 @@ export function PeopleList({ copy, locale, dark, ageBand, list, owner, view, act
   </div>;
 }
 
-/** One person: the cartoon avatar, the name, the handle and the Tutor pill as Core bound it (E.5). Opens their profile when they have a handle. */
+/** One person: the cartoon avatar, the name, the handle and the Tutor pill as Core bound it. Opens their profile when they have a handle. */
 function Person({ person, tutorLabel, onNavigate }: { person: PersonRow; tutorLabel: string; onNavigate: (href: string) => void }) {
   const content = <>
     <CartoonAvatar look={person.look} size="sm" />

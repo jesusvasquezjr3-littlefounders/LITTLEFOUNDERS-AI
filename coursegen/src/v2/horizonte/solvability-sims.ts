@@ -9,7 +9,7 @@ import {
 } from './sim1.js';
 import { OUTCOMES, analyseChoices, payloadProblem, type Payload } from './sim2.js';
 
-// F0.4 checkers for the five seeded simulations. Core grades them against a seeded run the gate never has, so each checker proves what the
+// Checkers for the five seeded simulations. Core grades them against a seeded run the gate never has, so each checker proves what the
 // public payload and the exact model fix: the answer exists, a full run reaches it reliably, no neighbouring setting does, the start is not
 // it. Every slider here is reversible, so no state is a dead end and none is searched for.
 

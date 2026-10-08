@@ -16,7 +16,7 @@
    * time-based guardrail in the controller. Three cycles of conversation
    * evidence were read through that.
    *
-   * `"exclude": []` is deliberate and is the §5 lesson written down: `extends`
+   * `"exclude": []` is deliberate: `extends`
    * inherits the parent's exclusion, and a config written to check something
    * that inherits an exclusion of it passes everything.
    */
@@ -29,12 +29,7 @@
   /*
    * SCOPED TO THE SCRIPTS, AND SAYING SO.
    *
-   * This config's job is `scripts/`. Oracle's TEST tree was ALSO unchecked —
-   * `tsconfig.json` excludes it and, until `tsconfig.test.json` (2026-08-29),
-   * nothing else picked it up. That gap was real: `orchestrator.test.ts` called
-   * `handleSegmentResult('seg-1', 100, Date.now())` against the same
-   * four-parameter signature this file's own history is about, undetected
-   * because the test that called it wrong was never type-checked either.
+   * This config's job is `scripts/`.
    */
   "exclude": ["src/__tests__"]
 }

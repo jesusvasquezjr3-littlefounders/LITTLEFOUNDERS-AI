@@ -8,7 +8,7 @@ import {
 } from './learnerRegisterPolicy.js';
 
 /*
- * B.23 (S05.3f): which register a learner reads in, from Core's own age
+ * Which register a learner reads in, from Core's own age
  * evidence. Never from the client, never from role.
  *
  *   1. A valid birth date on the profile gives the exact age.
@@ -19,7 +19,7 @@ import {
  *   4. Nothing known: the youngest register, the most protective default.
  *
  * The register changes tone, the Mentor's presence, reward framing and social
- * mechanics (OD-4). It is not a safeguard: every minor safeguard keeps
+ * mechanics. It is not a safeguard: every minor safeguard keeps
  * following age through its own module.
  */
 

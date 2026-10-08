@@ -31,20 +31,19 @@ import './sceneCanvas.css';
  * So there is exactly one, and each character is drawn into the screen
  * rectangle of its own DOM placeholder, with its own camera, through the
  * renderer's scissor. Ten avatars cost ten DRAWS rather than ten CONTEXTS.
- * This is what §6 decision 1 of GOAL_3D_CHARACTERS.md meant by "one persistent
+ * This is the "one persistent
  * canvas"; `CharacterStage` answered it for one character at a time and this
  * answers it for a screen.
  *
  * THIS FILE HOLDS NO 3D. The registry, the context and the placeholder are
  * plain React, and the canvas is loaded lazily from `CharacterLayerCanvas`, so
  * opening a lesson does not pull the renderer into the lesson's own chunk
- * before it is needed (TUTOR_3D.md §6: `three` only ever behind a lazy import).
+ * before it is needed (`three` only ever behind a lazy import).
  *
  * WHILE THE CANVAS IS NOT DRAWING, A STILL OF THE REAL MODEL STANDS IN. A
  * lesson never shows a hole where a character should be, and the stand-in is a
  * manifest-registered render of the same character's real 3D model in the
- * catalogue pose closest to what the slot asked for (`slotStill.ts`; Frontend
- * Bible 02 rule 21, 07 §4, 08 §7). It is never a hand-drawn look-alike.
+ * catalogue pose closest to what the slot asked for (`slotStill.ts`). It is never a hand-drawn look-alike.
  */
 
 export interface CharacterSlotSpec {

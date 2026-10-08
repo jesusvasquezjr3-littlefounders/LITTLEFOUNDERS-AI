@@ -5,7 +5,7 @@ import { CopyId, Facts, LoadFailure, Loading, Metrics, shortId, StaffPage, useFo
 import { labelOf, useConsoleCopy, type ConsoleCopy } from './staffConsoleCopy';
 
 /*
- * E.4 (as amended by OD-3), Appendix J 1.1: the staff-reviewed age correction
+ * The staff-reviewed age correction
  * queue (manage_users). A self-registered account's age is locked after its
  * first declaration; with no guardian to re-confirm, the account asks and a
  * staff member decides here, after checking the evidence outside the app.

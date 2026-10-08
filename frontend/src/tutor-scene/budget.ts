@@ -82,7 +82,7 @@ export interface BudgetReading {
  *
  * `fileBytes` is optional because a model loaded from a local file picker in
  * the lab has a known size while one streamed from Depot does not — and an
- * unknown size must not be reported as a passing zero (/AGENTS.md §1.14).
+ * unknown size must not be reported as a passing zero.
  */
 export function readBudget(
   stats: { triangles: number; drawCalls: number; fileBytes?: number; perFrame?: boolean },
@@ -127,8 +127,8 @@ function line(name: BudgetLine, actual: number, limit: number): BudgetReading {
  * why the audition turns the shadow pass off for as long as it is on stage
  * (`ContactShadow` keeps every character grounded regardless, on every tier).
  *
- * Stated as functions rather than as a paragraph so the arithmetic is asserted
- * against the real measurements in `budget.test.ts`: the last time a scene cost
+ * Stated as functions rather than as a paragraph so the arithmetic can be
+ * checked against real measurements: the last time a scene cost
  * was reasoned about in prose instead of measured, the readout painted "Over
  * budget" in red for a scene that was comfortably inside its documented cost.
  */

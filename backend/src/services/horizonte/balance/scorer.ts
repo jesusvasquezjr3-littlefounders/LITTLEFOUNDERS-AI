@@ -12,7 +12,7 @@ const REVIEW: V2Grade = { verdict: 'review', diagnostic: 'value' };
 const plain = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
 const keysOf = (value: Record<string, unknown>): string => Object.keys(value).sort().join();
 
-/* ---------- F1.8 equation balance ---------- */
+/* ---------- Equation balance ---------- */
 
 type BalanceSegment = { payload: { start: StartScale; ops: readonly string[] } };
 type BalanceRubric = { x: number };
@@ -42,7 +42,7 @@ function gradeBalance(segment: BalanceSegment, response: unknown, rubric: Balanc
   return solvedValue(end) === x && sameRational(typed, ratio(x)) ? MET : REVIEW;
 }
 
-/* ---------- F1.15 visual proofs ---------- */
+/* ---------- Visual proofs ---------- */
 
 type ProofSegment = { visual: { type: string }; payload: Record<string, unknown> & { choices: readonly string[] } };
 type ProofRubric = { choice: ProofChoice; value: string };

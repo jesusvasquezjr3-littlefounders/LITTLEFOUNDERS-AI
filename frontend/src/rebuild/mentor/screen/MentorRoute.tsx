@@ -26,16 +26,16 @@ export function MentorRoute({ header, getToken, userId, locale, theme, guardianL
   theme: 'light' | 'dark';
   guardianLink: boolean;
   reviewSkill: string | null;
-  /** OD-43: the lesson a guided review was opened from, or null. */
+  /** The lesson a guided review was opened from, or null. */
   reviewLessonId?: string | null;
   onLeave: () => void;
   onPath: () => void;
-  /** Bible 08 §8 (GAP-FIX-R1): the profile's "Change" opens the screen with the chooser sheet up. */
+  /** The profile's "Change" opens the screen with the chooser sheet up. */
   initialSheet?: MentorSheet | null;
 }) {
   const session = useMentorSession({ getToken, userId, reviewSkill, reviewLessonId });
   const copy = mentorCopy(locale);
-  // The title is the character's name once Core has said which one (08 §2); "Mentor" before that.
+  // The title is the character's name once Core has said which one; "Mentor" before that.
   const title = session.known ? MENTOR_NAMES[session.character] : copy.mentorScreen.documentTitle;
   useEffect(() => { document.title = `${title} · LittleFounders`; }, [title]);
   return <MentorScreen header={header} session={session} copy={copy} locale={locale} theme={theme} guardianLink={guardianLink} onLeave={onLeave} onPath={onPath} initialSheet={initialSheet} />;

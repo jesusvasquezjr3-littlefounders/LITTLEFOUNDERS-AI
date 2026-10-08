@@ -5,7 +5,7 @@ import { LazyRoute } from './LazyRoute';
 import { STAFF_ROUTE_GRANTS, type StaffRouteGrant } from './staffGrants';
 
 /*
- * Lane 6 (staff): the staff console. App.tsx (Lane 0) mounts these inside the
+ * Staff routes: the staff console. App.tsx mounts these inside the
  * staff shell (RequireAuth + RequireOnboarded); ./staffGrants.ts says which
  * grant opens each page.
  *
@@ -17,9 +17,9 @@ import { STAFF_ROUTE_GRANTS, type StaffRouteGrant } from './staffGrants';
  */
 /*
  * Every console section is a rebuilt screen (./staffConsole.tsx hosts them):
- * W2T.1 Overview, Users, Emails, Audit log, Reports and Roles & Access; W2T.2
- * Content, Generation and Mentor quality (C.24); W2T.3 Analytics & Health and
- * Learning intel, whose Insights view is S8 (G.5). /admin/insights keeps old
+ * Overview, Users, Emails, Audit log, Reports and Roles & Access; Content,
+ * Generation and Mentor quality; Analytics & Health and
+ * Learning intel, which includes the Insights view. /admin/insights keeps old
  * bookmarks working by opening that view.
  */
 const loadConsole = () => import('./staffConsole');

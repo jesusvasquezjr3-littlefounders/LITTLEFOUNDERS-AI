@@ -10,10 +10,10 @@ import es from '@/i18n/es-MX/rebuild-mentor.json';
 import pt from '@/i18n/pt-BR/rebuild-mentor.json';
 
 /*
- * C.7 in Settings: the learner's own disposition profile ("how you learn"),
- * the Mentor lane's rebuilt `DispositionSummary` in its own-view form.
+ * In Settings: the learner's own disposition profile ("how you learn"),
+ * the rebuilt `DispositionSummary` in its own-view form.
  *
- * Who may reset it is Core's rule (the OD-18 memory rule): a child's profile
+ * Who may reset it is Core's rule (the memory rule): a child's profile
  * is reset by their verified Tutor, a teen without a guardian link and an
  * adult reset their own. The reset button is offered only where that rule
  * can allow it: never for the kid role, never for a teen whose wallet

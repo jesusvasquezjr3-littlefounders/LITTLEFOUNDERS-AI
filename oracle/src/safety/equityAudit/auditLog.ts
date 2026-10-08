@@ -5,8 +5,7 @@ import { componentHash, REPO_ROOT } from '../biasAudit/registry.js';
 import type { EquityAuditReport } from './audit.js';
 
 /*
- * C.18 / C.20 / Appendix D §3.7 — THE EQUITY-DRIFT AUDIT RECORD AND CADENCE
- * (policy: docs/rebuild/mentor/EQUITY-AUDIT-POLICY.md).
+ * THE EQUITY-DRIFT AUDIT RECORD AND CADENCE
  *
  * `audit-log.json` keeps every recorded run: the date, whether it was the
  * zero-spend dry run or an owner-run live run, the model it measured, the
@@ -18,19 +17,19 @@ import type { EquityAuditReport } from './audit.js';
  *   MATERIAL CHANGE  the audited sources hash differently from the latest
  *                    recorded run: the prompt builder (how the nickname and
  *                    the feedback rules reach the model), the model call, the
- *                    C.18 readers that score a turn, and the audit's own cues,
+ *                    honesty readers that score a turn, and the audit's own cues,
  *                    scripts and harness. Rerun and record.
  *   CADENCE          the latest recorded run is older than CADENCE_DAYS.
  *   OPEN FINDING     the latest LIVE run drifted: it stays failing until a
  *                    later live run passes.
  *
- * LIVE EVIDENCE is separate and owner-run (OD-23: zero paid spend during the
+ * LIVE EVIDENCE is separate and owner-run (zero paid spend during the
  * migration). Until a live run is recorded, or when the model or the sources
  * changed since the last one, `--check` WARNS that live evidence is pending
  * or stale, and `--require-live` makes that a failure.
  */
 
-/** Proposed, pending calibration (Threshold Recalibration Log): semi-annual, like the C.20 bias audit. */
+/** Proposed, pending calibration: semi-annual, like the bias audit. */
 export const CADENCE_DAYS = 183;
 
 export const AUDITED_SOURCES = [
@@ -66,7 +65,7 @@ const EntrySchema = z
     verdict: z.enum(['ok', 'drift']),
     drifting: z.array(DriftSummary),
     insufficientCells: z.number().int().nonnegative(),
-    /** Human review of the run (policy §5): the Safety/Trust Lead; null until signed. */
+    /** Human review of the run: the Safety/Trust Lead; null until signed. */
     reviewedBy: z.string().nullable(),
     notes: z.string(),
   })

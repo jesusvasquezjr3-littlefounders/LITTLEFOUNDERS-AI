@@ -13,13 +13,13 @@
 .lf-fraction-cells { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 2px; min-block-size: var(--target-lg); overflow: hidden; border-radius: var(--rounded-md); background: var(--sunken); }
 .lf-fraction-cell { background: var(--surface); border-inline-end: 1px solid var(--edge); }.lf-fraction-cell--filled { background: var(--sky-strong); }
 
-/* M2 counting on (GAP-FIX-R2): hop buttons from the current square and the trail of landings. */
+/* M2 counting on: hop buttons from the current square and the trail of landings. */
 .lf-number-line-hops { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-2); }
 .lf-number-line-hop-trail { flex-basis: 100%; margin: 0; font-weight: 800; overflow-wrap: anywhere; }
 
-/* M2 ordered items (GAP-FIX-R5): one marker per labelled item; the item being moved is the strong one. */
+/* M2 ordered items: one marker per labelled item; the item being moved is the strong one. */
 .lf-number-line-marker--item { background: var(--sky-strong); }
 .lf-number-line-marker--item[data-active="true"] { z-index: 1; background: var(--primary-strong); }
 .lf-number-line-marker-label { position: absolute; inset-block-end: calc(100% + 2px); inset-inline-start: 50%; transform: translateX(-50%); color: var(--content); font: var(--type-caption); white-space: nowrap; }
-/* M3 (GAP-FIX-R5): the second point of a comparison or an equivalents pair. */
+/* M3: the second point of a comparison or an equivalents pair. */
 .lf-number-line-marker--second { background: var(--sky-strong); }

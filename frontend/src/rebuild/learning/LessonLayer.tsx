@@ -11,14 +11,14 @@ import './lessonLayer.css';
 const skipLabel: Record<Locale, string> = { 'en-US': enCore.appShell.skip, 'es-MX': esCore.appShell.skip, 'pt-BR': ptCore.appShell.skip };
 
 /**
- * W2L.3: the learner's lesson layer, the one frame every screen of a lesson
+ * The learner's lesson layer, the one frame every screen of a lesson
  * route renders in (opening, refusals, the recall, the lesson itself, the
  * result, the guided-review offer). A lesson is a full-screen single state
- * (02 §4.5, rule 15) with no app navigation, like the placement flow, so the
+ * with no app navigation, like the placement flow, so the
  * layer carries the shell duties itself: the design system's root (mode,
  * language, the Copy Budget band), the document title and language, a skip
  * link as the first Tab stop, and focus on the new screen's heading when the
- * lesson moves from one screen to the next (02 rule 13). The first screen's
+ * lesson moves from one screen to the next. The first screen's
  * arrival is left where the browser puts it, as on the app shells.
  *
  * Each screen renders exactly one `<main>` of its own (the boards own their
@@ -47,7 +47,7 @@ export function LessonLayer({ header, theme, locale, ageBand, pageTitle, screen,
   useLayoutEffect(() => {
     if (settled.current === screen) return;
     settled.current = screen;
-    // A new lesson screen is a screen entry for the orchestrated patterns (02 rule 14).
+    // A new lesson screen is a screen entry for the orchestrated patterns.
     noteRouteChange();
     const main = layer.current?.querySelector<HTMLElement>('main');
     const target = main?.querySelector<HTMLElement>('h1') ?? main;
@@ -60,7 +60,7 @@ export function LessonLayer({ header, theme, locale, ageBand, pageTitle, screen,
     <div ref={layer} className="lf-lesson-layer" data-shell="lesson" data-lesson-screen={screen} lang={locale}>
       <SkipLink label={skipLabel[locale]} target={mainId} />
       {header}
-      {/* GAP-FIX-R5: one stage-request store above the lesson and the guided-review offer beside it (08 §3, §11). */}
+      {/* One stage-request store above the lesson and the guided-review offer beside it. */}
       <LessonStageRequestHost>{children}</LessonStageRequestHost>
     </div>
   </RebuildRoot>;

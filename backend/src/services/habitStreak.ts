@@ -1,11 +1,11 @@
 /*
- * THE HABIT STREAK MODEL (B.21, S05.3e): a lapse-tolerant day streak.
+ * THE HABIT STREAK MODEL: a lapse-tolerant day streak.
  *
  * One pure module, deliberately free of I/O. The learning streak uses it
  * (Core's read model here, and the SQL function `habit_streak_advance` inside
  * `complete_lesson`).
  *
- * The rules (Frontend Bible 02 §9.6, Product 10 B.21, Appendix B §3.7):
+ * The rules:
  *
  *  1. A streak counts PRACTISED days in a row. A day is practised when the
  *     learner passes a lesson on that local calendar date (the client's wall
@@ -21,7 +21,7 @@
  *     here ever lowers either of them.
  *  5. A broken run is "resting", never "lost": the next practised day starts
  *     a new run at 1 and the best stays visible.
- *  6. Only the 7-, 30- and 100-day marks are milestones (OD-7). An ordinary
+ *  6. Only the 7-, 30- and 100-day marks are milestones. An ordinary
  *     practised day is not.
  *  7. A date EARLIER than the last practised day (clock skew, a device in
  *     another timezone) changes nothing. The legacy rule restarted the run,
@@ -29,7 +29,7 @@
  */
 
 export const HABIT_STREAK_MODEL = 'rest-days-v1' as const;
-/** Free, automatic rest days per ISO week (Bible 02 §9.6 rule 1). */
+/** Free, automatic rest days per ISO week. */
 export const REST_DAYS_PER_WEEK = 2;
 export interface HabitStreakState {
   /** Practised days in the current run. */
@@ -119,7 +119,7 @@ function scanGap(lastDay: number, restDaysUsed: number, endDay: number, paused: 
 
 /**
  * What the learner (or their Tutor) sees on `today`, before practising.
- * Stored values are never rewritten by a read (OD-9): a run that can no
+ * Stored values are never rewritten by a read: a run that can no
  * longer continue reads as `resting`, and the stored row keeps its numbers
  * until the next practised day starts a new run.
  */
@@ -168,7 +168,7 @@ export function addDays(date: string, offset: number): string {
   return fromDay(toDay(date) + offset);
 }
 
-// ── The weekly strip (GAP-FIX-R1 learning; Bible 02 §9.6 rules 4-5, 04 §4.3) ──
+// ── The weekly strip ──
 
 export type StreakDayState = 'practiced' | 'rest' | 'paused' | 'open' | 'today';
 export interface StreakDay { date: string; state: StreakDayState }

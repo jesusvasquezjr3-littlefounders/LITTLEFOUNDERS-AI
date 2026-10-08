@@ -1,9 +1,8 @@
 import type { TrayDemoStep } from './types';
 
 /*
- * THE DEMONSTRATION DRIVER (Tutor v3; widened to 6 segment types
- * 2026-09-02/03, /TUTOR_INSTRUMENTS.md Sprint 2 — but see the LIVE VOCABULARY
- * note below before assuming all 6 actually fire).
+ * THE DEMONSTRATION DRIVER (Tutor v3; widened to 6 segment types — but see
+ * the LIVE VOCABULARY note below before assuming all 6 actually fire).
  *
  * "Mira, si agrego esta moneda…" — the tutor MOVES the open activity's own
  * controlled draft while speaking. Every demonstrable renderer already owns a
@@ -36,7 +35,7 @@ import type { TrayDemoStep } from './types';
  * land on a real id would move the child's own draft with no check behind it,
  * risking the tutor visibly asserting a WRONG placement while narrating as if
  * it were correct. So `orderStepsAdapter`/`sortBucketsAdapter`/
- * `matchPairsAdapter` below are real, tested, and CURRENTLY UNREACHABLE in
+ * `matchPairsAdapter` below are real and CURRENTLY UNREACHABLE in
  * production: nothing in the prompt ever asks the model to emit the steps
  * they handle. Kept as forward-compatible infrastructure for when the ids gap
  * is closed (or product accepts a non-committal placement), not dead code —
@@ -117,15 +116,14 @@ const DEMO_ADAPTERS: Record<string, DemoAdapter> = {
   number_line: numberLineAdapter,
 };
 
-/** Kept for the one caller (`mayDemonstrate`'s own doc comment history) and the test file that names it directly. */
+/** Kept for the one caller. */
 export const TRAY_TYPES = new Set(Object.keys(DEMO_ADAPTERS));
 
 /**
  * WHETHER THE TUTOR MAY TOUCH THIS SEGMENT RIGHT NOW.
  *
- * Four guards, each protecting a child's unsubmitted answer, and they lived
- * inside a `useEffect` in a component with no test file — so the only thing
- * holding them was that nobody edited them. Pulled out here because a rule
+ * Four guards, each protecting a child's unsubmitted answer. Pulled out of
+ * a `useEffect` in a component because a rule
  * about when it is safe to write into someone's answer should be checkable
  * without mounting a panel.
  *

@@ -5,8 +5,8 @@ import { requireInternalKey } from '../middleware/auth.js';
 import { SOCIAL_RETENTION_MAX_LIMIT, runSocialGraphRetention } from '../services/socialGovernance.js';
 
 /*
- * POST /api/v1/internal/social-retention/run — the daily E.11 sweep
- * (.github/workflows/social-retention.yml; policy SOCIAL-GOVERNANCE.md §3).
+ * POST /api/v1/internal/social-retention/run — the daily sweep
+ * (.github/workflows/social-retention.yml).
  *
  * One call runs public.run_social_graph_retention once: every retention
  * class, each bounded by `limit` rows, in one transaction that also writes

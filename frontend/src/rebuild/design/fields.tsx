@@ -9,7 +9,7 @@ import { Glyph } from './glyphs';
 import { withPressFeedback } from './motion';
 
 /*
- * Form controls (Frontend Bible 02 §3 `input`, §4.4, §9.8). Every control has a
+ * Form controls. Every control has a
  * visible label, optional help above the control and an error directly under
  * it that pairs a glyph with words. Values scroll inside their box; labels,
  * help and errors wrap. No component owns a string: callers pass translated,
@@ -249,13 +249,13 @@ export interface ChoiceOption<T extends string> {
   value: T; label: string; disabled?: boolean;
   /**
    * A decorative identity mark drawn beside the label in a SegmentedControl
-   * option (02 §4.3: a wallet pocket is colour, icon and label at once). The
+   * option (a wallet pocket is colour, icon and label at once). The
    * node must be aria-hidden; the label still names the option.
    */
   art?: ReactNode;
 }
 
-/** "Choose one" is a rounded rectangle with a ring-and-dot mark (02 §9.5 shape table). */
+/** "Choose one" is a rounded rectangle with a ring-and-dot mark. */
 export function RadioGroup<T extends string>({ legend, help, error, name, options, value, onValueChange, disabled }: {
   legend: string; help?: string; error?: string; name: string; options: readonly ChoiceOption<T>[];
   value: T | null; onValueChange: (value: T) => void; disabled?: boolean;
@@ -283,15 +283,14 @@ export interface PictureOption<T extends string> {
   label: string;
   /** Our own drawing of the option (a manifest-registered asset), decorative: the label names it. */
   picture?: ReactNode;
-  /** A colour to choose, drawn as a round swatch with a thin functional edge (02 §4.4 (1)). */
+  /** A colour to choose, drawn as a round swatch with a thin functional edge. */
   swatch?: string;
 }
 
 /**
- * "Choose one" among pictures: a colour, a drawing, a preset (W2 profile lane:
- * the avatar parts and the cover presets). One radio group, so the arrow keys
+ * "Choose one" among pictures: a colour, a drawing, a preset (the avatar parts and the cover presets). One radio group, so the arrow keys
  * move within it and Tab leaves it; every option has a name, and the chosen one
- * carries a ring and a check, never colour alone (02 rule 6, §4.4 (2)). An
+ * carries a ring and a check, never colour alone. An
  * option without a picture (for example "None") shows its label.
  */
 export function PictureChoice<T extends string>({ legend, legendRole = 'body', name, options, value, onValueChange, disabled }: {
@@ -304,7 +303,7 @@ export function PictureChoice<T extends string>({ legend, legendRole = 'body', n
       {options.map((option) => {
         const kind = option.swatch ? 'swatch' : option.picture ? 'picture' : 'text';
         return <label key={option.value} className={`lf-picture-option lf-picture-option--${kind}`} data-value={option.value} onPointerDown={withPressFeedback()}>
-          {/* 02 §9.1: the press ring's clipping layer, so the check badge on the corner stays whole. */}
+          {/* The press ring's clipping layer, so the check badge on the corner stays whole. */}
           <span className="lf-press-host" data-press-host aria-hidden="true" />
           <input type="radio" className="lf-picture-input" name={name} value={option.value} checked={value === option.value}
             aria-label={kind === 'text' ? undefined : option.label} onChange={() => onValueChange(option.value)} />
@@ -327,10 +326,10 @@ export function SegmentedControl<T extends string>({ legend, legendHidden = fals
   legend: string; legendHidden?: boolean; name: string; options: readonly ChoiceOption<T>[]; value: T | null; onValueChange: (value: T) => void;
   disabled?: boolean; className?: string;
   /**
-   * `compact` (OD-28, owner review item V-13): on a phone-width container the
+   * `compact`: on a phone-width container the
    * options take less padding, a smaller gap and a smaller check, so the control
    * can share a row with the action beside it. The 48 px target floor, the check
-   * mark and the type step never change (02 §8).
+   * mark and the type step never change.
    */
   size?: 'md' | 'compact';
 }) {

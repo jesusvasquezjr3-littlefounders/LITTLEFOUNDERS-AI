@@ -2,7 +2,7 @@ import crypto from 'crypto';
 import { LESSON_ATTEMPT_TOKEN_TTL_SECONDS, type LessonAttemptTokenPayload } from './lessonAttemptToken.js';
 
 /*
- * F3.0: the seed of a seeded Horizonte run. It is a pure function of the verified attempt token, so it needs no table:
+ * The seed of a seeded Horizonte run. It is a pure function of the verified attempt token, so it needs no table:
  * a resume re-signs the same nonce and so yields the same seed, a miss mints a new nonce and so a new seed, and the nonce
  * is burned by the grade exactly as for every other segment. Server only: the HMAC stays out of the browser tree.
  */

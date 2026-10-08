@@ -1,14 +1,10 @@
 import { MASTERY_PREREQ_THRESHOLD } from '../pedagogy/bkt.js';
 
 /*
- * B.6 / OD-16 / OD-22 — the age-pathway policy as executable, pure code.
+ * The age-pathway policy as executable, pure code.
  *
- * STATUS: engineering proposal awaiting owner review (OD-22). The written
- * policy is docs/rebuild/sprints/S05-B6-PATHWAY-POLICY.md; every numbered rule
- * there that a program can decide is decided HERE, and each one is pinned by
- * pathwayPolicy.test.ts. S05.3a ships this module and the data it reads; the
- * learner routes adopt it in the following checkpoint, so nothing a learner
- * sees changes yet.
+ * STATUS: engineering proposal awaiting owner review. Every rule a program
+ * can decide is decided HERE.
  *
  * ONE BRAIN. Nothing here stores or estimates mastery. Prerequisites come
  * from the Mentor's KC graph (kc_edge), "already known" from the Mentor's BKT
@@ -16,16 +12,16 @@ import { MASTERY_PREREQ_THRESHOLD } from '../pedagogy/bkt.js';
  * course evidence, and review from the Mentor's memory cards. A topic reaches
  * the graph only through topic_knowledge_components (kcTopicMap.ts).
  *
- * AGE IS A SAFEGUARD, NEVER A MASTERY PROXY (OD-16). Age decides which
+ * AGE IS A SAFEGUARD, NEVER A MASTERY PROXY. Age decides which
  * chapters may open and which ones a learner's completion is measured on. It
  * never credits, skips or blocks a topic by itself; that is evidence's job.
- * Age evidence is read server-side and never leaves Core (S05.2a posture).
+ * Age evidence is read server-side and never leaves Core (age evidence is never exposed).
  */
 
 export type PathwayStage = 'child' | 'tween' | 'teen' | 'adult';
 export const STAGE_ORDER: readonly PathwayStage[] = ['child', 'tween', 'teen', 'adult'];
 
-/** Frontend Bible registers and the v2 document `age_band`s: 6–9, 10–12, 13–17, 18+. */
+/** The frontend registers and the v2 document `age_band`s: 6–9, 10–12, 13–17, 18+. */
 export const STAGE_AGE_BANDS: Readonly<Record<PathwayStage, { min: number; max: number | null }>> = {
   child: { min: 6, max: 9 },
   tween: { min: 10, max: 12 },
@@ -69,7 +65,7 @@ const rank = (stage: PathwayStage): number => STAGE_ORDER.indexOf(stage);
 const isAge = (value: unknown): value is number => typeof value === 'number' && Number.isInteger(value) && value >= 0 && value <= 119;
 
 /**
- * Rule P1 — a chapter's policy. Explicit columns win and must be complete and
+ * A chapter's policy. Explicit columns win and must be complete and
  * coherent; a half-filled or incoherent row is `null`, which every caller
  * treats as CLOSED (fail closed, never fall back to a guess).
  */
@@ -109,9 +105,9 @@ function ageOn(birthDate: string, now: Date): number | null {
 }
 
 /**
- * Rule P2 — age evidence follows age, not account role. A valid birth date is
+ * Age evidence follows age, not account role. A valid birth date is
  * exact; otherwise the declared band bounds it; an under-13 protected origin
- * (the A.2 refusal path) caps it at 12 whatever else was typed.
+ * (the age-refusal path) caps it at 12 whatever else was typed.
  */
 export function learnerAgeEvidence(
   input: { birthDate: string | null; declaredBand: 'under_13' | '13_to_17' | 'adult' | null; protectedOrigin: boolean },
@@ -131,7 +127,7 @@ export function learnerAgeEvidence(
   return evidence;
 }
 
-/** Rule P3 — the learner's stage is the band of the YOUNGEST age the evidence allows. Unknown is child. */
+/** The learner's stage is the band of the YOUNGEST age the evidence allows. Unknown is child. */
 export function learnerStage(evidence: AgeEvidence): PathwayStage {
   const age = evidence.lowerBound;
   if (age === null || age < STAGE_AGE_BANDS.tween.min) return 'child';
@@ -141,9 +137,9 @@ export function learnerStage(evidence: AgeEvidence): PathwayStage {
 }
 
 /**
- * Rule P4 — the safeguard. Child chapters are open to everyone. Any other
+ * The safeguard. Child chapters are open to everyone. Any other
  * chapter opens only when the youngest age the evidence allows meets the
- * chapter's minimum; unknown age opens nothing above child. OD-25's one
+ * chapter's minimum; unknown age opens nothing above child. The one
  * exception (earlyStageCandidate, below) is applied by the course adapter on
  * top of this rule, never inside it.
  */
@@ -154,15 +150,15 @@ export function chapterOpensForAge(evidence: AgeEvidence, policy: ChapterPolicy 
 }
 
 /**
- * OD-25 (27 September 2026) refines P4: mastery may open ONE stage early. A
+ * Since 27 September 2026 mastery may open ONE stage early. A
  * chapter the safeguard closes is a candidate for early entry only when
  *   * the learner's age is known (unknown age still opens nothing above child),
  *   * the chapter's stage is exactly one stage above the learner's own stage,
  *   * and it is not an adult chapter: adult chapters never open to a minor.
  * A candidate opens only after every prerequisite skill of the chapter is
- * mastered on the shared graph (E2) AND the learner confirms; it then plays as
- * an OPTIONAL chapter (never required, never in a denominator, B3), and it
- * closes again if a corrected age removes the candidacy (T4). Two stages up,
+ * mastered on the shared graph AND the learner confirms; it then plays as
+ * an OPTIONAL chapter (never required, never in a denominator), and it
+ * closes again if a corrected age removes the candidacy. Two stages up,
  * or any adult chapter for a minor, stays closed whatever the evidence.
  */
 export function earlyStageCandidate(evidence: AgeEvidence, policy: ChapterPolicy | null): boolean {
@@ -184,11 +180,11 @@ export interface PathwayResolution {
 }
 
 /**
- * Rule P5 — which chapters form the learner's pathway in ONE course.
+ * Which chapters form the learner's pathway in ONE course.
  *  1. Open chapters of the learner's own stage.
  *  2. Else the nearest YOUNGER stage with open chapters ("younger-bridge":
  *     today's adults in the teen-only legacy courses). Recorded as a content
- *     gap: OD-16 wants genuinely authored chapters for every stage.
+ *     gap: genuinely authored chapters are wanted for every stage.
  *  3. Else the nearest OLDER stage whose chapters the safeguard opens
  *     ("older-early": a 12-year-old in the 12–18 legacy chapters).
  *  4. Else the course is unavailable to this learner.
@@ -226,15 +222,14 @@ export function resolvePathway(evidence: AgeEvidence, chapters: ReadonlyArray<{ 
 export type CoursePrerequisiteDecision = 'satisfied' | 'waived-younger-stage' | 'missing';
 
 /**
- * Rule P7 — a course-level prerequisite (B.2, `courses.requires`) across
+ * A course-level prerequisite (`courses.requires`) across
  * stages. It is satisfied by a credential of the required course earned in
  * ANY stage (a frozen legacy badge included). When the learner's pathway in
  * the required course would be a younger bridge — a teen or adult facing a
- * children's course — it is waived: OD-16 never makes an older learner
+ * children's course — it is waived: an older learner is never made to
  * complete another stage's chapters, and what that course teaches still
- * reaches the frontier through the shared graph (F2/F5). Otherwise it is
- * missing. S05.2ba's route currently demands the badge from everyone; S05.3b
- * adopts this rule there.
+ * reaches the frontier through the shared graph. Otherwise it is
+ * missing.
  */
 export function coursePrerequisiteDecision(
   requiredCourse: PathwayResolution,
@@ -290,16 +285,16 @@ export interface LearnerEvidence {
   /** KC keys whose Mentor memory card is due now (memory_card). */
   dueReviewKcs: ReadonlySet<string>;
   /**
-   * OD-24: ACTIVE KC keys a completed legacy topic taught (legacy_kc_credits,
-   * written by the OD-9 toolkit before the legacy catalog is retired). Graded
-   * course evidence under E2 that outlives the legacy content; T3: it
+   * ACTIVE KC keys a completed legacy topic taught (legacy_kc_credits,
+   * written by the migration toolkit before the legacy catalog is retired). Graded
+   * course evidence that outlives the legacy content: it
    * satisfies prerequisites at every stage and never completes a topic.
    */
   legacyCreditedKcs?: ReadonlySet<string>;
 }
 
 /**
- * OD-25 — a chapter's prerequisite skills: the graph prerequisites of every
+ * A chapter's prerequisite skills: the graph prerequisites of every
  * skill its topics teach, minus the skills taught inside the chapter itself.
  * Sorted, so the stored evidence of a confirmation is stable.
  */
@@ -321,7 +316,7 @@ export interface TopicCompletion {
   complete: boolean;
 }
 
-/** Rule E1 — a topic is complete when every live lesson is passed or placement-credited. */
+/** A topic is complete when every live lesson is passed or placement-credited. */
 export function topicCompletion(topic: PathwayTopic, evidence: LearnerEvidence): TopicCompletion {
   const done = topic.lessonIds.filter((id) => evidence.passedLessonIds.has(id) || evidence.creditedLessonIds.has(id)).length;
   return { done, total: topic.lessonIds.length, complete: topic.lessonIds.length > 0 && done === topic.lessonIds.length };
@@ -335,8 +330,8 @@ export interface GraphState {
 }
 
 /**
- * Rule E2 — a KC is satisfied by graded course evidence (a complete topic, in
- * any open chapter, that TEACHES it, or an OD-24 legacy credit for one) or by
+ * A KC is satisfied by graded course evidence (a complete topic, in
+ * any open chapter, that TEACHES it, or a legacy credit for one) or by
  * the Mentor's posterior at its own prerequisite bar. Either way the other surface cannot show it as locked.
  */
 export function graphState(
@@ -384,7 +379,7 @@ export interface BlockedSaga {
 export interface Frontier {
   items: FrontierItem[];
   blocked: BlockedSaga[];
-  /** Unsatisfied prerequisites taught only outside the pathway: suggested, never required (OD-16). */
+  /** Unsatisfied prerequisites taught only outside the pathway: suggested, never required. */
   advisoryKcs: string[];
 }
 
@@ -395,33 +390,32 @@ function firstOpenLesson(topic: PathwayTopic, evidence: LearnerEvidence): string
 const byPosition = <T extends { position: number }>(rows: readonly T[]): T[] => [...rows].sort((a, b) => a.position - b.position);
 
 /**
- * Rules F1–F7 — the frontier that replaces the single linear "current lesson".
+ * The frontier that replaces the single linear "current lesson".
  *
- *  F1  Pathway order is the authored order: chapter, saga, topic position.
+ *  - Pathway order is the authored order: chapter, saga, topic position.
  *      Each saga of a pathway chapter contributes at most its FIRST
- *      incomplete topic, so the narrative inside a saga is kept (B.9).
- *  F2  A topic's KC prerequisites are the Mentor-graph prerequisites of every
+ *      incomplete topic, so the narrative inside a saga is kept.
+ *  - A topic's KC prerequisites are the Mentor-graph prerequisites of every
  *      KC it teaches, minus the KCs it teaches itself. One of them BLOCKS only
  *      when an EARLIER pathway topic teaches it and it is not yet satisfied
- *      (Rule E2). Where the shared graph and the authored order disagree, the
+ *      Where the shared graph and the authored order disagree, the
  *      authored order wins for gating, and where nothing earlier in the
  *      pathway teaches a prerequisite (a content gap, another course, a
  *      younger stage) it never blocks: a course cannot demand what it has
  *      not taught, and an adult never has to clear childhood chapters.
- *  F3  Authored hard topic prerequisites and review citations block the same
+ *  - Authored hard topic prerequisites and review citations block the same
  *      way: only when they point at an earlier pathway topic that is neither
  *      complete nor has all of its taught KCs satisfied.
- *  F4  Chapters are no longer locked in sequence: every open saga of every
+ *  - Chapters are no longer locked in sequence: every open saga of every
  *      pathway chapter is on the frontier, ranked in pathway order.
- *  F5  A prerequisite that stays unsatisfied and is taught only in an
+ *  - A prerequisite that stays unsatisfied and is taught only in an
  *      OPTIONAL chapter is advisory: its first incomplete teaching topic there
  *      is offered as a "bridge" item after the pathway items.
- *  F6  At most one "review-due" item leads: a Mentor memory card that is due
+ *  - At most one "review-due" item leads: a Mentor memory card that is due
  *      promotes the first open frontier review topic that reviews it.
- *  F7  No deadlock, by construction: the earliest incomplete pathway topic
+ *  - No deadlock, by construction: the earliest incomplete pathway topic
  *      only waits on earlier topics, which are all complete, so the frontier
- *      is empty only when the pathway is complete (pinned on the whole real
- *      catalog by pathwayPolicy.test.ts).
+ *      is empty only when the pathway is complete.
  * Deterministic: same inputs, same order.
  */
 export function computeFrontier(
@@ -504,7 +498,7 @@ export function computeFrontier(
     }
   }
 
-  // F5: one bridge per advisory KC that an optional chapter teaches.
+  // One bridge per advisory KC that an optional chapter teaches.
   const bridges: FrontierItem[] = [];
   const advisoryKcs = [...advisory].sort();
   for (const kc of advisoryKcs) {
@@ -522,7 +516,7 @@ export function computeFrontier(
     }
   }
 
-  // F6: one review-due lead, from an OPEN frontier review topic that reviews a due KC.
+  // One review-due lead, from an OPEN frontier review topic that reviews a due KC.
   const dueKcs = [...evidence.dueReviewKcs].sort();
   const lead = openReviews.find((item) => dueKcs.some((kc) => (kcsByTopicPath.get(item.topicPath)?.reviews ?? []).includes(kc)));
   const ordered = lead ? [{ ...lead, reason: 'review-due' as const }, ...items.filter((i) => i.topicId !== lead.topicId)] : items;
@@ -540,22 +534,22 @@ export interface PathwayProgress {
   /** KCs the pathway teaches, and how many are satisfied (course or Mentor). */
   kcsTaught: number;
   kcsSatisfied: number;
-  /** Rule B1: every topic of every pathway chapter complete. */
+  /** Every topic of every pathway chapter complete. */
   complete: boolean;
 }
 
 /**
- * Rules B1–B3 — progress and completion are measured on the PATHWAY only.
- *  B1  Progress % = lessons passed or credited in pathway chapters / lessons
+ * Progress and completion are measured on the PATHWAY only.
+ *  - Progress % = lessons passed or credited in pathway chapters / lessons
  *      in pathway chapters. For a legacy single-stage course whose chapters
  *      are all the learner's pathway this is exactly today's formula, so no
- *      migrated percentage moves (OD-9).
- *  B2  Graph completion = every topic of the pathway complete, i.e. every KC
+ *      migrated percentage moves.
+ *  - Graph completion = every topic of the pathway complete, i.e. every KC
  *      the pathway teaches demonstrated through its own graded topics or
  *      placement credits. Mentor mastery alone satisfies prerequisites; it
- *      completes a topic only when the learner accepts the offer to count it
- *      (OD-25), which is stored as a mastery credit and read as a credit.
- *  B3  Optional and closed chapters never enter a denominator: an adult is
+ *      completes a topic only when the learner accepts the offer to count it,
+ *      which is stored as a mastery credit and read as a credit.
+ *  - Optional and closed chapters never enter a denominator: an adult is
  *      never measured on childhood chapters, a minor never on adult ones.
  */
 export function pathwayProgress(
@@ -597,9 +591,9 @@ export function pathwayProgress(
 }
 
 /**
- * Rule B4 — a course badge is a staged credential: earned for the pathway
+ * A course badge is a staged credential: earned for the pathway
  * stage it was completed on, once, and never revoked by a later catalog
- * expansion, an age change or a map revision (OD-9). An unavailable pathway
+ * expansion, an age change or a map revision. An unavailable pathway
  * can never earn one; a younger-bridge pathway can (today's adults keep
  * today's badges) and is reported as a content gap.
  */
@@ -615,7 +609,7 @@ export function pathwayBadgeDecision(
 }
 
 /**
- * Rule B5 — which stage credentials a learner already holds in one course,
+ * Which stage credentials a learner already holds in one course,
  * from course_pathway_badges rows. A frozen legacy full-course badge counts
  * as the credential of the stage its chapters formed, so a learner who earned
  * the legacy badge is never asked to earn the same stage twice.
@@ -632,7 +626,7 @@ export function earnedStagesFromBadgeRows(
 }
 
 // ---------------------------------------------------------------------------
-// Legacy-credit equivalence (OD-9)
+// Legacy-credit equivalence
 // ---------------------------------------------------------------------------
 
 export type EvidenceTreatment =
@@ -642,9 +636,9 @@ export type EvidenceTreatment =
   | 'kept-as-is-outside-pathway-scope';
 
 /**
- * Every OD-9 evidence type and what the pathway model does with it. None is
- * rewritten, re-scored, remapped or deleted by the pathway cutover; the test
- * pins that no entry is ever "dropped" and that the list covers OD-9 §4.1.
+ * Every legacy evidence type and what the pathway model does with it. None is
+ * rewritten, re-scored, remapped or deleted by the pathway cutover; no entry
+ * is ever "dropped".
  */
 export const LEGACY_EVIDENCE_EQUIVALENCE: ReadonlyArray<{ evidence: string; table: string; treatment: EvidenceTreatment; rule: string }> = [
   { evidence: 'lesson passes and best scores', table: 'lesson_progress', treatment: 'kept-as-is-counts-toward-completion', rule: 'E1/B1: a passed lesson completes its topic in every stage; best_score is preserved and never lowered (B.5).' },

@@ -1,22 +1,19 @@
-// B.17 — the concept-cap gate: age-based working-memory limits per lesson
-// (Appendix C Stage 2, gate 1; Forge gate 14).
+// The concept-cap gate: age-based working-memory limits per lesson (Forge gate 14).
 //
 // "Forge must gain a deterministic gate that counts genuinely new
 // (non-previously-introduced) concepts per lesson and blocks publication when
 // that count exceeds an age-tier ceiling … Lessons exceeding the ceiling must
-// be split, not shipped as authored." Appendix B §1.2 gives the ranges: 2–3
-// new concepts for ages 6–9, 3–4 for 10–12, 4–6 for teens and adults. The owner
-// log (§8) applies them as written, recalibrated through the Threshold
-// Recalibration Log.
+// be split, not shipped as authored." The ranges are 2–3 new concepts for
+// ages 6–9, 3–4 for 10–12, 4–6 for teens and adults.
 //
 // Two layers, because density is decided when a lesson is PLANNED and can be
 // broken when it is WRITTEN:
 //
-//   catalog  — every lesson blueprint declares `new_concepts` (Stage 0/1). In
+//   catalog  — every lesson blueprint declares `new_concepts`. In
 //              course order, a concept is new only the first time it is
 //              declared; a later declaration is refused as "not new". The count
 //              is checked against the band ceiling (block) and the lower end of
-//              the range (Stage 3 review). An undeclared lesson blocks: density
+//              the range. An undeclared lesson blocks: density
 //              that is not tracked cannot be shown to fit.
 //   document — with a concept registry (concepts.yaml, surface terms per
 //              locale), a generated lesson that uses a LATER lesson's concept
@@ -24,8 +21,8 @@
 //              lesson's real count (declared + early) is checked again.
 //
 // Ranges → rule: the upper end of each range is the blocking ceiling; a count
-// above the lower end is allowed but goes to the Stage 3 reviewer, who checks
-// the concepts are chunked onto prior knowledge (Appendix B §1.2 "Nuance").
+// above the lower end is allowed but goes to the human reviewer, who checks
+// the concepts are chunked onto prior knowledge.
 
 import type { TaxonomyFile, ConceptsFile } from '../catalog/schema.js';
 import type { ContentLocale } from './budgets.js';
@@ -38,7 +35,7 @@ export const CONCEPT_CEILINGS: Readonly<Record<WorkingMemoryBand, { target: numb
   '13+': { target: 4, ceiling: 6 },
 };
 
-/** The oldest youngest-age each younger band takes (Appendix B §1.2 ranges); older is 13+. */
+/** The oldest youngest-age each younger band takes; older is 13+. */
 export const WORKING_MEMORY_BAND_MAX_AGE = { '6-9': 9, '10-12': 12 } as const;
 
 /**

@@ -104,16 +104,16 @@ export function reviewCard(card: MemoryCard, rating: ReviewRating, now: Date): M
 }
 
 /*
- * ── C.11: THE TWO TIERS, SEEN FROM THE CROSS-SESSION SCHEDULER ──────────────
+ * ── THE TWO TIERS, SEEN FROM THE CROSS-SESSION SCHEDULER ──────────────
  *
- * Appendix D §2.4 (Settles & Meeder's Duolingo precedent): within-session
+ * Following Settles & Meeder's Duolingo precedent, within-session
  * repetition and cross-session spacing are two distinct problems solved by
  * two distinct mechanisms. This card is the CROSS-SESSION one — an
  * activation/half-life-style model whose interval widens as successful SPACED
  * reviews accumulate (`stability` is the days the memory holds at ~90%
  * recall, i.e. a half-life of stability × ln 2 / ln(1/0.9) ≈ 6.6 × stability).
  *
- * Before C.11 every graded attempt was a review here, so a learner who missed
+ * Before the two tiers every graded attempt was a review here, so a learner who missed
  * and then answered the same knowledge component correctly three times in one
  * sitting grew its stability three times in twenty minutes — a session-scoped
  * illusion of retention, scheduled days out. Now an attempt within

@@ -19,7 +19,7 @@ export function createApp(deps: AppDeps = {}): express.Express {
     res.json({ data: { service: SERVICE, version: VERSION, status: 'ok' }, error: null });
   });
 
-  // Everything below /internal is service-to-service only (/AGENTS.md §1.5),
+  // Everything below /internal is service-to-service only,
   // same header convention as parent-id-check: x-internal-api-key.
   app.use('/internal', (req, res, next) => {
     const provided = req.get('x-internal-api-key') ?? '';
@@ -38,7 +38,7 @@ export function createApp(deps: AppDeps = {}): express.Express {
 
   // Error-handling middleware MUST have 4 params to be recognized as such by
   // Express — Express 5 forwards rejected async handler promises (and body
-  // parse errors) here. Last-resort §1.6 envelope guarantee: without it,
+  // parse errors) here. Last-resort envelope guarantee: without it,
   // finalhandler answers text/html with a stack trace outside production.
   app.use(envelopeErrorHandler);
 

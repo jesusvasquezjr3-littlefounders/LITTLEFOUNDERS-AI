@@ -1,7 +1,7 @@
 /*
  * Deterministic answer checking + misconception detection.
  *
- * THE RULE (blueprint §12.2, /ORACLE.md v3): the LLM never judges whether an
+ * THE RULE: the LLM never judges whether an
  * answer is correct. Correctness is arithmetic against the segment's own key;
  * a WRONG answer is then matched against the KC's misconception catalog to
  * decide whether it was a systematic wrong idea rather than noise.
@@ -83,7 +83,7 @@ const NUMERIC_PATTERNS: Record<string, (ops: Record<string, number>) => number |
    * SEPARATELY, without carrying an overflowing fractional sum into the
    * whole part — the exact wrong idea `money.add-money`'s
    * `adds-digits-ignores-decimal` catalog entry describes ("1.50 + 2.50 = 4
-   * becomes 3.100"). Found by adversarial review, round 52 (2026-08-30,
+   * becomes 3.100"). Found by adversarial review (2026-08-30,
    * MEDIUM/HIGH): that misconception carried ONLY an `option_tags` pattern,
    * which `checkAttempt` never consults for a `kind: 'numeric'` attempt —
    * the exact shape `money.add-money`'s own direct-amount-entry activities

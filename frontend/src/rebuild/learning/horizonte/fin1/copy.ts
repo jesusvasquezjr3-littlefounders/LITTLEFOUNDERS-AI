@@ -1,7 +1,7 @@
 import type { HorizonteCopy } from '../boardTypes';
 
 /*
- * fin1 board copy: F1.10 compound interest (`cmp*`, ages 10 and up), F2.11 time value (`tv*`) and F2.12 effective rate, card,
+ * fin1 board copy: compound interest (`cmp*`, ages 10 and up), time value (`tv*`) and effective rate, card,
  * NPV and IRR (`ef*`, `cd*`, `np*`, `ir*`; ages 13 and up). Each string is native, not translated word for word. A string that
  * carries figures is `data` (the Copy Budget exempts it); the prose around the figures stays inside the body, option and action
  * limits. `$` is the generic currency sign.
@@ -15,7 +15,7 @@ export const FIN1_COPY = {
   yearOne: { role: 'data', band: '10-12', 'en-US': '{n} year', 'es-MX': '{n} año', 'pt-BR': '{n} ano' },
   yearMany: { role: 'data', band: '10-12', 'en-US': '{n} years', 'es-MX': '{n} años', 'pt-BR': '{n} anos' },
 
-  /* ── F1.10 compound interest ── */
+  /* ── Compound interest ── */
   cmpPredictHeading: { role: 'heading', band: '10-12', 'en-US': 'Your prediction', 'es-MX': 'Tu predicción', 'pt-BR': 'Sua previsão' },
   cmpPredictHelp: { role: 'body', band: '10-12', 'en-US': 'Pick one before you slide.', 'es-MX': 'Elige una antes de mover los controles.', 'pt-BR': 'Escolha uma antes de mexer nos controles.' },
   cmpReveal: { role: 'action', band: '10-12', 'en-US': 'Reveal', 'es-MX': 'Revelar', 'pt-BR': 'Revelar' },
@@ -82,7 +82,7 @@ export const FIN1_COPY = {
   cmpMet: { role: 'body', band: '10-12', 'en-US': 'You predicted, tested and explained it.', 'es-MX': 'Predijiste, probaste y explicaste.', 'pt-BR': 'Você previu, testou e explicou.' },
   cmpNot: { role: 'body', band: '10-12', 'en-US': 'Not yet. Check each part again.', 'es-MX': 'Aún no. Revisa cada parte.', 'pt-BR': 'Ainda não. Revise cada parte.' },
 
-  /* ── F2.11 time value of money and annuities ── */
+  /* ── Time value of money and annuities ── */
   tvYear: { role: 'data', band: '13-17', 'en-US': 'Year {n}', 'es-MX': 'Año {n}', 'pt-BR': 'Ano {n}' },
   tvYearZero: { role: 'data', band: '13-17', 'en-US': 'Today, year 0', 'es-MX': 'Hoy, año 0', 'pt-BR': 'Hoje, ano 0' },
   tvPrize: { role: 'option', band: '13-17', 'en-US': 'Prize {n}', 'es-MX': 'Premio {n}', 'pt-BR': 'Prêmio {n}' },
@@ -112,7 +112,7 @@ export const FIN1_COPY = {
   tvMetAnnuity: { role: 'body', band: '13-17', 'en-US': 'You timed the payments and found the worth.', 'es-MX': 'Ubicaste los pagos y hallaste su valor.', 'pt-BR': 'Você posicionou os pagamentos e achou o valor.' },
   tvHintAnnuity: { role: 'body', band: '13-17', 'en-US': 'Not yet. Check the years and the total.', 'es-MX': 'Aún no. Revisa los años y el total.', 'pt-BR': 'Ainda não. Confira os anos e o total.' },
 
-  /* ── F2.12 effective rate ── */
+  /* ── Effective rate ── */
   efNominal: {
     role: 'data', band: '13-17', 'en-US': 'Nominal {rate} a year, compounded {n} times',
     'es-MX': 'Nominal {rate} al año, capitalizada {n} veces', 'pt-BR': 'Nominal {rate} ao ano, capitalizada {n} vezes',
@@ -135,7 +135,7 @@ export const FIN1_COPY = {
   efMet: { role: 'body', band: '13-17', 'en-US': 'You found the rate you really pay.', 'es-MX': 'Hallaste la tasa que de verdad pagas.', 'pt-BR': 'Você achou a taxa que realmente paga.' },
   efHint: { role: 'body', band: '13-17', 'en-US': 'Not yet. Compare the balance with the start.', 'es-MX': 'Aún no. Compara el saldo con el inicio.', 'pt-BR': 'Ainda não. Compare o saldo com o início.' },
 
-  /* ── F2.12 credit card ── */
+  /* ── Credit card ── */
   cdOwed: { role: 'data', band: '13-17', 'en-US': 'You owe {amount} at {rate} a year.', 'es-MX': 'Debes {amount} al {rate} al año.', 'pt-BR': 'Você deve {amount} a {rate} ao ano.' },
   cdMonth: { role: 'body', band: '13-17', 'en-US': 'Month', 'es-MX': 'Mes', 'pt-BR': 'Mês' },
   cdMonthValue: { role: 'data', band: '13-17', 'en-US': 'Month {n}', 'es-MX': 'Mes {n}', 'pt-BR': 'Mês {n}' },
@@ -162,7 +162,7 @@ export const FIN1_COPY = {
   cdMetInterest: { role: 'body', band: '13-17', 'en-US': 'You found what the minimum really costs.', 'es-MX': 'Hallaste lo que de verdad cuesta el mínimo.', 'pt-BR': 'Você achou quanto o mínimo realmente custa.' },
   cdHintInterest: { role: 'body', band: '13-17', 'en-US': 'Not yet. Read the interest at the end.', 'es-MX': 'Aún no. Lee el interés al final.', 'pt-BR': 'Ainda não. Leia os juros no fim.' },
 
-  /* ── F2.12 NPV ── */
+  /* ── NPV ── */
   npRate: { role: 'body', band: '13-17', 'en-US': 'Discount rate', 'es-MX': 'Tasa de descuento', 'pt-BR': 'Taxa de desconto' },
   npTask: { role: 'data', band: '13-17', 'en-US': 'Rate for your answer: {rate}', 'es-MX': 'Tasa para tu respuesta: {rate}', 'pt-BR': 'Taxa para sua resposta: {rate}' },
   npOutlay: { role: 'data', band: '13-17', 'en-US': 'Paid today: {amount}', 'es-MX': 'Pagas hoy: {amount}', 'pt-BR': 'Você paga hoje: {amount}' },
@@ -184,7 +184,7 @@ export const FIN1_COPY = {
   npMet: { role: 'body', band: '13-17', 'en-US': 'You found the net value today.', 'es-MX': 'Hallaste el valor neto de hoy.', 'pt-BR': 'Você achou o valor líquido de hoje.' },
   npHint: { role: 'body', band: '13-17', 'en-US': 'Not yet. Add the worths, then subtract the cost.', 'es-MX': 'Aún no. Suma los valores y resta el costo.', 'pt-BR': 'Ainda não. Some os valores e subtraia o custo.' },
 
-  /* ── F2.12 IRR ── */
+  /* ── IRR ── */
   irDial: { role: 'body', band: '13-17', 'en-US': 'Trial rate', 'es-MX': 'Tasa de prueba', 'pt-BR': 'Taxa de teste' },
   irHere: { role: 'data', band: '13-17', 'en-US': 'Net value at {rate}: {amount}', 'es-MX': 'Valor neto al {rate}: {amount}', 'pt-BR': 'Valor líquido a {rate}: {amount}' },
   irAbove: { role: 'body', band: '13-17', 'en-US': 'The value is above zero.', 'es-MX': 'El valor está sobre cero.', 'pt-BR': 'O valor está acima de zero.' },

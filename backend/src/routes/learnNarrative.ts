@@ -9,7 +9,7 @@ import { serviceRest } from '../services/supabaseRest.js';
  * /api/v1/learn/journal. Mounted inside learnRouter, behind its requireAuth +
  * requireAgeScreen.
  *
- * B.9 — the learner's own decision journal: read it, clear it. Only ever the
+ * The learner's own decision journal: read it, clear it. Only ever the
  * caller's own rows; there is no id in the path to point at someone else.
  */
 

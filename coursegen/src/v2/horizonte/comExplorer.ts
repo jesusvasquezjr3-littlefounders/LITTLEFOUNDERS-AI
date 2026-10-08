@@ -2,7 +2,7 @@ import { issue, result, searchAssignments, verifyUniqueOrCovered, type Solvabili
 import { keysAre, range, whole, type Rec } from './comShared.js';
 
 /*
- * F2.17 trigonometry and calculus explorers. Hand-mirrored from backend/src/services/horizonte/com/{trig,calculus,explorer}.ts.
+ * Trigonometry and calculus explorers. Hand-mirrored from backend/src/services/horizonte/com/{trig,calculus,explorer}.ts.
  * The answer is one choice (a prediction) and one whole number the learner finds by exploring; the key is the model's own
  * computed answer, so it is checked for equality, never trusted.
  */

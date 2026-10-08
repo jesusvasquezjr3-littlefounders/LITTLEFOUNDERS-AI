@@ -33,14 +33,14 @@ export function FunctionMachineBoard({ document, segment, onBack, onGrade, seque
   const { pending, grade } = useSingleActiveGrade();
   const example = segment.payload.examples.find((item) => item.input === selected);
   // A rule follows an observed result: learners cannot skip the public trial step.
-  // Bible 05 §5 / Appendix P Part 5 (GAP-FIX-R7): each part of the rule is read for the lesson's locale and sent as its
+  // Each part of the rule is read for the lesson's locale and sent as its
   // canonical whole number, within the payload's public bounds (the canonical scorer refuses past them).
   const multiplierDomain = { whole: true, min: 1, max: segment.payload.multiplierMaximum };
   const offsetDomain = { whole: true, max: segment.payload.offsetMaximum };
   const typedMultiplier = readNumberAnswer(multiplier, document.locale, multiplierDomain).canonical;
   const typedOffset = readNumberAnswer(offset, document.locale, offsetDomain).canonical;
   const valid = ran && typedMultiplier !== null && typedOffset !== null;
-  // Bible 05 §3: Reset restores the authored start (the first input, not yet run, an empty rule) and clears the verdict.
+  // Reset restores the authored start (the first input, not yet run, an empty rule) and clears the verdict.
   const pristine = selected === initialInput && !ran && multiplier === '' && offset === '' && verdict === null;
   const reset = () => { setSelected(initialInput); setRan(false); setMultiplier(''); setOffset(''); setVerdict(null); };
   const submit = () => { if (verdict === 'met') { sequence?.onAdvance(); return; } if (!valid || typedMultiplier === null || typedOffset === null) return; grade(() => onGrade({ multiplier: typedMultiplier, offset: typedOffset }, segment.id), (result) => setVerdict(result === 'met' ? 'met' : 'review'), () => setVerdict('unavailable')); };
@@ -57,7 +57,7 @@ export function FunctionMachineBoard({ document, segment, onBack, onGrade, seque
           onValueChange={(value) => { setSelected(Number(value)); setRan(false); }} options={segment.payload.examples.map((item) => ({ value: String(item.input), label: String(item.input) }))} />
           <Button variant="accent" disabled={pending} onClick={() => setRan(true)}>{t.run}</Button></div>
         <div className="lf-function-machine-rule"><h2 data-copy-role="heading">{t.rule}</h2><NumberAnswer label={t.multiplier} locale={document.locale} {...multiplierDomain} disabled={pending} value={multiplier} onTextChange={(text) => { setMultiplier(text); setVerdict(null); }} /><NumberAnswer label={t.offset} locale={document.locale} {...offsetDomain} disabled={pending} value={offset} onTextChange={(text) => { setOffset(text); setVerdict(null); }} />
-          {/* Bible 05 §5 (GAP-FIX-R2): a document that declares notation writes the learner's rule with KaTeX, digits only. */}
+          {/* A document that declares notation writes the learner's rule with KaTeX, digits only. */}
           {segment.payload.notation && typedMultiplier !== null && typedOffset !== null
             ? <MathExpression tex={`f(x) = ${typedMultiplier} \\times x + ${typedOffset}`} spokenText={t.spoken(typedMultiplier, typedOffset)} fallback={`f(x) = ${typedMultiplier} × x + ${typedOffset}`} locale={document.locale} block /> : null}</div>
       </div>

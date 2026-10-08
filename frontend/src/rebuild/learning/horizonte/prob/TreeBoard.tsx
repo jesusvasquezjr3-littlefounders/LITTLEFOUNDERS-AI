@@ -32,7 +32,7 @@ function put(current: Placed, item: string, target: string): Placed {
 }
 
 /*
- * H14: a tree for one whole population. The three shares are written out; the learner drags each head count onto the
+ * A tree for one whole population. The three shares are written out; the learner drags each head count onto the
  * branch it belongs to (or taps a count, then a branch, or uses the Move to menu). The answer is the arrangement; Core
  * holds the one tree these shares grow.
  */

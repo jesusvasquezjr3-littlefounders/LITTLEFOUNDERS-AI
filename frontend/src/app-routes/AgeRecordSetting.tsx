@@ -6,10 +6,10 @@ import {
 } from '@/rebuild/account/AgeRecordCard';
 
 /*
- * P3 data plane for S-04 (OD-28) and E.4 (OD-3): reads GET /auth/age-screen
+ * Data plane for the age card: reads GET /auth/age-screen
  * (the same read the route guard makes) and shows the age card for a
  * self-managed teen, a teen who moved to adult by birth month, or an adult.
- * The declaration itself is never written here (E.4); GET/POST
+ * The declaration itself is never written here; GET/POST
  * /account/age-correction offers the staff-reviewed correction to the
  * accounts Core says may ask. A failed read shows nothing, never a guess; a
  * failed correction read shows the card without the request.

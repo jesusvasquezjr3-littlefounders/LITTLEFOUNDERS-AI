@@ -48,7 +48,7 @@ import type { HudRect } from './composition';
  * rect lifts, the inset grows, and the aim lifts again. It converges on the
  * `MIN_FREE_FRACTION` clamp instead of diverging, which is worse than a runaway
  * because it looks like a slow deliberate drift rather than a bug. The three
- * slots below are exactly /DESIGN.md → Screen Recipes → Tutor's three
+ * slots below are exactly the Tutor screen's three
  * viewport-anchored elements' surfaces; the offer chips, the speech caption and
  * every rim pad ride the world and must never appear here.
  *
@@ -78,7 +78,7 @@ export const SAFE_AREA_SLOTS = ['lesson', 'sheet', 'mic'] as const satisfies rea
  *
  * Closed, and closed for the same reason the camera's list is: each entry has a
  * different reason to exist and a different behaviour when the keyboard opens.
- * /DESIGN.md → Screen Recipes → Tutor fixes the count of viewport-anchored
+ * The Tutor screen fixes the count of viewport-anchored
  * elements at three; a fourth is an owner decision, and `exit` is one of the
  * three, not a fourth.
  *

@@ -9,7 +9,7 @@ import { PlaneBoard, PlaneFigure, fmt, niceCeil, slots, tickEvery, usePlaneGrade
 type CostSegment = Extract<HorizonteSegment, { type: 'fin.cost-structure.v2' }>;
 
 /*
- * N28: a fixed cost and an extra cost per unit make an average cost per unit that falls as the units grow. The learner
+ * A fixed cost and an extra cost per unit make an average cost per unit that falls as the units grow. The learner
  * moves the units (a handle locked to its row, or a slider) to where the average meets the goal. The answer is the
  * whole number of units; Core holds it.
  */

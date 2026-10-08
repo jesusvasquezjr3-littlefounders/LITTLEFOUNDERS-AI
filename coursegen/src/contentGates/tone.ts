@@ -1,11 +1,11 @@
-// B.14 — Law 2 tone gate: "speak like a mentor, never like a bank".
+// Law 2 tone gate: "speak like a mentor, never like a bank".
 //
-// COSMIC_NARRATIVE.md Law 2: no "account balance", "transaction declined" or
+// Law 2: no "account balance", "transaction declined" or
 // "insufficient funds" as the emotional frame; no yield-chasing, no hype, no
-// "get rich", no FOMO, no urgency tricks. The SPEC's own example of leakage
-// is procedural system copy: "No attempts left for this question" (B.14).
+// "get rich", no FOMO, no urgency tricks. An example of leakage
+// is procedural system copy: "No attempts left for this question".
 //
-// Deterministic by design (OD-23, zero spend): a per-locale lexicon of
+// Deterministic by design (zero spend): a per-locale lexicon of
 // phrases, matched on folded text (lower case, no diacritics) at word
 // boundaries. Each entry carries a severity per SURFACE:
 //
@@ -15,7 +15,7 @@
 //             TEACHES what a bank message or a scam looks like (the investing
 //             course has a whole fraud-radar adventure). Banking vocabulary and
 //             everyday-language urgency ("limited time") therefore go to human
-//             review (Appendix C Stage 3); voiced hype promises and
+//             review; voiced hype promises and
 //             resource-exhaustion framing block.
 //
 // Four context rules turn a blocking hit into a review item, never into a
@@ -59,8 +59,7 @@ const proc = (phrase: string): ToneEntry => ({ phrase, category: 'procedural', l
  * against folded text. Keep entries specific: a single common word ("balance",
  * "hurry", "moon") collides with ordinary story language and belongs in human
  * review, not here; names of concepts the curriculum teaches ("FOMO") are not
- * voice. Every change is a Threshold Recalibration Log entry (Appendix C Part
- * 1.3) in docs/operations/BLOCK-B-THRESHOLD-LOG.md (the per-locale count is checked).
+ * voice.
  */
 export const TONE_LEXICON: Readonly<Record<ContentLocale, readonly ToneEntry[]>> = {
   'en-US': [
@@ -109,8 +108,7 @@ export const TONE_LEXICON: Readonly<Record<ContentLocale, readonly ToneEntry[]>>
 /**
  * How far back a negation ("never", "nunca", "nao") or a warning cue
  * ("signal", "estafa", "golpe") may sit and still downgrade a blocking hit
- * to review. Calibrated on the four catalogs and the corpus; recorded in the
- * Block B threshold log (docs/operations/BLOCK-B-THRESHOLD-LOG.md).
+ * to review. Calibrated on the four catalogs and the corpus.
  */
 export const NEGATION_WINDOW_WORDS = 4;
 export const WARNING_CUE_WINDOW_WORDS = 6;

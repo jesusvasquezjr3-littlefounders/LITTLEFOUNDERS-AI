@@ -8,7 +8,7 @@ import { LoadingState, RebuildRoot, SkipLink } from '@/rebuild/design/controls';
 import './lazyRoute.css';
 
 /*
- * The wrapper every lazy route goes through (Lane 0; shared by every route
+ * The wrapper every lazy route goes through (shared by every route
  * module in this folder).
  *
  * Suspense alone is not enough: it handles the WAIT, never the FAILURE. When a
@@ -30,8 +30,7 @@ export function LazyRoute({ children, home }: { children: ReactNode; home?: stri
  * downloads: the rebuilt loading state, in the page's language and mode, from
  * the first frame. A bare design-system root, not `ShellRoot`: the shell root
  * moves focus on its first mount after a route change, and that mount must be
- * the page's own, not this placeholder's. (It replaced the legacy
- * LoadingOverlay with the legacy UI, S10L.1.)
+ * the page's own, not this placeholder's.
  */
 export function TutorChunkFallback() {
   const locale = useShellLocale();

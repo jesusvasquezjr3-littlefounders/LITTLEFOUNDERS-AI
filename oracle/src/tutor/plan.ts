@@ -4,7 +4,7 @@ import { ADAPTATIONS, PLAN_STEPS } from '../context/schema.js';
 
 /*
  * The lesson plan — the spine that makes a session a LESSON rather than a
- * playlist of replies (/ORACLE.md §9.3).
+ * playlist of replies.
  *
  * Everything here is deterministic and server-owned, on purpose. The model is
  * good at PERFORMING a step — explaining warmly, choosing an example, writing
@@ -25,7 +25,7 @@ export type PlanStep = (typeof PLAN_STEPS)[number];
 
 /** A learner has missed the same skill this many times → change the approach. */
 export const STUCK_THRESHOLD = 2;
-/** …and this many times → the tutor should OFFER an adaptation (/ORACLE.md §11). */
+/** …and this many times → the tutor should OFFER an adaptation. */
 export const OFFER_ADAPTATION_THRESHOLD = 3;
 
 export interface LessonPlan {
@@ -43,7 +43,7 @@ export interface LessonPlan {
    * step N of N" guidance repeating, because nothing downstream was ever
    * told the arc was done.
    *
-   * Found live, 2026-08-31 (AGENTS.md item 81): a direct drive of the real
+   * Found live, 2026-08-31: a direct drive of the real
    * orchestrator against the real model showed the badge-facing symptom
    * (`TutorOrchestrator.lessonThread` frozen at "step 3 of 3") accompanied
    * by a genuine content stall on a controller-dormant session — four
@@ -60,17 +60,17 @@ export interface LessonPlan {
   stylesTried: Adaptation[];
   /**
    * Adaptation KINDS the learner has already been offered and DECLINED for
-   * the current stuck skill (/ORACLE.md §11). Scoped and reset exactly like
+   * the current stuck skill. Scoped and reset exactly like
    * `stylesTried` above — cleared the moment this skill is mastered
    * (`recordGrade`) — because it lives only in-memory on this session's plan
-   * and never reaches the profile or any persisted store: §11's "declining is
+   * and never reaches the profile or any persisted store: the rule "declining is
    * not recorded as a fact about them" is about a permanent label, not about
    * remembering, for the length of one struggling episode, that the learner
    * already said no to this. A later, genuinely new struggle — this same
    * skill again after being fixed, or a different skill, or a whole new
    * session — starts with a clean slate.
    *
-   * Found by adversarial review, round 67 (2026-08-30, MEDIUM): before this
+   * Found by adversarial review: before this
    * field existed, a decline left zero trace anywhere — `ws/server.ts`'s own
    * comment on the decline branch was "local state only, no upstream call" —
    * so `stuckInstruction` re-issued the IDENTICAL free-choice offer
@@ -100,7 +100,7 @@ const SEQUENCES: Record<TutorIntent, PlanStep[]> = {
  * `backend/src/routes/tutor.ts`), not a title — Oracle has no access to the
  * frontend's i18n catalog where the learner-facing question text actually
  * lives, and the two services deploy independently. Found by adversarial
- * review, round 40 (2026-08-30, HIGH): before this map existed, the RAW id
+ * review: before this map existed, the RAW id
  * (e.g. `why_prices_change`) fell straight through to `subject` below and
  * became the lesson's whole `objective` — the model was never told this is
  * a QUESTION, let alone which one, and had to guess a topic from a mangled
@@ -209,7 +209,7 @@ export function nextStyle(plan: LessonPlan): Adaptation | null {
  * `TutorOrchestrator.declineAdaptation`, the decline-side sibling of
  * `applyAdaptation` (both consume `lastOfferedAdaptation` there; this is only
  * the plan-side bookkeeping). See `LessonPlan.declinedAdaptations` for scope
- * and why this is safe under §11.
+ * and why this is safe.
  */
 export function recordDeclinedAdaptation(plan: LessonPlan, adaptation: Adaptation): void {
   if (!plan.declinedAdaptations.includes(adaptation)) plan.declinedAdaptations.push(adaptation);
@@ -241,17 +241,17 @@ export function stuckInstruction(plan: LessonPlan, skillKey: string, options: St
 
 export interface StuckOptions {
   /**
-   * C.17: the autonomy-supportive register (teens, adults) ASKS before it
+   * The autonomy-supportive register (teens, adults) ASKS before it
    * changes the approach — the unilateral style rotation is skipped and the
    * accept/decline offer (`offerAdaptation`) is made at the first stuck
-   * point instead of the second (Appendix D §3.6: "a strong bias toward
+   * point instead of the second ("a strong bias toward
    * asking before adjusting pacing rather than unilaterally changing it,
    * leaning harder into the existing accept/decline mechanic").
    */
   askFirst?: boolean;
 }
 
-/** Which kind of move a stuck skill earned — C.17 counts unilateral changes against offers. */
+/** Which kind of move a stuck skill earned — dialogue calibration counts unilateral changes against offers. */
 export type StuckMoveKind = 'none' | 'style_change' | 'offer' | 'no_offer_left';
 
 /** `stuckInstruction` with the kind of move it made, for the dialogue-calibration record. */
@@ -280,17 +280,17 @@ export function stuckMove(
 }
 
 function offerInstruction(plan: LessonPlan, failures: number, askFirst: boolean): string {
-  // C.17: the ask-first register gives the reason for the offer and changes nothing until they answer.
+  // The ask-first register gives the reason for the offer and changes nothing until they answer.
   const why = askFirst
     ? ' Say in one short sentence why you suggest it, and change nothing until they accept.'
     : '';
   const tried = askFirst ? '' : ' and different explanations were tried';
   /*
-   * DECLINED ADAPTATIONS MUST NOT BE RE-OFFERED (/ORACLE.md §11, item found by
-   * adversarial review, round 67, 2026-08-30). Without this, a learner who
+   * DECLINED ADAPTATIONS MUST NOT BE RE-OFFERED (found by
+   * adversarial review, 2026-08-30). Without this, a learner who
    * declines "slower pacing" and then fails the same skill again was offered
    * "slower pacing" again, verbatim — thrashing, not adapting. This is a
-   * prompt-level exclusion, the same enforcement style §11 already uses for
+   * prompt-level exclusion, the same enforcement style already used for
    * "the offer must stand alone in its turn" (not a deterministic gate on the
    * model's output) — deliberately, since `offerAdaptation` is a genuinely
    * free choice among the closed vocabulary and there is no wrong value to
@@ -334,8 +334,8 @@ function offerInstruction(plan: LessonPlan, failures: number, askFirst: boolean)
  * with no failures recorded — which looks exactly like a fresh, healthy plan.
  *
  * So the snapshot carries the WHOLE plan, `objective` and `steps` included,
- * rather than re-deriving the deterministic parts. That is the /AGENTS.md
- * §1.14 "prefer a measurement that reads NOTHING above the thing being
+ * rather than re-deriving the deterministic parts. That is the
+ * "prefer a measurement that reads NOTHING above the thing being
  * measured" posture applied here: a restored plan is correct because it is a
  * copy, not because `buildPlan` happens to still be deterministic and happens
  * to still be fed identical inputs.

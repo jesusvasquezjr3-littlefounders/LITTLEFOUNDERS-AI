@@ -1,6 +1,6 @@
-/* B.21 / B.24 (S05.3e). Tokens only; separation by fill, never by outline (Bible 02 §4.4). */
+/* Tokens only; separation by fill, never by outline. */
 
-/* A dashboard of independent cards: a neutral page (rule 15). */
+/* A dashboard of independent cards: a neutral page. */
 .lf-rhythm { min-block-size: 100dvh; padding: var(--spacing-4); background: var(--base); color: var(--content); }
 .lf-rhythm-inner { display: grid; gap: var(--spacing-5); max-inline-size: 760px; margin-inline: auto; }
 .lf-rhythm-inner > * { min-inline-size: 0; }
@@ -8,7 +8,7 @@
 .lf-rhythm-top h1 { font-size: 1.75rem; }
 .lf-rhythm-state { min-block-size: min(50dvh, 360px); display: grid; align-content: center; gap: var(--spacing-3); }
 
-/* The streak: the reward hue (coins, XP, stars, streak; Bible 02 §4.2). */
+/* The streak: the reward hue (coins, XP, stars, streak). */
 .lf-rhythm-streak { display: grid; gap: var(--spacing-3); padding: var(--spacing-5); border-radius: var(--rounded-lg); background: var(--reward-soft); color: var(--content); }
 .lf-rhythm-streak h2, .lf-rhythm-pace h2, .lf-rhythm-choices h2 { font-size: 1.25rem; }
 .lf-rhythm-count { display: flex; align-items: center; flex-wrap: wrap; gap: var(--spacing-2); margin: 0; }

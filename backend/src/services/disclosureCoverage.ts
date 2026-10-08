@@ -2,16 +2,15 @@ import { z } from 'zod';
 import { serviceRest } from './supabaseRest.js';
 
 /*
- * Appendix O Part 1.1 (Teen/Guest Consent-Adjacent Disclosure Coverage) for
- * H.1, and Part 2.1 criterion 3 ("Measured"): the share of self-registered
+ * Teen/Guest Consent-Adjacent Disclosure Coverage: the share of self-registered
  * 13-17 and guest accounts active in the window that were shown the teen
  * analytics disclosure/opt-out, or whose analytics are suppressed outright
- * (a guest, or a protected under-13 origin). Target: 100% once H.1 ships.
+ * (a guest, or a protected under-13 origin). Target: 100%.
  *
  * public.analytics_disclosure_coverage (migration analytics_disclosure_coverage)
  * returns COUNTS; this module turns them into the rate and the verdict. A teen
  * with an event admitted without an opt-in is never counted as covered: a
- * disclosure that gates nothing is not what H.1 requires. Counts only; a
+ * disclosure that gates nothing is not what is required. Counts only; a
  * malformed or missing answer fails the read, never renders zeros.
  */
 
@@ -34,7 +33,7 @@ export interface DisclosureCoverageReport extends DisclosureCounts {
   target: 1;
   status: 'met' | 'missed' | 'no_data';
   /**
-   * Appendix O 1.1, Consent-Gate Population Gap Rate: the share of the same
+   * Consent-Gate Population Gap Rate: the share of the same
    * population measured with no choice behind it (a teen's event admitted
    * without an opt-in, or a guest's admitted event). Target: zero.
    */

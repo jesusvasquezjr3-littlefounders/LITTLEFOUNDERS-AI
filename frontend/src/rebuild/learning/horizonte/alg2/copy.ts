@@ -1,7 +1,7 @@
 import type { HorizonteCopy } from '../boardTypes';
 
 /*
- * Horizonte alg2 (F2.4, F2.5, F2.6): every word the three boards own. Equations, coordinates and the learner's own lines
+ * Horizonte alg2: every word the three boards own. Equations, coordinates and the learner's own lines
  * are data, not copy. Slots in braces are filled by the board.
  */
 export const ALG2_COPY = {

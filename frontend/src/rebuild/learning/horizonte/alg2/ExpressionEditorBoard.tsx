@@ -49,7 +49,7 @@ function Notation({ parsed, variable, words, fallback, locale }: { parsed: Parse
 }
 
 /*
- * F2.6, D27: a chain of lines the learner types, one step each, with the notation drawn under every line that reads and a
+ * A chain of lines the learner types, one step each, with the notation drawn under every line that reads and a
  * plain "same value as the line above" or "not the same" beside it. The browser only reads and compares (advisory: the
  * same bounded engine Core runs, which never evaluates learner text); Core holds the finished-form key and the verdict.
  */

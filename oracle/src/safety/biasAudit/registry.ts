@@ -24,27 +24,25 @@ import {
 } from '../../tutor/explanationLexicon.js';
 
 /*
- * C.20 — THE REGISTRY OF AUDITED COMPONENTS.
+ * THE REGISTRY OF AUDITED COMPONENTS.
  *
- * Product C.20: "Any lexical or prosodic component feeding the Behavioral
- * Telemetry Layer (C.9) or content moderation must be audited against
+ * Any lexical or prosodic component feeding the Behavioral
+ * Telemetry Layer or content moderation must be audited against
  * dialect and ASR-artifact variation before release, with a recurring
- * re-audit cadence as the component or its underlying model changes."
+ * re-audit cadence as the component or its underlying model changes.
  *
  * Every such component is listed here, with the source files whose content
  * defines it (hashed, so a material change is detectable) and a `run`
  * adapter that turns its output into one comparable label. The registry is
- * the denominator of Appendix F's Bias-Audit Coverage metric (target 100%),
- * and `biasAudit.test.ts` fails when the telemetry layer imports a
- * learner-text reader that is not registered here.
+ * the denominator of bias-audit coverage metric (target 100%).
  *
  * PROSODIC COMPONENTS: none exist. The voice channel is transcribed text
  * only (`voice/provider.ts`); no pitch, energy or speaking-rate feature is
  * computed anywhere. The first prosodic feature must be registered here, with
- * accent and child-speech fixtures, before it may feed anything (policy §3).
+ * accent and child-speech fixtures, before it may feed anything.
  *
  * `mode: 'live_only'` marks a component that cannot run without a paid model
- * call (the output judge): OD-23 allows zero spend during the migration, so
+ * call (the output judge): no spend is allowed without approval, so
  * its fixture set ships with a dry-run plan and an owner-run live step, and
  * coverage reports it as pending live evidence.
  */
@@ -222,7 +220,7 @@ export const AUDITED_COMPONENTS: AuditedComponent[] = [
     sources: ['oracle/src/safety/moderation.ts'],
     functions: ['moderateTutorOutput'],
     mode: 'live_only',
-    // Never run by the fixture audit: a paid call (OD-23). `scripts/bias-audit.ts --judge-live` runs it.
+    // Never run by the fixture audit: a paid call. `scripts/bias-audit.ts --judge-live` runs it.
     run: () => {
       throw new Error('moderation.output_judge is live-only (a paid model call); use bias-audit --judge-plan / --judge-live');
     },

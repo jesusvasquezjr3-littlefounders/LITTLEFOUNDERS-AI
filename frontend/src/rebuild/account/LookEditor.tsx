@@ -11,21 +11,21 @@ import '../design/system.css';
 import './account.css';
 
 /*
- * P2, THE LOOK EDITOR (E.12, B.24; Frontend Bible 02 §4.4, §8, 07).
+ * THE LOOK EDITOR.
  *
  * The person picks their cartoon avatar part by part, and one of the ten
  * cover presets. Nothing here is a photo, a URL or free text: every choice
- * is one value of the closed set Core and the database accept (E.12), drawn
+ * is one value of the closed set Core and the database accept, drawn
  * from our own sprites. Each part is one radio group, so the keyboard moves
  * through a part with the arrow keys and Tab jumps to the next part; every
  * option has a translated name (no raw option identifiers reach a screen
  * reader). The selected option carries a ring and a check, never colour
- * alone (02 rule 6).
+ * alone.
  *
- * B.24: this is cosmetic personalisation. The copy never presents it as a
+ * This is cosmetic personalisation. The copy never presents it as a
  * choice about learning, and nothing is earned, unlocked or rewarded here.
- * "Random look" draws a cosmetic look (the route draws it; the draw is on the
- * B.22 allowlist as a non-reward purpose).
+ * "Random look" draws a cosmetic look (the route draws it; the draw is a
+ * non-reward purpose).
  */
 
 /** The value of the "None" option of an optional part (a stored option value is never empty). */

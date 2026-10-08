@@ -14,7 +14,7 @@ import { fill, learnCopy } from './learnCopy';
 import type { TogetherGoal, TogetherOutcome, TogetherPerson, TogetherState } from './together';
 
 /*
- * L-04 (owner decision OD-27 (1)) — goals together, at /learn/together, on the
+ * Goals together, at /learn/together, on the
  * learner shell. The one peer mechanic for 13 to 17 year olds: a shared
  * lesson goal with 1 to 4 mutual connections.
  *
@@ -22,11 +22,10 @@ import type { TogetherGoal, TogetherOutcome, TogetherPerson, TogetherState } fro
  *     the people in it as cartoon cards, and ONE number, the group total.
  *   - What does not: a per-person count, an order of people by anything but
  *     when they joined, a score, a ranking, a public view, a reward or a
- *     celebration (OD-7's list has no group goal), and any way to send a
- *     person words (E.10). Reaching the goal is said once, as information.
+ *     celebration (the milestone list has no group goal), and any way to send a
+ *     person words. Reaching the goal is said once, as information.
  *   - Safety: anyone leaves at any time; the person who started the goal
- *     removes someone or cancels an ask; anyone reports someone in the goal
- *     (E.3), and may leave in the same step.
+ *     removes someone or cancels an ask; anyone reports someone in the goal, and may leave in the same step.
  *
  * Presentation only: the host (app-routes/TogetherRoute.tsx, or the
  * preview) owns transport. Core decides eligibility; a closed state says why
@@ -86,7 +85,7 @@ export function TogetherView(props: TogetherViewProps) {
           : state.status !== 'ready' || !state.value.eligible
             ? <>
               <EmptyState heading={t.closedTitle} body={t.closedBody} />
-              {/* The way in, a separate line (06 §3: one idea per body block, at most 12 words). */}
+              {/* The way in, a separate line (one idea per body block, at most 12 words). */}
               <p className="lf-together-hint" data-copy-role="body">{t.closedHint}</p>
             </>
             : <Ready {...props} value={state.value} t={t} />}
@@ -102,7 +101,7 @@ function Ready(props: TogetherViewProps & { value: Extract<TogetherState, { stat
   const say = (outcome: TogetherOutcome, success: string) => setNotice(outcome === 'done' ? { tone: 'success', text: success } : { tone: 'error', text: refusalText(t, outcome) });
 
   return <>
-    {/* GAP-FIX-R4 (06 §3.1): one line says who sees it and what is not here; the first view stays within 40 words. */}
+    {/* One line says who sees it and what is not here; the first view stays within 40 words. */}
     <p className="lf-together-intro" data-copy-role="body">{t.intro}</p>
     {notice ? <InlineNotice tone={notice.tone} live>{notice.text}</InlineNotice> : null}
 
@@ -121,7 +120,7 @@ function Ready(props: TogetherViewProps & { value: Extract<TogetherState, { stat
 
     <section className="lf-together-section" aria-labelledby={`${headingId}-goals`}>
       <h2 id={`${headingId}-goals`} data-copy-role="heading">{t.goalsTitle}</h2>
-      {/* An invitation above already says what to do first (06 §3.1): the empty state waits until nothing is asked. */}
+      {/* An invitation above already says what to do first: the empty state waits until nothing is asked. */}
       {value.goals.length === 0 && value.invitations.length === 0 && !creating ? <EmptyState heading={t.emptyTitle} body={t.emptyBody} /> : null}
       <ul className="lf-together-list">
         {value.goals.map((goal) => <li key={goal.id}><GoalCard {...props} goal={goal} onDone={say} /></li>)}
@@ -173,7 +172,7 @@ function GoalCard(props: TogetherViewProps & { goal: TogetherGoal; t: Copy; onDo
   const [reporting, setReporting] = useState<TogetherPerson | null>(null);
   const [asking, setAsking] = useState(false);
   const [busy, setBusy] = useState(false);
-  // 06 §3.1 layering: the goal, the group total and the people first; asking, removing, reporting and leaving one press away.
+  // Layering: the goal, the group total and the people first; asking, removing, reporting and leaving one press away.
   const [managing, setManaging] = useState(false);
   const manageId = useId();
   const others = goal.members.filter((m) => !m.isSelf);

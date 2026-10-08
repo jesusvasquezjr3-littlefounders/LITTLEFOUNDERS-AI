@@ -22,8 +22,7 @@
  *
  * `--dry-run` means NO side effects, not "no manifest write": it contacts
  * nothing and uploads nothing. A flag that still performs the expensive half of
- * the operation is how a repair once paid for itself before it ran
- * (/AGENTS.md §1.14).
+ * the operation is how a repair once paid for itself before it ran.
  */
 import { readdir, readFile, writeFile, stat } from 'node:fs/promises';
 import { existsSync, readFileSync } from 'node:fs';
@@ -36,8 +35,8 @@ const HERE = dirname(fileURLToPath(import.meta.url));
  * Credentials come from `frontend/.env.publish`, which `.gitignore` covers via
  * `.env*`. Reading them from a file rather than the command line keeps
  * INTERNAL_API_KEY out of shell history and out of any transcript — Depot's
- * management API key is a production credential, and /AGENTS.md §1.10 exists
- * because a sibling project committed one in plaintext.
+ * management API key is a production credential, and a sibling project once
+ * committed one in plaintext.
  *
  * Values already in the environment WIN, so CI can supply them without a file.
  * Nothing here ever prints a value.
@@ -95,8 +94,8 @@ const files = (await collect(SCENES).catch(() => null)) ?? fail(
 
 /*
  * `assets:mouth` draws an atlas for all four characters, but only the ones with
- * a fitted card ever load one — liruf and dina keep their painted mouths
- * (/TUTOR_3D.md §3.1). Publishing the other two would put ~124 kB of bytes
+ * a fitted card ever load one — liruf and dina keep their painted mouths.
+ * Publishing the other two would put ~124 kB of bytes
  * nobody requests in the bucket and quietly imply they are in use.
  */
 const cards = JSON.parse(

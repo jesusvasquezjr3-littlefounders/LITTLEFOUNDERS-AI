@@ -12,8 +12,8 @@ import { ConnectedStandaloneHeader } from '@/app-shell/StandaloneHeader';
 import { MentorRoute, mentorCopy } from '@/rebuild/mentor/screen/MentorRoute';
 
 /*
- * `/tutor`: the Mentor screen (Frontend Bible 08, W2M.2). The legacy chat-era
- * experience is no longer mounted here (OD-15); this route supplies only what
+ * `/tutor`: the Mentor screen. The legacy chat-era
+ * experience is no longer mounted here; this route supplies only what
  * the application knows and the rebuilt screen must not reach for itself:
  *
  *   - the signed-in account and its token (Core is the only data source; the
@@ -21,14 +21,14 @@ import { MentorRoute, mentorCopy } from '@/rebuild/mentor/screen/MentorRoute';
  *   - the language and mode the learner chose;
  *   - whether a guardian link exists (the account has the `kid` role):
  *     only then does the menu say what the grown-up
- *     sees (08 §4); a teen without a parent and an adult never see that line;
+ *     sees; a teen without a parent and an adult never see that line;
  *   - the guided review a lesson offered (`?review=<skill>`), validated here;
  *   - navigation: close goes back to the learner's home, the closing state's
  *     one action goes back to the learning path.
  *
  * `three` is still reached only through this lazy route (the stage bridge
  * `rebuild/mentor/MentorStage.tsx`), and `tutor_open` is still recorded once
- * per visit for the acquisition funnel (H.3), consent-gated like every event.
+ * per visit for the acquisition funnel, consent-gated like every event.
  */
 
 class MentorBoundary extends Component<{ fallback: ReactNode; children: ReactNode }, { failed: boolean }> {
@@ -56,9 +56,9 @@ export default function TutorPage() {
   const locale = useShellLocale();
   const navigate = useNavigate();
   const reviewSkill = useMemo(() => guidedReviewSkillFrom(window.location.search), []);
-  // OD-43: the lesson a guided review was opened from, so the Mentor can complement the course.
+  // The lesson a guided review was opened from, so the Mentor can complement the course.
   const reviewLesson = useMemo(() => guidedReviewLessonFrom(window.location.search), []);
-  // Bible 08 §8 (GAP-FIX-R1): /tutor?sheet=chooser (the profile's "Change") opens with the Mentor chooser.
+  // /tutor?sheet=chooser (the profile's "Change") opens with the Mentor chooser.
   const initialSheet = useMemo(() => new URLSearchParams(window.location.search).get('sheet') === 'chooser' ? 'chooser' as const : null, []);
   const opened = useRef(false);
   useEffect(() => {

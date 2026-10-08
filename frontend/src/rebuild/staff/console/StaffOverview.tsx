@@ -7,13 +7,13 @@ import { ConsoleLink, consoleLinkHandler, LoadFailure, Loading, Metrics, ShareBa
 import { fill, labelOf, useConsoleCopy, type SectionNames } from './staffConsoleCopy';
 
 /*
- * S1 Overview (G.1: mixed by the viewer's current grants). Core projects
+ * Overview (mixed by the viewer's current grants). Core projects
  * /admin/overview by grant (users with manage_users, content with
  * manage_content, audit with manage_support) and refuses it with none; health
  * and retention are read only with view_analytics, so an account without that
  * grant never asks for them. Every block and every section link below exists
  * only for a grant the viewer holds; the section list mirrors
- * app-routes/staffGrants.ts (pinned by app-routes/__tests__/staffConsole.test.tsx).
+ * app-routes/staffGrants.ts.
  */
 
 export type ConsoleSection = Exclude<keyof SectionNames, 'overview'>;

@@ -14,7 +14,7 @@ import generated from './mouthCards.generated.json';
  * The Tutor cast's mouths.
  *
  * WHY THIS EXISTS AT ALL: not one jaw, mouth, brow or eye bone exists on any of
- * the four exports (/TUTOR_3D.md §3), and the mouths are PAINTED INTO THE
+ * the four exports, and the mouths are PAINTED INTO THE
  * TEXTURE rather than modelled. There is no geometry to deform, so blendshapes
  * would stretch a decal rather than open a mouth, and the handoff's preferred
  * route — sliding the mouth region's UV offset — is not implementable either:
@@ -72,7 +72,7 @@ export function mouthCardFor(id: CharacterId): MouthCardData | null {
 
 /** Atlas image for a character, alongside the .glb it belongs to. */
 export function mouthAtlasUrl(base: string, id: CharacterId): string {
-  // `base` is kept in the signature so the lab and the tests can point this
+  // `base` is kept in the signature so the lab can point this
   // somewhere else, but the resolution goes through the manifest: Depot serves
   // by content hash, not by name (see assets.ts).
   return base === SCENE_ASSET_BASE ? sceneAssetUrl(`mouth/${id}.png`) : `${base}/mouth/${id}.png`;

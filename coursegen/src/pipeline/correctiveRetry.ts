@@ -1,5 +1,5 @@
 // Schema-corrective retry loop — SEPARATE counter from providers/retry.ts's
-// transport retries (COURSE_ENGINE.md §4). Used by plan.ts, write.ts and
+// transport retries. Used by plan.ts, write.ts and
 // localize.ts: call the model, try to parse+validate its JSON, and on
 // failure feed the issues back into the NEXT call instead of giving up.
 

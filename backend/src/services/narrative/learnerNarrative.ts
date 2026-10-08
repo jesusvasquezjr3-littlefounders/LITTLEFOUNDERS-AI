@@ -3,7 +3,7 @@ import { extractV2Decisions, pickRecall, type RecallRelevance } from './decision
 import { journalCandidates, recordDecisions, recordResurfacing, topicTeaches } from './narrativeData.js';
 
 /*
- * B.9 (S05.3c) — the moments the learning routes hand to the narrative
+ * The moments the learning routes hand to the narrative
  * layer. Each is best-effort by design: a failure here is logged and
  * the lesson, grade or completion it rides on proceeds untouched. A narrative
  * echo is never allowed to cost a learner a lesson (and the code stays safe to
@@ -42,7 +42,7 @@ export interface NarrativeRecall {
   recorded_at: string;
 }
 
-/** Moment 2 (B.9): when a lesson opens, resurface one earlier, relevant decision from this course. */
+/** Moment 2: when a lesson opens, resurface one earlier, relevant decision from this course. */
 export async function resurfaceForLesson(input: { userId: string; tree: CourseTree; courseId: string; topicId: string; lessonId: string }): Promise<NarrativeRecall | null> {
   try {
     const found = topicOf(input.tree, input.topicId);
@@ -82,7 +82,7 @@ export async function resurfaceForLesson(input: { userId: string; tree: CourseTr
   }
 }
 
-/** B.9 for v2 (GAP-FIX-R1): a graded v2 story choice goes to the same journal. Best-effort, after Core stored the receipt. */
+/** Decision journal for v2: a graded v2 story choice goes to the same journal. Best-effort, after Core stored the receipt. */
 export async function recordV2GradedDecisions(input: {
   userId: string; courseId: string; topicId: string; lessonId: string; locale: string; lessonTitle: string | null;
   segment: { id: string; type: string; prompt: string; payload: unknown }; answer: unknown;

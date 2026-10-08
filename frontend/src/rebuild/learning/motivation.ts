@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 /*
- * B.21 / B.24 (S05.3e): the learner's side of the habit streak and their
+ * The learner's side of the habit streak and their
  * autonomy levers.
  *
  *   GET /learn/rhythm?local_date   the streak as the model reads it today
@@ -11,7 +11,7 @@ import { z } from 'zod';
  *
  * Core decides everything. A malformed payload is unavailable, never partly
  * shown. Transport is injected, so this module imports nothing from the
- * legacy app (Bible 02 rule 23). The guardian's pause lives in
+ * legacy app. The guardian's pause lives in
  * rebuild/family/streakPause.ts.
  */
 
@@ -26,7 +26,7 @@ export const streakViewSchema = z.object({
   restDaysLeft: z.number().int().min(0).max(2),
   lastActiveDate: calendarDate.nullable(),
   pause: z.object({ startsOn: calendarDate, endsOn: calendarDate }).nullable(),
-  // GAP-FIX-R1 (Bible 04 §4.3): the current week, Monday first, for the streak strip. Optional for an older Core.
+  // The current week, Monday first, for the streak strip. Optional for an older Core.
   week: z.array(z.object({ date: calendarDate, state: z.enum(['practiced', 'rest', 'paused', 'open', 'today']) }).strict()).length(7).optional(),
 }).refine((view) => view.status !== 'resting' || view.current === 0, 'A resting streak has no live run');
 export type StreakView = z.infer<typeof streakViewSchema>;

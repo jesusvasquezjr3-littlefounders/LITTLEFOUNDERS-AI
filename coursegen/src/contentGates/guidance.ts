@@ -26,7 +26,7 @@ export function contentGateGuidance(audience: Audience): string {
 }
 
 /**
- * Gates 14-16 stated to the author for ONE lesson (S05.4b), from its catalog
+ * Gates 14-16 stated to the author for ONE lesson, from its catalog
  * policy: the concepts it may introduce, the mentor-misjudgment episode it
  * must stage, and the market it is written for. Empty when there is nothing
  * lesson-specific to say.

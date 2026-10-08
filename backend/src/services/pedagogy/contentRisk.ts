@@ -1,5 +1,5 @@
 /*
- * Product C.5 / Appendix E §3.1.1 — the content-risk category of a piece of
+ * The content-risk category of a piece of
  * live-generated content: `standard`, or `sensitive` when it touches a
  * sensitive topic (financial hardship, family conflict, loss, or anything
  * adjacent to the safety-stop categories).
@@ -15,14 +15,13 @@
  * other's classification.
  *
  * DETERMINISTIC ON PURPOSE. A model classifier would cost a paid call per
- * item (OD-23) and could itself be steered by the text it classifies. This
+ * item and could itself be steered by the text it classifies. This
  * list is loose by design: a false positive costs one extra human review,
  * a false negative costs a lower review rate on exactly the content that
  * needed a higher one.
  *
  * HAND-MIRRORED from `oracle/src/content/contentRisk.ts`. The block between
- * the markers must stay byte-identical (after whitespace normalization);
- * `npm run live-content:check` enforces it.
+ * the markers must stay byte-identical (after whitespace normalization).
  */
 
 export type ContentRiskCategory = 'standard' | 'sensitive';

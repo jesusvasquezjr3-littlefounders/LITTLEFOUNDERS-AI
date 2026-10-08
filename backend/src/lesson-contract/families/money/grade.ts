@@ -1,4 +1,4 @@
-// `money` family — pure validators (LESSON_ENGINE.md §5.5, §6).
+// `money` family — pure validators.
 // Malformed answers → score 0, never throw. This module is react-free: any
 // currency FORMATTING happens in the components (Intl); here we only compute
 // numbers and put them in `reveal` for the renderer to localize.

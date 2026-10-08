@@ -13,7 +13,7 @@ import './stats1.css';
 type DotPlotSegment = Extract<HorizonteSegment, { type: 'stats.dot-plot.v2' }>;
 
 /*
- * C06, H03, H07: a stacked dot plot and one measure (mean, median or mode) to bring to a number by moving a few dots.
+ * A stacked dot plot and one measure (mean, median or mode) to bring to a number by moving a few dots.
  * A dot moves by dragging its chip onto a column, tapping a chip then a column, or the Move to menu. The answer is the
  * list of dots; Core holds the target and checks the measure in whole numbers.
  */

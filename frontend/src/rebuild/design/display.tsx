@@ -6,9 +6,8 @@ import { resolveManifestAsset, resolveMentorRender } from './assets';
 import { withPressFeedback } from './motion';
 
 /*
- * Display components (Frontend Bible 02 §3 components, §4.2 reserved hues,
- * §4.4 separation by fill, §9.2 feedback grammar). Status is always a glyph
- * plus a word plus a hue, never the hue alone (02 rule 6).
+ * Display components. Status is always a glyph
+ * plus a word plus a hue, never the hue alone.
  */
 
 export type StatusTone = 'success' | 'warning' | 'error' | 'sky' | 'primary';
@@ -18,10 +17,10 @@ export function Chip({ tone, glyph, children, role = 'body' }: { tone: StatusTon
   return <span className={`lf-status-chip lf-status-chip--${tone}`} data-copy-role={role}><Glyph name={glyph} /><span>{children}</span></span>;
 }
 
-/** The coin art lesson boards teach money with (07 §1 class B `money.coin`). */
+/** The coin art lesson boards teach money with (`money.coin`). */
 export const COIN_ASSET_ID = 'money.coin';
 /**
- * The platform's own unit is the seed (OD-41, 07 §1 class B `money.seed`): decorative, beside a number and the word "seeds",
+ * The platform's own unit is the seed (`money.seed`): decorative, beside a number and the word "seeds",
  * only for what a child earns, saves, spends and shares. It is not money, so nothing has to say "simulated".
  */
 export const SEED_ASSET_ID = 'money.seed';
@@ -31,7 +30,7 @@ function CoinMark() {
 }
 
 /**
- * A coin quantity (02 §9.5 "Shape by object type": the coin shape is used only
+ * A coin quantity (the coin shape is used only
  * for money): the coin art, then the text, which always carries the number and
  * the glossary word "coins" in the reader's language ("12 coins", "12 monedas",
  * "12 moedas"). The art is decorative; the words carry the meaning.
@@ -58,7 +57,7 @@ export function ChipGroup({ label, children }: { label?: string; children: React
   return <div className="lf-chip-group" role={label ? 'group' : undefined} aria-label={label}>{children}</div>;
 }
 
-/** Pointer handlers a board adds to a chip the learner can also drag (Bible 05 §4, GAP-FIX-R4). */
+/** Pointer handlers a board adds to a chip the learner can also drag. */
 export interface ChipDrag {
   onPointerDown: (event: PointerEvent<HTMLButtonElement>) => void; onPointerMove: (event: PointerEvent<HTMLButtonElement>) => void;
   onPointerUp: (event: PointerEvent<HTMLButtonElement>) => void; onPointerCancel: (event: PointerEvent<HTMLButtonElement>) => void;
@@ -77,13 +76,13 @@ export function ChoiceChip({ selected, onToggle, children, disabled, drag }: { s
 }
 
 /**
- * A reply chip in the Mentor's response area (08 §2): a suggested answer the
+ * A reply chip in the Mentor's response area: a suggested answer the
  * learner sends with one press ("We're good", "Not really"). It is an `option`
  * control (8 words, 5 for ages 6–9) and never a toggle: answering moves the
  * turn on, so it has no pressed state. Chips offered together share one look,
  * none is preselected, and the caller lays the group out. It keeps the button
  * base (focus ring, 56 px target, press feedback) with a sunken fill, so it
- * has its own boundary on a surface panel in both themes (02 §4.4).
+ * has its own boundary on a surface panel in both themes.
  */
 export function ReplyChip({ children, onPress, disabled, className, ...data }: {
   children: ReactNode; onPress: () => void; disabled?: boolean; className?: string;
@@ -92,7 +91,7 @@ export function ReplyChip({ children, onPress, disabled, className, ...data }: {
     disabled={disabled} onClick={onPress} onPointerDown={withPressFeedback()}>{children}</button>;
 }
 
-/** Solid label pill. Accent is excluded: it is reserved for the call to action (02 §4.2). */
+/** Solid label pill. Accent is excluded: it is reserved for the call to action. */
 export type PillTone = 'primary' | 'success' | 'reward' | 'sky' | 'mint' | 'berry' | 'inverse';
 export function Pill({ tone, children, role = 'body' }: { tone: PillTone; children: ReactNode; role?: CopyRole }) {
   return <span className={`lf-pill lf-pill--${tone}`} data-copy-role={role}>{children}</span>;
@@ -101,7 +100,7 @@ export function Pill({ tone, children, role = 'body' }: { tone: PillTone; childr
 export type CardTone = 'neutral' | 'primary' | 'sky' | 'mint' | 'berry';
 /**
  * Neutral cards separate by a soft elevation (light) or surface step (dark);
- * identity cards are a solid hue with no border (02 §4.4). An identity card's
+ * identity cards are a solid hue with no border. An identity card's
  * meaning is carried three ways, so a hue card requires a heading.
  */
 export function Card({ tone = 'neutral', heading, headingLevel = 2, as: Tag = 'section', children }: {
@@ -119,7 +118,7 @@ export function List({ label, children }: { label: string; children: ReactNode }
   return <ul className="lf-list" aria-label={label}>{children}</ul>;
 }
 
-/** 56 px list row. The trailing slot drops to its own line when the title needs the room (02 §7 rule 6). */
+/** 56 px list row. The trailing slot drops to its own line when the title needs the room. */
 export function ListRow({ title, supporting, leading, trailing, onPress, titleRole = 'body' }: {
   title: ReactNode; supporting?: ReactNode; leading?: ReactNode; trailing?: ReactNode; onPress?: () => void; titleRole?: CopyRole;
 }) {
@@ -165,7 +164,7 @@ export function InlineNotice({ tone, children, live = false }: { tone: NoticeTon
 }
 
 /**
- * The capsule is progress (02 §9.5). The value is written as text as well as
+ * The capsule is progress. The value is written as text as well as
  * drawn. `labelHidden` is for a bar whose value the screen already writes next
  * to it (the lesson top bar's "2/4"): the label then names the bar for
  * assistive technology only, and no head row is drawn.
@@ -188,8 +187,7 @@ export function ProgressBar({ label, value, max, valueText, tone = 'primary', la
 }
 
 /**
- * Placeholder shapes while something loads. They shimmer (OD-28, owner review
- * item V-04): busy motion, not one of the three idle slots (motion.tsx), it
+ * Placeholder shapes while something loads. They shimmer: busy motion, not one of the three idle slots (motion.tsx), it
  * stops when the content arrives and is off under reduced motion, where the
  * shapes stay still. Decorative: the status words beside them carry the meaning.
  */
@@ -207,10 +205,10 @@ export function LoadingState({ label, lines = 3 }: { label: string; lines?: numb
 }
 
 /**
- * One of our own class B assets (07 §3, §6), by manifest id only: never a free
+ * One of our own class B assets, by manifest id only: never a free
  * URL, and never a Mentor render (those go through `MentorAvatar`, which checks
  * the real model and pose). Decorative by default, because the word beside it
- * carries the meaning (07 §8: an asset never replaces a label the person needs);
+ * carries the meaning (an asset never replaces a label the person needs);
  * an informative use passes its translated name. An unregistered, retired or
  * render id leaves the slot empty and marked `data-refused`: there is no
  * fallback picture and no stock icon.
@@ -254,8 +252,7 @@ export function ErrorState({ heading, body, retryLabel, retryingLabel, retrying 
 /**
  * The Mentor avatar slot. It accepts only a manifest-registered render of the
  * real 3D model in a catalogue pose; an unknown, retired or non-render asset
- * leaves the slot empty. There is no letter, glyph or look-alike fallback
- * (02 rule 21, 07 §4).
+ * leaves the slot empty. There is no letter, glyph or look-alike fallback.
  */
 export function MentorAvatar({ renderId, label, size = 'md' }: { renderId: string; label: string | null; size?: 'xs' | 'sm' | 'md' | 'lg' }) {
   const asset = resolveMentorRender(renderId);

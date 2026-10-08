@@ -31,7 +31,7 @@ const surfaceAsk = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('reach'), targetCents: whole(-SURFACE_LIMITS.targetCents, SURFACE_LIMITS.targetCents) }).strict(),
 ]);
 
-/** F4.7: a surface of two inputs and one output (compound interest or profit); the learner reads it and picks the option the question asks for. */
+/** a surface of two inputs and one output (compound interest or profit); the learner reads it and picks the option the question asks for. */
 export const surfacePayload = z.object({
   surface: z.discriminatedUnion('kind', [compoundSurface, profitSurface]),
   ask: surfaceAsk,
@@ -44,7 +44,7 @@ const expression = z.string().min(1).max(FORMULA_LIMITS.maxChars);
 const edge = whole(-FORMULA_LIMITS.coordinate, FORMULA_LIMITS.coordinate);
 
 /**
- * F4.7 (fix round): a free-form surface z = f(x, y). The author types the formula (or, for a build, the learner does); it is read
+ * A free-form surface z = f(x, y). The author types the formula (or, for a build, the learner does); it is read
  * by a bounded pure parser, never evaluated as code. A task asks for a slope, a gradient, the length of a gradient-descent walk,
  * or a formula through given points.
  */
@@ -66,7 +66,7 @@ export const formulaPayload = z.object({
 
 const placeId = z.enum(PLACE_IDS as [string, ...string[]]);
 
-/** F4.8: routes between named places on a globe, each with a fee; the learner picks the shortest, the longest or the cheapest. */
+/** Routes between named places on a globe, each with a fee; the learner picks the shortest, the longest or the cheapest. */
 export const globePayload = z.object({
   routes: z.array(z.object({
     id: z.enum(ROUTE_IDS), from: placeId, to: placeId, feeBps: whole(0, GLOBE_LIMITS.feeBps), flatCents: whole(0, GLOBE_LIMITS.flatCents),
@@ -75,7 +75,7 @@ export const globePayload = z.object({
   sendCents: whole(GLOBE_LIMITS.sendCents.min, GLOBE_LIMITS.sendCents.max),
 }).strict();
 
-/** F4.9: one real object shown at its true size; there is no question and no answer. */
+/** One real object shown at its true size; there is no question and no answer. */
 export const arPayload = z.object({ object: z.enum(AR_OBJECT_IDS as [string, ...string[]]) }).strict();
 
 const complain = (ctx: z.RefinementCtx, message: string) => ctx.addIssue({ code: 'custom', path: ['payload'], message });

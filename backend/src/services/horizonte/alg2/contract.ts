@@ -7,7 +7,7 @@ import { GRAPH_FAMILIES, GRAPH_LIMITS, SYSTEM_LIMITS, graphPayloadProblem, syste
 const windowNumber = (magnitude: number) => z.number().int().min(-magnitude).max(magnitude);
 const sliderText = z.string().max(12);
 
-/** D14, D27, D12, T01: sliders for the parameters of a line, a parabola or an exponential, and a window to read the curve in. The key stays in the rubric. */
+/** Sliders for the parameters of a line, a parabola or an exponential, and a window to read the curve in. The key stays in the rubric. */
 export const functionGraphPayload = z.object({
   curve: z.enum(GRAPH_FAMILIES),
   form: z.enum(['standard', 'vertex']).optional(),
@@ -24,7 +24,7 @@ const systemNumber = (magnitude: number) => z.number().int().min(-magnitude).max
 const systemCoordinate = z.number().min(-SYSTEM_LIMITS.windowMagnitude).max(SYSTEM_LIMITS.windowMagnitude);
 const systemPoint = z.object({ x: systemCoordinate, y: systemCoordinate }).strict();
 
-/** D19: two or three lines a x + b y = c and markers to move onto the crossings. */
+/** Two or three lines a x + b y = c and markers to move onto the crossings. */
 export const lineSystemPayload = z.object({
   lines: z.array(z.object({ a: systemNumber(SYSTEM_LIMITS.coefficient), b: systemNumber(SYSTEM_LIMITS.coefficient), c: systemNumber(SYSTEM_LIMITS.constant) }).strict())
     .min(SYSTEM_LIMITS.minLines).max(SYSTEM_LIMITS.maxLines),
@@ -36,7 +36,7 @@ export const lineSystemPayload = z.object({
   start: z.array(systemPoint).min(1).max(SYSTEM_LIMITS.maxLines),
 }).strict();
 
-/** D42, D43, D04, D05: an expression to rewrite or an equation to solve, line by line. The reference answer stays in the rubric. */
+/** An expression to rewrite or an equation to solve, line by line. The reference answer stays in the rubric. */
 export const expressionEditorPayload = z.object({
   task: z.enum(['rewrite', 'solve']),
   given: z.string().min(1).max(EXPRESSION_LIMITS.maxChars),

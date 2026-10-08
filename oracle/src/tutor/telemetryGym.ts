@@ -8,13 +8,13 @@ import {
 import type { Locale } from '../context/schema.js';
 
 /*
- * C.9 / C.19 — THE BEHAVIORAL TELEMETRY LAYER AGAINST APPENDIX F'S SIMULATED
- * LEARNERS (Part 3, Stage 2), and the dedicated adversarial test the C.9
- * Definition of Done asks for: "the layer never outputs a declarative emotion
+ * THE BEHAVIORAL TELEMETRY LAYER AGAINST SIMULATED
+ * LEARNERS, and the dedicated adversarial check:
+ * "the layer never outputs a declarative emotion
  * label ... across the full simulated-student suite".
  *
  * Each persona is a deterministic stream of learner turns (words, reply
- * latency, verified answers) built from Appendix D's own profiles, with the
+ * latency, verified answers) built from the learner profiles, with the
  * behaviour the layer must show for it and why:
  *
  *   disengaging          D'Mello/Graesser sink state: an engaged start, then
@@ -32,20 +32,20 @@ import type { Locale } from '../context/schema.js';
  *   careless             fast misses on items the learner knows, at an engaged
  *                        pace: an attention slip, not disengagement. Must NOT
  *                        be checked on (the slip is recorded, not fused).
- *   reactant_teen        terse and fast FROM THE START (§1.6: a teen's baseline
+ *   reactant_teen        terse and fast FROM THE START (a teen's baseline
  *                        terseness is self-presentation), later genuinely
  *                        drifting, and brushing off the check-in. Its baseline
  *                        must not fire; the drift may, at most `maxCheckIns`
  *                        times and never inside the re-arm window.
- *   masking              §1.6 developmental masking: polite and brief, then a
+ *   masking              developmental masking: polite and brief, then a
  *                        quiet withdrawal (shorter, slower, missing) with no
  *                        complaint at all. MUST get the check-in — from
  *                        behaviour, never from a feeling word.
  *   steady               in flow for the whole session. Must NOT be checked
  *                        on, however long it runs.
  *
- * Every threshold is the proposed default (Threshold Recalibration Log). The
- * personas are a regression floor, not a validation: Appendix D §1.6 puts
+ * Every threshold is the proposed default. The
+ * personas are a regression floor, not a validation: research puts
  * text/telemetry-only detection in a "moderately useful, far from certain"
  * range, which is why the layer's only output is a low-stakes question.
  */
@@ -329,7 +329,7 @@ export function runTelemetryPersona(
   if (fired.length !== checkIns.length) {
     problems.push(`${fired.length} firing(s) but ${checkIns.length} check-in(s): the repair initiation rate is below 100%`);
   }
-  // C.9 Definition of Done (b): no emotion label in anything the layer outputs.
+  // No emotion label in anything the layer outputs.
   const output = JSON.stringify({ report, readings, snapshot: layer.snapshot() });
   const label = EMOTION_LABEL.exec(output);
   if (label) problems.push(`the layer's output carries an emotion label ("${label[0]}")`);
@@ -343,7 +343,7 @@ export function runTelemetryPersona(
   };
 }
 
-/** Stage 7's floor on the Default-to-Inaction Rate, applied to the simulated suite as a whole. */
+/** The rollback floor on the Default-to-Inaction Rate, applied to the simulated suite as a whole. */
 export const DEFAULT_TO_INACTION_FLOOR = 0.85;
 
 export function runTelemetryGym(personas: readonly TelemetryPersona[] = TELEMETRY_PERSONAS): {

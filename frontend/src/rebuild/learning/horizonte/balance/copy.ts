@@ -2,14 +2,14 @@ import type { HorizonteCopy, HorizonteCopyEntry } from '../boardTypes';
 import type { CopyRole } from '../../../design/copyBudget';
 
 /*
- * F1.8 and F1.15 board copy. Every string is written natively per locale (not translated word for word), carries the
+ * Board copy. Every string is written natively per locale (not translated word for word), carries the
  * Copy Budget role of the element that shows it, and is judged at the 10-12 band (13-17 shares its limits). Labels and
  * spoken text for the math live here, keyed by id, because the segment payload is identical in every locale.
  */
 const row = (role: CopyRole, en: string, es: string, pt: string): HorizonteCopyEntry => ({ role, band: '10-12', 'en-US': en, 'es-MX': es, 'pt-BR': pt });
 
 export const BALANCE_COPY = {
-  /* ---- F1.8 equation balance ---- */
+  /* ---- Equation balance ---- */
   wordX: row('data', 'x', 'x', 'x'),
   wordPlus: row('data', 'plus', 'más', 'mais'),
   wordEquals: row('data', 'equals', 'es igual a', 'é igual a'),
@@ -43,7 +43,7 @@ export const BALANCE_COPY = {
   showTable: row('action', 'Show as table', 'Mostrar como tabla', 'Mostrar como tabela'),
   hideTable: row('action', 'Hide table', 'Ocultar tabla', 'Ocultar tabela'),
 
-  /* ---- F1.15 visual proofs ---- */
+  /* ---- Visual proofs ---- */
   predictHeading: row('heading', 'Predict first', 'Primero predice', 'Primeiro preveja'),
   piecesHeading: row('heading', 'Move the pieces', 'Mueve las piezas', 'Mova as peças'),
   predictHint: row('body', 'Predict to unlock.', 'Predice para desbloquear.', 'Preveja para liberar.'),

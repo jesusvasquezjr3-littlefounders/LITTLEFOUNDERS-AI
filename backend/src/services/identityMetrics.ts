@@ -3,34 +3,28 @@ import { serviceRest } from './supabaseRest.js';
 import { listMinorRecordTutors } from './tutorAgeRecord.js';
 
 /*
- * Appendix M Part 1 (1.1-1.4), Part 2.1 criterion 3 ("Measured") and Part 3
- * Stage 5 (a change ships with its metric already instrumented): the Block A
- * acquisition and identity metrics, read from public.identity_metrics
+ * The acquisition and identity metrics, read from public.identity_metrics
  * (migration identity_metrics), which returns COUNTS for one window. This
  * module turns them into rates and marks each one either as a RELEASE-GATE
  * target (a fixed target the release is held to) or DIAGNOSTIC (a baseline
- * and a trend, no fixed target), exactly as Appendix M's Target column says.
+ * and a trend, no fixed target).
  *
  * The adversarial metrics of the same tables (Flagged-Session Microphone
  * Suppression, AI Mentor Fail-Closed, Age-Screen Bypass, Unauthorized Kid
- * Email Change, and the guard behind Unconsented Analytics) are test suites,
- * not data: they are listed with the suite that proves them, never given a
- * fabricated rate.
+ * Email Change, and the guard behind Unconsented Analytics) are not
+ * rates: each is listed with its suite, never given a fabricated rate.
  *
- * Unconsented Analytics Event Rate (flagged sessions) is ALSO measured
- * (GAP-FIX-R7 fix7identi0): Appendix M 1.1 names its data source, the
- * analytics event log filtered by the origin flag, with a target of zero, and
- * Part 2.2(d) holds A.2 open until it reports zero for a release cycle. So
+ * Unconsented Analytics Event Rate (flagged sessions) is ALSO measured:
+ * its data source is the
+ * analytics event log filtered by the origin flag, with a target of zero, held
+ * open until it reports zero for a release cycle. So
  * identity_metrics counts the learning_events and family_money_events rows
  * stored for a flagged account at or after its flag, and the release gate
  * flagged_session_unconsented_events is met only at zero such rows. The
  * adversarial entry stays: it proves the guard, this proves the log.
- * The database halves run every release through `npm run identity:db-verify`
- * (database CI, the repo gates and release readiness; GAP-FIX-R4), and
- * database/scripts/identity-db-verify.test.mjs pins these entries to it.
  *
  * Counts only: no account id reaches the console. A malformed or missing
- * answer fails the whole read (§1.14), never renders zeros.
+ * answer fails the whole read, never renders zeros.
  */
 
 export type MetricKind = 'release_gate' | 'diagnostic';
@@ -38,7 +32,7 @@ export type MetricStatus = 'met' | 'missed' | 'no_data' | 'diagnostic';
 
 export interface IdentityMetric {
   id: string;
-  /** Appendix M part: 1.1 | 1.2 | 1.3 | 1.4. */
+  /** Metric group: 1.1 | 1.2 | 1.3 | 1.4. */
   part: '1.1' | '1.2' | '1.3' | '1.4';
   requirement: string;
   kind: MetricKind;
@@ -55,7 +49,7 @@ export interface IdentityMetric {
 export interface IdentityMetricsReport {
   window: { from: string; to: string; days: number; backlogCutoff: string };
   metrics: IdentityMetric[];
-  /** Appendix M adversarial metrics: proven by a test suite every release, never a rate. */
+  /** Adversarial metrics: proven by a suite every release, never a rate. */
   adversarial: { id: string; requirement: string; suite: string }[];
   releaseGate: { total: number; met: number; missed: number; noData: number };
 }
@@ -122,7 +116,7 @@ function metric(
 }
 
 /**
- * Appendix M 1.1, A.2: a target-zero count, expressed like the other gates as
+ * A target-zero count, expressed like the other gates as
  * the share of flagged accounts active in the window that stored no
  * optional-analytics row after their flag. Any stored row misses the gate,
  * whatever the denominator says; no active flagged account reads no_data.
@@ -155,7 +149,7 @@ export function buildIdentityReport(
   const fieldChecks = [
     fields.originFlag.produced > 0 && fields.originFlag.consumed,
     fields.verificationTier.produced > 0 && fields.verificationTier.consumed,
-    // The alternate remedy (Appendix M 1.2): a document-type field kept only
+    // The alternate remedy: a document-type field kept only
     // when something validates it; a declared field with no consumer fails.
     !fields.documentType.declared || fields.documentType.consumed,
     fields.revocationStatus.consumed,
@@ -163,7 +157,7 @@ export function buildIdentityReport(
   const metrics: IdentityMetric[] = [
     metric('guest_origin_flag_coverage', '1.1', 'A.2', 'release_gate', c.guestOrigin.flagged, c.guestOrigin.requested,
       { flaggedGuestsCreated: c.guestOrigin.flaggedGuestsCreated }),
-    // A.2, Appendix M 1.1 Unconsented Analytics Event Rate (target zero): a
+    // Unconsented Analytics Event Rate (target zero): a
     // stored onboarding discovery answer from a population the attribution
     // predicate refuses. Expressed as the share of stored answers that are
     // admitted, so "met" means zero unconsented rows.
@@ -186,10 +180,10 @@ export function buildIdentityReport(
     metric('verification_status_differentiation', '1.2', 'A.5', 'release_gate', tags.holders - tags.untagged, tags.holders, {
       idVerified: tags.idVerified, staffGranted: tags.staffGranted, revoked: tags.revoked, untagged: tags.untagged,
     }),
-    // A.2, A.5, OD-3 section 2 (F3-identity-site): every Tutor's own age
+    // Every Tutor's own age
     // record is an adult's. A holder whose record says a minor (verified
     // before guard_parent_verification_age existed) misses the gate until
-    // staff revoke the role or settle an E.4 age correction.
+    // staff revoke the role or settle an age correction.
     metric('tutor_adult_age_record', '1.2', 'A.2, A.5', 'release_gate', Math.max(0, tags.holders - minorRecordTutors), tags.holders,
       { minorRecord: minorRecordTutors }),
     metric('staff_grant_justification_completeness', '1.2', 'A.5', 'release_gate', c.staffGrantJustification.justified,

@@ -80,8 +80,7 @@ function stripExcessEmojis(text: string, budget: number): { text: string; used: 
   return { text: out, used };
 }
 
-// Static-first message assembly (AGENTS.md "An identical prompt prefix is a
-// 10x discount"): persona + style lead; the moving dialogue tail comes last.
+// Static-first message assembly (an identical prompt prefix is cached at a large discount): persona + style lead; the moving dialogue tail comes last.
 function teacherMessages(teacher: Canon, student: Canon, brief: string, dialogue: string[]): { role: 'system' | 'user'; content: string }[] {
   return [
     {
@@ -121,8 +120,7 @@ export interface RecapLine {
 
 /**
  * Iterates the two personas into RECAP_LINES alternating lines. The student
- * calls NEVER include the lesson brief — that blindness is the whole point,
- * and the tests pin it.
+ * calls NEVER include the lesson brief — that blindness is the whole point.
  */
 export async function generateRecapLines(
   document: LessonDocumentParsed,

@@ -1,6 +1,6 @@
 /*
- * Envelope-aware client for Core — the ONLY service the frontend calls
- * (/AGENTS.md §1.5). Every response is { data, error } (§1.6); error codes
+ * Envelope-aware client for Core — the ONLY service the frontend calls.
+ * Every response is { data, error }; error codes
  * map to i18n keys `errors.api.<code>`.
  */
 
@@ -20,7 +20,7 @@ export interface ApiError {
    */
   resetAt?: string;
   /**
-   * B.2's COURSE_PREREQUISITE_REQUIRED refusal carries the slugs of the
+   * The COURSE_PREREQUISITE_REQUIRED refusal carries the slugs of the
    * prerequisite courses that are not completed yet. Absent on every other
    * error code.
    */
@@ -28,7 +28,7 @@ export interface ApiError {
 }
 
 /**
- * A.1 (F3-identity-site): Core answers ACCOUNT_SUSPENDED on any route once a
+ * Core answers ACCOUNT_SUSPENDED on any route once a
  * child's last verified Tutor link is gone. The session holder hears it at
  * once (AuthContext drops the session and shows the paused screen), not on
  * the next /auth/me.

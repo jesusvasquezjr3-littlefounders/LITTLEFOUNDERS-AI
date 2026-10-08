@@ -18,7 +18,7 @@ import { isBotUserAgent } from '../services/botDetection.js';
  *    CALLER'S OWN address and reveals nothing about the registry: an
  *    unexcluded probe cannot learn which networks are excluded.
  *  - Nothing is persisted. The visitor's address is matched in memory against
- *    the cached snapshot and discarded (§1.9 — we do not store visitor IPs).
+ *    the cached snapshot and discarded (we do not store visitor IPs).
  *  - `degraded: true` means Vault could not answer, so "not excluded" here is
  *    an assumption, not a fact. The browser keeps any exclusion it already
  *    persisted, which is what makes a staff machine stay excluded through an

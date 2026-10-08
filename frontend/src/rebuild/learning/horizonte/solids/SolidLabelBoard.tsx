@@ -19,7 +19,7 @@ type Names = Readonly<Record<number, PolyFaceName>>;
 export const FRAME_PAD = 0.8;
 
 /*
- * F4.2, naming mode for the box, the triangular prism and the square pyramid: the net is drawn flat with the lengths on every panel and a
+ * Naming mode for the box, the triangular prism and the square pyramid: the net is drawn flat with the lengths on every panel and a
  * few panels already named. The learner names the rest by dragging a name onto a panel, tapping a name then a panel, or with "Move to";
  * tapping a named panel takes its name back. The lengths and the panels that touch are what tell the faces apart. The answer is the
  * name of every panel; Core holds the one correct naming, the browser never says met.

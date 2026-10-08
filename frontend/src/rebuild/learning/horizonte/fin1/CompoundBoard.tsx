@@ -16,7 +16,7 @@ import './Fin1Boards.css';
 type CompoundSegment = Extract<HorizonteSegment, { type: 'money.compound-interest.v2' }>;
 
 /*
- * F1.10: predict, slide, reveal. The learner picks the value they expect for a fixed case, then Reveal opens the real figure
+ * Predict, slide, reveal. The learner picks the value they expect for a fixed case, then Reveal opens the real figure
  * and moves the two sliders onto the case; the sliders also answer the public challenge. The curve draws compound growth
  * (solid) against simple growth (dashed), with a text line and a table as equivalents. The answer is the prediction, the two
  * slider positions and the reason; Core holds the key.

@@ -1,7 +1,7 @@
 import { createPrng } from '../seed/prng.js';
 import { hasOnly, inRange, isStops, whole, type Fraction } from './model.js';
 
-/** F3.2: confidence intervals that cover a known truth, and the percentile bootstrap. Integer arithmetic decides every cover. */
+/** Confidence intervals that cover a known truth, and the percentile bootstrap. Integer arithmetic decides every cover. */
 export const SAMPLES = 100;
 export const LEVELS = [50, 80, 90, 95, 99] as const;
 export type Level = (typeof LEVELS)[number];

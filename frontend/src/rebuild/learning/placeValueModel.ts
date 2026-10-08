@@ -44,7 +44,7 @@ export function placeValueReplay(payload: PlaceValuePayload, trades: readonly Pl
   return { mode, hundreds, tens, ones, take, can, ready, result };
 }
 
-/** Legacy two-place view used by the pilot tests: `trades` ten-for-one trades from `total` loose ones. */
+/** Legacy two-place view: `trades` ten-for-one trades from `total` loose ones. */
 export function placeValueState(total: number, trades: number): { tens: number; ones: number; total: number; canTrade: boolean; canUndo: boolean } | null {
   if (!Number.isSafeInteger(total) || total < 10 || total > 29 || !Number.isSafeInteger(trades)
     || trades < 0 || trades > Math.floor(total / 10)) return null;

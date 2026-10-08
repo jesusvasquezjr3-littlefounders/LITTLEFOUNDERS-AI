@@ -1,9 +1,9 @@
-// publish stage — COURSE_ENGINE.md §4/§6. Splits each locale's document into
+// publish stage. Splits each locale's document into
 // the client-safe `document` (answer stripped from every segment) +
 // server-only `answer_keys` map, then upserts the full hierarchy path by
 // slug (course → adventure → saga → topic → lesson → lesson_documents×N).
 // Lessons land as status='review' — publishing to 'published' is a human
-// action (blocking gate for kids' content, non-negotiable, §6).
+// action (blocking gate for kids' content, non-negotiable).
 
 import { vaultPatch, vaultSelect, vaultUpsert } from '../vault/restClient.js';
 import type { LessonDocumentParsed } from '../contract/schema.js';
@@ -19,7 +19,7 @@ export interface SplitDocumentResult {
   answerKeys: Record<string, unknown>;
 }
 
-/** The single sanctioned stripper on the Forge side — mirrors stripAnswers() (LESSON_ENGINE.md §3). */
+/** The single sanctioned stripper on the Forge side — mirrors stripAnswers(). */
 export function splitDocument(document: LessonDocumentParsed): SplitDocumentResult {
   const answerKeys: Record<string, unknown> = {};
   const segments = document.segments.map((segment) => {
@@ -66,9 +66,9 @@ export interface PublishInput {
     theme: string;
     /**
      * Whatever tier key the course's taxonomy.yaml age_tiers declares
-     * (tier1/tier2 today, tier3 once Inversiones lands — COURSE_ENGINE.md
-     * §3.1b) — NOT a closed literal union here; the catalog is the source
-     * of truth (§1.3-style: no hardcoded taxonomy in code). Vault's
+     * (tier1/tier2 today, tier3 once Inversiones lands) — NOT a closed literal
+     * union here; the catalog is the source of truth (no hardcoded taxonomy
+     * in code). Vault's
      * `adventures.age_tier` column CHECK constraint (database/migrations/
      * 0007) is a separate, DB-level gate — out of scope for coursegen/src.
      */
@@ -100,7 +100,7 @@ export interface PublishInput {
     reviewOf: string[];
     /** Competency-graph projection (0042) — raw catalog slug paths, same resolve-at-query-time posture as reviewOf. */
     prerequisites: Array<{ path: string; strength: 'hard' | 'soft'; reason: string }>;
-    /** Competency-graph projection (0042) — null when the topic has no placement probe yet (see COURSE_ENGINE.md §3.2). */
+    /** Competency-graph projection (0042) — null when the topic has no placement probe yet. */
     placementProbe: Partial<Record<'en-US' | 'es-MX' | 'pt-BR', { prompt: string; options: string[]; correctIndex: number }>> | null;
   };
   lesson: {
@@ -111,7 +111,7 @@ export interface PublishInput {
     estimatedMinutes: number;
     cast: string[];
     /**
-     * GAP-FIX-R5 (B.24): the blueprint's optional_enrichment. Written only when
+     * The blueprint's optional_enrichment. Written only when
      * the blueprint declares it, so a Vault before the autonomy-levers
      * migration keeps accepting every other publish.
      */
@@ -132,16 +132,16 @@ export interface PublishInput {
    * every child's path mid-course — silently, as a side effect of an
    * improvement — until a human re-published each one.
    *
-   *  - `demote-to-review` keeps COURSE_ENGINE §6's human gate literally: new
+   *  - `demote-to-review` keeps the human gate literally: new
    *    content is unreviewed, so it leaves the learner-visible catalog until a
    *    human releases it. Correct, and an outage if you did not plan for it.
    *
    * There used to be a second choice, `keep-published`, that swapped the
    * content of a live slot in place: the lesson stayed live and the new
    * content went out with no Forge release verification and no human read.
-   * The S05.4c lane review removed it (Product G.2: "No path to production
+   * It was removed: no path to production
    * content for children should exist that is structurally exempt from the
-   * same gates the primary interface enforces"). The regenerated lesson now
+   * same gates the primary interface enforces. The regenerated lesson now
    * returns through Core's release_lesson / release_course preflight, which
    * requires a fresh verify:course attestation of every Forge release gate.
    * Live content without an outage is the v2 versioned-document path (0101).

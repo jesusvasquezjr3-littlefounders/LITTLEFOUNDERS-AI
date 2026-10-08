@@ -2,10 +2,10 @@ import { withConnection } from '../db/duckdb.js';
 import { getMaintenanceStep, logMaintenanceFailure, logMaintenanceRun, RETENTION_JOB } from './warehouseMaintenance.js';
 
 /*
- * H.2 and Appendix O 1.2 (retention-window reconciliation): the warehouse's
+ * Retention-window reconciliation: the warehouse's
  * own copy of raw usage events obeys the same written window as the raw store.
  *
- * docs/operations/GOVERNANCE.md section 3 keeps raw usage events for 400 days
+ * Raw usage events are kept for 400 days
  * in the operational store, and Vault enforces it with
  * `prune_learning_events(400)` (.github/workflows/insights-maintenance.yml).
  * The warehouse copies those events into `fact_events_raw` incrementally
@@ -14,15 +14,15 @@ import { getMaintenanceStep, logMaintenanceFailure, logMaintenanceRun, RETENTION
  * data. The experiment assignment and exposure rows are keyed by a learner and
  * sit under the same bound.
  *
- * ONE HOME FOR THE WINDOW: RAW_EVENT_RETENTION_DAYS below. ci-workflow.test.ts
- * pins the Vault prune call to this constant, so the two windows cannot drift.
+ * ONE HOME FOR THE WINDOW: RAW_EVENT_RETENTION_DAYS below. Keep the Vault
+ * prune call equal to this constant, so the two windows cannot drift.
  * The daily aggregates (agg_daily_*) hold counts only and are not pruned.
  *
  * Every run writes one warehouse_maintenance_log row per table (rows removed,
  * even when zero), and a failed run writes one `ok = FALSE` row after its
- * rollback (GAP-FIX-R8). The log is read by Core's `warehouse_retention`
+ * rollback. The log is read by Core's `warehouse_retention`
  * watched job (services/warehouseMaintenance.ts), so a prune that failed or
- * stopped running fails ops-job-watch and notifies a human (H.4).
+ * stopped running fails ops-job-watch and notifies a human.
  */
 
 export const RAW_EVENT_RETENTION_DAYS = 400;

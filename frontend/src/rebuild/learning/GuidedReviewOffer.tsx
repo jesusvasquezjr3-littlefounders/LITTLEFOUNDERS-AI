@@ -10,25 +10,25 @@ import '../design/system.css';
 import './register.css';
 
 /*
- * B.26 and OD-1 (S05.3f) — the guided-review offer.
+ * The guided-review offer.
  *
  * A wrong answer costs nothing (no lives, no counter, no lock). After three
  * consecutive misses on the same skill, Core's grade response carries an
  * offer, and the learner's own Mentor makes it here: review that skill
  * together, or keep going. Declining is neutral (no guilt, no second ask) and
  * nothing about the lesson changes either way. The offer names the skill,
- * never the learner (Appendix B §2.8), and is worded in the learner's
- * register (B.23): warm and literal for the youngest, direct for teens.
+ * never the learner, and is worded in the learner's
+ * register: warm and literal for the youngest, direct for teens.
  *
- * Not a dialog and not a lock: a sheet anchored to the viewport (rule 12)
+ * Not a dialog and not a lock: a sheet anchored to the viewport
  * that leaves the lesson usable behind it; Escape declines. It sits on the
  * neutral surface and never uses the error hue: it is an offer, not an error.
  * Presentation only: the host owns transport and navigation.
  *
- * GAP-FIX-R5 (Bible 08 §4: "an offer with two equal choices, never a
- * default-accepted path"; 08 §3; D9): both choices are the same variant and
+ * An offer with two equal choices, never a
+ * default-accepted path: both choices are the same variant and
  * size, and neither takes focus when the offer opens. While it is open the
- * lesson's compact Mentor is `encouraging` (08 §3: "when offering a guided
+ * lesson's compact Mentor is `encouraging` ("when offering a guided
  * review").
  */
 
@@ -58,7 +58,7 @@ export const guidedReviewCopy: Record<Locale, Record<Voice, Copy>> = {
   },
 };
 
-/** The young register speaks warmly; from 10 the Mentor is brief and direct (B.23). */
+/** The young register speaks warmly; from 10 the Mentor is brief and direct. */
 export function guidedReviewVoice(register: LearnerRegister): Voice {
   return REGISTERS[register].mentor.presence === 'high' ? 'warm' : 'direct';
 }
@@ -86,7 +86,7 @@ export function GuidedReviewOffer({ offer, locale, register, dark, onReview, onD
     return () => window.removeEventListener('keydown', onKey);
   }, []);
   // The host spans the viewport's bottom edge and is the `app` container, so the sheet's wide layout follows the
-  // container (02 §7 rule 9); it takes no pointer events, so the lesson beside the sheet stays usable.
+  // container; it takes no pointer events, so the lesson beside the sheet stays usable.
   return <div className="lf-rebuild lf-guided-review-host" data-theme={dark ? 'dark' : 'light'} lang={locale} data-surface="app"
     data-screen={fixture ? 'guided-review-preview' : 'guided-review'} data-age-band={REGISTERS[register].copyBand} data-register={register}>
     <section className="lf-guided-review" aria-labelledby={titleId}>

@@ -12,7 +12,7 @@ import { SegmentPrompt, verdictBannerText } from './segmentKit';
 import { namedFeedback } from './namedFeedback';
 
 /*
- * B.12 (Law 4, S05.3d): decide, then say why. The learner picks a decision
+ * Decide, then say why. The learner picks a decision
  * and the reason behind it; Core grades both from one signed attempt. The
  * decision decides completion. The reason becomes a separate judgment quality
  * that never changes the score. The browser never sees which choice is
@@ -78,7 +78,7 @@ export function DecisionReasonsBoard({ document, segment, onBack, onGrade, seque
       {choice === null ? null : <section className="lf-learning-control-strip lf-reasoning-board" aria-labelledby="reasoning-reason-title">
         <h2 id="reasoning-reason-title" data-copy-role="prompt">{segment.payload.reasonPrompt}</h2>
         <div className="lf-reasoning-options" role="group" aria-labelledby="reasoning-reason-title">
-          {/* The reason is judged apart from the decision and never marked right or wrong on the option itself (B.12). */}
+          {/* The reason is judged apart from the decision and never marked right or wrong on the option itself. */}
           {segment.payload.reasons.map((option) => <AnswerChoice key={option.id} label={option.label} selected={reason === option.id} disabled={locked}
             onSelect={() => pick(setReason, option.id)} />)}
         </div>

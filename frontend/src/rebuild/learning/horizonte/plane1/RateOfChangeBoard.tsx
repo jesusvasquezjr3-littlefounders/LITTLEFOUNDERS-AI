@@ -9,7 +9,7 @@ import { PlaneBoard, PlaneFigure, ValueTable, fmt, slots, tickEvery, usePlaneGra
 type RateSegment = Extract<HorizonteSegment, { type: 'alg.rate-of-change.v2' }>;
 
 /*
- * D16: a value that starts at a point and grows by the same amount each step. The learner puts the graph point at the
+ * A value that starts at a point and grows by the same amount each step. The learner puts the graph point at the
  * asked step (a handle locked to its column) at the value that keeps the rate. The table lists the steps beside the
  * graph. The answer is the value at that step; Core holds it.
  */

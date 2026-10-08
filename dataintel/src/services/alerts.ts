@@ -15,7 +15,7 @@ export interface Alert {
   lastTriggeredAt?: string;
   createdAt: string;
   /**
-   * H.3: the outcome of the latest trigger's delivery, so staff see an alert
+   * The outcome of the latest trigger's delivery, so staff see an alert
    * that fired and notified nobody. `null` when the alert never fired, or the
    * latest trigger is still in flight or predates delivery tracking.
    */
@@ -26,7 +26,7 @@ export interface Alert {
 export type AlertChannel = Alert['channel'];
 
 /**
- * Appendix O 1.3 (Alert-to-Notification Delivery Rate): every trigger in the
+ * Alert-to-Notification Delivery Rate: every trigger in the
  * window against the ones that reached a human. `pending` counts triggers
  * with no recorded outcome (in flight, or recorded before delivery was
  * tracked). `rate` is delivered / triggered, `null` when nothing fired.
@@ -44,7 +44,7 @@ export interface AlertDeliveryRate {
 }
 
 /**
- * H.3 / Appendix O 1.3 (Alert-to-Notification Delivery Rate): the final
+ * Alert-to-Notification Delivery Rate: the final
  * outcome of a trigger's delivery, after its bounded retries (each attempt is
  * its own row in alert_delivery_attempts). `null` only while delivery is in
  * flight, or for a trigger recorded before delivery was tracked.
@@ -61,7 +61,7 @@ export interface AlertDelivery {
 }
 
 /**
- * H.3 (GAP-FIX-R6): a failed send is retried a bounded number of times and
+ * A failed send is retried a bounded number of times and
  * every attempt is recorded. A network error, a timeout, 408, 425, 429 and any
  * 5xx are worth another try; any other 4xx is the receiver refusing the
  * payload and is not retried. `delaysMs[i]` is the wait before attempt i + 2.
@@ -70,7 +70,7 @@ export const ALERT_DELIVERY_ATTEMPTS = 3;
 export const alertRetry: { delaysMs: number[] } = { delaysMs: [2_000, 8_000] };
 
 /**
- * H.3 (GAP-FIX-R6): a trigger whose delivery reached nobody. `unrecorded` is a
+ * A trigger whose delivery reached nobody. `unrecorded` is a
  * trigger with no outcome well after its send window (the process stopped
  * mid-delivery): nobody was told about it either.
  */
@@ -189,7 +189,7 @@ CREATE TABLE IF NOT EXISTS alert_history (
   delivery_attempts INTEGER
 )`;
 
-/** H.3 (GAP-FIX-R6): one row per send, so a retried delivery shows each try. */
+/** One row per send, so a retried delivery shows each try. */
 const ENSURE_ATTEMPTS = `\
 CREATE TABLE IF NOT EXISTS alert_delivery_attempts (
   alert_id TEXT NOT NULL,
@@ -247,9 +247,9 @@ function rowToAlert(r: StoredAlert): Alert {
 }
 
 /**
- * H.3 (GAP-FIX-R6): the channels this deployment can deliver through. An alert
+ * The channels this deployment can deliver through. An alert
  * may only be created, or made active, on one of them: an alert that can only
- * ever record `unconfigured` is the un-completable object Block H forbids.
+ * ever record `unconfigured` is a dead alert: it can never notify anyone.
  */
 export function configuredChannels(): Record<AlertChannel, boolean> {
   const { ALERT_WEBHOOK_URL, ALERT_EMAIL_SERVER_URL, ALERT_EMAIL_INTERNAL_KEY, ALERT_EMAIL_TO } = getConfig();
@@ -318,7 +318,7 @@ export async function listAlerts(): Promise<Alert[] | null> {
 
     await ensureHistorySchema();
 
-    // H.3: each alert with the delivery outcome of its latest trigger.
+    // Each alert with the delivery outcome of its latest trigger.
     const rows = await query<StoredAlertWithDelivery>(
       `SELECT a.*, h.delivery_status AS last_delivery_status, h.delivery_error AS last_delivery_error
        FROM alerts a
@@ -403,7 +403,7 @@ export async function getAlertHistory(
 }
 
 /**
- * Appendix O 1.3: the delivery rate of every trigger in the last `days`
+ * The delivery rate of every trigger in the last `days`
  * (1-365). A read failure answers null, never zeros.
  */
 export async function alertDeliveryRate(days: number): Promise<AlertDeliveryRate | null> {
@@ -442,7 +442,7 @@ export async function alertDeliveryRate(days: number): Promise<AlertDeliveryRate
 }
 
 /**
- * H.3 (GAP-FIX-R6): every trigger in the last `hours` (1-168) that notified
+ * Every trigger in the last `hours` (1-168) that notified
  * nobody: delivery failed after its retries, the channel is not configured,
  * or no outcome was recorded 15 minutes after the trigger. Core's
  * GET /internal/ops/job-status carries the count as `alerts.undelivered`, and
@@ -548,10 +548,10 @@ export async function evaluateAlerts(): Promise<{ triggered: number }> {
           alertObj.id,
         );
 
-        // H.3: a recorded trigger with no consumer is not alerting. Deliver
+        // A recorded trigger with no consumer is not alerting. Deliver
         // through the alert's configured channel, retrying a failed send a
         // bounded number of times; the trigger row is already durable and its
-        // final outcome is written back to it (Appendix O 1.3). A trigger that
+        // final outcome is written back to it. A trigger that
         // still reached nobody surfaces in undeliveredAlerts() and fails the
         // operations watchdog.
         const delivery = await deliverAlert(alertObj, { value: currentValue, triggeredAt });
@@ -623,10 +623,10 @@ async function send(url: string, init: RequestInit): Promise<SendOutcome> {
 }
 
 /**
- * H.3's notification channel. `webhook` alerts POST the trigger payload to
+ * The notification channel. `webhook` alerts POST the trigger payload to
  * the configured URL; `email` alerts POST a plain-text internal email through
  * the email-server's `/api/v1/send`, in the body that endpoint accepts
- * (alertEmail.ts, contract-tested against the email-server's own route).
+ * (alertEmail.ts).
  * Each send is bounded by a timeout so a hanging channel cannot stall the
  * evaluation loop; a failed send is retried up to ALERT_DELIVERY_ATTEMPTS
  * times (alertRetry), each attempt recorded in alert_delivery_attempts. The

@@ -1,10 +1,10 @@
 import { z } from 'zod';
 
 /*
- * S05.3d: the client side of Core's staff learning-quality report
- * (GET /admin/content/learning-quality). B.19 practice success band per lesson,
- * the calibration reviews it opens and the recalibration log; B.12's judgment
- * signal differentiation; B.5's replay-notice display rate. Every status and
+ * The client side of Core's staff learning-quality report
+ * (GET /admin/content/learning-quality). Practice success band per lesson,
+ * the calibration reviews it opens and the recalibration log; the judgment
+ * signal differentiation; the replay-notice display rate. Every status and
  * threshold is computed by Core; this module only validates the shape.
  */
 
@@ -49,7 +49,7 @@ export const learningQualityReportSchema = z.object({
     judgmentDivergenceFloor: z.number(), judgmentMinAttempts: z.number().int(), replayNoticeTarget: z.number(), bandReviewCadenceDays: z.number().int(),
   }),
   /*
-   * S05.3e (B.21, B.24): Appendix C's rest-day utilization and autonomy
+   * Rest-day utilization and autonomy
    * adoption. Null until the motivation migration is applied; absent from an
    * older Core. Diagnostic: the adoption baseline is set after release.
    */
@@ -60,7 +60,7 @@ export const learningQualityReportSchema = z.object({
       adoption_rate: z.number().min(0).max(1).nullable() })),
   }).nullable().optional(),
   /*
-   * GAP-FIX-R1 (Appendix C 1.1, Appendix P Parts 4.5 and 8): transfer versus
+   * Transfer versus
    * practice per KC, the structure-versus-answer split of first-try errors,
    * the M1 first unaided stage and d-prime on the scam families. Null until
    * 0207 is applied; absent from an older Core.
@@ -75,7 +75,7 @@ export const learningQualityReportSchema = z.object({
       correct_rejections: count, dPrime: z.number() })),
   }).nullable().optional(),
   /*
-   * GAP-FIX-R7 (Appendix C 1.1, B.9): Decision Journal Coverage & Resurfacing
+   * Decision Journal Coverage & Resurfacing
    * Rate. Coverage = story choices journaled / story choices made (the
    * best-effort journal's lost writes made visible); learners without the
    * journal's consent are reported apart. Null until the coverage migration
@@ -86,9 +86,9 @@ export const learningQualityReportSchema = z.object({
     recorded: count, resurfaced: count, resurfacingRate: z.number().min(0).max(1).nullable(), baseline: z.literal('release-1'),
   }).nullable().optional(),
   /*
-   * GAP-FIX-R2 (Appendix P Part 8; Appendix C 1.3): scorer parity, d′ by
-   * phase, cue hits, representation A/B, CPA entry stages, B.1/B.2/B.4 and
-   * defect escapes, and the committed coverage snapshot. Null until 0216 and
+   * Scorer parity, d′ by
+   * phase, cue hits, representation A/B, CPA entry stages
+   * and defect escapes, and the committed coverage snapshot. Null until 0216 and
    * 0218 are applied; absent from an older Core.
    */
   qaSignals: z.object({
@@ -103,7 +103,7 @@ export const learningQualityReportSchema = z.object({
     prerequisiteGate: z.object({ refused: count, passed: count, target: z.literal(1) }),
     forcedUpdate: z.object({ blocked: count, target: z.literal(1) }),
     defectEscapes: z.object({ escapes: count, publishedVersions: count, byGate: z.array(z.object({ gateId: z.string(), escapes: count })), target: z.literal(0) }),
-    /* Gap-fix round 7 (Appendix C 1.3 / Stage 6): every escape opens a gate-effectiveness review; null before its migration, absent from an older Core. */
+    /* Every escape opens a gate-effectiveness review; null before its migration, absent from an older Core. */
     gateReviews: z.object({
       open: z.array(z.object({
         reviewId: z.string().uuid(), escapeId: z.string().uuid(), lessonId: z.string().uuid(), gateId: z.string(), gateDescription: z.string(),
@@ -121,7 +121,7 @@ export const learningQualityReportSchema = z.object({
 export type LearningQualityReport = z.infer<typeof learningQualityReportSchema>;
 export type ReviewDecision = 'make_harder' | 'make_easier' | 'adjust_band' | 'no_change';
 export type ReviewDecisionBody = { decision: ReviewDecision; note: string; lowerPct?: number; upperPct?: number };
-/** Appendix C 1.3 / Stage 6 (gap-fix round 7): how a gate-effectiveness review closes; only a changed gate names its commit or version. */
+/** How a gate-effectiveness review closes; only a changed gate names its commit or version. */
 export type GateReviewOutcome = 'gate_changed' | 'lexicon_extended' | 'accepted_limitation';
 export type GateReviewBody = { outcome: GateReviewOutcome; note: string; gateChangeRef?: string };
 

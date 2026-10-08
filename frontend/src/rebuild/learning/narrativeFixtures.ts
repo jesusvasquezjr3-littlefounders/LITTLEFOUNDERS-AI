@@ -2,7 +2,7 @@ import type { Locale } from '../design/copyBudget';
 import type { JournalState, NarrativeRecall } from './narrative';
 
 /*
- * S05.3c preview fixtures for the recall and the journal, in the three
+ * Preview fixtures for the recall and the journal, in the three
  * locales. Snapshot texts are what Core stores: plain text, at most two
  * sentences and 24 words (decisionJournal.ts). Catalog titles are localized
  * objects, exactly as Core serves them.

@@ -12,7 +12,7 @@ type LinkedSegment = Extract<HorizonteSegment, { type: 'alg.linked-views.v2' }>;
 const clampTo = (value: number, low: number, high: number) => Math.min(high, Math.max(low, value));
 
 /*
- * D18: a table, a graph and an equation of one line. Two table points are given; the learner edits the slope and the
+ * A table, a graph and an equation of one line. Two table points are given; the learner edits the slope and the
  * intercept (two handles, or two sliders) until the line passes through both. The answer is the pair m and b; Core
  * holds it.
  */

@@ -1,12 +1,11 @@
 import { z } from 'zod';
 
 /*
- * Canonical models, contracts and scorers of the Appendix A Part 3 concept
- * boards (GAP-FIX-R1 learning; B.7 part 2). Each board composes Part 2
+ * Canonical models, contracts and scorers of the concept
+ * boards. Each board composes the chart
  * primitives; each model is pure and computed once: Core validates and grades
  * with this file, and the browser draws from its generated copy
- * (frontend/src/rebuild/learning/v2ConceptBoards.generated.ts,
- * agent/tools/sync-v2-concept-boards.mjs, spec:check). Integers in minor
+ * (frontend/src/rebuild/learning/v2ConceptBoards.generated.ts). Integers in minor
  * units and basis points throughout; zod only (the file is copied verbatim).
  *
  *   money.amortization.v2      loan amortization, step-by-step scrub (6)
@@ -114,12 +113,12 @@ export function lemonadeDay(stand: StandPayload, price: number, cupsMade: number
 const base = {
   id, prompt: z.string().trim().min(1).max(500),
   help: z.array(z.string().trim().min(1).max(160)).min(1).max(2).optional(),
-  // GAP-FIX-R6 (B.20, Bible 02 §9.2): the same authored feedback banner every v2 segment may carry (v2SegmentFamilies' v2SegmentFeedback).
+  // The same authored feedback banner every v2 segment may carry (v2SegmentFamilies' v2SegmentFeedback).
   feedback: z.object({ met: z.string().trim().min(1).max(160).optional(), not_yet: z.string().trim().min(1).max(160).optional(), choice_hints: z.record(z.string().regex(/^[a-z0-9][a-z0-9._:-]{2,100}$/), z.string().trim().min(1).max(160)).optional() }).strict()
     .refine((value) => value.met !== undefined || value.not_yet !== undefined, 'Feedback needs met or not_yet').optional(),
   item_role: z.enum(['practice', 'transfer']).optional(),
   knowledge_component_id: id.optional(),
-  // Appendix P Part 8 (GAP-FIX-R2): the same pre/post phase and representation variant every v2 segment may carry.
+  // The same pre/post phase and representation variant every v2 segment may carry.
   item_phase: z.enum(['pre', 'post']).optional(),
   variant: id.optional(),
 };
@@ -169,7 +168,7 @@ export type V2ConceptSegment = z.infer<(typeof v2ConceptSegments)[number]>;
 export type V2ConceptType = V2ConceptSegment['type'];
 export const V2_CONCEPT_TYPES = v2ConceptSegments.map((schema) => schema.shape.type.value) as readonly V2ConceptType[];
 
-/** Every concept board is for teens (Appendix A Part 3), except opportunity cost and the lemonade stand (all tiers). */
+/** Every concept board is for teens, except opportunity cost and the lemonade stand (all tiers). */
 export function conceptAllowed(type: V2ConceptType, ageBand: string): boolean {
   return type === 'money.opportunity-cost.v2' || type === 'money.lemonade-stand.v2' || ageBand === '13-17' || ageBand === 'adult';
 }
@@ -184,7 +183,7 @@ export const V2_CONCEPT_RUBRICS = {
   'money.lemonade-stand.v2': z.object({ target_profit_minor: int }).strict(),
 } as const;
 
-/* ── Grading (Part 7): verdict and closed diagnostic code, or invalid ─────── */
+/* ── Grading: verdict and closed diagnostic code, or invalid ─────── */
 
 export type ConceptGrade = { verdict: 'met' | 'review' | 'invalid' | 'valid'; diagnostic: 'none' | 'structure' | 'value' | 'tolerance' | 'outcome' };
 const INVALID: ConceptGrade = { verdict: 'invalid', diagnostic: 'none' };

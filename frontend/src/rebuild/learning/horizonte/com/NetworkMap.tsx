@@ -5,7 +5,7 @@ import { blockOf, type Block } from './labelBlock';
 import './networkMap.css';
 
 /*
- * The map of places and the roads or bridges between them. The names are HTML over the drawing (Frontend Bible 05 section 5),
+ * The map of places and the roads or bridges between them. The names are HTML over the drawing,
  * so they keep their size and wrap in translation. A name is 14 px wherever the map is, so the drawing is laid out in CSS
  * pixels: it measures the room it has, spreads the places as far apart as that room and the names allow, and for each place
  * picks the side of its circle where the name touches no road, bridge number or other name.

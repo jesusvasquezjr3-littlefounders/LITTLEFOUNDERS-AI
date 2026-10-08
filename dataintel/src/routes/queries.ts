@@ -93,7 +93,7 @@ const exportFiltersSchema = z.object({
   segment_id: z.union([z.string(), z.array(z.string())]).optional(),
 }).strict();
 
-// H.3: the async export-JOB endpoints were removed — jobs could be created
+// The async export-JOB endpoints were removed — jobs could be created
 // and listed but no processor ever advanced them, so staff could create an
 // artifact that could never complete. The direct /export/events endpoint
 // below is the real, working mechanism and remains the only export surface.
@@ -115,7 +115,7 @@ const experimentSchema = z.object({
   variantB: z.string().min(1).max(100),
   surface: z.enum(['learn', 'tasks', 'profile', 'tutor']).default('learn'),
   target: z.string().regex(/^[a-z0-9._-]{1,64}$/).default('default'),
-  // H.7 under OD-23/OD-26: declared age bounds (integers 0-120) and the
+  // Declared age bounds (integers 0-120) and the
   // eligibility policy. adults_only (the default) admits 18+ only; od26_c17,
   // the one owner-approved exception, may go down to 10 and only on the
   // Mentor (tutor) surface. A new exception needs a new owner decision.
@@ -133,7 +133,7 @@ const experimentSchema = z.object({
   (exp) => exp.eligibilityPolicy !== 'od26_c17' || exp.surface === experiments.OD26_SURFACE,
   { message: 'The OD-26 exception covers the C.17 Mentor dialogue experiment only (surface tutor)', path: ['eligibilityPolicy'] },
 ).refine(
-  // C.22 / Appendix F Stage 5 (GAP-FIX-R3): a Mentor canary is a tutor experiment, adults only (OD-23), with no upper
+  // A Mentor canary is a tutor experiment, adults only, with no upper
   // age bound (Core sends a verified adult without an exact age as 18, the floor the ID verification proves).
   (exp) => exp.target !== experiments.MENTOR_CANARY_TARGET
     || (exp.surface === 'tutor' && exp.eligibilityPolicy === 'adults_only' && (exp.maxAge ?? null) === null),
@@ -144,7 +144,7 @@ const runtimeAssignmentSchema = z.object({
   userId: z.string().uuid(),
   surface: z.enum(['learn', 'tasks', 'profile', 'tutor']),
   target: z.string().regex(/^[a-z0-9._-]{1,64}$/),
-  // H.7: the caller's derived age, or null when the age evidence is
+  // The caller's derived age, or null when the age evidence is
   // unavailable — a bounded experiment will refuse it.
   age: z.number().int().min(0).max(120).nullable().optional(),
 });
@@ -187,7 +187,7 @@ export function intelRouter(): Router {
   const router = Router();
 
   /*
-   * POST /erasure — Product 10 E.6, the warehouse step of an account erasure
+   * POST /erasure — the warehouse step of an account erasure
    * (services/erasure.ts). Called by Core after the account is gone from
    * Vault. Returns the rows removed per table; a failure is a 502 and Core
    * retries it on the next daily sweep.
@@ -428,7 +428,7 @@ export function intelRouter(): Router {
 
   // ═══ Exports ═══════════════════════════════════════════════════════
 
-  // H.3: job creation/list/status endpoints removed — no processor ever
+  // Job creation/list/status endpoints removed — no processor ever
   // advanced them, so the ability to create a permanently-pending job was
   // deleted rather than shipped as a promise without a consumer.
 
@@ -667,7 +667,7 @@ export function intelRouter(): Router {
       const parsed = experimentSchema.safeParse(req.body);
       if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', parsed.error.message);
       const { name, metric, variantA, variantB, surface, target, minAge, maxAge, eligibilityPolicy } = parsed.data;
-      // B.28 (S05.3f): more events or sessions is never what an experiment wins on.
+      // More events or sessions is never what an experiment wins on.
       if (experiments.isEngagementVolumeMetric(metric)) {
         return fail(res, 400, 'ENGAGEMENT_VOLUME_METRIC', 'Engagement volume cannot be an experiment success metric (B.28); use a return or learning metric');
       }
@@ -760,8 +760,7 @@ export function intelRouter(): Router {
   // ═══ Alerts ════════════════════════════════════════════════════════
 
   /*
-   * H.3 (GAP-FIX-R6; Block H: no alert may be built to record without a real
-   * consumer): an alert is created only on a channel this deployment can
+   * No alert may be built to record without a real consumer: an alert is created only on a channel this deployment can
    * deliver through. GET /alerts/channels says which ones those are.
    */
   router.post('/alerts', async (req, res) => {
@@ -790,7 +789,7 @@ export function intelRouter(): Router {
   });
 
   /*
-   * Appendix O 1.3 (H.3): the Alert-to-Notification Delivery Rate over the
+   * The Alert-to-Notification Delivery Rate over the
    * last `days` (1-365, default 30), against its 100% target. Read-only;
    * Core proxies it at /admin/intel/alerts/delivery (view_analytics).
    */
@@ -806,11 +805,11 @@ export function intelRouter(): Router {
     }
   });
 
-  /** H.3 (GAP-FIX-R6): the delivery channels this deployment has, so the console shows them. */
+  /** The delivery channels this deployment has, so the console shows them. */
   router.get('/alerts/channels', (_req, res) => ok(res, alerts.configuredChannels()));
 
   /*
-   * H.3 (GAP-FIX-R6): the triggers of the last `hours` (1-168, default 36)
+   * The triggers of the last `hours` (1-168, default 36)
    * that reached nobody. Core reads it for GET /internal/ops/job-status
    * (`alerts.undelivered`), which ops-job-watch fails on.
    */
@@ -827,7 +826,7 @@ export function intelRouter(): Router {
   });
 
   /*
-   * H.4 (GAP-FIX-R8): the last successful and last attempted run of each
+   * The last successful and last attempted run of each
    * warehouse maintenance step (the 400-day retention prune and the erasure
    * re-apply), from warehouse_maintenance_log. Internal key only (the /api/v1
    * guard in app.ts). Core reads it for GET /internal/ops/job-status
@@ -846,7 +845,7 @@ export function intelRouter(): Router {
       const parsed = alertPatchSchema.safeParse(req.body);
       if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', parsed.error.message);
       const { status } = parsed.data;
-      // H.3 (GAP-FIX-R6): an alert whose channel is gone cannot be switched back on.
+      // An alert whose channel is gone cannot be switched back on.
       if (status === 'active') {
         const current = await alerts.getAlert(id);
         if (current === undefined) return fail(res, 502, 'DATA_UNAVAILABLE', 'Alert unavailable');

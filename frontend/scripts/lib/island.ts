@@ -1,10 +1,9 @@
 /*
  * Loads a diorama exactly as the product places it, with no browser.
  *
- * Shared by `generate-walkmask.ts` (which bakes the mask) and
- * `verify-placement.ts` (which checks the mask is doing its job). They MUST
- * agree about scale and origin down to the centimetre or the mask lands offset
- * from the ground it describes — so there is one loader, not two.
+ * Used by `generate-walkmask.ts` (which bakes the mask). It MUST
+ * agree with the product about scale and origin down to the centimetre or the
+ * mask lands offset from the ground it describes.
  *
  * The positioning mirrors `Diorama.tsx`: scale by `sceneScale`, centre on the
  * origin in XZ, rest the underside on y=0. An earlier draft scaled by the

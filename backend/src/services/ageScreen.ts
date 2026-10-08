@@ -25,7 +25,7 @@ export function declaredBandForDate(value: string, now = new Date()): AgeBand | 
 }
 
 /**
- * OD-28 (S-04): the month a declared teen was born, kept so the band moves to
+ * The month a declared teen was born, kept so the band moves to
  * adult at 18. Only for a 13-17 band, never the day, and only from a date
  * `declaredBandForDate` already accepted. Every other band keeps no date.
  */
@@ -50,8 +50,8 @@ export function promotionDue(birthMonth: string | null | undefined, now = new Da
 }
 
 /**
- * The optional `birthMonth` (`YYYY-MM`) an age-screen or signup body may send
- * (S-04, OD-28). The month itself is always derived from the birth date
+ * The optional `birthMonth` (`YYYY-MM`) an age-screen or signup body may send.
+ * The month itself is always derived from the birth date
  * (`birthMonthForBand`); an explicit month only has to agree with it.
  */
 export const ClientBirthMonth = z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/, 'A birth month is YYYY-MM');
@@ -71,13 +71,13 @@ export function effectiveAgeBand(declared: AgeBand, birthMonth: string | null | 
 
 export interface AgeScreenState {
   required: boolean;
-  /** The band as of today (S-04: a teen with a birth month reads as adult after 18). */
+  /** The band as of today (a teen with a birth month reads as adult after 18). */
   ageBand: AgeBand | null;
   /** Origin posture, not GoTrue anonymous status or verified adulthood. */
   protectedOrigin: boolean;
-  /** S-04: a birth month was kept with the declaration. Optional so older fixtures and callers stay valid. */
+  /** A birth month was kept with the declaration. Optional so older fixtures and callers stay valid. */
   birthMonthRecorded?: boolean;
-  /** S-04: the adult band comes from a declared teen's birth month (analytics carry the teen's explicit "no"). */
+  /** The adult band comes from a declared teen's birth month (analytics carry the teen's explicit "no"). */
   adultByBirthMonth?: boolean;
 }
 
@@ -94,7 +94,7 @@ export async function readAgeScreen(userId: string): Promise<AgeScreenState | nu
   // The refusal path already captured the minimum signal. It must not ask a
   // child to disclose the date a second time just to enter protected learning.
   let declared = row?.declared_age_band ?? null;
-  // OD-28: a declared teen whose month says 18 moves to adult. The database
+  // A declared teen whose month says 18 moves to adult. The database
   // makes the move; if it cannot confirm it, the teen band stays (protective).
   let promotedNow = false;
   if (!origin && declared === '13_to_17' && promotionDue(birthMonth)) {
@@ -116,7 +116,7 @@ export async function readAgeScreen(userId: string): Promise<AgeScreenState | nu
 
 /**
  * Records the first declaration. `birthDate`, when given, is the date the
- * band was derived from: a teen's month and year are kept (OD-28), nothing
+ * band was derived from: a teen's month and year are kept, nothing
  * else of it is sent.
  */
 export async function recordAgeScreen(userId: string, band: AgeBand, birthDate?: string): Promise<boolean> {
@@ -136,7 +136,7 @@ export async function recordAgeScreenBand(userId: string, band: AgeBand, birthDa
 }
 
 /**
- * The `birthMonth` an age-screen or signup body may send (S-04). Returns the
+ * The `birthMonth` an age-screen or signup body may send. Returns the
  * month to keep, null when none should be kept, or 'invalid' for a month that
  * is malformed or is not the month of the submitted date.
  */

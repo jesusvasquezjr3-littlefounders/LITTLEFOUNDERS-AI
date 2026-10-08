@@ -1,19 +1,16 @@
-// The learner register policy (Product 10 B.23, with B.25, B.26 and B.27;
-// S05.3f). Written policy: docs/rebuild/LEARNER-REGISTER-AND-WELLBEING-POLICY.md.
+// The learner register policy.
 //
-// CANONICAL FILE. Core owns it. Verbatim copies are generated for the places
+// CANONICAL FILE. Core owns it. Verbatim copies exist in the places
 // that must read the same rules (no shared package exists, by design):
 //   frontend/src/rebuild/design/learnerRegisterPolicy.generated.ts  (the UI)
-//   coursegen/src/pipeline/learnerRegisterPolicy.generated.ts       (Forge gates 18 and 19)
-// Regenerate with `node agent/tools/sync-learner-register-policy.mjs`;
-// `npm run spec:check` fails when a copy drifts. The repository gate
-// (agent/tools/check-dark-patterns.mjs) imports this file directly.
+//   coursegen/src/pipeline/learnerRegisterPolicy.generated.ts       (Forge gates)
+// Update every copy by hand when this file changes.
 //
 // Keep this file self-contained and erasable (no imports, no enums, no
 // namespaces): Node imports it with type stripping, and three packages with
 // different compiler settings compile the same bytes.
 //
-// One design system for every band (OD-4). A register changes the words, the
+// One design system for every band. A register changes the words, the
 // Mentor character's presence and voice, the reward framing and the social
 // mechanics allowed. It never changes tokens, components or shapes.
 
@@ -39,10 +36,10 @@ export interface RegisterSpec {
   register: LearnerRegister;
   /** Inclusive age range; `max` is null for the open adult band. */
   ages: { min: number; max: number | null };
-  /** The Copy Budget band (Frontend Bible 06) this register reads with. */
+  /** The Copy Budget band this register reads with. */
   copyBand: RegisterCopyBand;
   tone: {
-    /** What praise names (Appendix B §1.8, §2.9): never the learner's traits. */
+    /** What praise names: never the learner's traits. */
     praiseTarget: 'process' | 'skill' | 'capability' | 'utility';
     /** A bare "Great job!" with nothing named: allowed only while praise is still taken at face value. */
     genericPraise: boolean;
@@ -53,15 +50,15 @@ export interface RegisterSpec {
   };
   mentor: {
     presence: 'high' | 'reduced' | 'minimal';
-    /** Phone band height of the compact lesson stage, in CSS px (Bible 08 §11 caps it at 30/25/15% of the height). */
+    /** Phone band height of the compact lesson stage, in CSS px (capped at 30/25/15% of the height). */
     stageBandPx: number;
-    /** Reply chips first, chips and field equal, or the text field first (Bible 08 §9). */
+    /** Reply chips first, chips and field equal, or the text field first. */
     replyFirst: 'chips' | 'equal' | 'text';
     /** Idle and reaction animation level for the character. */
     animation: 'lively' | 'moderate' | 'calm';
-    /** How the character reacts to a miss: always encouraging, never sad or disappointed (B.26). */
+    /** How the character reacts to a miss: always encouraging, never sad or disappointed. */
     missReaction: 'encouraging';
-    /** How the character reacts to a met answer (never a celebration: OD-7). */
+    /** How the character reacts to a met answer (never a celebration). */
     metReaction: 'happy' | 'nod';
   };
   reward: {
@@ -80,13 +77,12 @@ export interface RegisterSpec {
     /** Whether a peer can see this learner's progress, mistakes or rank. */
     peerVisibleProgress: false;
   };
-  /** The autonomy mechanism this band leads with (B.24). */
+  /** The autonomy mechanism this band leads with. */
   autonomy: 'topic' | 'approach' | 'path-pace' | 'full';
 }
 
 /**
- * The four registers (Product 10, Block B "Age-band registers"; Appendix B
- * §2.9). The adult register serves adult learners.
+ * The four registers. The adult register serves adult learners.
  */
 export const REGISTERS: Readonly<Record<LearnerRegister, RegisterSpec>> = {
   young: {
@@ -140,8 +136,7 @@ export function registerForCopyBand(band: RegisterCopyBand): LearnerRegister {
 }
 
 /**
- * B.24 / Product 10 Block B "Age-band registers", autonomy column (GAP-FIX-R5):
- * which levers each register's autonomy mechanism OFFERS. Core serves the
+ * Which levers each register's autonomy mechanism OFFERS. Core serves the
  * choices and the course screen shows them from this table only.
  *   topic      (6-9)   simple binary choices: which of two recommended topics next;
  *   approach   (10-12) choice of approach or strategy, not just topic order, with the open path;
@@ -149,7 +144,7 @@ export function registerForCopyBand(band: RegisterCopyBand): LearnerRegister {
  *   full       (adult) every lever.
  * Mentor choice and the learner's daily pace plan stay open to every band: they
  * were the release-1 levers for everyone, and a younger learner keeps a
- * stopping point they chose (the owner may narrow this; see GAP-FIX-R5).
+ * stopping point they chose (the owner may narrow this).
  */
 export type AutonomyLever = 'path' | 'approach' | 'enrichment' | 'mentor' | 'pace';
 export interface AutonomyOffer { path: 'binary' | 'open'; approach: boolean; enrichment: boolean; mentor: true; pace: true }
@@ -192,10 +187,10 @@ export function parseAgeRange(text: string): { min: number; max: number | null }
 }
 
 /**
- * The graduation moments (B.23: around ages 10 to 12, when children begin
+ * The graduation moments (around ages 10 to 12, when children begin
  * discounting simplistic praise). A graduation is shown once, only to a
  * learner who actually used a younger register first; it is informational,
- * never a celebration (OD-7's closed list does not include it).
+ * never a celebration (the closed celebration list does not include it).
  */
 export const GRADUATIONS: ReadonlyArray<{ from: LearnerRegister; to: LearnerRegister; atAge: number }> = [
   { from: 'young', to: 'transition', atAge: 10 },
@@ -217,10 +212,10 @@ export function graduationInto(seen: readonly LearnerRegister[], current: Learne
 }
 
 /**
- * B.26 and OD-1: after this many consecutive misses on the same skill, the
+ * After this many consecutive misses on the same skill, the
  * learner's Mentor offers a guided review of that skill. An offer the learner
  * can decline, never a penalty or a lock. Proposed value; owned by the
- * Pedagogical Lead and recalibrated through Appendix C's threshold log.
+ * Pedagogical Lead and recalibrated through the threshold log.
  */
 export const GUIDED_REVIEW_MISS_THRESHOLD = 3;
 
@@ -248,7 +243,7 @@ function word(source: string): RegExp {
 }
 
 export const LEXICONS: Readonly<Record<LexiconId, readonly RegExp[]>> = {
-  // A verdict on who the learner is (Appendix B §2.8, Tangney): shame, not guilt.
+  // A verdict on who the learner is (Tangney): shame, not guilt.
   'self-global': [
     word("you(?:'re| are) (?:so |such an? |just )?(?:bad|terrible|awful|hopeless|useless|stupid|dumb|lazy|careless|slow|a failure|a loser|a disappointment)(?: at| with)?"),
     word("you(?:'re| are) not (?:an? )?(?:saver|money person|math person|numbers person|good (?:at|with) (?:money|saving|math|numbers|this))"),
@@ -281,7 +276,7 @@ export const LEXICONS: Readonly<Record<LexiconId, readonly RegExp[]>> = {
     word('você (?:já )?deveria saber'),
     word('até um (?:bebê|criancinha) (?:consegue|sabe)'),
   ],
-  // Praise aimed at a fixed trait (Kluger and DeNisi; Appendix B §1.8).
+  // Praise aimed at a fixed trait (Kluger and DeNisi).
   'person-praise': [
     word("you(?:'re| are) (?:so |such an? |really )?(?:smart|clever|gifted|genius|a genius|a natural|brilliant)"),
     word('(?:good|smart) (?:boy|girl)'),
@@ -290,7 +285,7 @@ export const LEXICONS: Readonly<Record<LexiconId, readonly RegExp[]>> = {
     word('você é (?:tão |muito |um |uma )?(?:inteligente|esperto|esperta|gênio|brilhante|superdotad[oa])'),
     word('(?:bom|boa) (?:menino|menina)'),
   ],
-  // A family's real money as a moral failing (B.27; Appendix B §2.7).
+  // A family's real money as a moral failing.
   'family-finance-moralizing': [
     word('(?:poor|low[- ]income|broke) (?:families|people|parents|kids) (?:are|just) (?:lazy|bad|irresponsible|careless|wasteful|to blame|lesser|worse)'),
     word("(?:poor|low[- ]income|broke) (?:families|people|parents|kids) (?:never|don't|can't) (?:save|try|work hard|plan|care)"),
@@ -318,7 +313,7 @@ export const LEXICONS: Readonly<Record<LexiconId, readonly RegExp[]>> = {
     word('ser pobre é (?:uma |sua )?(?:culpa|vergonha|escolha|fracasso)'),
     word('vergonha d[aoe] (?:sua|tua) família'),
   ],
-  // OD-1: nothing is spent by a wrong answer, and no counter of it is shown.
+  // Nothing is spent by a wrong answer, and no counter of it is shown.
   'loss-mechanic': [
     word('(?:\\d+|no|zero|out of|lose an?|lost an?|extra|more) (?:lives|hearts|energy)'),
     word('(?:lives|hearts) (?:left|remaining)'),
@@ -369,7 +364,7 @@ export const LEXICONS: Readonly<Record<LexiconId, readonly RegExp[]>> = {
     word('(?:sinto|sentimos|senti) (?:sua|tua) falta'),
     word('(?:dina|zara|liruf|rho|dr\\.? rho|seu mentor) (?:está|estará|se sente|fica) (?:trist[e]|decepcionad[oa]|sozinh[oa])'),
   ],
-  // Radesky et al. 2022, lures to purchase or to watch advertising (OD-5: no paywall exists).
+  // Radesky et al. 2022, lures to purchase or to watch advertising (no paywall exists).
   'purchase-lure': [
     word('buy now(?=\\s*[!.]|$)'),
     word('upgrade (?:now|to (?:premium|pro|plus))'),
@@ -403,7 +398,7 @@ export const LEXICONS: Readonly<Record<LexiconId, readonly RegExp[]>> = {
     word('você está ficando para trás'),
     word('(?:caiu|desceu) no ranking'),
   ],
-  // B.23: babyish framing a teen or an adult reads as "for little kids" (Appendix B §2.9).
+  // Babyish framing a teen or an adult reads as "for little kids".
   'childish-framing': [
     word('kiddo'),
     word('little (?:ones?|buddy|champ|genius|learner|friend)'),
@@ -456,8 +451,8 @@ export function findLexicons(text: string, lexicons: readonly LexiconId[]): Lexi
 
 /**
  * Feedback that praises with nothing named ("Great job!", "¡Excelente!").
- * Past the young register, praise must name the step or skill (B.20, B.23).
- * GAP-FIX-R6: a bare verdict ("Correct", "That works.", "¡Exacto!") names
+ * Past the young register, praise must name the step or skill.
+ * A bare verdict ("Correct", "That works.", "¡Exacto!") names
  * nothing either, so it counts as generic too.
  */
 const GENERIC_PRAISE = /^[\s¡!¿]*(?:(?:great|good|nice|awesome|amazing|perfect|excellent|fantastic|wonderful|super)(?: (?:job|work))?|well done|way to go|you did it|(?:that's |that is )?(?:correct|right)|that works|(?:muy )?bien(?: hecho)?|excelente|genial|perfecto|increíble|fantástico|lo lograste|(?:es )?correcto|exacto|así es|eso (?:es|funciona)|muito bem|parabéns|ótimo|excelente|perfeito|incrível|mandou bem|conseguiu|(?:está )?(?:correto|certo)|isso (?:mesmo|funciona)|exato)[\s.!]*$/iu;

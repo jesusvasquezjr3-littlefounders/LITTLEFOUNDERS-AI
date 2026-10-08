@@ -8,18 +8,18 @@ import { axisShare, densities, estimateLines, heatShade, lineEnds, longestWord, 
 import { readingPart, readingSpan, readingWord } from './readingWords';
 
 /*
- * Horizonte F1.0: the drawing of the twelve reading charts, one lazy chunk
+ * The drawing of the twelve reading charts, one lazy chunk
  * (TeachingChart.tsx loads it on the first reading chart). Same rules as the
- * other kinds (Bible 05 V1/V6): hand-written SVG in the 320 x 180 box, marks and
+ * other kinds: hand-written SVG in the 320 x 180 box, marks and
  * numerals in the SVG, every word an HTML label over it, sky, mint and berry
  * with a second channel (pattern, marker shape or dash), no stock library.
  *
  * Every mark can be tapped to read its numbers, and the Previous and Next
  * buttons (or the arrow keys inside the reader) walk the same marks, so a tap is
- * never the only way in (V4). The hit areas are whole rows, columns or bands:
+ * never the only way in. The hit areas are whole rows, columns or bands:
  * the buttons carry the 48 px floor where a band is narrower.
  *
- * Fix round: a plot is only as tall as its content (`height`, the viewBox's own),
+ * A plot is only as tall as its content (`height`, the viewBox's own),
  * so the legend sits under the marks instead of under a fixed 180-unit box. The
  * words that hang below the marks are measured, not guessed (useFittedTags).
  */

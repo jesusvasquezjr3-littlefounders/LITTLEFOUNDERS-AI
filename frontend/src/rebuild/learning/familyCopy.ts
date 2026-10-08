@@ -1,10 +1,10 @@
 import type { CopyRole, Locale } from '../design/copyBudget';
 
 /*
- * GAP-FIX-R1 learning: the fixed UI words of the first-release logic, money,
+ * The fixed UI words of the first-release logic, money,
  * story and Mentor boards (familyBoards.tsx). Authored lesson text (rules,
  * items, messages, scenes, lines) comes from the document; these are only the
- * board's own labels, budgeted in familyCopy.test.ts for the youngest band.
+ * board's own labels, for the youngest band.
  */
 export interface FamilyCopy {
   rule: string; cards: string;
@@ -15,7 +15,7 @@ export interface FamilyCopy {
   tray: string; total: string; price: string; paid: string; change: string; fewer: string; more: string;
   next: string; whatHappened: string;
   countUp: string; sayCount: string; say: string; cues: string;
-  // GAP-FIX-R4 (Appendix P L5, L10): choose the diagram, flag regions, the conclusion, the rule switch, dragging.
+  // L5, L10: choose the diagram, flag regions, the conclusion, the rule switch, dragging.
   sentence: string; pickDiagram: string; relationOverlap: string; relationSubset: string; relationDisjoint: string;
   occupied: string; conclusion: string; necessarily: string; possibly: string; never: string; newRule: string; place: string;
 }

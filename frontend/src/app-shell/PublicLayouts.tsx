@@ -9,7 +9,7 @@ import { ShellPreferences } from './ShellPreferences';
 import { sitePageTitle } from './siteTitles';
 
 /*
- * The public site and the sign-in flow on real routes (W2 Lane 0), replacing
+ * The public site and the sign-in flow on real routes, replacing
  * the legacy MarketingLayout and AuthLayout. Owner direction, 2026-10-06: the
  * site topbar is the brand, a round theme toggle, a round language menu and a
  * ghost "Log in"; there are no page links and no header call to action (the
@@ -53,7 +53,7 @@ export function SiteLayout() {
     <SiteShell appName={APP_NAME} pageTitle={sitePageTitle(pathname, locale)} routeKey={pathname} locale={locale} onNavigate={navigate}
       utilities={<SiteTopbarControls />} homeHref="/" links={links} secondaryAction={entry}
       labels={{ skip: shell.skip, navigation: shell.navigation, menu: shell.menu, close: shell.close }} footer={<SiteFooter />}>
-      {/* The public pages are rebuilt (W2 Lane 1): no legacy body wrapper. */}
+      {/* The public pages are rebuilt: no legacy body wrapper. */}
       <Outlet />
     </SiteShell>
   </ShellRoot>;
@@ -75,7 +75,7 @@ export function AuthLayout() {
   return <ShellRoot>
     <AuthShell appName={APP_NAME} pageTitle={title} routeKey={pathname} locale={locale} onNavigate={navigate} homeHref="/" utilities={<ShellPreferences />}
       back={session ? { label: copy.openApp, href: APP_HOME } : { label: copy.home, href: '/' }} labels={{ skip: shell.skip }} footer={<SiteFooter />}>
-      {/* The sign-in screens are rebuilt (W2 Lane 1, W2S.2): no legacy body wrapper. */}
+      {/* The sign-in screens are rebuilt: no legacy body wrapper. */}
       <Outlet />
     </AuthShell>
   </ShellRoot>;

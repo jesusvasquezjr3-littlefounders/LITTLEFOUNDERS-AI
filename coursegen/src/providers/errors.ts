@@ -1,5 +1,5 @@
 // Typed provider errors — the transport-retry / non-retryable split
-// (COURSE_ENGINE.md §4 "Retries & backoff") lives on `retryable`.
+// lives on `retryable`.
 
 export class ProviderHttpError extends Error {
   readonly status: number;

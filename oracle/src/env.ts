@@ -2,11 +2,11 @@ import { z } from 'zod';
 
 /*
  * Oracle's configuration. Everything the Tutor runtime needs, validated at the
- * edge (/AGENTS.md §1.6) so a missing provider key is a startup failure with a
+ * edge so a missing provider key is a startup failure with a
  * name rather than a 500 in front of a child three turns into a session.
  *
  * The voice and model provider keys are OPTIONAL on purpose. Oracle must boot,
- * serve /health and run a text-only session without them: §1.14's rule is that
+ * serve /health and run a text-only session without them: the rule is that
  * liveness never depends on optional infrastructure, and a speech provider is
  * the most optional thing here — losing it costs the voice, not the lesson.
  */
@@ -18,7 +18,7 @@ const Env = z.object({
   INTERNAL_API_KEY: z.string().min(16, 'INTERNAL_API_KEY must be at least 16 chars'),
 
   /**
-   * Shared secret Core signs live-session tokens with (/ORACLE.md §3.2).
+   * Shared secret Core signs live-session tokens with.
    * Distinct from INTERNAL_API_KEY: one authenticates a SERVICE, this one
    * authenticates a single browser socket for a single session. Reusing one
    * secret for both would mean a leaked session token could call the internal
@@ -34,7 +34,7 @@ const Env = z.object({
   DEPOT_URL: z.url().optional(),
   DEPOT_INTERNAL_KEY: z.string().min(16).optional(),
 
-  /** Forge, for tier-3 live segment generation (/ORACLE.md §7.3). */
+  /** Forge, for tier-3 live segment generation. */
   COURSEGEN_URL: z.url().optional(),
   COURSEGEN_INTERNAL_KEY: z.string().min(16).optional(),
 
@@ -68,8 +68,8 @@ const Env = z.object({
    * exactly deepseek-v4-flash, deepseek-v4-flash-vision-exp and
    * deepseek-v4-pro.
    *
-   * The divergence is recorded in agent/tools/check-provider-parity.mjs so the
-   * gate allows it knowingly. `deepseek-chat` is not an option either way: it
+   * The divergence is deliberate.
+   * `deepseek-chat` is not an option either way: it
    * was retired 2026-07-24.
    */
   MODEL_API_BASE: z.url().default('https://api.deepseek.com/v1'),
@@ -82,13 +82,13 @@ const Env = z.object({
   /**
    * Real-time voice. `provider: none` is a first-class, tested mode — it is
    * what a deployment without an Inworld contract runs, and what every test
-   * runs (/ORACLE.md §14: speech is an enhancement, the lesson is the product).
+   * runs (speech is an enhancement, the lesson is the product).
    */
   /*
    * THE DPA GATE, made explicit (owner decision, 2026-08-21).
    *
    * A minor's voice reaching a third party needs a data-processing agreement
-   * that does not exist yet (/LEGAL/AI_TUTOR_LEGAL_REVIEW.md §6). Until it
+   * that does not exist yet. Until it
    * does, this stays FALSE and no minor's microphone opens — regardless of
    * guardian consent, which is a separate and also-required condition.
    *
@@ -142,7 +142,7 @@ const Env = z.object({
   REDIS_URL: z.string().url().default('redis://localhost:6379'),
 
   /*
-   * THE SPEECH CACHE (/ORACLE.md §15).
+   * THE SPEECH CACHE.
    *
    * Text-to-speech is the most expensive thing this service does, and most of
    * what it says it has said before. The cache sits in front of the paid call
@@ -166,14 +166,14 @@ const Env = z.object({
    * and says nothing about anybody. `all` also shares model-generated turns
    * between learners, which is more saving and a CHANGE TO A DOCUMENTED
    * PRIVACY PROMISE: a shared clip cannot be deleted with one child's session,
-   * so their tutor's words would outlive the 90-day retention window
-   * (/ORACLE.md §12). That is an owner decision with counsel in it. It is a
+   * so their tutor's words would outlive the 90-day retention window.
+   * That is an owner decision with counsel in it. It is a
    * named flag with a default and a sign-off to record, for the same reason
    * TUTOR_VOICE_FOR_MINORS is.
    */
   SPEECH_CACHE_SCOPE: z.enum(['scripted', 'all']).default('scripted'),
 
-  /** Session budget (/ORACLE.md §0 assumption 5, §9.5). */
+  /** Session budget. */
   SESSION_SOFT_BUDGET_MS: z.coerce.number().int().positive().default(15 * 60_000),
   SESSION_HARD_BUDGET_MS: z.coerce.number().int().positive().default(25 * 60_000),
   SESSION_MAX_TURNS: z.coerce.number().int().positive().default(120),
@@ -194,39 +194,39 @@ const Env = z.object({
    * in-process for this window; Core can mint a fresh single-use token for the
    * same session and the browser re-attaches to the conversation it left. The
    * park lives in this process's memory, so it shares the SINGLE-REPLICA
-   * constraint the token nonce ledger already imposes (/ORACLE.md §16).
+   * constraint the token nonce ledger already imposes.
    */
   SESSION_RESUME_GRACE_MS: z.coerce.number().int().positive().default(90_000),
-  /** Per-turn learner input cap, in characters (§5 bounds). */
+  /** Per-turn learner input cap, in characters. */
   TURN_MAX_INPUT_CHARS: z.coerce.number().int().positive().default(600),
 
   /**
-   * Product C.10 — the corroborating-evidence requirement: how many
+   * The corroborating-evidence requirement: how many
    * consecutive qualifying observations the pedagogy controller needs before
-   * it declares mastery or triggers remediation/rescue. The SPEC's value is
-   * 2, "proposed, pending data-driven validation" (Threshold Recalibration
-   * Log, docs/rebuild/mentor/THRESHOLD-RECALIBRATION-LOG.md). Changing it is
-   * a Tier 1 governance change (C.22), never a tuning knob.
+   * it declares mastery or triggers remediation/rescue. The default is
+   * 2, "proposed, pending data-driven validation".
+   * Changing it is
+   * a deliberate decision, never a tuning knob.
    *
    * The floor is 2, not 1: "no mastery or remediation decision executes on a
-   * single observation" is a non-negotiable Block C constraint, so an
-   * environment value cannot switch C.10 off globally (S06.15 lane review).
+   * single observation" is a non-negotiable constraint, so an
+   * environment value cannot switch it off globally.
    * A value below 2 refuses to boot rather than weakening the rule. The only
-   * sanctioned single-observation path is the per-KC Stage 7 rollback below.
+   * sanctioned single-observation path is the per-KC rollback below.
    */
   TUTOR_CORROBORATION_MIN_OBSERVATIONS: z.coerce.number().int().min(2).max(5).default(2),
   /**
-   * Appendix F Part 3 Stage 7 — the Extended Mastery Engine kill switch,
-   * OPERATOR OVERRIDE: comma-separated `kc.key`s reverted to the pre-C.10
+   * The Extended Mastery Engine kill switch,
+   * OPERATOR OVERRIDE: comma-separated `kc.key`s reverted to the
    * single-observation baseline until root-caused. Empty (the default) rolls
    * nothing back. The automatic rollback is Core's (`getMasteryKillSwitch`,
    * which writes `mentor.kill_switch.mastery.*` to `audit_logs` and sends the
    * tripped keys as the negotiated context field
    * `corroborationRollbackKcKeys`); the controller applies the UNION of the
-   * two. This env list is NOT written to the Kill-Switch Trigger Log by
+   * two. This env list is NOT written to the audit log by
    * itself: Oracle logs it to stdout once per session in which a listed KC
    * is in the plan, and the operator who sets it records the trip in the
-   * log by hand (MENTOR-INTEGRITY-POLICY.md §3.3).
+   * log by hand.
    */
   TUTOR_CORROBORATION_ROLLBACK_KC_KEYS: z
     .string()
@@ -238,42 +238,42 @@ const Env = z.object({
         .filter((key) => key.length > 0),
     ),
   /**
-   * Product C.8/C.12 — the behavioral-signature session-end signal
+   * The behavioral-signature session-end signal
    * (`tutor/sessionEndSignal.ts`). `offer` (default): the Mentor may offer to
    * stop early when the signal fires. `shadow`: computed and logged, never
-   * offered. `off`: not computed. `shadow` and `off` are the Appendix F
-   * Stage 7 rollback — session management reverts to the time/turn caps.
+   * offered. `off`: not computed. `shadow` and `off` are the
+   * rollback — session management reverts to the time/turn caps.
    * An unknown value falls back to `offer` rather than silently disabling it.
    */
   TUTOR_SESSION_END_SIGNAL: z.enum(['offer', 'shadow', 'off']).catch('offer').default('offer'),
 
   /**
-   * C.9/C.19 Stage 7 kill switch for the Behavioral Telemetry Layer
+   * Kill switch for the Behavioral Telemetry Layer
    * (`tutor/behavioralTelemetry.ts`). `act` (default): a fired disengagement
    * signal makes the Mentor check in ("are we on the same page?") and routes
    * the answer through the adaptation offer. `shadow`: computed and recorded,
-   * never acted on. `off`: not computed. `shadow` and `off` are the Appendix F
-   * Stage 7 rollback (Default-to-Inaction Rate below 85% or Disengagement-
+   * never acted on. `off`: not computed. `shadow` and `off` are the
+   * rollback (Default-to-Inaction Rate below 85% or Disengagement-
    * Repair Initiation Rate below 100%); session management reverts to the
    * time/turn caps. An unknown value falls back to `act`, never a silent off.
    */
   TUTOR_BEHAVIORAL_TELEMETRY: z.enum(['act', 'shadow', 'off']).catch('act').default('act'),
 
   /**
-   * C.15 Stage 7 kill switch for the Alliance Controller
+   * Kill switch for the Alliance Controller
    * (`tutor/allianceController.ts`). `act` (default): the goal-agreement
    * opening move, the renegotiation trigger after repeated declined
    * adaptations, and the persona-continuity re-establishment. `shadow`:
    * the renegotiation trigger and the continuity re-establishment are
    * suspended (recorded, never acted on) and the passive bond/goal tracking
-   * keeps running — the Appendix F Part 3 rollback. `off`: nothing. Core's
+   * keeps running — the rollback. `off`: nothing. Core's
    * automatic rollback verdict can only make it stricter. An unknown value
    * falls back to `act`, never a silent off.
    */
   TUTOR_ALLIANCE_CONTROLLER: z.enum(['act', 'shadow', 'off']).catch('act').default('act'),
 
   /**
-   * C.14 switch for the self-explanation move (`tutor/selfExplanation.ts`).
+   * Switch for the self-explanation move (`tutor/selfExplanation.ts`).
    * `act` (default): after a financial decision the system asks the learner
    * why, checks the reply names the idea and follows up once. `shadow`: the
    * decision points are recorded, never prompted. `off`: nothing. An unknown
@@ -282,13 +282,13 @@ const Env = z.object({
   TUTOR_SELF_EXPLANATION: z.enum(['act', 'shadow', 'off']).catch('act').default('act'),
 
   /**
-   * C.11 switch for the two-tier spaced-review router
+   * Switch for the two-tier spaced-review router
    * (`tutor/spacedReview.ts`). `act` (default): a wrong answer close to the
    * mastery threshold with budget left is brought back once more in this
    * session after a short gap (the controller's review detour); every other
    * wrong answer, and every item still open at close, is handed to Core's
    * cross-session scheduler. `shadow`: every routing decision is computed and
-   * recorded, no re-exposure detour is opened — the Stage 7 rollback. `off`:
+   * recorded, no re-exposure detour is opened — the rollback. `off`:
    * nothing is routed or recorded. Core's automatic verdict
    * (`spacedReviewMode`) can only make it stricter. An unknown value falls
    * back to `act`.
@@ -296,18 +296,18 @@ const Env = z.object({
   TUTOR_SPACED_REVIEW: z.enum(['act', 'shadow', 'off']).catch('act').default('act'),
 
   /**
-   * C.17 switch for the age-band dialogue calibration
+   * Switch for the age-band dialogue calibration
    * (`tutor/dialogueCalibration.ts`). `act` (default): the session runs the
-   * variant Core assigned (the SPEC's calibrated register for every learner
+   * variant Core assigned (the calibrated register for every learner
    * outside the adults-only experiment). `off`: every session runs the
-   * uniform pre-C.17 register (`control`, recorded as `operator_off`). An
+   * uniform pre-calibration register (`control`, recorded as `operator_off`). An
    * unknown value falls back to `act`.
    */
   TUTOR_DIALOGUE_CALIBRATION: z.enum(['act', 'off']).catch('act').default('act'),
 
   /**
-   * ORACLE.md §15.2 item 2 (narrow scope — the horizontal-scale half of that
-   * item is a separate, larger, architecturally-undecided piece of work).
+   * Narrow scope ( — the horizontal-scale half of that
+   * problem is a separate, larger, architecturally-undecided piece of work).
    *
    * Hard per-process ceiling on live tutor sessions. Before this existed,
    * `oracle/` accepted every authenticated socket unconditionally: nothing
@@ -320,13 +320,13 @@ const Env = z.object({
    *
    * The default is a conservative STARTING POINT, not a measured capacity
    * figure — this codebase has no production memory profile for a live
-   * session yet (§15.2's own "unmeasured" caveat applies here too). Raise it
+   * session yet. Raise it
    * per deployment once real load is observed.
    */
   ORACLE_MAX_CONCURRENT_SESSIONS: z.coerce.number().int().positive().default(200),
 
   /**
-   * ORACLE.md §15.2 item 3 — the websocket handshake has no rate limit of its
+   * The websocket handshake has no rate limit of its
    * own, because the WebSocketServer in `ws/server.ts` is attached directly
    * to the raw HTTP server and Express's `globalRateLimiter`
    * (`middleware/rateLimit.ts`) never sees the upgrade. See
@@ -358,9 +358,9 @@ const Env = z.object({
    */
 
   /**
-   * THE PLATFORM-WIDE SPEND CIRCUIT BREAKER (/ORACLE.md §15.2 item 1).
+   * THE PLATFORM-WIDE SPEND CIRCUIT BREAKER.
    *
-   * Every OTHER limit in §15 bounds what ONE session or ONE learner can cost
+   * Every OTHER limit bounds what ONE session or ONE learner can cost
    * (turn caps, budget clocks, the per-day session cap). None of them bounds
    * what the PROCESS spends in total, so a provider incident that makes
    * retries pile up across many sessions at once, or a bug that multiplies
@@ -368,7 +368,7 @@ const Env = z.object({
    * bill" is not a control.
    *
    * $20/day is a deliberately conservative FIRST default, not a modelled
-   * budget: /ORACLE.md's own measurement puts an ordinary session at
+   * budget: the measured cost puts an ordinary session at
    * fractions of a cent and even a pathological 120-turn one at "cents", so
    * this ceiling exists to catch a MULTIPLIER-shaped bug — a retry storm, a
    * loop — rather than to cap realistic legitimate usage. Raise it
@@ -377,9 +377,9 @@ const Env = z.object({
    *
    * In-process and reset on a rolling 24h window (`session/spend-guard.ts`) —
    * deliberately NOT moved to the shared store the nonce ledger and the
-   * session park now use (/ORACLE.md §16, `RUNBOOK.md` Round 143), because a
+   * session park now use, because a
    * circuit breaker must not depend on the infrastructure it exists to
-   * survive (§1.14). A process restart forgets today's running total; the
+   * survive. A process restart forgets today's running total; the
    * worst that allows is one extra day at full exposure on the day of a
    * deploy, which is a fair trade against a Redis outage silently disabling
    * the breaker entirely.
@@ -392,7 +392,7 @@ const Env = z.object({
   DAILY_SPEND_CEILING_USD: z.coerce.number().positive().default(20),
   /**
    * The fraction of the ceiling that triggers a LOUD warning instead of a
-   * refusal — "an alert well below it", per §15.2, so an operator has room to
+   * refusal — "an alert well below it", so an operator has room to
    * react before a learner is ever turned away. Expressed as a fraction of
    * the ceiling rather than a second absolute dollar figure so the two stay
    * in proportion when the ceiling itself is retuned.
@@ -414,7 +414,7 @@ export function getConfig(): Config {
     if (parsed.data.SESSION_HARD_BUDGET_MS <= parsed.data.SESSION_SOFT_BUDGET_MS) {
       // A hard stop at or before the soft close means the tutor never gets to
       // wrap up: the session dies mid-sentence every single time, which is the
-      // exact failure §9.5 exists to prevent.
+      // exact failure the budgets exist to prevent.
       throw new Error('[oracle] SESSION_HARD_BUDGET_MS must exceed SESSION_SOFT_BUDGET_MS');
     }
     cached = Object.freeze(parsed.data);

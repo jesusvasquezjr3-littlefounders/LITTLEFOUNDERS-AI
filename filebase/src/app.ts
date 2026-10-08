@@ -17,7 +17,7 @@ export function createApp(): express.Express {
     res.json({ data: { service: SERVICE, version: VERSION, status: 'ok' }, error: null });
   });
 
-  // Management API — service-to-service only (/AGENTS.md §1.5).
+  // Management API — service-to-service only.
   const requireInternalKey = (req: Request, res: Response, next: NextFunction) => {
     const provided = req.get('x-internal-api-key') ?? '';
     const expected = config.INTERNAL_API_KEY;

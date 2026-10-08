@@ -1,6 +1,6 @@
 import { exactKeys, isId, isRecord, isWhole, sameKeys, sameSet, type Frame, type SlotMap } from './arrange.js';
 
-/* F2.16 "Redes y conteo": graphs and bridges (J01), Dijkstra (J03), choice trees (J08) and Pascal's triangle (J09). */
+/* "Redes y conteo": graphs and bridges, Dijkstra, choice trees and Pascal's triangle. */
 
 export const NETWORK_VISUALS = ['graph', 'shortest-path', 'choice-tree', 'pascal'] as const;
 export type NetworkVisual = (typeof NETWORK_VISUALS)[number];

@@ -1,11 +1,10 @@
 name: Badge link retirement
 
-# The legacy badge-link image sweep (Product 10 F.2 under OD-20;
-# docs/rebuild/policies/ACHIEVEMENT-SHARING.md).
+# The legacy badge-link image sweep.
 #
-# OD-20 made an achievement share a picture handed to the parent, so no new
+# An achievement share is now a picture handed to the parent, so no new
 # public badge link is issued. Links issued before the cutover keep their
-# 30-day expiry and revocation until they end, and F.2 says a dead link is not
+# 30-day expiry and revocation until they end, and a dead link is not
 # dead until its IMAGE stops resolving at its own storage URL. Revocation and
 # a visit to a dead link purge the image already; a link that simply expires
 # unvisited did not. This workflow asks Core to sweep every dead legacy link's
@@ -103,7 +102,7 @@ jobs:
             purged=$(printf '%s' "$body" | grep -o '"purged":[0-9]*' | head -1 | cut -d: -f2)
             failed=$(printf '%s' "$body" | grep -o '"failed":[0-9]*' | head -1 | cut -d: -f2)
 
-            # An absent count is NOT zero (§1.14): an error envelope or a proxy
+            # An absent count is NOT zero: an error envelope or a proxy
             # page must fail the run, never read as "nothing left to sweep".
             if [ -z "${scanned:-}" ] || [ -z "${purged:-}" ] || [ -z "${failed:-}" ]; then
               echo "::error::Core's reply carried no sweep counts; refusing to report a sweep that may not have happened"

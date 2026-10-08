@@ -1,10 +1,10 @@
 import type { Territory, TerritoryState } from './territory';
 
 /*
- * W2L.2: preview and test fixtures for the course world (L3), shaped exactly
+ * Preview and test fixtures for the course world, shaped exactly
  * like Core's GET /learn/courses/:slug/tree (they parse with territorySchema).
  * One world per scene theme, so every scene is seen; review-due topics from
- * the spaced-review layer; a world not reached yet; and, under the B.6
+ * the spaced-review layer; a world not reached yet; and, under the
  * pathway engine, an extra younger chapter and a chapter closed by age.
  */
 
@@ -48,7 +48,7 @@ export function territoryFixture(placementRequired = false): Territory {
   };
 }
 
-/** Under the B.6 pathway engine for a teen: a younger chapter is an extra, the adult chapter closed by age (never listed). */
+/** Under the pathway engine for a teen: a younger chapter is an extra, the adult chapter closed by age (never listed). */
 export function pathwayTerritoryFixture(): Territory {
   const base = territoryFixture();
   const [coins, needs] = base.adventures;

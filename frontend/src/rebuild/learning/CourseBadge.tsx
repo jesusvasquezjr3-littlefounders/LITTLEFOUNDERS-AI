@@ -3,8 +3,7 @@ import { courseIdentity } from './learnHome';
 import './courseBadge.css';
 
 /*
- * W2L.3: the learner-side course badge (B.4/B.5 badges, 02 §9.7 slots, 07 §3
- * own assets). The legacy display was a metallic CSS disc around the course's
+ * The learner-side course badge. The legacy display was a metallic CSS disc around the course's
  * raster art with a stock icon as its fallback; the rebuilt badge is our own
  * rosette (`course.badge.frame`) holding the course's own identity icon, so a
  * badge reads as the course it was earned in. A course without an identity

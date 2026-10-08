@@ -2,16 +2,15 @@ import { useId } from 'react';
 import { Glyph } from '../design/controls';
 
 /*
- * The photo of a parent's ID for A.5 verification (A7, W2S.2): the one file
+ * The photo of a parent's ID for verification: the one file
  * input of the rebuilt frontend, and deliberately NOT a shared design-system
- * control. An upload is a governed surface (docs/rebuild/policies/
- * SOCIAL-GOVERNANCE.md §4.2, E.12): this file is listed there, and a generic
+ * control. An upload is a governed surface: this is the only file input, and a generic
  * file control any screen could import would put a profile image one import
  * away from the child-safety review it needs.
  *
  * The native input keeps the keyboard (Tab to it, Enter or Space opens the
  * platform's picker) and the screen-reader behaviour, visually hidden (a file
- * input's own text is the browser's, clipped with an ellipsis, 02 §7 rule 1).
+ * input's own text is the browser's, clipped with an ellipsis).
  * The well around it is its <label>, so a press anywhere on it (at least
  * 64 px) opens the picker, and it takes a dropped file. The input is named by
  * the visible field label; the well's action word and the chosen file's name

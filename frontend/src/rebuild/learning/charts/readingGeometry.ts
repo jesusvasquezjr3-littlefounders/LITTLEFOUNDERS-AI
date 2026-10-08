@@ -1,9 +1,9 @@
 import { quantile } from './chartModel.generated';
 
 /*
- * Horizonte F1.0: the pure geometry behind the twelve reading charts (axis
+ * The pure geometry behind the twelve reading charts (axis
  * ticks, density estimates, timeline lanes, heat shades). No React, no DOM:
- * readingCharts.tsx only turns these numbers into SVG, and the tests pin them.
+ * readingCharts.tsx only turns these numbers into SVG.
  */
 
 export type Domain = [number, number];

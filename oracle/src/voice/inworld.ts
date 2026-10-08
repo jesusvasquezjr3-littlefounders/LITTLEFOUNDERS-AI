@@ -61,7 +61,7 @@ const STT_MODEL = 'inworld/inworld-stt-1';
  * devices. There is also no enum to reach for even if we wanted one: `WEBM_OPUS`
  * and `M4A` are both rejected as `AUDIO_ENCODING_UNSPECIFIED`.
  *
- * §1.14: a confident wrong label is worse than no label. The bytes carry their
+ * A confident wrong label is worse than no label. The bytes carry their
  * own container header; the provider reads it correctly; we stop guessing.
  * Do not reintroduce a MIME→enum table here — that is this defect, exactly.
  */
@@ -70,7 +70,7 @@ const AUDIO_ENCODING = 'AUTO_DETECT';
 /*
  * WORD-LEVEL CAPTION TIMING — GATED ON THE MODEL, NEVER MEASURED LIVE.
  *
- * ORACLE.md §19.5 deferred word-level caption highlighting as "needs
+ * Word-level caption highlighting was once deferred as "needs
  * provider timestamps". It does not need them; Inworld already has them, on
  * the EXACT endpoint this file already calls (`POST /tts/v1/voice`,
  * confirmed against `docs.inworld.ai/api-reference/ttsAPI/texttospeech/
@@ -92,7 +92,7 @@ const AUDIO_ENCODING = 'AUTO_DETECT';
  * `timestampType` set to find out whether an unsupported model politely
  * ignores the field or answers a 400 for the whole request — and guessing
  * wrong there would not lose a caption, it would lose the TUTOR'S VOICE for
- * every learner, the exact §1.14 class of defect this codebase has already
+ * every learner, the exact class of defect this codebase has already
  * paid for once (the OGG_OPUS outage this file documents below). So the
  * field is sent ONLY when the CONFIGURED model already names itself
  * TTS-2-family — a model nothing in production requests today — which makes
@@ -161,7 +161,7 @@ function parseWordTimings(alignment: {
  *
  * AND THERE IS NO FALLBACK. An unmapped character throws, the turn is
  * captioned and silent, and `scripts/clone-character-voices.ts` says which
- * enrolment is missing. Substituting a stock voice would be the §1.14 defect
+ * enrolment is missing. Substituting a stock voice would be the defect
  * in its purest form: a confident wrong answer where an absent one merely
  * omits.
  */
@@ -273,7 +273,7 @@ interface RecognizeResponse {
      * different KIND of processing from turning speech into text, and nothing
      * in this product needs it. It is disabled explicitly rather than left to
      * a default, because a default is something a provider may change and we
-     * would never notice. Recorded in /LEGAL/AI_TUTOR_LEGAL_REVIEW.md §2.1.
+     * would never notice.
      */
     voiceProfile?: unknown;
   };

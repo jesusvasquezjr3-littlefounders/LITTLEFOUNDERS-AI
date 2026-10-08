@@ -1,5 +1,5 @@
 /*
- * retroChecks.ts — G.2's follow-up mechanism (Appendix N 2.3(b)): RUN the
+ * retroChecks.ts — the follow-up mechanism for release-check bypasses: RUN the
  * bypassed release verification retroactively.
  *
  *   npm run content:retro-checks            verify every course with an open check

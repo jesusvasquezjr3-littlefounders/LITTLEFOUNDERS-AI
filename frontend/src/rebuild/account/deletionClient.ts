@@ -1,12 +1,12 @@
 /*
- * Client API layer for Product 10 E.6 self-service account deletion.
+ * Client API layer for self-service account deletion.
  *
  * Core decides everything: who may delete themselves (a parent-created child
  * never, staff never through this flow), the waiting period, the re-entry of
  * the password or a recent sign-in, and the erasure itself. This file only
  * carries requests and validates the answers, so a malformed response is a
  * failure, never an invented state. Transport-only and dependency-injected;
- * it imports nothing from the legacy app (Bible 02 rule 23).
+ * it imports nothing from the legacy app.
  */
 
 export type DeletionStatus = 'pending' | 'processing' | 'held';
@@ -130,7 +130,7 @@ export async function cancelAccountDeletion(transport: Transport): Promise<Resul
   return { ok: false, code: errorCode(answer.envelope) };
 }
 
-/** The stated date, in the reader's locale (Appendix J: every request carries its timeline). */
+/** The stated date, in the reader's locale (every request carries its timeline). */
 export function formatDeletionDate(iso: string, locale: string): string {
   return new Intl.DateTimeFormat(locale, { day: 'numeric', month: 'short', year: 'numeric' }).format(new Date(iso));
 }

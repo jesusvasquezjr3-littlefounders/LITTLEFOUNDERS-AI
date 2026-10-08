@@ -22,7 +22,7 @@ function Bar({ cells, shaded, hue }: { cells: number; shaded: number; hue: 'sky'
   </div>;
 }
 
-/* F1.6 fraction wall: shade the parts of a finer row that match the given row. The learner chooses how far to shade. */
+/* Fraction wall: shade the parts of a finer row that match the given row. The learner chooses how far to shade. */
 function WallBoard({ document, segment, onBack, sequence, onGrade, payload }: Props<EquivalentPayload>) {
   const { locale } = document;
   const t = copyText(NUM_B_COPY, locale);
@@ -69,7 +69,7 @@ function WallBoard({ document, segment, onBack, sequence, onGrade, payload }: Pr
   </NumBFrame>;
 }
 
-/* F1.6 bars: two bars of different parts; recut both into common parts, then write the sum or the difference. */
+/* Bars: two bars of different parts; recut both into common parts, then write the sum or the difference. */
 function BarsBoard({ document, segment, onBack, sequence, onGrade, payload }: Props<PairPayload>) {
   const { locale } = document;
   const t = copyText(NUM_B_COPY, locale);
@@ -109,7 +109,7 @@ function BarsBoard({ document, segment, onBack, sequence, onGrade, payload }: Pr
   </NumBFrame>;
 }
 
-/* F1.6 product grid: columns for one fraction, rows for the other; the cells shaded twice are the product. */
+/* Product grid: columns for one fraction, rows for the other; the cells shaded twice are the product. */
 function ProductBoard({ document, segment, onBack, sequence, onGrade, payload }: Props<PairPayload>) {
   const { locale } = document;
   const t = copyText(NUM_B_COPY, locale);
@@ -149,7 +149,7 @@ function ProductBoard({ document, segment, onBack, sequence, onGrade, payload }:
   </NumBFrame>;
 }
 
-/* F1.6 measuring: lay tiles of one length along another and read how many fit, the part left over included. */
+/* Measuring: lay tiles of one length along another and read how many fit, the part left over included. */
 function MeasureBoard({ document, segment, onBack, sequence, onGrade, payload }: Props<PairPayload>) {
   const { locale } = document;
   const t = copyText(NUM_B_COPY, locale);

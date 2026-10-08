@@ -1,5 +1,5 @@
 /*
- * H.3: the internal email an alert trigger sends, in the body the
+ * The internal email an alert trigger sends, in the body the
  * email-server's POST /api/v1/send accepts (email-server/src/app.ts SendBody:
  * `to`, a required `subject`, `text`, `templateType`). The email-server has no
  * template renderer, so the message is plain text written here.

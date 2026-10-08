@@ -11,7 +11,7 @@ import es from '@/i18n/es-MX/rebuild-profile.json';
 import pt from '@/i18n/pt-BR/rebuild-profile.json';
 
 /*
- * Data plane for E.8's self-managed teen connections on the legacy own-profile
+ * Data plane for the self-managed teen connections on the legacy own-profile
  * route. Every decision is confirmed by a matching receipt before the list
  * changes; a conflict or a removal reloads both lists from the first page.
  * Session changes invalidate in-flight answers.
@@ -35,7 +35,7 @@ function Scoped({ discoverable }: { discoverable: boolean }) {
   const [failed, setFailed] = useState(false);
   const [busy, setBusy] = useState(false);
   const [notice, setNotice] = useState<TeenNotice | null>(null);
-  // E.3: the request the teen just declined stays reportable and blockable beside the receipt (Core admits both for 30 days).
+  // The request the teen just declined stays reportable and blockable beside the receipt (Core admits both for 30 days).
   const [closedRequestId, setClosedRequestId] = useState<string | null>(null);
   const generation = useRef(0);
   useEffect(() => () => { generation.current++; }, []);
@@ -85,7 +85,7 @@ function Scoped({ discoverable }: { discoverable: boolean }) {
     setNotice({ tone: 'alert', text: result.code === 'PROFILE_REVIEW_REQUIRED' ? copy.review : copy.decisionFailed });
   }
 
-  // E.3 (GAP-FIX-R5 social): a report leaves the request to decide; a block closes it, so the lists reload.
+  // A report leaves the request to decide; a block closes it, so the lists reload.
   async function report(requestId: string, category: ReportCategory, note: string | null): Promise<boolean> {
     const current = generation.current;
     const token = await getToken();
@@ -116,7 +116,7 @@ function Scoped({ discoverable }: { discoverable: boolean }) {
     setNotice({ tone: 'alert', text: copy.blockFailed });
   }
 
-  // GAP-FIX-R8 social (E.3, E.8): a follower, handle-less or not, is reported and blocked by user id.
+  // A follower, handle-less or not, is reported and blocked by user id.
   async function reportFollower(userId: string, category: ReportCategory, note: string | null): Promise<boolean> {
     const current = generation.current;
     const token = await getToken();

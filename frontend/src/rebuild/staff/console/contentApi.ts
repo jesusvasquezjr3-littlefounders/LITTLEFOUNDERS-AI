@@ -1,25 +1,25 @@
 /*
- * The Content section's wire shapes (S2, W2T.2), hand-mirrored from Core's
+ * The Content section's wire shapes, hand-mirrored from Core's
  * `routes/admin.ts` and `services/adminData.ts` (no shared types across
  * packages by design) and checked on arrival: a payload of the wrong shape is
  * an error state, never a guessed zero. Every path sits behind Core's
- * `manage_content` grant (G.1).
+ * `manage_content` grant.
  *
- *   GET  /admin/content                     courses, summary, B.3 incidents
- *   POST /admin/content/:id/status          publish runs release_course (G.2)
+ *   GET  /admin/content                     courses, summary, incidents
+ *   POST /admin/content/:id/status          publish runs release_course
  *   GET  /admin/moderation(/:id)            the lesson review queue and one lesson
- *   POST /admin/moderation/:id/status       approve runs release_lesson (G.2)
- *   GET  /admin/tutor/review-queue          live Mentor activities sampled (C.5)
- *   POST /admin/tutor/review-queue/:id/status   a verdict, audited (G.3)
- *   GET  /admin/tutor/live-content/status   C.5 rates, suspensions, backlog
- *   GET  /admin/tutor/packs?status=review   C.6 packs waiting for a release
- *   GET  /admin/content/learning-quality    B.19 / B.12 / B.5 (S05.3d)
- *   GET  /admin/content/lesson-versions     new versions of live lessons waiting (G.2)
- *   POST /admin/content/lessons/:id/versions/:v/release|reject   the staff decision (G.2)
- *   GET  /admin/content/bypass-checks       Appendix N 1.2 rates and the retroactive checks
- *   GET  /admin/content/lessons/:id/versions/:v   one version's document, as a learner is served it (GAP-FIX-R6)
- *   POST /admin/content/lessons/:id/preview-grade  a preview answer checked, nothing recorded (GAP-FIX-R6)
- *   GET|POST /admin/content/lessons/:id/pedagogical-review   Appendix C Stage 3 (stage3Api.ts)
+ *   POST /admin/moderation/:id/status       approve runs release_lesson
+ *   GET  /admin/tutor/review-queue          live Mentor activities sampled
+ *   POST /admin/tutor/review-queue/:id/status   a verdict, audited
+ *   GET  /admin/tutor/live-content/status   rates, suspensions, backlog
+ *   GET  /admin/tutor/packs?status=review   packs waiting for a release
+ *   GET  /admin/content/learning-quality    learning-quality figures
+ *   GET  /admin/content/lesson-versions     new versions of live lessons waiting
+ *   POST /admin/content/lessons/:id/versions/:v/release|reject   the staff decision
+ *   GET  /admin/content/bypass-checks       bypass rates and the retroactive checks
+ *   GET  /admin/content/lessons/:id/versions/:v   one version's document, as a learner is served it
+ *   POST /admin/content/lessons/:id/preview-grade  a preview answer checked, nothing recorded
+ *   GET|POST /admin/content/lessons/:id/pedagogical-review   pedagogical review (stage3Api.ts)
  */
 
 import type { LiveContentStatus, TutorPackSummary } from '../../mentor/liveContentApi';
@@ -30,7 +30,7 @@ const isNumber = (value: unknown): value is number => typeof value === 'number' 
 const isCounts = (value: unknown): value is Record<string, number> => isRecord(value) && Object.values(value).every(isNumber);
 const arrayOf = <T>(value: unknown, item: (entry: unknown) => entry is T): value is T[] => Array.isArray(value) && value.every(item);
 
-/* ---- Courses and the B.3 incident counter -------------------------------- */
+/* ---- Courses and the incident counter -------------------------------- */
 
 export const COURSE_STATUSES = ['published', 'review', 'draft', 'archived'] as const;
 export type CourseStatus = (typeof COURSE_STATUSES)[number];
@@ -39,7 +39,7 @@ export interface Course {
   id: string; slug: string; title: string; description: string; subject: string; status: string; position: number; createdAt: string;
   adventureCount: number; sagaCount: number; topicCount: number; lessonCount: number; lessonsByStatus: Record<string, number>;
 }
-/** B.3: one row per course that failed to assemble for a learner, with how often and when last (migration 0107). */
+/** One row per course that failed to assemble for a learner, with how often and when last (migration 0107). */
 export interface AssemblyIncident { courseId: string; courseTitle: string; occurrenceCount: number; firstSeenAt: string; lastSeenAt: string }
 export interface ContentData {
   courses: Course[];
@@ -53,12 +53,12 @@ const isCourse = (c: unknown): c is Course => isRecord(c) && isString(c.id) && i
 const isIncident = (i: unknown): i is AssemblyIncident => isRecord(i) && isString(i.courseId) && isString(i.courseTitle)
   && isNumber(i.occurrenceCount) && isString(i.lastSeenAt);
 
-/** A malformed incident list is an error, never a silently empty signal (B.3). */
+/** A malformed incident list is an error, never a silently empty signal. */
 export const isContentData = (value: unknown): value is ContentData => isRecord(value) && arrayOf(value.courses, isCourse)
   && isRecord(value.summary) && isCounts(value.summary.courses) && isCounts(value.summary.lessons)
   && (value.courseAssemblyIncidents === undefined || arrayOf(value.courseAssemblyIncidents, isIncident));
 
-/* ---- The release preflight's refusals (G.2, S05.4c) ---------------------- */
+/* ---- The release preflight's refusals ---------------------- */
 
 /**
  * Core maps each refusal of `release_course` / `release_lesson` to its own
@@ -74,7 +74,7 @@ export const RELEASE_REFUSALS = {
   RELEASE_VERIFICATION_REQUIRED: 'releaseVerificationRequired',
   RELEASE_VERIFICATION_INCOMPLETE: 'releaseVerificationIncomplete',
   RELEASE_COURSE_RELEASE_REQUIRED: 'releaseCourseRequired',
-  // GAP-FIX-R6: no passing Appendix C Stage 3 pedagogical review covers the content (Stage3Review.tsx records one).
+  // No passing pedagogical review covers the content (Stage3Review.tsx records one).
   RELEASE_STAGE3_REVIEW_REQUIRED: 'releaseStage3Required',
   RELEASE_BLOCKED: 'releaseBlocked',
 } as const;
@@ -115,14 +115,14 @@ const isLessonDocumentRow = (d: unknown): d is LessonDocumentRow => isRecord(d) 
 export const isLessonDetail = (value: unknown): value is LessonDetail => isReviewLesson(value)
   && arrayOf((value as unknown as Record<string, unknown>).documents, isLessonDocumentRow);
 
-/** GAP-FIX-R6: a pending version's document for the Live updates preview. */
+/** A pending version's document for the Live updates preview. */
 export type VersionDocument = LessonDocumentRow & { lessonId: string };
 export const isVersionDocument = (value: unknown): value is VersionDocument => isLessonDocumentRow(value) && isString((value as unknown as Record<string, unknown>).lessonId);
 export const versionDocumentPath = (lessonId: string, documentVersionId: string) =>
   `/admin/content/lessons/${encodeURIComponent(lessonId)}/versions/${encodeURIComponent(documentVersionId)}`;
 
 /**
- * GAP-FIX-R6: the reviewer's answer, checked by Core with the learner's scorer
+ * The reviewer's answer, checked by Core with the learner's scorer
  * and recorded nowhere. `met` / `review` is what the learner's board shows.
  */
 export interface PreviewVerdict { verdict: 'met' | 'review'; judgment?: string; diagnostic?: string }
@@ -175,7 +175,7 @@ export function imageAssets(document: Record<string, unknown>): MediaAsset[] {
   return found;
 }
 
-/* ---- Live Mentor activities (C.5, G.3) and activity packs (C.6) ----------- */
+/* ---- Live Mentor activities and activity packs ----------- */
 
 export interface LiveSegment {
   id: string; segment_type: string; payload: Record<string, unknown>; provenance: Record<string, unknown>;
@@ -186,7 +186,7 @@ const isLiveSegment = (s: unknown): s is LiveSegment => isRecord(s) && isString(
 export const isLiveQueue = (value: unknown): value is { segments: LiveSegment[]; total: number } => isRecord(value)
   && arrayOf(value.segments, isLiveSegment) && isNumber(value.total);
 
-/** Core stamps its own content-risk classification on every live item since S06.12; an older item has none. */
+/** Core stamps its own content-risk classification on every live item; an older item has none. */
 export function riskCategory(segment: LiveSegment): 'standard' | 'sensitive' | null {
   const value = segment.provenance.risk_category;
   return value === 'standard' || value === 'sensitive' ? value : null;
@@ -202,7 +202,7 @@ export const isPacks = (value: unknown): value is { packs: TutorPackSummary[]; t
   && isNumber(value.total) && arrayOf(value.packs, (p): p is TutorPackSummary => isRecord(p) && isString(p.id)
     && isString(p.skill_key) && isNumber(p.tier) && isString(p.locale) && isRecord(p.pack) && Array.isArray(p.pack.segments));
 
-/* ---- Live updates: pending v2 versions and the retroactive checks (G.2) -- */
+/* ---- Live updates: pending v2 versions and the retroactive checks -- */
 
 /** A new version of a lesson that is already live, waiting for a staff release (Core services/contentRelease.ts). */
 export interface PendingVersion {

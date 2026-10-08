@@ -31,7 +31,7 @@
  *  - PAID WORK IS OPT-IN. Probe authoring calls DeepSeek. Without --confirm
  *    the run reports exactly what it WOULD author and spends nothing.
  *  - THE AUDIENCE IS DERIVED, NEVER ASSUMED. Each probe carries its own
- *    course's subject and age band (/AGENTS.md §1.14) — an entrepreneurship
+ *    course's subject and age band — an entrepreneurship
  *    probe can never inherit financial-education's 6-year-old register.
  *  - A TOPIC WITH NO LIVE LESSON IS NOT PROBED. Placement walks live content;
  *    paying to author a question about 733 archived lessons is money burned.

@@ -2,13 +2,12 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { STAFF_PERMISSIONS, type StaffPermission } from '../../design/controls';
 
 /*
- * The data layer of the rebuilt staff console (W2 Lane 6, W2T.1).
+ * The data layer of the rebuilt staff console.
  *
- * The rebuilt UI imports nothing outside src/rebuild and src/i18n (02 rule 23,
- * `check-product-spec.mjs`), so the screens receive a `StaffApi` from their
+ * The rebuilt UI imports nothing outside src/rebuild and src/i18n, so the screens receive a `StaffApi` from their
  * route host (app-routes/staffConsole.tsx), which calls Core with the staff
  * member's own session. Core is the control: every path below sits behind
- * requireRole(admin|superadmin) plus the named grant of G.1
+ * requireRole(admin|superadmin) plus the named grant
  * (`requireAdminPermission`, backend/src/routes/admin.ts), and Roles & Access
  * behind superadmin. The screens only choose what to ask for and what to show;
  * a hidden section never substitutes for the server's refusal.
@@ -18,16 +17,16 @@ import { STAFF_PERMISSIONS, type StaffPermission } from '../../design/controls';
  * state, never a crash or a guessed zero.
  */
 
-/** A refusal may carry Core's itemized reasons (the C.6 pack contract lists every failure). */
+/** A refusal may carry Core's itemized reasons (the pack contract lists every failure). */
 export type StaffResult<T> = { ok: true; data: T } | { ok: false; code: string; failures?: string[] };
 
-/** A file Core rendered (W2T.3: the analytics reports, the intel and raw-event exports): its bytes and Core's export headers (truncated, next-offset, rows, token). */
+/** A file Core rendered (the analytics reports, the intel and raw-event exports): its bytes and Core's export headers (truncated, next-offset, rows, token). */
 export interface StaffDownload { blob: Blob; headers: Record<string, string> }
 
 export interface StaffApi {
   get<T>(path: string): Promise<StaffResult<T>>;
   post<T>(path: string, body: unknown): Promise<StaffResult<T>>;
-  /** DELETE (W2T.3: revoking an analytics exclusion). A host without it offers no revoke. */
+  /** DELETE (revoking an analytics exclusion). A host without it offers no revoke. */
   remove?<T>(path: string): Promise<StaffResult<T>>;
   /** A raw file route (success is bytes; a failure is Core's usual envelope). A host without it offers no download. */
   download?(path: string): Promise<StaffResult<StaffDownload>>;
@@ -57,7 +56,7 @@ export type Load<T> =
 /**
  * One read. `path: null` reads nothing (a section the viewer has no grant
  * for never asks Core). A reload keeps the data on screen while it runs, so a
- * refresh after an action never moves the page (02 rule 13); a first load or
+ * refresh after an action never moves the page; a first load or
  * a retry after an error shows the loading state.
  */
 export function useStaffRead<T>(api: StaffApi, path: string | null, guard: (value: unknown) => value is T) {
@@ -92,7 +91,7 @@ const isNullableString = (value: unknown): value is string | null => value === n
 const isCounts = (value: unknown): value is Record<string, number> => isRecord(value) && Object.values(value).every(isNumber);
 const arrayOf = <T>(value: unknown, item: (entry: unknown) => entry is T): value is T[] => Array.isArray(value) && value.every(item);
 
-/* ---- Overview (S1) ------------------------------------------------------- */
+/* ---- Overview ------------------------------------------------------- */
 
 /** GET /admin/overview: each part only when the viewer holds its grant (Core projects it). */
 export interface Overview {
@@ -120,9 +119,9 @@ export const isRetention = (value: unknown): value is Retention => isRecord(valu
   && arrayOf(value.buckets, (b): b is Retention['buckets'][number] => isRecord(b) && isString(b.bucket) && isNumber(b.n) && isNumber(b.avg_first_attempt_score))
   && arrayOf(value.byTopic, (t): t is Retention['byTopic'][number] => isRecord(t) && isString(t.slug) && isString(t.title) && isNumber(t.avgFirstAttemptScore));
 
-/* ---- Users (S3, A.5) ----------------------------------------------------- */
+/* ---- Users ----------------------------------------------------- */
 
-/** A.5: the verification Core projects per account (id-verified vs staff-granted vs revoked). */
+/** The verification Core projects per account (id-verified vs staff-granted vs revoked). */
 export const VERIFICATIONS = ['id-verified', 'staff-granted', 'revoked'] as const;
 export type Verification = (typeof VERIFICATIONS)[number];
 
@@ -135,7 +134,7 @@ export interface StaffUser {
   birthDate: string | null;
   roles: string[];
   verification?: Verification | null;
-  /** A.2/A.5 (F3-identity-site): the account holds the parent role while its own age record says a minor. */
+  /** The account holds the parent role while its own age record says a minor. */
   ageRecordMinor?: boolean;
 }
 const isUser = (u: unknown): u is StaffUser => isRecord(u) && isString(u.userId) && isString(u.displayName) && isNullableString(u.username)
@@ -155,16 +154,16 @@ export const isFunnelIntegrity = (value: unknown): value is { accountsCreated: n
 export const isRegistrations = (value: unknown): value is { entries: { role: string; registrations: number }[] } => isRecord(value)
   && arrayOf(value.entries, (e): e is { role: string; registrations: number } => isRecord(e) && isString(e.role) && isNumber(e.registrations));
 
-/* ---- Roles & Access (S10, A.5, G.4) --------------------------------------- */
+/* ---- Roles & Access --------------------------------------- */
 
 /** Core's GRANTABLE_ROLES, in the order the form offers them. */
 export const GRANTABLE_ROLES = ['parent', 'kid', 'bigfounder', 'admin', 'superadmin'] as const;
 export type GrantableRole = (typeof GRANTABLE_ROLES)[number];
-/** A.5: a staff grant of the parent role carries this audited justification (Core: 10-200 characters). */
+/** A staff grant of the parent role carries this audited justification (Core: 10-200 characters). */
 export const JUSTIFICATION = { min: 10, max: 200 } as const;
-/** A.5: a revocation's audited reason (Core: 10-300 characters). */
+/** A revocation's audited reason (Core: 10-300 characters). */
 export const REVOKE_REASON = { min: 10, max: 300 } as const;
-/** G.4: the quarterly access-review window. A grant older than this is listed for re-justification. */
+/** The quarterly access-review window. A grant older than this is listed for re-justification. */
 export const REVIEW_WINDOW_DAYS = 90;
 
 export interface Assignment { role: string; grantedAt: string | null; grantedBy: string | null }
@@ -204,7 +203,7 @@ export const isCandidates = (value: unknown): value is { candidates: Candidate[]
   && arrayOf(value.candidates, (c): c is Candidate => isRecord(c) && isString(c.userId) && isString(c.displayName) && isNullableString(c.username) && arrayOf(c.roles, isString));
 
 /*
- * G.4 / Appendix N 1.1: the access-review log. Core lists only the elevated
+ * The access-review log. Core lists only the elevated
  * grants (admin and superadmin roles, the four staff permissions; never a
  * family role), each with its last kept review; a grant is due when
  * max(granted, last review) is older than the cadence. Recording "Keep
@@ -230,7 +229,7 @@ export const isAccessReviews = (value: unknown): value is AccessReviews => isRec
 /** The grants the review card asks about: due first, oldest confirmation first (the server's order). */
 export const reviewDue = (reviews: AccessReviews | null): AccessReviewGrant[] => (reviews?.grants ?? []).filter((grant) => grant.due);
 
-/* ---- Audit log (S9) ------------------------------------------------------ */
+/* ---- Audit log ------------------------------------------------------ */
 
 export interface AuditEntry { id: number; actorId: string | null; action: string; subject: string; detail: Record<string, unknown>; createdAt: string }
 export interface AuditPage { entries: AuditEntry[]; total: number; limit: number; offset: number }
@@ -254,7 +253,7 @@ export function auditPath(filters: AuditFilters, offset: number): string {
   return `/admin/audit?${params.toString()}`;
 }
 
-/* ---- Reports (E.3) ------------------------------------------------------- */
+/* ---- Reports ------------------------------------------------------- */
 
 export const REPORT_CATEGORIES = ['unwanted_contact', 'harassment', 'inappropriate_content', 'impersonation', 'other'] as const;
 export type ReportCategory = (typeof REPORT_CATEGORIES)[number];
@@ -279,7 +278,7 @@ export const isCaseDetail = (value: unknown): value is CaseDetail => isCase(valu
 /** The queue: Core's page cap (ReportsQuerySchema allows 1-200). */
 export const REPORTS_PATH = '/admin/reports?limit=200';
 
-/* ---- Emails (S4) --------------------------------------------------------- */
+/* ---- Emails --------------------------------------------------------- */
 
 export interface EmailEntry {
   id: string; messageId?: string; to: string; subject: string; status: string; templateType: string;

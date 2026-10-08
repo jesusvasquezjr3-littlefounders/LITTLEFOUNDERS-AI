@@ -99,7 +99,7 @@ import {
   listRecentSummaries,
   getLearnerMemory,
   writeLearnerMemoryPair,
-  // The parental approval gate (/ORACLE.md §20, migration 0068).
+  // The parental approval gate (migration 0068).
   parkLearnerMemoryProposal,
   listPendingLearnerMemoryProposals,
   getLearnerMemoryProposal,
@@ -107,7 +107,7 @@ import {
   clearLearnerMemory,
   type LearnerMemoryProposalRow,
   searchOwnTurns,
-  // Class V artifacts (migration 0069, TUTOR_INSTRUMENTS.md §3.6).
+  // Class V artifacts (migration 0069).
   getTutorPlan,
   writeTutorPlan,
   insertNotebookEntry,
@@ -173,7 +173,7 @@ import { verdictFrom } from '../lesson-contract/core/types.js';
 import { runEvaluationPass } from '../services/pedagogy/evaluationLoop.js';
 
 /*
- * The Tutor's API (/ORACLE.md). Two surfaces in one router file, and the split
+ * The Tutor's API. Two surfaces in one router file, and the split
  * is the important part:
  *
  *   /api/v1/tutor/*           browser-facing, requireAuth, caller-scoped
@@ -188,13 +188,13 @@ import { runEvaluationPass } from '../services/pedagogy/evaluationLoop.js';
 
 const NOT_FOUND = 'NOT_FOUND';
 const VALIDATION = 'VALIDATION_ERROR';
-/** C.4 / OD-18 (2026-09-24): no eligible reviewer exists for this account's memory notes. */
+/** No eligible reviewer exists for this account's memory notes. */
 const MEMORY_REVIEW_INELIGIBLE = 'MEMORY_REVIEW_INELIGIBLE';
 
 /**
- * A closed, human-written question set. Never a free-text box (§9.2).
+ * A closed, human-written question set. Never a free-text box.
  *
- * Found by adversarial review, round 40 (2026-08-30, HIGH): this list used
+ * Found by adversarial review (2026-08-30, HIGH): this list used
  * to exist ONLY as an inline literal in the `/offers` response — the actual
  * gate at session-start time (`StartBody` below) validated `skillKey` as any
  * `string.min(1).max(128)`, regardless of `intent`. A crafted `POST
@@ -206,7 +206,7 @@ const MEMORY_REVIEW_INELIGIBLE = 'MEMORY_REVIEW_INELIGIBLE';
  */
 const FAQ_IDS = ['what_is_saving', 'why_prices_change', 'what_is_a_budget', 'how_does_a_loan_work'] as const;
 
-/** Daily caps (/ORACLE.md §15, §0 assumption 5). */
+/** Daily caps. */
 const MAX_SESSIONS_PER_DAY = 2;
 /**
  * The staff exemption's "effectively unlimited" cap, capped ITSELF at
@@ -237,7 +237,7 @@ const STAFF_SESSION_CAP = 2_147_483_647;
  * session cap, below) to also cover the session's own duration and turn
  * budget in Oracle. The expression was already written inline twice; a third
  * copy in a different file, evaluated at a different moment, is the shape
- * AGENTS.md §1.14 records under hand-tuned constants drifting apart — and a
+ * hand-tuned constants drifting apart — and a
  * role set that disagreed between "may start another session" and "may keep
  * this one open" would be invisible until someone was cut off mid-test by
  * exactly the limit they had been exempted from.
@@ -245,8 +245,8 @@ const STAFF_SESSION_CAP = 2_147_483_647;
  * SCOPE, deliberately: `admin` as well as `superadmin`, matching what the
  * session cap has always exempted rather than inventing a second, narrower
  * set for the new half of the same feature. Both roles are granted, never
- * self-served (§1.4), and `superadmin` is additionally DB-restricted to
- * `@littlefounders.ai` addresses (§1.3), so the blast radius is a staff list
+ * self-served, and `superadmin` is additionally DB-restricted to
+ * `@littlefounders.ai` addresses, so the blast radius is a staff list
  * somebody deliberately wrote.
  *
  * WHAT THIS DOES NOT EXEMPT, and must never be extended to: the
@@ -254,21 +254,20 @@ const STAFF_SESSION_CAP = 2_147_483_647;
  * `oracle/src/session/spend-guard.ts`). That control exists precisely for
  * the runaway case, and an unattended staff session with no session cap, no
  * duration cap and no turn cap is the single most plausible way to produce
- * one. Nor does it touch moderation, consent, or the §1.9 PII boundary —
+ * one. Nor does it touch moderation, consent, or the PII boundary —
  * those are safety, not usage.
  */
 export function isStaffRoles(roles: readonly string[]): boolean {
   return roles.includes('admin') || roles.includes('superadmin');
 }
-/** Without a cap the tutor is the cheapest XP per minute and courses become optional (§8). */
+/** Without a cap the tutor is the cheapest XP per minute and courses become optional. */
 const MAX_TUTOR_XP_PER_DAY = 120;
 const PASS_THRESHOLD = 70;
 // The learner-local day boundary lives in lib/localDay.ts; re-exported so existing callers are unchanged.
 export { startOfLocalDayIso } from '../lib/localDay.js';
 
 /**
- * The wire shape of the SESSION_LIMIT refusal's one extra field (§1.9
- * clarity — a vague "come back tomorrow" cannot tell a child whether the
+ * The wire shape of the SESSION_LIMIT refusal's one extra field (a clear answer: a vague "come back tomorrow" cannot tell a child whether the
  * wait is ten minutes or nearly a day).
  *
  * Kept as a validated schema rather than a bare `.toISOString()` call so a
@@ -292,8 +291,8 @@ function normalizeLocale(raw: string | null | undefined): 'en-US' | 'es-MX' | 'p
  * Found by adversarial review, 2026-08-30 (HIGH): `PreferencesBody`'s
  * nickname regex only excludes punctuation (`/^[\p{L}\p{N}][\p{L}\p{N}
  * '_-]*$/u`) — it accepts SPACES, so a clean two-word name with no comma or
- * period sails through untouched. The existing rejection test only proved
- * this for `'Ana Vasquez, Jr.'`, which fails on the comma, not on being a
+ * period sails through untouched. The only rejection that was checked was
+ * `'Ana Vasquez, Jr.'`, which fails on the comma, not on being a
  * full name; a bare `'Ana Vasquez'` — literally a real learner's own
  * `display_name` — was never checked against anything. That nickname is
  * "the only name-shaped value that may travel" into the model context
@@ -302,7 +301,7 @@ function normalizeLocale(raw: string | null | undefined): 'en-US' | 'es-MX' | 'p
  * hide a surname" — this closes the one place nothing ever checked that.
  *
  * Word-based rather than whole-string, so "Vasquez" alone (the surname on
- * its own, §1.9's specific example) is caught exactly as "Ana Vasquez" is,
+ * its own, the specific example) is caught exactly as "Ana Vasquez" is,
  * without also rejecting a nickname that merely shares a short, common word
  * with the real name by coincidence.
  */
@@ -324,7 +323,7 @@ async function profileOf(accessToken: string, userId: string): Promise<FullProfi
   return rows?.[0] ?? null;
 }
 
-/** Whether the caller is a verified guardian of `kidId`. The app-layer half of §1.3. */
+/** Whether the caller is a verified guardian of `kidId`. The app-layer half of the check. */
 async function isVerifiedGuardian(parentId: string, kidId: string): Promise<boolean | null> {
   const links = await getVerifiedKidLinks(parentId);
   if (links === null) return null;
@@ -332,7 +331,7 @@ async function isVerifiedGuardian(parentId: string, kidId: string): Promise<bool
 }
 
 /**
- * C.4 / OD-18 (24 September 2026): WHO may review a persistent LEARNER-store
+ * WHO may review a persistent LEARNER-store
  * memory note about this account. Resolved from server-held evidence — roles
  * read with the service role, verified guardian links, the stored age-screen
  * declaration — never from anything the caller says about itself.
@@ -346,7 +345,7 @@ async function isVerifiedGuardian(parentId: string, kidId: string): Promise<bool
  *                      verified guardian link): the teen is the reviewer of
  *                      their own notes, through their own learner session.
  *   'adult-direct'     a screened adult declaration: the existing ungated
- *                      write behaviour is preserved (OD-18 changes nothing
+ *                      write behaviour is preserved (nothing changes
  *                      for adults).
  *   'hold'             every other state — a missing age declaration, an
  *                      under-13/origin-marked account with no guardian link
@@ -355,7 +354,7 @@ async function isVerifiedGuardian(parentId: string, kidId: string): Promise<bool
  *
  * `null` means one of the reads itself failed. Callers refuse that as 502
  * DATA_UNAVAILABLE rather than folding it into any of the four outcomes
- * (§1.14 — a role read that failed must not silently reclassify a child as
+ * (a role read that failed must not silently reclassify a child as
  * an adult).
  */
 type MemoryReviewClass = 'guardian-review' | 'self-review' | 'adult-direct' | 'hold';
@@ -423,7 +422,7 @@ function microphoneBlockedBy(
  *
  * A degraded Oracle must produce an honest disabled button, not a thirty-second
  * loading sequence that ends in a closed socket. A failed preflight is treated
- * as "cannot start" — an unreachable runtime is not a working one (§1.14).
+ * as "cannot start" — an unreachable runtime is not a working one.
  */
 async function preflight(isMinor: boolean, wantsVoice: boolean): Promise<PreflightResult> {
   const { ORACLE_URL, ORACLE_INTERNAL_KEY, ORACLE_TIMEOUT_MS } = getConfig();
@@ -485,7 +484,7 @@ function internalRouter(): Router {
 
     const consent = isMinor && !originRestricted ? await getActiveVoiceConsent(session.user_id) : null;
 
-    // A failed personalization read is NOT an empty one (/ORACLE.md §14). The
+    // A failed personalization read is NOT an empty one. The
     // flag travels so the tutor can say it is still getting to know the
     // learner rather than silently behaving as though they know nothing.
     const states = await getOwnLearnerIntelligence(session.user_id);
@@ -497,8 +496,8 @@ function internalRouter(): Router {
         : null;
 
     /*
-     * `weak_skill` WITHOUT a course/topic link — the common shape (round 47,
-     * 2026-08-30, HIGH): `OfferChips.tsx`'s "continue" chip sends only
+     * `weak_skill` WITHOUT a course/topic link — the common shape
+     * (2026-08-30, HIGH): `OfferChips.tsx`'s "continue" chip sends only
      * `skillKey` whenever the prior session had no course/topic. With
      * `courseContext` null, `buildPlan` (oracle/src/tutor/plan.ts) fell
      * through to the raw `skill_key` slug — e.g.
@@ -534,14 +533,14 @@ function internalRouter(): Router {
       // the session itself.
     }
 
-    // OD-43: the current lesson in the topic, so the Mentor can complement the course.
+    // The current lesson in the topic, so the Mentor can complement the course.
     if (courseContext?.topicId) {
       const lesson = await resolveCurrentLesson(session.user_id, courseContext.topicId, session.locale);
       if (lesson) courseContext = { ...courseContext, lesson };
     }
 
     /*
-     * The memory digests (/ORACLE.md §4.1, 2026-08-28). Only the fields
+     * The memory digests. Only the fields
      * Oracle's PreviousSessionSchema names travel; the internal course/topic
      * ids the digest also stores stay here. A failed read degrades to a tutor
      * with no memory — never to a refused session.
@@ -549,7 +548,7 @@ function internalRouter(): Router {
     const recent = await listRecentSummaries(session.user_id, session.id);
     /*
      * V4: the curated learner brief (0053). A read failure is NOT an empty
-     * brief (/AGENTS.md, round 28, 2026-08-30, HIGH) — `learnerBriefDegraded`
+     * brief — `learnerBriefDegraded`
      * travels alongside it so Oracle's post-session review can refuse to
      * treat "we could not read it" as "this learner has none" and overwrite
      * real accumulated memory with a note written from a false premise.
@@ -564,7 +563,7 @@ function internalRouter(): Router {
      * so a field an older Oracle does not know would make it refuse every
      * session: an optional field is sent only when it was announced, which
      * makes the Core/Oracle deploy order irrelevant. Kept identical to
-     * Oracle's CONTEXT_OPTIONAL_FIELDS by `npm run telemetry:check`.
+     * Oracle's CONTEXT_OPTIONAL_FIELDS by hand.
      */
     const accepts = new Set(
       String(req.get('x-oracle-context-fields') ?? '')
@@ -573,7 +572,7 @@ function internalRouter(): Router {
         .filter((f) => (CONTEXT_OPTIONAL_FIELDS as readonly string[]).includes(f)),
     );
     /*
-     * C.10 Appendix F Stage 7: the Extended Mastery Engine's automatic
+     * The Extended Mastery Engine's automatic
      * rollback — the `kc.key`s reverted to the single-observation baseline
      * until an operator resolves the trip. SERVER-SIDE ONLY: Oracle's
      * controller reads it and it never enters the sealed model context. A
@@ -594,7 +593,7 @@ function internalRouter(): Router {
       : null;
 
     /*
-     * C.16: the re-engagement a silent dropout or a budget interruption in the
+     * The re-engagement a silent dropout or a budget interruption in the
      * learner's PREVIOUS session queued for this return. Decided here from
      * Core's own rows; a failed read opens with the plain greeting, never
      * with a guess about what happened last time.
@@ -610,18 +609,18 @@ function internalRouter(): Router {
           });
 
     /*
-     * C.9/C.19 Appendix F Stage 7 AUTOMATIC ROLLBACK: while the Behavioral
+     * AUTOMATIC ROLLBACK: while the Behavioral
      * Telemetry Layer's kill-switch condition holds (or a trip is unresolved),
      * Oracle runs it in shadow — measuring, never acting. Evaluated only for
      * an Oracle that can receive it.
      */
     const killSwitch = accepts.has('behavioralTelemetryMode') ? await getTelemetryKillSwitch() : null;
     /*
-     * C.7 / C.15: the learner's disposition projection, this persona's
-     * continuity and the Alliance Controller's Stage 7 verdict — each only
+     * The learner's disposition projection, this persona's
+     * continuity and the Alliance Controller's rollback verdict — each only
      * for an Oracle that announced it can parse it. SERVER-SIDE ONLY: Oracle
      * keeps them out of the sealed model context. A FAILED read is not an
-     * empty profile (§1.14): the projection travels as null (nothing is
+     * empty profile: the projection travels as null (nothing is
      * changed) and the continuity as null (the ordinary opening), never as a
      * guess about this learner.
      */
@@ -634,14 +633,14 @@ function internalRouter(): Router {
         : null;
     const allianceKillSwitch = accepts.has('allianceMode') ? await getAllianceKillSwitch() : null;
     /*
-     * C.11 Appendix F Stage 7: the spaced-review router's automatic rollback
+     * The spaced-review router's automatic rollback
      * verdict — evaluated only for an Oracle that can receive it.
      */
     const spacedReviewSwitch = accepts.has('spacedReviewMode') ? await getSpacedReviewKillSwitch() : null;
     /*
-     * C.17: the dialogue register. The band is derived HERE from Core's own
+     * The dialogue register. The band is derived HERE from Core's own
      * age evidence (the birth date never travels); the variant comes from the
-     * adults-only H.7 experiment or is the SPEC's calibrated default. Anything
+     * adults-only experiment or is the calibrated default. Anything
      * unexpected sends null — Oracle then uses the tier fallback, never a
      * guess about this learner's age.
      */
@@ -666,10 +665,10 @@ function internalRouter(): Router {
     }
 
     /*
-     * C.22 / Appendix F Stage 5: this learner's arm of a running Mentor canary
+     * This learner's arm of a running Mentor canary
      * (mentorCanary.ts). Only for an Oracle that can apply it — otherwise no
      * assignment is asked for and no exposure recorded, so a canary is never
-     * counted for a session that could not have run it. Adults only (OD-23):
+     * counted for a session that could not have run it. Adults only:
      * the verified-adult posture above, the adult band, the adult analytics
      * rule. Anything unexpected is "no canary": the approved defaults run.
      */
@@ -699,7 +698,7 @@ function internalRouter(): Router {
       tier: session.tier,
       locale: session.locale,
       // The nickname is the only name-shaped value that may travel
-      // (/ORACLE.md §4.1). With none chosen, the tutor gets a neutral word
+      // With none chosen, the tutor gets a neutral word
       // rather than the learner's display name.
       nickname: prefs.nickname ?? neutralNickname(session.locale),
       character: session.character,
@@ -711,7 +710,7 @@ function internalRouter(): Router {
       skillKey: session.skill_key,
       previousSessions,
       /*
-       * V4 SESSION DOSSIER (harness §4.3): the slow chamber's qualitative
+       * V4 SESSION DOSSIER: the slow chamber's qualitative
        * knowledge of this learner, immutable for the whole session so the
        * fast chamber's prompt prefix stays cacheable. Written only by the
        * post-session review; a guardian can read it via RLS; every write is
@@ -759,9 +758,9 @@ function internalRouter(): Router {
 
   /**
    * V4's live sequence board, exactly as Oracle computed it. Validated at
-   * the edge like everything else here (§1.6) — a `.strict()` closed shape,
+   * the edge like everything else here — a `.strict()` closed shape,
    * mirroring `oracle/src/ws/protocol.ts`'s `WireSequenceBoard`. Found by
-   * adversarial review, round 35 (2026-08-30, HIGH): no field for this
+   * adversarial review (2026-08-30, HIGH): no field for this
    * existed at all, so a session that drew a board lost it silently on
    * replay and on the guardian transcript viewer (migration 0058).
    */
@@ -783,7 +782,7 @@ function internalRouter(): Router {
   /**
    * `compare` and `marked_line` — two static quantities side by side, and
    * one or more values placed on a line between two references, SHIPPED
-   * 2026-09-01 (ORACLE.md §20.5's "Two more kinds"), mirroring
+   * 2026-09-01, mirroring
    * `oracle/src/ws/protocol.ts`'s `WireWhiteboard`. Same rigor as
    * `SequenceWhiteboardBody` above: a `.strict()` closed shape per kind, so
    * this endpoint refuses a malformed board rather than silently persisting
@@ -824,7 +823,7 @@ function internalRouter(): Router {
   /**
    * The `categories` kind — a comparison across named things at one moment
    * rather than one quantity over time (the first bounded slice of "UI
-   * generativa acotada", blueprint §10.4 — ORACLE.md §20.5), mirroring
+   * generativa acotada"), mirroring
    * `oracle/src/ws/protocol.ts`'s `WireCategoriesBoard`. Same rigor as
    * `SequenceWhiteboardBody` above: a `.strict()` closed shape, so this
    * endpoint refuses a malformed board rather than silently persisting one.
@@ -844,7 +843,7 @@ function internalRouter(): Router {
 
   /**
    * The `tokens` kind — discrete, denominated objects on the table rather than
-   * a chart (/TUTOR_INSTRUMENTS.md, Sprint 6), mirroring
+   * a chart), mirroring
    * `oracle/src/ws/protocol.ts`'s tokens member. `subtotals` and `total` are
    * SERVER-COMPUTED (`oracle/src/tutor/whiteboard.ts`'s `computeTokens`): the
    * sum of a pile is the arithmetic the learner is doing, so the model is given
@@ -867,7 +866,7 @@ function internalRouter(): Router {
     .strict();
 
   /*
-   * WAVE 1 INSTRUMENTS (/TUTOR_INSTRUMENTS.md Sprints 7-8), each mirroring its
+   * WAVE 1 INSTRUMENTS, each mirroring its
    * member of `oracle/src/ws/protocol.ts`'s `WireWhiteboard`. Every one carries
    * at least one SERVER-COMPUTED field the model-facing schema deliberately
    * lacks — a bar model's widths, a flow's `kept`, a goal's `remaining`, a
@@ -936,7 +935,7 @@ function internalRouter(): Router {
     })
     .strict();
 
-  /* The canonical primary-maths vocabulary (/TUTOR_INSTRUMENTS.md §3.1). */
+  /* The canonical primary-maths vocabulary. */
   const TenFrameWhiteboardBody = z
     .object({
       kind: z.literal('ten_frame'),
@@ -995,7 +994,7 @@ function internalRouter(): Router {
     })
     .strict();
 
-  /* Decision and comparison (/TUTOR_INSTRUMENTS.md §3.2 families D and F). */
+  /* Decision and comparison. */
   const TableWhiteboardBody = z
     .object({
       kind: z.literal('table'),
@@ -1086,7 +1085,7 @@ function internalRouter(): Router {
     })
     .strict();
 
-  /* Operations and real-money artefacts (/TUTOR_INSTRUMENTS.md §3.2 C and F). */
+  /* Operations and real-money artefacts. */
   const DealWhiteboardBody = z
     .object({ kind: z.literal('deal'), total: z.number().int(), bins: z.array(z.string().max(40)).min(2).max(6), perBin: z.number().int(), remainder: z.number().int(), label: z.string().max(60) })
     .strict();
@@ -1143,7 +1142,7 @@ function internalRouter(): Router {
   const BeforeAfterWhiteboardBody = z
     .object({ kind: z.literal('before_after'), what: z.string().max(40), before: z.number(), after: z.number(), delta: z.number(), direction: z.enum(['up', 'down', 'same']), label: z.string().max(60), currency: z.enum(['MXN', 'USD', 'BRL']).nullable() })
     .strict();
-  /** Class II, S9 (/TUTOR_INSTRUMENTS.md §3.3) — no computed field: nothing is server-derived, see `WhiteboardGrabSchema`'s own comment (oracle/src/tutor/turnSchema.ts). */
+  /** No computed field: nothing is server-derived, see `WhiteboardGrabSchema`'s own comment (oracle/src/tutor/turnSchema.ts). */
   const GrabWhiteboardBody = z
     .object({
       kind: z.literal('grab'),
@@ -1161,7 +1160,7 @@ function internalRouter(): Router {
       label: z.string().max(60),
     })
     .strict();
-  /** Class II, S10 — NOT ungraded: `values` is server-computed, same as `sequence_compare`'s own two-track shape generalised to 2-3 branches. */
+  /** NOT ungraded: `values` is server-computed, same as `sequence_compare`'s own two-track shape generalised to 2-3 branches. */
   const WhatifWhiteboardBody = z
     .object({
       kind: z.literal('whatif'),
@@ -1183,7 +1182,7 @@ function internalRouter(): Router {
       currency: z.enum(['MXN', 'USD', 'BRL']).nullable(),
     })
     .strict();
-  /** Class II, S10 — NOT ungraded: ONE `sequence`, server-computed in a single pass, split at `givenCount` into the tutor's shown prefix and the learner's revealed suffix. */
+  /** NOT ungraded: ONE `sequence`, server-computed in a single pass, split at `givenCount` into the tutor's shown prefix and the learner's revealed suffix. */
   const YourTurnWhiteboardBody = z
     .object({
       kind: z.literal('your_turn'),
@@ -1252,8 +1251,7 @@ function internalRouter(): Router {
    * v3's tray-demonstration steps, exactly as it was validated before ever
    * reaching a turn (`oracle/src/tutor/turnSchema.ts`'s `DemoStepSchema`) —
    * mirroring `WhiteboardBody` immediately above, edge-validated the same
-   * way every request body is (§1.6). Found while investigating ORACLE.md
-   * §19.5's "replaying `demonstrate` animations" backlog item, 2026-09-01:
+   * way every request body is. Found while investigating the "replaying `demonstrate` animations" backlog item, 2026-09-01:
    * no field for this existed at all, so a session where the tutor
    * demonstrated on the money tray lost that fact silently on replay and on
    * the guardian transcript viewer (migration 0067).
@@ -1262,7 +1260,7 @@ function internalRouter(): Router {
     .array(
       z
         .object({
-          // Widened to 4 families 2026-09-02 (/TUTOR_INSTRUMENTS.md Sprint 2) —
+          // Widened to 4 families 2026-09-02 —
           // see `DemoStepSchema`'s own comment (oracle/src/tutor/turnSchema.ts)
           // for what each new verb moves and why the vocabulary stayed flat.
           kind: z.enum(['add', 'remove', 'pause', 'place', 'assign', 'pair', 'move']),
@@ -1280,10 +1278,10 @@ function internalRouter(): Router {
     .max(8);
 
   /*
-   * C.18 — the Mentor turn's honesty facts (answer-reveal and anti-
+   * The Mentor turn's honesty facts (answer-reveal and anti-
    * sycophancy instrumentation). HAND-MIRRORED from Oracle's `TurnHonesty`
    * (oracle/src/tutor/feedbackHonesty.ts) and the `tutor_turn_honesty`
-   * CHECK lists; `npm run honesty:check` (root) keeps the three identical.
+   * CHECK lists; keep the three identical.
    * Strict inside, optional outside: an Oracle build that predates it sends
    * none and nothing changes.
    */
@@ -1315,13 +1313,13 @@ function internalRouter(): Router {
     whiteboard: WhiteboardBody.nullish(),
     demonstrate: DemonstrateBody.nullish(),
     /**
-     * Class V (migration 0069, TUTOR_INSTRUMENTS.md §3.6): "persist the
+     * Class V (migration 0069): "persist the
      * board this turn just drew as the learner's ongoing plan." Only
      * meaningful alongside a non-null `whiteboard` — see the handler below.
      */
     savePlan: z.boolean().nullish(),
     /**
-     * Class III / S17 (TUTOR_INSTRUMENTS.md §3.4, migration 0070): the
+     * Class III (migration 0070): the
      * pre-authored roleplay scene id this turn started, when it started
      * one — the identical live-only-field gap `demonstrate` above closes,
      * closed the same way. A closed id, not free text; capped generously
@@ -1331,7 +1329,7 @@ function internalRouter(): Router {
     roleplayScene: z.string().min(1).max(64).nullish(),
     /** Class III `point_at` (2026-09-04): the array index `action: "point"` reached for, if any. */
     pointAt: z.number().int().min(0).nullish(),
-    /** C.18: see `TurnHonestyBody`. Only meaningful on a tutor turn. */
+    /** See `TurnHonestyBody`. Only meaningful on a tutor turn. */
     honesty: TurnHonestyBody.nullish(),
   });
 
@@ -1341,7 +1339,7 @@ function internalRouter(): Router {
     const recorded = await insertTutorTurn(parsed.data);
 
     /*
-     * C.18: the Mentor-integrity row (tutor_turn_honesty), with Core's own
+     * The Mentor-integrity row (tutor_turn_honesty), with Core's own
      * key-based reveal check. Best-effort and independent of the turn write,
      * like the plan save below: a lost honesty row costs the dashboard one
      * data point, never the learner a reported failure.
@@ -1359,7 +1357,7 @@ function internalRouter(): Router {
     }
 
     /*
-     * Class V (migration 0069, TUTOR_INSTRUMENTS.md §3.6): a turn that drew
+     * Class V (migration 0069): a turn that drew
      * a board and marked it as the plan persists it — a plain overwrite,
      * never a merge (write_tutor_plan's own comment explains why that is
      * safe here and would not be for learner_memory). Best-effort and
@@ -1394,17 +1392,17 @@ function internalRouter(): Router {
   /*
    * V4: the post-session review's write path. Oracle destils what a session
    * taught us about the learner and PUTs it here; Core owns the limits, the
-   * store and the ledger. Content rules are §1.9's: no surnames, no
+   * store and the ledger. Content rules: no surnames, no
    * locations. Enforced upstream, in Oracle, BEFORE this call is ever made —
    * the writer's prompt forbids them, a regex re-check catches digit/URL-
-   * shaped identifiers, and (round 42, 2026-08-30) a content-moderation
+   * shaped identifiers, and (since 2026-08-30) a content-moderation
    * judge catches what the regex cannot (a surname or a school name has
    * neither shape). This endpoint's own job is only the length caps and the
    * atomic write (`writeLearnerMemoryPair`, `tutorData.ts`) — it does not, and
    * should not, re-run content checks Oracle already ran.
    */
   /*
-   * `expectedBefore` — round 51 (2026-08-30, MEDIUM): without this, this
+   * `expectedBefore` (2026-08-30, MEDIUM): without this, this
    * route's own `writeLearnerMemory` call had no way to compare against
    * anything but a value it had just re-read itself, which can never lose a
    * race against a genuinely concurrent session (see that function's own
@@ -1438,7 +1436,7 @@ function internalRouter(): Router {
     }
     const { userId, sessionId, stores, expectedBefore } = parsed.data;
 
-    // C.4 / OD-18 (24 September 2026): the reviewer of a memory note is
+    // The reviewer of a memory note is
     // resolved from server-held evidence, not from the request. A verified
     // guardian link or a legacy `kid` role keeps the guardian-review flow. An
     // independent screened teen (13_to_17, no link, no protected origin)
@@ -1448,9 +1446,9 @@ function internalRouter(): Router {
     // hold: the whole write is refused, both stores. A screened adult keeps
     // the existing direct write.
     //
-    // GAP-FIX-R2 (C.4, OD-18): BOTH stores go through that review. The
+    // BOTH stores go through that review. The
     // pedagogy note ("what teaching works with this child") is the second of
-    // C.4's two memory notes and model-written prose about the same child; it
+    // the two memory notes and model-written prose about the same child; it
     // used to write straight through for every minor with nobody seeing it.
     const review = await classifyMemoryReview(userId);
     if (review === null) {
@@ -1483,8 +1481,8 @@ function internalRouter(): Router {
     }
 
     /*
-     * ONE call, not one per store — round 61 (2026-08-30, MEDIUM), closed as
-     * round 75. This used to loop and await `writeLearnerMemory` once per
+     * ONE call, not one per store (2026-08-30, MEDIUM).
+     * This used to loop and await `writeLearnerMemory` once per
      * store, which is two transactions with a real window between them, and a
      * session starting in that window read one brand-new note beside one
      * stale one. A `null` store still means "this review proposed nothing
@@ -1505,7 +1503,7 @@ function internalRouter(): Router {
      * it did not FAIL either, and Oracle's `updateLearnerMemory` requires
      * every proposed store to report success or it logs "the write did not
      * land". Without this field a gated write would be indistinguishable from
-     * a broken one, forever, on every kid session (§1.14).
+     * a broken one, forever, on every kid session.
      */
     return ok(res, { written, pending });
   });
@@ -1521,7 +1519,7 @@ function internalRouter(): Router {
         q: z.string().min(2).max(200),
         // Optional: an Oracle deployed ahead of this route degrades to the
         // `searchOwnTurns` default (es-MX) rather than a refused request —
-        // round 29, 2026-08-30, see database/migrations/0056.
+        // 2026-08-30, see database/migrations/0056.
         locale: z.enum(['en-US', 'es-MX', 'pt-BR']).optional(),
       })
       .strict();
@@ -1543,8 +1541,7 @@ function internalRouter(): Router {
   });
 
   /*
-   * V4 HARNESS BACKLOG: TRAJECTORY EMISSION (/ORACLE.md §20, ROADMAP.md
-   * "Remaining harness phases", migration 0065). A durable, queryable record
+   * V4 HARNESS BACKLOG: TRAJECTORY EMISSION (migration 0065). A durable, queryable record
    * of what the deterministic pedagogical controller
    * (`oracle/src/tutor/controller.ts`) actually decided across a real
    * session — which strategy fired, on what mastery estimate, over which
@@ -1553,7 +1550,7 @@ function internalRouter(): Router {
    * endpoint changes nothing about what a live session does.
    *
    * Same closed-vocabulary posture as `/flags` and `/turns`: every field is a
-   * bounded enum, number or identifier (§13 of /ORACLE.md — never a
+   * bounded enum, number or identifier (never a
    * free-text or arbitrary-JSON channel). Oracle sends the WHOLE session's
    * steps in one call, fire-and-forget after the session ends
    * (`oracle/src/session/trajectory.ts`), so this route is never on a live
@@ -1582,7 +1579,7 @@ function internalRouter(): Router {
        * (`oracle/src/session/trajectory.ts` records it for every learner
        * turn that states a wrong idea) and never in this one, so every
        * session containing one had its WHOLE batch refused with a 400 — the
-       * steps most relevant to C.10's remediation evidence were exactly the
+       * steps most relevant to the remediation evidence were exactly the
        * ones that never landed. Accepted now; the DB CHECK is widened by the
        * matching contract migration (`*_trajectory_stated_misconception_kind.sql`).
        */
@@ -1601,7 +1598,7 @@ function internalRouter(): Router {
       kcId: z.uuid().nullable(),
       kcMode: z.enum(['new', 'review', 'probe', 'remediation']).nullable(),
       /*
-       * C.10 — the evidence behind a consequential decision (Extended
+       * The evidence behind a consequential decision (Extended
        * Mastery Engine event log). Optional so a batch from an Oracle build
        * that predates them still lands; when present they are validated as
        * a unit (all three set, or all three null) by the refine below.
@@ -1609,7 +1606,7 @@ function internalRouter(): Router {
       evidenceRule: z.enum(['mastery', 'remediation', 'rescue']).nullable().optional(),
       evidenceObservations: z.number().int().min(0).max(100).nullable().optional(),
       evidenceRequired: z.number().int().min(1).max(5).nullable().optional(),
-      // GAP-FIX-R2 (Appendix D §2.6): which correct answers the chain set aside; travels with the evidence.
+      // Which correct answers the chain set aside; travels with the evidence.
       evidenceDiscounted: z.enum(['none', 'too_fast', 'hint_assisted', 'too_fast_and_hint_assisted']).nullable().optional(),
       masteryRevoked: z.boolean().optional(),
     })
@@ -1663,22 +1660,22 @@ function internalRouter(): Router {
     segmentCount: z.number().int().nonnegative(),
     costUsd: z.number().nonnegative(),
     /*
-     * C.16 / C.8 / C.12 (Appendix F §1.1–1.2). OPTIONAL so an Oracle deployed
+     * OPTIONAL so an Oracle deployed
      * before this Core still closes; each is validated against its closed
-     * vocabulary (hand-mirrored — `npm run session-end:check`), and a bad
+     * vocabulary (hand-mirrored), and a bad
      * value refuses the close like any other malformed field.
      */
     closingScript: z.enum(CLOSING_SCRIPTS).optional(),
     opening: z.enum(SESSION_OPENINGS).optional(),
     endSignal: SessionEndReportBody.optional(),
     /*
-     * C.9/C.19 (Appendix F §1.2): the Behavioral Telemetry Layer's counts and
+     * The Behavioral Telemetry Layer's counts and
      * firings. OPTIONAL (an older Oracle, or the layer switched off); strict
      * inside, so an emotion label or an unknown outcome refuses the close.
      */
     behavioralTelemetry: BehavioralTelemetryReportBody.optional(),
     /*
-     * C.15 / C.14 / C.7 (Appendix F §1.2): the Alliance Controller's record,
+     * The Alliance Controller's record,
      * the self-explanation events and this session's disposition
      * observations. OPTIONAL (an older Oracle, or a component switched off);
      * strict inside, so an emotion label or the learner's words refuse the
@@ -1688,9 +1685,9 @@ function internalRouter(): Router {
     selfExplanation: SelfExplanationReportBody.optional(),
     disposition: DispositionObservationBody.optional(),
     /*
-     * C.11 / C.17 (Appendix F §1.1–1.2): the spaced-review routing decisions
+     * The spaced-review routing decisions
      * with the inputs the rule read, and the dialogue register the session
-     * ran with its counts. OPTIONAL (an older Oracle, or C.11 switched off);
+     * ran with its counts. OPTIONAL (an older Oracle, or spaced review switched off);
      * strict inside, so learner text, an unknown label, a routing that does
      * not fit its tier or a register that does not fit its variant refuses
      * the close.
@@ -1698,7 +1695,7 @@ function internalRouter(): Router {
     spacedReview: SpacedReviewReportBody.optional(),
     dialogueCalibration: DialogueCalibrationReportBody.optional(),
     /*
-     * C.22 Stage 5: the canary arm Oracle actually ran. OPTIONAL (no canary,
+     * The canary arm Oracle actually ran. OPTIONAL (no canary,
      * a refused one, or an older Oracle); strict inside.
      */
     canary: CanaryReportBody.optional(),
@@ -1709,22 +1706,21 @@ function internalRouter(): Router {
     if (!parsed.success) return fail(res, 400, VALIDATION, parsed.error.issues[0]?.message ?? 'Invalid close');
     // `ended_at IS NULL` in the update means the FIRST close wins. A socket
     // that dies after a graceful farewell must not rewrite `completed` into
-    // `learner_left` — and, since round 98, the caller is told WHICH of
+    // `learner_left` — and the caller is now told WHICH of
     // those happened rather than only whether the HTTP call itself
     // succeeded (`closeTutorSession`'s own comment).
     const outcome = await closeTutorSession(parsed.data);
     const closed = outcome !== 'failed';
 
     /*
-     * THE MEMORY DIGEST, written when a close actually landed (/ORACLE.md
-     * §4.1, 2026-08-28). Computed HERE, deterministically, from rows Core
+     * THE MEMORY DIGEST, written when a close actually landed (2026-08-28). Computed HERE, deterministically, from rows Core
      * already holds — never by a model and never from transcript text,
      * because this object is what the NEXT session's model context carries.
      * Best-effort after the close: a failed digest costs continuity, not the
      * session record.
      */
     /*
-     * C.8/C.12: the signal's firings, written only by the close that actually
+     * The signal's firings, written only by the close that actually
      * landed (first close wins, like the row itself). Best-effort: a failed
      * write costs Trigger Rate data points, never the close.
      */
@@ -1741,7 +1737,7 @@ function internalRouter(): Router {
     }
 
     /*
-     * C.9/C.19: the telemetry firings, written only by the close that
+     * The telemetry firings, written only by the close that
      * actually landed. Best-effort: a failed write costs Repair Initiation
      * data points, never the close.
      */
@@ -1759,7 +1755,7 @@ function internalRouter(): Router {
     }
 
     /*
-     * C.15 / C.14 / C.7: the alliance record, the self-explanation ledger and
+     * The alliance record, the self-explanation ledger and
      * the disposition profile, written only by the close that actually
      * landed. Best-effort: a failed write costs metric data points or one
      * session's contribution to the profile, never the close.
@@ -1792,8 +1788,8 @@ function internalRouter(): Router {
         });
         if (!folded) console.warn(`[tutor] disposition profile NOT updated for session ${owner.id}`);
         /*
-         * C.11: the routing log, and the hand-off of every knowledge component
-         * the session did not retire to the cross-session scheduler. C.17: the
+         * The routing log, and the hand-off of every knowledge component
+         * the session did not retire to the cross-session scheduler. The
          * register row. Best-effort: a failed write costs audit rows or one
          * early review, never the close.
          */
@@ -1836,7 +1832,7 @@ function internalRouter(): Router {
         );
       }
     }
-    // `alreadyClosed` is new (round 98): `closed` alone cannot tell Oracle's
+    // `alreadyClosed` is new: `closed` alone cannot tell Oracle's
     // `finish()` apart from a real update, which is exactly the signal it
     // needs to stop reporting a lost race as a success.
     return ok(res, { closed, alreadyClosed: outcome === 'already-closed' });
@@ -1845,11 +1841,11 @@ function internalRouter(): Router {
   /*
    * A PAID CALL THAT LANDS AFTER THE CLOSE STILL BELONGS TO THE SESSION.
    *
-   * Round 78 (2026-08-30). The post-session review makes its own real call to
+   * The post-session review makes its own real call to
    * the pedagogical model, and Oracle fires it fire-and-forget AFTER
    * `closeSession` has already persisted `cost_usd` — in the graceful
    * `finish()` path and in the dropped-connection `finalizeParked()` path
-   * alike. So the one number §15 promises measures the session's spend
+   * alike. So the one number that promises to measure the session's spend
    * ("before it is a surprise") was, for every session with a real
    * conversation in it, missing that call. This route is how the cost gets
    * home: an ADDITION, done in Postgres (migration `0062`), never a
@@ -1876,7 +1872,7 @@ function internalRouter(): Router {
     if (total === null) {
       // LOUD, and never a 500: the caller is a best-effort background task
       // that must not retry, so this line is the only trace an uncounted
-      // cost leaves (§1.0, "in blind flight").
+      // cost leaves ("in blind flight").
       console.warn(
         `[tutor] session cost NOT recorded (${parsed.data.reason}, $${parsed.data.costUsd.toFixed(6)}) ` +
           `for session ${sessionId.data} — no such session, or the write failed`,
@@ -1887,8 +1883,7 @@ function internalRouter(): Router {
   });
 
   /*
-   * A.1 (FAQ 'cancelTutor': paused at once), Appendix M 2.1 criterion 2
-   * (F3-identity-site finish): Oracle asks before each learner turn of a
+   * FAQ 'cancelTutor': paused at once. Oracle asks before each learner turn of a
    * minor's live session whether the account is still admitted, so a session
    * opened before the pause ends on the next turn instead of running until it
    * closes on its own. Same read as requireActiveAccount: 'suspended' only for
@@ -1913,7 +1908,7 @@ function internalRouter(): Router {
   });
 
   /**
-   * The nightly 90-day sweep (/ORACLE.md §12), called by
+   * The nightly 90-day sweep, called by
    * `.github/workflows/tutor-retention.yml`.
    *
    * It reports what it deleted rather than answering 204, because a retention
@@ -1925,7 +1920,7 @@ function internalRouter(): Router {
   /*
    * THE SWEEP'S OWN WATCHER, on the INTERNAL surface (2026-09-01).
    *
-   * `/ORACLE.md` §15.2 item 4 closed the data half of this — every purge that
+   * The data half of this is already done — every purge that
    * reaches the database writes `tutor.retention.swept` to `audit_logs`,
    * including a batch that deleted nothing, and
    * `GET /admin/tutor/retention-status` reads it back for a human. What it
@@ -1947,11 +1942,11 @@ function internalRouter(): Router {
    * staleness threshold (`RETENTION_STALE_HOURS`) must exist in exactly one
    * place: a watcher that re-implemented "36 hours" in bash would be a second
    * hand-tuned constant that drifts from the first the day either moves, which
-   * is the failure AGENTS.md §1.14 records for independently-tuned values. The
+   * is the failure independently-tuned values produce. The
    * only thing this route adds is who is allowed to ask.
    *
    * A failed READ stays a 502, never a reassuring 200 — same as the admin
-   * route, and for the same §1.14 reason: "the database is unreachable" and
+   * route, and for the same reason: "the database is unreachable" and
    * "the sweep has never run" are different facts and the watcher must be able
    * to tell them apart.
    */
@@ -1962,7 +1957,7 @@ function internalRouter(): Router {
   });
 
   /*
-   * C.21 / C.24: ONE PASS OF THE EVALUATION LOOP (Appendix E §3.1 Tier 3).
+   * ONE PASS OF THE EVALUATION LOOP.
    * Scores every ended, unscored session against the transcript rubric,
    * recomputes every consolidated signal, opens or refreshes flags for the
    * named owners, and stores the snapshot the staff dashboard reads.
@@ -1995,7 +1990,7 @@ function internalRouter(): Router {
     const result = await purgeExpiredTutorSessions(parsed.data.limit);
     if (result === null) {
       // NOT "nothing to delete". An unreachable database is how a 90-day
-      // promise quietly becomes forever (§1.14).
+      // promise quietly becomes forever.
       return fail(res, 502, 'DATA_UNAVAILABLE', 'The retention sweep could not run');
     }
     if (result.audioFailed > 0) {
@@ -2005,7 +2000,7 @@ function internalRouter(): Router {
       );
     }
     /*
-     * C.7 (S06.15 lane review): the learner disposition profile's retention
+     * The learner disposition profile's retention
      * (a profile not updated for 365 days is deleted) rides this nightly
      * sweep, so the promise has a scheduled job and not only an operator
      * command. It is reported, never swallowed: `null` means the delete could
@@ -2017,10 +2012,10 @@ function internalRouter(): Router {
       console.error('[tutor-retention] disposition-profile retention FAILED — stale profiles were not deleted this run');
     }
     /*
-     * ORACLE.md §15.2 item 4 (closed 2026-08-31): the sweep's own monitoring.
+     * The sweep's own monitoring.
      * Written on every reply that reaches here — INCLUDING a batch that
      * deletes zero sessions — because "ran and found nothing due" and "never
-     * ran" must stay distinguishable (§1.14); only the absence of this row
+     * ran" must stay distinguishable; only the absence of this row
      * for too long (`getTutorRetentionStatus`, services/tutorData.ts) means
      * the workflow itself has stopped firing. `actorId: null` because this is
      * a scheduled job, not a staff click — see `insertAuditLog`'s own comment.
@@ -2052,17 +2047,15 @@ function internalRouter(): Router {
     /** v3: the controller strategy in force when it was requested. */
     strategy: z.string().max(16).nullish(),
     /**
-     * V4 sprint 2 backlog (ROADMAP.md): a hint so the ladder can prefer a
+     * V4 sprint 2 backlog: a hint so the ladder can prefer a
      * VISUAL segment over its own frontier fallback. Best-effort — a miss
      * falls through to the ladder's ordinary behaviour, never an error.
      *
      * MIRRORS `oracle/src/tutor/turnSchema.ts`'s `PREFERRED_SEGMENT_TYPES` —
-     * widened together 2026-09-02 (/TUTOR_INSTRUMENTS.md Sprint 1) from
+     * widened together 2026-09-02 from
      * `interest_peek`/`number_line` alone to the Lesson Engine's own `money`
-     * family (9 types) plus `number_line`. Kept in agreement by
-     * `agent/tools/check-preferred-types-parity.mjs`, not by convention alone
-     * — the exact class of drift `check-instrument-parity.mjs` exists to catch
-     * one layer up, applied here because oracle and backend share no types.
+     * family (9 types) plus `number_line`. Kept in agreement by hand,
+     * because oracle and backend share no types.
      */
     preferredTypes: z
       .array(
@@ -2094,7 +2087,7 @@ function internalRouter(): Router {
   });
 
   /**
-   * Ladder tiers 1 and 2 (/ORACLE.md §7).
+   * Ladder tiers 1 and 2.
    *
    * On a miss this returns `needsGeneration` rather than an error, because a
    * miss is a normal state — most skills have no pack yet — and because tier 3
@@ -2108,7 +2101,7 @@ function internalRouter(): Router {
     if (!session) return fail(res, 404, NOT_FOUND, 'No such session');
 
     /*
-     * RETRY-ON-CLAIM-CONFLICT (RUNBOOK.md Round 109). The ladder below
+     * RETRY-ON-CLAIM-CONFLICT. The ladder below
      * reads a SNAPSHOT of "already served" that cannot cheaply be made
      * atomic with it — three tiers of PostgREST round trips cannot run
      * inside the Postgres function that claims the seq. So the atomicity
@@ -2141,7 +2134,7 @@ function internalRouter(): Router {
        * WHEN kcId IS PRESENT, THE CATALOG'S OWN skill_key WINS OVER WHATEVER
        * skillKey THE CALLER SEPARATELY ASSERTED.
        *
-       * Found by adversarial review, round 58 (2026-08-30, HIGH): Oracle's
+       * Found by adversarial review (2026-08-30, HIGH): Oracle's
        * PROBE strategy (`controller.ts`'s `probeEntry()`) synthesizes a
        * request naming the PREREQUISITE's real `kcId` alongside the
        * INTERRUPTED (original) entry's own `skillKey` — the controller has no
@@ -2222,7 +2215,7 @@ function internalRouter(): Router {
       let route: LadderRoute = candidate ? 'named_skill' : 'none';
 
       /*
-       * C.6: THE CURATED PACK FOR THIS EXACT KNOWLEDGE COMPONENT.
+       * THE CURATED PACK FOR THIS EXACT KNOWLEDGE COMPONENT.
        *
        * A KC that no published topic teaches (`kc.skill_key` null) had no
        * human-approved content at all, so every activity about it was live
@@ -2281,7 +2274,7 @@ function internalRouter(): Router {
 
           for (const prerequisite of prerequisites) {
             const key = typeof prerequisite.skill_key === 'string' && prerequisite.skill_key !== '' ? prerequisite.skill_key : null;
-            // C.6: a prerequisite with no published topic may still have a
+            // A prerequisite with no published topic may still have a
             // curated pack of its own.
             if (key === null) {
               if (prerequisite.key) {
@@ -2314,7 +2307,7 @@ function internalRouter(): Router {
             }
             /*
              * TIER 2 FOR THE PREREQUISITE TOO. Found by adversarial review,
-             * round 58 (2026-08-30, MEDIUM): this fallback only ever tried
+             * (2026-08-30, MEDIUM): this fallback only ever tried
              * `serveFromCatalog`, unlike the named-skill path above, which
              * tries the human-published bank when the catalog misses. A
              * prerequisite whose only real content lives in the bank was
@@ -2390,7 +2383,7 @@ function internalRouter(): Router {
               preferredTypes: parsed.data.preferredTypes,
             });
           }
-          // Tier 2 for the frontier fallback too (round 58, 2026-08-30,
+          // Tier 2 for the frontier fallback too (2026-08-30,
           // MEDIUM) — see the identical comment on the prerequisite rung
           // above; this rung had the same catalog-only gap.
           if (!candidate) {
@@ -2415,7 +2408,7 @@ function internalRouter(): Router {
       const eventKey = activeKc?.key ? `kc:${activeKc.key}` : namedSkill;
       if (!candidate) {
         /*
-         * C.5 / Appendix E §3.1.1(b): the human-approved tiers missed. Live
+         * The human-approved tiers missed. Live
          * generation is open only while its content-risk category is not
          * suspended (an uncalibrated or stale judge, a concordance or review
          * floor breached). The request's category is read from what the
@@ -2494,7 +2487,7 @@ function internalRouter(): Router {
    * Tier 3: verify a generated candidate and, only if it holds, persist it.
    *
    * The generator does not get to certify its own output. A candidate that
-   * fails any check produces NOTHING (/ORACLE.md §7.3) — the caller falls back
+   * fails any check produces NOTHING — the caller falls back
    * and says so honestly rather than showing something generic.
    */
   router.post('/segments/verify', async (req, res) => {
@@ -2540,7 +2533,7 @@ function internalRouter(): Router {
     }
 
     /*
-     * C.5: THE GOVERNANCE GATE (Appendix E §3.1.1). Core decides the item's
+     * THE GOVERNANCE GATE. Core decides the item's
      * content-risk category itself (its own lexicon over the item and the
      * rationale, the session's recorded safety flags) and takes the union
      * with what Oracle reported, so a report can raise the category and
@@ -2599,8 +2592,7 @@ function internalRouter(): Router {
     };
 
     /*
-     * The SAME atomic claim `/segments` uses (migration 0064, RUNBOOK.md
-     * Round 109) — this route used to compute its own `seq` with a separate
+     * The SAME atomic claim `/segments` uses (migration 0064) — this route used to compute its own `seq` with a separate
      * plain read (`countSessionSegments`), sharing the identical race. A
      * conflict here would mean this EXACT generated segment id was already
      * served to this session; two bounded retries recompute a fresh seq
@@ -2619,7 +2611,7 @@ function internalRouter(): Router {
   });
 
   /**
-   * v3 voice-check: a spoken answer, verified DETERMINISTICALLY (/ORACLE.md).
+   * v3 voice-check: a spoken answer, verified DETERMINISTICALLY.
    *
    * Oracle calls this when the learner's turn plausibly contains an answer to
    * the open segment. Core normalizes the utterance to a number, runs the REAL
@@ -2659,7 +2651,7 @@ function internalRouter(): Router {
   };
 
   /*
-   * GAP-FIX-R2 (Frontend Bible 08 §2, §4; C.18): the KEY-BASED reveal check
+   * The KEY-BASED reveal check
    * for a Mentor turn's reply chips, BEFORE the turn is delivered. A chip is
    * sent as the learner's own words, so a chip that holds the open
    * activity's answer is a reveal one tap away. Oracle never holds the key;
@@ -2863,7 +2855,7 @@ function daysAgo(iso: string, now = Date.now()): number {
  * works. If NEITHER check names anything real, the skill key is dropped
  * (never a value `POST /sessions` is left to reject) — `OfferChips.tsx`
  * already hides the whole opening when both `topic` and `skillKey` come back
- * null (/AGENTS.md §1.14: nothing offered beats an offer that 400s the
+ * null (nothing offered beats an offer that 400s the
  * instant it is accepted).
  *
  * Already-present `courseId`/`topicId` (an ordinary `course_topic` close, or
@@ -2933,8 +2925,8 @@ function hashSeed(value: string): number {
 }
 
 /**
- * Persists a chosen candidate through the atomic claim (migration 0064,
- * RUNBOOK.md Round 109) and answers the client — or reports `'conflict'`
+ * Persists a chosen candidate through the atomic claim (migration 0064)
+ * and answers the client — or reports `'conflict'`
  * without sending a response, so a caller with a ladder to re-run (`POST
  * /segments`) can reselect and retry instead of surfacing a manufactured
  * 502 for a concurrent request that legitimately lost a race it should
@@ -2953,7 +2945,7 @@ async function persistAndServe(
   tier: number,
   keyVerifiedOverride?: boolean,
   /**
-   * C.5: the governance facts of an admitted LIVE candidate. A live item is
+   * The governance facts of an admitted LIVE candidate. A live item is
    * claimed only through the governed function (segment + systematic
    * sampling decision + log row in one transaction); there is no path that
    * serves a live item without its sampling record.
@@ -2984,10 +2976,10 @@ async function persistAndServe(
   }
   /*
    * Live items are sampled into the staff review queue by the governed
-   * claim (C.5): systematically, at the category's current rate, never
-   * below the Appendix E floor. This does not protect the first learner; it
+   * claim: systematically, at the category's current rate, never
+   * below the review floor. This does not protect the first learner; it
    * is what catches a SYSTEMATIC defect early, and what drives the dynamic
-   * rate and the Stage 7 suspension.
+   * rate and the suspension.
    */
   const row = live !== undefined
     ? await insertLiveSegmentChecked<TutorSegmentRow>({
@@ -3046,13 +3038,13 @@ async function persistAndServe(
  * `difficulty` in this route is the value the caller ASKED for, so Oracle's
  * session-scoped ratchet (`oracle/src/tutor/controller.ts`'s `lastDifficulty`)
  * kept ratcheting off its own guess rather than off what landed on the screen.
- * Found by adversarial review, round 59, deferred; fixed round 74
+ * Found by adversarial review, deferred and later fixed
  * (2026-08-30, MEDIUM). Core's BKT posterior is difficulty-agnostic, so
  * nothing PERSISTED was ever corrupted by this — only Oracle's local adaptive
  * state, for the rest of the session.
  *
  * `null`, never a default, when the chosen segment declares no usable
- * difficulty (§1.14: failure must be distinguishable from emptiness).
+ * difficulty (failure must be distinguishable from emptiness).
  * `orderCandidates` defaults a missing difficulty to 3 for SORTING, where a
  * tie-break guess costs nothing; reporting that same 3 here would be
  * indistinguishable from a segment genuinely authored at band 3, and the
@@ -3070,7 +3062,7 @@ interface CourseTitleRow {
 
 /**
  * Catalog topic titles by id, for the guardian narrative's DIGEST fallback
- * (/ORACLE.md §12, 2026-09-01).
+ * (2026-09-01).
  *
  * Why this exists at all: the digest (`tutor_sessions.summary`, migration
  * `0051`) stores BOTH a baked `topic` STRING — written at close in the
@@ -3097,7 +3089,7 @@ async function getTopicTitlesByIds(topicIds: string[]): Promise<Map<string, Reco
   );
   // A transport failure returns null, and the caller falls back to the baked
   // digest string — a topic named in the wrong language still beats no topic
-  // at all on a read-only, display-only surface (§1.14 permits defaulting
+  // at all on a read-only, display-only surface (defaulting is acceptable
   // exactly here: nothing is read-modify-written back).
   for (const row of rows ?? []) out.set(row.id, row.title ?? {});
   return out;
@@ -3107,7 +3099,7 @@ async function getTopicTitlesByIds(topicIds: string[]): Promise<Map<string, Reco
  * Resolves what a `course_topic` session is ABOUT, into the title Oracle's
  * `buildPlan` names as the lesson's whole objective.
  *
- * Found by adversarial review, round 46 (2026-08-30, HIGH): both lookups used
+ * Found by adversarial review (2026-08-30, HIGH): both lookups used
  * to omit `status=eq.published` — unlike every other consumer of these two
  * tables (`tutorLadder.ts`, `supabaseRest.ts`'s own course/topic reads) — and
  * ran INDEPENDENTLY, with no check that `topicId` actually belongs to
@@ -3167,7 +3159,7 @@ async function resolveCourseContext(
   };
 }
 
-/** OD-43: the learner's place in the course topic, as the Mentor may see it. */
+/** The learner's place in the course topic, as the Mentor may see it. */
 interface CourseLessonRef {
   lessonId: string;
   lessonTitle: string;
@@ -3184,7 +3176,7 @@ type CourseContextWire = {
 };
 
 /**
- * OD-43 (owner sign-off, 2026-10-06): the Mentor as a complement to the
+ * The Mentor as a complement to the
  * course. The learner's CURRENT lesson in a topic — the first published,
  * non-enrichment lesson they have not passed, in position order — with its
  * place, so the Mentor can ground its talk in the real lesson and where it
@@ -3213,7 +3205,7 @@ async function resolveCurrentLesson(userId: string, topicId: string, locale: str
 }
 
 /**
- * OD-43: the course a topic belongs to (topics → sagas → adventures →
+ * The course a topic belongs to (topics → sagas → adventures →
  * course_id). Used only to anchor a lesson-opened review to its course so the
  * Mentor can name it; a failed read degrades to a topic-only anchor.
  */
@@ -3298,14 +3290,14 @@ export function tutorRouter(): Router {
       personalized: prefs.updated_at !== new Date(0).toISOString(),
       // The catalog travels WITH the preferences so the picker is driven by
       // the server, never by a hard-coded list in the client that drifts the
-      // moment a diorama is added (/ORACLE.md §0 assumption 1).
+      // moment a diorama is added.
       catalog: {
         characters: [...CHARACTERS],
         dioramas: [...DIORAMAS],
         backdrops: [...BACKDROPS],
         adaptations: [...ADAPTATIONS],
         // rho and zara have working mouths; liruf and dina do not
-        // (/TUTOR_3D.md §3.1). All four are selectable (owner decision 4) and
+        // All four are selectable and
         // the UI needs to know which get the closer framing.
         articulates: ['rho', 'zara'],
       },
@@ -3336,7 +3328,7 @@ export function tutorRouter(): Router {
     const user = authedUser(res);
 
     /*
-     * Found by adversarial review, round 36 (2026-08-30, MEDIUM/HIGH): this
+     * Found by adversarial review (2026-08-30, MEDIUM/HIGH): this
      * check used to compare only the two fields present in THIS request
      * body, so it never fired unless a single PUT set both at once — a
      * two-step sequence (PUT `{character}`, then later PUT `{companion}`
@@ -3382,7 +3374,7 @@ export function tutorRouter(): Router {
   /**
    * The KC graph as this learner sees it — the SAME graph the session planner
    * traverses, so the map and the tutor can never disagree about "where were
-   * we". 502 on an upstream failure (§1.14: a missing map is not an empty
+   * we". 502 on an upstream failure (a missing map is not an empty
    * one); an unseeded graph yields an empty map, which the client says
    * honestly.
    */
@@ -3402,9 +3394,8 @@ export function tutorRouter(): Router {
   });
 
   /*
-   * GAP-FIX-R2 — WHAT THE MENTOR DECIDED, AND ON WHAT EVIDENCE (Block C Real-
-   * Time Interaction Standard; Appendix D §2.6: "expose the evidence, not
-   * just the conclusion"; C.10). Per skill: the displayed state, the latest
+   * WHAT THE MENTOR DECIDED, AND ON WHAT EVIDENCE ("expose the evidence, not
+   * just the conclusion"). Per skill: the displayed state, the latest
    * consequential decision with the evidence the controller logged, and the
    * next re-check. Numbers and closed labels only (`masteryEvidence.ts`).
    * The learner reads their own; a verified guardian reads their child's,
@@ -3434,7 +3425,7 @@ export function tutorRouter(): Router {
     return ok(res, evidence);
   });
 
-  // ── The offer screen (/ORACLE.md §9.2) ────────────────────────────────────
+  // ── The offer screen ────────────────────────────────────
 
   router.get('/offers', async (_req, res) => {
     const user = authedUser(res);
@@ -3457,7 +3448,7 @@ export function tutorRouter(): Router {
 
     /*
      * THE CAP THE OFFER SCREEN USED TO BE SILENT ABOUT. Found by adversarial
-     * review, round 99 (2026-08-31, HIGH): `canStart`/`startBlockedBy` below
+     * review (2026-08-31, HIGH): `canStart`/`startBlockedBy` below
      * reflected ONLY `runtime` — Oracle's own health — never
      * `MAX_SESSIONS_PER_DAY`, so a learner who had already used every
      * session today saw the exact same inviting offer screen as one who had
@@ -3473,18 +3464,18 @@ export function tutorRouter(): Router {
      * was not needed. This read is advisory only: a `null` count (an
      * upstream failure) degrades to "not reached" rather than lying that a
      * full cap is empty, which is acceptable ONLY because this endpoint
-     * never writes anything (§1.14) — the actual enforcement never moved
+     * never writes anything — the actual enforcement never moved
      * off the atomic path below.
      */
     const isStaff = isStaffRoles(roles);
     const sessionsToday = await countTutorSessionsSince(user.id, startOfLocalDayIso(locale));
     const sessionCapReached = sessionsToday !== null && sessionsToday >= (isStaff ? STAFF_SESSION_CAP : MAX_SESSIONS_PER_DAY);
     /*
-     * The SAME reset instant round 95's fix computes for `POST /sessions`'s
+     * The SAME reset instant the earlier fix computes for `POST /sessions`'s
      * own 429 `resetAt` — exposed here too, proactively, so this screen and
      * the post-tap refusal never disagree about HOW LONG the wait is. Reuses
      * `SessionLimitResetAt` (defined above) rather than a bare
-     * `.toISOString()`, for the same reason round 95 introduced it: a
+     * `.toISOString()`, for the same reason it was introduced: a
      * regression in the day-ahead arithmetic fails loudly here instead of
      * shipping a countdown to the past onto a child's screen. Only computed
      * when the cap is actually what is blocking — never a meaningless value
@@ -3539,7 +3530,7 @@ export function tutorRouter(): Router {
        * learner cannot tell (and should not have to) which one is refusing
        * them. `startBlockedBy` names the reason; `SESSION_LIMIT` reuses the
        * exact code `POST /sessions` already returns for the same refusal
-       * (round 99), so one piece of client copy serves both moments.
+       * so one piece of client copy serves both moments.
        */
       canStart: runtime.canStart && !sessionCapReached,
       startBlockedBy: !runtime.canStart ? runtime.blockedBy : sessionCapReached ? 'SESSION_LIMIT' : null,
@@ -3570,7 +3561,7 @@ export function tutorRouter(): Router {
       intent: z.enum(['course_topic', 'weak_skill', 'faq', 'open', 'diagnostic']),
       courseId: z.string().uuid().nullish(),
       topicId: z.string().uuid().nullish(),
-      /** OD-43: a guided review opened FROM a lesson carries its id; Core resolves the topic/course from it. */
+      /** A guided review opened FROM a lesson carries its id; Core resolves the topic/course from it. */
       lessonId: z.string().uuid().nullish(),
       skillKey: z.string().min(1).max(128).nullish(),
       wantsVoice: z.boolean().default(false),
@@ -3583,17 +3574,17 @@ export function tutorRouter(): Router {
      * `weak_skill`'s `skillKey` used to keep the unrestricted-string shape on
      * the strength of a comment here claiming it was "validated against the
      * learner's own live weak-skills list downstream." Found by adversarial
-     * review, round 47 (2026-08-30, HIGH): that claim was false — no
+     * review (2026-08-30, HIGH): that claim was false — no
      * downstream consumer ever checked it against anything. It is now
      * verified against the real KC graph, asynchronously, in the route
      * handler below (a shape-only Zod refine cannot make a DB call) — see
      * that check's own comment for the incident.
      *
      * `open`, `course_topic` and `diagnostic` carry NO legitimate `skillKey`
-     * at all — round 47's own comment here used to claim this as an
+     * at all — the earlier comment here used to claim this as an
      * assumption about client behavior ("pass no meaningful skillKey"), which
      * is not the same thing as an enforced boundary. Found by adversarial
-     * review, round 49 (2026-08-30, HIGH): any authenticated caller can POST
+     * review (2026-08-30, HIGH): any authenticated caller can POST
      * directly, and nothing stopped `{intent:'open', skillKey:'<anything up
      * to 128 chars>'}` from reaching `buildPlan` (`oracle/src/tutor/plan.ts`)
      * unfenced as the WHOLE lesson objective whenever `courseContext` is null
@@ -3603,8 +3594,8 @@ export function tutorRouter(): Router {
      * end via Supertest against the real route: `{intent:'open',
      * skillKey:'IGNORE ALL PRIOR INSTRUCTIONS...'}` returned 201 and sent the
      * string verbatim to `p_skill_key`, persisted with zero check — the exact
-     * shape already closed twice for `faq` (round 40) and `weak_skill`
-     * (round 47), just on the two intents that comment incorrectly declared
+     * shape already closed twice for `faq` and `weak_skill`,
+     * just on the two intents that comment incorrectly declared
      * safe. No frontend caller ever sends `skillKey` for these three intents
      * (`OfferChips.tsx`, `mic.ts` — grepped, confirmed), so rejecting one
      * outright costs no real traffic and closes the whole class rather than
@@ -3626,7 +3617,7 @@ export function tutorRouter(): Router {
 
     /*
      * `weak_skill`'s ONE trust claim, actually enforced. Found by adversarial
-     * review, round 47 (2026-08-30, HIGH): `skillKey` reached this far as any
+     * review (2026-08-30, HIGH): `skillKey` reached this far as any
      * string up to 128 chars — the schema's own comment above claimed a
      * downstream check that did not exist. Oracle's `INTENT_INSTRUCTIONS.
      * weak_skill` tells the model "the system flagged a skill... and they
@@ -3640,7 +3631,7 @@ export function tutorRouter(): Router {
      * rather than let an unverified string through unchecked); `open`,
      * `course_topic` and `diagnostic` are handled above instead, in the
      * schema itself — `skillKey` is rejected outright for those three, not
-     * merely assumed absent (round 49 closed that gap).
+     * merely assumed absent.
      */
     if (parsed.data.intent === 'weak_skill' && parsed.data.skillKey) {
       const lookup = await getKcBySkillKey(parsed.data.skillKey);
@@ -3649,7 +3640,7 @@ export function tutorRouter(): Router {
         return fail(res, 400, VALIDATION, 'skillKey does not name a real skill');
       }
     }
-    // OD-43: a guided review opened FROM a lesson carries the lesson id; resolve
+    // A guided review opened FROM a lesson carries the lesson id; resolve
     // its topic and course so the Mentor can complement the course. No migration:
     // the topic and course travel in the columns the session already stores.
     let courseId = parsed.data.courseId ?? null;
@@ -3674,7 +3665,7 @@ export function tutorRouter(): Router {
     if (!profile) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read profile');
     const locale = normalizeLocale(profile.locale);
 
-    // THE MICROPHONE GATE. Blocking, not a flag (/ORACLE.md §4.3). A minor with
+    // THE MICROPHONE GATE. Blocking, not a flag. A minor with
     // no active guardian consent gets a working, silent session — never a
     // session that quietly opens a microphone.
     const calibration = await calibrationState(res);
@@ -3728,7 +3719,7 @@ export function tutorRouter(): Router {
       // The reset instant, not a fixed "come back tomorrow": the client
       // formats this into a concrete time-remaining rather than guessing at
       // local midnight with its own clock and timezone, which can disagree
-      // with the server's (§1.9 — a vague wait reads the same whether it is
+      // with the server's (a vague wait reads the same whether it is
       // ten minutes or a day to a child with a weak sense of relative time).
       const resetAt = SessionLimitResetAt.parse(startOfLocalDayIso(locale, new Date(), 1));
       return fail(res, 429, 'SESSION_LIMIT', 'You have used all of today’s tutor sessions', { resetAt });
@@ -3765,7 +3756,7 @@ export function tutorRouter(): Router {
 
   /**
    * A fresh single-use socket token for a session whose connection dropped
-   * (/ORACLE.md §3.2 resume, owner sign-off 2026-08-28). Oracle parks the
+   * (resume, 2026-08-28). Oracle parks the
    * dropped orchestrator for a grace window; this is the other half — the
    * ONLY way a browser gets back in, because the original token was burned on
    * first use by design.
@@ -3801,8 +3792,8 @@ export function tutorRouter(): Router {
   });
 
   /*
-   * C.15 THE END-OF-SESSION BOND PROXY: "did I get what you were going for
-   * today?" (Appendix D §3.4; Appendix F §1.2 Alliance Bond Proxy Score).
+   * THE END-OF-SESSION BOND PROXY: "did I get what you were going for
+   * today?" (the alliance bond proxy score).
    * The learner answers it on the closing surface AFTER the session closed.
    * Their own session only (a guardian answers nothing for the child), once,
    * within a day of the close, and never after a safety stop — nothing on
@@ -3833,18 +3824,18 @@ export function tutorRouter(): Router {
     const written = await writeBondProxy(row.id, body.data.answer);
     if (written === 'failed') return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not save the answer');
     if (written === 'already') return fail(res, 409, 'ALREADY_ANSWERED', 'Already answered');
-    // Persona rapport (C.7), best-effort: the metric row is the record.
+    // Persona rapport, best-effort: the metric row is the record.
     const folded = await recordDispositionBondProxy(user.id, session.character as 'dina' | 'liruf' | 'rho' | 'zara', body.data.answer);
     if (!folded) console.warn(`[tutor] bond proxy not folded into the disposition profile for session ${session.id}`);
     return ok(res, { recorded: true });
   });
 
   /*
-   * C.7 THE DISPOSITION PROFILE, READABLE AND RESETTABLE (Appendix D §2.6:
-   * interpretable, never a black box; the learner-memory boundary). Closed
+   * THE DISPOSITION PROFILE, READABLE AND RESETTABLE (interpretable,
+   * never a black box; the learner-memory boundary). Closed
    * labels and numbers only. The learner reads their own; a verified
-   * guardian reads their child's. A reset follows the memory-review rule
-   * (OD-18): a child's profile is reset by their verified guardian; a teen
+   * guardian reads their child's. A reset follows the memory-review rule:
+   * a child's profile is reset by their verified guardian; a teen
    * without a guardian link and an adult reset their own.
    */
   router.get('/disposition', async (_req, res) => {
@@ -3886,7 +3877,7 @@ export function tutorRouter(): Router {
     return ok(res, { reset: true });
   });
 
-  /** A full transcript, for replay (/ORACLE.md §12). Owner or verified guardian. */
+  /** A full transcript, for replay. Owner or verified guardian. */
   router.get('/sessions/:id', async (req, res) => {
     const sessionId = z.string().uuid().safeParse(req.params.id);
     if (!sessionId.success) return fail(res, 400, VALIDATION, 'Invalid session id');
@@ -3961,7 +3952,7 @@ export function tutorRouter(): Router {
     });
   });
 
-  // ── Grading (/ORACLE.md §8) ───────────────────────────────────────────────
+  // ── Grading ───────────────────────────────────────────────
 
   const GradeBody = z
     .object({
@@ -3994,13 +3985,13 @@ export function tutorRouter(): Router {
     }
 
     /*
-     * Found by adversarial review, round 36 (2026-08-30, MEDIUM): a grader
+     * Found by adversarial review (2026-08-30, MEDIUM): a grader
      * that throws used to be silently indistinguishable from a genuinely
      * wrong answer — the SAME `{ score: 0 }` reached the learner, the
      * guardian-visible history, and (uncaught, until the fix below) the
      * pedagogical mastery model, with no log line anywhere. A content/grader
      * bug looked exactly like a learner who keeps failing, with zero
-     * server-side signal (§1.14 "blind flight").
+     * server-side signal ("blind flight").
      */
     let outcome: { score: number; feedback_md?: string };
     let graderCrashed = false;
@@ -4038,7 +4029,7 @@ export function tutorRouter(): Router {
     const bestScore = row.score === null ? score : Math.max(row.score, score);
     /*
      * `attempts` IS SERVER-DERIVED, NOT THE CLIENT'S CLAIM (found by
-     * adversarial review, round 36, 2026-08-30, LOW/MEDIUM). The client's
+     * adversarial review, 2026-08-30, LOW/MEDIUM). The client's
      * `attemptNumber` fed both the stored `attempts` column AND
      * `recordAttempt`'s FSRS rating unchecked — a client could always claim
      * `attemptNumber: 1` regardless of real retry count, and two identical
@@ -4053,7 +4044,7 @@ export function tutorRouter(): Router {
     const attemptOrdinal = Math.min(row.attempts + 1, 3);
 
     /*
-     * XP is payable ONLY when the key survived re-execution (/ORACLE.md §8).
+     * XP is payable ONLY when the key survived re-execution.
      * A live segment whose key could not be independently re-derived still
      * teaches — the learner sees the feedback — but it awards nothing, because
      * awarding progress for a result the server could not verify is how a
@@ -4098,7 +4089,7 @@ export function tutorRouter(): Router {
       });
       if (awarded === null) {
         // Refuse rather than assume zero was credited — indistinguishable
-        // from a lost write otherwise (§1.14).
+        // from a lost write otherwise.
         return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not credit tutor XP');
       }
       xp = awarded;
@@ -4120,7 +4111,7 @@ export function tutorRouter(): Router {
      * a pedagogy failure is logged loudly inside recordAttempt and costs
      * adaptation quality, never the learner's score or XP.
      *
-     * NEVER FED A CRASH AS EVIDENCE (round 36, 2026-08-30, MEDIUM). A grader
+     * NEVER FED A CRASH AS EVIDENCE (2026-08-30, MEDIUM). A grader
      * that threw carries no information about the learner's understanding —
      * treating its forced `score: 0` as a genuine wrong answer would corrupt
      * BKT/misconception tracking with a false negative caused by our own bug.
@@ -4186,7 +4177,7 @@ export function tutorRouter(): Router {
     });
   });
 
-  // ── Consent (/ORACLE.md §4.3) ─────────────────────────────────────────────
+  // ── Consent ─────────────────────────────────────────────
 
   const ConsentBody = z
     .object({
@@ -4209,7 +4200,7 @@ export function tutorRouter(): Router {
     if (!guardian) return fail(res, 403, 'FORBIDDEN', 'Only a verified guardian can grant this consent');
 
     /*
-     * POLICY BEFORE PERSISTENCE (/ORACLE.md §16, the DPA decision).
+     * POLICY BEFORE PERSISTENCE (the DPA decision).
      *
      * While `TUTOR_VOICE_FOR_MINORS` is off, a granted consent buys the family
      * NOTHING — the socket refuses the microphone anyway — and costs them
@@ -4300,10 +4291,10 @@ export function tutorRouter(): Router {
     return ok(res, { revoked: true });
   });
 
-  // ── Guardian visibility (/ORACLE.md §12) ──────────────────────────────────
+  // ── Guardian visibility ──────────────────────────────────
 
   /**
-   * Round 110 (2026-08-31, MEDIUM): `limit`/`offset` so a guardian who has
+   * `limit`/`offset` so a guardian who has
    * not opened this page in a while can still page back to an older,
    * non-flagged session rather than losing UI access to it once more than
    * one page has accumulated since their last visit. Same shape `listAudit`
@@ -4338,8 +4329,8 @@ export function tutorRouter(): Router {
     }
 
     /*
-     * The "what is happening" narrative (/ORACLE.md §12, 2026-09-01) —
-     * closes the §19.5 v3-tail item of the same name. Entirely
+     * The "what is happening" narrative (2026-09-01) —
+     * a v3-tail item. Entirely
      * deterministic (sessionNarrative.ts's own header explains why a model
      * call is not needed): `kc_attempt` (migration 0052) already names
      * which Knowledge Component each graded attempt evidenced and whether
@@ -4383,8 +4374,8 @@ export function tutorRouter(): Router {
     }
 
     /*
-     * The DIGEST fallback, re-localized (2026-09-01). ORACLE.md §12 recorded
-     * this as a known limitation on the stated grounds that the digest's
+     * The DIGEST fallback, re-localized (2026-09-01). It was once recorded
+     * as a known limitation on the stated grounds that the digest's
      * topic "was baked in at close time rather than kept as a re-localizable
      * id" — that was simply wrong about our own schema: `SessionSummaryDigest`
      * carries `topicId` alongside the baked `topic` string (migration 0051,
@@ -4439,7 +4430,7 @@ export function tutorRouter(): Router {
       // precisely the case where a parent must find out.
       safetyFlags: flags,
       /*
-       * A SECOND, separate provenance (migration 0065, /ORACLE.md §4.1b): a
+       * A SECOND, separate provenance (migration 0065): a
        * flag raised while the learner was choosing a course, before any
        * `tutor_sessions` row existed for `safetyFlags` above to reference.
        * Kept as its own field rather than merged into `safetyFlags` — the
@@ -4455,10 +4446,10 @@ export function tutorRouter(): Router {
     });
   });
 
-  // ── The parental approval gate (/ORACLE.md §20, migration 0068) ───────────
+  // ── The parental approval gate (migration 0068) ───────────
 
   /*
-   * THE ITEM /ORACLE.md MARKED **BLOCKING BEFORE FAMILY ROLLOUT**, closed
+   * THE ITEM THAT WAS **BLOCKING BEFORE FAMILY ROLLOUT**, closed
    * here. What the tutor believes about a child — the LEARNER memory store —
    * no longer writes itself for a `kid`. Every proposal parks, and this pair
    * of routes is the portal that empties the queue.
@@ -4470,7 +4461,7 @@ export function tutorRouter(): Router {
    * database rather than by this line being the only thing standing between a
    * stranger and a note about someone's child.
    *
-   * OD-18 (24 September 2026, C.4) extended the queue without touching this
+   * Teen self-review (24 September 2026) extended the queue without touching this
    * pair: an independent screened teen's parked notes are decided by the teen
    * themself through `GET /memory-proposals` and the SAME decision route
    * below, whose authorization is resolved per note-owner (see
@@ -4517,7 +4508,7 @@ export function tutorRouter(): Router {
       getLearnerMemory(kidUserId.data),
     ]);
     // A read failure is a 502, never an empty queue rendered as "nothing to
-    // review" — those are the same screen with opposite meanings (§1.14).
+    // review" — those are the same screen with opposite meanings.
     if (proposals === null || current === null) {
       return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read the pending notes');
     }
@@ -4526,7 +4517,7 @@ export function tutorRouter(): Router {
   });
 
   /*
-   * OD-18 (24 September 2026, C.4): an independent screened teen is the
+   * An independent screened teen is the
    * reviewer of their OWN parked notes. This is that queue — the same rows,
    * the same response shape as the guardian portal above, with the CALLER
    * as the subject. Only an account classified as a self-reviewing teen
@@ -4550,7 +4541,7 @@ export function tutorRouter(): Router {
       getLearnerMemory(user.id),
     ]);
     // A read failure is a 502, never an empty queue rendered as "nothing to
-    // review" — those are the same screen with opposite meanings (§1.14).
+    // review" — those are the same screen with opposite meanings.
     if (proposals === null || current === null) {
       return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read the pending notes');
     }
@@ -4579,14 +4570,14 @@ export function tutorRouter(): Router {
     if (proposal === undefined) return fail(res, 404, NOT_FOUND, 'No such note');
 
     /*
-     * OD-18 (24 September 2026, C.4): WHO may decide is re-resolved from the
+     * WHO may decide is re-resolved from the
      * NOTE'S OWNER, not from the caller's claim about themselves. A
      * guardian-reviewed note keeps the existing `isVerifiedGuardian` check
      * (unchanged); a self-reviewed note admits exactly one caller — the
      * owner themself; a hold or an adult (whose notes never park) has no
      * eligible reviewer and is refused. A failed classification read is 502,
      * never 403 — "we could not check" must not read as "you are not
-     * allowed" (§1.14).
+     * allowed".
      */
     const review = await classifyMemoryReview(proposal.user_id);
     if (review === null) {
@@ -4657,12 +4648,12 @@ export function tutorRouter(): Router {
   });
 
   /*
-   * GAP-FIX-R5 (C.4, OD-18, S01.4): a STORED note can be deleted, not only a
+   * A STORED note can be deleted, not only a
    * proposed one. Before this, a note already in learner_memory (every note
-   * written for a universal-role teen before OD-18, and every note a reviewer
+   * written for a universal-role teen before teen self-review, and every note a reviewer
    * approved and later regretted) was readable by the teen and the guardian
    * and removable by neither, while Core read it into every session. The same
-   * reviewer rule as the proposal decision and the C.7 disposition reset:
+   * reviewer rule as the proposal decision and the disposition reset:
    *
    *   DELETE /memory/:store              the note's owner, admitted only when
    *                                      classifyMemoryReview answers
@@ -4678,7 +4669,7 @@ export function tutorRouter(): Router {
    * The body names the text the reviewer was shown (`expected`): the delete is
    * a compare-and-delete in the database, so a note that changed since it was
    * read is never removed unseen (409 NOTE_OUT_OF_DATE). A read failure is
-   * 502, never a 404 (§1.14).
+   * 502, never a 404.
    */
   const MemoryStoreParam = z.enum(['learner', 'pedagogy']);
   const ClearBody = z.object({ expected: z.string().min(1).max(2200) }).strict();
@@ -4736,7 +4727,7 @@ export function tutorRouter(): Router {
     return ok(res, { deleted: true, store: store.data });
   });
 
-  // ── Class V artifacts: plan & notebook (migration 0069, TUTOR_INSTRUMENTS.md §3.6) ──
+  // ── Class V artifacts: plan & notebook (migration 0069) ──
 
   router.get('/plan', async (req, res) => {
     const user = authedUser(res);

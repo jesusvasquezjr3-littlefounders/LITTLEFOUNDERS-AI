@@ -10,7 +10,7 @@ import { getConfig } from '../env.js';
  * and recorded here as a URL against the content hash of the line. The runtime
  * looks a line up before it looks at a provider, so the whole scripted set —
  * the greetings, the safety lines, the closes, the fallbacks — costs nothing
- * for the rest of the product's life (/ORACLE.md §15).
+ * for the rest of the product's life.
  *
  * IT IS TRACKED CONFIG, NOT A SECRET, and the precedent is
  * `oracle/voices.enrolled.json`: URLs to world-readable audio in our own

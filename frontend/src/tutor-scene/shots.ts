@@ -66,25 +66,21 @@ export interface Vec3 {
  * horizontal field of view is only 8.53 degrees, which caps the offset at
  * 0.53 m and the separation at 2.4 degrees. An over-the-shoulder needs the
  * stand-off to be SMALL relative to the separation; here it is the reverse, and
- * no tuning reverses it. §1.11 makes 375 px non-negotiable, so a framing that
+ * no tuning reverses it. 375 px is non-negotiable, so a framing that
  * is geometrically impossible there cannot stay in the vocabulary.
  *
  * WHY NOTHING REPLACES IT. Its one caller was `conversing` with a live segment,
- * and that caller was itself a violation of three authoritative documents:
- * /ORACLE.md §9.3 ("the character's on-screen height is the same with a segment
- * and without one"), /ORACLE.md §16's shipping gate ("the character's measured
- * on-screen height unchanged with and without a live segment"), and /DESIGN.md
- * → Screen Recipes → Tutor ("the character's on-screen height must be identical
+ * and that caller broke a rule: the character's on-screen height must be identical
  * with and without a segment, or the lesson appears to shove the tutor out of
- * the way to make room for itself"). A live segment must NOT change the shot at
+ * the way to make room for itself. A live segment must NOT change the shot at
  * all. `composition.ts` is what moves the character out from behind the plate,
  * and it does that without touching distance by design.
  *
  * And there was never anything in the WORLD to look over a shoulder at: the
  * activity is DOM chrome on a plate, and a world camera cannot frame a
  * screen-space rectangle. The pair moment that IS expressible — one character
- * putting a question to another — is `two-shot`, which /ORACLE.md §9.4 already
- * assigns.
+ * putting a question to another — is `two-shot`, which is already
+ * assigned.
  * ────────────────────────────────────────────────────────────────────────────
  */
 export type ShotId =
@@ -214,7 +210,7 @@ export const STAGE_BEARING = Math.atan2(0.35, 1);
 /**
  * How far off the subject's own facing axis `closeup-wide` sits, in radians.
  *
- * /ORACLE.md §2.2's primary decision for the two characters with no mouth card
+ * The primary decision for the two characters with no mouth card
  * is "they frame wider" — their performance is posture and gesture, and a
  * dead-on close-up frames the one thing that is not working. 22 degrees is
  * enough to read as a chosen angle rather than a mistake, and little enough that
@@ -231,8 +227,8 @@ export const CLOSEUP_WIDE_DISTANCE = 1.35;
  * IT WAS 0.70, AND THAT IS WHY THE OFFER CHIPS SIT ON DR RHO'S MOUSTACHE. At
  * 0.70 the frame is 1.19 m tall for a 1.70 m character and his head alone is
  * 0.81 m of it — 68% of the viewport is face, and the published `lead.chest`
- * anchor lands at about 90% of the screen, underneath the microphone. /DESIGN.md
- * → Screen Recipes → Tutor puts the offer chips AT THE TUTOR'S CHEST as
+ * anchor lands at about 90% of the screen, underneath the microphone. The Tutor screen
+ * puts the offer chips AT THE TUTOR'S CHEST as
  * world-anchored chrome and closes the count of viewport-anchored elements at
  * three, so there is nowhere else for them to go: if the chest is not on screen
  * above the microphone dock, the openings are either culled or laid across the
@@ -295,8 +291,8 @@ export const ISLAND_ELEVATION = {
  * empty, and the metric that was supposed to defend the composition (distance
  * from the top of the viewport to the first HUD pixel) reported 88% clear.
  *
- * Landscape stays above 1 deliberately. `/DESIGN.md` -> Screen Recipes ->
- * Tutor spends the freed width at 1280 px on "a wider establishing shot and
+ * Landscape stays above 1 deliberately. The Tutor screen
+ * spends the freed width at 1280 px on "a wider establishing shot and
  * real island around the floating plate", so there the whole rim is in the
  * picture with a margin — which is also what keeps the `island.rim.*` pads
  * pickable at the breakpoint where they fit.
@@ -400,8 +396,8 @@ export const APPROACH_LEAN = 0.12;
  *
  * A point exactly on the edge is cropped as far as a learner is concerned, and
  * it is also one composition shift away from actually being cropped. This is
- * tighter than the 12% the shot audit asks of a HEAD, so a shot that satisfies
- * its own hold satisfies the audit with room left over.
+ * tighter than the 12% asked of a HEAD, so a shot that satisfies
+ * its own hold has room left over.
  */
 export const HOLD_MARGIN = 0.86;
 
@@ -466,8 +462,7 @@ export const TWO_SHOT_ELEVATION = {
  * that fit in one row across a desktop chest wrap to TWO rows on a 375 px one
  * while the microphone dock underneath grows from 96 px of orb to a fifth of the
  * screen. These are the numbers that put the chest above that dock at both
- * breakpoints with the cluster's measured height in between; the arithmetic is
- * written out as a test in `shots.test.ts` → "the introducing phase, composed".
+ * breakpoints with the cluster's measured height in between.
  *
  * They also decide the conversing phase, and for the better: at 375 px with the
  * sheet at HALF the pair puts the whole character, crown to chest, in the band
@@ -518,7 +513,7 @@ export const CLOSEUP_HEADROOM = { landscape: 0.03, portrait: 0.07 } as const;
  *
  * THE CAPTION LIVES THERE. It rides `lead.crown` and hangs above it, it is what
  * a deaf learner reads and what everyone reads on a bus with no headphones, and
- * /ORACLE.md does not treat it as optional. It also cannot register with the
+ * it is not optional. It also cannot register with the
  * safe area — it is world-anchored, and the rule against that is on
  * `SafeAreaSlot` — so the only place its room can be reserved is here, by the
  * shot that decides where the crown lands.
@@ -537,7 +532,7 @@ export const CLOSEUP_CAPTION_BAND = 0.08;
  * eats part of the viewport.
  *
  * A fitting shot has a size requirement, so a smaller free rectangle means
- * pulling back. A close shot does not: /ORACLE.md's composition rule is that the
+ * pulling back. A close shot does not: the composition rule is that the
  * character's on-screen height does not change when a lesson plate appears, so
  * a close shot answers an inset by SHIFTING its aim and never by retreating.
  * Conflating the two is how a lesson panel silently shrinks the character it is
@@ -981,10 +976,10 @@ function closeup(ctx: ShotContext): CameraPose {
 /**
  * The wider close shot, for the characters whose performance is their body.
  *
- * Liruf and Dina have no mouth card (/TUTOR_3D.md §7.1), so a dead-on close-up
- * frames a painted, motionless mouth at full size. /ORACLE.md §2.2's primary
+ * Liruf and Dina have no mouth card, so a dead-on close-up
+ * frames a painted, motionless mouth at full size. The primary
  * decision for them is to frame wider and keep more of the body in shot; the
- * stage shipped §2.2's FALLBACK instead ("never close the camera on them"),
+ * stage shipped the FALLBACK instead ("never close the camera on them"),
  * which left them at the island shot where nothing about them is legible either.
  *
  * So: off the facing axis, further back, and aimed BETWEEN the head and the

@@ -10,12 +10,12 @@ import { localizedText } from './coursePath';
 import type { JournalEntry, JournalState } from './narrative';
 
 /*
- * B.9 / S05.3c — the learner's decision journal: the story choices they made
+ * The learner's decision journal: the story choices they made
  * across lessons, what happened next, and where they changed their mind. It
  * is the learner's own record and they can clear it; their progress, scores
  * and coins are untouched by that. Core shows it to nobody else.
  *
- * Layering (Bible 06): each entry shows the choice first; the situation, what
+ * Layering: each entry shows the choice first; the situation, what
  * happened and a changed mind open with one tap on the entry.
  *
  * Presentation only: the host (routes/app/learn/DecisionJournalRoute.tsx, or
@@ -53,7 +53,7 @@ export function DecisionJournalView({ state, locale, dark, ageBand, onBack, onRe
   state: JournalState;
   locale: Locale;
   dark: boolean;
-  /** Bible 06 §7 (GAP-FIX-R4): the learner's Copy Budget band, as Core's register gives it. */
+  /** The learner's Copy Budget band, as Core's register gives it. */
   ageBand?: AgeBand;
   onBack: () => void;
   onRetry?: () => void;
@@ -66,7 +66,7 @@ export function DecisionJournalView({ state, locale, dark, ageBand, onBack, onRe
   const t = decisionJournalCopy[locale];
   const theme = dark ? 'dark' : 'light';
   /*
-   * W2L.1: one root, top row and <h1> in every state. On the learner shell the
+   * One root, top row and <h1> in every state. On the learner shell the
    * page's <h1> takes focus on arrival while the journal is still loading;
    * that heading must survive the answer instead of being replaced under it.
    */

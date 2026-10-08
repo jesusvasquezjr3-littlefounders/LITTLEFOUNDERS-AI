@@ -1,15 +1,15 @@
 /*
- * The legacy achievement-link window (OD-20). Its own module so both the
+ * The legacy achievement-link window. Its own module so both the
  * sharing service (services/badges.ts) and the data layer
  * (services/supabaseRest.ts) can read it without an import cycle.
  */
 
 /**
- * OD-20's decision date. Links issued before it keep their F.2 controls
+ * The decision date. Links issued before it keep their legacy controls
  * until they expire; a link issued at or after it is never served (fail
  * closed — the decision says new shares are images, so a row created after
  * it can only come from an outdated deploy). Mirrored in
- * frontend/api/badge/[token].ts and checked by `npm run sharing:check`.
+ * frontend/api/badge/[token].ts.
  */
 export const BADGE_LINK_CUTOVER = '2026-09-24T00:00:00.000Z';
 
@@ -22,7 +22,7 @@ export const BADGE_LINK_CUTOVER = '2026-09-24T00:00:00.000Z';
 export const BADGE_LINK_ROUTE_RETIRES_AT = '2026-10-24T00:00:00.000Z';
 
 /**
- * F.2's default expiration window for legacy links (migration 0109,
+ * The default expiration window for legacy links (migration 0109,
  * `expires_at`). No new link is issued any more; this remains the fact the
  * retirement date above is derived from.
  */

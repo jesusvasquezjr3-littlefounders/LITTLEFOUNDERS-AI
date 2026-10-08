@@ -2,9 +2,9 @@ import { Vector3, type Object3D } from 'three';
 import { findStandingSpots, type StandingSpot } from './standingSpots';
 
 /*
- * Class III / S18 `props`: placing the FIRST object on this island that is
- * neither a character nor the camera — and the catalog's own acceptance bar
- * for this sprint is specific: "placed by the EXISTING placement solver,
+ * `props`: placing the FIRST object on this island that is
+ * neither a character nor the camera — and the acceptance bar
+ * is specific: "placed by the EXISTING placement solver,
  * that a character can stand beside WITHOUT BREAKING WALKABILITY." That is
  * two separate claims, and each has its own real mechanism here rather than
  * a shortcut standing in for it:
@@ -40,8 +40,8 @@ import { findStandingSpots, type StandingSpot } from './standingSpots';
 /**
  * Half-width/half-depth footprint a character should keep clear of a placed
  * prop, in metres. Lives here (a plain module, no React/JSX) rather than on
- * `StallProp.tsx` itself, so `verify-placement.ts` — a headless Node script
- * with no bundler and no JSX runtime — can import the ONE number it needs
+ * `StallProp.tsx` itself, so a headless Node script
+ * with no bundler and no JSX runtime can import the ONE number it needs
  * without importing a `.tsx` React component to get it, the same caution
  * `measurements.ts`'s own header already takes for a different Vite-only
  * dependency ("nothing below needs a URL, only heights and footprints").
@@ -139,10 +139,9 @@ export function findPropSpot(
  * `pointTarget.ts` already applies to a different kind of miss.
  *
  * Lives here, not inline in `TutorScene.tsx`'s own solve effect, for the
- * SAME reason `findPropSpot`/`excludingProp` already do: `verify-placement.ts`
- * is a headless script with no React tree to mount, and needs this exact
- * sequence to certify rather than a hand-rolled copy that could drift from
- * what the product actually runs.
+ * SAME reason `findPropSpot`/`excludingProp` already do: a headless script
+ * has no React tree to mount, and needs this exact sequence rather than a
+ * hand-rolled copy that could drift from what the product actually runs.
  */
 export function findPropSpots(
   ground: Object3D,

@@ -15,7 +15,7 @@ import { lineUnits } from './v2VisualScorer.generated';
 import { formatLineNumber, fractionName } from './fractionName';
 
 type Segment = Extract<LessonClientSegment, { type: 'math.number-line.fraction.v2' }>;
-/** M3 answers (GAP-FIX-R5): one number (a fraction, or a typed decimal parsed for the locale), or two placed points and, for a comparison, the choice. */
+/** M3 answers: one number (a fraction, or a typed decimal parsed for the locale), or two placed points and, for a comparison, the choice. */
 export type FractionLineAnswer = { value: string } | { placements: { first: string; second: string }; choice?: 'first' | 'second' | 'same' };
 type Copy = { back: string; explore: string; board: string; line: string; area: string; place: string; reset: string; left: string; right: string; estimate: string; representation: string; value: string; showTable: string; showVisual: string; check: string; continue: string; unavailable: string;
   typeIt: string; move: string; larger: string; same: string; onePoint: string };
@@ -39,7 +39,7 @@ type Point = 'first' | 'second';
 
 export function FractionNumberLineBoard({ document, segment, onBack, onGrade, sequence }: { document: LessonClientDocument; segment: Segment; onBack: () => void; onGrade: (answer: FractionLineAnswer, segmentId: string) => 'met' | 'review' | 'invalid' | Promise<'met' | 'review' | 'invalid'>; sequence?: LessonSequenceControl }) {
   const t = copy[document.locale]; const p = segment.payload; const locale = document.locale;
-  // M3 (GAP-FIX-R5): a comparison or an equivalents pair places two points; a single placement may also be typed as a decimal.
+  // M3: a comparison or an equivalents pair places two points; a single placement may also be typed as a decimal.
   const pair = p.compare_values ?? p.equivalent_values ?? null;
   const comparing = p.compare_values !== undefined;
   const [units, setUnits] = useState<Record<Point, number>>({ first: p.initialUnits, second: p.initialUnits });

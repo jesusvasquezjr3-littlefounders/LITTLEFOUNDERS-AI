@@ -1,18 +1,16 @@
 schema_version: 1
 
-# Market problem inventory — Product B.16 (cultural localization, not translation).
+# Market problem inventory (cultural localization, not translation).
 #
-# Owner: the content / learning-design team (Appendix C Stage 0-3). Engineering
+# Owner: the content / learning-design team. Engineering
 # owns only the schema and the gate that reads this file
-# (coursegen/src/contentGates/regional.ts). The written policy and the
-# per-market checklist live in docs/content/REGIONAL-ADAPTATION-GATE.md.
+# (coursegen/src/contentGates/regional.ts).
 #
 # Evidence rule: `evidence: cited` entries restate a finding with its source,
-# as recorded in the brand's research foundation (docs/product-audit/
-# COSMIC_NARRATIVE.md section 1.1). `evidence: hypothesis` entries are
+# as recorded in the brand's research foundation. `evidence: hypothesis` entries are
 # learning-design hypotheses the team must validate or delete before a
 # scenario that cites them is released; the gate lists every scenario that
-# cites a hypothesis as a Stage 3 review item. Never add a number here that
+# cites a hypothesis as a review item. Never add a number here that
 # has no source.
 #
 # Anchors are context markers that identify ONE market. The gate uses them two

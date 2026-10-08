@@ -5,7 +5,7 @@ import type { ScriptedLine } from './scripted.js';
 type RoleplaySceneId = (typeof ROLEPLAY_SCENE_IDS)[number];
 
 /*
- * Class III / S17 `roleplay`, voice added afterward (owner request,
+ * `roleplay`, voice added afterward (owner request,
  * 2026-09-03): the ORACLE-SIDE mirror of the rebuilt Mentor's scene captions
  * (`frontend/src/rebuild/mentor/session/roleplay.ts`, `rebuild-mentor.json`)'s beat text, which oracle otherwise has no reason to know at
  * all — the scene id crosses the wire (`roleplayScene`, migration `0070`),
@@ -14,11 +14,8 @@ type RoleplaySceneId = (typeof ROLEPLAY_SCENE_IDS)[number];
  * WHY A MIRROR RATHER THAN A SHARED IMPORT. This codebase's own established
  * posture, everywhere a value must be true in two services with no shared
  * type: oracle and the frontend deliberately import nothing from each
- * other, so the text lives twice and `npm run roleplay-voices:check`
- * (`agent/tools/check-roleplay-voice-parity.mjs`) asserts the two copies
- * say the same thing, beat for beat, locale for locale — the identical
- * discipline `instruments:check`/`demo-step:check` already hold two other
- * hand-mirrored surfaces to.
+ * other, so the text lives twice and the two copies must
+ * say the same thing, beat for beat, locale for locale.
  *
  * WHY THIS EXISTS AT ALL: a roleplay beat's dialogue is fixed, catalog
  * text — nobody generates it, nobody's session changes it — so paying a
@@ -87,7 +84,7 @@ const LEMONADE_CHANGE: RoleplayVoiceScene = {
 
 /**
  * Keyed the same way `ROLEPLAY_SCENE_IDS` is — every scene id that field can
- * carry MUST have an entry here, checked by `roleplay-voices:check` rather
+ * carry MUST have an entry here, rather
  * than left to fail silently at synthesis time (a missing entry would just
  * mean that scene never gets voiced, an invisible gap `scripted.ts`'s own
  * closed-set reasoning exists to prevent).
@@ -127,7 +124,7 @@ export function roleplayLineCatalogue(): ScriptedLine[] {
   return lines;
 }
 
-/** For the parity gate — every scene id this file must cover. */
+/** Every scene id this file must cover. */
 export function roleplaySceneIds(): readonly RoleplaySceneId[] {
   return ROLEPLAY_SCENE_IDS;
 }

@@ -42,7 +42,7 @@ export function useRoleplay({ active, scene, turnSeq, waiting, lead, companion, 
   locale: Locale;
   /** The session speaks (Core allowed voice for it): only then do the pre-generated clips play. */
   voice: boolean;
-  /** Hold the current beat (the development preview and its audits photograph one beat). */
+  /** Hold the current beat (the development preview shows one beat). */
   frozen?: boolean;
 }): RoleplayState | null {
   const [running, setRunning] = useState<{ scene: RoleplaySceneId; seq: number } | null>(null);

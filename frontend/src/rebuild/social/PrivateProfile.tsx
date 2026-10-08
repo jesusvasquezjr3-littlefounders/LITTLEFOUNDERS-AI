@@ -5,7 +5,7 @@ import '../design/system.css';
 import './socialTiers.css';
 
 /*
- * E.8's private-by-default teen, as another account sees it before the teen
+ * The private-by-default teen, as another account sees it before the teen
  * has accepted them: the handle they already typed, a sentence that says the
  * teen decides, and one way to ask. Nothing else about the teen is on the
  * wire (Core serves only username, cartoon avatar and cover preset). A child

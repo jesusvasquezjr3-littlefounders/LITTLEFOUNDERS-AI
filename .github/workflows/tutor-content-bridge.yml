@@ -1,7 +1,6 @@
 name: Tutor content bridge audit
 
 # DOES THE KNOWLEDGE-COMPONENT GRAPH STILL REACH PUBLISHED CONTENT?
-# (RUNBOOK.md Round 105, oracle/AGENTS.md #73)
 #
 # `backend/src/services/contentBridgeAudit.ts` is the ONLY thing that answers
 # this — it proves every mapped `kc.skill_key` still resolves to a published
@@ -10,7 +9,7 @@ name: Tutor content bridge audit
 # null skill_key because the mapping then LOOKS done while carrying no
 # traffic). Until this workflow existed, the audit only ever ran as a side
 # effect of a human dispatching `tutor-deploy.yml`'s `seed-kc` step — the
-# ONLY trigger for the exact defect this audit exists to catch (RUNBOOK.md's
+# ONLY trigger for the exact defect this audit exists to catch (the
 # original content-bridge fix: the tutor unable to reach ANY published
 # lesson because `kc.skill_key` was null on every row) was a human choosing
 # to re-seed.
@@ -85,12 +84,11 @@ jobs:
       - name: Install the Railway CLI
         run: npm i -g @railway/cli@5.43.1
 
-      # RUNBOOK.md Round 112: this comment used to claim "same five variables
+      # This comment used to claim "same five variables
       # ... needs nothing beyond what that step already proves is sufficient"
       # — wrong, and unverifiable until now because GitHub Actions was
-      # billing-blocked repo-wide for the entire time this workflow existed
-      # (RUNBOOK.md's earlier rounds). `backend/src/config.ts`'s env schema
-      # has SIX required-with-no-default fields, not five: it also requires
+      # billing-blocked repo-wide for the entire time this workflow existed.
+      # `backend/src/config.ts`'s env schema has SIX required-with-no-default fields, not five: it also requires
       # `TUTOR_SESSION_SECRET` (any script that imports the backend's config
       # module triggers Zod validation of the WHOLE schema, whether or not
       # that script's own code path reads the field). The first real run of

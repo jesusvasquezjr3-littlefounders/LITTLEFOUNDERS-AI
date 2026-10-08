@@ -3,7 +3,7 @@ import { serviceRest, serviceRestRaw } from './supabaseRest.js';
 import { AgeBand, birthMonthForBand } from './ageScreen.js';
 
 /*
- * E.4 (as amended by OD-3), Appendix J 1.1: the staff-reviewed age correction
+ * The staff-reviewed age correction
  * for a self-registered account. The age a self-registered account declared is
  * locked; with no guardian to re-confirm, a later change is a request that a
  * staff member with manage_users decides.

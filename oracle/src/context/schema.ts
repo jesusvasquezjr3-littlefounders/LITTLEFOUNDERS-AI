@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 /*
- * THE PRIVACY BOUNDARY (/ORACLE.md §4.1).
+ * THE PRIVACY BOUNDARY.
  *
  * This file is the complete, enumerated set of things that may reach a
  * third-party pedagogical model about a learner. If a field is not declared
@@ -11,22 +11,22 @@ import { z } from 'zod';
  * WHY .strict() AND NOT .passthrough() OR A PLAIN OBJECT: Zod's default drops
  * unknown keys silently, which reads as safe and is not — a silent drop means
  * a developer who adds `birthDate` to the builder sees their feature "work"
- * (it just has no effect) and ships. `.strict()` REJECTS, loudly, in a test,
- * at the boundary. This is the same lesson §1.14 records about defaults: the
+ * (it just has no effect) and ships. `.strict()` REJECTS, loudly,
+ * at the boundary. This is the same lesson as with defaults: the
  * dangerous failure is the one that looks like success.
  *
- * The forbidden list is stated POSITIVELY in /ORACLE.md §4.1 for the same
+ * The forbidden list is stated POSITIVELY for the same
  * reason a prompt must name what it wants: a prohibition expressed only by
  * omission gets filled in with a default.
  *
- * Adding ANY field here requires: a /ORACLE.md §4.1 table row, an entry in
- * /LEGAL/AI_TUTOR_LEGAL_REVIEW.md, and a test. It is not a refactor.
+ * Adding ANY field here widens what reaches the model about a child:
+ * it is a reviewed decision, not a refactor.
  */
 
 export const CHARACTER_IDS = ['dina', 'liruf', 'rho', 'zara'] as const;
 export const LOCALES = ['en-US', 'es-MX', 'pt-BR'] as const;
 
-/** The closed adaptation vocabulary (/ORACLE.md §11), mirrored by migration 0047. */
+/** The closed adaptation vocabulary, mirrored by migration 0047. */
 export const ADAPTATIONS = [
   'slower_pacing',
   'more_examples',
@@ -35,10 +35,10 @@ export const ADAPTATIONS = [
   'repeat_before_advancing',
 ] as const;
 
-/** The closed intent vocabulary from the offer screen (/ORACLE.md §9.2). */
+/** The closed intent vocabulary from the offer screen. */
 export const INTENTS = ['course_topic', 'weak_skill', 'faq', 'open', 'diagnostic'] as const;
 
-/** Data Intel's explainable recommendation (/ORACLE.md, Data Intel contract). */
+/** Data Intel's explainable recommendation. */
 export const RECOMMENDED_ACTIONS = ['remediate', 'practice', 'retrieve', 'continue'] as const;
 
 /**
@@ -72,7 +72,7 @@ export const SkillStateSchema = z
   .strict();
 
 /**
- * OD-43 (owner sign-off, 2026-10-06): the learner's CURRENT lesson inside the
+ * The learner's CURRENT lesson inside the
  * session's topic — the Mentor as a complement to the course. It carries OUR
  * catalog title and the lesson's position, never anything the learner typed.
  */
@@ -91,7 +91,7 @@ export const CourseContextSchema = z
     courseTitle: z.string().min(1).max(160).nullable(),
     topicId: z.uuid().nullable(),
     topicTitle: z.string().min(1).max(160).nullable(),
-    /** OD-43: the current lesson in this topic, or null/absent when none is known. */
+    /** The current lesson in this topic, or null/absent when none is known. */
     lesson: CourseLessonSchema.nullable().optional(),
   })
   .strict();
@@ -103,12 +103,12 @@ export const TurnSchema = z
   })
   .strict();
 
-/** The closed step vocabulary of a lesson plan (/ORACLE.md §9.3). */
+/** The closed step vocabulary of a lesson plan. */
 export const PLAN_STEPS = ['warmup', 'explain', 'practice', 'check', 'stretch'] as const;
 
 /**
- * The closed strategy vocabulary of the v3 pedagogical controller
- * (/ORACLE.md, Tutor v3; blueprint §9.2). The CONTROLLER picks one per turn
+ * The closed strategy vocabulary of the v3 pedagogical controller.
+ * The CONTROLLER picks one per turn
  * from mastery bands and events — the model only performs it.
  */
 export const STRATEGIES = [
@@ -127,8 +127,8 @@ export const STRATEGIES = [
 ] as const;
 
 /**
- * The v3 pedagogy state, as the model is allowed to see it (/ORACLE.md §4.1,
- * owner decision 2026-08-28 — the Tutor v3 blueprint adoption).
+ * The v3 pedagogy state, as the model is allowed to see it
+ * owner decision 2026-08-28).
  *
  * SERVER-DERIVED, same privacy class as `planState`: the strategy and mode
  * are closed enums the controller chose; `kcObjective` and
@@ -156,7 +156,7 @@ export /**
  * `courseContext`'s titles, written by us, published by us, and containing
  * nothing about the person reading it. Nothing the LEARNER typed or did with
  * the activity travels here: not their answer, not their score, not their
- * taps. §4.1 row + legal §2.2 item 13.
+ * taps.
  */
 const OpenActivitySchema = z
   .object({
@@ -214,7 +214,7 @@ export const PlanStateSchema = z
   .strict();
 
 /**
- * One prior conversation, as a strictly-shaped digest (/ORACLE.md §4.1,
+ * One prior conversation, as a strictly-shaped digest
  * owner sign-off 2026-08-28).
  *
  * This is the ONE deliberate exception to "never a previous session's data",
@@ -262,24 +262,24 @@ export const TutorContextSchema = z
     /**
      * Up to three prior conversations as strict digests — topic, skills,
      * outcome, counters. NEVER their transcripts (see PreviousSessionSchema).
-     * Owner sign-off 2026-08-28; §4.1 row + legal §2.2 item 11.
+     * Owner sign-off 2026-08-28.
      */
     previousSessions: z.array(PreviousSessionSchema).max(3),
     /**
      * The v3 controller's state for THIS turn. Null while the v3 brain is
      * off, unseeded, or the session has no plan — the model then teaches as
-     * v2 did. §4.1 row + legal §2.2 item 12.
+     * v2 did.
      */
     pedagogy: PedagogyStateSchema.nullable(),
     /**
      * The activity currently on the learner's screen, or null when there is
      * none. Our own authored text, so the tutor stops narrating something it
-     * cannot see. §4.1 row + legal §2.2 item 13.
+     * cannot see.
      */
     openActivity: OpenActivitySchema.nullable(),
     /**
-     * V4: the curated learner brief (LEARNER + PEDAGOGY stores, /ORACLE.md
-     * §20). Derived from this learner's own past sessions by the post-session
+     * V4: the curated learner brief (LEARNER + PEDAGOGY stores).
+     * Derived from this learner's own past sessions by the post-session
      * review, hard-capped, ledgered, guardian-readable. The only prose about
      * the CHILD (rather than the session) that reaches the model.
      */
@@ -308,7 +308,7 @@ export type Locale = (typeof LOCALES)[number];
  * The ONE function allowed to produce a model-bound context.
  *
  * It throws rather than returning a partial object: a context that failed
- * validation is not a degraded context, it is a bug, and §1.14's rule is that
+ * validation is not a degraded context, it is a bug, and the rule is that
  * failure must stay distinguishable from emptiness. Callers do not get to
  * decide to send it anyway.
  */
@@ -324,7 +324,7 @@ export function sealContext(candidate: unknown): TutorContext {
 }
 
 /*
- * THE SECOND DOOR (/ORACLE.md §7.3).
+ * THE SECOND DOOR.
  *
  * Tier-3 generation sends a different, much smaller thing to the model: a
  * BRIEF describing what activity to write, not a description of a learner.
@@ -335,7 +335,7 @@ export function sealContext(candidate: unknown): TutorContext {
  *    conversational schema would mean loosening that schema — making the
  *    tighter of the two gates weaker to accommodate the looser use.
  * 2. Every path that reaches the model must pass A seal. Two schemas is fine;
- *    an unsealed path is not, and `boundaries.test.ts` fails on one.
+ *    an unsealed path is not.
  *
  * Note what is NOT here, and could plausibly have been: the nickname. A
  * generated exercise has no reason to address the learner by name, and a

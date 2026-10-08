@@ -1,4 +1,4 @@
-// The composed LessonDocument Zod schema — LESSON_ENGINE.md §3.
+// The composed LessonDocument Zod schema
 // This is the contract Forge (coursegen) generates against and Core will
 // validate with server-side (pure TS, dependency-free beyond zod, by design).
 
@@ -40,7 +40,7 @@ export const lessonDocumentSchema = z
     segments: z.array(segmentUnion).min(1).max(80),
   })
   .superRefine((doc, ctx) => {
-    // Cross-field integrity (§3). Deeper per-type referential checks land with Forge.
+    // Cross-field integrity. Deeper per-type referential checks land with Forge.
     const ids = new Set<string>();
     doc.segments.forEach((segment, index) => {
       if (ids.has(segment.id)) {

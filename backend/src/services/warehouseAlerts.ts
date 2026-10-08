@@ -2,9 +2,9 @@ import { z } from 'zod';
 import { getConfig } from '../config.js';
 
 /*
- * H.3 (GAP-FIX-R6; Block H: "no alert, event, or export job may be built to
- * record without a real consumer"; Appendix O 1.3 Alert-to-Notification
- * Delivery Rate, target 100%).
+ * "No alert, event, or export job may be built to
+ * record without a real consumer"; Alert-to-Notification
+ * Delivery Rate, target 100%.
  *
  * The warehouse (dataintel) delivers each alert trigger through its channel
  * and retries a failed send a bounded number of times. A trigger that still

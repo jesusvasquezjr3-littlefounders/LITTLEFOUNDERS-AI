@@ -1,7 +1,7 @@
 /**
- * F4.7 (fix round): a free-form surface z = f(x, y), read from text, with its partial derivatives, its gradient and a small
- * gradient-descent walk. Pure and import-free, so a byte copy is valid in the browser (synced) and in Forge (copied, pinned
- * by a test). The text is typed by an author in Forge or by a learner in the board; it is never evaluated as code: there is no
+ * A free-form surface z = f(x, y), read from text, with its partial derivatives, its gradient and a small
+ * gradient-descent walk. Pure and import-free, so a byte copy is valid in the browser (synced) and in Forge (copied).
+ * The text is typed by an author in Forge or by a learner in the board; it is never evaluated as code: there is no
  * eval, no Function, no regular expression over the text and no lookup of a property by a name from the text. It is tokenized
  * by character code, parsed by a bounded recursive descent into a small tree and walked with exact rational arithmetic.
  *

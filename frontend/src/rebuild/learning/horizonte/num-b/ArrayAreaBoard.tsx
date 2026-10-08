@@ -21,7 +21,7 @@ const cutPoints = (across: number): number[] => {
   return [...points].sort((a, b) => a - b);
 };
 
-/* F1.4 array: the learner counts equal rows (a scaffold that is never graded), then types the total. */
+/* Array: the learner counts equal rows (a scaffold that is never graded), then types the total. */
 function ArrayBoard({ document, segment, onBack, sequence, onGrade, payload }: Props<ArrayPayload>) {
   const { locale } = document;
   const t = copyText(NUM_B_COPY, locale);
@@ -59,7 +59,7 @@ function ArrayBoard({ document, segment, onBack, sequence, onGrade, payload }: P
   </NumBFrame>;
 }
 
-/* F1.4 multiplication box: cut the long side, find two partial products, add them. The learner chooses the cut. */
+/* Multiplication box: cut the long side, find two partial products, add them. The learner chooses the cut. */
 function AreaModelBoard({ document, segment, onBack, sequence, onGrade, payload }: Props<AreaModelPayload>) {
   const { locale } = document;
   const t = copyText(NUM_B_COPY, locale);
@@ -130,7 +130,7 @@ function AreaModelBoard({ document, segment, onBack, sequence, onGrade, payload 
   </NumBFrame>;
 }
 
-/* F1.4 missing-area division: take the area away in parts of the known side, then name the other side. */
+/* Missing-area division: take the area away in parts of the known side, then name the other side. */
 function AreaDivisionBoard({ document, segment, onBack, sequence, onGrade, payload }: Props<AreaDivisionPayload>) {
   const { locale } = document;
   const t = copyText(NUM_B_COPY, locale);

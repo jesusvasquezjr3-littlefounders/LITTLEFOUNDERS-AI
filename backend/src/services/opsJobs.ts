@@ -9,7 +9,7 @@ import { getUndeliveredAlerts, type UndeliveredAlertsStatus } from './warehouseA
 import { getWarehouseMaintenance, type WarehouseMaintenanceStepStatus } from './warehouseMaintenance.js';
 
 /*
- * H.4 and Appendix O 1.3 / 2.3: the watchdog-plus-notification pattern the
+ * The watchdog-plus-notification pattern the
  * Mentor retention sweep already has (tutorData.ts getTutorRetentionStatus +
  * tutor-retention-watch.yml), extended to the daily database backups and the
  * schema drift probe.
@@ -27,8 +27,8 @@ import { getWarehouseMaintenance, type WarehouseMaintenanceStepStatus } from './
  * records): OPS_JOB_STALE_HOURS below. The watch workflow and the staff
  * console read `stale`, they never re-derive it.
  *
- * GAP-FIX-R3 (Appendix O 1.3 names three jobs: the Mentor retention sweep,
- * the backup and the drift probe): the retention sweep rides on the same
+ * Three jobs are watched: the Mentor retention sweep,
+ * the backup and the drift probe. The retention sweep rides on the same
  * notification path. It records its own trail (`tutor.retention.swept`, not a
  * heartbeat) and its window keeps its one home, RETENTION_STALE_HOURS in
  * tutorData.ts; the status below carries it as `tutorRetention`, a fourth
@@ -36,14 +36,14 @@ import { getWarehouseMaintenance, type WarehouseMaintenanceStepStatus } from './
  * not inside it, because the staff console shows it on its own card and
  * `jobs` stays the heartbeat jobs.
  *
- * G.4 (quarterly access review, Appendix N 1.1): the number of elevated
+ * Quarterly access review: the number of elevated
  * grants past the 90-day review cadence rides here too (`accessReviews`), so
  * a due review reaches the watchdog issue instead of waiting for a
  * superadmin to open Roles & Access. It also carries `total` (every elevated
  * grant held), which the calendar-quarter review issue
  * (access-review-quarterly.yml) puts in front of the staff/access owner.
  *
- * H.3 (GAP-FIX-R6): the warehouse alert triggers that reached nobody in the
+ * The warehouse alert triggers that reached nobody in the
  * last 36 hours ride here as `alerts.undelivered` (services/warehouseAlerts.ts),
  * so an alert that notified nobody fails the watch and is named on the
  * watchdog issue. An unreadable warehouse is `undelivered: null`, which the
@@ -51,24 +51,24 @@ import { getWarehouseMaintenance, type WarehouseMaintenanceStepStatus } from './
  */
 
 /*
- * GAP-FIX-R6 (H.4 and the Block H non-negotiable: no job whose silent failure
- * would harm family data may lack the watchdog-plus-notification pattern):
+ * No job whose silent failure
+ * would harm family data may lack the watchdog-plus-notification pattern:
  * five more jobs keep promises made to families and are watched here too.
  *
  *   heartbeat jobs (report through POST /internal/ops/heartbeat, like the
  *   backups):
  *     learning_retention  learning-retention.yml, the 400-day practice days
  *     insights_prune      insights-maintenance.yml, prune_learning_events(400),
- *                         the H.2 raw-event window itself
+ *                         the raw-event window itself
  *   trail jobs (already leave their own durable record; read, never re-written):
- *     account_deletions   account-deletion.yml (E.6 erasure, A.1's 90-day
+ *     account_deletions   account-deletion.yml (account erasure, the 90-day
  *                         paused-child promise): `account_deletions.sweep_ran`;
  *                         a run whose paused-child candidates were unreadable
  *                         (`suspensionsUnreadable`) is a failed attempt
- *     social_retention    social-retention.yml (E.11): `social_retention.sweep_ran`,
+ *     social_retention    social-retention.yml: `social_retention.sweep_ran`,
  *                         written by the database in the sweep's own transaction
  *
- * GAP-FIX-R8 (H.4, F.2 under OD-20, owner answer D-08): the daily legacy
+ * The daily legacy
  * badge-image purge is a family-data job too (the pictures of children's
  * achievements behind expired or revoked legacy links must stop resolving).
  *   trail job:
@@ -87,7 +87,7 @@ import { getWarehouseMaintenance, type WarehouseMaintenanceStepStatus } from './
  */
 
 /*
- * GAP-FIX-R8 (H.4, Appendix O 1.2 and 1.3; the Block H non-negotiables): the
+ * The
  * analytics warehouse's 400-day retention prune and its erasure re-apply keep
  * promises made to families on every sync, and they are watched as one job, `warehouse_retention`, read from dataintel
  * (services/warehouseMaintenance.ts), never through a heartbeat a job could
@@ -117,8 +117,7 @@ export type OpsJob = (typeof OPS_JOBS)[number];
  * genuinely missed day.
  *
  * warehouse_retention runs after every warehouse sync (every 5 minutes by
- * default). It keeps the same 36 hours (one calibration value,
- * h4.ops_job_stale_hours in docs/operations/STAFF-OPS-RECALIBRATION-LOG.md):
+ * default). It keeps the same 36 hours (one calibration value):
  * a FAILED run is stale at once (judgeWarehouseRetention), so the window only
  * decides how long a sync worker that stopped altogether goes unnamed.
  */
@@ -171,7 +170,7 @@ export interface OpsJobStatus {
   /** No successful run within the window, or none ever: the same verdict (a promise not currently kept). */
   stale: boolean;
   lastRunDetail: Record<string, unknown> | null;
-  /** GAP-FIX-R8: the job's record could not be read (the warehouse was down). Always stale; the watcher refuses it. */
+  /** The job's record could not be read (the warehouse was down). Always stale; the watcher refuses it. */
   unreadable?: true;
 }
 
@@ -179,7 +178,7 @@ const Rows = z.array(z.object({ created_at: z.string(), detail: z.record(z.strin
 type TrailRow = z.infer<typeof Rows>[number];
 
 /**
- * Pure (GAP-FIX-R8): the verdict for `warehouse_retention` from dataintel's
+ * Pure: the verdict for `warehouse_retention` from dataintel's
  * maintenance steps. The job's last successful run is the OLDER of the steps'
  * last successes (the promise kept least recently binds), its last attempt the
  * older of their last attempts, and `lastAttemptOk` is false when either
@@ -221,9 +220,9 @@ export function judgeWarehouseRetention(steps: WarehouseMaintenanceStepStatus[] 
 /** Pure: whether one trail row records a successful run of that job. */
 export function runSucceeded(job: OpsJob, detail: Record<string, unknown> | null): boolean {
   if ((HEARTBEAT_JOBS as readonly string[]).includes(job)) return detail?.ok === true;
-  // The sweep audits every run; one that could not read the paused children did not keep A.1's promise.
+  // The sweep audits every run; one that could not read the paused children did not keep the paused-child promise.
   if (job === 'account_deletions') return detail !== null && detail.suspensionsUnreadable !== true;
-  // A badge sweep page whose images could not all be purged left a dead link's picture resolving (F.2).
+  // A badge sweep page whose images could not all be purged left a dead link's picture resolving.
   if (job === 'badge_link_retirement') return detail !== null && detail.failed === 0;
   // The social sweep's row exists only for a run that completed.
   return true;
@@ -251,14 +250,14 @@ export function judgeOpsJob(
 }
 
 /**
- * G.2 / Appendix N 2.3(b): the retroactive release checks past their 30-day
+ * The retroactive release checks past their 30-day
  * window and still open ride on the same watchdog. `overdue > 0` fails
  * ops-job-watch and opens or comments on the watchdog issue.
  */
 export interface ContentRetroCheckStatus { overdue: number; windowDays: number }
 
 /**
- * G.4: elevated staff grants past the access-review cadence (`due`, the Roles &
+ * Elevated staff grants past the access-review cadence (`due`, the Roles &
  * Access card's due list) and all elevated grants held (`total`, what the
  * quarterly calendar-triggered review issue asks the staff/access owner to
  * review; agent/tools/access-review-quarterly.mjs).
@@ -282,7 +281,7 @@ export function retentionAsJob(status: TutorRetentionStatus): TutorRetentionJobS
   };
 }
 
-/** E.6: erasures still processing whose step failed more than `afterHours` ago with no completion since. */
+/** Erasures still processing whose step failed more than `afterHours` ago with no completion since. */
 export interface AccountDeletionFailureStatus { stuck: number; afterHours: number }
 
 export interface OpsStatus {
@@ -292,7 +291,7 @@ export interface OpsStatus {
   anyStale: boolean;
   contentRetroChecks: ContentRetroCheckStatus;
   accessReviews: AccessReviewDueStatus;
-  /** H.3: warehouse alert triggers that notified nobody (null count = the warehouse was not read). */
+  /** Warehouse alert triggers that notified nobody (null count = the warehouse was not read). */
   alerts: UndeliveredAlertsStatus;
   accountDeletionFailures: AccountDeletionFailureStatus;
 }
@@ -324,7 +323,7 @@ const ProcessingIds = z.array(z.object({ id: z.string().uuid() })).max(200);
 const FailureRows = z.array(z.object({ detail: z.record(z.string(), z.unknown()).nullable() }));
 
 /**
- * E.6: erasures that stalled. A request still `processing` with a step failure
+ * Erasures that stalled. A request still `processing` with a step failure
  * recorded more than DELETION_STEP_FAILURE_HOURS ago has had no success since
  * (completion moves it out of `processing`). Null when a read failed.
  */
@@ -349,7 +348,7 @@ export async function getStuckAccountDeletions(now: Date = new Date()): Promise<
 
 /**
  * Every job's status. Null when a READ failed: a database outage is a 502,
- * never "the backups have never run" (§1.14).
+ * never "the backups have never run".
  */
 export async function getOpsJobStatus(now: Date = new Date()): Promise<OpsStatus | null> {
   const overdue = getOverdueRetroChecks();
@@ -364,7 +363,7 @@ export async function getOpsJobStatus(now: Date = new Date()): Promise<OpsStatus
   const [overdueChecks, retentionStatus, access, stuck, alerts, warehouseSteps] = await Promise.all([
     overdue, retention, accessCounts, stuckDeletions, undeliveredAlerts, warehouseMaintenance,
   ]);
-  // GAP-FIX-R8: an unreadable warehouse is an unreadable, stale job, never a 502 for every job.
+  // An unreadable warehouse is an unreadable, stale job, never a 502 for every job.
   jobs.push(judgeWarehouseRetention(warehouseSteps, now));
   if (overdueChecks === null || retentionStatus === null || access === null || stuck === null) return null;
   const tutorRetention = retentionAsJob(retentionStatus);

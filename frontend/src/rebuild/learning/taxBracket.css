@@ -3,7 +3,7 @@
 .lf-tax-slice { transition: width var(--dur-component) var(--ease-standard); }
 .lf-tax-legend { display: flex; flex-wrap: wrap; gap: var(--spacing-2) var(--spacing-3); }
 .lf-tax-legend span { align-items: center; display: inline-flex; font-weight: 800; gap: var(--spacing-1); }
-/* Slice fills come from the shared series patterns (lessonVisuals.tsx StackedSlicesVisual, 05 §2). */
+/* Slice fills come from the shared series patterns (lessonVisuals.tsx StackedSlicesVisual). */
 .lf-tax-swatch { display: inline-block; block-size: 0.75rem; border-radius: 999px; inline-size: 0.75rem; }
 .lf-tax-summary { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--spacing-2); font-weight: 800; }
 .lf-tax-summary span { padding: var(--spacing-2); border-radius: var(--rounded-sm); background: var(--sunken); overflow-wrap: anywhere; }

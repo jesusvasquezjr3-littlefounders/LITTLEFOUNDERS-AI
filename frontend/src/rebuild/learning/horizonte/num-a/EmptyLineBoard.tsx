@@ -19,7 +19,7 @@ const AXIS = 96;
 const signed = (jump: number) => `${jump < 0 ? '−' : '+'}${Math.abs(jump)}`;
 
 /*
- * A12: an empty number line. The learner draws jumps of the sizes the author allows, forward or back, one tap each; the jumps
+ * An empty number line. The learner draws jumps of the sizes the author allows, forward or back, one tap each; the jumps
  * sit in the order they were made, not to scale. The answer is the signed list of jumps; Core holds the target.
  * There is no drag, so no handle: every jump is a 64 px button.
  */

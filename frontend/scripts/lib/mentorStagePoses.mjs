@@ -16,7 +16,7 @@ export const STAGE_STILL_POSES = [
   { pose: 'transition.close.warm', query: 'state=closing&closing=completed&age=6-9' },
   { pose: 'transition.exit', query: 'state=closing&closing=learner_left&age=6-9' },
   { pose: 'transition.pause', query: 'state=closing&closing=safety_stop&age=6-9' },
-  // GAP-FIX-R2: the `acknowledging` state (08 §11, a met answer): the quiet happy pose and the calm register's nod.
+  // The `acknowledging` state (a met answer): the quiet happy pose and the calm register's nod.
   { pose: 'feedback.correct.quiet', query: 'state=acknowledging&age=6-9' },
   { pose: 'greet.nod', query: 'state=acknowledging&age=13-17' },
 ];

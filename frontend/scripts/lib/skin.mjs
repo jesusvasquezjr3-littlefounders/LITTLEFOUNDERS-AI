@@ -1,22 +1,19 @@
 /*
- * Shared machinery for the three gates that judge a character's MESH rather
- * than its skeleton: `verify-skin`, `verify-pose` and `verify-clearance`.
+ * Shared machinery for judging a character's MESH rather than its skeleton.
  *
  * It exists so the anatomy vocabulary and the clip composition are written
  * ONCE. `spurious()` already has a second copy in `repair-skin.py` that has to
  * be kept in step by hand — Blender cannot import this — and that is one copy
- * too many already. Three more would be the same trap AGENTS.md §5 describes
- * for the whiteboard instruments, where a shape hand-written in five places
- * silently lost a member and two boards were dropped for months.
+ * too many already.
  *
  * THE CLIP COMPOSITION HERE MUST MATCH THE RUNTIME'S. Clips are ADDITIVE:
  * `clipLibrary.ts` sanitises away every translation track, then
  * `AnimationUtils.makeClipAdditive` measures each rotation against the
  * library's own exported `emotion.rest`, and three.js applies the result on top
  * of the character's BIND rotation. Playing a clip absolutely instead re-poses
- * every character into the authoring rig's skeleton — the defect TUTOR_3D.md
- * §3 records, which collapsed Rho's feet 60.6% and Liruf's 79.4%. A gate that
- * composed clips its own way would measure that defect instead of the product.
+ * every character into the authoring rig's skeleton, which collapsed Rho's feet
+ * 60.6% and Liruf's 79.4%. A check that composed clips its own way would
+ * measure that defect instead of the product.
  */
 import { NodeIO } from '@gltf-transform/core';
 import { KHRONOS_EXTENSIONS } from '@gltf-transform/extensions';
@@ -51,7 +48,7 @@ const BODY_SIDE = new Set(['leg', 'pelvis', 'spine']);
  * True when a face or a weight linking bones `a` and `b` cannot be anatomy.
  *
  * MIRRORED IN `repair-skin.py`. If the two ever disagree, the repair and the
- * gate that judges it stop meaning the same thing by "defect".
+ * check that judges it stop meaning the same thing by "defect".
  *
  * The two exemptions are what keep this from flagging a correct rig. The
  * SHOULDER is how an arm attaches to a torso at all, and the upper arm meeting
@@ -63,7 +60,7 @@ const BODY_SIDE = new Set(['leg', 'pelvis', 'spine']);
  * his waist — up to 0.60 of upper-arm weight, and the wider reading waved all of
  * it through. Zara's real armpit vertices sit at 66% of hers, so nothing
  * legitimate depends on it. Bone NAMES do not sit at the same height on these
- * three rigs (TUTOR_3D.md §3), so the rule names the pelvis rather than
+ * three rigs, so the rule names the pelvis rather than
  * trusting a `Spine02` to be low.
  */
 export function spurious(a, b) {
@@ -385,7 +382,7 @@ export function clipFor(library, action, characterId) {
   return library.names.includes(override) ? override : action;
 }
 
-/** The canonical actions and emotions, as `verify-rig` enumerates them. */
+/** The canonical actions and emotions, as the rig enumerates them. */
 export const ACTIONS = [
   'idle', 'jump', 'hop', 'wave', 'point', 'celebrate',
   'nod', 'shake', 'think', 'dance', 'peek', 'bow',

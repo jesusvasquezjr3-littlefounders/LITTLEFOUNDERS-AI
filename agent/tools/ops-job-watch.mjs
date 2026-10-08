@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// ops-job-watch.mjs — H.4 / Appendix O 1.3 and 2.3: turns Core's operations
+// ops-job-watch.mjs — turns Core's operations
 // job status into a verdict and a HUMAN NOTIFICATION.
 //
 // .github/workflows/ops-job-watch.yml asks Core (from inside the container,
@@ -18,32 +18,32 @@
 // The local drill (backend `npm run ops:drill`) feeds this a status that a
 // stale heartbeat produced and checks that it fails and writes the notice.
 //
-// G.2 / Appendix N 2.3(b): the same reply carries `contentRetroChecks.overdue`,
+// The same reply carries `contentRetroChecks.overdue`,
 // the retroactive release checks past their 30-day window and still open
 // (Core's services/contentRelease.ts). Any overdue check fails the watch and
 // is named in the notice; a reply without the number is refused, like a job
 // without its `stale` boolean.
 //
-// Appendix O 1.3 names three jobs that each need a watchdog AND an external
+// Three jobs each need a watchdog AND an external
 // notification: the Mentor retention sweep, the backup and the drift probe.
 // The retention sweep arrives as `tutorRetention` (Core builds it from
 // tutorData.getTutorRetentionStatus(), the one home of its 36-hour window) and
 // is judged exactly like the heartbeat jobs.
 //
-// G.4 / Appendix N 1.1: `accessReviews.due` is the number of elevated staff
+// `accessReviews.due` is the number of elevated staff
 // grants past the 90-day access review (staff_access_review_status). Any due
 // grant fails the watch and is named in the notice, so the staff/access owner
 // is told on the watchdog issue; a reply without the number is refused.
 //
-// GAP-FIX-R6 (H.4 and the Block H non-negotiable): the jobs that keep promises
-// to families are watched too: account_deletions (E.6 erasure and A.1's 90-day
-// paused-child deletion), family_retention (D.21), social_retention (E.11),
-// learning_retention (400-day practice days) and insights_prune (H.2's 400-day
+// The jobs that keep promises
+// to families are watched too: account_deletions (erasure and the 90-day
+// paused-child deletion), family_retention, social_retention,
+// learning_retention (400-day practice days) and insights_prune (the 400-day
 // raw-event window). `accountDeletionFailures.stuck` counts erasures whose step
 // failed more than a day ago and never completed; any fails the watch, and a
 // reply without the number is refused.
 //
-// H.3 (GAP-FIX-R6; Block H: no alert may record without a consumer):
+// No alert may record without a consumer:
 // `alerts.undelivered` is the number of warehouse alert triggers in the last
 // 36 hours that reached nobody (delivery failed after its retries, the
 // channel is not configured, or no outcome was recorded; Core's
@@ -51,14 +51,14 @@
 // named in the notice, so this issue is the alert's escalation channel. A reply
 // without the number (the warehouse could not be read) is refused.
 //
-// GAP-FIX-R8 (H.4; Appendix O 1.2 and 1.3): `warehouse_retention` is the
-// analytics warehouse's 400-day retention prune and its erasure re-apply (E.6),
+// `warehouse_retention` is the
+// analytics warehouse's 400-day retention prune and its erasure re-apply,
 // read by Core from dataintel's maintenance log. It is judged like every job
 // (Core's `stale`), and a job marked `unreadable: true` (Core could not read
 // the warehouse) is refused as an error, never counted as a quiet success.
 // The notice names the failing step and its error.
 //
-// GAP-FIX-R8 (H.4; F.2 under OD-20; owner answer D-08): badge_link_retirement,
+// `badge_link_retirement` is
 // the daily purge of the images behind expired or revoked legacy badge links
 // (badge-link-retirement.yml). Core judges it from its own
 // `badge_links.images_swept` trail; a sweep page that could not purge every
@@ -160,7 +160,7 @@ export function buildNotification(result, runUrl = '') {
   }
   for (const job of result.stale) {
     lines.push(`- **${job.job}**: last successful run ${hours(job.hoursSinceLastRun)} (window ${job.staleAfterHours ?? '?'} h); last attempt ${job.lastAttemptAt ?? 'never'}${job.lastAttemptOk === false ? ' (failed)' : ''}.`);
-    // GAP-FIX-R8: the warehouse job covers two steps; name each one that failed or never succeeded.
+    // The warehouse job covers two steps; name each one that failed or never succeeded.
     const steps = Array.isArray(job.lastRunDetail?.steps) ? job.lastRunDetail.steps : [];
     for (const step of steps) {
       if (!step || typeof step !== 'object' || (step.lastAttemptOk !== false && step.lastSuccessAt)) continue;

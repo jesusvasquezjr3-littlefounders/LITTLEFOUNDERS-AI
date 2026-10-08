@@ -4,7 +4,7 @@ import { countServiceRows, serviceRest } from './supabaseRest.js';
 import { telemetryColumns, type BehavioralTelemetryReport } from './pedagogy/behavioralTelemetry.js';
 
 /*
- * The Tutor's data plane (migration 0047, /ORACLE.md).
+ * The Tutor's data plane (migration 0047).
  *
  * Everything here is SERVICE-ROLE, because every one of these tables has RLS
  * with no client write policy: clients read their own rows through PostgREST,
@@ -13,7 +13,7 @@ import { telemetryColumns, type BehavioralTelemetryReport } from './pedagogy/beh
  *
  * The one rule that is not obvious from the code: there is nowhere in this file
  * to store a learner's audio, and that is deliberate rather than unfinished
- * (/ORACLE.md §0 decision 8). If a future change needs one, it needs a
+ * (a deliberate decision). If a future change needs one, it needs a
  * migration, a legal review entry, and a conversation — not a column.
  */
 
@@ -52,7 +52,7 @@ export interface TutorPreferencesRow {
  *
  * Returns defaults for a learner who has never opened the picker, and `null`
  * only when the READ failed. Those are different states and the caller must be
- * able to tell them apart (§1.14) — "no row yet" is a first visit, "could not
+ * able to tell them apart — "no row yet" is a first visit, "could not
  * read" is an outage, and answering the second with defaults would silently
  * discard a learner's chosen character every time PostgREST hiccuped.
  */
@@ -101,7 +101,7 @@ export async function upsertTutorPreferences(
 export interface VoiceConsentRow {
   id: string;
   user_id: string;
-  /** NULL once the granting guardian's account was erased (E.6); the consent was ended at that moment. */
+  /** NULL once the granting guardian's account was erased; the consent was ended at that moment. */
   granted_by: string | null;
   consent_text: string;
   locale: string;
@@ -147,7 +147,7 @@ export async function grantVoiceConsent(input: {
   /*
    * THE INSERT FAILED — BUT A CONCURRENT GRANT COULD HAVE WON THE RACE
    * between the `existing` check above and this insert. Found by
-   * adversarial review, round 30 (2026-08-30, LOW): this is check-then-
+   * adversarial review (2026-08-30, LOW): this is check-then-
    * insert across two round trips, not one transaction, and the partial
    * unique index (`idx_tutor_voice_consent_live`, migration 0047) makes
    * this a REAL race, not a hypothetical — two devices/tabs granting for
@@ -205,7 +205,7 @@ export interface TutorSessionRow {
 }
 
 /**
- * The digest one closed session leaves for the next (/ORACLE.md §4.1, owner
+ * The digest one closed session leaves for the next (owner
  * sign-off 2026-08-28). STRICTLY topic/skills/outcome/counters — computing it
  * from transcript text is forbidden, because this object is what the next
  * session's model context is allowed to carry. The course/topic ids stay
@@ -241,7 +241,7 @@ export interface CreateSessionInput {
  * The result of an attempted session start against the daily cap.
  *
  * `null` on a transport/RPC failure — the caller must refuse rather than
- * assume the cap was or was not reached (§1.14): a failed call collapsed
+ * assume the cap was or was not reached: a failed call collapsed
  * into "cap reached" would wrongly turn away a learner who never actually
  * used their sessions, and collapsed into "created" would be worse.
  */
@@ -250,7 +250,7 @@ export type StartSessionResult = { status: 'created'; session: TutorSessionRow }
 /**
  * Creates a session, ATOMICALLY checked against the learner's daily cap.
  *
- * Found by adversarial review, round 34 (2026-08-30, HIGH): the previous
+ * Found by adversarial review (2026-08-30, HIGH): the previous
  * shape was a plain application-level read-then-write — count "sessions
  * today" via a separate query, compare to the cap in JS, then create the
  * session with a SEPARATE, unconditional INSERT. Two concurrent
@@ -308,14 +308,14 @@ export interface TutorSessionsPage {
 }
 
 /**
- * Newest-first, paginated (/ORACLE.md §12, guardian visibility).
+ * Newest-first, paginated (guardian visibility).
  *
- * Found by adversarial review, round 110 (2026-08-31, MEDIUM,
+ * Found by adversarial review (2026-08-31, MEDIUM,
  * guardian-dashboard-depth): this hardcoded `limit=30` with no `offset` at
  * all, so nothing upstream could EVER ask for session #31 — a family that
  * did not open the Tutor page in the last ~30 sessions lost UI access to
  * every older, non-flagged one, even though the row is still there and
- * still inside the 90-day retention window (§1.9). `limit`/`offset` follow
+ * still inside the 90-day retention window. `limit`/`offset` follow
  * the same convention `listAudit` already established in `adminData.ts`.
  * `hasMore` is derived by requesting one row past `limit` rather than a
  * second exact COUNT query — cheaper for a list this size, and it never
@@ -354,7 +354,7 @@ export type CloseTutorSessionOutcome = 'closed' | 'already-closed' | 'failed';
  * `true` either way, so the caller (the `/sessions/:id/close` route) reported
  * success on a write that never happened.
  *
- * Found by adversarial review, round 98 (2026-08-31, MEDIUM,
+ * Found by adversarial review (2026-08-31, MEDIUM,
  * tutor-review-sweep-92): `oracle/src/ws/server.ts`'s `finish()` calls this
  * unconditionally once a busy turn it was waiting on finally clears the
  * floor, and never checked what came back. When `finalizeParked`'s own
@@ -366,19 +366,19 @@ export type CloseTutorSessionOutcome = 'closed' | 'already-closed' | 'failed';
  * mid-turn moment by the time `finish()`'s own `completed` close arrives.
  * That second write matched zero rows and was silently reported as a
  * success: the more accurate close reason and the turn's true final cost
- * were discarded with no trace anywhere. Exactly the §1.14 "failure
+ * were discarded with no trace anywhere. Exactly the "failure
  * collapsed into emptiness" shape.
  *
  * `Prefer: return=representation` is what makes the two cases visible: an
  * empty array is a real, honest "matched nothing"; a one-row array is a real
- * update. See `RUNBOOK.md` Round 98.
+ * update.
  */
 
 /**
  * How many sessions this learner has already started since `sinceIso`, or
  * `null` on a read failure.
  *
- * Found by adversarial review, round 99 (2026-08-31, HIGH): `GET /offers`
+ * Found by adversarial review (2026-08-31, HIGH): `GET /offers`
  * had no way to tell the offer screen the learner's daily cap was already
  * spent — its `canStart`/`startBlockedBy` fields reflected only Oracle's own
  * health, never `MAX_SESSIONS_PER_DAY`, so a learner who had used every
@@ -395,7 +395,7 @@ export type CloseTutorSessionOutcome = 'closed' | 'already-closed' | 'failed';
  * read is advisory only and never what ENFORCES the cap — that stays
  * atomic, inside the SQL function, at session-start time — it only lets the
  * offer screen say so honestly before a learner taps in and gets bounced.
- * `null` on failure is deliberate (§1.14): this is a display-only read, so
+ * `null` on failure is deliberate: this is a display-only read, so
  * the caller may treat "unknown" as "not reached" rather than collapsing a
  * transient PostgREST failure into a false, and much worse, "cap reached".
  */
@@ -409,13 +409,13 @@ export async function closeTutorSession(input: {
   turnCount: number;
   segmentCount: number;
   costUsd: number;
-  /** C.16: the closing script Oracle used (omitted by an older Oracle). */
+  /** The closing script Oracle used (omitted by an older Oracle). */
   closingScript?: string;
-  /** C.16: the opening the session began with. */
+  /** The opening the session began with. */
   opening?: string;
-  /** C.8/C.12: whether the session-end signal was evaluated at all. */
+  /** Whether the session-end signal was evaluated at all. */
   endSignal?: { evaluated: boolean };
-  /** C.9/C.19: how the Behavioral Telemetry Layer ran (absent while it was off). */
+  /** How the Behavioral Telemetry Layer ran (absent while it was off). */
   behavioralTelemetry?: BehavioralTelemetryReport;
 }): Promise<CloseTutorSessionOutcome> {
   const rows = await serviceRest<{ id: string }[]>(`/tutor_sessions?id=eq.${eu(input.sessionId)}&ended_at=is.null`, {
@@ -445,14 +445,14 @@ export async function closeTutorSession(input: {
  * For the paid calls a session causes but does not finish paying for before
  * `closeTutorSession` writes `cost_usd` — today exactly one, the post-session
  * review's own model call (`oracle/src/session/review.ts`), which Oracle fires
- * fire-and-forget AFTER the close in both its close paths. Round 64 fixed the
- * same class for tier-3 generation, but that cost happens DURING the session,
+ * fire-and-forget AFTER the close in both its close paths. Tier-3 generation had the
+ * same class, but that cost happens DURING the session,
  * so folding it into the orchestrator's running total was enough; there is no
  * running total left by the time this one is known.
  *
  * ADDITION IN POSTGRES, NOT HERE (migration `0062`). PostgREST can only PATCH
  * a literal, so doing this in application code would mean read-add-write —
- * the §1.14 shape that erased a child's XP behind a 200, and the shape
+ * the shape that erased a child's XP behind a 200, and the shape
  * migrations 0055/0057/0059 have each already moved into the database.
  *
  * Returns the session's NEW total, or `null` when nothing was added (no such
@@ -503,7 +503,7 @@ export interface LearnerBrief {
  * `null` means the READ ITSELF failed (a transient `serviceRest` error) —
  * distinct from a real, successful query that simply found no rows yet.
  *
- * Found by adversarial review, round 28 (2026-08-30, HIGH): this used to
+ * Found by adversarial review (2026-08-30, HIGH): this used to
  * collapse both into the same `{ learner: null, pedagogy: null }` shape via
  * `rows ?? []`, throwing away the one signal (`serviceRest` returning `null`
  * specifically on failure, vs. a real `[]`) that tells them apart. The
@@ -512,7 +512,7 @@ export interface LearnerBrief {
  * learner never had memory" and proposes a note "from scratch" — which then
  * REPLACES whatever real, accumulated memory existed. A transient read
  * failure on session N+1 could silently and permanently erase everything
- * sessions 1..N wrote, the exact §1.14 failure-must-be-distinguishable-from-
+ * sessions 1..N wrote, the exact failure-must-be-distinguishable-from-
  * emptiness shape this file's own header already names for
  * `getLearningStatsForUpdate`. The route now threads this through as
  * `learnerBriefDegraded`, and `session/review.ts` refuses to run the write
@@ -536,7 +536,7 @@ export async function getLearnerMemory(userId: string): Promise<LearnerBrief | n
  * compare-and-swaps and the two ledger rows are one Postgres call, so they
  * are one transaction.
  *
- * Found by adversarial review, round 42 (2026-08-30, MEDIUM/HIGH): this used
+ * Found by adversarial review (2026-08-30, MEDIUM/HIGH): this used
  * to be a plain read-then-write — GET the current content, then an
  * unconditional upsert — with nothing checking the row was still in the
  * state that was just read. Two concurrent calls for the SAME (user_id,
@@ -567,7 +567,7 @@ export async function getLearnerMemory(userId: string): Promise<LearnerBrief | n
  * cross-service change," protect the wider case where two whole SESSIONS
  * overlap and each one's model proposal was computed from a belief read at
  * session START, minutes before either write. That "larger change" is
- * exactly what closes it now (round 51, 2026-08-30, MEDIUM): this function
+ * exactly what closes it now (2026-08-30, MEDIUM): this function
  * no longer reads the CURRENT row itself to invent an "expected before" —
  * doing that meant comparing the row against a value read moments before the
  * compare, which by construction always matches (the compare-and-swap could
@@ -649,7 +649,7 @@ export async function writeLearnerMemoryPair(input: {
    * A transport failure is reported as "no proposed store landed" rather than
    * as an empty map: an absent key means "nothing was proposed for that
    * store" to every caller here, so collapsing a failed call into one would
-   * read as success (§1.14 — failure must be distinguishable from emptiness).
+   * read as success (failure must be distinguishable from emptiness).
    * The same reasoning covers a verdict this layer does not recognise: only
    * the two the function documents count as landed.
    */
@@ -671,8 +671,8 @@ export async function writeLearnerMemoryPair(input: {
  *
  * `learner_memory` auto-wrote both stores for every learner. 0068 gated the
  * LEARNER store for a `kid`: its proposal parks as a pending row a verified
- * guardian decides on. C.4 and OD-18 then made the gate cover BOTH notes
- * (the learner note and the pedagogy note are the SPEC's two memory notes,
+ * guardian decides on. The gate was then extended to cover BOTH notes
+ * (the learner note and the pedagogy note are the two memory notes,
  * both model-written prose about the same child), for every reviewer the
  * route resolves: a verified guardian, or an independent teen reviewing
  * their own notes. Only a screened adult's notes still write directly.
@@ -717,7 +717,7 @@ const PROPOSAL_COLUMNS =
  *
  * Returns false on ANY failure. The caller must refuse the whole request on
  * false rather than continuing: a parked proposal that silently failed to land
- * is a child's note that vanished, reported to Oracle as success (§1.14).
+ * is a child's note that vanished, reported to Oracle as success.
  */
 export async function parkLearnerMemoryProposal(input: {
   userId: string;
@@ -789,7 +789,7 @@ export async function getLearnerMemoryProposal(
  *
  * `null` is a transport failure and is deliberately NOT folded into any of
  * them: "we could not reach the database" and "your approval was refused
- * because the note is stale" are different sentences for a parent (§1.14).
+ * because the note is stale" are different sentences for a parent.
  */
 export type LearnerMemoryDecisionOutcome =
   | 'written'
@@ -813,8 +813,8 @@ export async function decideLearnerMemoryProposal(input: {
   /**
    * The ledger's `actor` for an approved note. Deliberately different from
    * `oracle-post-session-review`: reading the ledger back, a guardian-
-   * approved write and an auto-write must not look the same. OD-18 (C.4,
-   * 2026-09-24) adds a THIRD stamp — `learner-self-approved-review` — so a
+   * approved write and an auto-write must not look the same. Since
+   * 2026-09-24 there is a THIRD stamp — `learner-self-approved-review` — so a
    * self-approved note can be told apart from a guardian-approved one too.
    * Defaults to the guardian stamp: every caller today is either a guardian
    * decision or the teen self-review path, and the route decides which.
@@ -838,7 +838,7 @@ export async function decideLearnerMemoryProposal(input: {
 }
 
 /**
- * GAP-FIX-R5 (C.4, OD-18, S01.4): delete ONE stored memory note, compared
+ * Delete ONE stored memory note, compared
  * against the text the reviewer was shown (`clear_learner_memory`, the
  * learner_memory_clear migration). The function removes the row, writes the
  * append-only ledger row (the actor, never the text) and closes the pending
@@ -849,7 +849,7 @@ export async function decideLearnerMemoryProposal(input: {
  *   'conflict'  the note changed since the reviewer read it; nothing moved.
  *
  * `null` is a transport failure or a word this layer does not recognise,
- * never folded into any of the three (§1.14).
+ * never folded into any of the three.
  */
 export type LearnerMemoryClearOutcome = 'deleted' | 'absent' | 'conflict';
 
@@ -881,7 +881,7 @@ export async function clearLearnerMemory(input: {
  *
  * `locale` picks the Postgres text-search configuration the QUERY text is
  * parsed with — the language the recall question was actually asked in.
- * Found by adversarial review, round 29 (2026-08-30, HIGH): this used to
+ * Found by adversarial review (2026-08-30, HIGH): this used to
  * hardcode Spanish (`database/migrations/0053_learner_memory.sql`'s
  * default), and Postgres's Spanish stemmer mistransforms English/
  * Portuguese words rather than merely leaving them unstemmed, breaking
@@ -931,7 +931,7 @@ export async function listRecentSummaries(
  * learner (a fast learner clearing two segments back-to-back, a retried
  * request, two open tabs) both read the same stale total before either write
  * landed, so both spent the full remaining cap. Core has no documented
- * single-replica constraint (unlike Oracle — oracle/AGENTS.md), so an
+ * single-replica constraint (unlike Oracle), so an
  * in-process lock cannot close this under horizontal scaling, and the cap
  * spans every `tutor_sessions` row for a user on a given day, which a
  * row-level conditional PATCH (the `ended_at=is.null` pattern
@@ -944,7 +944,7 @@ export async function listRecentSummaries(
  * less than requested, or zero, once the cap is reached) — never null on
  * success, matching `award_tutor_xp`'s own `RETURNS int` (never NULL). A
  * `null` return here means the call itself failed, and the caller must
- * refuse rather than assume zero was credited (§1.14) — treating a failed
+ * refuse rather than assume zero was credited — treating a failed
  * write as "nothing happened" would be indistinguishable from the very
  * silent-loss bug this file's `closeTutorSession` comment already warns
  * against, on the same table.
@@ -993,7 +993,7 @@ export interface TutorTurnSequenceBoard {
  * Mirrors `oracle/src/ws/protocol.ts`'s `WireWhiteboard`'s `compare` member.
  *
  * Found missing entirely during the `categories` merge (2026-09-01):
- * `compare`/`marked_line` shipped (ORACLE.md §20.5's "Two more kinds")
+ * `compare`/`marked_line` shipped
  * without ever gaining a persistence type or read-time re-validation branch
  * here — so a live `compare`/`marked_line` turn would have failed
  * `TutorTurnWhiteboardRowSchema` below and lost its board silently on
@@ -1027,7 +1027,7 @@ export interface TutorTurnMarkedLineBoard {
 /**
  * A live categories comparison, exactly as it was shown. Mirrors
  * `oracle/src/ws/protocol.ts`'s `WireCategoriesBoard` — the first bounded
- * slice of "UI generativa acotada" (blueprint §10.4, ORACLE.md §20.5).
+ * slice of "UI generativa acotada".
  */
 export interface TutorTurnCategoriesBoard {
   kind: 'categories';
@@ -1039,7 +1039,7 @@ export interface TutorTurnCategoriesBoard {
 
 /**
  * A live table of coins and notes, exactly as it was shown. Mirrors
- * `oracle/src/ws/protocol.ts`'s tokens member (/TUTOR_INSTRUMENTS.md, Sprint 6).
+ * `oracle/src/ws/protocol.ts`'s tokens member.
  * `subtotals`/`total` are server-computed: the sum of a pile is the arithmetic
  * the learner is doing, so the model has no field to assert it.
  */
@@ -1264,9 +1264,9 @@ export interface TutorTurnFractionCircleBoard { kind: 'fraction_circle'; denomin
 export interface TutorTurnStackBoard { kind: 'stack'; columns: { label: string; parts: { label: string; value: number }[] }[]; totals: number[]; max: number; label: string; currency: 'MXN' | 'USD' | 'BRL' | null }
 /** Two trajectories at once. Tracks of different lengths are refused. */
 export interface TutorTurnSequenceCompareBoard { kind: 'sequence_compare'; unit: 'day' | 'week' | 'month' | 'year'; tracks: [{ label: string; start: number; steps: { op: string; value: number }[] }, { label: string; start: number; steps: { op: string; value: number }[] }]; values: number[][]; label: string; currency: 'MXN' | 'USD' | 'BRL' | null }
-/** Class II, S10 — NOT ungraded: `values` is server-computed, one array per branch. */
+/** NOT ungraded: `values` is server-computed, one array per branch. */
 export interface TutorTurnWhatifBoard { kind: 'whatif'; start: number; unit: 'day' | 'week' | 'month' | 'year'; branches: { label: string; steps: { op: string; value: number }[] }[]; values: number[][]; label: string; currency: 'MXN' | 'USD' | 'BRL' | null }
-/** Class II, S10 — NOT ungraded: ONE `sequence`, split at `givenCount` into the tutor's shown prefix and the learner's revealed suffix. */
+ /** NOT ungraded: ONE `sequence`, split at `givenCount` into the tutor's shown prefix and the learner's revealed suffix. */
 export interface TutorTurnYourTurnBoard { kind: 'your_turn'; start: number; steps: { op: string; value: number }[]; givenCount: number; unit: 'day' | 'week' | 'month' | 'year'; values: number[]; label: string; currency: 'MXN' | 'USD' | 'BRL' | null }
 /** When, not how much. Two events in one period are refused — the board exists to show ORDER. */
 export interface TutorTurnTimelineBoard { kind: 'timeline'; unit: 'day' | 'week' | 'month' | 'year'; span: number; events: { label: string; at: number }[]; positions: number[]; label: string }
@@ -1360,9 +1360,9 @@ export interface TutorTurnRow {
   whiteboard: TutorTurnWhiteboard | null;
   /**
    * Null on every row that never demonstrated on the money tray — see
-   * migration 0067. Found while investigating ORACLE.md §19.5's "replaying
+   * migration 0067. Found while  investigating the "replaying
    * `demonstrate` animations" backlog item, 2026-09-01: the identical gap
-   * round 35 found for `whiteboard` above, on the tutor's OTHER v3 turn-
+   * found for `whiteboard` above, on the tutor's OTHER v3 turn-
    * schema visual field.
    */
   demonstrate: TutorTurnDemonstrateStep[] | null;
@@ -1418,8 +1418,8 @@ const WhiteboardStepRowSchema = z
  * Deliberately validates SHAPE and BOUNDS rather than re-running
  * `computeSequence`'s arithmetic: Oracle already computes and validates
  * these numbers TWICE before they are ever persisted (once at
- * `parseTurn`-time, once again at the wire in `ws/server.ts`, /ORACLE.md
- * §20.5) — this read path's job is to refuse a row that is no longer a
+ * `parseTurn`-time, once again at the wire in `ws/server.ts`)
+ * — this read path's job is to refuse a row that is no longer a
  * well-formed whiteboard by construction, not to become a third copy of the
  * arithmetic that produced it.
  */
@@ -1502,8 +1502,8 @@ const WhiteboardCategoryRowSchema = z
 /**
  * Re-derives oracle's `CategoriesBoardSchema` the same way
  * `SequenceBoardRowSchema` above re-derives `SequenceBoardSchema` — the
- * first bounded slice of "UI generativa acotada" (blueprint §10.4,
- * ORACLE.md §20.5). `values` here has no separate ceiling of its own the
+ * first bounded slice of "UI generativa acotada".
+ * `values` here has no separate ceiling of its own the
  * way a sequence's running total does (each category's own `value` bound
  * already IS the ceiling — there is no accumulation to overshoot it).
  */
@@ -2007,7 +2007,7 @@ const WhatifBranchRow = z
   })
   .strict();
 
-/** Class II, S10 — NOT ungraded: `values` is server-computed, `sequence_compare`'s own shape generalised to 2-3 branches sharing one `start`. */
+/** NOT ungraded: `values` is server-computed, `sequence_compare`'s own shape generalised to 2-3 branches sharing one `start`. */
 const WhatifBoardRowSchema = z
   .object({
     kind: z.literal('whatif'),
@@ -2020,7 +2020,7 @@ const WhatifBoardRowSchema = z
   })
   .strict();
 
-/** Class II, S10 — NOT ungraded: ONE `sequence`, split at `givenCount` into the tutor's shown prefix and the learner's revealed suffix. */
+ /** NOT ungraded: ONE `sequence`, split at `givenCount` into the tutor's shown prefix and the learner's revealed suffix. */
 const YourTurnBoardRowSchema = z
   .object({
     kind: z.literal('your_turn'),
@@ -2329,7 +2329,7 @@ const TutorTurnWhiteboardRowSchema = z
 
 /**
  * A malformed board on this DISPLAY-ONLY read degrades to no board rather
- * than failing the whole transcript fetch (§1.14: "defaulting is acceptable
+ * than failing the whole transcript fetch ("defaulting is acceptable
  * only for display-only reads" — this data is never read, modified and
  * written back; a replay simply shows no board, exactly as it already does
  * for any row written before migration 0058). Logged loudly rather than
@@ -2359,13 +2359,13 @@ function readTurnWhiteboard(raw: unknown, turnId: string): TutorTurnWhiteboard |
  * `TutorTurnWhiteboardRowSchema` above uses for the sibling v3 visual field,
  * and for the same reason: this package and `oracle` share no types, and a
  * malformed or historically-stale row must be caught at THIS side of that
- * duplication rather than trusted on a TypeScript assertion alone (round 35 /
- * round 113's own lesson, applied here before the identical gap could repeat
+ * duplication rather than trusted on a TypeScript assertion alone (the earlier
+ * lesson, applied here before the identical gap could repeat
  * it under a different field name).
  */
 const DemonstrateStepRowSchema = z
   .object({
-    // Widened to 4 families 2026-09-02 (/TUTOR_INSTRUMENTS.md Sprint 2) — see
+    // Widened to 4 families 2026-09-02 — see
     // `DemoStepSchema`'s own comment (oracle/src/tutor/turnSchema.ts).
     kind: z.enum(['add', 'remove', 'pause', 'place', 'assign', 'pair', 'move']),
     denomination: z.number().positive().max(10_000).optional(),
@@ -2382,7 +2382,7 @@ const TutorTurnDemonstrateRowSchema = z.array(DemonstrateStepRowSchema).min(1).m
 
 /**
  * A malformed demonstration on this DISPLAY-ONLY read degrades to none
- * rather than failing the whole transcript fetch — the identical §1.14
+ * rather than failing the whole transcript fetch — the identical
  * reasoning `readTurnWhiteboard` above already documents in full: this data
  * is read, never modified or written back, and a family's whole conversation
  * history must not go down over one corrupt row. Logged loudly rather than
@@ -2413,15 +2413,15 @@ export interface InsertTurnInput {
   source: 'model' | 'scripted' | 'stt';
   moderation?: Record<string, unknown>;
   /**
-   * Found by adversarial review, round 35 (2026-08-30, HIGH): this field
+   * Found by adversarial review (2026-08-30, HIGH): this field
    * did not exist at all, so a session that used the whiteboard lost it
    * silently on replay and on the guardian transcript viewer (migration
    * 0058).
    */
   whiteboard?: TutorTurnWhiteboard | null;
   /**
-   * Found while investigating ORACLE.md §19.5's "replaying `demonstrate`
-   * animations" backlog item, 2026-09-01 — the identical gap round 35 found
+   * Found while  investigating the "replaying `demonstrate`
+   * animations" backlog item, 2026-09-01 — the identical gap found
    * for `whiteboard` above, on the tutor's OTHER v3 turn-schema visual
    * field: this field did not exist at all, so a session where the tutor
    * demonstrated on the money tray lost that fact silently on replay and on
@@ -2429,7 +2429,7 @@ export interface InsertTurnInput {
    */
   demonstrate?: TutorTurnDemonstrateStep[] | null;
   /**
-   * Class III / S17 (TUTOR_INSTRUMENTS.md §3.4, migration 0070): the same
+   * The same
    * live-only-field gap `demonstrate` above closes, closed identically —
    * this field did not exist at all, so a session that started a roleplay
    * scene would have lost that fact silently on replay and on the guardian
@@ -2482,7 +2482,7 @@ export async function listTutorTurns(sessionId: string): Promise<TutorTurnRow[] 
   }));
 }
 
-// ── Class V artifacts: plan & notebook (migration 0069, TUTOR_INSTRUMENTS.md §3.6) ──
+// ── Class V artifacts: plan & notebook (migration 0069) ──
 
 export interface TutorPlanRow {
   user_id: string;
@@ -2535,7 +2535,7 @@ export interface TutorNotebookEntryRow {
  * Copies `whiteboard` into a new kept-board row — never a reference, see
  * migration 0069's own header for why (sessions purge at 90 days). Returns
  * false on any failure; the caller must refuse rather than report success on
- * a "keep" that did not actually land (§1.14).
+ * a "keep" that did not actually land.
  */
 export async function insertNotebookEntry(input: {
   userId: string;
@@ -2597,13 +2597,13 @@ export interface TutorSegmentRow {
 }
 
 /*
- * THE REVIEW QUEUE READER (/ORACLE.md §7.3, closed 2026-08-28).
+ * THE REVIEW QUEUE READER (closed 2026-08-28).
  *
  * Live-generated segments have been SAMPLED into `review_status='pending'`
- * since migration 0047 — and nothing read the column. §15.2 item 6 called it
+ * since migration 0047 — and nothing read the column. It was called
  * out: post-hoc human review is one of the eight compensating controls that
  * make live generation acceptable for a minor without a human in the loop,
- * it is asserted to counsel in /LEGAL/AI_TUTOR_LEGAL_REVIEW.md §5, and a
+ * it is asserted to counsel, and a
  * control that exists only as an unread flag is a control that does not
  * exist. These two functions, plus the /admin/tutor/review-queue surface,
  * are the reader.
@@ -2650,7 +2650,7 @@ export async function setTutorReviewStatus(
 }
 
 /*
- * THE RETENTION SWEEP'S OWN MONITORING (/ORACLE.md §15.2 item 4, closed
+ * THE RETENTION SWEEP'S OWN MONITORING (closed
  * 2026-08-31).
  *
  * The nightly sweep (`routes/tutor.ts`'s `/retention/purge`, called by
@@ -2674,7 +2674,7 @@ export async function setTutorReviewStatus(
 
 /** Written by `routes/tutor.ts` after every purge that reaches the database —
  * even one that deletes zero sessions, because "the sweep ran and found
- * nothing due" and "the sweep never ran" must be distinguishable (§1.14). */
+ * nothing due" and "the sweep never ran" must be distinguishable. */
 export const RETENTION_SWEEP_AUDIT_ACTION = 'tutor.retention.swept';
 
 export interface TutorRetentionStatus {
@@ -2709,7 +2709,7 @@ interface AuditLogRow {
  * Reads the most recent recorded sweep. `null` means the READ itself failed
  * (an unreachable database) — distinct from a `stale: true` result, which
  * means the read succeeded and found nothing recent. Collapsing those two
- * would be exactly the "upstream did not answer" defaulting §1.14 forbids: a
+ * would be exactly the "upstream did not answer" defaulting forbidden here: a
  * database outage would report as "the sweep has never run," which is a
  * different, and differently alarming, claim than the one that would actually
  * be true.
@@ -2737,7 +2737,7 @@ export async function getTutorRetentionStatus(now: Date = new Date()): Promise<T
  * `'conflict'` — a concurrent request already claimed the identical
  * candidate for this session; the caller must re-run its own ladder
  * selection against a fresh read and retry, never treat this as a hard
- * failure. `null` — a genuine transport/DB failure (§1.14: distinguishable
+ * failure. `null` — a genuine transport/DB failure (distinguishable
  * from an ordinary "someone else got there first").
  *
  * FOUND BY ADVERSARIAL REVIEW SWEEP tutor-review-sweep-101
@@ -2761,8 +2761,7 @@ export async function getTutorRetentionStatus(now: Date = new Date()): Promise<T
  * (1) and the learner-memory pair (2) — this invariant is per-session, not
  * per-learner, and must never contend with any of those three). An empty
  * result set is the conflict signal; the route's own retry loop is what
- * turns that into "the next distinct candidate" rather than a 502. See
- * `RUNBOOK.md` Round 109.
+ * turns that into "the next distinct candidate" rather than a 502.
  */
 export async function insertTutorSegmentChecked(input: {
   sessionId: string;
@@ -2863,7 +2862,7 @@ export interface TutorPackRow {
   locale: string;
   pack: Record<string, unknown>;
   status: string;
-  /** C.6 columns (curated-pack migration); absent on an older schema. */
+  /** Curated-pack columns (curated-pack migration); absent on an older schema. */
   pack_version?: number;
   content_hash?: string | null;
   source?: string;
@@ -2874,7 +2873,7 @@ export interface TutorPackRow {
  *
  * `status=eq.published` is not a filter to be relaxed for testing: a pack in
  * `review` has not been read by a human, and the whole point of tier 2 is that
- * one has. The lesson pipeline pins the same rule with a test and so does this.
+ * one has. The lesson pipeline applies the same rule and so does this.
  */
 export async function findPublishedPack(
   skillKey: string,
@@ -2931,7 +2930,7 @@ export async function listSafetyFlags(userId: string, limit = 50): Promise<Safet
 
 // ── Placement safety flags (0065) ────────────────────────────────────────────
 //
-// The SECOND, separate flags table /ORACLE.md §4.1b's own "not yet done" note
+// The SECOND, separate flags table the earlier "not yet done" note
 // asked for: a flagged placement-intake utterance used to be a console.error
 // and nothing else, because placement runs before any `tutor_sessions` row
 // exists for `tutor_safety_flags.session_id` to name. Written from
@@ -2978,7 +2977,7 @@ export async function listPlacementSafetyFlags(
   );
 }
 
-// ── Trajectory emission (V4 harness backlog — /ORACLE.md §20.7, migration 0066) ──
+// ── Trajectory emission (V4 harness backlog, migration 0066) ──
 
 export interface TrajectoryStepInput {
   turnSeq: number;
@@ -2992,11 +2991,11 @@ export interface TrajectoryStepInput {
   misconceptionCode: string | null;
   kcId: string | null;
   kcMode: 'new' | 'review' | 'probe' | 'remediation' | null;
-  /** C.10 evidence (absent from an Oracle build that predates it). */
+  /** Mastery evidence (absent from an Oracle build that predates it). */
   evidenceRule?: 'mastery' | 'remediation' | 'rescue' | null;
   evidenceObservations?: number | null;
   evidenceRequired?: number | null;
-  /** GAP-FIX-R2: correct answers the evidence chain set aside (absent from an older Oracle). */
+  /** Correct answers the evidence chain set aside (absent from an older Oracle). */
   evidenceDiscounted?: 'none' | 'too_fast' | 'hint_assisted' | 'too_fast_and_hint_assisted' | null;
   masteryRevoked?: boolean;
 }
@@ -3005,7 +3004,7 @@ export interface TrajectoryStepInput {
  * Bulk-inserts one session's worth of controller decisions in ONE call.
  * Oracle batches the whole session (fire-and-forget, after it ends — see
  * `oracle/src/session/trajectory.ts`) rather than one call per turn, so this
- * never adds a request to the live turn path (§2.7 of oracle/AGENTS.md).
+ * never adds a request to the live turn path (see oracle).
  *
  * `on_conflict=session_id,turn_seq` + `resolution=ignore-duplicates` is the
  * same idempotency idiom `insertTutorTurn` already uses against
@@ -3056,5 +3055,5 @@ export async function insertTutorTrajectory(
   return res !== null;
 }
 
-// ── Daily budget (/ORACLE.md §15) ───────────────────────────────────────────
+// ── Daily budget ───────────────────────────────────────────
 

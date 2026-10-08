@@ -19,7 +19,7 @@ export function RequireGuest({ children }: { children: ReactNode }) {
   const { session, isGuest } = useAuth();
 
   if (session === undefined) return null; // restoring from storage
-  // GAP-FIX-R5: a signed-in account with a pending Tutor invite goes on to it.
+  // A signed-in account with a pending Tutor invite goes on to it.
   if (session && !isGuest) return <Navigate to={continueAfterSignIn(undefined, APP_HOME)} replace />;
   return <>{children}</>;
 }

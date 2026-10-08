@@ -6,7 +6,7 @@ import {
 } from '../design/learnerRegisterPolicy.generated';
 
 /*
- * B.23 (S05.3f): the learner's age register, as Core resolved it.
+ * The learner's age register, as Core resolved it.
  *
  *   GET  /learn/register             { register, copy_band, policy_version, graduation }
  *   POST /learn/register/graduation  { register }  (the learner saw the graduation)

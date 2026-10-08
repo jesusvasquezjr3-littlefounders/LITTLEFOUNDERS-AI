@@ -7,11 +7,11 @@ import { getConfig } from '../config.js';
  * Oracle owns the model call, the injection fence and the moderation pass
  * (oracle/src/tutor/placementIntake.ts). Core owns two things Oracle must never
  * see: the learner's birth date, which is converted to a BAND here and never
- * forwarded (/AGENTS.md §1.9), and the 12+ floor, which is enforced here
+ * forwarded, and the 12+ floor, which is enforced here
  * because Core is the only service that can.
  *
  * EVERY failure returns null, and a null means "run the deterministic path".
- * That is the §1.14 rule applied to an enhancement: the intake is optional
+ * That is the fail-open rule applied to an enhancement: the intake is optional
  * infrastructure, so an Oracle that is down, slow, unconfigured or returning
  * nonsense costs a learner a nicer first question and nothing else. It must
  * never be able to stop someone from being placed.
@@ -64,7 +64,7 @@ export interface PlacementIntakeOutcome {
  *
  * Returns null for anyone under 12 and for an unknown birth date. Unknown maps
  * to "no intake" deliberately: the alternative is offering a free-text box to
- * someone who might be seven, on the strength of a missing field. §1.9's
+ * someone who might be seven, on the strength of a missing field. The
  * carve-out is for learners we KNOW are old enough, not for ones we cannot rule
  * out.
  */
@@ -99,11 +99,11 @@ export async function runPlacementIntake(request: PlacementIntakeRequest): Promi
     const { available, priorFraction, reflection, source, flagged } = parsed.data.data;
     if (!available || priorFraction === null || reflection === null || source === null) return null;
     if (flagged) {
-      // Loud on purpose (§1.9): this is the only signal today that a
+      // Loud on purpose: this is the only signal today that a
       // learner's placement-intake text was flagged rather than Oracle
       // simply being unavailable. `request.learnerText` is deliberately NOT
       // logged here — the category/severity is the actionable part, and the
-      // raw text is exactly what §1.9 minimizes exposure of.
+      // raw text is exactly what the kid-safety rule minimizes exposure of.
       console.error(
         `[core] placement intake blocked a flagged utterance: ${flagged.category} (${flagged.severity})`,
       );

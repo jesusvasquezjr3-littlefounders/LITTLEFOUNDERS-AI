@@ -7,8 +7,7 @@ import '../design/system.css';
 import './account.css';
 
 /*
- * P3, SETTINGS (Product 10 A.6, E.4, E.6, E.8, E.13, H.1, C.4/OD-18, C.7;
- * Frontend Bible 02 §4.5, §9.8, 06).
+ * SETTINGS.
  *
  * One neutral page of cards in one reading column, composed by the route
  * from these presentational parts and the rebuilt panels it passes in (the
@@ -16,12 +15,12 @@ import './account.css';
  * and sign-out, account deletion). Every age-tier rule is decided by Core;
  * this page states the same truth:
  *
- *   - A.6: a child account (the kid role) has no email of its own and keeps
+ *   - A child account (the kid role) has no email of its own and keeps
  *     its username (the sign-in name derives from it). The email row is a
  *     note, the username a read-only field that says why. Core refuses both
  *     changes anyway (KID_EMAIL_FORBIDDEN, KID_USERNAME_LOCKED).
- *   - E.4: the birth date is shown, never edited here.
- *   - E.13: a minor's name or username that could help a stranger find them
+ *   - The birth date is shown, never edited here.
+ *   - A minor's name or username that could help a stranger find them
  *     is refused by Core (PROFILE_FIELD_UNSAFE) and the field says so.
  *   - A guest has no sign-in details yet: the page offers the account upgrade
  *     instead of email and password rows.
@@ -82,8 +81,8 @@ export const USERNAME_PATTERN = /^[a-z0-9_]{3,20}$/;
 export function DetailsCard({ copy, locale, kid, form, onField, onSave }: {
   copy: SettingsCopy; locale: string;
   /**
-   * A.6: a child account keeps its username. A child also reads the youngest
-   * register (06 §3.1: 25 words in the first view), so the two helper lines an
+   * A child account keeps its username. A child also reads the youngest
+   * register (25 words in the first view), so the two helper lines an
    * adult reads (what the language drives, that the birth date is fixed here)
    * are left out: the row without a control already says it cannot be edited.
    */
@@ -103,7 +102,7 @@ export function DetailsCard({ copy, locale, kid, form, onField, onSave }: {
       <TextField label={copy.name} value={form.displayName} maxLength={80} autoComplete="nickname" required error={nameError} errorLive={form.errors.displayName !== 'required'}
         onChange={(event) => onField('displayName', event.target.value)} />
       {kid ? <div className="lf-settings-row" data-field="username">
-        {/* A.6: a child's username is shown, never offered as a field it cannot change. */}
+        {/* A child's username is shown, never offered as a field it cannot change. */}
         <div className="lf-settings-row-text">
           <span className="lf-settings-row-label" data-copy-role="body">{copy.username}</span>
           <span className="lf-settings-row-value ugc" data-copy-role="data">{form.username}</span>
@@ -140,7 +139,7 @@ export interface PasswordChangeState { open: boolean; current: string; next: str
 
 export function SignInCard({ copy, kid, email, emailChange, passwordChange, onEmail, onPassword }: {
   copy: SettingsCopy;
-  /** A.6: a child account has no email of its own, by design. */
+  /** A child account has no email of its own, by design. */
   kid: boolean;
   email: string | null;
   emailChange: EmailChangeState;

@@ -9,12 +9,12 @@ import { resolveCover, resolveLook } from '@/rebuild/account/avatar/avatarKit';
 import { isOffline, useProfileScreenEnvironment } from './profileRouteKit';
 
 /*
- * /@username (P6): the data plane of the rebuilt public profile. Core's
- * GET /profiles/:username decides everything (E.1, E.5, E.8, E.13): whether
+ * /@username: the data plane of the rebuilt public profile. Core's
+ * GET /profiles/:username decides everything: whether
  * the profile exists for this viewer at all (one NOT_FOUND for "does not
  * exist", "blocked" and "not visible", never saying which), a private teen's
  * card, the Tutor verdict, and how this viewer may connect. The parser reads
- * only the fields the screen shows (E.13: a field Core might add later never
+ * only the fields the screen shows (a field Core might add later never
  * reaches the page by accident), and a malformed answer is a failure with a
  * retry, never a guessed profile. Every action is confirmed by Core's receipt
  * before the page changes.
@@ -76,7 +76,7 @@ export function connectFor(parsed: ParsedPublicProfile): ConnectView {
   }
   if (parsed.self) return { kind: 'self' };
   // Unfollowing a child or a private teen ends what this viewer can see of them; a child viewer
-  // whose connections its Tutor manages cannot follow again on its own (W2P.3): both ask first.
+  // whose connections its Tutor manages cannot follow again on its own: both ask first.
   if (parsed.isFollowing) {
     const leaving = parsed.guardianTier || parsed.mode === 'teenRequest' || parsed.mode === 'managed';
     return { kind: 'follow', following: true, leaving, busy: false, error: null };
@@ -95,7 +95,7 @@ const REQUEST_REFUSALS: Record<string, RequestStatus> = {
   SOCIAL_REQUEST_LIMIT: 'limit',
   SOCIAL_ALREADY_CONNECTED: 'connected',
   PROFILE_REVIEW_REQUIRED: 'review',
-  // GAP-FIX-R8 social: an account without a @username chooses one before it asks a teen.
+  // An account without a @username chooses one before it asks a teen.
   USERNAME_REQUIRED: 'handle',
 };
 
@@ -170,7 +170,7 @@ function ScopedPublicProfile({ username }: { username: string }) {
     busy.current = false;
     if (!alive.current) return;
     const receipt = result?.data;
-    // Only a pending receipt that made no follow is a success (E.1, E.8).
+    // Only a pending receipt that made no follow is a success.
     if (receipt && typeof receipt.requestId === 'string' && receipt.status === 'pending' && receipt.following === false) {
       setConnect((connect) => connect.kind === 'request' ? { ...connect, status: 'pending' } : connect);
       return;

@@ -1,6 +1,6 @@
 /*
- * The guardian "what is happening" narrative (/ORACLE.md §12, 2026-09-01) —
- * closing the §19.5 v3-tail item of the same name.
+ * The guardian "what is happening" narrative (2026-09-01) —
+ * a v3-tail item.
  *
  * Pure and deterministic, on purpose: everything it needs already exists as
  * structured data Core computed for another reason —
@@ -13,7 +13,7 @@
  * choice, not a placeholder for one: the evidence above is rich enough to
  * say something true and specific without inventing prose, and skipping a
  * call avoids new cost, new latency, and a new privacy-review surface for a
- * feature that does not need one (AGENTS.md §1.14 — prefer the boring,
+ * feature that does not need one (prefer the boring,
  * verifiable path).
  *
  * No I/O in this file — the route resolves attempts/titles/locale and hands
@@ -52,12 +52,12 @@ export interface SessionNarrative {
   gradedTotal: number | null;
 }
 
-/** How many topics a single narrative sentence names — /ORACLE.md §12's own cap philosophy (`skillKeys.slice(0, 5)`), tightened here because this is prose a parent reads once, not a machine-readable list. */
+/** How many topics a single narrative sentence names — the same cap philosophy as elsewhere (`skillKeys.slice(0, 5)`), tightened here because this is prose a parent reads once, not a machine-readable list. */
 const MAX_NARRATIVE_TOPICS = 2;
 
 /**
  * Builds one session's narrative, or `null` when there is genuinely nothing
- * topic-specific or numeric to report (AGENTS.md §1.14: emit nothing rather
+ * topic-specific or numeric to report (emit nothing rather
  * than a confident, content-free sentence).
  *
  * Tiering, richest first:

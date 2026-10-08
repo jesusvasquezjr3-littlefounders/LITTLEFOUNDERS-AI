@@ -1,6 +1,5 @@
-# Auto-update for Pulse's pinned upstream images (pulse/AGENTS.md § upgrade
-# protocol). Dependabot (native, zero external infra — chosen over the hosted
-# Renovate app, see WALKTHROUGH.md decision log 2026-07-20) watches each
+# Auto-update for Pulse's pinned upstream images. Dependabot (native, zero
+# external infra — chosen over the hosted Renovate app) watches each
 # Dockerfile FROM pin and opens bump PRs; patch bumps automerge after CI via
 # .github/workflows/pulse-dependabot-automerge.yml, minor/major wait for
 # human review (they can carry schema migrations).
@@ -22,7 +21,7 @@ updates:
       - "dependencies"
     ignore:
       # ClickHouse and Postgres move ONLY alongside the Plausible pin (the
-      # combination upstream tests — pulse/AGENTS.md #3). Majors are manual.
+      # combination upstream tests). Majors are manual.
       - dependency-name: "clickhouse/clickhouse-server"
         update-types: ["version-update:semver-major"]
       - dependency-name: "postgres"

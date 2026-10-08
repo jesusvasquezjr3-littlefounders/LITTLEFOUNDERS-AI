@@ -5,12 +5,12 @@ import {
 } from './v2LessonDocument.js';
 
 /*
- * GAP-FIX-R6 (staff-ops): the human review sees what a child will see.
+ * The human review sees what a child will see.
  *
- * Product 10 G.2 ("no lesson reaches a child without human approval") and
- * Appendix C Part 3 Stage 3 (Pedagogical Human Review judges the age register,
- * the autonomy mechanism and the reasoning exercise) need the reviewer to play
- * the lesson in the learner's own renderer. For a v2 document (OD-24) that is
+ * No lesson reaches a child without human approval, and the pedagogical
+ * human review (which judges the age register, the autonomy mechanism and
+ * the reasoning exercise) needs the reviewer to play
+ * the lesson in the learner's own renderer. For a v2 document that is
  * the rebuilt lesson view, fed exactly what GET /learn/lessons/:id feeds it:
  *
  *   - the answerless client document (stripAnswers, then the authored

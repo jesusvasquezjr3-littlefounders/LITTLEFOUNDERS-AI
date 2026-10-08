@@ -281,12 +281,12 @@ CLIPS = {
 
     # `peek` leans the torso 13 degrees sideways and rotates the hips with it,
     # and it never touches the arms — on Zara and Liruf that is fine. Rho stands
-    # with his hands 1.2 cm from his thighs (TUTOR_3D.md §4.2a), so the lean
+    # with his hands 1.2 cm from his thighs, so the lean
     # brings the thigh up THROUGH his hand: at t=0.80 more than half of it was
     # inside his trousers with only the fingers still showing. The fix is the
     # smallest one that works — hold both arms a few degrees out for the length
     # of the lean, which is what a person does to look around a corner anyway.
-    # Found by `verify:clearance`; invisible to every other gate, because a hand
+    # Invisible to any check on the mesh, because a hand
     # inside a leg deforms nothing at all.
     "peek@rho": {
         "frames": 45,
@@ -495,9 +495,9 @@ CLIPS = {
             # The anticipation pulls the arm OUT, not back. This override was
             # written to fix the REACH and kept the shared clip's own -12 on Z,
             # which on Zara's rig pulls the arm behind her and on Liruf — whose
-            # rest orientation differs by 73 degrees (TUTOR_3D.md §3) — drove his
+            # rest orientation differs by 73 degrees — drove his
             # forearm INSIDE his belly. At t=0.23 only his claws were still
-            # visible. `verify:clearance` found it; nothing else could, because
+            # visible. Nothing in the mesh itself shows it, because
             # interpenetration deforms no triangle.
             (6, {"RightArm": (0, 0, 10), "Spine02": (0, -5, 0), "Head": (0, -6, 0)}),
             (15, {"RightArm": (-75, -20, -30), "RightForeArm": (-10, 0, 6),

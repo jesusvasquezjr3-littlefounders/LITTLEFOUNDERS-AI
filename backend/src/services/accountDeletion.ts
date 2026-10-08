@@ -4,7 +4,7 @@ import { insertAuditLog, serviceRest, serviceRestRaw } from './supabaseRest.js';
 import { extractBucketAndFile } from './tutorRetention.js';
 
 /*
- * Product 10 E.6 — account deletion, one lifecycle for every path.
+ * Account deletion, one lifecycle for every path.
  *
  * Self-service (adults, parents, independent teens, unscreened accounts):
  * a request is PENDING for ACCOUNT_DELETION_GRACE_DAYS, every session is
@@ -13,14 +13,14 @@ import { extractBucketAndFile } from './tutorRetention.js';
  * (a guest cannot come back to cancel, and holding a child's data for a
  * window nobody can use is the worse outcome). A parent-created child is
  * never deleted by the child, and
- * A.1's 90-day suspension purge runs through this same lifecycle.
+ * The 90-day suspension purge runs through this same lifecycle.
  *
  * THE ERASURE is four recorded steps, each idempotent, retried by the daily
  * sweep until all four are recorded:
  *   oracle     end any live or parked Mentor session of the account, so no
  *              turn is written back after the rows are gone
  *   core       one database transaction (migration account_erasure_function):
- *              inventory, non-cascading rows, links (A.1 suspension), the
+ *              inventory, non-cascading rows, links (suspension), the
  *              auth.users row and everything that cascades from it
  *   depot      delete every stored object the inventory named
  *   dataintel  drop the account's rows from the analytics warehouse
@@ -28,11 +28,11 @@ import { extractBucketAndFile } from './tutorRetention.js';
  * step is missing, so "completed" always means all four happened.
  *
  * Every read that decides something is shape-validated, and an unreadable
- * answer is 'unavailable', never "no request" (§1.14).
+ * answer is 'unavailable', never "no request".
  */
 
 export const ACCOUNT_DELETION_GRACE_DAYS = 14;
-/** Completion SLA for Appendix J's Deletion-Request Clarity metric: within this long of the stated date. */
+/** Completion SLA for the Deletion-Request Clarity metric: within this long of the stated date. */
 export const ACCOUNT_DELETION_SLA_HOURS = 48;
 
 export const DeletionPopulation = z.enum(['adult', 'parent', 'teen', 'unscreened', 'guest', 'child', 'kid']);

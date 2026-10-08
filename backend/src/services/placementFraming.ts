@@ -1,10 +1,10 @@
 import type { DoneStep, PlacementMethod } from './placementAlgorithm.js';
 
 /*
- * B.15 (S05.3d): placement outcome framing as accompaniment, not a verdict.
+ * Placement outcome framing as accompaniment, not a verdict.
  *
  * Core classifies every outcome into one closed frame; the client owns the
- * words (three locales, the Copy Budget and the B.15 lexicon gate in
+ * words (three locales, the copy budget and the growth-oriented lexicon in
  * frontend/src/rebuild/learning/placementOutcome.ts). The frame carries what
  * the learner needs to hear and nothing that could rank them: no score, no
  * count of right or wrong answers, no percentile and no comparison with any
@@ -34,7 +34,7 @@ export function placementFrame(done: Pick<DoneStep, 'method' | 'creditedLessonId
 }
 
 /**
- * The exact keys a placement result may carry. A test pins the response to
+ * The exact keys a placement result may carry. The response is limited to
  * this list so a comparative or score field cannot be added by accident.
  */
 export const PLACEMENT_RESULT_KEYS = [

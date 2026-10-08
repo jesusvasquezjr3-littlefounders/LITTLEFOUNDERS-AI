@@ -1,10 +1,10 @@
 /*
- * Product C.24: THE MENTOR-QUALITY DASHBOARD, as staff read and act on it.
+ * THE MENTOR-QUALITY DASHBOARD, as staff read and act on it.
  *
  * Read side: the latest snapshot the evaluation loop stored, merged with the
  * signal registry (so a signal with no data yet still shows, as such), every
  * active flag with its owner role, the named owners and the weekly review
- * record. Freshness (Appendix F §1.4: every consolidated signal within 24
+ * record. Freshness (every consolidated signal within 24
  * hours) and the owners' review completion are computed here, at read time,
  * so a loop that stopped running shows as stale rather than as calm.
  *
@@ -15,8 +15,8 @@
  *   - a named owner signs the weekly review of their role's signals;
  *   - staff with `manage_users` name or remove an owner (the person must be
  *     staff who can read analytics);
- *   - a named owner records a per-release manual audit (B.25, B.22, B.20;
- *     GAP-FIX-R2) through `record_release_audit`, which re-checks the owner
+ *   - a named owner records a per-release manual audit
+ *     through `record_release_audit`, which re-checks the owner
  *     role in SQL and writes the audit row in the same transaction.
  * The route layer requires `view_analytics` before any of this runs; the
  * named-owner rule is enforced HERE, against the database, never by the UI.
@@ -157,7 +157,7 @@ export async function getMentorQualityDashboard(now = new Date(), viewerId: stri
     owners: owners.map((o) => ({ role: o.owner_role, userId: o.user_id, displayName: nameOf.get(o.user_id) ?? null, assignedAt: o.assigned_at })),
     // Which roles the reader is named for: the client shows actions only there (Core still enforces).
     viewerOwnerRoles: viewerId === null ? [] : OWNER_ROLES.filter((role) => owners.some((o) => o.owner_role === role && o.user_id === viewerId)),
-    // GAP-FIX-R2 (Appendix C 1.2): the latest per-release audit of each kind, for the owner's form.
+    // The latest per-release audit of each kind, for the owner's form.
     releaseAudits: {
       cadenceDays: T.releaseAuditCadenceDays,
       kinds: RELEASE_AUDIT_KINDS.map((kind) => {
@@ -248,7 +248,7 @@ export async function resolveFlag(flagId: string, actorId: string, note: string,
 
 export type ReviewResult = { ok: true; week: string } | { ok: false; code: 'not_owner' | 'already' | 'unavailable' };
 
-/** The weekly sign-off (Appendix F §1.4 Dashboard Usage Rate): one per owner, role and ISO week. */
+/** The weekly sign-off (Dashboard Usage Rate): one per owner, role and ISO week. */
 export async function recordOwnerReview(actorId: string, role: OwnerRole, note: string | null, now = new Date()): Promise<ReviewResult> {
   const owner = await isNamedOwner(actorId, role);
   if (owner === null) return { ok: false, code: 'unavailable' };
@@ -320,7 +320,7 @@ export async function setOwner(input: { role: OwnerRole; userId: string; action:
 
 export { OWNER_ROLES };
 
-// ── Per-release manual audits (Appendix C 1.2; B.25, B.22, B.20) ─────────────
+// ── Per-release manual audits ─────────────
 
 export type ReleaseAuditResult = 'recorded' | 'not_owner' | 'duplicate' | 'invalid' | 'unavailable';
 

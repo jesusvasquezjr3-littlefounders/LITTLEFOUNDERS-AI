@@ -7,7 +7,7 @@ import { APP_HOME } from '@/app-shell/home';
  * Role gate for app routes (client-side UX only — real authorization lives
  * in RLS + Core; this just keeps locked sections out of reach in the UI).
  * `role` accepts a single role or an any-of set — the staff console unlocks
- * for admin OR superadmin (/AGENTS.md §1.4: both hold the console
+ * for admin OR superadmin (both hold the console
  * capabilities; only superadmin-exclusive panels gate on the single role).
  */
 export function RequireRole({ role, children }: { role: string | string[]; children: ReactNode }) {

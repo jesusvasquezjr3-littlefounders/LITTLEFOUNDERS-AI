@@ -6,13 +6,13 @@ import { OwnFollowersRoute, OwnFollowingRoute, PublicFollowersRoute, PublicFollo
 import { PublicProfileRoute } from '@/routes/app/profile/PublicProfileRoute';
 
 /*
- * Lane 5 (profile): the learner's own profile, avatar, settings and social
- * lists, and public profiles at /@username. App.tsx (Lane 0) mounts these
+ * Profile routes: the learner's own profile, avatar, settings and social
+ * lists, and public profiles at /@username. App.tsx mounts these
  * inside the signed-in app shell (RequireAuth + RequireOnboarded).
  *
- * Every route is a rebuilt screen: /profile (P1), /profile/avatar (P2) and
- * /profile/settings (P3) since W2P.1 (`rebuild/account/`); the people lists
- * (P4, P5, P7, P8) and public profiles (P6) since W2P.2 (`rebuild/social/`).
+ * Every route is a rebuilt screen: /profile, /profile/avatar and
+ * /profile/settings (`rebuild/account/`); the people lists
+ * and public profiles (`rebuild/social/`).
  */
 export const profileShellRoutes = (
   <>

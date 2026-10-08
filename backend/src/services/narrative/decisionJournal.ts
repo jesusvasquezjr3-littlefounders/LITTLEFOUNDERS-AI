@@ -1,7 +1,7 @@
 import type { GradingSegment } from '../lessonDocument.js';
 
 /*
- * B.9 (S05.3c) — the decision journal: the course engine's narrative state.
+ * The decision journal: the course engine's narrative state.
  *
  * WHAT IS RECORDED. A meaningful in-story decision is a point where the learner
  * was offered two or more real alternatives inside a story and picked one:
@@ -11,8 +11,8 @@ import type { GradingSegment } from '../lessonDocument.js';
  *   - dialogue_choice   every turn (the schema guarantees 2–4 replies);
  *   - would_you_rather  the one A-or-B pick.
  * Every other exercise type is explicitly NOT a story decision. The
- * classification below is exhaustive over the grader registry and pinned by a
- * test, so a new story type cannot silently skip the journal.
+ * classification below is exhaustive over the grader registry, so a new story
+ * type cannot silently skip the journal.
  *
  * WHERE IT COMES FROM. Core extracts the decisions from the answer it has just
  * graded, validated against the lesson document it served (a choice id that
@@ -31,7 +31,7 @@ export type DecisionSegmentType = 'story_branch' | 'dialogue_choice' | 'would_yo
 
 /**
  * Every grader type, classified. `true` = a story decision the journal records.
- * Adding a grader without adding it here fails decisionJournal.test.ts.
+ * A grader added without an entry here is not a story decision.
  */
 export const STORY_DECISION_TYPES: Readonly<Record<string, boolean>> = {
   story_branch: true,
@@ -91,7 +91,7 @@ export const STORY_DECISION_TYPES: Readonly<Record<string, boolean>> = {
 export const SNAPSHOT_MAX = 280;
 /**
  * The learner reads a snapshot again as narrative copy, so it also fits the
- * narrative Copy Budget (Bible 06: 30 words, 2 sentences; 24 words leaves room
+ * narrative copy budget (30 words, 2 sentences; 24 words leaves room
  * for the ×1.25 of es-MX and pt-BR measured on the same limit).
  */
 export const SNAPSHOT_MAX_WORDS = 24;
@@ -129,7 +129,7 @@ const fits = (text: string, max: number): boolean => text.length <= max && words
  * Fits authored text into the stored snapshot without inventing anything:
  * up to two whole sentences while they fit the character and word bounds,
  * else the first sentence's longest word-boundary prefix within them. The UI
- * renders the snapshot in full (D1), so the bound lives here, in the data.
+ * renders the snapshot in full, so the bound lives here, in the data.
  */
 export function fitSnapshot(markdown: string, max = SNAPSHOT_MAX): string | null {
   const text = plainText(markdown);
@@ -283,7 +283,7 @@ export interface RecallTarget {
   courseId: string;
   /** Topic ids in the same saga (story arc) as the target lesson. */
   sagaTopicIds: ReadonlySet<string>;
-  /** Knowledge-component ids per topic, for the target and the candidates' topics (B.6's shared graph). */
+  /** Knowledge-component ids per topic, for the target and the candidates' topics (the shared graph). */
   kcByTopic: ReadonlyMap<string, ReadonlySet<string>>;
 }
 
@@ -295,7 +295,7 @@ export type RecallRelevance = 'shared-skill' | 'same-arc';
 /**
  * Picks at most one earlier decision to resurface when a learner opens a
  * lesson. Relevant means the earlier decision's topic teaches a knowledge
- * component this lesson's topic teaches (the shared B.6 graph), or it sits in
+ * component this lesson's topic teaches (the shared graph), or it sits in
  * the same story arc (saga). Never a decision from this lesson, never another
  * course's, never one already shown in three other lessons. An entry already
  * resurfaced in THIS lesson is shown again, so a reload is stable.
@@ -325,7 +325,7 @@ function sharesSkill(c: JournalCandidate, targetKcs: ReadonlySet<string>, target
   return false;
 }
 
-// ── v2 story decisions (GAP-FIX-R1 learning, B.9 applied to the new catalog per OD-24) ──
+// ── v2 story decisions (the decision journal applied to the new catalog) ──
 
 /** The v2 story kinds, mapped onto the journal's existing decision types (record_learner_decisions accepts only these). */
 export const V2_STORY_DECISION_TYPES: Readonly<Record<string, DecisionSegmentType>> = {

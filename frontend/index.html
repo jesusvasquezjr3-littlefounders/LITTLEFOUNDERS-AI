@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>LittleFounders</title>
     <!--
-      The design system's two typefaces (Frontend Bible 02 D3), self-hosted:
-      no third-party font request on any page (OD-12). Preloaded because the
+      The design system's two typefaces, self-hosted:
+      no third-party font request on any page. Preloaded because the
       stylesheet that declares them (rebuild/design/system.css) arrives with
       the bundle, which would otherwise start both downloads late. `crossorigin`
       is required even same-origin: fonts are fetched in CORS mode, and
@@ -17,8 +17,7 @@
     <link rel="preload" as="font" type="font/woff2" href="/fonts/plus-jakarta-sans-latin-v1.woff2" crossorigin />
 
     <!--
-      THE BOOT VEIL (Frontend Bible 02 rule 2, D13 and rule 23; 04 §2 and §3;
-      02 §9.4).
+      THE BOOT VEIL.
 
       This is INLINE, in the <head>, and it has to be: it is the only styling
       that exists at the moment the browser paints its first frame. An external
@@ -38,15 +37,15 @@
       3. Nothing arrived; it appeared. Text popped in at whatever instant its
          bytes landed, with no entrance at all.
 
-      WHAT IT IS, rebuilt from the Bible (GAP-FIX-R5 F5-design-system): an
+      WHAT IT IS: an
       opaque ground in the token --base, nothing on it, and one dissolve. The
       legacy veil it replaces was a glass surface (an 18 px backdrop blur, a
-      breathing radial-gradient bloom, an off-token 560 ms curve). Rule 2
-      forbids glass and gradients, rule 23 forbids carrying the legacy look
-      over, and 02 §9.4 keeps idle motion for three things, none of them a
+      breathing radial-gradient bloom, an off-token 560 ms curve). The design
+      system forbids glass and gradients and carrying the legacy look
+      over, and keeps idle motion for three things, none of them a
       loading screen. The ground alone hides the shell: it is opaque.
 
-      MOTION (04 §2, §3). One screen replacing another is --dur-transition
+      MOTION. One screen replacing another is --dur-transition
       (380 ms): the veil leaves on the exit easing and the app arrives on the
       enter easing. Both live only inside `prefers-reduced-motion:
       no-preference`; with reduced motion the veil simply cuts away. The only
@@ -66,10 +65,10 @@
       :root {
         /*
          * Mirrors the design tokens (src/rebuild/design/tokens.css): the ground
-         * is --base in each mode (02 D4), the dissolve is --dur-transition and
-         * the two curves are --ease-exit and --ease-enter (04 §2). Duplicated
-         * on purpose (these must exist before any stylesheet has loaded) and
-         * pinned by src/__tests__/bootVeil.test.ts so the copies cannot drift.
+         * is --base in each mode, the dissolve is --dur-transition and
+         * the two curves are --ease-exit and --ease-enter. Duplicated
+         * on purpose (these must exist before any stylesheet has loaded), so
+         * the copies must be kept in step by hand.
          */
         --lf-boot-ground: #f4f5fd;
         --lf-boot-dissolve: 380ms;
@@ -192,7 +191,6 @@
        *
        * The storage key and the 'auto' semantics are src/theme/useTheme.tsx's,
        * copied because that module is inside the bundle this runs ahead of.
-       * src/theme/themeBoot.test.ts pins the two copies together.
        */
       (function () {
         var root = document.documentElement;

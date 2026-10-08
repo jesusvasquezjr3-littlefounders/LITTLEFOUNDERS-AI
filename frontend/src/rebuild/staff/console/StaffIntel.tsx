@@ -16,19 +16,19 @@ import { Facts, LoadFailure, Loading, Metrics, RangeSheet, saveDownload, shortId
 import { fill, labelOf, useConsoleCopy, type ConsoleCopy } from './staffConsoleCopy';
 
 /*
- * S6 Learning intel, with S8 Insights as one of its views (view_analytics),
- * W2T.3. Everything here is read from the warehouse through Core (read-only
+ * Learning intel, with Insights as one of its views (view_analytics).
+ * Everything here is read from the warehouse through Core (read-only
  * for this grant: Core refuses any other method without manage_support) and
  * from Core's own insight views. One window drives every read; the file
  * exports carry the same window, so a file cannot describe another period.
  *
  *   Overview     daily, weekly and monthly users, events, week-1 retention,
- *                activation, H.1's teen and guest disclosure coverage against
- *                its 100% target (Appendix O 1.1), a trend whose metric and
+ *                activation, the teen and guest disclosure coverage against
+ *                its 100% target, a trend whose metric and
  *                grain really change the read (the legacy selectors changed
  *                nothing), the activation funnel, who reaches what, and the
  *                unresolved anomalies.
- *   Insights     S8, reached from the navigation (G.5): learning evidence by
+ *   Insights     reached from the navigation: learning evidence by
  *                course, lesson and learner, skill health, and the paged raw
  *                event export Core has served all along (no screen had
  *                offered it since the Insights page was folded in).
@@ -37,9 +37,9 @@ import { fill, labelOf, useConsoleCopy, type ConsoleCopy } from './staffConsoleC
  *                engagement ranking of learners is not rebuilt: DP-05).
  *   Experiments & alerts   what is configured, read-only, with each alert's
  *                latest delivery outcome and the month's delivery rate
- *                against its 100% target (H.3, Appendix O 1.3).
+ *                against its 100% target.
  *
- * G.6: nothing here reads a Mentor transcript. A learner is named only for a
+ * Nothing here reads a Mentor transcript. A learner is named only for a
  * viewer who holds manage_users; everyone else sees a short id.
  */
 
@@ -127,7 +127,7 @@ function ExportButtons({ api, span }: { api: StaffApi; span: IntelWindow }) {
   </div>;
 }
 
-/** A rate against its target (Appendix O): the share, the target, and a verdict chip. */
+/** A rate against its target: the share, the target, and a verdict chip. */
 function TargetValue({ value, target }: { value: number | null; target: number }) {
   const { copy, locale } = useConsoleCopy();
   const format = useFormats(locale);
@@ -243,7 +243,7 @@ function OverviewView({ api, span }: { api: StaffApi; span: IntelWindow }) {
 }
 
 /* ------------------------------------------------------------------------- */
-/*  Insights (S8)                                                             */
+/*  Insights                                                             */
 /* ------------------------------------------------------------------------- */
 
 type Directory = 'courses' | 'lessons' | 'learners';

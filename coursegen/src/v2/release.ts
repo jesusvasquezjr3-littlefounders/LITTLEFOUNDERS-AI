@@ -1,9 +1,8 @@
-// The v2 write/publish stage (GAP-FIX-R1 learning; OD-17, OD-24, OD-23,
-// F-06/B.16). A new-catalog lesson reaches learners only through this chain:
+// The v2 write/publish stage. A new-catalog lesson reaches learners only through this chain:
 //
 //   1. emit        the per-market documents and answer keys (emit.ts),
 //                  each market with its own rubric when the plan gives one
-//                  (B.16 per-market answer keys);
+//                  (per-market answer keys);
 //   2. v2 gates    Forge content gates 11-16 (inside emit);
 //   3. Core check  `npm --prefix backend run forge-v2:check -- <file>`:
 //                  Core's strict contract plus the interactive-behaviour gate
@@ -14,13 +13,12 @@
 //                  with a manifest that attests exactly that document. For a
 //                  lesson that is already published, Vault stores the version
 //                  as PENDING and nothing a child sees changes until a staff
-//                  member releases it on the Content page (G.2, GAP-FIX-R2:
-//                  *_v2_staff_release_approval.sql); the result lists those.
-//   6. Stage 3     (GAP-FIX-R6, Appendix C Part 3) each published version's
-//                  review flags (gates 12, 14, 16, 17, 18, 19: findings a human
-//                  must judge) are recorded in Vault
-//                  (`record_forge_stage3_items`); no version goes live until a
-//                  Stage 3 pedagogical review resolves each of them.
+//                  member releases it on the Content page
+//                  (*_v2_staff_release_approval.sql); the result lists those.
+//   6. review      each published version's review flags (gates 12, 14, 16,
+//                  17, 18, 19: findings a human must judge) are recorded in
+//                  Vault (`record_forge_stage3_items`); no version goes live
+//                  until a human pedagogical review resolves each of them.
 //
 // Nothing here spends: no model, image or voice call. Steps 3-5 are injected
 // (child processes and the service-role RPC by default) so the stage is fully
@@ -41,10 +39,9 @@ const repoRoot = path.resolve(here, '../../..');
 /**
  * The Forge gates a v2 document runs (the manifest ids Vault requires, rows of
  * public.forge_v2_manifest_gates): gate 1 (contract, by Core), gates 11-16,
- * the v2 content gate and (GAP-FIX-R2, Appendix C Stage 2) the carried-over
+ * the v2 content gate and the carried-over
  * legacy document gates 2-9, plus reward-mechanic (17), wellbeing-language
- * (18) and age-register (19). check-forge-release-gate-parity keeps
- * this list equal to the migration rows.
+ * (18) and age-register (19). Keep this list equal to the migration rows.
  */
 export const V2_MANIFEST_GATES = RELEASE_CHECK_IDS
   .filter((id) => ['forge.gate.01.contract', 'forge.gate.02.age-vocabulary', 'forge.gate.03.currency-facts', 'forge.gate.04.arithmetic',
@@ -63,12 +60,12 @@ export interface V2ReleaseDeps {
   rpc?: (fn: string, body: Record<string, unknown>) => Promise<{ ok: boolean; status: number; body: unknown }>;
 }
 
-/** One Forge flag for the Stage 3 pedagogical reviewer, as Vault stores it (gate 1-99, message 1-600 characters). */
+/** One Forge flag for the pedagogical reviewer, as Vault stores it (gate 1-99, message 1-600 characters). */
 export interface Stage3Item { gate: number; message: string }
 export interface Stage3Record { lessonId: string; locale: string; versionId: string; items: Stage3Item[] }
 
 /**
- * Appendix C Part 3 Stage 3 (GAP-FIX-R6): the review flags of one market's
+ * The review flags of one market's
  * document. A plan-level flag (no locale) belongs to every market's version,
  * so each version's review resolves it. Duplicates are dropped.
  */
@@ -93,22 +90,22 @@ export interface V2ReleaseResult {
   documents: EmittedV2Document[];
   calls: V2PublishCall[];
   problems: string[];
-  /** G.2: versions of live lessons Vault queued for a staff release (Content page, Live updates). */
+  /** Versions of live lessons Vault queued for a staff release (Content page, Live updates). */
   pendingApproval?: { lessonId: string; locale: string; versionId: string }[];
   /**
-   * B.18 (GAP-FIX-R3): differentiated narration channels with no generated
+   * Differentiated narration channels with no generated
    * audio asset. Flagged, never silently shipped: learners get the text-only
    * plate until the audio exists; with `requireNarrationAudio` they block.
    */
   narrationWithoutAudio?: string[];
-  /** Stage 3 (GAP-FIX-R6): the review flags per published version; recorded in Vault on a real run, listed on a dry run. */
+  /** Human review: the review flags per published version; recorded in Vault on a real run, listed on a dry run. */
   stage3?: Stage3Record[];
 }
 
 /**
- * B.18 (GAP-FIX-R3): each Mentor-voiced segment whose narration channel is
+ * Each Mentor-voiced segment whose narration channel is
  * `differentiated` must name an `audio_ref` that Echo's audio manifest (the
- * assets audiogen generated, a paid run under OD-23) holds. Producing the
+ * assets audiogen generated, a paid run) holds. Producing the
  * audio is out of scope here; this only reports what is missing.
  */
 export function narrationWithoutAudio(documents: readonly EmittedV2Document[], audioManifest: Readonly<Record<string, unknown>> = {}): string[] {

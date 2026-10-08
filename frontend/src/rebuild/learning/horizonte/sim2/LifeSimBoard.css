@@ -1,4 +1,4 @@
-/* F3.3 life simulation board: a fan of 100 seeded futures under one slider choice. Tokens only. */
+/* Life simulation board: a fan of 100 seeded futures under one slider choice. Tokens only. */
 .lf-life { display: grid; gap: var(--spacing-3); justify-items: start; }
 .lf-life-chart { display: grid; grid-template-columns: auto minmax(0, 1fr); column-gap: var(--spacing-1); row-gap: var(--spacing-2); box-sizing: border-box; inline-size: 100%; max-inline-size: 42rem; padding: var(--spacing-3) var(--spacing-3) var(--spacing-2) var(--spacing-2); border-radius: var(--rounded-sm); background: var(--sunken); color: var(--content); }
 .lf-life-plot { grid-area: 1 / 2; display: block; inline-size: 100%; block-size: auto; overflow: visible; }

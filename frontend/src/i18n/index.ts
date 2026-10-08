@@ -3,17 +3,17 @@ import { initReactI18next } from 'react-i18next';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
 /*
- * Locale resources are fragmented per route area (frontend/AGENTS.md §i18n):
+ * Locale resources are fragmented per route area:
  * <locale>/common.json    — spread at the root: the not-found fallback, the
  *                           theme labels and the legacy 2D characters' greeting
  * <locale>/tutor.json    — the Mentor stage's scene and microphone strings
  * The legacy namespaces no screen reads any more (errors, auth, dashboard,
- * profile, learn, admin, onboarding, placement) left with the legacy UI in
- * S10L.1; marketing (the badge page's copy) left with its rebuild in S10L.3.
- * New UI never adds a namespace here (Frontend Bible 02 rule 23).
+ * profile, learn, admin, onboarding, placement) left with the legacy UI;
+ * marketing (the badge page's copy) left with its rebuild.
+ * New UI never adds a namespace here.
  *
  * The REBUILT UI's copy is deliberately not loaded here: it is one
- * `<locale>/rebuild-<namespace>.json` per wave-2 lane (core, site, learn,
+ * `<locale>/rebuild-<namespace>.json` per area (core, site, learn,
  * mentor, profile, staff), imported as typed JSON by the surface that
  * owns it, or merged by `./rebuild.ts` (REBUILD_NAMESPACES). A rebuilt string
  * missing from its namespace is then a type error, never a raw key on screen.
@@ -80,14 +80,11 @@ void i18n
     supportedLngs: [...LOCALES],
     interpolation: { escapeValue: false },
     /*
-     * The event this emits is what lets the test suite catch a key that only
-     * exists at runtime (see src/test-setup.ts).
-     *
-     * `check-t-keys` says it plainly in its own output: under a dynamic
-     * segment only the static namespace is verified, and the leaf keys below
-     * it are not checked and CANNOT be. There are around 170 such call sites.
-     * One of them shipped a key that did not exist and rendered as itself,
-     * in Spanish, across the top of the web-analytics chart.
+     * The event this emits signals a key that only exists at runtime: under a
+     * dynamic segment only the static namespace can be checked, and the leaf
+     * keys below it cannot. One such call site once shipped a key that did not
+     * exist and rendered as itself, in Spanish, across the top of the
+     * web-analytics chart.
      *
      * Costs nothing in production: i18next emits an event and carries on
      * rendering exactly as before. It is a signal, not a behaviour change.

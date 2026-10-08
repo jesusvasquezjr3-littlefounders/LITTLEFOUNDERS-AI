@@ -5,20 +5,20 @@ import '../design/system.css';
 import './accountDeletion.css';
 
 /*
- * Product 10 E.6: the account holder's own deletion, one copy-driven
+ * The account holder's own deletion, one copy-driven
  * component for every state of the flow.
  *
- * Law 5 is the point of E.6: the person sees the SHAPE and the TIMELINE of
+ * The point: the person sees the SHAPE and the TIMELINE of
  * the deletion before they confirm (when it happens, how to keep the account,
  * what goes and what stays, which children are paused) and the stated date
- * afterwards. Detail beyond the Copy Budget sits behind "What gets deleted"
- * (Bible 06 §4, layering), never in more words on the first view.
+ * afterwards. Detail beyond the first view sits behind "What gets deleted",
+ * never in more words on the first view.
  *
  * Core decides everything that matters (deletionClient.ts is the transport):
  * who may delete themselves, the grace period, the password or recent
- * sign-in, the children paused (A.1). This component renders the verdict it
+ * sign-in, the children paused. This component renders the verdict it
  * is given. A parent-created child sees who can delete the account instead
- * of a control. No celebration: a deletion is not on the OD-7 milestone list.
+ * of a control. No celebration: a deletion is not a milestone.
  */
 
 export interface AccountDeletionCopy {
@@ -194,7 +194,7 @@ function Ready({ copy, view, onStart, onBack, onConfirm, onSignIn }: {
   const errorId = useId();
   const needsPassword = view.reauth === 'password';
   const canConfirm = acknowledged && (!needsPassword || password.length > 0) && !view.submitting;
-  // A wrong password belongs to the password field (02 §9.8: the error sits
+  // A wrong password belongs to the password field (the error sits
   // directly under its control); the other two errors are about the request.
   const passwordError = view.error === 'password' ? copy.wrongPassword : undefined;
   const errorText = view.error === 'reauth' ? copy.reauth : view.error === 'failed' ? copy.failed : null;
@@ -219,7 +219,7 @@ function Ready({ copy, view, onStart, onBack, onConfirm, onSignIn }: {
     </>;
   }
   // The confirm step states what this account's deletion does to others
-  // (children it supervises alone are paused, A.1) right above the decision.
+  // (children it supervises alone are paused) right above the decision.
   return <>
     {view.pausedChildren > 0 ? <div className="lf-account-deletion-children">
       <Copy role="body">{view.pausedChildren === 1 ? copy.pausedOne : copy.pausedMany.replace('{count}', String(view.pausedChildren))}</Copy>

@@ -1,11 +1,10 @@
 #!/usr/bin/env node
 /*
- * `npm run tutor:judge-calibration` — Product C.23: calibrate every automated
+ * `npm run tutor:judge-calibration` — calibrate every automated
  * evaluation judge against a human panel before it is trusted for anything,
- * and re-verify it on a cadence (Appendix E §2.1, §3.2; Appendix F §1.3).
- * The runbook is docs/rebuild/mentor/JUDGE-CALIBRATION-POLICY.md.
+ * and re-verify it on a cadence.
  *
- * Zero spend: nothing here calls a model (OD-23). The paid step, running the
+ * Zero spend: nothing here calls a model. The paid step, running the
  * real judge over the seed set, is owner-run in Oracle.
  *
  *   --status [--json]            every registered judge: trust state, scope,
@@ -35,7 +34,7 @@
  *                                calibration instead (smaller strata; a failed
  *                                spot check un-trusts the judge until a new
  *                                calibration passes).
- *   --verify-proposal=FILE       Stage 3 of a Tier 2 change: may the transcript
+ *   --verify-proposal=FILE       A Tier 2 change: may the transcript
  *                                judge gate it? Reads the proposal record's
  *                                `stage3` and the calibration rows.
  */
@@ -331,7 +330,7 @@ async function record(): Promise<number> {
     }
     input = built.input;
   } else {
-    // The content judge's calibration file carries its ratings (S06.12 format).
+    // The content judge's calibration file carries its ratings.
     const { calibrationInputFrom } = await import('./live-content-report.js');
     const content = calibrationInputFrom(run as never);
     const asQ = (labels: Record<string, string>) => Object.fromEntries(Object.entries(labels).map(([id, l]) => [id, { approve: l as JudgeLabel }]));

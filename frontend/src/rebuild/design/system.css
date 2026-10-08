@@ -30,8 +30,8 @@ body { margin: 0; }
 .lf-rebuild[data-theme='dark'] { color-scheme: dark; --shadow-control: 0 1px 3px rgb(6 7 19 / .56); }
 .lf-rebuild *, .lf-rebuild *::before, .lf-rebuild *::after { box-sizing: border-box; }
 /*
- * The element baseline (S10 design-system gap fix). The legacy global sheet and
- * its Tailwind preflight no longer load outside the OD-24 island, so the reset
+ * The element baseline. The legacy global sheet and
+ * its Tailwind preflight no longer load, so the reset
  * every rebuilt surface was built on in the real app lives here, scoped to the
  * design-system root at zero specificity: any component rule wins over it, and
  * the preview entry and the real app now share one baseline.
@@ -52,7 +52,7 @@ body { margin: 0; }
 :where(.lf-rebuild) :where(img, svg, video, canvas, audio, iframe, embed, object) { display: block; vertical-align: middle; }
 :where(.lf-rebuild) :where(img, video) { max-inline-size: 100%; block-size: auto; }
 :where(.lf-rebuild) :where([hidden]) { display: none; }
-/* Element rules: every page is rebuilt, so they apply to the whole root (02 rule 23). */
+/* Element rules: every page is rebuilt, so they apply to the whole root. */
 .lf-rebuild :is(h1, h2, p) { margin: 0; }
 .lf-rebuild h1 { font: 700 1.75rem/1.12 'Plus Jakarta Sans', sans-serif; letter-spacing: -.005em; text-wrap: balance; }
 .lf-rebuild h2 { font: 600 1.5rem/1.25 'Plus Jakarta Sans', sans-serif; text-wrap: balance; }

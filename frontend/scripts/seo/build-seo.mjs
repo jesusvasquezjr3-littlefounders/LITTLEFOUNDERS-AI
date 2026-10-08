@@ -13,12 +13,11 @@
  *    crawler, which are precisely the consumers this exists for.
  * 2. It does not invent copy. Titles and descriptions come from site.mjs; the
  *    body shell is assembled from the SAME i18n JSON the running app renders
- *    (the rebuilt public site's `rebuild-site.json`, W2 Lane 1), so the
+ *    (the rebuilt public site's `rebuild-site.json`), so the
  *    prerendered page cannot drift from the page a person sees. Serving
  *    crawlers different content than users is cloaking, and it is penalised.
  * 3. It does not guess the routes. It fails the build if site.mjs and the
- *    app's own marketing-path allowlist disagree — the drift class that
- *    `paths:check` already guards on the analytics side.
+ *    app's own marketing-path allowlist disagree.
  *
  * FAILURE DIRECTION: a page this script does not emit falls through to the SPA
  * shell, which is marked `noindex`. So a bug here costs visibility, never a
@@ -383,8 +382,8 @@ export function loadMarketing(locale) {
 
 /**
  * llms-full.txt: the brief plus the text of every indexable page. Exported with
- * renderLlmsTxt so agent/tools/check-seo-surface.mjs audits exactly what ships
- * (OD-6: the AI is the Mentor, never "tutor"; Bible 02 rule 16: no em dash).
+ * renderLlmsTxt so what is checked is exactly what ships
+ * (the AI is the Mentor, never "tutor"; no em dash).
  */
 export function renderLlmsFullTxt(locale, marketing = loadMarketing(locale)) {
   return [
@@ -475,5 +474,5 @@ function main() {
   );
 }
 
-// Only when invoked directly (the frontend build), so the SEO audit can import the renderers.
+// Only when invoked directly (the frontend build), so the renderers can be imported.
 if (process.argv[1] && resolve(fileURLToPath(import.meta.url)) === resolve(process.argv[1])) main();

@@ -25,14 +25,14 @@ import { staffViewer } from '../../staff/console/staffConsoleApi';
 import { framed, type PreviewContext, type PreviewRegistry } from './types';
 
 /*
- * Lane 6 (staff): the staff console's rebuilt panels.
+ * Staff: the staff console's rebuilt panels.
  */
 
 /*
- * C.5 / C.6 preview fixtures for the staff surfaces. Default: everyday topics
- * open but RAISED after an issue, sensitive topics PAUSED by a Stage 7 trip.
+ * Preview fixtures for the staff surfaces. Default: everyday topics
+ * open but RAISED after an issue, sensitive topics PAUSED by a trip.
  * `?judge=uncalibrated` shows the state production starts in until the owner
- * runs the calibration (OD-23).
+ * runs the calibration.
  */
 const PREVIEW_LIVE_STATUS = (judge: string | null): LiveContentStatus => ({
   calibration: judge === 'uncalibrated'
@@ -64,7 +64,7 @@ const PREVIEW_REVIEW_ITEM = {
 } as const;
 
 /*
- * W2T.1 console screens on fixtures: ?state=ready|loading|error|refused|empty,
+ * Console screens on fixtures: ?state=ready|loading|error|refused|empty,
  * ?grants=a,b (an admin's named grants; default superadmin), ?write=failed|rejected.
  */
 type ConsoleRender = (props: { api: ReturnType<typeof fixtureApi>; viewer: ReturnType<typeof staffViewer> }) => JSX.Element;
@@ -94,7 +94,7 @@ export const staffPreviewScreens: PreviewRegistry = {
   </main>),
   'staff-live-content': framed(({ t, locale, theme, params }) => <main className="lf-preview lf-preview--staff-live-content" data-surface="app"
     data-screen="staff-live-content"><div className="lf-preview-content">
-    {/* C.5 / C.6 staff fixtures: ?state=ready|loading|failed, ?judge=uncalibrated, ?decide=failed|already, ?pack=refused|failed. */}
+    {/* Staff fixtures: ?state=ready|loading|failed, ?judge=uncalibrated, ?decide=failed|already, ?pack=refused|failed. */}
     <LiveContentStatusPanel copy={t.staffLiveContent} locale={locale} dark={theme === 'dark'}
       phase={params.get('state') === 'loading' ? 'loading' : params.get('state') === 'failed' ? 'failed' : 'ready'}
       status={PREVIEW_LIVE_STATUS(params.get('judge'))} />
@@ -108,7 +108,7 @@ export const staffPreviewScreens: PreviewRegistry = {
   </div></main>),
   'staff-mentor-quality': framed(({ t, locale, theme, params }) => <main className="lf-preview lf-preview--staff-mentor-quality" data-surface="app"
     data-screen="staff-mentor-quality"><div className="lf-preview-content">
-    {/* C.24 staff fixtures: ?state=ready|loading|failed, ?fresh=stale|never, ?viewer=none, ?flags=empty, ?act=failed|not_owner|changed, ?review=already|failed. */}
+    {/* Staff fixtures: ?state=ready|loading|failed, ?fresh=stale|never, ?viewer=none, ?flags=empty, ?act=failed|not_owner|changed, ?review=already|failed. */}
     <MentorQualityDashboard copy={t.staffMentorQuality} locale={locale} dark={theme === 'dark'}
       phase={params.get('state') === 'loading' ? 'loading' : params.get('state') === 'failed' ? 'failed' : 'ready'}
       data={previewMentorQuality({ fresh: params.get('fresh'), viewer: params.get('viewer'), empty: params.get('flags') === 'empty' })}
@@ -122,13 +122,13 @@ export const staffPreviewScreens: PreviewRegistry = {
   'staff-console-audit': consoleScreen('staff-console-audit', ({ api }) => <StaffAudit api={api} />),
   'staff-console-reports': consoleScreen('staff-console-reports', ({ api }) => <StaffReports api={api} />),
   'staff-console-emails': consoleScreen('staff-console-emails', ({ api }) => <StaffEmails api={api} />),
-  /* W2T.2: ?view=courses|review|updates|live|quality (Content), ?view=live|history|trends|coach (Generation). The preview has no lesson player. */
+  /* ?view=courses|review|updates|live|quality (Content), ?view=live|history|trends|coach (Generation). The preview has no lesson player. */
   'staff-console-content': framed(({ params }: PreviewContext) => <ConsoleFixture id="staff-console-content" params={params}
     render={({ api }) => <StaffContent api={api} initialView={contentView(params.get('view'))} />} />),
   'staff-console-generation': framed(({ params }: PreviewContext) => <ConsoleFixture id="staff-console-generation" params={params}
     render={({ api }) => <StaffGeneration api={api} initialView={generationView(params.get('view'))} />} />),
   'staff-console-mentor-quality': consoleScreen('staff-console-mentor-quality', ({ api }) => <StaffMentorQuality api={api} />),
-  /* W2T.3: ?view=audience|web|behavior|health|tools (Analytics & Health), ?view=overview|insights|retention|people|operations (Learning intel). */
+  /* ?view=audience|web|behavior|health|tools (Analytics & Health), ?view=overview|insights|retention|people|operations (Learning intel). */
   'staff-console-analytics': framed(({ params }: PreviewContext) => <ConsoleFixture id="staff-console-analytics" params={params}
     render={({ api, viewer }) => <StaffAnalytics api={api} viewer={viewer} initialView={analyticsView(params.get('view'))} />} />),
   'staff-console-intel': framed(({ params }: PreviewContext) => <ConsoleFixture id="staff-console-intel" params={params}

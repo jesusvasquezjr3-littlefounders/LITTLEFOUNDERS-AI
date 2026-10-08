@@ -1,6 +1,6 @@
 import { exactKeys, isWhole } from './arrange.js';
 
-/* F2.17 trigonometry: the unit circle (F02) and the circle unrolled into a wave (F03). Every special angle is a whole number of degrees. */
+/* Trigonometry: the unit circle and the circle unrolled into a wave. Every special angle is a whole number of degrees. */
 
 export const LEVELS = ['zero', 'half', 'root2', 'root3', 'one'] as const;
 export type Level = (typeof LEVELS)[number];

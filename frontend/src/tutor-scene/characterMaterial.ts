@@ -148,8 +148,8 @@ function isSelfIlluminated(material: ShadedMaterial): boolean {
  * Turns an unlit export back into clay that the scene's light can reach.
  *
  * Returns what it changed, so the caller can skip the `needsUpdate` write —
- * and so a test can assert that a correctly authored material is left alone
- * rather than merely assert that it looks the same afterwards.
+ * and so a correctly authored material is visibly left alone
+ * rather than merely looking the same afterwards.
  */
 export function relightAsClay(material: ShadedMaterial): {
   dimmedEmission: boolean;

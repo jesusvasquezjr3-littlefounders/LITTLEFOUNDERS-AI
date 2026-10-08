@@ -1,6 +1,5 @@
 /*
- * The rebuilt UI imports nothing from the legacy frontend (Bible 02 rule 23;
- * `npm run spec:check`), so this layer carries its own envelope-aware call to
+ * The rebuilt UI imports nothing from the legacy frontend, so this layer carries its own envelope-aware call to
  * Core: every response is `{ data, error }`, and anything else is an error,
  * never a guessed success.
  */
@@ -34,11 +33,10 @@ async function api<T>(path: string, options: { method?: 'GET' | 'POST' | 'DELETE
 }
 
 /*
- * The client API layer for C.15 (the end-of-session bond proxy) and C.7 (the
- * learner disposition profile, readable and resettable). Hand-mirrored from
+ * The client API layer for the end-of-session bond proxy and the
+ * learner disposition profile, readable and resettable. Hand-mirrored from
  * Core's `routes/tutor.ts` and `services/pedagogy/disposition.ts` (this repo
- * shares no types across packages; `npm run alliance:check` keeps the
- * vocabularies identical).
+ * shares no types across packages).
  *
  * Every call goes to Core, the only service the frontend talks to. Nothing
  * here carries free text: the bond proxy is one of three closed answers, and

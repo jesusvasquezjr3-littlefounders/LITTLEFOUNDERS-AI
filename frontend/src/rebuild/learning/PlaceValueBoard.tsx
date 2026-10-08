@@ -76,7 +76,7 @@ export function PlaceValueBoard({ document, segment, onBack, sequence, onGrade }
   const state = placeValueReplay(segment.payload, shown);
   if (!state) return null;
   const { start } = placeValueStart(segment.payload);
-  // Three columns whenever hundreds can appear (Bible 05 §7 flats); the 10-29 pilot keeps two.
+  // Three columns whenever hundreds can appear (flats); the 10-29 pilot keeps two.
   const threePlaces = state.mode === 'subtract' || start.hundreds > 0 || start.tens >= 10 || start.ones + start.tens * 10 >= 100;
   const total = state.hundreds * 100 + state.tens * 10 + state.ones;
   const push = (trade: PlaceTrade) => { grading.reset(); setTrades((value) => [...value, trade]); };
@@ -105,7 +105,7 @@ export function PlaceValueBoard({ document, segment, onBack, sequence, onGrade }
             hundreds={state.hundreds} tens={state.tens} ones={state.ones} {...(threePlaces ? { hundredsText: `${t.hundreds}: ${state.hundreds}` } : {})}
             tensText={`${t.tens}: ${state.tens}`} onesText={`${t.ones}: ${state.ones}`} />}>
           {() => replayIndex === null ? <div className="lf-place-value-controls">
-            {/* Bible 05 §3: Reset restores the authored start (no trades), leaves any replay and clears the verdict. */}
+            {/* Reset restores the authored start (no trades), leaves any replay and clears the verdict. */}
             <Button onClick={() => { grading.reset(); setTrades([]); setReplayIndex(null); }} disabled={trades.length === 0 || grading.met}>{t.reset}</Button>
             {offered.map((trade) => <Button key={trade} disabled={!state.can[trade] || grading.met} onClick={() => push(trade)}>{tradeLabel[trade]}</Button>)}
             <Button disabled={trades.length === 0 || grading.met} onClick={() => { grading.reset(); setTrades((value) => value.slice(0, -1)); }}>{t.undo}</Button>

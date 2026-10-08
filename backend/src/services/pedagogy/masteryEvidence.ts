@@ -1,10 +1,10 @@
 /*
- * WHAT THE MENTOR DECIDED, AND ON WHAT EVIDENCE (GAP-FIX-R2).
+ * WHAT THE MENTOR DECIDED, AND ON WHAT EVIDENCE.
  *
- * Product Block C's Real-Time Interaction Standard: the Extended Mastery
- * Engine's "outputs remain interpretable and auditable to a parent, per
- * Appendix D §2.6", and §2.6 itself: "for the parent-facing explanation layer,
- * expose the evidence, not just the conclusion". C.10 already records that
+ * The Extended Mastery
+ * Engine's "outputs remain interpretable and auditable to a parent":
+ * "for the parent-facing explanation layer,
+ * expose the evidence, not just the conclusion". The engine already records that
  * evidence (the controller's consequential decisions in
  * `tutor_trajectory_step`, the answer ledger in `kc_attempt`, the review
  * schedule in `memory_card`); this is the one projection of it that a
@@ -39,7 +39,7 @@ export interface MasteryDecision {
   kind: MasteryDecisionKind;
   /** Consecutive qualifying observations the decision rested on (null for a withdrawal with no new evidence). */
   observations: number | null;
-  /** The requirement in force (2 by default, C.10). */
+  /** The requirement in force (2 by default). */
   required: number | null;
   /** Correct answers the chain set aside on the way; null when not recorded (an older step). */
   discounted: DiscountedEvidence | null;
@@ -101,7 +101,7 @@ export function displayStateOf(input: {
   attempts: number;
   reviewDue: boolean;
   consecutiveCorrect: number;
-  /** The corroboration this KC needs (`corroborationMinFor`; Appendix F Stage 7 rollback). */
+  /** The corroboration this KC needs (`corroborationMinFor`; rollback). */
   corroborationMin?: number;
 }): MasteryDisplayState {
   const node = deriveNodeState({ ...input, prereqsMet: true });
@@ -109,7 +109,7 @@ export function displayStateOf(input: {
 }
 
 /**
- * Null ONLY on an upstream read failure (§1.14: "could not look" is never
+ * Null ONLY on an upstream read failure ("could not look" is never
  * "nothing to show"). A learner with no evidence yet gets an empty list.
  */
 export async function buildMasteryEvidence(userId: string, locale: string, now = new Date()): Promise<MasteryEvidenceResponse | null> {

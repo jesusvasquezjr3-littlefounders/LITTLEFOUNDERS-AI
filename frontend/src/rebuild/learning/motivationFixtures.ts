@@ -1,7 +1,7 @@
 import type { Rhythm, RhythmState, StreakView } from './motivation';
 
 /*
- * S05.3e preview fixtures for the rebuilt rhythm (B.21, B.24), the guardian's
+ * Preview fixtures for the rebuilt rhythm, the guardian's
  * holiday pause and the milestone result. Shapes only: every real value comes
  * from Core. Used by the preview-only fixture page and the real-Chrome matrix.
  */

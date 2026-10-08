@@ -1,9 +1,9 @@
 /*
- * Sign-in, recovery, verification and onboarding (W2 Lane 1, W2S.2): tokens
- * only, the 4 px spacing scale (03 §3.1), the named type steps (03 §3.2),
- * layouts by the `app` container width (02 §7 rule 9), no border on a filled
- * shape (02 §4.4), light and dark from the same tokens. Text never truncates:
- * every row wraps (02 §7).
+ * Sign-in, recovery, verification and onboarding: tokens
+ * only, the 4 px spacing scale, the named type steps,
+ * layouts by the `app` container width, no border on a filled
+ * shape, light and dark from the same tokens. Text never truncates:
+ * every row wraps.
  */
 
 /* ---- A sign-in screen: one column inside the sign-in shell ---- */
@@ -39,7 +39,7 @@
 /* Google, then "or" between the two ways in. */
 .lf-rebuild .lf-auth-social { display: grid; gap: var(--spacing-4); }
 .lf-rebuild .lf-auth-social > .lf-button { inline-size: 100%; }
-/* Words, not a rule: separation is never a drawn line (02 §4.4). */
+/* Words, not a rule: separation is never a drawn line. */
 .lf-rebuild .lf-auth-or { max-inline-size: none; color: var(--content-muted); font: var(--type-label); text-align: center; }
 
 /* Day, month, year: one row while they fit, one column on the narrowest phones. */
@@ -48,7 +48,7 @@
 .lf-rebuild .lf-date-fields-row { display: grid; grid-template-columns: 1fr 1fr 1.4fr; gap: var(--spacing-3); min-inline-size: 0; }
 @container app (max-width: 339px) { .lf-rebuild .lf-date-fields-row { grid-template-columns: 1fr; } }
 
-/* The why-sheet of the under-13 refusal: short paragraphs (06 §4 layering). */
+/* The why-sheet of the under-13 refusal: short paragraphs. */
 .lf-rebuild .lf-auth-why { display: grid; gap: var(--spacing-3); }
 
 /* ---- Become a Tutor ---- */
@@ -142,5 +142,5 @@
 /* The same for a choice row: its resting fill is the hue's tint, which the panel already is (the chosen row stays the hue). */
 .lf-rebuild .lf-onboarding-panel .lf-radio-option { background: var(--surface); }
 .lf-rebuild .lf-onboarding-form { display: grid; gap: var(--spacing-5); min-inline-size: 0; }
-/* O1's Mentor step (08 §8): each character's picture on its Diorama leads its row, as on the Mentor screen's chooser. */
+/* The onboarding Mentor step: each character's picture on its Diorama leads its row, as on the Mentor screen's chooser. */
 @container app (min-width: 640px) { .lf-rebuild .lf-onboarding-panel { padding: var(--spacing-8); } }

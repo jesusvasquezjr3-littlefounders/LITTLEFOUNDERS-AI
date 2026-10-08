@@ -5,14 +5,14 @@ import { pluralUnit } from '../design/plural';
 import type { GateReviewBody, GateReviewOutcome, LearningQualityReport } from './learningQualityReport';
 
 /*
- * GAP-FIX-R2 learning: the Appendix P Part 8 metrics (scorer parity, d′ before
+ * The metrics (scorer parity, d′ before
  * and after, representation A/B, tap-alternative and locale coverage) and the
- * Appendix C 1.3 QA metrics (placement commit success, prerequisite gate,
+ * QA metrics (placement commit success, prerequisite gate,
  * forced update, defect escapes) in the staff learning-quality panel, with the
  * defect-escape entry form. Release metrics show their target; diagnostic
  * metrics are labelled as such and carry none. It never shows a learner.
  *
- * Gap-fix round 7 (Appendix C 1.3 Defect Escape Rate, Stage 6): each escape
+ * Defect escape rate: each escape
  * opens a gate-effectiveness review. The open ones are listed with their gate,
  * owner and age (overdue past the logged cadence), each closed here with what
  * changed and why the gate missed it; Core and the database refuse the rest.
@@ -104,7 +104,7 @@ const CHANGE_REF = /^[A-Za-z0-9][A-Za-z0-9._/@+-]{2,79}$/;
 
 export function LearningQaSignals({ signals, locale, onRecordEscape, onResolveGateReview }: {
   signals: LearningQualityReport['qaSignals']; locale: Locale; onRecordEscape?: (body: DefectEscapeBody) => Promise<boolean>;
-  /** Gap-fix round 7: closes a gate-effectiveness review through Core. */
+  /** Closes a gate-effectiveness review through Core. */
   onResolveGateReview?: (reviewId: string, body: GateReviewBody) => Promise<GateReviewOutcomeResult>;
 }) {
   const t = copy[locale];

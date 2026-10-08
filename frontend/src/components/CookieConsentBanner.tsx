@@ -8,7 +8,7 @@ import { RebuildEnvironmentContext } from '@/rebuild/design/layers';
 import { CookieConsent, type CookieChoice } from '@/rebuild/site/CookieConsent';
 
 /*
- * The bridge that mounts the rebuilt cookie choice (M8, rebuild/site/
+ * The bridge that mounts the rebuilt cookie choice (rebuild/site/
  * CookieConsent.tsx) once, above every route (App.tsx), and keeps the
  * contract the rest of the app relies on:
  *
@@ -25,7 +25,7 @@ import { CookieConsent, type CookieChoice } from '@/rebuild/site/CookieConsent';
  *   - `onDecision` tells App.tsx a choice was made, so measurement starts or
  *     stops immediately instead of on the next navigation.
  *
- * No legacy UI component crosses over (02 rule 23); the surface gets the
+ * No legacy UI component crosses over; the surface gets the
  * site's mode and language through the design system's environment context.
  */
 

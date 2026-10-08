@@ -17,11 +17,11 @@ export type MicBlockedReason = 'POLICY_BLOCKED' | 'CONSENT_REQUIRED' | 'VOICE_UN
  * a microfono", and it was accurate twice over: the control was hidden when it
  * did not work, and it was absent wherever nobody had thought to mount it.
  *
- * /ORACLE.md §14.1 answers the first half: always rendered, in all five states,
+ * The first half is answered by always rendering it, in all five states,
  * saying why when the answer is no. This file answers the second half by making
  * "which state is the orb in right now" a total function over the phase
  * vocabulary — so a new phase cannot be added without deciding what the
- * microphone does in it, and every phase can be enumerated in a test.
+ * microphone does in it, and every phase can be enumerated.
  *
  * IT RETURNS KEYS, NOT SENTENCES. Nothing here calls `t()`, so the whole
  * mapping is pure and testable without an i18n runtime, and the copy stays
@@ -187,7 +187,7 @@ export function micForPhase(input: StageMicInput): StageMicPlan {
        *
        * The orb is the one that stays, because the microphone is what is
        * unavailable and a learner who cannot find the control cannot be told why
-       * it is off (/ORACLE.md §14.1). It borrows the phase's own copy rather
+       * it is off. It borrows the phase's own copy rather
        * than one of Core's three policy answers: "no voice provider is
        * configured" is a confident wrong sentence when what actually happened is
        * that the Tutor API could not be reached at all.

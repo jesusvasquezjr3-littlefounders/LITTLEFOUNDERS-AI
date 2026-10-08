@@ -3,24 +3,21 @@ import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 /*
- * The lesson-complete confetti burst (owner decision OD-28, review item V-12:
- * "Lesson completion gets a confetti burst (reduced-motion static frame)").
+ * The lesson-complete confetti burst, with a reduced-motion static frame.
  *
- * Built in-house at zero spend (OD-23): no provider, no stock animation, no
+ * Built in-house at zero spend: no provider, no stock animation, no
  * network. Both files are pure functions of the piece table below and the
- * Bible 02 token colours, so they are reproducible byte for byte:
+ * design-token colours, so they are reproducible byte for byte:
  *
- *   public/rebuild/motion/lesson-confetti.json        the motion asset (Lottie, 07 §3.1 "Motion of a flat element")
- *   public/rebuild/motion/lesson-confetti-still.svg   its designated static frame (07 §5), the burst's last frame
+ *   public/rebuild/motion/lesson-confetti.json        the motion asset (Lottie)
+ *   public/rebuild/motion/lesson-confetti-still.svg   its designated static frame, the burst's last frame
  *
  *   node scripts/generate-lesson-confetti.mjs          writes both files
  *   node scripts/generate-lesson-confetti.mjs --check  fails if a checked-in file differs
  *
- * The asset gate (`check-rebuild-assets.mjs`, in `spec:check`) imports
- * `synthesize(path)` and runs the same comparison for every manifest row that
- * names this script as its `generator`.
+ * `synthesize(path)` returns the bytes of either generated file.
  *
- * The motion (Frontend 04 §2, 07 §5):
+ * The motion:
  *   - twelve flat pieces (dots and short bars) burst out from one point, the
  *     medal's centre, and land above it, so no piece ever sits on the heading;
  *   - the entrance is the celebration's own timing: --dur-transition plus
@@ -29,8 +26,8 @@ import { fileURLToPath } from 'node:url';
  *     previous one in its group of four; the file then holds its last frame
  *     until 900 ms, well inside the 3 s ceiling, and plays once (never loops);
  *   - three hues from the token sheet (reward, mint, berry): the accent is the
- *     call to action only and error red never appears in art (02 §4.2, 07 §3).
- *     Hue fills are the same in both modes (02 §5), so one file serves both;
+ *     call to action only and error red never appears in art.
+ *     Hue fills are the same in both modes, so one file serves both;
  *   - no text, no raster, no gradient, no expression.
  */
 
@@ -61,7 +58,7 @@ const frontendRoot = resolve(import.meta.dirname, '..');
 const MOTION_PATH = '/rebuild/motion/lesson-confetti.json';
 const STILL_PATH = '/rebuild/motion/lesson-confetti-still.svg';
 
-/** The light token sheet's value for a hue (hue fills do not change with the mode, 02 §5). */
+/** The light token sheet's value for a hue (hue fills do not change with the mode). */
 function tokenColours() {
   const sheet = readFileSync(resolve(frontendRoot, 'src/rebuild/design/tokens.css'), 'utf8');
   const light = sheet.slice(0, sheet.indexOf('}'));
@@ -114,7 +111,7 @@ export function lottie(colours = tokenColours()) {
   return { v: '5.7.4', nm: 'lesson-confetti', fr: FPS, ip: 0, op: TOTAL_FRAMES, w: WIDTH, h: HEIGHT, ddd: 0, assets: [], layers };
 }
 
-/** The static frame: every piece where the burst leaves it (07 §5), plain in-house shapes in token colours. */
+/** The static frame: every piece where the burst leaves it, plain in-house shapes in token colours. */
 export function stillFrame(colours = tokenColours()) {
   const shapes = PIECES.map((piece) => {
     const [x, y] = landing(piece);
@@ -125,7 +122,7 @@ export function stillFrame(colours = tokenColours()) {
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${WIDTH} ${HEIGHT}" width="${WIDTH}" height="${HEIGHT}">${shapes.join('')}</svg>\n`;
 }
 
-/** The bytes of one generated file, by its manifest path (the asset gate's generator contract). */
+/** The bytes of one generated file, by its path. */
 export function synthesize(path = MOTION_PATH) {
   if (path === STILL_PATH) return Buffer.from(stillFrame(), 'utf8');
   if (path === MOTION_PATH) return Buffer.from(`${JSON.stringify(lottie())}\n`, 'utf8');

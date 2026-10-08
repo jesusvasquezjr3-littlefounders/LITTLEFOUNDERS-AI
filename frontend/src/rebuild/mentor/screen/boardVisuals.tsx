@@ -9,8 +9,8 @@ import type { TutorWhiteboardWire } from '../session/types';
 import type { BoardFormat, BoardModel, BoardWords } from './boardModel';
 
 /*
- * THE MENTOR'S BOARD DRAWS WITH THE LESSONS' VISUALS (product B.7 "one
- * component set"; Frontend Bible 08 §2 layer 4, 05).
+ * THE MENTOR'S BOARD DRAWS WITH THE LESSONS' VISUALS (one
+ * component set).
  *
  * Every Oracle whiteboard kind maps to the shared Pizarrón visual that draws
  * that concept (`learning/pizarron`): a number line for a number line, a tape
@@ -21,8 +21,7 @@ import type { BoardFormat, BoardModel, BoardWords } from './boardModel';
  * view (`boardModel` rows in `TeachingChartBoard`) stays the accessible
  * alternative.
  *
- * `BOARD_RENDERERS` is the manifest the whiteboard parity gate reads
- * (agent/tools/check-instrument-parity.mjs): every wire kind must name a
+ * `BOARD_RENDERERS` is the manifest: every wire kind must name a
  * visual exported by `learning/pizarron`.
  */
 
@@ -79,7 +78,7 @@ export const BOARD_RENDERERS = {
 const fill = (template: string, values: Record<string, string | number>) =>
   Object.entries(values).reduce((text, [key, value]) => text.split(`{${key}}`).join(String(value)), template);
 
-/** The static chart's description: the title, then every row of the table, in order (05 §4: type → values → takeaway). */
+/** The static chart's description: the title, then every row of the table, in order (type → values → takeaway). */
 export function boardDescription(model: BoardModel): string {
   return [model.title, ...model.rows.map((row) => `${row.label}: ${row.value}`)].join('. ');
 }

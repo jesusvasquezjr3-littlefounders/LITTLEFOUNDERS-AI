@@ -9,7 +9,7 @@ import es from '@/i18n/es-MX/rebuild-profile.json';
 import pt from '@/i18n/pt-BR/rebuild-profile.json';
 
 /*
- * OD-18 (24 September 2026, C.4): an independent screened teen reviews their
+ * An independent screened teen reviews their
  * OWN Mentor memory notes. This is that surface, mounted on /profile/settings
  * beside the analytics choice - the two places a teen governs their own data.
  *
@@ -19,14 +19,14 @@ import pt from '@/i18n/pt-BR/rebuild-profile.json';
  * disappears the moment the server answers 403 FORBIDDEN. A kid's queue
  * belongs to their guardian, an adult has no parked notes, and both get the
  * same 403 - the server's refusal is the only signal we trust, on the first
- * load and on every decision (§1.14: "we could not check" is never rendered
+ * load and on every decision ("we could not check" is never rendered
  * as "you are not allowed").
  *
  * A read failure is a failure state with retry, never an empty queue: those
  * are the same screen with opposite meanings. A 409 (already decided / out
  * of date) refreshes the queue instead of claiming the decision landed.
  *
- * GAP-FIX-R5 (C.4, OD-18): the teen can also DELETE a stored note. The call
+ * The teen can also DELETE a stored note. The call
  * names the exact text on screen, so a note that changed in the meantime is
  * never removed unseen: Core answers 409 and the queue reloads with a notice.
  */

@@ -28,7 +28,7 @@ import {
  * A mouth laid over the character's painted one, parented to the head joint.
  *
  * The character cannot open its mouth: no facial bone exists on any export and
- * the mouth is texture, not geometry (/TUTOR_3D.md §3). This card is the mouth.
+ * the mouth is texture, not geometry. This card is the mouth.
  *
  * It is deliberately NOT a flat quad — see `mouthAtlas.ts` — and it is parented
  * to the head JOINT rather than added to the scene graph beside the character,

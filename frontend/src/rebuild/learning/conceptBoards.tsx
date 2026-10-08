@@ -14,7 +14,7 @@ import { amortizationSchedule, compoundValue, equilibrium, lemonadeDay, payoff, 
 import './conceptBoards.css';
 
 /*
- * GAP-FIX-R1 learning (Appendix A Part 3; B.7 part 2): the concept boards.
+ * The concept boards.
  * Each composes the Part 2 primitives (operations/), draws from the canonical
  * concept model (v2ConceptBoards.generated.ts, the byte copy of Core's), and
  * sends only integers and ids to Core, which grades with its private rubric.
@@ -27,7 +27,7 @@ interface BoardProps<T extends LessonClientSegment['type']> {
   document: LessonClientDocument; segment: Seg<T>; onBack: () => void; sequence?: LessonSequenceControl; onGrade?: OnGradeSegment;
 }
 const verdictOf = (grading: ReturnType<typeof useSegmentGrade>) => grading.result && grading.result !== 'unavailable' ? grading.result.verdict : null;
-/** Bible 05 §3/§6 (GAP-FIX-R4): the "Show as table" labels of the player, in the lesson's locale. */
+/** The "Show as table" labels of the player, in the lesson's locale. */
 const tableLabels = (locale: LessonClientDocument['locale']) => ({ showTable: playerCopy(locale).showTable, showChart: playerCopy(locale).showChart });
 /** A two-or-more column data table for a concept chart (the same numbers the chart draws). */
 function DataTable({ label, columns, rows }: { label: string; columns: readonly string[]; rows: ReadonlyArray<{ id: string | number; cells: readonly string[] }> }) {
@@ -120,7 +120,7 @@ export function SupplyDemandBoard({ document, segment, onBack, sequence, onGrade
       onCheck={() => grading.check({ demand_shift: shift.demand, supply_shift: shift.supply, price })} />
       : <ViewedFoot locale={document.locale} sequence={sequence} ready={shift.demand !== 0 || shift.supply !== 0} />}>
     <section className="lf-learning-board lf-concept-board">
-      {/* GAP-FIX-R4 (B.7; Bible 05 §5, §6): the shared Pizarrón picture; words are HTML; the handles are pointer-only
+      {/* The shared Pizarrón picture; words are HTML; the handles are pointer-only
           inside the aria-hidden drawing, and the steppers below are the accessible way to move each curve. */}
       <figure className="lf-op">
         <ChartOrTable labels={tableLabels(document.locale)}
@@ -212,7 +212,7 @@ export function InflationBoard({ document, segment, onBack, sequence, onGrade }:
         fill(t.sentence[2], { years: yearWord(years) }),
       ]} />
       <div data-operation="operation.scale-toggle.v1"><ScaleToggle legend={t.view} value={scale} onChange={setScale} options={[{ value: 'near', label: t.near }, { value: 'far', label: t.far }]} /></div>
-      {/* GAP-FIX-R4 (B.7): the price line is the shared Pizarrón growth lines, with its table one press away. */}
+      {/* The price line is the shared Pizarrón growth lines, with its table one press away. */}
       {hide ? null : <ChartOrTable labels={tableLabels(document.locale)}
         chart={<GrowthLinesVisual label={`${money(series[0]!)} → ${money(series[series.length - 1]!)}`} max={top}
           series={[{ id: 'price', label: t.price, values: series, endText: money(series[series.length - 1]!), series: 'sky' }]}
@@ -338,7 +338,7 @@ export function DiversificationBoard({ document, segment, onBack, sequence, onGr
     foot={graded ? <GradedFoot locale={document.locale} grading={grading} named={namedFeedback(document.locale, 'diversification')} feedback={segment.feedback} canCheck sequence={sequence} onCheck={() => grading.check({ weights })} />
       : <ViewedFoot locale={document.locale} sequence={sequence} />}>
     <section className="lf-learning-control-strip" aria-label={t.portfolioPoint}>
-      {/* Bible 05 §3: the tap and keyboard controls sit in the strip under the board, not on it. */}
+      {/* The tap and keyboard controls sit in the strip under the board, not on it. */}
       <div className="lf-concept-controls" data-operation="operation.reallocate.v1">
         {p.assets.map((asset) => <Stepper key={asset.id} label={fill(t.weight, { x: asset.label })} valuePlacement="label" value={weights[asset.id] ?? 0} valueText={`${weights[asset.id] ?? 0}%`}
           min={0} max={100} step={p.step} onValueChange={(value) => move(asset.id, value)} labels={{ decrease: t.less, increase: t.more }} disabled={grading.met} />)}

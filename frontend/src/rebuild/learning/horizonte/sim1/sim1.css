@@ -1,4 +1,4 @@
-/* F3.1 and F3.2 simulation boards: chance, Galton board and walk, coverage of intervals, bootstrap. Tokens only. */
+/* Simulation boards: chance, Galton board and walk, coverage of intervals, bootstrap. Tokens only. */
 .lf-sim { display: grid; gap: var(--spacing-3); justify-items: start; }
 .lf-sim-drawing { max-inline-size: 42rem; }
 .lf-sim-chart { display: block; inline-size: 100%; max-inline-size: 42rem; block-size: auto; border-radius: var(--rounded-sm); background: var(--sunken); color: var(--content); }

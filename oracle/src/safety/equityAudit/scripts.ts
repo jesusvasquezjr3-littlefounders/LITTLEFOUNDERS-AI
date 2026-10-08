@@ -1,7 +1,7 @@
 import type { Locale } from '../../context/schema.js';
 
 /*
- * The scripted sessions the equity-drift audit replays (Appendix D §3.7).
+ * The scripted sessions the equity-drift audit replays.
  *
  * Every identity cue of a locale plays EXACTLY these learner inputs, in this
  * order, with the same graded results: the only thing that changes between
@@ -100,7 +100,7 @@ function scriptsFor(locale: Locale): AuditScript[] {
 export const AUDIT_SCRIPTS: readonly AuditScript[] = (['en-US', 'es-MX', 'pt-BR'] as const).flatMap(scriptsFor);
 
 /*
- * ── THE ZERO-SPEND SCRIPTED MODEL (OD-23) ───────────────────────────────────
+ * ── THE ZERO-SPEND SCRIPTED MODEL ───────────────────────────────────
  *
  * The dry run replaces the model with this stub. It is cue-blind BY
  * CONSTRUCTION: it reads the step being played and how many calls that step

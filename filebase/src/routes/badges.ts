@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { renderBadgePng } from '../lib/badge.js';
 
 /*
- * Achievement images (OD-20, 24 September 2026; Product 10 F.1).
+ * Achievement images (24 September 2026).
  *
  * POST /api/v1/badges/render renders an achievement PNG (1080x1920) and
  * returns the BYTES in the response. Nothing is written to storage: the
@@ -14,16 +14,16 @@ import { renderBadgePng } from '../lib/badge.js';
  * Mounted behind the same INTERNAL_API_KEY gate as /api/v1/files (app.ts):
  * only Core calls it, never a browser.
  *
- * POST /api/v1/badges (the pre-OD-20 compose-and-store endpoint) is retired.
+ * POST /api/v1/badges (the pre-compose-and-store endpoint) is retired.
  * It stored every badge as a world-readable object behind a public share
  * link. It now answers 410 and writes nothing, so even an older Core that
  * still calls it cannot mint a new public image (fail closed). Legacy
  * images issued before the cutover are removed through the ordinary
  * DELETE /api/v1/files/:bucket/:file path when their link is revoked or
- * expires (Core's F.2 purge and sweep).
+ * expires (Core's purge and sweep).
  */
 
-// F.6 standing constraint: first name, server-derived label, kind, the
+// Standing constraint: first name, server-derived label, kind, the
 // image's own language and Core's localized kicker — nothing else.
 // `.strict()` refuses an age band, a surname, a photo reference or any other
 // extra field instead of ignoring it.

@@ -11,7 +11,7 @@
  * `preferDirection`), so radially outward aims at the viewer for exactly the
  * arc of the island nearest them and points everybody else into the sea.
  *
- * It is measurable, and it was measured with `npm run verify:placement` before
+ * It is measurable, and it was measured before
  * anything here was written. On `diorama-a`, with the whole cast standing for
  * the personalization audition, three of the four were turned more than
  * 125 degrees off the viewer:
@@ -38,8 +38,8 @@
  * learner.
  *
  * PURE, AND FREE OF `three` AND OF REACT, for the same reason `shots.ts` is:
- * `scripts/verify-placement.ts` runs the real solver against the real islands
- * with no bundler and no GPU, and it now gates this too. A facing bug that only
+ * the real solver runs against the real islands
+ * with no bundler and no GPU. A facing bug that only
  * a screenshot can find is a facing bug that ships.
  *
  * IT STILL DOES NOT READ THE CAMERA, and that constraint is unchanged and
@@ -80,7 +80,7 @@ export const MAX_SOCIAL_TURN = (20 * Math.PI) / 180;
 /**
  * How far off the viewer a character may be turned before it is a defect.
  *
- * The gate `scripts/verify-placement.ts` applies, and it is deliberately loose:
+ * The limit is deliberately loose:
  * the social turn is capped at 20 degrees, so anything beyond 45 means the base
  * yaw itself is wrong rather than that a gesture went a little far. Every
  * placement the solver produces today lands inside 20.

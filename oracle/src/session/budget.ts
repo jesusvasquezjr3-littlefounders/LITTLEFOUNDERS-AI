@@ -4,13 +4,13 @@ import type { Config } from '../env.js';
  * When a session should start wrapping up, and when it must stop.
  *
  * A PURE REDUCER, deliberately, and the reason is written on the 3D scene's
- * quality governor in /TUTOR_3D.md §6: state that lives inside a React or
+ * quality governor: state that lives inside a React or
  * timer callback gets double-invoked, re-entered, or fired twice on a
  * reconnect, and a budget that latches early cuts a child off mid-lesson. A
  * function of (elapsed, turns) has no such failure mode and can be tested
  * exhaustively in milliseconds.
  *
- * Three states, and the middle one is the whole point (/ORACLE.md §9.5):
+ * Three states, and the middle one is the whole point:
  *
  *   running  → normal turns
  *   wrapping → the tutor is told to begin closing, IN CHARACTER. It finishes
@@ -47,7 +47,7 @@ export interface BudgetInput {
  * WHY NOT `Infinity`, which is what "unlimited" literally asks for. The hard
  * budget is the only thing that ever closes a session nobody is sitting in
  * front of, and a forgotten staff tab with no session cap, no turn cap and
- * no clock is precisely the runaway AGENTS.md §1.14 prices in dollars. Eight
+ * no clock is precisely the runaway that costs real dollars. Eight
  * hours is past any real testing session and still terminates an abandoned
  * one the same day. This is the identical judgement `STAFF_SESSION_CAP`
  * already made when it chose Postgres's `int4` ceiling over
@@ -114,7 +114,7 @@ export function evaluateBudget(input: BudgetInput, config: Config): BudgetVerdic
  * about the learner while it wraps up, or the close reads as a different
  * character walking in.
  *
- * C.16 (Appendix D §3.5): the model no longer writes the goodbye or a
+ * The model no longer writes the goodbye or a
  * unilateral "what we did" summary. It finishes the thread and sets
  * `next: "close"`; the SYSTEM then asks the co-constructed recap question
  * ("what is one thing that clicked for you today?") and closes with a line
@@ -132,7 +132,7 @@ export const WRAP_UP_INSTRUCTION = [
 ].join('\n');
 
 /**
- * C.11: the budget a within-session spaced re-exposure still has — model
+ * The budget a within-session spaced re-exposure still has — model
  * turns before the turn cap and time before the session starts WRAPPING
  * (after which no new activity is requested, so a re-exposure scheduled past
  * it could never happen). Pure, from the same inputs as `evaluateBudget`.

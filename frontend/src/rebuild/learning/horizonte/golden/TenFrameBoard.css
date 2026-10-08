@@ -1,4 +1,4 @@
-/* A03/A04 ten frames: a 5 by 2 grid of 48 to 64 px square cells, 8 px apart, each a button holding an SVG counter. Tokens only. */
+/* Ten frames: a 5 by 2 grid of 48 to 64 px square cells, 8 px apart, each a button holding an SVG counter. Tokens only. */
 .lf-tenframe { display: grid; gap: var(--spacing-4); justify-items: start; }
 .lf-tenframe-frames { display: flex; flex-wrap: wrap; gap: var(--spacing-4); }
 .lf-tenframe-frame { display: grid; gap: var(--spacing-1); }

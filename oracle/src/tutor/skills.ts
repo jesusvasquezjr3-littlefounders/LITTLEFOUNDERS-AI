@@ -12,7 +12,7 @@ import { SPECIFIED_INSTRUMENTS } from './instrumentSpecs.js';
  * not that they know which strategy to use — it is that they carry a CATALOGUE
  * of worked-out didactic maneuvers, indexed by situation, each with its own
  * procedure, its own failure modes, and its own definition of "it worked".
- * That is what the harness blueprint calls skills: procedural memory, loaded
+ * These are called skills: procedural memory, loaded
  * only when relevant (progressive disclosure), selected deterministically.
  *
  * THE FAST CHAMBER NEVER THINKS ABOUT THIS. Selection is metadata filtering —
@@ -22,8 +22,8 @@ import { SPECIFIED_INSTRUMENTS } from './instrumentSpecs.js';
  * model, appended to the turn's user content, so the prefix cache is untouched.
  *
  * Files live in `oracle/skills/moves/*.md` — in the repo, versioned, reviewed
- * through pull requests. That IS the approval gate the blueprint requires
- * (§15.1: no autonomous content reaches a child): today every skill is
+ * through pull requests. That IS the approval gate that is required
+ * (no autonomous content reaches a child): today every skill is
  * hand-written and code-reviewed; the self-authoring loop, when it arrives,
  * stages proposals for the same review instead of writing here directly.
  */
@@ -54,8 +54,8 @@ export interface PedagogicalSkill {
    */
   onceOnly: boolean;
   /**
-   * The board `kind`s this move's own procedure needs, if any
-   * (/TUTOR_INSTRUMENTS.md §4.4). Guidance for exactly these travels with the
+   * The board `kind`s this move's own procedure needs, if any.
+   * Guidance for exactly these travels with the
    * body; every other instrument stays out of this turn's context entirely.
    *
    * Most moves name none, and that is the point: a move about questioning
@@ -241,11 +241,11 @@ export interface SkillQuery {
 }
 
 /**
- * Deterministic selection, blueprint §6.4 levels 0-1.
+ * Deterministic selection, levels 0-1.
  *
  * A catalogued misconception with a dedicated remediation always wins — the
  * specific procedure beats the general one — PROVIDED it is still declared
- * for the CURRENT strategy. Found by adversarial review, round 22
+ * for the CURRENT strategy. Found by adversarial review
  * (2026-08-30, HIGH): this path used to skip the strategy filter entirely,
  * on the theory that a diagnosed misconception should win regardless of
  * mode. It does not: the controller sets `misconceptionCode` on every

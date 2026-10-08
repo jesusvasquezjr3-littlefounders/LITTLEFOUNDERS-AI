@@ -9,8 +9,8 @@ import { readCoursesCache } from './coursesCache';
 import { bandOf, useLearnerRegister, useLearnHost } from './learnHost';
 
 /*
- * /learn/:courseSlug/territory — the host of the rebuilt course world (W2L.2,
- * L3), inside the learner shell. It reads the course tree Core serves under
+ * /learn/:courseSlug/territory — the host of the rebuilt course world,
+ * inside the learner shell. It reads the course tree Core serves under
  * either course engine (rebuild/learning/territory.ts) and owns navigation;
  * the map itself is presentation only.
  */
@@ -36,7 +36,7 @@ export function TerritoryRoute() {
     return () => { active = false; };
   }, [courseSlug, transport, revision]);
 
-  // B.2: the missing prerequisites are named by their titles, from the shelf the learner already has (or one read).
+  // The missing prerequisites are named by their titles, from the shelf the learner already has (or one read).
   const needsTitles = state.status === 'prerequisite' && !shelf;
   useEffect(() => {
     if (!needsTitles) return undefined;

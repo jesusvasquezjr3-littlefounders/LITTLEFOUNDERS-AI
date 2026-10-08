@@ -13,10 +13,9 @@ import { FlowchartBuildBoard } from './buildBoards';
 import { eulerRegions, sortPhaseBins, type FlowchartPayload } from './v2SegmentFamilies.generated';
 
 /*
- * GAP-FIX-R1 learning: the first-release logic and money boards (Appendix P
- * Part 8: L1, L5, L6, L10, L12, $1, $2, $9, $10, $11), the v2 story boards
- * (B.9) and the Mentor-voiced turns (B.8, B.11). Every board follows the
- * Bible 05 anatomy through `BoardShell`, offers a tap and keyboard path for
+ * The first-release logic and money boards (L1, L5, L6, L10, L12, $1, $2, $9, $10, $11), the v2 story boards
+ * and the Mentor-voiced turns. Every board follows the
+ * shared anatomy through `BoardShell`, offers a tap and keyboard path for
  * every action (buttons, never drag-only), a "Move to" choice for regions and
  * bins, and sends only ids and integers to Core, which grades against its
  * private rubric. The browser never sees which answer is right.
@@ -27,7 +26,7 @@ interface BoardProps<T extends LessonClientSegment['type']> {
   document: LessonClientDocument; segment: Seg<T>; onBack: () => void; sequence?: LessonSequenceControl; onGrade?: OnGradeSegment;
 }
 
-/* L1: turn over exactly the cards that could break the rule. The cards are the shared Pizarrón text cards (B.7). */
+/* L1: turn over exactly the cards that could break the rule. The cards are the shared Pizarrón text cards. */
 export function RuleCardsBoard({ document, segment, onBack, sequence, onGrade }: BoardProps<'logic.rule-checker.v2'>) {
   const t = familyCopy[document.locale];
   const [flipped, setFlipped] = useState<string[]>([]);
@@ -45,7 +44,7 @@ export function RuleCardsBoard({ document, segment, onBack, sequence, onGrade }:
     </section>
     <section className="lf-learning-control-strip" aria-labelledby={`${segment.id}-cards`}>
       <h3 id={`${segment.id}-cards`} data-copy-role="heading">{t.cards}</h3>
-      {/* Each card is the shared pick chip: a turned card gains a check, never colour alone (02 rule 23). */}
+      {/* Each card is the shared pick chip: a turned card gains a check, never colour alone. */}
       <div className="lf-rule-cards" role="group" aria-labelledby={`${segment.id}-cards`}>
         {segment.payload.cards.map((card) => <ChoiceChip key={card.id} selected={flipped.includes(card.id)}
           disabled={grading.pending || grading.met} onToggle={() => toggle(card.id)}>{card.face}</ChoiceChip>)}
@@ -55,12 +54,12 @@ export function RuleCardsBoard({ document, segment, onBack, sequence, onGrade }:
 }
 
 /*
- * L5 (GAP-FIX-R4, Appendix P L5 "Place items; pick the diagram that matches a
+ * L5 ("Place items; pick the diagram that matches a
  * sentence"; graded on the item->region map, the region occupancy flags and the
  * chosen conclusion): the learner may first choose which of the three diagrams
  * matches the sentence, then drags each item into a region of the shared
- * Pizarrón Euler picture (VennVisual, B.7) or taps it then its region, or uses
- * the "Move to" menu (Bible 05 §4); then flags the regions that hold
+ * Pizarrón Euler picture (VennVisual) or taps it then its region, or uses
+ * the "Move to" menu; then flags the regions that hold
  * something, and for a syllogism says whether the conclusion must, might or
  * cannot be true. Core holds every answer.
  */
@@ -142,7 +141,7 @@ export function EulerBoard({ document, segment, onBack, sequence, onGrade }: Boa
   </BoardShell>;
 }
 
-/* L6 / $9: walk a flowchart once per scenario, or (13+, GAP-FIX-R2) build one and test it on cases. */
+/* L6 / $9: walk a flowchart once per scenario, or (13+) build one and test it on cases. */
 export function FlowchartBoard(props: BoardProps<'logic.flowchart.v2' | 'money.spend-decision.v2'>) {
   return 'mode' in props.segment.payload ? <FlowchartBuildBoard {...props} /> : <WalkFlowchartBoard {...props} />;
 }
@@ -201,10 +200,10 @@ function WalkFlowchartBoard({ document, segment, onBack, sequence, onGrade }: Bo
 
 /*
  * L10 / $10: sort each item into a bin and say why; a bin may be "it depends".
- * GAP-FIX-R4 (Appendix P L10 "the rule changes mid-task"): with a switch, the
+ * With a switch ("the rule changes mid-task"), the
  * items after `switch_after` are sorted by the new rule into the second bin
  * set, shown once the first rule's items are sorted. Items are dragged onto
- * the shared Pizarrón bins (SortBinsVisual, B.7), tapped then their bin, or
+ * the shared Pizarrón bins (SortBinsVisual), tapped then their bin, or
  * moved with the "Move to" menu.
  */
 export function SortBinsBoard({ document, segment, onBack, sequence, onGrade }: BoardProps<'logic.sort-by-rule.v2' | 'money.needs-wants.v2'>) {
@@ -282,7 +281,7 @@ export function MessageListBoard({ document, segment, onBack, sequence, onGrade 
     // A message called fine again keeps no cue ticks.
     if (!scam) setTicks((current) => (current[id] ? Object.fromEntries(Object.entries(current).filter(([key]) => key !== id)) : current));
   };
-  // L12 (GAP-FIX-R2): "tick which cues fired" per message; stored as a diagnostic beside the flag decision.
+  // L12: "tick which cues fired" per message; stored as a diagnostic beside the flag decision.
   const cueList = segment.payload.cues;
   const [ticks, setTicks] = useState<Record<string, string[]>>({});
   const tick = (message: string, cue: string) => { grading.reset(); setTicks((current) => {
@@ -305,7 +304,7 @@ export function MessageListBoard({ document, segment, onBack, sequence, onGrade 
             <SegmentedControl className="lf-message-actions" legend={message.sender} legendHidden name={`${segment.id}-${message.id}`} size="compact"
               options={[{ value: 'scam', label: t.scam }, { value: 'safe', label: t.notScam }]} value={scam ? 'scam' : 'safe'}
               disabled={grading.pending || grading.met} onValueChange={(value) => set(message.id, value === 'scam')} />
-            {/* GAP-FIX-R4: the cues are what made the learner call it a scam, so they appear once it is flagged. */}
+            {/* The cues are what made the learner call it a scam, so they appear once it is flagged. */}
             {cueList && scam ? <div className="lf-message-cues" role="group" aria-label={`${t.cues}: ${message.sender}`}>
               {cueList.map((cue) => <ChoiceChip key={cue.id} selected={(ticks[message.id] ?? []).includes(cue.id)} disabled={grading.pending || grading.met}
                 onToggle={() => tick(message.id, cue.id)}>{cue.label}</ChoiceChip>)}
@@ -319,8 +318,8 @@ export function MessageListBoard({ document, segment, onBack, sequence, onGrade 
 
 /*
  * $1 / $2: coins and bills in integer minor units; the total is always the sum
- * of the tray. GAP-FIX-R4 (Bible 05 §2 and §7 Money): the tray is drawn with
- * the shared Pizarrón coin piles (CoinGroupsVisual, B.7): reward coins with the
+ * of the tray. The tray is drawn with
+ * the shared Pizarrón coin piles (CoinGroupsVisual): reward coins with the
  * ridge outline, notes as a simplified token of the same family, one pile per
  * denomination, filling live as the steppers change; for $2 the running
  * count-up sits beside the tray. Never the Wallet's save and spend hues.
@@ -339,7 +338,7 @@ export function CoinTrayBoard({ document, segment, onBack, sequence, onGrade }: 
   }, [document.locale, currency]);
   const total = denominations.reduce((sum, d) => sum + d.value_minor * (counts[String(d.value_minor)] ?? 0), 0);
   const change = segment.type === 'money.making-change.v2' ? segment.payload : null;
-  // $2 (GAP-FIX-R2): the learner says the running count after each coin; Core checks it counts UP from the price to the amount paid.
+  // $2: the learner says the running count after each coin; Core checks it counts UP from the price to the amount paid.
   const [said, setSaid] = useState<number[]>([]);
   const [saying, setSaying] = useState<string | null>(null);
   const coins = Object.values(counts).reduce((sum, count) => sum + count, 0);
@@ -380,7 +379,7 @@ export function CoinTrayBoard({ document, segment, onBack, sequence, onGrade }: 
   </BoardShell>;
 }
 
-/* B.9: story decisions. Core grades the choice id and journals the decision. */
+/* Story decisions. Core grades the choice id and journals the decision. */
 export function StoryChoiceBoard({ document, segment, onBack, sequence, onGrade }: BoardProps<'story.branch.v2' | 'story.dialogue-choice.v2' | 'story.would-you-rather.v2'>) {
   const [choice, setChoice] = useState<string | null>(null);
   const grading = useSegmentGrade(segment.id, onGrade);
@@ -400,7 +399,7 @@ export function StoryChoiceBoard({ document, segment, onBack, sequence, onGrade 
   </BoardShell>;
 }
 
-/* B.8: one Mentor turn in the compact stage's speech plate (intro, transition or wrap). */
+/* One Mentor turn in the compact stage's speech plate (intro, transition or wrap). */
 export function MentorTurnBoard({ document, segment, onBack, sequence }: BoardProps<'voice.mentor-turn.v2'>) {
   const mentor = useLessonMentor();
   return <BoardShell screen={`mentor-${segment.payload.role}`} locale={document.locale} title={document.title} segment={segment} onBack={onBack} sequence={sequence}
@@ -413,7 +412,7 @@ export function MentorTurnBoard({ document, segment, onBack, sequence }: BoardPr
   </BoardShell>;
 }
 
-/* B.11: the Mentor's own misjudgment, then the recovery, stepped one plate at a time. */
+/* The Mentor's own misjudgment, then the recovery, stepped one plate at a time. */
 export function MentorEpisodeBoard({ document, segment, onBack, sequence }: BoardProps<'voice.mentor-episode.v2'>) {
   const t = familyCopy[document.locale];
   const mentor = useLessonMentor();
@@ -435,7 +434,7 @@ export function MentorEpisodeBoard({ document, segment, onBack, sequence }: Boar
   </BoardShell>;
 }
 
-/* B.7 part 1: a teaching chart, explored or with one question read off it (the acceptable option is private to Core). */
+/* A teaching chart, explored or with one question read off it (the acceptable option is private to Core). */
 export function ChartBoard({ document, segment, onBack, sequence, onGrade }: BoardProps<'visual.chart.v2'>) {
   const [choice, setChoice] = useState<string | null>(null);
   const grading = useSegmentGrade(segment.id, onGrade);

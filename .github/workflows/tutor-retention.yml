@@ -1,7 +1,6 @@
 name: Tutor retention
 
-# The 90-day sweep the AI Tutor's retention promise depends on
-# (/ORACLE.md §12, /LEGAL/AI_TUTOR_LEGAL_REVIEW.md §3).
+# The 90-day sweep the AI Tutor's retention promise depends on.
 #
 # "A retention policy nobody runs is not a retention policy" is written into
 # migration 0047 beside the function this calls. This workflow is the half that
@@ -140,14 +139,14 @@ jobs:
             # not understand — an error envelope, an HTML error page from a
             # proxy — would otherwise read as "nothing left to delete" and end
             # the sweep looking successful, which is the one outcome a
-            # retention job must never fake (/AGENTS.md §1.14).
+            # retention job must never fake.
             if [ -z "${deleted:-}" ]; then
               echo "::error::Core's reply carried no sessionsDeleted count; refusing to report a sweep that may not have happened"
               printf '%s\n' "$body" | head -5 >&2
               exit 1
             fi
             failed=${failed:-0}
-            # C.7: the disposition-profile retention rides the same call. A
+            # The disposition-profile retention rides the same call. A
             # null count means the delete could not run (e.g. the migration is
             # not applied yet): warned, never read as zero.
             if printf '%s' "$body" | grep -q '"dispositionProfilesPurged":null'; then

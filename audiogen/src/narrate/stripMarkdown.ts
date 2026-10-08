@@ -1,5 +1,5 @@
 /*
- * Strips MarkdownLite syntax (LESSON_ENGINE.md §8: **bold**, *italic*, `code`,
+ * Strips MarkdownLite syntax (**bold**, *italic*, `code`,
  * line breaks, "- " lists — nothing else is valid) down to plain narration
  * text for TTS. Mirrors what frontend/src/lesson-engine/core/MarkdownLite.tsx
  * renders visually, but flattens to prose instead of DOM nodes.

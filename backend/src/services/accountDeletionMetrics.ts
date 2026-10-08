@@ -3,10 +3,10 @@ import { ACCOUNT_DELETION_SLA_HOURS } from './accountDeletion.js';
 import { countServiceRows, serviceRest } from './supabaseRest.js';
 
 /*
- * Appendix J "Deletion-Request Clarity" for E.6, plus the operational view
+ * "Deletion-Request Clarity", plus the operational view
  * staff need to see that deletions actually finish.
  *
- * THE SLA (published in docs/rebuild/policies/ACCOUNT-DELETION.md): every
+ * THE SLA: every
  * self-service request is answered with its date at the moment it is made
  * (the request response and the deletion screen carry scheduled_for), and
  * the erasure completes within ACCOUNT_DELETION_SLA_HOURS of that date.
@@ -19,7 +19,7 @@ import { countServiceRows, serviceRest } from './supabaseRest.js';
  *   overdue             open requests more than the SLA past their date
  *
  * Counts only: no account id leaves this function. Every count is exact or
- * the whole read fails (§1.14).
+ * the whole read fails.
  */
 
 export interface AccountDeletionMetrics {

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // content:gates — the Forge content gates over everything in the repository
-// (gates 11-13: B.18, B.14, OD-13; gates 14-16: B.17, B.11, B.16),
-// with zero spend (no network, no model call; OD-23).
+// (gates 11-16),
+// with zero spend (no network, no model call).
 //
 //   npm run content:gates -- --course financial-education
 //   npm run content:gates -- --course first-lemonade-stand          (catalog + database/seeds/first-lemonade-stand-fixture.sql)

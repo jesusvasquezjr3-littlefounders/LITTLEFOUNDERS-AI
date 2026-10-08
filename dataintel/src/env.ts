@@ -14,7 +14,7 @@ const Env = z.object({
 
   SYNC_INTERVAL_MS: z.coerce.number().int().positive().default(300_000),
 
-  // H.3: alert triggers must notify a human, not just record a row. Optional
+  // Alert triggers must notify a human, not just record a row. Optional
   // delivery channels: an alert can only be created or re-activated on a
   // channel that is configured here (409 ALERT_CHANNEL_UNCONFIGURED). If a
   // channel is removed later, its triggers record `unconfigured` and surface

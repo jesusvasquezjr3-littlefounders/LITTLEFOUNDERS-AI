@@ -78,7 +78,7 @@ function ProofDrawing({ figure, placed, label }: { figure: ProofFigure; placed: 
 }
 
 /*
- * F1.15: a figure of rigid pieces. The learner predicts the formula first (the pieces stay locked until they do), then
+ * A figure of rigid pieces. The learner predicts the formula first (the pieces stay locked until they do), then
  * moves every piece (drag its chip onto the figure, tap the chip then the figure, or the Move to menu) and types the
  * value. Pieces are only moved, never stretched, so the area is the same before and after. Core holds the key.
  */

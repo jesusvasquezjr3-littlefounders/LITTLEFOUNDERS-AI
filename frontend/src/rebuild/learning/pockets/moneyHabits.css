@@ -1,8 +1,8 @@
-/* S07.4 money-habit surfaces (D.13-D.16). Tokens only; separation by fill, never outline; pockets use the wallet identity hues (Bible 02 §4). */
+/* Money-habit surfaces. Tokens only; separation by fill, never outline; pockets use the wallet identity hues. */
 .lf-money-habits [data-pocket='save'], .lf-money-habits[data-pocket='save'] { --pocket: var(--mint); --pocket-soft: var(--mint-soft); }
 .lf-money-habits [data-pocket='spend'] { --pocket: var(--sky); --pocket-soft: var(--sky-soft); }
 .lf-money-habits [data-pocket='share'], .lf-money-habits[data-pocket='share'] { --pocket: var(--berry); --pocket-soft: var(--berry-soft); }
-/* The pocket rows stay 8 px apart wherever PocketSplit is mounted (the allocation lesson too), so no two step buttons touch (03 §3 tap gap). */
+/* The pocket rows stay 8 px apart wherever PocketSplit is mounted (the allocation lesson too), so no two step buttons touch. */
 :is(.lf-family-hub, .lf-pocket-split) .lf-money-habits-pockets { display: grid; gap: var(--spacing-2); }
 .lf-family-hub .lf-money-habits-pockets li {
   display: flex;
@@ -16,9 +16,9 @@
 }
 .lf-money-habits-pocket-name { flex: 1 1 6rem; font-weight: 800; }
 .lf-money-habits-count { min-inline-size: 3ch; text-align: center; font: 700 1.5rem/1 'Plus Jakarta Sans', sans-serif; font-variant-numeric: tabular-nums; }
-/* D.13 pocket rows: the shared Stepper (usual split) or a typed count with −/+ (a payout) takes the rest of the row. */
+/* Pocket rows: the shared Stepper (usual split) or a typed count with −/+ (a payout) takes the rest of the row. */
 .lf-money-habits-stepper, .lf-money-habits-pocket-count { flex: 1 1 12rem; min-inline-size: 0; }
-/* On the pocket's own tint, a field and a step button keep a boundary by fill (02 §4.4). */
+/* On the pocket's own tint, a field and a step button keep a boundary by fill. */
 .lf-money-habits-pockets :is(.lf-input, .lf-stepper-button, .lf-icon-button:not(:disabled)) { background: var(--surface); }
 .lf-money-habits-chip {
   display: inline-flex;
@@ -35,13 +35,13 @@
 .lf-money-habits-available { font: 700 1.5rem/1.2 'Plus Jakarta Sans', sans-serif; }
 /* A secondary control on a list row gets its own fill, so it never reads as plain text in dark mode. */
 .lf-money-habits li .lf-button--secondary { background: var(--sunken); }
-/* A gift line (the place, the amount and the family's note) keeps the 75-character measure on a wide panel (03 §3). */
+/* A gift line (the place, the amount and the family's note) keeps the 75-character measure on a wide panel. */
 .lf-money-habits-gifts { max-inline-size: 34rem; }
 .lf-money-habits-next { display: grid; gap: var(--spacing-3); padding: var(--spacing-4); border-radius: var(--rounded-md); background: var(--reward-soft); color: var(--content); }
 .lf-money-habits-next .lf-family-money-milestone { background: var(--surface); }
 .lf-money-habits-next .lf-input { background: var(--surface); }
 
-/* D.16: a goal's progress by provenance. Own coins are solid; bonus coins are
+/* A goal's progress by provenance. Own coins are solid; bonus coins are
    striped; Tutor coins are dotted; each is also named in the legend, so the
    difference never rests on colour alone. */
 .lf-goal-progress { display: grid; gap: var(--spacing-2); }
@@ -61,10 +61,10 @@
 .lf-goal-progress [data-part='bonus'] { background: repeating-linear-gradient(135deg, var(--reward-strong) 0 4px, var(--reward-soft) 4px 8px); }
 .lf-goal-progress [data-part='family'] { background: radial-gradient(circle, var(--sky-strong) 2px, var(--sky-soft) 2.5px) 0 0 / 6px 6px; }
 .lf-money-habits-scale { flex: 1 0 100%; color: var(--content-muted); font-weight: 700; }
-/* GAP-FIX-R1: the one Save/Spend/Share split shared by the Wallet and the lesson board. */
+/* The one Save/Spend/Share split shared by the Wallet and the lesson board. */
 .lf-pocket-split { display: grid; gap: var(--spacing-2); min-inline-size: 0; }
 .lf-pocket-split-left { margin: 0; font-weight: 800; }
-/* GAP-FIX-R4 (02 §4.3): the split bar under the pocket rows. Segments sized by count, separated by gaps, pocket hues by token, no border (02 §4.4). */
+/* The split bar under the pocket rows. Segments sized by count, separated by gaps, pocket hues by token, no border. */
 .lf-split-bar { display: flex; gap: var(--spacing-1); block-size: var(--spacing-3); min-inline-size: 0; }
 .lf-split-bar-part { flex: 0 1 0; min-inline-size: 0; border-radius: var(--rounded-full); }
 .lf-split-bar-part[data-empty='true'] { display: none; }
@@ -74,7 +74,7 @@
 .lf-split-bar-part[data-split-segment='left'] { background: var(--sunken); }
 @media (prefers-reduced-motion: no-preference) { .lf-split-bar-part { transition: flex-grow var(--dur-micro) var(--ease-standard); } }
 
-/* The goal ring (owner review, 6 October 2026): the goal reads as something filling up. Decorative: the bar beside it carries provenance (D.16). */
+/* The goal ring: the goal reads as something filling up. Decorative: the bar beside it carries provenance. */
 .lf-goal-ringwrap { display: grid; gap: var(--spacing-4); min-inline-size: 0; }
 .lf-goal-ring-row { display: flex; align-items: center; gap: var(--spacing-4); min-inline-size: 0; }
 .lf-goal-ring {

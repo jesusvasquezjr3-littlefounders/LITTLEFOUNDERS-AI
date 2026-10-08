@@ -5,7 +5,7 @@ import { DiscoverableCard, discoverableVisible, type DiscoverableCopy, type Disc
 import { isOffline } from './profileRouteKit';
 
 /*
- * P3 data plane for OD-27 (2) (S-03): a 16- or 17-year-old opts in to, or
+ * Data plane for the discoverable choice: a 16- or 17-year-old opts in to, or
  * out of, a discoverable profile.
  *
  *   read   Settings' own GET /profile: `social.discoverable { canChoose, enabled }`,
@@ -16,7 +16,7 @@ import { isOffline } from './profileRouteKit';
  *          whose age evidence cannot prove 16, a flagged profile, an adult,
  *          a guest). The card changes only on Core's receipt, and shows the
  *          state Core returns, never the one that was asked for.
- *   OD-9   4.2 (GAP-FIX-R3): `reason: 'DATA_PRACTICE_CONSENT_REQUIRED'` (read or
+ *   `reason: 'DATA_PRACTICE_CONSENT_REQUIRED'` (read or
  *          a refused write) means a migrated teen whose Tutor has not yet
  *          consented to the discoverable-profile practice: the card says a
  *          Tutor must allow it first and offers no switch. Any other or
@@ -69,7 +69,7 @@ export function DiscoverableSetting({ copy, initial }: { copy: DiscoverableCopy;
         return;
       }
       if (code === 'DATA_PRACTICE_CONSENT_REQUIRED') {
-        // OD-9 4.2: a Tutor must consent first. Hide the switch and say so.
+        // A Tutor must consent first. Hide the switch and say so.
         setState((current) => current ? { enabled: next ? current.enabled : false, canChoose: false, reason: 'consentRequired' } : current);
         setStatus('consentRequired');
         return;

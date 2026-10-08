@@ -1,4 +1,4 @@
-/* The shared chart primitives (W2T.3; Frontend Bible 05 §2 viz tokens, §5, §6). Series hues are sky, mint and
+/* The shared chart primitives. Series hues are sky, mint and
    berry (strong tones) in that fixed order, with a second channel from the second series on; primary marks only
    the point being read. Gridlines are decorative (outline); the base line is the 2 px edge. Words are HTML beside
    the SVG. Tokens and logical properties only, layout by container width, no motion. */

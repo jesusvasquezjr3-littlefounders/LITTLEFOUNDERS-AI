@@ -6,18 +6,18 @@ import '../design/system.css';
 import './socialTiers.css';
 
 /*
- * E.8's lighter tier, managed by the teen: a self-registered 13 to 17 year
+ * The lighter tier, managed by the teen: a self-registered 13 to 17 year
  * old sees who asked to connect and accepts or declines each one, and can
- * remove anyone who follows them. No guardian is asked (OD-3: none exists in
- * this flow), and no count of anything is shown (E.9): these are people to
+ * remove anyone who follows them. No guardian is asked (none exists in
+ * this flow), and no count of anything is shown: these are people to
  * decide about, not a number to grow.
- * E.3 (GAP-FIX-R5 social; OD-8, D-19): an inbound request is the first
+ * An inbound request is the first
  * unwanted-contact event, so each one can also be reported (the bounded
  * report dialog) or blocked (behind a confirmation) right here, without
  * opening the requester's profile. Both reach Core by request id. A decline
  * is not the end of that path: the request just declined keeps Report and
  * Block beside the receipt (Core admits both for 30 days).
- * GAP-FIX-R8 social (E.3, E.8): every follower is listed, one without a
+ * Every follower is listed, one without a
  * @username included, and each can be removed, reported or blocked here by
  * user id: a connection is always manageable by the person it connects to.
  * Copy-only, no transport: the route wrapper owns the data plane.
@@ -41,7 +41,7 @@ export function TeenConnections({ copy, reportCopy, locale, dark, discoverable =
   reportCopy: ReportCopy;
   locale: string;
   dark: boolean;
-  /** OD-27 (2): a 16-17-year-old who chose to be found; the intro no longer says private. */
+  /** A 16-17-year-old who chose to be found; the intro no longer says private. */
   discoverable?: boolean;
   requests: TeenRequestView[];
   followers: FollowerView[];
@@ -50,16 +50,16 @@ export function TeenConnections({ copy, reportCopy, locale, dark, discoverable =
   busy: boolean;
   notice: TeenNotice | null;
   hasMore: boolean;
-  /** E.3: the request the teen just declined, still reportable and blockable beside the receipt. */
+  /** The request the teen just declined, still reportable and blockable beside the receipt. */
   closedRequestId?: string | null;
   onDecide: (requestId: string, decision: 'accept' | 'decline') => void;
-  /** E.3: true only on Core's receipt; the dialog keeps what was chosen otherwise. */
+  /** True only on Core's receipt; the dialog keeps what was chosen otherwise. */
   onReport: (requestId: string, category: ReportCategory, note: string | null) => Promise<boolean>;
   /** Runs after the confirmation; the route says whether it landed. */
   onBlock: (requestId: string) => Promise<void>;
-  /** A follower, by user id (GAP-FIX-R8 social): handle-less followers are addressable too. */
+  /** A follower, by user id: handle-less followers are addressable too. */
   onRemove: (userId: string) => void;
-  /** E.3 on a list entry: true only on Core's receipt. */
+  /** On a list entry: true only on Core's receipt. */
   onReportFollower: (userId: string, category: ReportCategory, note: string | null) => Promise<boolean>;
   /** Runs after the confirmation; the route says whether it landed. */
   onBlockFollower: (userId: string) => Promise<void>;

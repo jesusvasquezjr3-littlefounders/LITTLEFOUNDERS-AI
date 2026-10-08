@@ -14,7 +14,7 @@ import type { LessonDocument, LessonLocale } from '../types/lessonDocument.js';
  * "published chain" policy would still expose `answer_keys` on the same
  * row) — only the service role can read it, which is exactly what this
  * module uses. Echo NEVER selects `answer_keys` — the select clause below
- * is deliberately narrow (invariant, AGENTS.md).
+ * is deliberately narrow (invariant).
  */
 
 export interface LessonDocumentRow {

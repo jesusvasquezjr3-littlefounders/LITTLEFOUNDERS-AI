@@ -11,7 +11,7 @@ import {
 } from './stats1.js';
 
 /**
- * F0.4 checkers for the Horizonte statistics and probability pieces. Each one reads the public payload alone for everything the payload
+ * Checkers for the Horizonte statistics and probability pieces. Each one reads the public payload alone for everything the payload
  * fixes, and compares with the answer key only when there is one. The pack gates (stats1.ts, prob.ts) stay as they are: the helpers
  * imported here are theirs, and the searches below are independent encodings of the same facts, so a bug in either shows up as a
  * disagreement instead of passing quietly.

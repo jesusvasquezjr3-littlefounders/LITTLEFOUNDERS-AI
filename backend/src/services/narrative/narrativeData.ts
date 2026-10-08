@@ -3,7 +3,7 @@ import { restBatchedByIds, serviceRest, serviceRestRaw } from '../supabaseRest.j
 import type { DecisionRecord, JournalCandidate } from './decisionJournal.js';
 
 /*
- * B.9 (S05.3c) — every read and write the narrative layer needs. The rules
+ * Every read and write the narrative layer needs. The rules
  * stay pure in decisionJournal.ts.
  *
  * FAILURE POSTURE. Readers return null on an upstream failure; the routes that
@@ -20,7 +20,7 @@ const eu = (value: string): string => encodeURIComponent(Uuid.parse(value));
 const inList = (ids: readonly string[]): string => `in.(${ids.map((id) => Uuid.parse(id)).join(',')})`;
 const Localized = z.record(z.string(), z.unknown());
 
-// ── B.9 journal ───────────────────────────────────────────────────────────────
+// ── Decision journal ───────────────────────────────────────────────────────────────
 
 export async function recordDecisions(input: {
   userId: string; courseId: string; topicId: string; lessonId: string; locale: string; decisions: DecisionRecord[];
@@ -110,7 +110,7 @@ export async function clearJournal(userId: string): Promise<boolean> {
   return response.ok;
 }
 
-// ── Shared: the B.6 topic → knowledge-component links ─────────────────────────
+// ── Shared: the topic → knowledge-component links ─────────────────────────
 
 const LinkRow = z.object({ topic_id: z.string(), kc_id: z.string(), role: z.string(), is_primary: z.boolean().optional() }).passthrough();
 const KcRow = z.object({ id: z.string(), key: z.string(), title: Localized, status: z.string() }).passthrough();
@@ -120,7 +120,7 @@ export type KcRow = z.infer<typeof KcRow>;
  * Every knowledge component each topic TEACHES, primary first, including
  * draft components (a component's review status does not change what a topic
  * teaches; retired ones are excluded). Null on a failed read, or before the
- * B.6 migrations exist.
+ * pathway migrations exist.
  */
 export async function topicTeaches(topicIds: string[]): Promise<Map<string, KcRow[]> | null> {
   if (topicIds.length === 0) return new Map();

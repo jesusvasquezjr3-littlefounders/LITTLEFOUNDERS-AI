@@ -14,7 +14,7 @@ import {
  * `measurements.ts`, which imports nothing and can therefore be read by a
  * headless script. This module adds URLs on top, and reading a URL requires
  * `import.meta.env`, which only exists under Vite. Keeping the two apart is why
- * `scripts/verify-placement.ts` can run the real placement solver against the
+ * the real placement solver can run against the
  * real islands with no bundler and no browser.
  */
 
@@ -33,7 +33,7 @@ export {
  * Assets are served from `/scenes` in development (frontend/public/scenes, a
  * gitignored build output of `npm run assets:3d`) and from Depot's public
  * `tutor-scenes` bucket in deployed environments. Depot serves world-readable,
- * PII-free generated media directly to the browser by design (/AGENTS.md §1.5),
+ * PII-free generated media directly to the browser by design,
  * which is exactly what these are.
  */
 const ASSET_BASE = import.meta.env.VITE_SCENE_ASSET_BASE ?? '/scenes';

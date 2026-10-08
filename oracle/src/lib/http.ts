@@ -2,7 +2,7 @@ import crypto from 'crypto';
 import type { NextFunction, Request, Response } from 'express';
 import { getConfig } from '../env.js';
 
-/** Envelope error response (/AGENTS.md §1.6). */
+/** Envelope error response. */
 export function fail(res: Response, status: number, code: string, message: string): Response {
   return res.status(status).json({ data: null, error: { code, message } });
 }
@@ -13,7 +13,7 @@ export function ok<T>(res: Response, data: T, status = 200): Response {
 }
 
 /**
- * Constant-time secret comparison on FIXED-WIDTH digests (/AGENTS.md §1.14).
+ * Constant-time secret comparison on FIXED-WIDTH digests.
  *
  * Never guard timingSafeEqual with a String.length pre-check: String.length
  * counts UTF-16 code units while Buffer.from yields UTF-8 bytes, so a

@@ -12,8 +12,8 @@ import { PublicProfile, type ConnectView, type PublicPerson, type PublicProfileV
 import { PeopleList, type PeopleNotice, type PeopleView, type PersonRow, type RowAction } from './PeopleList';
 
 /*
- * Fixture-only preview of the profile lane's social screens (W2P.2: P4-P8),
- * for the audits and design review, on the development-only preview entry
+ * Fixture-only preview of the social screens,
+ * for design review, on the development-only preview entry
  * (`?screen=public-profile|people-list&state=…`). No transport, no session,
  * no spend. Names are long on purpose where a real name can be long, to prove
  * wrapping at 320 px.
@@ -82,7 +82,7 @@ const PEOPLE: PersonRow[] = [
   { userId: 'u1', displayName: 'Bartolomeo Alessandro Rodríguez Villanueva', username: 'bartolomeo_villa', look: MARTA, tutor: false },
   { userId: 'u2', displayName: 'Jesús Vásquez', username: 'jesus_v', look: resolveLook({}, 'jesus'), tutor: true },
   { userId: 'u3', displayName: 'Luz', username: 'luz', look: RIO, tutor: false },
-  // GAP-FIX-R8 social: an account without a @username is a row like any other (no profile link; actions by user id).
+  // An account without a @username is a row like any other (no profile link; actions by user id).
   { userId: 'u4', displayName: 'Patricia Guadalupe Hernández Solís', username: null, look: resolveLook({}, 'patricia'), tutor: false },
 ];
 

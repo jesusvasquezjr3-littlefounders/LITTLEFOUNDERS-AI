@@ -4,14 +4,14 @@ import '../design/system.css';
 import './checkIn.css';
 
 /*
- * C.19 on the Mentor stage (Frontend Bible 08 §4: "Repair: 'Did that help?'
+ * The check-in on the Mentor stage ("Repair: 'Did that help?'
  * is a turn with chips, not a modal").
  *
- * When the Behavioral Telemetry Layer (C.9) fires its disengagement signal,
+ * When the Behavioral Telemetry Layer fires its disengagement signal,
  * the SYSTEM asks a written check-in in the Mentor's voice ("Let me check I'm
  * really helping. Are we on the same page?"). The question lives in the
  * speech plate, because it IS the Mentor's turn; this surface carries only the
- * two reply chips, which are `option` controls (Bible 08 §2: 5 words at most
+ * two reply chips, which are `option` controls (5 words at most
  * for ages 6–9):
  *
  *   aligned      "We're good"  — the plan continues.

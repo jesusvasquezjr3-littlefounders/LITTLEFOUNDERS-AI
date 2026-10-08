@@ -1,8 +1,7 @@
 /*
  * Envelope-aware client for Core, the only service the browser calls for
- * Mentor data. Ported unchanged from `lib/api.ts` (W2 Mentor lane): the rebuilt
- * frontend imports nothing from the legacy frontend (Frontend Bible 02 rule 23;
- * `npm run spec:check`), so the Mentor session layer carries its own copy of the
+ * Mentor data. Ported unchanged from `lib/api.ts`: the rebuilt
+ * frontend imports nothing from the legacy frontend, so the Mentor session layer carries its own copy of the
  * same call. Every response is `{ data, error }`; anything else is an error,
  * never a guessed success.
  */
@@ -10,10 +9,10 @@
 export const BASE_URL: string = import.meta.env.VITE_BACKEND_URL ?? 'http://localhost:4000';
 
 /**
- * A.1 (F3-identity-site): the same window event `lib/api.ts` dispatches when
+ * The same window event `lib/api.ts` dispatches when
  * Core answers ACCOUNT_SUSPENDED (a child whose last verified Tutor link is
  * gone). AuthContext listens for it, drops the session and shows the paused
- * screen. Kept as its own copy for the reason above; a test pins the two equal.
+ * screen. Kept as its own copy for the reason above.
  */
 export const ACCOUNT_SUSPENDED_EVENT = 'lf:account-suspended';
 
@@ -32,7 +31,7 @@ export interface ApiError {
    * other error code.
    */
   resetAt?: string;
-  /** B.2's COURSE_PREREQUISITE_REQUIRED refusal; absent on every other code. */
+  /** The COURSE_PREREQUISITE_REQUIRED refusal; absent on every other code. */
   missingPrerequisites?: string[];
 }
 

@@ -18,7 +18,7 @@ import { serviceRest } from './supabaseRest.js';
  * Exclusion is therefore FORWARD-ONLY: it stops future pollution and cannot
  * remove history. The console states that on screen.
  *
- * FAILURE IS NOT EMPTINESS (§1.14): every read returns `null` when Vault
+ * FAILURE IS NOT EMPTINESS: every read returns `null` when Vault
  * cannot answer — never an empty list, which would read as "nothing is
  * excluded" and silently re-admit staff traffic. Callers decide:
  *   - tracking-decision → answers `degraded: true`, and the browser keeps any
@@ -166,7 +166,7 @@ export interface ParsedNetwork {
 
 /**
  * Parse admin input (`203.0.113.7`, `203.0.113.0/24`, `2001:db8::/48`) into a
- * masked, storable network. Strict by §1.14: no coercion, no silent widening.
+ * masked, storable network. Strict: no coercion, no silent widening.
  */
 export function parseNetwork(input: string): ParsedNetwork | NetworkParseError {
   const value = input.trim();
@@ -339,7 +339,7 @@ function prunable(): boolean {
 }
 
 /**
- * Record that a STAFF session was seen at this address (§1.9: admin and
+ * Record that a STAFF session was seen at this address (admin and
  * superadmin only — Core never writes a visitor's, parent's or kid's address).
  * Fire-and-forget and deduped in-process: this sits on every admin request and
  * must never add latency or a failure mode to the console.

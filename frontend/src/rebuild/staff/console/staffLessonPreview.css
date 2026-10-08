@@ -1,4 +1,4 @@
-/* GAP-FIX-R6: the staff v2 lesson preview (StaffLessonPreview.tsx). A full-viewport modal layer: the learner's
+/* The staff v2 lesson preview (StaffLessonPreview.tsx). A full-viewport modal layer: the learner's
    lesson layer fills it and scrolls inside it, under a staff bar that stays in view. Tokens only, logical
    properties only, no motion of its own (the lesson's own motion follows the reduced-motion rules). */
 

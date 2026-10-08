@@ -50,7 +50,7 @@ export function GroundProvider({ children }: { children: ReactNode }) {
        * `null`, never 0, when nothing is hit — a character standing off the
        * edge of the island is a placement bug, and reporting "ground at zero"
        * would silently hide it by dropping them onto an invisible plane
-       * (/AGENTS.md §1.14: failure must stay distinguishable from emptiness).
+       * (failure must stay distinguishable from emptiness).
        */
       return hits.length ? (hits[0]?.point.y ?? null) : null;
     },
@@ -68,7 +68,7 @@ export function GroundProvider({ children }: { children: ReactNode }) {
  * `GroundProvider` returns `null` when a raycast finds nothing, and
  * `Character3D` renders nothing in response - both deliberate, because inside
  * the diorama a character with no ground under them is a placement bug and
- * hiding it behind an invisible plane is exactly what §1.14 forbids.
+ * hiding it behind an invisible plane is exactly what must not happen.
  *
  * `CharacterStage` has no island by design. Reusing the diorama's provider
  * there would make every character invisible for a reason that does not apply,

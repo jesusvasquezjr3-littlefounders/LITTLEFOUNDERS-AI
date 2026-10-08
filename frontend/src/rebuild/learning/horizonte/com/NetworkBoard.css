@@ -1,4 +1,4 @@
-/* F2.16 networks and counting: the map, the choice tree and Pascal's triangle. A neutral board: a surface, quiet lines, one ink for what the learner chose (V2, V3). Tokens only. */
+/* Networks and counting: the map, the choice tree and Pascal's triangle. A neutral board: a surface, quiet lines, one ink for what the learner chose. Tokens only. */
 svg.lf-net { display: block; inline-size: 100%; max-inline-size: 36rem; block-size: auto; padding: var(--spacing-2); background: var(--surface); border-radius: var(--rounded-md); outline: 2px solid var(--outline); }
 .lf-net-edge { stroke: var(--edge); stroke-width: 2.5; stroke-linecap: round; }
 .lf-net-edge--used { stroke: var(--primary-strong); stroke-width: 4; }

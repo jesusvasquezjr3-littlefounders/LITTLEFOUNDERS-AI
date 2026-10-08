@@ -2,7 +2,7 @@ import { createHash } from 'node:crypto';
 import type { CalibrationStratum, JudgeLabel } from './judgeCalibration.js';
 
 /*
- * Product C.23 — THE TRANSCRIPT JUDGE'S GOLD SET (Appendix E §2.1, §3.2).
+ * THE TRANSCRIPT JUDGE'S GOLD SET.
  *
  * The seed set a human panel rates, blind, before the transcript judge is
  * trusted for anything: 47 short Mentor transcripts written by hand for this
@@ -12,7 +12,7 @@ import type { CalibrationStratum, JudgeLabel } from './judgeCalibration.js';
  * pipeline (the zero-spend dry run uses them as both "panel" and "judge"),
  * and Core refuses to record a calibration that uses them.
  *
- * Two strata, because Appendix E §1.2 is explicit that judge reliability
+ * Two strata, because judge reliability
  * collapses on the ambiguous cases that matter most:
  *   routine  the plain case of each question (a word-for-word repeated hint,
  *            "You're frustrated", a wrong answer called right);
@@ -25,7 +25,7 @@ import type { CalibrationStratum, JudgeLabel } from './judgeCalibration.js';
  *
  * Every question has at least 10 applicable transcripts per stratum, with at
  * least 4 of each of pass and fail, so a judge that answers the same thing
- * every time fails. A test pins these counts.
+ * every time fails.
  *
  * The set is Tier 1 data (a change changes what "calibrated" means), its
  * identity is `TRANSCRIPT_GOLD_SET_HASH`, and a calibration is recorded

@@ -1,4 +1,4 @@
-/* F2.18 bits and logic gates: a row of switches and a wired circuit. A neutral board: a surface, quiet wires, one ink for what the learner placed (V2, V3). Tokens only. */
+/* Bits and logic gates: a row of switches and a wired circuit. A neutral board: a surface, quiet wires, one ink for what the learner placed. Tokens only. */
 .lf-bits-scroll { inline-size: 100%; overflow-x: auto; padding-block: var(--spacing-1); }
 .lf-bits { display: flex; gap: var(--spacing-2); inline-size: max-content; }
 .lf-bit {

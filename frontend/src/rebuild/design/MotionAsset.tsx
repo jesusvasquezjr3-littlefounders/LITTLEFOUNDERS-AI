@@ -3,18 +3,17 @@ import { resolveManifestAsset } from './assets';
 import { useCelebrationState } from './motion';
 
 /*
- * A celebration motion asset (Frontend Bible 07 §5, 04; OD-7; OD-28 V-12).
+ * A celebration motion asset.
  *
  * It shows one manifest-registered Lottie of the `celebration-motion` family,
- * by id only, and only inside a milestone `Celebration` on the closed OD-7
+ * by id only, and only inside a milestone `Celebration` on the closed milestone
  * list: outside one, or inside a refused one, it renders nothing, so no
- * celebration asset can play anywhere else (07 §5 "play only on the D7
- * milestone list"). While that celebration plays, the Lottie plays once (never
+ * celebration asset can play anywhere else. While that celebration plays, the Lottie plays once (never
  * a loop) through the bundled player, whose code and WebAssembly are loaded
  * only then and served from this app, never from a CDN; once started it runs
  * to its end and holds its last frame. Reduced motion, a revisit, and a moment
  * that settled before the player could start show the asset's designated
- * static frame (07 §5), an SVG drawn as the animation's last frame, so nothing
+ * static frame, an SVG drawn as the animation's last frame, so nothing
  * jumps. If the player cannot load, the static frame is shown instead.
  * Always decorative: hidden from assistive tech, never interactive, no text.
  */

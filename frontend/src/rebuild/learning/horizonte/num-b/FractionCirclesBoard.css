@@ -1,4 +1,4 @@
-/* F1.6 fraction circles: circles cut into equal slices, shaded from a numbered row (a tap on a slice is a shortcut). Tokens only; text stays on --content. */
+/* Fraction circles: circles cut into equal slices, shaded from a numbered row (a tap on a slice is a shortcut). Tokens only; text stays on --content. */
 .lf-circles { display: flex; flex-wrap: wrap; gap: var(--spacing-6); align-items: start; inline-size: 100%; max-inline-size: 100%; container: lf-circles / inline-size; }
 .lf-circle-figure { display: grid; gap: var(--spacing-2); justify-items: center; margin: 0; }
 .lf-circle { inline-size: min(40cqi, 10rem); block-size: auto; aspect-ratio: 1; overflow: visible; }

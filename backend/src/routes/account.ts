@@ -21,7 +21,7 @@ import {
 import { listExpiredKidSuspensions, purgeExpiredKidSuspension } from '../services/guardianLifecycle.js';
 
 /*
- * /api/v1/account/deletion — Product 10 E.6, the account holder's own
+ * /api/v1/account/deletion — the account holder's own
  * deletion (services/accountDeletion.ts has the lifecycle).
  *
  * WHO MAY DELETE THEMSELVES, decided here from server-side facts only:
@@ -34,13 +34,13 @@ import { listExpiredKidSuspensions, purgeExpiredKidSuspension } from '../service
  *     screened): pending for ACCOUNT_DELETION_GRACE_DAYS, every session
  *     signed out, cancellable by signing back in.
  *
- * A LINKED TEEN'S TUTORS ARE TOLD (owner review D-14 (b), GAP-FIX-R2): for a
+ * A LINKED TEEN'S TUTORS ARE TOLD: for a
  * teen, Core reads the verified guardian links before scheduling (unreadable =
  * 502, nothing scheduled) and reports how many Tutors will be told
  * (`tutorsTold`, also on the GET so the teen sees it before confirming). The
  * database writes one notice per verified Tutor and its audit row in the
  * request's own transaction (teen_deletion_guardian_notices). Notify only: no
- * reason, no action. An unlinked teen tells nobody (D-14 (a)).
+ * reason, no action. An unlinked teen tells nobody.
  *
  * CONFIRMATION is server-side, not only a UI step: the body must carry
  * acknowledge:true, and the session must prove it is the holder — the current
@@ -87,7 +87,7 @@ function recentlySignedIn(user: AuthedUser, now = Date.now()): boolean {
   return latest > 0 && now - latest <= REAUTH_WINDOW_MS && latest <= now + 60_000;
 }
 
-/** For a parent: how many linked children this account supervises alone (they will be paused, A.1) or with another Tutor. */
+/** For a parent: how many linked children this account supervises alone (they will be paused) or with another Tutor. */
 async function childImpact(userId: string): Promise<{ lastTutorOf: number; sharedTutorOf: number } | null> {
   const links = await getVerifiedKidLinks(userId);
   if (links === null) return null;
@@ -116,7 +116,7 @@ export function accountRouter(): Router {
   router.use(requireAuth);
 
   /*
-   * E.4 (OD-3): a self-registered account's age is locked after its first
+   * A self-registered account's age is locked after its first
    * declaration; a later change is a request a staff member decides
    * (services/ageCorrection.ts). A parent-created child is refused (its Tutor
    * gives its age, KID_AGE_BY_TUTOR), as are a guest, an account with the
@@ -203,7 +203,7 @@ export function accountRouter(): Router {
       return fail(res, 401, 'REAUTH_REQUIRED', 'Sign in again to confirm');
     }
 
-    // D-14 (b): a linked teen's verified Tutors are told in the request's own transaction (the database trigger);
+    // A linked teen's verified Tutors are told in the request's own transaction (the database trigger);
     // Core reads them first so an unreadable link table schedules nothing and the answer states who is told.
     let tutorsTold = 0;
     if (allowed.population === 'teen') {
@@ -267,10 +267,10 @@ export function accountRouter(): Router {
 /*
  * POST /api/v1/internal/account-deletions/run — the daily sweep
  * (.github/workflows/account-deletion.yml). Erases every child paused 90
- * days with no Tutor (A.1, F3-identity-site), runs every due self-service
+ * days with no Tutor, runs every due self-service
  * request, re-checks held ones and resumes any erasure whose step failed.
  * Audited on every run, including a run that found nothing: "ran and found
- * nothing" and "never ran" must stay distinguishable (§1.14). An unreadable
+ * nothing" and "never ran" must stay distinguishable. An unreadable
  * candidate list is a 502, never a reassuring zero.
  */
 export const ACCOUNT_DELETION_SWEEP_AUDIT_ACTION = 'account_deletions.sweep_ran';
@@ -285,7 +285,7 @@ export function accountDeletionSweepRouter(): Router {
     const parsed = SweepBody.safeParse(req.body ?? {});
     if (!parsed.success) return fail(res, 400, 'VALIDATION_ERROR', parsed.error.issues[0]?.message ?? 'Invalid body');
     /*
-     * A.1 (F3-identity-site): the FAQ's "deleted if nobody supervises it within
+     * The FAQ's "deleted if nobody supervises it within
      * 90 days" runs here, daily, without waiting for the child to sign in
      * again. Each candidate goes through purgeExpiredKidSuspension, which
      * re-reads the verified links and never erases on an ambiguous read.

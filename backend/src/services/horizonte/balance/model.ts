@@ -1,5 +1,5 @@
 /*
- * F1.8 equation balance. A scale holds `a x + b = c x + d`: each pan carries x-blocks and unit-counters. The learner
+ * Equation balance. A scale holds `a x + b = c x + d`: each pan carries x-blocks and unit-counters. The learner
  * does one operation at a time and the same one on both pans, so the scale stays level; an operation done on one pan
  * only (a slip) tips it. Everything here is pure and total: the scorer, the board and the Forge gate all share it.
  */

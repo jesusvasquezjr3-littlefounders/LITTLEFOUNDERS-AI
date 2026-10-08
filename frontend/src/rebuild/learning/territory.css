@@ -1,7 +1,6 @@
 /*
- * W2L.2 (L3): the course world. A neutral page with coloured cards (02 rule
- * 15, §4.5): each chapter is a neutral card led by its own scene art (B.8),
- * separated by elevation, never by an outline (02 §4.4). Tokens only.
+ * The course world. A neutral page with coloured cards: each chapter is a neutral card led by its own scene art,
+ * separated by elevation, never by an outline. Tokens only.
  */
 .lf-rebuild.lf-territory { align-content: start; }
 .lf-territory-inner { display: grid; gap: var(--spacing-6); inline-size: 100%; max-inline-size: 1040px; margin-inline: auto; }
@@ -34,7 +33,7 @@
 .lf-territory-topics { display: grid; gap: var(--spacing-4); min-inline-size: 0; }
 .lf-territory-saga { display: grid; gap: var(--spacing-2); min-inline-size: 0; }
 .lf-territory-saga h3 { font-size: 1rem; color: var(--content-muted); overflow-wrap: break-word; }
-/* Topic rows sit on a sunken well inside the card, so a surface row keeps a boundary in both modes (02 §4.4). */
+/* Topic rows sit on a sunken well inside the card, so a surface row keeps a boundary in both modes. */
 .lf-rebuild .lf-territory-topics .lf-list-row { background: var(--sunken); }
 .lf-rebuild[data-theme='dark'] .lf-territory-topics .lf-list-row { background: var(--surface); }
 /* On the soft primary well of the world where the learner is, a sunken row would vanish: rows take the surface there. */

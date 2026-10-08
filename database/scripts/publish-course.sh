@@ -4,10 +4,10 @@
 # Forge writes draft/review content. This local operator shortcut must use the
 # same release_course preflight as Core: complete locales, reviewable lessons,
 # and a fresh Forge verification after the last document change that attests
-# every Forge release gate in public.forge_release_gates (S05.4c). It cannot
+# every Forge release gate in public.forge_release_gates. It cannot
 # turn an unchecked hierarchy into child-visible content.
 #
-# G.3 / Appendix N 1.2 (GAP-FIX-R5): a release names a staff actor and writes
+# A release names a staff actor and writes
 # its 'admin.course.release' audit row in the same transaction, from the CLI
 # exactly as from the staff console. The actor is LF_RELEASE_ACTOR (a user id
 # holding superadmin, or admin with manage_content) or, when it is unset, the

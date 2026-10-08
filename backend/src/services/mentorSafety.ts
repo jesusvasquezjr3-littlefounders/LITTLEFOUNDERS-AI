@@ -8,7 +8,7 @@ const Verification = z.object({
   birth_date: z.string().nullable(),
 }).strict();
 
-/** C.2/C.3 interim rule: unknown or unverified age receives minor safeguards.
+/** Interim rule: unknown or unverified age receives minor safeguards.
  * Editable profile dates and role grants are not proof of adulthood. Only the
  * latest service-owned ID verification can exempt an active parent account.
  * This is a safety posture, not an inferred age or a pedagogical age band.
@@ -53,7 +53,7 @@ export async function readAdultVerificationStatus(userId: string, roles: readonl
   return roles.includes('parent') && hasVerifiedAdultEvidence(record) ? 'verified' : 'unverified';
 }
 
-/** A.2 origin restrictions survive upgrade until verified supervision/adulthood.
+/** Origin restrictions survive upgrade until verified supervision/adulthood.
  * Consent alone is insufficient: a stale consent row is not a guardian link.
  */
 export async function resolveMentorSafety(userId: string, roles: readonly string[]): Promise<{

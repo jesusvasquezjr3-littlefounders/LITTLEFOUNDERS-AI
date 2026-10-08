@@ -3,7 +3,7 @@ import { query } from '../db/duckdb.js';
 import { exportQuery } from '../db/queries.js';
 
 /*
- * H.3: the async export-JOB machinery (create/list/get + the export_jobs
+ * The async export-JOB machinery (create/list/get + the export_jobs
  * table) was removed — jobs could be created and listed but no processor
  * ever advanced them, so staff could create an artifact that could never
  * complete. The direct, synchronous /export/events surface below was

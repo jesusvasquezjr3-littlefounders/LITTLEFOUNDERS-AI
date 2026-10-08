@@ -67,7 +67,7 @@ if (ex.status < 200 || ex.status >= 300) {
   for (const r of active) {
     // A /32 or /128 is one machine. Anything wider deserves a hard look: a
     // consumer ISP or CGNAT range silences thousands of real visitors, and
-    // RUNBOOK's 2026-08-14 entry records a VPN exit node nearly being approved.
+    // A VPN exit node was nearly approved once (2026-08-14).
     const network = String(r.network || '');
     const bits = Number(network.split('/')[1]);
     const wide = Number.isFinite(bits) && (network.includes(':') ? bits < 128 : bits < 32);

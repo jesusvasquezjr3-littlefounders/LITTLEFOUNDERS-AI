@@ -1,4 +1,4 @@
-// The zero-spend v2 lesson emitter (S05.4c, OD-17, OD-23).
+// The zero-spend v2 lesson emitter.
 //
 // Turns one v2 lesson plan into the three per-market documents Vault stores
 // as immutable `lesson_document_versions` rows (0101): the answerless public
@@ -14,8 +14,7 @@
 //     the three markets fill exactly the same fields (a string left in the
 //     locale-neutral payload would ship untranslated);
 //   - the Forge content gates for v2 (gates.ts) pass: a blocked lesson emits
-//     no documents and returns to Stage 1 with its itemized report
-//     (Appendix C Stage 2).
+//     no documents and returns to authoring with its itemized report.
 // Contract validity itself is Core's decision: the output is validated by
 // Core's strict v2 parser (`npm --prefix backend run forge-v2:check`).
 
@@ -160,7 +159,7 @@ export function emitV2Lesson(plan: V2LessonPlan, options: { versionId: string; m
     if (new Set(shapes).size !== 1) {
       problems.push({ gate: 1, segmentId: segment.id, message: 'the three markets do not fill the same copy fields' });
     }
-    // GAP-FIX-R4 (Appendix P Parts 1-3 ages column, Part 4.10; Bible 05 §7): the same age scope and content
+    // The same age scope and content
     // rules Core enforces on delivery (the byte-for-byte copy of Core's families), so Forge never emits them.
     const visual = segment.visual as { type: string };
     const scopeKey = segment.type === 'money.allocation.v2' && visual.type !== 'stacked-bar' ? `${segment.type}:${visual.type}` : segment.type;
@@ -168,7 +167,7 @@ export function emitV2Lesson(plan: V2LessonPlan, options: { versionId: string; m
     if (scope) problems.push({ gate: 1, segmentId: segment.id, message: `age scope: ${scope}` });
   }
 
-  // B.16 / F-06: each market's answer keys come from its own rubric when the plan gives one per market.
+  // Each market's answer keys come from its own rubric when the plan gives one per market.
   const answerKeysFor = (locale: V2Locale) => Object.fromEntries(plan.segments
     .filter((segment) => segment.rubric || segment.rubric_by_locale)
     .map((segment) => [segment.id, segment.rubric_by_locale ? segment.rubric_by_locale[locale] : segment.rubric!]));
@@ -197,7 +196,7 @@ export function emitV2Lesson(plan: V2LessonPlan, options: { versionId: string; m
       ...(plan.mentor_stage ? { mentor_stage: { ...plan.mentor_stage } } : {}),
       ...(plan.approaches ? { approaches: { options: plan.approaches.options.map((option) => ({ id: option.id, label: option.label[locale], segment_ids: [...option.segment_ids] })) } } : {}),
     };
-    // GAP-FIX-R5 (B.24, Block B autonomy): every approach chain complete and gradable, offered only where the register allows it.
+    // Every approach chain complete and gradable, offered only where the register allows it.
     const approachProblem = v2ApproachesProblem(document as Parameters<typeof v2ApproachesProblem>[0], autonomyOfferForBand(plan.age_band).approach);
     if (approachProblem) problems.push({ gate: 1, locale, message: `approaches: ${approachProblem}` });
     const report = runV2DocumentGates(document, policy.regional, markets, answerKeysFor(locale));

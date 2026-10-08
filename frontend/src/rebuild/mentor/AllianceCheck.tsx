@@ -6,16 +6,15 @@ import '../design/system.css';
 import './alliance.css';
 
 /*
- * C.15 THE END-OF-SESSION BOND PROXY on the closing surface (Appendix D §3.4:
- * "a lightweight, low-friction end-of-session alliance-bond proxy — did I get
- * what you were going for today?"; Appendix F §1.2 Alliance Bond Proxy Score).
+ * THE END-OF-SESSION BOND PROXY on the closing surface ("a lightweight, low-friction end-of-session alliance-bond proxy — did I get
+ * what you were going for today?").
  *
  * One question and three EQUAL chips (yes / a little / not really), shown
  * after the session closed, never after a safety stop (the component renders
  * nothing for that script, and Core refuses it too). It is about whether the
  * MENTOR understood the learner's goal, never a rating of the learner and
  * never a feeling. Answering is optional: nothing blocks leaving, nothing
- * counts down, nothing celebrates (OD-7). Once answered the chips go and one
+ * counts down, nothing celebrates. Once answered the chips go and one
  * informational line thanks the learner; a failed save offers a retry.
  */
 

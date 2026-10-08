@@ -6,7 +6,7 @@ import { fill, useConsoleCopy } from './staffConsoleCopy';
 
 /*
  * A daily count over time (new accounts on Users, emails on Emails), drawn by
- * the design system's TrendChart (W2T.3): columns per day in the first series
+ * the design system's TrendChart: columns per day in the first series
  * hue with the average as a reference rule, or the running total as a line.
  * The chart never carries a reading alone: the summary metrics say the total,
  * the daily average, the peak and the change, the figure's summary names the
@@ -24,7 +24,7 @@ const PERIODS: readonly { id: Period; days: number | null }[] = [
   { id: '7d', days: 7 }, { id: '30d', days: 30 }, { id: '90d', days: 90 }, { id: '1y', days: 365 }, { id: 'all', days: null },
 ];
 
-/** The visible slice and its figures, for a period and metric. Pure, so the numbers are unit-tested. */
+/** The visible slice and its figures, for a period and metric. Pure. */
 export function chartSlice(points: readonly TimelineDay[], period: Period, metric: Metric) {
   const days = PERIODS.find((entry) => entry.id === period)?.days ?? null;
   const visible = days === null ? points.slice() : points.slice(Math.max(points.length - days, 0));

@@ -1,6 +1,6 @@
 // Run orchestration — wires validate→plan→write→gate→review→localize→
 // images→publish per slot, with checkpoint/resume, a small concurrency
-// pool, and the budget kill switches (COURSE_ENGINE.md §4).
+// pool, and the budget kill switches.
 
 import path from 'node:path';
 import { getConfig, requireGenerationKeys, requirePictureGeneration } from '../env.js';
@@ -52,7 +52,7 @@ export interface Slot {
   topic: AdventureFile['sagas'][number]['topics'][number];
   lesson: AdventureFile['sagas'][number]['topics'][number]['lessons'][number];
   /**
-   * Connect-to-prior (COURSE_ENGINE.md §3.1/§4): the previous slot's
+   * Connect-to-prior: the previous slot's
    * micro_objective in the GLOBAL linear walk (enumeration order) — same
    * topic's previous lesson, or the last lesson of the previous topic when
    * this lesson is position 1. Undefined ONLY for the course's very first
@@ -101,7 +101,7 @@ export interface RunOptions {
   runId?: string;
   curriculumRoot: string;
   runsRoot: string;
-  /** COURSE_ENGINE.md §3.3 — defaults to 'kid'. */
+  /** Defaults to 'kid'. */
   register?: Register;
   /**
    * Hard USD ceiling override (only ever LOWERS the scaled budget, never raises
@@ -271,12 +271,12 @@ async function previousArtDocuments(courseSlug: string, lessonSlug: string): Pro
 type PlacementProbeBundle = Partial<Record<LessonLocale, { prompt: string; options: string[]; correctIndex: number }>>;
 
 /**
- * Resolves this slot's placement-quiz probe bundle (COURSE_ENGINE.md §3.2) —
+ * Resolves this slot's placement-quiz probe bundle —
  * `null` for every slot except a teaching topic's FIRST lesson (the probe is
  * per-TOPIC, not per-lesson; authoring it once there keeps generation cost
  * from multiplying by lesson count). Uses the catalog's hand-authored
  * override when present, otherwise authors one from topic content only (no
- * learner data ever reaches this — /AGENTS.md §1.9 by construction), then
+ * learner data ever reaches this by construction), then
  * localizes es-MX -> en-US/pt-BR the same way titles are translated.
  */
 async function resolvePlacementProbe(
@@ -327,10 +327,10 @@ async function processSlot(
     return { slotId: slot.slotId, state: 'skipped', error: 'course taxonomy/facts/catalog failed to load' };
   }
   /*
-   * Lesson-policy gates 14-16 (S05.4b) decided from the CATALOG, before any paid
+   * Lesson-policy gates 14-16 decided from the CATALOG, before any paid
    * stage and also under --dry-run: a lesson whose density is undeclared or over
-   * its working-memory ceiling (B.17), or that needs market scenarios it does
-   * not declare (B.16), cannot ship as authored. A paid corrective retry cannot
+   * its working-memory ceiling, or that needs market scenarios it does
+   * not declare, cannot ship as authored. A paid corrective retry cannot
    * fix a catalog declaration, so the slot is skipped with the itemized reason
    * instead of generated and rejected later.
    */
@@ -394,7 +394,7 @@ async function processSlot(
     const planCtx = buildPlanContext(slot, course, course.catalog, course.taxonomy, register, competencyGraph);
     let skeleton = current.data?.skeleton as PlanSkeleton | undefined;
     if (!skeleton || current.state === 'pending' || current.state === 'failed') {
-      // QA/authoring override (COURSE_ENGINE.md §4 addendum): forced_types
+      // QA/authoring override: forced_types
       // skips the plan-stage LLM call entirely — deterministic, free, and
       // exact-coverage by construction.
       if (slot.lesson.forced_types) {
@@ -444,7 +444,7 @@ async function processSlot(
         },
         {
           ledger,
-          // Appendix C 1.3 first-submission pass rate per gate — telemetry
+          // First-submission pass rate per gate — telemetry
           // only, never able to kill a run.
           onFirstSubmission: (submission) => {
             void gateLog
@@ -487,7 +487,7 @@ async function processSlot(
     if (current.state === 'written') {
       const reviewResult = await reviewLesson(documents[AUTHORING_LOCALE]!, gateCtx, {
         ledger,
-        // COURSE_ENGINE.md §4 review: the judge's concreteness dimension asks
+        // Review: the judge's concreteness dimension asks
         // "does it connect to the prior lesson, unless it's the first?" —
         // without telling it WHICH lesson came before (or that none did), it
         // guessed, and guessed against us (top false-rejection cause on the
@@ -601,15 +601,14 @@ async function processSlot(
     // ---- publish ----
     current = getSlot(checkpoint, slot.slotId);
     if (current.state === 'illustrated') {
-      // COURSE_ENGINE.md §3.3 — adult register publishes as a PARALLEL course,
+      // Adult register publishes as a PARALLEL course,
       // never overwriting the kid course: `<slug>-adultos`, title +" (Adultos)"
       // in all 3 locales. Content itself was already regenerated end-to-end
       // above (never filtered/dressed-up kid content — the documented
       // anti-pattern this whole module exists to avoid).
       // The audience is derived from the catalog, never assumed: subject and
       // age band come from THIS course's own files, so an entrepreneurship
-      // probe can never inherit financial-education's 6-year-old register
-      // (/AGENTS.md §1.14).
+      // probe can never inherit financial-education's 6-year-old register.
       const probeAudience: ProbeAudience = {
         subject: course.catalog.course.subject,
         ages: course.taxonomy?.age_tiers?.[slot.tier]?.ages ?? slot.tier,
@@ -923,7 +922,7 @@ export async function runGeneration(options: RunOptions, deps: RunDeps = {}): Pr
     throw new Error(`generate: catalog failed to load — ${errors.map((e) => e.message).join('; ')}`);
   }
   const competencyGraph = buildCompetencyGraph(loadResult.course);
-  // Lesson-policy gates 14-16 (S05.4b): derived once from the catalog, applied per slot.
+  // Lesson-policy gates 14-16: derived once from the catalog, applied per slot.
   const coursePolicy = buildCoursePolicy(loadResult.course, { register: options.register ?? 'kid' });
   for (const finding of coursePolicy.findings.filter((f) => !f.lesson && f.severity === 'block')) {
     console.warn(`[forge] course release blocker [gate ${finding.gate} ${finding.spec}]: ${finding.message}`);

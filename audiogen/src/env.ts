@@ -7,15 +7,15 @@ import { z } from 'zod';
  * Voice resolution is two-tier: TTS_VOICE_{EN_US,ES_MX,PT_BR} are per-locale
  * defaults; TTS_VOICE_<CHARACTER>_<LOCALE> (12 vars, all optional) override
  * per canon character when a segment's narrator is known — see `voiceFor()`
- * below and README.md "Voice map".
+ * below.
  */
 const Env = z.object({
   PORT: z.coerce.number().int().positive().default(4002),
 
-  // Service-to-service auth (/AGENTS.md §1.5).
+  // Service-to-service auth.
   INTERNAL_API_KEY: z.string().min(16, 'INTERNAL_API_KEY must be at least 16 chars'),
 
-  // TTS provider — DashScope (Qwen3-TTS), decision RESOLVED (audiogen/AGENTS.md).
+  // TTS provider — DashScope (Qwen3-TTS), decision RESOLVED.
   TTS_API_URL: z
     .url()
     .default('https://dashscope-intl.aliyuncs.com/api/v1/services/aigc/multimodal-generation/generation'),
@@ -44,8 +44,7 @@ const Env = z.object({
   TTS_VOICE_ES_MX: z.string().min(1).default('Li'),
   TTS_VOICE_PT_BR: z.string().min(1).default('Ryan'),
 
-  // Per-character × per-locale voice overrides (the "voice map" — README.md
-  // "Voice map" section). All optional: an unset var falls back to the
+  // Per-character × per-locale voice overrides (the "voice map"). All optional: an unset var falls back to the
   // locale default above. Populated by `npm run voices:register` (writes
   // the cloned voice id per character/locale here) — always paired with
   // TTS_CLONE_MODEL at synthesis time, never TTS_MODEL.
@@ -68,11 +67,11 @@ const Env = z.object({
   SUPABASE_URL: z.url(),
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(20),
 
-  // Filebase — internal upload service (contract in README.md).
+  // Filebase — internal upload service.
   FILEBASE_URL: z.url(),
   FILEBASE_INTERNAL_KEY: z.string().min(16, 'FILEBASE_INTERNAL_KEY must be at least 16 chars'),
 
-  // Batch narration is an OPERATOR-OPT-IN, paid action (/AGENTS.md §1.9 BOUNDARIES).
+  // Batch narration is an OPERATOR-OPT-IN, paid action.
   AUDIOGEN_RUN_ON_START: z
     .string()
     .default('false')
@@ -82,7 +81,7 @@ const Env = z.object({
   // Optional hard ceiling for paid synthesis calls in one operator batch.
   // Cache hits and speech-guard refusals do not consume a reservation.
   AUDIOGEN_MAX_TTS_CALLS_PER_RUN: z.coerce.number().int().min(1).optional(),
-  // OD-28 (owner review D-03): the provider's price per 1,000 input characters,
+  // The provider's price per 1,000 input characters,
   // used to enforce the owner-approved USD ceiling of a paid batch. No default:
   // a stale guessed price would make the ceiling lie, so a paid batch refuses
   // to start until the operator sets the current one.
@@ -150,8 +149,7 @@ export interface ResolvedVoice {
 }
 
 /**
- * Resolves the voice (AND its required model) for one narration unit
- * (COURSE_ENGINE.md §7 — "voice = the segment's narrator character"). Falls
+ * Resolves the voice (AND its required model) for one narration unit: the voice is the segment's narrator character. Falls
  * back to the locale default + TTS_MODEL when the unit has no narrator, the
  * narrator isn't one of the 4 canon characters, or that character has no
  * override set for this locale yet. A character override ALWAYS pairs with

@@ -1,4 +1,4 @@
-/* F1.8 equation balance: a neutral scale. x blocks are sky, unit counters are mint, the frame is plain ink. Tokens only. */
+/* Equation balance: a neutral scale. x blocks are sky, unit counters are mint, the frame is plain ink. Tokens only. */
 .lf-balance { display: grid; gap: var(--spacing-3); justify-items: start; }
 .lf-balance-equation { min-block-size: 3.5rem; display: grid; align-items: center; font-size: 1.5rem; font-weight: 800; color: var(--content); }
 .lf-balance-equation p { font-size: 1rem; font-weight: 600; color: var(--content-muted); }

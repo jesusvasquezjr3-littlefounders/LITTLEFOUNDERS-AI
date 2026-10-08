@@ -6,7 +6,7 @@ import { sitePreviewScreens } from './site';
 import { staffPreviewScreens } from './staff';
 import type { PreviewRegistry } from './types';
 
-/** Every lane's preview screens, by lane. Lane 0 owns this file; each lane edits only its own registry. */
+/** Every area's preview screens, by area. Each area edits only its own registry. */
 export const PREVIEW_REGISTRIES: Readonly<Record<string, PreviewRegistry>> = {
   core: corePreviewScreens,
   site: sitePreviewScreens,
@@ -16,7 +16,7 @@ export const PREVIEW_REGISTRIES: Readonly<Record<string, PreviewRegistry>> = {
   staff: staffPreviewScreens,
 };
 
-/** Screen ids registered by more than one lane (must stay empty; `registry.test.ts`). */
+/** Screen ids registered by more than one area (must stay empty). */
 export function duplicatePreviewScreens(registries: Readonly<Record<string, PreviewRegistry>> = PREVIEW_REGISTRIES): string[] {
   const owner = new Map<string, string>();
   const duplicates: string[] = [];

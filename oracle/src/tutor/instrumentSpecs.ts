@@ -24,7 +24,7 @@
  * table where they can be picked up", and `tokens` is how a screen does that.
  * Naming the instrument there puts the tool beside the instruction to use it,
  * which is the arrangement this product has repeatedly found the model actually
- * follows (/ORACLE.md §20.5: "the model follows what it is CHECKED on", and its
+ * follows ("the model follows what it is CHECKED on", and its
  * sibling — the model follows what arrives with the concrete instruction).
  *
  * A move that names no instrument is normal and gets none: the system prompt's
@@ -117,12 +117,12 @@ const SPECS: InstrumentSpec[] = [
    * kinds the schema accepts, how many does the model ever get told WHEN to
    * reach for? The answer was 17, and only 6 of those through this file — the
    * other 39 existed as one shape line inside a list of 45, which is exactly
-   * the shape of /ORACLE.md §20.5's own lesson ("the model follows what it is
+   * the shape of the lesson ("the model follows what it is
    * CHECKED on") read from the other side: a kind nothing ever points at is a
    * kind that never fires, and the live-fire record already said so in writing
    * (`fill` 0/4, `whatif` 0/4, `move` 0/5).
    *
-   * These eleven were chosen the way §4.4 says guidance should be — by finding
+   * These eleven were chosen the way guidance should be — by finding
    * the MOVE that already teaches the thing, and giving it the board that draws
    * it. Every one is wired to a move whose body was read first: two of the
    * mappings that looked obvious from the move's NAME were wrong once the body

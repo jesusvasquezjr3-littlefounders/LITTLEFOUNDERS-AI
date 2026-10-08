@@ -29,8 +29,8 @@ import { fenceActivityContent } from '../safety/untrusted.js';
  *    message rather than into the instructions.
  *
  * The pedagogy is LearnLM-shaped: active learning over exposition, cognitive
- * load management, curiosity, metacognition — the same principles
- * /LESSON_ENGINE.md §1 lists, stated as instructions rather than as content
+ * load management, curiosity, metacognition,
+ * stated as instructions rather than as content
  * rules, because here the model is the teacher rather than the author.
  */
 
@@ -61,8 +61,7 @@ const TIER_GUIDANCE: Record<1 | 2 | 3, string> = {
  * vocabulary, and no gate anywhere had an opinion about it.
  *
  * MIRRORS `FORBIDDEN_BY_TIER` in backend/src/services/tutorLadder.ts. The two
- * services share no library by design (§1.5), so this is a deliberate copy;
- * the pinned test asserts the same words are caught on both sides.
+ * services share no library by design, so this is a deliberate copy.
  *
  * A hit is NOT a moderation block. Replacing the turn with a canned line is
  * the failure this product already has too much of — the learner would hear
@@ -110,7 +109,7 @@ export function tierVocabularyViolation(text: string, tier: 1 | 2 | 3): string |
 }
 
 /**
- * THE MENTOR NAMES ITSELF AS THE MENTOR (OD-6; owner log §5 glossary: the AI
+ * THE MENTOR NAMES ITSELF AS THE MENTOR (the AI
  * character is the Mentor, never "Tutor", "bot" or "assistant"; "Tutor" is
  * the learner's verified parent). The persona line says so; this is the
  * check, because `turn.say` reaches a child as speech and captions.
@@ -144,18 +143,18 @@ export function selfNamingViolation(text: string): string | null {
 }
 
 /**
- * THE MENTOR TURN'S COPY BUDGET (OD-13; Frontend Bible 06 role table row
- * `mentor`; 08 §2 layer 3): at most 2 sentences and 20 words, 12 words for
+ * THE MENTOR TURN'S COPY BUDGET:
+ * at most 2 sentences and 20 words, 12 words for
  * ages 6–9, one question per turn. Spanish and Portuguese run a quarter
- * longer (06 §4, ×1.25, rounded up).
+ * longer (×1.25, rounded up).
  *
  * MIRRORS `copyLimit('mentor', …)` and `checkCopy` in
  * frontend/src/rebuild/design/copyBudget.ts (the services share no library by
- * design); `prompt.test.ts` reads that file and fails when the numbers drift.
+ * design).
  * The frontend splits an over-long turn into caption pages, which HIDES a
  * violation; this check prevents it at the source. An overflow is a shape
  * failure with one retry that names the limit; one that survives the retry
- * is delivered, counted and flagged (the M-13 pattern), never hidden.
+ * is delivered, counted and flagged, never hidden.
  *
  * Age: Oracle knows the learner's tier, not the band. Tiers 1 and 2 are the
  * 6–9 band (TIER_GUIDANCE above); tier 3 is 10 and older.
@@ -222,7 +221,7 @@ export function mentorTurnBudgetCorrection(result: MentorTurnBudgetResult): stri
  * Piensa: el lápiz cuesta 5...") and stayed there until explicitly told
  * "please explain in English". The exact "a later, conflicting signal in
  * history outweighs an earlier static instruction" shape this file has
- * already found for other checks (item 46's activity mismatch, item 50's
+ * already found for other checks (the activity mismatch, the
  * worked example) — except here nothing was checking at all, so it was
  * never caught until a live session used a locale the Spanish-only
  * `tutor:converse` harness structurally could never exercise. For the exact
@@ -238,9 +237,9 @@ export function mentorTurnBudgetCorrection(result: MentorTurnBudgetResult): stri
  * heuristic, which would flag legitimate code-switched loanwords like
  * "pesos" or "ok".
  *
- * A bare, single-word "the" was in the first version of this list and this
- * codebase's OWN pre-existing test suite caught it before this ever shipped:
- * `hardening.test.ts`'s canary payload `'PAYLOAD-THE-JUDGE-MUST-SEE'`
+ * A bare, single-word "the" was in the first version of this list and it
+ * was caught before it ever shipped:
+ * the canary payload `'PAYLOAD-THE-JUDGE-MUST-SEE'`
  * matched `\bthe\b` case-insensitively, because a hyphen is a word boundary
  * — the exact false-positive class this file's own header comment already
  * warns about for `tierVocabularyViolation`'s siblings. Every marker here is
@@ -413,21 +412,21 @@ export function promisesADrawing(say: string): boolean {
  * "Casi, Explorer. Piensa: el lápiz cuesta 5, tú tienes 3. Si juntas 3 y 2,
  * ¿cuánto da? 3 más 2 es 5. Entonces te faltan 2 pesos, no 8. Ahora tú: una
  * goma cuesta 7 pesos y tienes 4. ¿Cuánto te falta?" is a REAL turn used
- * elsewhere in this codebase (`prompt.test.ts`) to represent genuine teaching
- * prose, and THIS function correctly reports it as two questions (proven
- * directly in `prompt.test.ts`, not merely reasoned about) — it does not try
+ * elsewhere in this codebase to represent genuine teaching
+ * prose, and THIS function correctly reports it as two questions —
+ * it does not try
  * to tell a rhetorical sub-question apart from a real one. Wiring it to fire
  * unconditionally on every turn would therefore have retried this exact
  * shape, and turns like it, for no gain — nobody is left unable to answer,
  * because the ordinary typing box (or the mic) is still on screen.
  *
  * So this is exported for the ONE place a second question actually is a
- * defect (/ORACLE.md §11): `orchestrator.ts` gates it on `offerAdaptation`
+ * defect: `orchestrator.ts` gates it on `offerAdaptation`
  * being set, because that is the one turn shape where a second question is
  * NOT merely untidy — the frontend hides the typing box while an offer is
  * open (`ConversationView.tsx`), so a question beyond the offer's own has no
  * control left that could ever answer it, for a learner with no voice
- * provider configured (§12).
+ * provider configured.
  */
 export function asksMultipleQuestions(say: string): boolean {
   const questionSentences = say
@@ -503,7 +502,7 @@ const RESULT_ASSERTIONS = /\b(?:es|son|tienes|tendr[áa]s|quedan?|hay|da)\s+(\d+
  * (an abstract "cada vez") is not a mismatch — there is nothing to check it
  * against, and the model is free to pick.
  *
- * Found by adversarial review, round 23 (2026-08-30, MEDIUM): this table and
+ * Found by adversarial review: this table and
  * `REPEATING_CUE` used to be two independently hand-written regexes needing
  * the SAME phrase set, and Portuguese's natural phrasing ("todo dia," "toda
  * semana," as opposed to the calqued "cada dia/semana" both already
@@ -586,7 +585,7 @@ export function whiteboardUnitMismatch(
  * Neither asks whether the NUMBERS the story tells out loud are the numbers
  * the board actually computes — and a real session showed the two can
  * disagree even when both exist and each looks fine read on its own. Found
- * live, testing as a real seeded account, round 65 (2026-08-30, HIGH):
+ * live, testing as a real seeded account (2026-08-30):
  * "Imagine you save 5 pesos each week. After the first week you have 5,
  * after the second you have 10, after the third you have 15" — an
  * unambiguous, internally consistent, ZERO-based story — paired with
@@ -670,7 +669,7 @@ const PERIOD_WORD: Record<string, number> = {
    * for Portuguese — Spanish's own fourth-ordinal key is spelled `cuarta`
    * (with a c), a different string, so it never covered this one by
    * accident the way `segunda`/`quinta` happen to (identical spelling in
-   * both languages). Found alongside item 2's Portuguese verb-coverage gap,
+   * both languages). Found alongside a Portuguese verb-coverage gap,
    * 2026-08-30 (MEDIUM): a period-4 claim using an otherwise fully-covered
    * verb form ("você tem") still returned `periodIndex: undefined` and was
    * silently skipped, while periods 1/2/3/5 of the identical shape correctly
@@ -696,7 +695,7 @@ const NUMBER_TOLERANCE = 0.6;
  * — see the doc comment above.
  *
  * The English verb alternation now also accepts the contractions `you'd
- * have`/`you'll have`/`you've saved` — added round 67 (2026-08-30) after
+ * have`/`you'll have`/`you've saved` — added (2026-08-30) after
  * characterizing a live, owner-observed turn (see
  * `PERIOD_COUNT_THEN_TOTAL_PAIRS`'s own doc comment below): a real model
  * repro produced "After 4 months,
@@ -712,8 +711,8 @@ const NUMBER_TOLERANCE = 0.6;
  * the space-requiring `you ` group, rather than nesting it inside one.
  *
  * The Portuguese verb alternation now also accepts `vira` ("becomes") and a
- * BARE `fica` (without a trailing "com") — found by re-running round 67's
- * own adversarial-review workflow against this check, 2026-08-30 (HIGH): a
+ * BARE `fica` (without a trailing "com") — found by re-running the
+ * adversarial-review workflow against this check, 2026-08-30 (HIGH): a
  * genuine, correct pt-BR growth narration — "Imagine que você guarda 10
  * reais, e a cada semana isso cresce 10%. Na primeira semana, vira 11. Na
  * segunda, cresce 10% em cima de 11, e fica 12,10." — called directly
@@ -741,14 +740,14 @@ const PERIOD_CLAIM_PATTERNS: RegExp[] = [
 ];
 
 /**
- * THE SAME DEFECT, A DIFFERENT PHRASING — found live by the owner, round 67
- * (2026-08-30, HIGH), the day after round 65 shipped. Asking "what if i get
+ * THE SAME DEFECT, A DIFFERENT PHRASING — found live by the owner
+ * (2026-08-30). Asking "what if i get
  * 3 dollars every month" produced: `say` = "Imagine you get 3 dollars every
  * month. If you save for 4 months, how much would you have? Let's think: 3,
  * then 6, then 9, then 12. So 12 dollars. Now, what if you spend 2 dollars
  * each month? How much would you have after 3 months?" paired with
  * `whiteboard: {start: 3, steps: [add 3, add 3, add 3, add 3]}` — the SAME
- * root cause round 65 already diagnosed (a story with no pre-existing
+ * root cause already diagnosed (a story with no pre-existing
  * amount has no worked example to generalize `start` from, so the model
  * intermittently reaches for the per-period rate instead of zero), but
  * `PERIOD_CLAIM_PATTERNS` above never fires: it anchors on an ORDINAL word
@@ -759,8 +758,8 @@ const PERIOD_CLAIM_PATTERNS: RegExp[] = [
  * the concluding total separated by a full question mark and the list
  * itself.
  *
- * Confirmed real and recurring before writing this fix, matching round 65's
- * own discipline: ~95 real turns against the actual `TutorOrchestrator` and
+ * Confirmed real and recurring before writing this fix, matching the
+ * earlier discipline: ~95 real turns against the actual `TutorOrchestrator` and
  * the real model (no mocks), across en-US/es-MX/pt-BR, a bare single first
  * turn, a "show me the steps" follow-up (the shape that actually elicits a
  * worked walkthrough — a bare first turn never did), and 15 identical
@@ -770,7 +769,7 @@ const PERIOD_CLAIM_PATTERNS: RegExp[] = [
  * identical repeats reproduced a genuine NUMBER mismatch a second time,
  * independent of the owner's own observation: `whiteboard.start` at 3
  * against a spoken "month one you have 3, month two you have 6, month three
- * you have 9, month four you have 12" — the exact round-65 shift, one more
+ * you have 9, month four you have 12" — the exact same shift, one more
  * phrasing again. That THIRD phrasing is deliberately left uncaught here: a
  * consistent, correct turn sampled in the same run ("month 1 you have 3,
  * month 2 you add 3 more, month 3 you add 3 again" against a board whose
@@ -1006,7 +1005,7 @@ export function whiteboardNumberMismatch(
  *   alternating operators is never `add` or `subtract` together.
  *
  * A TWO-STEP BOARD (one add, one subtract) IS A DELIBERATE, DOCUMENTED GAP,
- * for the same reason round 67 left its own ambiguous shape uncaught: it
+ * for the same reason an earlier ambiguous shape was left uncaught: it
  * cannot be told apart from a genuinely different, valid two-PERIOD story
  * where period 1 is a plain gain and period 2 is a plain loss ("first month
  * you earn 5, second month you spend 2") — a single repeat of the pair is
@@ -1064,8 +1063,8 @@ export function whiteboardDoubledPeriodSteps(
  * THE OTHER THREE BOARDS' WORDS-VERSUS-BOARD CHECKS.
  *
  * Everything above this line checks a `sequence`. `compare`, `marked_line`
- * and `categories` had NO drift detector at all until 2026-09-01, and both
- * /ORACLE.md §20.5 and oracle/AGENTS.md said so deliberately and in writing:
+ * and `categories` had NO drift detector at all until 2026-09-01, and that was
+ * deliberate:
  * every `sequence` check was written AFTER a real session reproduced a
  * specific defect, and inventing one ahead of the evidence is guessing.
  *
@@ -1100,7 +1099,7 @@ export function whiteboardDoubledPeriodSteps(
  *
  * ONE GUARD THEY ALL SHARE, AND IT IS NOT OPTIONAL IN A SOCRATIC PRODUCT:
  * only an ASSERTION can contradict a board. This tutor's whole method is
- * asking (§9.2), so "¿el helado cuesta más que la paleta?" is the single most
+ * asking, so "¿el helado cuesta más que la paleta?" is the single most
  * likely sentence on a `compare` turn — and reading it as a claim about which
  * side is bigger would fire the check on the product working exactly as
  * designed. `assertionClauses` drops any clause carrying a question mark of
@@ -1343,7 +1342,7 @@ export function whiteboardComparisonMismatch(
 /**
  * "You need N more" / "te faltan N" / "faltam N" — a SHORTFALL, stated.
  *
- * The sentence `marked_line` exists to draw, in /ORACLE.md §20.5's own
+ * The sentence `marked_line` exists to draw, in its own
  * example: "tienes 22, y algo cuesta 35 — ¿cuánto te falta?" The question is
  * the teaching; a turn that then ANSWERS it with a number has made a claim
  * about the distance between two marks, and that distance is on the board.
@@ -1768,7 +1767,7 @@ export function reusesATemplate(say: string, earlierTutorLines: readonly string[
  * THE SAME ANNOUNCEMENT AGAIN, REWORDED.
  *
  * "You never announce the SAME activity twice" was a prompt rule with nothing
- * checking it, and the blueprint's golden rule is exactly about that: if the
+ * checking it, and the product's golden rule is exactly about that: if the
  * differentiation is in the prompt, there is no product. A model follows what
  * it is CHECKED on and drifts from what it is merely asked, which is the sixth
  * time that has been true in this file alone.
@@ -1847,7 +1846,7 @@ export function repeatsEarlierSentence(say: string, earlierTutorLines: readonly 
  * static, prefix-cached prompt (unchanged across every call, per rule #1),
  * so the fix is wording, never per-call randomization.
  *
- * TELL, AS WELL AS CHECK. Round 67 (2026-08-30) closed the same root cause
+ * TELL, AS WELL AS CHECK. A later fix (2026-08-30) closed the same root cause
  * `whiteboardNumberMismatch` only ever caught after the fact (see that
  * function's own doc comment, further down this file, for the live
  * reproduction): the ONE worked example above always narrates `start` as a
@@ -1894,13 +1893,13 @@ export const TUTOR_SYSTEM_PROMPT: string = [
   `  "emotion": one of ${EMOTIONS.join(' | ')},`,
   `  "action": one of ${ACTIONS.join(' | ')},`,
   '  "pointAt": null or an integer index,',
-  // Class III `point_at` (2026-09-04): S16 shipped the coarse, whole-plate
+  // `point_at` (2026-09-04): a coarse, whole-plate
   // version of this; `pointAt` is the real target on top of it, for the
   // ONE whiteboard kind that currently exposes per-element identity —
   // `sequence`'s own bars, indexed 0 through the last one drawn. Naming an
   // index the board does not have, or naming one on a DIFFERENT kind, is
   // never an error: the client silently falls back to the same coarse
-  // whole-board gesture S16 already has, so a wrong guess costs nothing
+  // whole-board gesture it already has, so a wrong guess costs nothing
   // and asserts nothing about the board's own content.
   '  Choose "point" on the SAME turn you draw or refer back to a whiteboard —',
   '  it makes the character gesture toward the board rather than into empty',
@@ -1943,8 +1942,8 @@ export const TUTOR_SYSTEM_PROMPT: string = [
   '  "offerAdaptation": null or one of slower_pacing | more_examples | less_text | more_visual | repeat_before_advancing,',
   // `DemoStepSchema` (turnSchema.ts) also accepts "place"|"assign"|"pair" with
   // "item"/"bucket"/"left"/"right", and `trayDemo.ts` has a tested adapter for
-  // each — wired end to end, deliberately NOT offered here
-  // (/TUTOR_INSTRUMENTS.md Sprint 2, 2026-09-03). `orchestrator.ts` never
+  // each — wired end to end, deliberately NOT offered here.
+  // `orchestrator.ts` never
   // builds the served segment's real item/bucket ids into this model's
   // context (confirmed: zero references to `payload` in that file), so a
   // "place"/"assign"/"pair" step can only ever name a GUESSED id. For money,
@@ -1954,10 +1953,10 @@ export const TUTOR_SYSTEM_PROMPT: string = [
   // happened to land on a real id would move the child's own draft into a
   // position with no check behind it, and could show the trusted tutor
   // asserting a WRONG placement through action while narrating as if it were
-  // correct. That is the exact harm §1.14's "never affirm an unchecked
+  // correct. That is the exact harm the "never affirm an unchecked
   // answer" family of rules exists to prevent, so this stays schema-defined
   // and prompt-silent until either the served segment's real ids reach this
-  // context (a §4.1 sealed-context change, needs its own sign-off) or product
+  // context (a sealed-context change, needs its own sign-off) or product
   // decides a generic, non-committal placement is acceptable UX. Left as
   // future capability, not a bug — do not "complete" it by adding the three
   // verbs back here without resolving the ids-in-context gap first.
@@ -1996,8 +1995,8 @@ export const TUTOR_SYSTEM_PROMPT: string = [
   '    { "kind": "goal_bar", "goal": { "label", "value" }, "saved": { "label", "value" }, "label", "currency" }',
   '    { "kind": "worked", "start", "steps": 1-4 of { "op": "add"|"subtract", "value" }, "label", "currency" }',
   /*
-   * THE 31 KINDS S11-S15 SHIPPED, NEVER ADDED HERE — found 2026-09-03 while
-   * wiring `grab`'s own line below (/TUTOR_INSTRUMENTS.md §10.5). Every field
+   * THE 31 KINDS THAT SHIPPED, NEVER ADDED HERE — found 2026-09-03 while
+   * wiring `grab`'s own line below. Every field
    * transcribed directly from its own schema in turnSchema.ts, not
    * re-derived — a shape hint that disagrees with what `.strict()` actually
    * accepts is worse than none, because it fails in exactly the way a right
@@ -2043,19 +2042,19 @@ export const TUTOR_SYSTEM_PROMPT: string = [
   '    { "kind": "cycle", "steps": 3-5 of string, "label" }',
   '    { "kind": "before_after", "what", "before", "after", "label", "currency" }',
   /*
-   * `grab` — Class II, S9 (/TUTOR_INSTRUMENTS.md §3.3). Ungraded: no field
+   * `grab` — Ungraded: no field
    * for which bin an item belongs in, because the LEARNER decides that by
    * tapping, not the model. See WhiteboardGrabSchema's own comment.
    */
   '    { "kind": "grab", "binLabels": 2-4 of string, "items": 2-8 of string, "label" }',
   /*
-   * `fill` — Class II, S9 (/TUTOR_INSTRUMENTS.md §3.3). Ungraded: no field
+   * `fill` — Ungraded: no field
    * for how many are filled — that is the LEARNER's own tapping, not the
    * model's. See WhiteboardFillSchema's own comment.
    */
   '    { "kind": "fill", "container": "ten_frame"|"bar"|"jar", "capacity": 1-20, "label" }',
   /*
-   * `whatif` — Class II, S10 (/TUTOR_INSTRUMENTS.md §3.3). NOT ungraded: the
+   * `whatif` — NOT ungraded: the
    * numbers are the point, so `values` is server-computed same as `sequence`
    * itself. See WhiteboardWhatifSchema's own comment.
    */
@@ -2063,7 +2062,7 @@ export const TUTOR_SYSTEM_PROMPT: string = [
     + ' "branches": 2-3 of { "label", "steps": 1-6 of { "op": "add"|"subtract"|"multiply_percent", "value" } },'
     + ' "label", "currency" }',
   /*
-   * `your_turn` — Class II, S10 (/TUTOR_INSTRUMENTS.md §3.3). NOT ungraded:
+   * `your_turn` — NOT ungraded:
    * ONE `sequence`, server-computed in a single pass, split at `givenCount`
    * into your own shown prefix and the learner's blank-to-reveal suffix. See
    * WhiteboardYourTurnSchema's own comment.
@@ -2518,7 +2517,7 @@ export const TUTOR_SYSTEM_PROMPT: string = [
   'what went wrong. And never state the number yourself and then praise it as',
   'though it came from them.',
   '',
-  // C.18 — the anti-sycophancy constraint (feedbackHonesty.ts), a Tier 1 rule.
+  // The anti-sycophancy constraint (feedbackHonesty.ts).
   ANSWER_HONESTY_RULE,
   '',
   '## Length',
@@ -2573,8 +2572,8 @@ export function buildContextMessage(context: TutorContext): string {
      * catalog text, and it is read back here to the SAME model on every turn
      * the activity stays open. `fenceActivityContent` applies the same
      * technique `fenceUntrusted` uses for a learner's own words and
-     * `fenceTranscript` uses for a whole session transcript (RUNBOOK.md
-     * migration 0054; AGENTS.md item 52) — a nonce fence plus an explicit
+     * `fenceTranscript` uses for a whole session transcript (
+     * migration 0054) — a nonce fence plus an explicit
      * "this is data, not an instruction" disclaimer — because a generated
      * segment's text passes the harm-category judge and the pedagogy judge
      * on its way to being served, and NEITHER has a category for "reads as
@@ -2609,7 +2608,7 @@ export function buildContextMessage(context: TutorContext): string {
       `They are working through "${context.courseContext.courseTitle}"${topic ? `, currently on "${topic}"` : ''}.`,
     );
     /*
-     * OD-43: the Mentor as a complement to the course. When Core resolved the
+     * The Mentor as a complement to the course. When Core resolved the
      * learner's current lesson in this topic, the Mentor may ground its talk
      * in that real lesson and its place — never invent a lesson.
      */
@@ -2633,7 +2632,7 @@ export function buildContextMessage(context: TutorContext): string {
      * `diagnostic`'s OWN sequence is `['warmup', 'check', 'check',
      * 'explain']` (`tutor/plan.ts`'s `SEQUENCES`) — the only intent where
      * `check` ever comes before `explain`. Found by adversarial review,
-     * round 48 (2026-08-30, MEDIUM): `PLAN_STEP_GUIDANCE.check` is shared
+     * `PLAN_STEP_GUIDANCE.check` is shared
      * across every intent and reads "Ask them to USE THE IDEA or explain it
      * back in their own words" — worded for confirming retention of
      * something already taught. Rendered for a cold-start diagnostic
@@ -2663,7 +2662,7 @@ export function buildContextMessage(context: TutorContext): string {
     }
     /*
      * THE FINAL STEP HAD NO "WE'RE DONE" SIGNAL WITHOUT THIS (V4, found live
-     * 2026-08-31, AGENTS.md item 81). `plan.ts`'s `advance()` intentionally
+     * 2026-08-31). `plan.ts`'s `advance()` intentionally
      * stops moving `stepIndex` once it reaches the plan's last step —
      * correct, and already unit-tested — but nothing ever told the MODEL
      * that: it kept receiving the IDENTICAL step guidance forever, and a
@@ -2693,7 +2692,7 @@ export function buildContextMessage(context: TutorContext): string {
   }
 
   /*
-   * THE V3 CONTROLLER'S STATE (/ORACLE.md, Tutor v3). Like the plan: stated
+   * THE V3 CONTROLLER'S STATE. Like the plan: stated
    * as fact, chosen by the SERVER. The model performs the strategy; it never
    * picks one, and the misconception hint is OUR catalogued wording about a
    * wrong idea detected by arithmetic — never anything the learner said.
@@ -2713,7 +2712,7 @@ export function buildContextMessage(context: TutorContext): string {
   }
 
   /*
-   * WHAT CAME BEFORE — digests, never transcripts (/ORACLE.md §4.1, owner
+   * WHAT CAME BEFORE — digests, never transcripts (owner
    * sign-off 2026-08-28). Enough for continuity ("last time we worked on…");
    * nothing anyone said, ever.
    */
@@ -2824,7 +2823,7 @@ const FINAL_STEP_ESCALATION =
   'what clicked (C.16), and a recap they build is worth more than one they are read.';
 
 /**
- * `diagnostic`'s own version of the `check` step (round 48, 2026-08-30):
+ * `diagnostic`'s own version of the `check` step:
  * nothing has been explained yet in this sequence, so there is no "the idea"
  * to use or explain back. This probes instead of confirms.
  */
@@ -2861,7 +2860,7 @@ const INTENT_INSTRUCTIONS: Record<string, string> = {
  * Turns evidence and uncertainty into a sentence a model will actually act on.
  *
  * Passing the raw numbers through invites the model to read them out or to
- * treat 0.31 as a verdict. What it needs is the distinction /ORACLE.md draws
+ * treat 0.31 as a verdict. What it needs is the distinction
  * between "weak evidence" and "weak performance", stated in words.
  */
 function describeConfidence(evidenceCount: number, uncertainty: number): string {
@@ -2883,13 +2882,13 @@ function describeConfidence(evidenceCount: number, uncertainty: number): string 
  * prompts of the same size, and there was no way to tell whether that was a
  * real difference in the PRODUCT or a difference between two hand-written
  * copies of the same array. A probe that reconstructs what it is studying is
- * measuring its own reconstruction — the same defect as §1.14's harness rules,
+ * measuring its own reconstruction — the same defect as a harness measuring its own assumptions,
  * one layer up.
  *
  * So the product and its instrument now call this. A change to the shape
  * reaches both, and a future probe result is a statement about the product.
  *
- * The ORDER is load-bearing and three tests pin it: correction first (what to
+ * The ORDER is load-bearing: correction first (what to
  * change), shape reminder LAST (how to answer). A repair needs both, and a
  * reminder that is not the final message stops being the last thing read —
  * measured at 67% whitespace without it, 0% with it.
@@ -2933,7 +2932,7 @@ export function buildTurnMessages(input: {
 /**
  * The one message that takes whitespace completions from the majority to zero.
  *
- * MEASURED, `model:probe-empty` rounds 74-75 against the live provider: with
+ * MEASURED, `model:probe-empty` against the live provider: with
  * no reminder, 0/12 at 3 turns of history, 3/12 at 10, 7/12 at 20 — and with
  * it, 0/40 at 20 turns and 0/40 at 40, the schema maximum, on prompts up to
  * 14,543 tokens. The number of alternating turns is the variable; the byte
@@ -3008,9 +3007,8 @@ export const PRAISE_MARKERS =
 /**
  * PRAISE THAT CONFIRMS AN ANSWER, as against praise that encourages a person.
  *
- * The distinction is the whole detector, and an existing test is what forced
- * it out. `orchestrator.test.ts`'s "does not fire on a turn with no single
- * learner number" pins this exchange:
+ * The distinction is the whole detector. It must not fire on a turn with no single
+ * learner number, as in this exchange:
  *
  *   learner: "no sé, ayúdame"
  *   tutor:   "¡Excelente! La respuesta es 15."
@@ -3134,9 +3132,8 @@ const NO_ANSWER_MARKERS =
  * surviving repeat to the scripted line took the paid gate from 4 problems to
  * 14: eight turns that had repeated ONE SENTENCE, and taught something new in
  * the rest, were replaced by a canned apology that taught nothing. A repeated
- * sentence inside a moving turn is what `orchestrator.test.ts`'s "lets short
- * teaching language recur, because that is what teaching sounds like" protects
- * on purpose.
+ * sentence inside a moving turn is allowed on purpose: short
+ * teaching language recurs, because that is what teaching sounds like.
  *
  * The harm the gate actually caught was different in kind — turn 4 was turn 3,
  * 100% of its words — and only that one is worth spending a scripted line on.

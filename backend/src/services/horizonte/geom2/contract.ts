@@ -10,10 +10,10 @@ import { isTessellationPayload, TESSELLATION_MAX_COPIES, TESSELLATION_MAX_TILE, 
 const lattice = z.object({ x: z.number().int().min(-GEOM2_COORDINATE_LIMIT).max(GEOM2_COORDINATE_LIMIT), y: z.number().int().min(-GEOM2_COORDINATE_LIMIT).max(GEOM2_COORDINATE_LIMIT) }).strict();
 const latticeList = (minimum: number, maximum: number) => z.array(lattice).min(minimum).max(maximum);
 
-/** F2.7 geoboard: a square board of pegs; the learner stretches a band around pegs. The key (area, figure) is private. */
+/** Geoboard: a square board of pegs; the learner stretches a band around pegs. The key (area, figure) is private. */
 export const geoboardPayload = z.object({ size: z.number().int().min(GEOBOARD_MIN_SIZE).max(GEOBOARD_MAX_SIZE) }).strict();
 
-/** F2.7 area by squares: a grid with an outline on its lines; the learner shades the squares inside. */
+/** Area by squares: a grid with an outline on its lines; the learner shades the squares inside. */
 export const areaSquaresPayload = z.object({
   columns: z.number().int().min(AREA_MIN_SIDE).max(AREA_MAX_SIDE), rows: z.number().int().min(AREA_MIN_SIDE).max(AREA_MAX_SIDE), outline: latticeList(4, 16),
 }).strict().superRefine((value, ctx) => {
@@ -27,12 +27,12 @@ const move = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('dilate'), num: z.number().int().min(1).max(4), den: z.number().int().min(1).max(4), about: lattice }).strict(),
 ]);
 
-/** F2.8: a figure on the plane and the move to carry out (public); the learner places the image. */
+/** a figure on the plane and the move to carry out (public); the learner places the image. */
 export const transformPayload = z.object({
   extent: z.number().int().min(TRANSFORM_MIN_EXTENT).max(TRANSFORM_MAX_EXTENT), figure: latticeList(3, TRANSFORM_MAX_VERTICES), move,
 }).strict();
 
-/** F2.8: a floor of cells and one tile that is slid, and when `moves` says so also turned half a turn or flipped over; the learner places copies until the floor is covered. */
+/** a floor of cells and one tile that is slid, and when `moves` says so also turned half a turn or flipped over; the learner places copies until the floor is covered. */
 export const tessellationPayload = z.object({
   floor: latticeList(TESSELLATION_MIN_TILE, TESSELLATION_MAX_TILE * TESSELLATION_MAX_COPIES), tile: latticeList(TESSELLATION_MIN_TILE, TESSELLATION_MAX_TILE),
   moves: z.array(z.enum(TILE_MOTIONS)).min(2).max(TILE_MOTIONS.length).optional(),

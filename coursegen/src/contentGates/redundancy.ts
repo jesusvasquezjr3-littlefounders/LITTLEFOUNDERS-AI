@@ -1,12 +1,10 @@
-// B.18 — redundancy gate: on-screen text versus narration (Mayer's redundancy
-// principle, Appendix B §1.5).
+// Redundancy gate: on-screen text versus narration (Mayer's redundancy
+// principle). No long on-screen text duplicating narration.
 //
-// The rule, from the SPEC and Frontend 08 §5 ("The Forge content gate for
-// authored segments follows B.18 (no long on-screen text duplicating
-// narration)"):
+// The rule:
 //
 //   A narrated on-screen block may repeat its narration word for word only
-//   while it is a caption: at most one Mentor turn (Bible 06: 20 words and 2
+//   while it is a caption: at most one Mentor turn (20 words and 2
 //   sentences, 12 words for ages 6–9, ×1.25 for es-MX/pt-BR). A LONGER block
 //   that substantially duplicates what is being read aloud fails, and the
 //   author must either differentiate the two (narration explains, the text
@@ -26,7 +24,7 @@ import type { NarrationUnit, ScreenBlock } from './lessonModel.js';
 export const REDUNDANCY_THRESHOLD = 0.6;
 /** A differentiated script that adds less than this share of new words is not a differentiation. */
 export const SCRIPT_REPEAT_THRESHOLD = 0.8;
-/** The shortest run of consecutive words that counts as verbatim (Block B threshold log). */
+/** The shortest run of consecutive words that counts as verbatim. */
 export const VERBATIM_RUN_WORDS = 3;
 
 /** Share of `screen` tokens covered by common runs of ≥ VERBATIM_RUN_WORDS tokens (or the whole block when shorter). */

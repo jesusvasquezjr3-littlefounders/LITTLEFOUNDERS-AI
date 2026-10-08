@@ -6,7 +6,7 @@ import { StandaloneState } from '@/app-shell/StandaloneState';
 import { useShellCopy } from '@/app-shell/ShellRoot';
 
 /*
- * The route of last resort, on the rebuilt single-state screen (W2 Lane 0).
+ * The route of last resort, on the rebuilt single-state screen.
  *
  * Until this existed, <Routes> had no `path="*"` and an unmatched URL rendered
  * NOTHING: React Router matched no branch, #root stayed empty, and the user got

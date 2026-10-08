@@ -52,7 +52,7 @@ import type {
  * turned out to be wrong would be worse than a spoken one — a wrong picture
  * is remembered longer than a wrong sentence.
  *
- * DELIBERATELY NARROW, same posture as the rest of §5: closed vocabularies,
+ * DELIBERATELY NARROW, same posture as the rest of the schema: closed vocabularies,
  * bounded numbers, a ceiling on every intermediate or derived value.
  * Anything that would produce a non-finite, negative, or absurd value
  * returns null — and null means "drop the whiteboard from this turn,
@@ -196,7 +196,7 @@ export function computeMarkedLine(
  * a denomination that does not exist is not a rounding error — it teaches
  * something false about the real world. `WhiteboardTokenGroupSchema` can bound
  * one number; only this table can say that 7 is not a coin in any of the three
- * currencies this product ships (§1.14, "generated content must be verified for
+ * currencies this product ships ("generated content must be verified for
  * SUBJECT, not only for form").
  *
  * Expressed in each currency's MAJOR unit, sub-unit coins included, because a
@@ -265,7 +265,7 @@ export function computeTokens(board: Pick<WhiteboardTokens, 'groups' | 'currency
 }
 
 
-/* ── WAVE 1 INSTRUMENTS (/TUTOR_INSTRUMENTS.md Sprints 7-8) ─────────────────── */
+/* ── WAVE 1 INSTRUMENTS ─────────────────── */
 
 /** What a `bar_model` draws beyond its own raw parts — see `computeBarModel`. */
 export interface BarModelResult {
@@ -1215,7 +1215,7 @@ export function whiteboardComputesOk(board: Whiteboard): boolean {
       return true;
     // No numbers, no cross-field relationship to check — items and bin
     // labels are independent lists the SCHEMA already bounds. Ungraded by
-    // construction (§8.1 decision D), so there is no answer for a compute
+    // construction, so there is no answer for a compute
     // function to defend the way `two_bins`' own bin ASSIGNMENTS are. This
     // is the first kind in the catalog with genuinely nothing to compute.
     case 'grab':

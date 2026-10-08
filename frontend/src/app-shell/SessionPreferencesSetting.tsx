@@ -7,9 +7,9 @@ import { SessionPreferences } from '@/rebuild/shell/SessionPreferences';
 import { useShellCopy, useShellLocale } from './ShellRoot';
 
 /*
- * Settings' mode and sign-out controls (W2 Lane 0). They lived in the legacy
+ * Settings' mode and sign-out controls. They lived in the legacy
  * app shell's sidebar and top bar, which the rebuilt shells replaced; the
- * profile lane's Settings rebuild keeps this panel (or its equivalent).
+ * rebuilt Settings keeps this panel (or its equivalent).
  * Signing out plays the same sound and lands on the public home, as before.
  */
 export function SessionPreferencesSetting() {

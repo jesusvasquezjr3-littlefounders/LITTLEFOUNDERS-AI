@@ -356,7 +356,7 @@ const SCENARIOS: Scenario[] = [
   },
   {
     /*
-     * A LEARNER WHO KEEPS GETTING IT WRONG. The blueprint's RESCUE strategy
+     * A LEARNER WHO KEEPS GETTING IT WRONG. The RESCUE strategy
      * exists for this and the guardrail says never two in a row — but the
      * thing that actually matters is whether the tutor keeps its patience,
      * lowers the difficulty, and stops repeating the same explanation. Three
@@ -419,8 +419,8 @@ const SCENARIOS: Scenario[] = [
      * model) and a live browser session (manual, currently unavailable) ever
      * have. This scenario seeds a real plan entry so the controller activates.
      *
-     * It targets `scaffold-fading.md`'s open finding (ROADMAP.md, "Next up",
-     * 2026-08-29): `scaffoldingFor('FADED')` returns the constant 2 for the
+     * It targets an open finding
+     * (2026-08-29): `scaffoldingFor('FADED')` returns the constant 2 for the
      * WHOLE time a learner is in the FADED band — there is no server-tracked
      * fade step anywhere. `pKnown: 0.55` sits inside FADED's [0.5, 0.65) band
      * (`baseStrategy`), and the script asks for help without demanding a
@@ -476,7 +476,7 @@ const SCENARIOS: Scenario[] = [
      * its own plan sequence (`plan.ts`'s `SEQUENCES.diagnostic`:
      * `['warmup', 'check', 'check', 'explain']`) — the only one where
      * `check` runs before anything is ever `explain`ed. Found by adversarial
-     * review, round 48 (2026-08-30, MEDIUM): the shared `check` guidance
+     * review: the shared `check` guidance
      * ("ask them to use the idea or explain it back") presupposes something
      * already taught, contradicting the session's own "find out where they
      * stand, gently — it must not feel like a test" framing. Fixed with a
@@ -1029,7 +1029,7 @@ function flatten(s: string): string {
  *
  * This regex was written here by hand and then again in `prompt.ts` when the
  * same three faults became repairs. Two hand-kept copies of one list is the
- * shape of defect `instruments:check` exists to catch elsewhere in this repo —
+ * shape of defect that drifts silently —
  * a drift throws nothing, it just makes one of them quietly stop agreeing with
  * the other, and then the harness reports a fault the product cannot see or
  * misses one it can.
@@ -1041,12 +1041,12 @@ function praises(said: string): boolean {
    * This used the broad praise vocabulary and reported "Muy bien, Mati. Vamos
    * a contar esas juntas: tres de diez y cuatro de uno…" as praise for an
    * answer nobody gave. It is not: it is a warm opening followed by teaching,
-   * and `orchestrator.test.ts` pins that exact shape as CORRECT — a child who
+   * and the orchestrator treats that exact shape as CORRECT — a child who
    * says they do not know has done something worth praising, and the tutor is
    * then doing its job.
    *
    * So the harness was flagging a rule the product deliberately does not
-   * hold, which is §1.14's "the metric is measuring the harness's
+   * hold, which is the "metric is measuring the harness's
    * assumptions" exactly. The product repairs `exacto`/`correcto`/`así es`
    * said to someone who answered nothing; this now asks the same question.
    */
@@ -1299,7 +1299,7 @@ function review(beats: Beat[], tier: 1 | 2 | 3, nickname: string): void {
    * defect it was written for is different: three near-identical explanations
    * of compound interest, nothing changed, no new question. A detector that
    * cannot tell those apart is noise, and noise sends someone to fix something
-   * that works (§1.14).
+   * that works.
    *
    * So high overlap only counts when the NUMBERS are unchanged too. New
    * numbers mean a new problem, however familiar the words around them.
@@ -1521,7 +1521,7 @@ async function main(): Promise<void> {
   }
   /*
    * A HARNESS THAT CANNOT OPERATE THE SURFACE MUST SAY SO, NOT BLAME THE
-   * PRODUCT (CLAUDE.md §1.14).
+   * PRODUCT.
    *
    * Every scenario here is a minor, so every turn requires a model moderation
    * pass, and with no judge configured that pass fails CLOSED — which is the
@@ -1825,9 +1825,7 @@ async function main(): Promise<void> {
    * each one exists to produce the situation for names that appeared here.
    *
    * Reported, never gated: a single run of a non-deterministic model reaching
-   * every kind is not a thing to make a build depend on. What is gated is
-   * the reachability LEDGER (`boardReachability.test.ts`), which records the
-   * kinds a run has ever proven and fails when that record shrinks.
+   * every kind is not a thing to make a build depend on.
    */
   const missing = ALL_BOARD_KINDS.filter((k) => !boardKinds.has(k));
   if (missing.length > 0) {

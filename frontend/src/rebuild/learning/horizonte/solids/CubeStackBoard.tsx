@@ -15,7 +15,7 @@ type StackSegment = Extract<HorizonteSegment, { type: 'geometry.cube-stack.v2' }
 const points = (list: readonly Point[]): string => list.map((point) => `${point[0]},${point[1]}`).join(' ');
 
 /*
- * F4.3: a grid of columns of cubes drawn in isometric SVG, with the plan, front and side views beside it. The learner sets the height
+ * A grid of columns of cubes drawn in isometric SVG, with the plan, front and side views beside it. The learner sets the height
  * of each cell by tapping it, by dragging the cube chip onto a cell, or with "Move to"; the goal views are the task. The answer is
  * the height of every cell; Core holds the goal (and the fewest-cubes rule), the browser never says met.
  */

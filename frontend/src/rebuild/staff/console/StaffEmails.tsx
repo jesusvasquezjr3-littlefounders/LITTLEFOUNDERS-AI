@@ -9,7 +9,7 @@ import { DailyChart } from './DailyChart';
 import { labelOf, useConsoleCopy, type ConsoleCopy } from './staffConsoleCopy';
 
 /*
- * S4 Emails (manage_support): the transactional email history Core proxies
+ * Emails (manage_support): the transactional email history Core proxies
  * from the email server. Search, status and template filter on the server
  * (Core's EmailLogsQuerySchema), so a filter covers the whole history, not
  * the visible page. The totals and the history load separately and fail

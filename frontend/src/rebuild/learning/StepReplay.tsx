@@ -19,7 +19,7 @@ export function StepReplay({ steps, index, onChange, labels, disabled = false }:
   labels: StepReplayLabels;
 }) {
   const [playing, setPlaying] = useState(false);
-  // GAP-FIX-R5 (08 §11): a replayed step on screen is the Mentor demonstrating beside the board.
+  // A replayed step on screen is the Mentor demonstrating beside the board.
   useLessonStageRequest('demonstrating');
 
   useEffect(() => {

@@ -1,14 +1,12 @@
-// OD-11 / owner log §5 — the controlled glossary, as data (GAP-FIX-R1 learning).
+// The controlled glossary, as data.
 //
-// OD-11: translation is done by AI, working from the controlled glossary in
-// section 5 of `docs/littlefounders-spec/product/13-OWNER-DECISION-LOG.md`.
-// This module is that table as data (glossary.test.ts keeps it equal to the
-// owner log's rows), the lines the translator is handed, and the re-gate that
-// blocks a translated lesson on a never-use term.
+// Translation is done by AI, working from a controlled glossary. This module
+// is that table as data, the lines the translator is handed, and the re-gate
+// that blocks a translated lesson on a never-use term.
 //
 // The re-gate follows the tone gate's allowances: a quoted term, or one
 // preceded by a negation within four words ("it is not a bank"), is taught or
-// examined, not voiced, and goes to Stage 3 review instead of blocking.
+// examined, not voiced, and goes to human review instead of blocking.
 // Only unambiguous misuses are scanned: the AI called a Tutor, a bot or an
 // assistant; a "streak freeze"; a chore called a job; the Wallet called a
 // digital bank. Words a lesson legitimately teaches about ("bank",
@@ -23,7 +21,7 @@ export interface GlossaryRow {
   neverUse: string;
 }
 
-/** Owner log §5, row for row (glossary.test.ts compares it with the markdown table). */
+/** The glossary, row for row. */
 export const CONTROLLED_GLOSSARY: readonly GlossaryRow[] = [
   { concept: 'Verified parent', term: { 'en-US': 'Tutor', 'es-MX': 'Tutor', 'pt-BR': 'Tutor' }, neverUse: '(never for the AI)' },
   { concept: 'The AI character', term: { 'en-US': "Mentor (or the character's name)", 'es-MX': 'Mentor', 'pt-BR': 'Mentor' }, neverUse: 'Tutor, bot, assistant' },
@@ -32,7 +30,7 @@ export const CONTROLLED_GLOSSARY: readonly GlossaryRow[] = [
   { concept: "Parent's approval", term: { 'en-US': 'approve', 'es-MX': 'aprobar', 'pt-BR': 'aprovar' }, neverUse: 'accept' },
   { concept: 'Savings / spending / sharing', term: { 'en-US': 'save / spend / share', 'es-MX': 'ahorrar / gastar / compartir', 'pt-BR': 'poupar / gastar / compartilhar' }, neverUse: 'invest (for the save pocket)' },
   { concept: 'Rest day', term: { 'en-US': 'rest day', 'es-MX': 'día de descanso', 'pt-BR': 'dia de descanso' }, neverUse: 'streak freeze (implies a purchase)' },
-  // The owner log's concept cell also names the retired section name; the translator is never handed it (OD-28).
+  // The concept cell also names the retired section name; the translator is never handed it.
   { concept: 'The money section (OD-28)', term: { 'en-US': 'Wallet', 'es-MX': 'Cartera', 'pt-BR': 'Carteira' }, neverUse: 'bank, banking account' },
   { concept: 'Allowance (regional)', term: { 'en-US': 'allowance', 'es-MX': 'domingo / mesada (confirm regionally)', 'pt-BR': 'mesada' }, neverUse: '' },
   { concept: "The Mentor's 3D scene", term: { 'en-US': 'Diorama', 'es-MX': 'Diorama', 'pt-BR': 'Diorama' }, neverUse: '' },

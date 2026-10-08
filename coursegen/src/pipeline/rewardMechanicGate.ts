@@ -1,8 +1,5 @@
-// Reward-mechanic structural gate — Appendix C Part 3, Stage 2, gate 7 (B.22,
-// S05.3e). Policy: docs/rebuild/REWARD-AND-MOTIVATION-POLICY.md §3.
-//
-// Product 10 B.22: no randomized or variable-ratio reward mechanic may reach a
-// minor. Every reward must be predictable and tied to a specific, understood
+// Reward-mechanic structural gate. No randomized or variable-ratio reward
+// mechanic may reach a minor. Every reward must be predictable and tied to a specific, understood
 // action. For a lesson document that means:
 //
 //   BLOCKING (structural, no judgment needed)
@@ -15,17 +12,17 @@
 //       chance, probability, odds, lottery, loot, gacha, mystery, jackpot,
 //       surprise, roll, drop rate, weighted reward, bonus pool, variable ratio.
 //
-//   REVIEW (flagged for the Stage 3 pedagogical reviewer, not blocking)
+//   REVIEW (flagged for the pedagogical reviewer, not blocking)
 //     * learner-facing text that uses mystery-reward language ("mystery box",
 //       "spin the wheel", "surprise prize", in three languages). A teen lesson
 //       may legitimately TEACH the odds of a loot box as risk and expected
 //       value; the reviewer decides whether the text teaches the mechanic or
-//       dangles it. The code and copy of the product itself are held to the
-//       stricter repository gate (agent/tools/check-reward-mechanics.mjs).
+//       dangles it. The code and copy of the product itself are held to a
+//       stricter repository-wide scan.
 //
 // Pure over the raw document, so it reports even when the contract gate (1)
-// fails, and itemizes each finding by path, per Appendix C's "which gate,
-// which exact content span, why".
+// fails, and itemizes each finding by path (which gate,
+// which exact content span, why).
 
 export interface RewardMechanicFinding {
   path: string;

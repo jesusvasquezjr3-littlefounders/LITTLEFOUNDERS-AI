@@ -11,11 +11,11 @@ export interface Experiment {
   surface: string;
   target: string;
   segmentFilter?: Record<string, unknown>;
-  /** H.7: declared age bounds. The eligibility policy sets the floor a bound
-   * can never go under; an unknown age never qualifies (OD-23). */
+  /** Declared age bounds. The eligibility policy sets the floor a bound
+   * can never go under; an unknown age never qualifies. */
   minAge?: number | null;
   maxAge?: number | null;
-  /** H.7 / OD-23 / OD-26: 'adults_only' unless an owner decision opened it. */
+  /** 'adults_only' unless an owner decision opened it. */
   eligibilityPolicy: ExperimentEligibilityPolicy;
   createdAt: string;
   startedAt?: string;
@@ -23,14 +23,13 @@ export interface Experiment {
 }
 
 /**
- * B.28 (S05.3f): engagement volume is never a success metric. Counting more
+ * Engagement volume is never a success metric. Counting more
  * events or more sessions after a treatment rewards whatever keeps a learner
- * busy longest, which is the flow-as-stickiness trap Appendix B §2.6 names.
+ * busy longest, which is the flow-as-stickiness trap.
  * A new experiment may not declare these as its metric, and a legacy one
  * still reports its numbers (and which arm is higher, for diagnosis) but
  * never names a winner. Retention ('dau', 'users': did the learner come back
  * at all) is a binary return signal, not volume, and stays allowed.
- * Policy: docs/rebuild/LEARNER-REGISTER-AND-WELLBEING-POLICY.md §5.
  */
 export const ENGAGEMENT_VOLUME_METRICS: ReadonlySet<string> = new Set(['events', 'sessions']);
 
@@ -39,8 +38,8 @@ export function isEngagementVolumeMetric(metric: string): boolean {
 }
 
 /**
- * H.7 eligibility policies. OD-23 makes every experiment adults-only (18+)
- * until Product and Legal decide otherwise; OD-26 opens exactly one, the C.17
+ * Eligibility policies. Every experiment is adults-only (18+)
+ * until Product and Legal decide otherwise; exactly one exception is open, the
  * dialogue-calibration experiment (Mentor surface), to teens 13-17 with their
  * own analytics opt-in and tweens 10-12 with guardian analytics consent, and
  * keeps ages 6-9 out. Any other exception needs a new owner decision and a
@@ -51,9 +50,9 @@ export const EXPERIMENT_ELIGIBILITY_POLICIES = ['adults_only', 'od26_c17'] as co
 export type ExperimentEligibilityPolicy = (typeof EXPERIMENT_ELIGIBILITY_POLICIES)[number];
 /** The youngest age each policy can ever admit, whatever the declared bounds. */
 export const POLICY_MIN_AGE: Record<ExperimentEligibilityPolicy, number> = { adults_only: 18, od26_c17: 10 };
-/** OD-26: the C.17 exception applies to the Mentor dialogue experiment only. */
+/** The exception applies to the Mentor dialogue experiment only. */
 export const OD26_SURFACE = 'tutor';
-/** C.22 Stage 5 (GAP-FIX-R3): the Mentor canary target Core reads; always tutor, adults only. */
+/** The Mentor canary target Core reads; always tutor, adults only. */
 export const MENTOR_CANARY_TARGET = 'mentor.canary';
 
 export function isEligibilityPolicy(value: unknown): value is ExperimentEligibilityPolicy {
@@ -67,7 +66,7 @@ export interface ExperimentResults {
   pValue: number;
   confidence: number;
   winner: 'A' | 'B' | null;
-  /** B.28: true when the metric counts volume; `winner` is then always null. */
+  /** True when the metric counts volume; `winner` is then always null. */
   engagementVolume: boolean;
   /** The arm with the higher mean when significant, for diagnosis only. */
   higher: 'A' | 'B' | null;
@@ -161,10 +160,10 @@ async function ensureExperimentSchema(): Promise<void> {
   await execute('ALTER TABLE experiments ADD COLUMN IF NOT EXISTS target TEXT');
   await execute("UPDATE experiments SET surface = 'learn' WHERE surface IS NULL");
   await execute("UPDATE experiments SET target = 'default' WHERE target IS NULL");
-  // H.7: age eligibility bounds (NULL = unbounded on that side).
+  // Age eligibility bounds (NULL = unbounded on that side).
   await execute('ALTER TABLE experiments ADD COLUMN IF NOT EXISTS min_age INTEGER');
   await execute('ALTER TABLE experiments ADD COLUMN IF NOT EXISTS max_age INTEGER');
-  // OD-23/OD-26: the eligibility policy. NULL (a row from before the column)
+  // The eligibility policy. NULL (a row from before the column)
   // reads as adults_only; nothing ever widens an existing row.
   await execute('ALTER TABLE experiments ADD COLUMN IF NOT EXISTS eligibility_policy TEXT');
 }
@@ -191,7 +190,7 @@ function rowToExperiment(r: StoredExperiment): Experiment {
   };
 }
 
-/** A stored policy that is missing or unknown is the OD-23 default. */
+/** A stored policy that is missing or unknown is the default. */
 function storedPolicy(value: string | null | undefined): ExperimentEligibilityPolicy {
   return isEligibilityPolicy(value) ? value : 'adults_only';
 }
@@ -384,9 +383,9 @@ export async function getRuntimeAssignments(
     );
     const assignments: RuntimeAssignment[] = [];
     for (const experiment of experiments) {
-      // H.7: age eligibility is evaluated before any assignment exists. No
+      // Age eligibility is evaluated before any assignment exists. No
       // experiment assigns (or exposes) a learner whose age is unknown, under
-      // its policy's floor (OD-23: 18; OD-26 C.17: 10) or outside its bounds.
+      // its policy's floor (18, or 10 for the Mentor exception) or outside its bounds.
       const policy = storedPolicy(experiment.eligibility_policy);
       if (policy === 'od26_c17' && experiment.surface !== OD26_SURFACE) continue;
       if (!ageWithinBounds(age, experiment.min_age, experiment.max_age, policy)) continue;
@@ -420,7 +419,7 @@ export async function getRuntimeAssignments(
 }
 
 /**
- * H.7 under OD-23/OD-26: a learner qualifies only when their age is known, at
+ * A learner qualifies only when their age is known, at
  * or above the policy's floor (a missing minAge is that floor; a declared one
  * can raise it, never lower it) and inside every declared bound. Unknown ages
  * are never eligible: eligibility cannot be guessed.

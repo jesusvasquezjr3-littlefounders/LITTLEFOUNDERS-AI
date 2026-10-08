@@ -1,18 +1,17 @@
 /*
- * C.22 / Appendix E §3.1 (Tier 2 "released via canary rollout") / Appendix F
- * Part 3 Stage 5: the canary delivery path, Core's half.
+ * The canary delivery path, Core's half (a Tier 2 change "released via canary rollout").
  *
  * A Tier 2 proposal reaches "a small percentage of real sessions first"
- * through an H.7 experiment on surface `tutor`, target `mentor.canary`,
- * listed in docs/rebuild/mentor/governance/canaries.json (generated into
- * `mentorCanaryTables.generated.ts`). At session start Core decides this
+ * through an experiment on surface `tutor`, target `mentor.canary`,
+ * listed in
+ * `mentorCanaryTables.generated.ts`. At session start Core decides this
  * learner's arm and records the exposure; the negotiated session context
  * carries `{ proposalId, arm, overrides }` to Oracle (never the sealed model
  * context). Oracle reports the arm it actually ran at close and Core stores
  * it on the session row (`tutor_sessions.canary_proposal_id`, `canary_arm`),
  * which the Mentor-quality dashboard reads as canary against control.
  *
- * WHO MAY BE IN A CANARY (OD-23: experiments are adults only until the owner
+ * WHO MAY BE IN A CANARY (experiments are adults only until the owner
  * decides otherwise). Only a learner Core already treats as a verified adult
  * for the Mentor's safeguards (`resolveMentorSafety` says not a minor: the
  * latest service-owned ID verification proves 18+), whose dialogue band is
@@ -21,7 +20,7 @@
  * without verification, an adult who turned analytics off — is never asked
  * for an assignment and never exposed.
  *
- * THE SHARE. The H.7 runtime splits an experiment's eligible learners 50/50.
+ * THE SHARE. The experiment runtime splits an experiment's eligible learners 50/50.
  * A canary is a small share, so Core first draws a deterministic pool
  * (`2 × share` of eligible learners, hashed with its own salt so it is
  * independent of the runtime's A/B draw); only a pooled learner is exposed,
@@ -114,7 +113,7 @@ export async function resolveMentorCanary(input: {
 }): Promise<{ canary: MentorCanaryContext | null; assignment: CanaryAssignment }> {
   const manifest = (input.manifest ?? MENTOR_CANARIES).filter((c) => PROPOSAL_ID.test(c.proposalId) && validOverrides(c.overrides));
   if (manifest.length === 0) return { canary: null, assignment: 'no_canary' };
-  // OD-23: adults only, and "adult" means the Mentor's verified-adult posture, never a role or a declaration alone.
+  // Adults only, and "adult" means the Mentor's verified-adult posture, never a role or a declaration alone.
   if (input.isMinor || input.band !== 'adult' || (input.age !== null && input.age < 18)) return { canary: null, assignment: 'not_eligible' };
   if (!(await allowsSelfManagedAnalytics(input.userId, input.screening))) return { canary: null, assignment: 'no_consent' };
   // The ID verification proves 18+; a canary experiment declares no upper age bound (dataintel refuses one).
@@ -174,11 +173,11 @@ export async function recordCanaryArm(input: {
   return res === null ? 'failed' : 'recorded';
 }
 
-// ── the Stage 5 reading sample ───────────────────────────────────────────────
+// ── the reading sample ───────────────────────────────────────────────
 
 /**
  * A REPRODUCIBLE sample of canary-arm sessions for the person who reads real
- * transcripts before release (Appendix F Stage 5: at least 20). The same seed
+ * transcripts before release (at least 20). The same seed
  * draws the same sessions, so the reader and a reviewer see one sample.
  */
 export function drawCanarySample(sessionIds: readonly string[], size: number, seed: string): string[] {

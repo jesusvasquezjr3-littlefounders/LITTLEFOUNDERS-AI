@@ -1,7 +1,7 @@
 /*
- * GAP-FIX-R1 learning (owner review P-09, approved: "yes, for the topic's
- * primary skill only, as a new course_lesson evidence source"; B.6 "same
- * mastery model and review cards").
+ * Approved: "yes, for the topic's
+ * primary skill only, as a new course_lesson evidence source" with the "same
+ * mastery model and review cards".
  *
  * A graded course lesson is evidence on the topic's primary knowledge
  * component. It goes through the Mentor's own `recordAttempt` (BKT update,
@@ -13,9 +13,8 @@
  * posterior again (0206's partial unique index is the database backstop).
  * Best-effort like every pedagogy step: a failure here never fails a grade.
  *
- * GAP-FIX-R3 (P-09 "after policy acceptance and calibration"; D-06; OD-22):
- * gated at this single entry point. Nothing is recorded unless the B.6
- * pathway policy is accepted (COURSE_PATHWAY_ENGINE = 'pathway') and the
+ * Gated at this single entry point ("after policy acceptance and calibration").
+ * Nothing is recorded unless the pathway policy is accepted (COURSE_PATHWAY_ENGINE = 'pathway') and the
  * calibration switch COURSE_LESSON_EVIDENCE is 'on'. Under the default linear
  * engine, or with the switch off, a course grade never moves the Mentor's
  * picture of the learner.
@@ -37,7 +36,7 @@ export function courseReceiptKey(kind: 'v1' | 'v2', id: string): string | null {
   return RECEIPT_KEY.test(key) ? key : null;
 }
 
-/** P-09: course lessons count as Mentor evidence only after policy acceptance and calibration. */
+/** Course lessons count as Mentor evidence only after policy acceptance and calibration. */
 export function courseLessonEvidenceEnabled(): boolean {
   const config = getConfig();
   return config.COURSE_PATHWAY_ENGINE === 'pathway' && config.COURSE_LESSON_EVIDENCE === 'on';
@@ -82,12 +81,12 @@ export async function topicPrimaryPKnown(userId: string, topicId: string): Promi
 }
 
 /**
- * M9–M10 (GAP-FIX-R1): the delivered worked examples fade by the learner's
+ * The delivered worked examples fade by the learner's
  * mastery of the topic's primary KC, chosen on Core. Presentation only: the
  * scorer grades the same response steps whatever the fade.
  */
 /**
- * GAP-FIX-R2 (Appendix P Part 4.4): the entry stage of an M1 progression for
+ * The entry stage of a CPA progression for
  * this learner, from the topic's primary-KC mastery and their last first
  * unaided stage on the same fading group. Concrete when either read fails:
  * scaffolding is the safe default, never a skipped representation.

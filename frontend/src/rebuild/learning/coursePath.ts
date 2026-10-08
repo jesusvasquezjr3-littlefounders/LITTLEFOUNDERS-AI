@@ -2,15 +2,15 @@ import { z } from 'zod';
 import type { Locale } from '../design/copyBudget';
 
 /*
- * B.6 / S05.3b — the client side of GET /learn/courses/:slug/path.
+ * The client side of GET /learn/courses/:slug/path.
  *
  * Core decides everything on this screen: which chapters are the learner's
  * pathway, what is open now, what waits and why, and whether placement comes
  * first. The client only validates the shape and renders it. It never
  * re-derives a lock, never receives an age or a birth date (only the stage
  * names Core resolved), and treats a malformed payload as unavailable rather
- * than guessing. The fetch (either course engine) lives in course.ts (W2L.1),
- * so this module imports nothing from the legacy app (Bible 02 rule 23).
+ * than guessing. The fetch (either course engine) lives in course.ts,
+ * so this module imports nothing from the legacy app.
  */
 
 const stage = z.enum(['child', 'tween', 'teen', 'adult']);
@@ -41,7 +41,7 @@ export const coursePathSchema = z.object({
   })),
   items: z.array(pathItem),
   /*
-   * GAP-FIX-R5 (Product 10 Block B autonomy column, B.24): the levers the
+   * The levers the
    * learner's register offers (6-9: a binary pick of two next steps; 13-17 and
    * adults: optional depth lessons), and those depth lessons ("Explore
    * further"), never required. Absent from an older Core: the open path, no
@@ -53,7 +53,7 @@ export const coursePathSchema = z.object({
   blocked: z.array(z.object({ topicId: z.string(), topicTitle: localized, chapterId: z.string(), missingSkills: z.array(skillRef), missingTopics: z.array(z.object({ id: z.string(), title: localized })) })),
   skills: z.array(skillRef.extend({ shown: z.enum(['course', 'mentor', 'none']) })),
   /*
-   * OD-25: a chapter one stage above the learner's own that mastery can open
+   * A chapter one stage above the learner's own that mastery can open
    * (they confirm) or has opened, and topics the learner may accept as done on
    * what they showed with the Mentor. Core re-derives both before any write.
    * Absent from an older Core: nothing to offer.

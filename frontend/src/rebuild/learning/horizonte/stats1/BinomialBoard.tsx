@@ -16,7 +16,7 @@ const TOP = 16;
 const PLOT_H = 180;
 
 /*
- * H23: the bars of a binomial for a count n and a chance of success. The learner sets both until the mean (n times the
+ * The bars of a binomial for a count n and a chance of success. The learner sets both until the mean (n times the
  * chance) and the variance (n times the chance times the rest) match the goal in the prompt. The bars are scaled to their
  * own tallest bar, so the picture never shows the answer. The answer is n and the whole percent; Core holds the pair.
  */

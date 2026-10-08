@@ -9,7 +9,7 @@ import { asParam, isValidBucket, parseHashExt } from '../lib/validation.js';
 /*
  * Public streaming download — GET/HEAD /files/:bucket/:hash.:ext.
  *
- * This is the documented exception to the envelope rule (/AGENTS.md §1.6):
+ * This is the documented exception to the envelope rule:
  * a 200/206 success response streams raw object bytes with binary headers,
  * because it has to work as the `src` of an <audio>/<img> tag. Every ERROR
  * status from this route still uses the standard `{ data, error }` envelope
@@ -17,7 +17,7 @@ import { asParam, isValidBucket, parseHashExt } from '../lib/validation.js';
  *
  * `visibility: 'internal'` objects require the same INTERNAL_API_KEY header
  * as the management API; `public` objects are world-readable by design
- * (lesson audio/images carry no PII — /AGENTS.md §1.9).
+ * (lesson audio/images carry no PII).
  */
 
 /**

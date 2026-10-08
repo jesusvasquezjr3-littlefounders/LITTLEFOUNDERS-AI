@@ -104,7 +104,7 @@ function keyShapeProblem(frame: Frame, key: unknown): string | null {
 
 const solutionsOf = (key: unknown): Slots[] => (key as { solutions: Slots[] }).solutions;
 
-// Statement board (F2.13): hand-mirrored from backend/src/services/horizonte/fin2/statement.ts.
+// Statement board: hand-mirrored from backend/src/services/horizonte/fin2/statement.ts.
 const LINES = ['earned', 'passive', 'expenses', 'assets', 'liabilities'] as const;
 const GOAL = 'goal';
 const GOAL_MET = 'goal-met';
@@ -157,7 +157,7 @@ function statementKeyProblem(payload: unknown, solutions: readonly Slots[]): str
   return null;
 }
 
-// Decision grid (F2.14): hand-mirrored from backend/src/services/horizonte/fin2/matrix.ts.
+// Decision grid: hand-mirrored from backend/src/services/horizonte/fin2/matrix.ts.
 const GRID_VISUALS = ['swot', 'eisenhower', 'two-by-two', 'decision-matrix', 'business-canvas'] as const;
 type GridVisual = (typeof GRID_VISUALS)[number];
 const GRID_SLOTS = {
@@ -254,7 +254,7 @@ function gridKeyProblem(visual: unknown, payload: unknown, solutions: readonly S
   return null;
 }
 
-// Schedule board (F2.15): hand-mirrored from backend/src/services/horizonte/fin2/schedule.ts.
+// Schedule board: hand-mirrored from backend/src/services/horizonte/fin2/schedule.ts.
 const SCHEDULE_VISUALS = ['gantt', 'kanban', 'timeline'] as const;
 type ScheduleVisual = (typeof SCHEDULE_VISUALS)[number];
 const PERIOD_PREFIX = 'period-';
@@ -474,7 +474,7 @@ function fin2Gates(document: V2DocumentLike, answerKeys?: Record<string, unknown
   return problems;
 }
 
-// Solvability checkers (F0.4): the search runs over the same arrangements the board allows.
+// Solvability checkers: the search runs over the same arrangements the board allows.
 type Prepared = { solutions: Slots[]; issues: SolvabilityIssue[] };
 
 function prepareKey(frame: Frame, context: SolvabilityContext, subject: string): Prepared {

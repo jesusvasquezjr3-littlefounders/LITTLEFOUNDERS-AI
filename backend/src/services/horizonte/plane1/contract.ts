@@ -13,40 +13,40 @@ const demand = z.object({ a: int(10, 300), b: int(1, 10) }).strict();
 const supply = z.object({ c: int(0, 100), d: int(1, 10) }).strict();
 const goalPart = int(1, 4);
 
-/** D15: a rising line, the run of a slope triangle and the rise it starts with. The answer (the rise that stays on the line) stays in the rubric. */
+/** a rising line, the run of a slope triangle and the rise it starts with. The answer (the rise that stays on the line) stays in the rubric. */
 export const slopeTrianglePayload = z.object({
   grid, line: z.object({ from: point, to: point }).strict(), run: int(1, 8), start: int(0, GRID_TOP_MAX),
 }).strict();
 
-/** D16: a start point, a steady rate per step, the step to reach and the value the point starts at. */
+/** a start point, a steady rate per step, the step to reach and the value the point starts at. */
 export const rateOfChangePayload = z.object({
   grid, origin: point, rate: int(1, 8), at: int(1, GRID_X_MAX), start: int(GRID_BOTTOM_MIN, GRID_TOP_MAX),
 }).strict();
 
-/** D18: two points the line must pass through, in a table, a graph and an equation; the learner edits the slope and the intercept. */
+/** Two points the line must pass through, in a table, a graph and an equation; the learner edits the slope and the intercept. */
 export const linkedViewsPayload = z.object({
   grid, given: z.tuple([point, point]), start: z.object({ m: int(-SLOPE_LIMIT, SLOPE_LIMIT), b: int(GRID_BOTTOM_MIN, GRID_TOP_MAX) }).strict(),
 }).strict();
 
-/** N08, N09: a fixed cost, a price and a cost per unit, and how many units the axis shows. */
+/** A fixed cost, a price and a cost per unit, and how many units the axis shows. */
 export const breakEvenPayload = z.object({ fixed: int(1, 1000), price: int(2, 100), unit: int(1, 99), maxUnits: int(4, 60), start: int(0, 60) }).strict();
 
-/** N28: a fixed cost and a cost per unit, and the average cost per unit to reach. */
+/** A fixed cost and a cost per unit, and the average cost per unit to reach. */
 export const costStructurePayload = z.object({
   fixed: int(1, 1000), variable: int(1, 50), maxUnits: int(4, 60), goal: z.object({ average: int(2, 200) }).strict(), start: int(1, 60),
 }).strict();
 
-/** N10: a cost and a markup (on cost) or margin (on price) percent to price for. */
+/** A cost and a markup (on cost) or margin (on price) percent to price for. */
 export const marginMarkupPayload = z.object({
   cost: int(1, 100), basis: z.enum(BASES), percent: int(PERCENT_MIN, 300), maxPrice: int(10, 400), start: int(0, 400),
 }).strict();
 
-/** N09, N13: a market, one shift of a curve and the price the line starts at. The learner picks up or down and sets the new price. */
+/** A market, one shift of a curve and the price the line starts at. The learner picks up or down and sets the new price. */
 export const marketShiftPayload = z.object({
   pMax: int(4, 60), qMax: int(20, 300), demand, supply, shift: z.object({ curve: z.enum(CURVES), by: int(-60, 60) }).strict(), start: int(0, 60),
 }).strict();
 
-/** N13: a demand line and the elasticity (a fraction) to reach by sliding the price. */
+/** A demand line and the elasticity (a fraction) to reach by sliding the price. */
 export const elasticityPayload = z.object({
   pMax: int(4, 60), demand, goal: z.object({ num: goalPart, den: goalPart }).strict(), start: int(1, 60),
 }).strict();

@@ -1,17 +1,15 @@
 /*
- * THE CARTOON AVATAR, AS DATA (E.12, S08.7; Frontend Bible 07 §1, §3).
+ * THE CARTOON AVATAR, AS DATA.
  *
  * A profile picture is a closed set of cartoon options, never an image: Core
  * (`backend/src/services/profileShape.ts`) and the database accept nothing
- * else. What is stored stays exactly as it was (OD-9); only the drawing is
- * ours. The rebuilt frontend never imports an avatar pack (the asset gate
- * refuses DiceBear in `src/rebuild/`): the parts are our own SVG, registered
+ * else. What is stored stays exactly as it was; only the drawing is
+ * ours. The rebuilt frontend never imports an avatar pack: the parts are our own SVG, registered
  * in the manifest (`public/rebuild/avatar/*.svg`), and this file decides
  * which part to draw for a stored option set.
  *
  * The option lists mirror the editor's catalogue in `lib/avatarOptions.ts`
- * (hand-mirrored, as every wire shape in this repository is; the parity test
- * in `routes/app/profile/__tests__/avatarKitParity.test.ts` fails on drift).
+ * (hand-mirrored, as every wire shape in this repository is).
  * A stored value outside the catalogue (Core accepts any short alphanumeric
  * value, and a legacy row may hold one) draws the default part instead of
  * nothing, and is kept as it is until the person saves a new look.
@@ -128,9 +126,9 @@ export function withPart(look: AvatarLook, part: AvatarPart, value: string | nul
 }
 
 /*
- * The registered sprite files (07 §6: one manifest row each). Every part is a
+ * The registered sprite files (one manifest row each). Every part is a
  * `<g id>` drawn on one 200 x 200 grid, coloured through CSS variables so the
- * same file works in both modes (07 §3.1): `--lf-avatar-skin`,
+ * same file works in both modes: `--lf-avatar-skin`,
  * `--lf-avatar-hair` and `--lf-avatar-clothes` carry the person's choices,
  * and ink, white and the tokens come from the page.
  */
@@ -161,7 +159,7 @@ export function avatarLayers(look: AvatarLook): string[] {
 
 /* ---------------------------------------------------------------- covers */
 
-/** E.12: the ten cover presets (Core `COVER_PRESETS`, the SQL guard and `lib/coverPresets.ts`; `social:check` compares them). */
+/** The ten cover presets (Core `COVER_PRESETS`, the SQL guard and `lib/coverPresets.ts` must agree). */
 export const COVER_IDS = ['aurora', 'sunset', 'ocean', 'forest', 'candy', 'ember', 'midnight', 'mint', 'grape', 'dawn'] as const;
 export type CoverId = (typeof COVER_IDS)[number];
 export const DEFAULT_COVER: CoverId = 'aurora';

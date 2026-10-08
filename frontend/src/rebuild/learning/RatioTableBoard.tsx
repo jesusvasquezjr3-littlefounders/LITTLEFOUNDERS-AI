@@ -63,7 +63,7 @@ export function RatioTableBoard({ document, segment, onBack, sequence, onGrade }
   const allRows = useMemo(() => ratioTableRows(segment.payload, segment.payload.maximumPacks) ?? [], [segment.payload]);
   const rows = allRows.slice(0, packs);
   const current = rows.at(-1);
-  // M14 (Appendix P): children count LittleFounders coins; only the adult pathway may price in the market's currency
+  // M14: children count LittleFounders coins; only the adult pathway may price in the market's currency
   // (v2PayloadScopeProblem), so the payload's currency, not the band, decides the unit.
   const currency = segment.payload.currency;
   const money = useMemo(() => new Intl.NumberFormat(document.locale, currency === 'local'
@@ -99,7 +99,7 @@ export function RatioTableBoard({ document, segment, onBack, sequence, onGrade }
           </tr>)}</tbody></table>}
           chart={<RatioLinesVisual
             label={`${t.ratioLines}. ${packs} ${t.packs}: ${current?.items} ${t.items}; ${hideLast ? '?' : amount(current?.price ?? 0)}. ${t.unit}: ${amount(segment.payload.pricePerPack / segment.payload.itemsPerPack)}.`}
-            // B.7: the shared Pizarrón ratio lines (the Mentor's unit-price board draws with the same component); the drag handle is this lesson's own.
+            // The shared Pizarrón ratio lines (the Mentor's unit-price board draws with the same component); the drag handle is this lesson's own.
             overlay={<button className="lf-ratio-pair" type="button" aria-label={t.dragPair} style={{ insetInlineStart: pairPosition }} onPointerDown={startPair} onPointerMove={(event) => { if (event.currentTarget.hasPointerCapture(event.pointerId)) movePair(event); }} />}
             groups={[{ id: 'ratio', lines: [
               { id: 'items', label: t.items, ticks: allRows.map((row) => ({ id: String(row.packs), text: String(row.items), future: row.packs > packs })) },

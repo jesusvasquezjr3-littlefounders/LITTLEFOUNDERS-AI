@@ -5,17 +5,17 @@ import './avatar.css';
 
 /*
  * A person's cartoon avatar and their profile cover, drawn from our own
- * registered sprites (Frontend Bible 07 §1, §3, §6; E.12).
+ * registered sprites.
  *
  * Each part is a `<use>` of a manifest-registered SVG file. The person's
- * chosen colours reach the part through CSS variables on the drawing (07
- * §3.1: one file serves both modes); ink, white and the token hues come from
+ * chosen colours reach the part through CSS variables on the drawing (one file
+ * serves both modes); ink, white and the token hues come from
  * the page. If a sprite is not registered, or retired, the slot stays empty
  * and is marked `data-refused`: there is no stock picture, letter or initial
  * standing in for a person (the same rule as `Art` and `MentorAvatar`).
  *
  * The avatar is decorative by default, because the name beside it carries
- * the meaning (07 §8); a surface that shows it alone passes a label.
+ * the meaning; a surface that shows it alone passes a label.
  */
 
 const AVATAR_ASSETS = ['profile.avatar.body', 'profile.avatar.hair', 'profile.avatar.face', 'profile.avatar.extras'] as const;
@@ -51,7 +51,7 @@ export function CartoonAvatar({ look, size = 'md', label = null, framing = 'bust
   </span>;
 }
 
-/** The profile cover: one of the ten presets, a flat token composition (E.12: never an upload). */
+/** The profile cover: one of the ten presets, a flat token composition (never an upload). */
 export function CoverArt({ cover }: { cover: CoverId }) {
   const ready = resolveManifestAsset(COVER_ASSET) !== null;
   return <span className="lf-cover-art" data-slot="profile-cover" data-cover={cover} data-refused={ready ? undefined : 'true'} aria-hidden="true">

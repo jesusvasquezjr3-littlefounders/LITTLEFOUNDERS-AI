@@ -5,10 +5,10 @@ import { launchBrowser, openPage, warmDevServer } from './lesson-engine/browser.
 import { STAGE_STILL_POSES } from './lib/mentorStagePoses.mjs';
 
 /*
- * The Mentor stage's rendered sequences (Frontend Bible 08 §7, 07 §4, §5; gap-fix round 8), locally and at zero
+ * The Mentor stage's rendered sequences, locally and at zero
  * spend: no image or video model, no paid service.
  *
- * 08 §7: in the fallback (low-power device, no WebGL, data saver, a device that cannot hold 30 fps, a failed
+ * In the fallback (low-power device, no WebGL, data saver, a device that cannot hold 30 fps, a failed
  * renderer) the stage shows "pre-rendered stills and short sequences from the same models and catalogue poses";
  * "idle is a still: sequences play once per state change and settle". The stills are
  * render-mentor-stage-stills.mjs (`mentor.stageStill`). This renders the sequences: for every pose the full stage can
@@ -23,16 +23,15 @@ import { STAGE_STILL_POSES } from './lib/mentorStagePoses.mjs';
  *      engine plays the catalogue transition exactly as it does for a learner.
  *   3. The still shows the gesture HELD at its representative frame (`HELD_ACTION_PROGRESS` of the action's clip:
  *      the authored clip's own length for the bipeds, `ACTION_SECONDS` for Dina's procedural rig). The sequence is
- *      the real motion over the last `motion token` of time before that frame (07 §5: a state change maps to a motion
- *      token; `--dur-transition`, 380 ms, and `--dur-celebration`, 700 ms, only for the D7 celebration poses), one
+ *      the real motion over the last `motion token` of time before that frame (a state change maps to a motion
+ *      token; `--dur-transition`, 380 ms, and `--dur-celebration`, 700 ms, only for the celebration poses), one
  *      frame every 50 ms of engine time. A pose whose action is `idle` (an emotion change) is the first 380 ms after
  *      the change.
- *   4. The last moving frame is blended half-way into the still, and the still itself is the final frame (07 §5:
+ *   4. The last moving frame is blended half-way into the still, and the still itself is the final frame (
  *      every rendered sequence has a still; it is the sequence's end frame). The WebP plays ONCE (loop count 1).
  *
  * The files are drafts: `src/rebuild/assets/manifest.json` registers them (`mentor.stageSequence`, type `sequence`,
- * `endFrame` = the still's id) with `reviewStatus: "draft"` until the owner approves the character-render family
- * (07 §7, OD-14).
+ * `endFrame` = the still's id) with `reviewStatus: "draft"` until the owner approves the character-render family.
  *
  * Prerequisites (gitignored): the runtime models in `public/scenes/` and the Basis transcoder in `public/basis/`; the
  * stage stills already rendered; a Vite dev server:
@@ -44,10 +43,10 @@ const origin = process.env.REBUILD_URL ?? 'http://localhost:6410';
 const CHARACTERS = process.env.SEQ_CHARACTERS?.split(',') ?? ['rho', 'zara', 'liruf', 'dina'];
 const MODES = process.env.SEQ_MODES?.split(',') ?? ['light', 'dark'];
 
-/** Every pose the full stage can play except idle, which is a still (08 §7). */
+/** Every pose the full stage can play except idle, which is a still. */
 export const STAGE_SEQUENCE_POSES = STAGE_STILL_POSES.filter((row) => row.pose !== 'ambient.idle');
 const POSES = process.env.SEQ_POSES ? STAGE_SEQUENCE_POSES.filter((row) => process.env.SEQ_POSES.split(',').includes(row.pose)) : STAGE_SEQUENCE_POSES;
-/** The D7 celebration poses (only ever shown for a milestone, OD-7) take the celebration token; every other state change the transition token. */
+/** The celebration poses (only ever shown for a milestone) take the celebration token; every other state change the transition token. */
 const CELEBRATION_POSES = new Set(['celebrate.with', 'celebrate.applaud']);
 export const tokenOf = (pose) => (CELEBRATION_POSES.has(pose) ? { token: '--dur-celebration', ms: 700 } : { token: '--dur-transition', ms: 380 });
 const FIRST_FRAME_S = 4 / 60; // the first captured frame is at least this long after the change

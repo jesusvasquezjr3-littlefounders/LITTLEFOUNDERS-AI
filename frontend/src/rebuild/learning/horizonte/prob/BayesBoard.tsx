@@ -38,7 +38,7 @@ function runOutlines(start: number, end: number, rows: number): Outline[] {
 const chanceEcho = (reading: string, locale: Locale): string => (reading.includes('/') ? reading : new Intl.NumberFormat(locale, { maximumFractionDigits: 12 }).format(Number(reading)));
 
 /*
- * H29: the same population as the tree, drawn person by person in four groups (have it or not, positive or not) with the
+ * The same population as the tree, drawn person by person in four groups (have it or not, positive or not) with the
  * four head counts written out. The learner reads the chance of having it among the people with one result and types it
  * as a percent, a decimal or a fraction. Core holds the exact share and the allowance.
  */

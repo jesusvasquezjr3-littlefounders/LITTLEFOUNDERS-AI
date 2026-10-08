@@ -1,23 +1,22 @@
 #!/usr/bin/env node
 /*
- * `npm run tutor:dialogue-calibration-report` — the monitor for Product C.17
- * (age-band dialogue calibration), Appendix F §1.2 "Age-Band Calibration A/B
- * Outcome" and the calibration's Part 3 Stage 7 rollback.
+ * `npm run tutor:dialogue-calibration-report` — the monitor for age-band dialogue calibration
+ * ("Age-Band Calibration A/B Outcome") and the calibration's rollback.
  *
- *   A/B outcome     enrolled sessions only (the H.7 experiment; adults only
- *                   until Product and Legal widen the ages, OD-23): per band,
- *                   the Alliance Bond Proxy Score (C.15) and the completed-
- *                   close share (C.16) of each arm, the calibrated − control
+ *   A/B outcome     enrolled sessions only (the experiment; adults only
+ *                   until Product and Legal widen the ages): per band,
+ *                   the Alliance Bond Proxy Score and the completed-
+ *                   close share of each arm, the calibrated − control
  *                   difference with a 95% interval, and the verdict
  *                   (improvement / non-regression / inconclusive / regression
  *                   / insufficient data).
  *   Uncontrolled    sessions OUTSIDE the experiment (every minor) on the
- *                   calibrated default, per band, beside the pre-C.17
+ *                   calibrated default, per band, beside the pre-calibration
  *                   baseline. Observational, confounded, never causal.
  *   Style audit     controlling language that reached a teen or adult in the
  *                   autonomy-supportive register (a defect), and the
  *                   assignment mix (how many sessions each reason covered).
- *   Stage 7         the Kill-Switch Trigger Log.
+ *   Rollback        the Kill-Switch Trigger Log.
  *
  * Reads only, except `--resolve="root cause"` (records an operator's
  * resolution of a trip in force: new sessions run their assigned register

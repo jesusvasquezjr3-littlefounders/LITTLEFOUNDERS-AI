@@ -22,7 +22,7 @@ export function createApp(liveSessions: () => number = () => 0): express.Express
 
   /*
    * /health is mounted ABOVE the rate limiter and above every optional
-   * dependency (/AGENTS.md §1.14). Railway polls it continuously, so it must
+   * dependency. Railway polls it continuously, so it must
    * not consume a caller's budget, and it must not fail because Redis, the
    * model provider or the voice provider are having a bad day — a service that
    * cannot answer its healthcheck gets restarted, which fixes none of those
@@ -31,11 +31,11 @@ export function createApp(liveSessions: () => number = () => 0): express.Express
    * The components block reports degradation without ever failing on it.
    */
   app.get('/health', (_req, res) => {
-    // A pure in-memory read (§1.14 — never coupled to anything optional, same
+    // A pure in-memory read (never coupled to anything optional, same
     // as every other field in this block), so it belongs beside them rather
     // than only in a log line: an operator watching this endpoint sees the
     // spend ceiling trip in the same place they already watch everything
-    // else (/ORACLE.md §15.2 item 1).
+    // else.
     const spend = spendGuard.snapshot();
     res.json({
       data: {
@@ -94,8 +94,8 @@ export function createApp(liveSessions: () => number = () => 0): express.Express
      * `express.json()` throws a typed error for an oversized or malformed body,
      * and it landed here — so a 300 kB request came back `500 INTERNAL`, which
      * tells the caller we broke and invites a retry of the exact thing that
-     * cannot work. Both codes already exist in the frontend's error map
-     * (§1.6); nothing was producing them. Found while checking that an
+     * cannot work. Both codes already exist in the frontend's error map;
+     * nothing was producing them. Found while checking that an
      * unauthenticated request is rejected before its body is parsed.
      */
     const status = (err as { status?: number; statusCode?: number })?.status

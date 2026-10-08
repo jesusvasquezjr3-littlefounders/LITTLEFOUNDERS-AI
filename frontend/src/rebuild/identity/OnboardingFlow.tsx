@@ -9,28 +9,27 @@ import type { Locale } from '../design/copyBudget';
 import { identityCopy } from './authBlocks';
 
 /*
- * O1 Onboarding, rebuilt (W2S.2). A guest's one-time first run: welcome, name
+ * Onboarding, rebuilt. A guest's one-time first run: welcome, name
  * (required), the Mentor (optional), how they found us (optional) and the offer
  * to save their progress now or later. Each step is one state, so each is a
- * full-bleed single-state screen (02 §4.5, rule 15): one hue, the step's
+ * full-bleed single-state screen: one hue, the step's
  * content on a tint of it, the actions docked in the thumb zone, the progress
  * and the way back in the bar.
  *
- * What changed from the legacy flow (OD-15, 02 rules 22–23): no legacy
+ * What changed from the legacy flow: no legacy
  * component, no narration by the four characters in turn and no speech
- * bubbles. The Mentor is the learner's own choice (OD-6, 08 §8): the four real
- * characters as renders of the real models (07 §4), each with its name and one
+ * bubbles. The Mentor is the learner's own choice: the four real
+ * characters as renders of the real models, each with its name and one
  * short line, saved to the same preference the Mentor screen reads. The step
- * is the shared MentorChooser (08 §8: the characters standing on their
+ * is the shared MentorChooser (the characters standing on their
  * Diorama, `mentor.chooserStill`), not bust avatars in a list. The
  * mandatory age question is not here: the route guard asks it before this
- * screen mounts (A.3, A.4), and this flow never asks for a date again.
+ * screen mounts, and this flow never asks for a date again.
  *
- * A guest can be a child who was refused at sign-up (A.2), so every string is
- * budgeted for the youngest band (06 §3.1: 25 words on the first view).
+ * A guest can be a child who was refused at sign-up, so every string is
+ * budgeted for the youngest band (25 words on the first view).
  *
- * That same guest is why the discovery step is conditional (A.2, Appendix M
- * 1.1: no analytics event for a flagged session without an equivalent consent
+ * That same guest is why the discovery step is conditional (no analytics event for a flagged session without an equivalent consent
  * mechanism). Core stores the answer only for an account signup attribution
  * would admit and tells the flow through /auth/me; otherwise the step is not
  * shown and the progress reads "n of 4".
@@ -41,7 +40,7 @@ export type DiscoveryChannel = (typeof DISCOVERY_CHANNELS)[number];
 export const ONBOARDING_STEPS = ['welcome', 'name', 'mentor', 'discovery', 'account'] as const;
 export type OnboardingStep = (typeof ONBOARDING_STEPS)[number];
 /**
- * A.2, Appendix M 1.1: the "how did you hear about us" step is asked only when Core would keep the answer
+ * The "how did you hear about us" step is asked only when Core would keep the answer
  * (never a guest from the age-refusal path, a kid, or a teen who has not opted in). Without it the flow is 4 steps.
  */
 export const onboardingSteps = (askDiscovery: boolean): readonly OnboardingStep[] =>
@@ -61,12 +60,12 @@ export interface OnboardingValues { displayName: string; discoveryChannel: Disco
 
 export function OnboardingFlow({ locale, skipLabel, mentor, askDiscovery, completing, failed, onComplete, initialStep = 'welcome', initialName = '', header }: {
   locale: Locale; skipLabel: string; mentor: MentorChoiceState; header?: ReactNode;
-  /** Core's /auth/me `discoverySurvey`: show the optional discovery step (A.2). */
+  /** Core's /auth/me `discoverySurvey`: show the optional discovery step. */
   askDiscovery: boolean;
   /** The account choice whose completion request is in flight. */
   completing: AccountChoice | null; failed: boolean;
   onComplete: (values: OnboardingValues) => void;
-  /** Preview and test entry points. */
+  /** Preview entry points. */
   initialStep?: OnboardingStep; initialName?: string;
 }) {
   const copy = identityCopy(locale).onboardingFlow;
@@ -78,7 +77,7 @@ export function OnboardingFlow({ locale, skipLabel, mentor, askDiscovery, comple
   const afterMentor: OnboardingStep = askDiscovery ? 'discovery' : 'account';
   const trimmed = name.trim();
 
-  // A new step replaces the last in place: focus moves to its heading, and the page starts at the top (02 rule 13).
+  // A new step replaces the last in place: focus moves to its heading, and the page starts at the top.
   const heading = useRef<HTMLHeadingElement>(null);
   const settled = useRef(step);
   useEffect(() => {
@@ -122,7 +121,7 @@ export function OnboardingFlow({ locale, skipLabel, mentor, askDiscovery, comple
     case 'mentor':
       content = <>
         <h1 ref={heading} tabIndex={-1} data-copy-role="heading">{copy.mentorTitle}</h1>
-        {/* 08 §8: the four real characters on their Diorama, the same chooser the Mentor screen uses. */}
+        {/* The four real characters on their Diorama, the same chooser the Mentor screen uses. */}
         <MentorChooser label={copy.mentorTitle} lines={copy.lines} chosen={mentor.chosen} saving={mentor.saving}
           chosenLabel={copy.chosen} savingLabel={copy.saving} chosenTone="success" onChoose={mentor.onChoose} />
         {mentor.failed ? <InlineNotice tone="error" live>{copy.mentorFailed}</InlineNotice> : null}

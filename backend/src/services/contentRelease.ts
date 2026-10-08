@@ -3,8 +3,8 @@ import { serviceRest, serviceRestRaw } from './supabaseRest.js';
 import { STAGE3_REFUSAL, stage3RefusalMessage } from './pedagogicalReview.js';
 
 /*
- * Product G.2 (Block G opening: no lesson reaches a child without a human
- * staff approval) and Appendix N 1.2 / 2.3, on the rebuilt Content page.
+ * No lesson reaches a child without a human
+ * staff approval; this is the rebuilt Content page.
  *
  * 1. Pending v2 versions. Forge's reviewed publication
  *    (`publish_v2_lesson_version`) no longer puts a new version of an
@@ -18,7 +18,7 @@ import { STAGE3_REFUSAL, stage3RefusalMessage } from './pedagogicalReview.js';
  *    of a live document, a Superadmin's emergency activation, a legacy 0209
  *    publication on a live lesson) must be followed by a complete Forge
  *    verification of its course within 30 days. This reads the list and the
- *    counts behind Appendix N 1.2's two metrics, and the overdue count the
+ *    counts behind the two bypass metrics, and the overdue count the
  *    operations watchdog alerts on.
  * Every read failure is null (a 502), never an empty, calm list.
  */
@@ -84,7 +84,7 @@ export type VersionDecision = { outcome: 'done'; code: string } | { outcome: 're
 async function decide(fn: 'release_lesson_version' | 'reject_lesson_version', body: Record<string, unknown>): Promise<VersionDecision> {
   const raw = await serviceRestRaw(`/rpc/${fn}`, { method: 'POST', body: JSON.stringify(body) });
   if (!raw.ok) {
-    // GAP-FIX-R6: Vault's release gate refuses a version no passing Stage 3 review covers (the pointer does not move).
+    // Vault's release gate refuses a version no passing pedagogical review covers (the pointer does not move).
     const stage3 = stage3RefusalMessage(raw.body);
     return stage3 === null ? { outcome: 'unavailable' } : { outcome: 'refused', code: STAGE3_REFUSAL, message: stage3 };
   }
@@ -103,7 +103,7 @@ export function rejectLessonVersion(actorId: string, lessonId: string, documentV
   return decide('reject_lesson_version', { p_actor: actorId, p_lesson_id: lessonId, p_document_version_id: documentVersionId, p_reason: reason });
 }
 
-// ── Retroactive release checks (Appendix N 1.2) ─────────────────────────────
+// ── Retroactive release checks ─────────────────────────────
 
 const count = z.coerce.number().int().nonnegative();
 const MetricsRows = z.array(z.object({
@@ -149,7 +149,7 @@ export interface BypassReport {
   }[];
 }
 
-/** Pure: the two Appendix N 1.2 rates from the counts. */
+/** Pure: the two bypass rates from the counts. */
 export function bypassRates(m: BypassMetrics): { bypassRate: number | null; completenessRate: number | null } {
   return {
     bypassRate: m.publish_actions === 0 ? null : m.unverified / m.publish_actions,

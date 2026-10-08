@@ -1,14 +1,14 @@
 /*
- * S6 Learning intel and S8 Insights (view_analytics), W2T.3: the wire shapes
+ * Learning intel and Insights (view_analytics): the wire shapes
  * of the warehouse (dataintel, proxied read-only by Core at /admin/intel/*)
  * and Core's raw event export (/admin/insights/export). Hand-mirrored and
  * checked on arrival.
  *
  * What staff may see is fixed server-side and kept here:
- *   - H.1: behavioural events exist only when the consent gate admitted them
+ *   - Behavioural events exist only when the consent gate admitted them
  *     at the source (a child's only with a verified guardian's consent), and
  *     the warehouse filters staff activity out before any metric is computed;
- *   - G.6: no Mentor transcript, no impersonation. Nothing below reads
+ *   - No Mentor transcript, no impersonation. Nothing below reads
  *     either. A learner is shown by name only to a
  *     viewer who holds manage_users (the same grant that opens the people
  *     directory); otherwise by a short id.
@@ -114,7 +114,7 @@ export interface Experiment { id: string; name: string; status: string; metric: 
 export const isExperiments = (value: unknown): value is Experiment[] => arrayOf(value, (e): e is Experiment => isRecord(e) && isString(e.id)
   && isString(e.name) && isString(e.status) && isString(e.metric) && isString(e.variantA) && isString(e.variantB));
 /**
- * H.3: the outcome of an alert's latest trigger (dataintel alerts.ts). null
+ * The outcome of an alert's latest trigger (dataintel alerts.ts). null
  * when it never fired, or the trigger is in flight or predates tracking.
  */
 export const DELIVERY_STATUSES = ['delivered', 'failed', 'unconfigured'] as const;
@@ -130,7 +130,7 @@ export const isAlerts = (value: unknown): value is IntelAlert[] => arrayOf(value
   && isDeliveryStatus(a.lastDeliveryStatus) && (a.lastDeliveryError === undefined || isNullableString(a.lastDeliveryError)));
 
 /**
- * Appendix O 1.3 (H.3): the Alert-to-Notification Delivery Rate
+ * The Alert-to-Notification Delivery Rate
  * (GET /admin/intel/alerts/delivery). `rate` is delivered / triggered, null
  * when nothing fired; the target is 100%.
  */
@@ -138,7 +138,7 @@ export interface AlertDeliveryRate { days: number; triggered: number; delivered:
 export const isAlertDelivery = (value: unknown): value is AlertDeliveryRate => isRecord(value) && isNumber(value.days) && isNumber(value.triggered)
   && isNumber(value.delivered) && isNumber(value.failed) && isNumber(value.unconfigured) && isNumber(value.pending) && isNullableNumber(value.rate) && isNumber(value.target);
 /**
- * H.3 (GAP-FIX-R6): the delivery channels the warehouse can use
+ * The delivery channels the warehouse can use
  * (GET /admin/intel/alerts/channels). An alert can only be created or switched
  * on for a configured one.
  */
@@ -148,7 +148,7 @@ export const isAlertChannels = (value: unknown): value is AlertChannels => isRec
 export const DELIVERY_WINDOW_DAYS = 30;
 
 /**
- * Appendix O 1.1 (H.1): Teen/Guest Consent-Adjacent Disclosure Coverage
+ * Teen/Guest Consent-Adjacent Disclosure Coverage
  * (GET /admin/analytics/consent-coverage): active self-registered teens shown
  * the disclosure (or with analytics suppressed) and active guests (suppressed
  * by their protected origin), against a 100% target. Counts only.
@@ -157,7 +157,7 @@ export interface DisclosureCoverage {
   teens: { active: number; disclosed: number; optedIn: number; optedOut: number; protectedOrigin: number; measuredWithoutOptIn: number; covered: number };
   guests: { active: number; suppressed: number; measured: number };
   days: number; covered: number; population: number; coverage: number | null; target: number; status: 'met' | 'missed' | 'no_data';
-  /** Appendix O 1.1, Consent-Gate Population Gap Rate: measured with no choice behind it, target zero. */
+  /** Consent-Gate Population Gap Rate: measured with no choice behind it, target zero. */
   gap?: { measured: number; rate: number | null; target: number; status: 'met' | 'missed' | 'no_data' };
 }
 export const isDisclosureCoverage = (value: unknown): value is DisclosureCoverage => isRecord(value) && isRecord(value.teens) && isRecord(value.guests)
@@ -169,7 +169,7 @@ export const isDisclosureCoverage = (value: unknown): value is DisclosureCoverag
   && (value.gap === undefined || (isRecord(value.gap) && isNumber(value.gap.measured) && isNullableNumber(value.gap.rate) && isNumber(value.gap.target)
     && ['met', 'missed', 'no_data'].includes(value.gap.status as string)));
 
-/* ---- Insights (S8): learning evidence ----------------------------------------- */
+/* ---- Insights: learning evidence ----------------------------------------- */
 
 export type EvidenceStatus = 'awaiting_evidence' | 'limited' | 'sufficient';
 export type Attention = 'awaiting_evidence' | 'monitor' | 'review' | 'healthy';
@@ -227,7 +227,7 @@ export function titleIn(locale: string, item: { en: string | null; es: string | 
 export const isUserNames = (value: unknown): value is { users: { userId: string; displayName: string }[] } => isRecord(value)
   && arrayOf(value.users, (u): u is { userId: string; displayName: string } => isRecord(u) && isString(u.userId) && isString(u.displayName));
 
-/* ---- Raw events (S8 export) ------------------------------------------------------ */
+/* ---- Raw events (Insights export) ------------------------------------------------------ */
 
 /** Core's InsightsExportQuerySchema: days 1-365, csv or json, optional role and event; paged with a continuation token. */
 export const EXPORT_ROLES = ['anon', 'universal', 'parent', 'kid', 'bigfounder'] as const;

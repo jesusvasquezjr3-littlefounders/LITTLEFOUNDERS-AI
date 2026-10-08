@@ -1,7 +1,7 @@
 import type { CopyRole, Locale } from '../design/copyBudget';
 
 /*
- * GAP-FIX-R2 learning: the fixed UI words of the $6 unit-price comparator,
+ * The fixed UI words of the $6 unit-price comparator,
  * the L2 rule builder and the L6/$9 built flowchart (buildBoards.tsx).
  * Authored text (offers, conditions, actions, questions, outcomes, cards)
  * comes from the document. Rule keywords are the conventional words of each

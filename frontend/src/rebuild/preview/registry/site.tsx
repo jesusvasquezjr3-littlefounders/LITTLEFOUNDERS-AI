@@ -13,31 +13,29 @@ import { ProblemCapture } from '../../site/hero/ProblemCapture';
 import { standalone, type PreviewContext, type PreviewRegistry } from './types';
 
 /*
- * Lane 1 (site): the public site, sign-in, recovery, verification and
- * onboarding. Every screen is audited on its real route where the route can be
- * made to show it (scripts/audits/lanes/site.mjs). The states a real route
+ * Site: the public site, sign-in, recovery, verification and
+ * onboarding. The states a real route
  * cannot show on demand are previewed here, in the frame they have on the
  * route:
  *
- *   route-error       X2, standalone as the lesson player shows it (`?stale=1`).
- *   identity          A1–A7 inside the sign-in shell: `?view=` one of
+ *   route-error       standalone as the lesson player shows it (`?stale=1`).
+ *   identity          the sign-in screens inside the sign-in shell: `?view=` one of
  *                     login-google (Google on, a failed start, a wrong password),
- *                     login-offline, signup-offline (W2S.3: no connection),
+ *                     login-offline, signup-offline (no connection),
  *                     signup-refused, signup-refused-failed, signup-confirm,
  *                     forgot-sent, reset-form, reset-done, upgrade-error,
  *                     verify-failed, verify-success, verify-revoked,
  *                     verify-ineligible, verify-minor, verify-status-error.
- *   age-screen        The mandatory age question (A.3, A.4) on its single-state
+ *   age-screen        The mandatory age question on its single-state
  *                     screen: `?state=` askTutor (a parent-created child with no
- *                     age on record, GAP-FIX-R1) or error (Core's answer
- *                     unreadable). GAP-FIX-R5: both are audited here and on a
- *                     real route (scripts/audits/lanes/site.mjs).
- *   onboarding        O1 on its single-state screen: `?step=` one of the five
+ *                     age on record) or error (Core's answer
+ *                     unreadable).
+ *   onboarding        on its single-state screen: `?step=` one of the five
  *                     steps (name prefilled), `?chosen=` a Mentor, `?failed=1`.
  */
 const noop = () => {};
 
-/** Every `?view=` of the identity preview; scripts/audits/lanes/site.mjs audits each one (app-routes auditCoverage test). */
+/** Every `?view=` of the identity preview. */
 export const IDENTITY_PREVIEW_VIEWS = ['login-google', 'login-offline', 'signup-offline', 'signup-refused', 'signup-refused-failed', 'signup-confirm',
   'forgot-sent', 'reset-form', 'reset-done', 'upgrade-error', 'verify-failed', 'verify-success', 'verify-revoked', 'verify-ineligible', 'verify-minor',
   'verify-status-error'] as const;

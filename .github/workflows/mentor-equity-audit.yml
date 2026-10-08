@@ -1,16 +1,16 @@
 name: Mentor equity-drift audit cadence
 
-# APPENDIX D §3.7 / C.18 / C.20 LAW 5: THE EQUITY-DRIFT AUDIT, AS A RUN
+# LAW 5: THE EQUITY-DRIFT AUDIT, AS A RUN
 # SOMEBODY SEES.
 #
 # The Mentor's praise and feedback must not drift with the identity cues a
 # learner presents. `oracle/src/safety/equityAudit/` replays identical
 # scripted sessions through the real orchestrator, varying only the nickname
-# and the locale, and scores every Mentor turn with the deterministic C.18
-# readers (policy: docs/rebuild/mentor/EQUITY-AUDIT-POLICY.md). Three rules
+# and the locale, and scores every Mentor turn with the deterministic
+# readers. Three rules
 # make the audit due, and this monthly run fails, visibly, on each:
 #
-#   MATERIAL CHANGE  the prompt builder, the model call, the C.18 readers or
+#   MATERIAL CHANGE  the prompt builder, the model call, the readers or
 #                    the audit's own cues, scripts and harness changed since
 #                    the last recorded run;
 #   CADENCE          the last recorded run is older than the semi-annual
@@ -19,7 +19,7 @@ name: Mentor equity-drift audit cadence
 #
 # The run here is the zero-spend dry run (a cue-blind scripted model): no
 # network, no model, no secrets. The paid live run (`--live`) is owner-run and
-# never runs here (OD-23); while it is pending the check prints a warning.
+# never runs here; while it is pending the check prints a warning.
 
 on:
   schedule:

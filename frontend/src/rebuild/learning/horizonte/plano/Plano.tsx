@@ -10,7 +10,7 @@ import {
 import './plano.css';
 
 /*
- * Plano: the one plane every Horizonte board draws on (F0.2). The model (./model) owns every rule; this file draws
+ * Plano: the one plane every Horizonte board draws on. The model (./model) owns every rule; this file draws
  * the layers and wires the pointer and keyboard to it. The plane is controlled: a handle shows the x and y its layer
  * gives, and a move asks `onHandleChange` for the new point, so a board keeps the learner's answer in its own state.
  *

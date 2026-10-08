@@ -48,7 +48,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
    * A ref and not a local, because this effect RE-RUNS on every `choice`
    * change: a local would reset to true on each run and silently kill the
    * cross-fade on the one event it exists for — a visitor pressing the theme
-   * toggle (/DESIGN.md §Motion recipe 6, non-negotiable). Only the very first
+   * toggle (non-negotiable). Only the very first
    * mount of the whole app skips it.
    */
   const mounted = useRef(false);

@@ -1,16 +1,14 @@
 // Lesson Engine contract types — TRIMMED, SERVER-SIDE COPY.
 //
-// Source of truth: frontend/src/lesson-engine/core/types.ts (LESSON_ENGINE.md
-// §3, §6, §7). This file exists because the platform has NO shared-package
-// workspace (/AGENTS.md §1.2 — "8 independent npm packages, no workspaces"):
-// Core needs the same grading contract the frontend engine and dev harness
+// Source of truth: frontend/src/lesson-engine/core/types.ts. This file exists
+// because the platform has NO shared-package workspace (the packages are
+// independent): Core needs the same grading contract the frontend engine and dev harness
 // use, so the pure (non-React) parts are copied here instead of re-derived.
 //
 // PARITY CONTRACT: `VerdictTier`, `Verdict`, `GradeMeta`, `Grader`,
 // `GradeOutcome`, `FamilyGrader`, `tierFor` and `verdictFrom` must stay
 // byte-for-byte identical (modulo import lines/whitespace) to the frontend
-// original — enforced by `npm run contract:check`
-// (backend/scripts/contract-check.ts). Never hand-edit those symbols here
+// original. Never hand-edit those symbols here
 // without mirroring the edit in frontend/src/lesson-engine/core/types.ts in
 // the SAME commit.
 //

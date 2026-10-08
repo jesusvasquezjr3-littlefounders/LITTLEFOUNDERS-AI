@@ -1,6 +1,6 @@
 /*
- * The client API layer for C.5 (the governed live-generation tier) and C.6
- * (the curated activity-pack release gate), used by the staff console.
+ * The client API layer for the governed live-generation tier and
+ * the curated activity-pack release gate, used by the staff console.
  *
  * Every call goes to Core, the only service the frontend talks to, under the
  * staff member's own session; Core enforces the `manage_content` grant on
@@ -9,7 +9,7 @@
  * `services/pedagogy/liveContentGovernance.ts` and `services/tutorPacks.ts`
  * (this repo shares no types across packages).
  *
- * The rebuilt UI imports nothing from the legacy frontend (Bible 02 rule 23),
+ * The rebuilt UI imports nothing from the legacy frontend,
  * so this layer carries its own envelope-aware call: every response is
  * `{ data, error }`, and anything else is an error, never a guessed success.
  */

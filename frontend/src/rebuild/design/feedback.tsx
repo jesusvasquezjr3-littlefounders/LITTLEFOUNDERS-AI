@@ -5,7 +5,7 @@ import { Glyph, type GlyphName } from './glyphs';
 import { RebuildEnvironmentContext, useLayerHost, type RebuildEnvironment } from './layers';
 
 /*
- * Feedback that is not in the page flow (Frontend Bible 02 §9.2, §9.8; S03.2):
+ * Feedback that is not in the page flow:
  * a persistent polite/assertive announcer, and toasts on the top layer (z 70)
  * that are announced through it. Both live in body-level hosts that are never
  * made inert, so an announcement made while a dialog is open is still heard.

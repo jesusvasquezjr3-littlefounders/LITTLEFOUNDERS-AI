@@ -1,5 +1,5 @@
-// review stage — independent judge (Qwen, decorrelated provider),
-// COURSE_ENGINE.md §4. A failing rubric gate (kid_safety/age_fit/concreteness/
+// review stage — independent judge (Qwen, decorrelated provider).
+// A failing rubric gate (kid_safety/age_fit/concreteness/
 // pedagogy/cognitive_engagement/feedback_quality/distractor_quality — see
 // passesJudgeGate) triggers a revise call to DeepSeek with the judge's notes,
 // then a full re-gate (the 9 deterministic gates must still pass after
@@ -40,7 +40,7 @@ export const reviewRubricSchema = z.object({
   kid_safety: z.number().min(1).max(5),
   naturalness: z.number().min(1).max(5),
   /**
-   * COURSE_ENGINE.md §4 review stage: ≥1 worked concrete instance (a
+   * Review stage: ≥1 worked concrete instance (a
    * specific number, character or scenario — gate 6b is the deterministic
    * floor, this is the judge's holistic read) AND the lesson opens by
    * connecting to the prior lesson's concept rather than restarting cold.
@@ -167,7 +167,7 @@ function passesJudgeGate(rubric: ReviewRubric, document: LessonDocumentParsed, s
 /**
  * The judge's rubric and calibrations.
  *
- * PREFIX-CACHE DISCIPLINE (AGENTS.md "Mass generation" #12): this is ~66% of
+ * PREFIX-CACHE DISCIPLINE: this is ~66% of
  * the prompt and byte-identical across the 345 judge calls of a full run — it
  * lives in the SYSTEM message so the provider's implicit context cache serves
  * it as one stable prefix. Everything per-lesson (priorLine, the document,

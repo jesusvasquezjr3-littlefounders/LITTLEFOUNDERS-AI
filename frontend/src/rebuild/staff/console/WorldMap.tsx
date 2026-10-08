@@ -8,7 +8,7 @@ import { LoadFailure, Loading } from './ConsoleParts';
 import { fill, useConsoleCopy } from './staffConsoleCopy';
 
 /*
- * The geography block of Analytics & Health (W2T.3): visitors by country
+ * The geography block of Analytics & Health: visitors by country
  * from Plausible, on the world map, and by region inside one country.
  *
  * The map is a picture; the list is the control. Choosing a country (in the

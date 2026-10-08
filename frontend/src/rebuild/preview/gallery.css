@@ -1,4 +1,4 @@
-/* Preview-only layout for the S03.2 overlay and shell catalogue. Tokens and logical properties only. */
+/* Preview-only layout for the overlay and shell catalogue. Tokens and logical properties only. */
 .lf-rebuild .lf-preview--gallery { justify-content: flex-start; }
 .lf-rebuild .lf-gallery { gap: var(--spacing-8); }
 .lf-rebuild .lf-gallery > .lf-button:first-child { align-self: flex-start; }

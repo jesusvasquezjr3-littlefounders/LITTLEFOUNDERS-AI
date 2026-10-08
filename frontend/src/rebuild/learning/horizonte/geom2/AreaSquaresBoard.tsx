@@ -12,7 +12,7 @@ type AreaSegment = Extract<HorizonteSegment, { type: 'math.area-squares.v2' }>;
 
 const same = (a: Cell, b: Cell) => a.x === b.x && a.y === b.y;
 
-/* F2.7 area by squares: an outline on a grid; the learner shades the squares inside. Cells are named by their lower-left corner. */
+/* Area by squares: an outline on a grid; the learner shades the squares inside. Cells are named by their lower-left corner. */
 function AreaSquares({ document, segment, onBack, sequence, onGrade }: Omit<HorizonteBoardProps, 'segment'> & { segment: AreaSegment }) {
   const { columns, rows, outline } = segment.payload;
   const t = copyText(GEOM2_COPY, document.locale);

@@ -1,6 +1,6 @@
 import { exactKeys, isId, isRecord, isWhole, sameKeys, type Accepts, type Frame, type SlotMap } from './arrange.js';
 
-/* F2.18 "Bits y compuertas": binary bits (J21) and logic gates (J12). */
+/* "Bits y compuertas": binary bits and logic gates. */
 
 export const CIRCUIT_VISUALS = ['bits', 'gates'] as const;
 export type CircuitVisual = (typeof CIRCUIT_VISUALS)[number];

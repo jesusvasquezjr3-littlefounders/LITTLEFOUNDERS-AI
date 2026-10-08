@@ -13,9 +13,9 @@ import { normalizeForSpeech } from './normalizeForSpeech.js';
 import type { NarrationUnit } from './types.js';
 
 /*
- * Walks a LessonDocument and returns the ORDERED narratable units
- * (LESSON_ENGINE.md §12): `prompt_md` on every segment; the `story` family's
- * bodies (§5.1); `explanation_md` when present; the `choices` roll-up (option
+ * Walks a LessonDocument and returns the ORDERED narratable units:
+ * `prompt_md` on every segment; the `story` family's
+ * bodies; `explanation_md` when present; the `choices` roll-up (option
  * labels read in order) and each `hint` — so a pre-reader can HEAR the whole
  * exercise, not just the question (the QA inspection found played narration
  * coverage stuck at ~41% because options and hints had no audio). Deterministic
@@ -25,11 +25,11 @@ export function extractNarratables(document: LessonDocument): NarrationUnit[] {
   const units: NarrationUnit[] = [];
 
   for (const segment of document.segments) {
-    // B.18 (Mayer's redundancy principle): the author chose a channel. A
+    // Mayer's redundancy principle: the author chose a channel. A
     // text_only segment is deliberately silent; a differentiated segment's
     // prompt clip reads the spoken script, never the on-screen cue. Forge's
-    // redundancy gate (coursegen/src/contentGates) mirrors this exact rule —
-    // agent/tools/check-narration-parity.mjs keeps the two in step.
+    // redundancy gate (coursegen/src/contentGates) mirrors this exact rule;
+    // keep the two in step.
     if (segment.narration?.mode === 'text_only') continue;
     const promptSource = segment.narration?.mode === 'differentiated' ? segment.narration.script_md : segment.prompt_md;
     push(units, segment, 'prompt', promptSource);

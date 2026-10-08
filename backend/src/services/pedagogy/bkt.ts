@@ -72,27 +72,27 @@ export const MASTERY_PREREQ_THRESHOLD = 0.8;
 export const MASTERY_DISPLAY_THRESHOLD = 0.85;
 
 /**
- * Product C.10 — the corroborating-evidence rule, on the PERSISTED side: a
+ * The corroborating-evidence rule, on the PERSISTED side: a
  * KC is only presented as mastered (and only dropped from the planner's
  * frontier) when the learner's most recent attempts on it end in at least
  * this many consecutive correct answers. The posterior alone let a single
  * lucky answer flip a KC to "mastered" on the map and the parent's view.
  * Mirrors Oracle's `CORROBORATION_MIN_OBSERVATIONS`; proposed pending
- * calibration (docs/rebuild/mentor/THRESHOLD-RECALIBRATION-LOG.md).
+ * calibration.
  */
 export const MASTERY_CORROBORATION_MIN = 2;
 
 /**
- * Appendix F Part 3 Stage 7 (C.10): while the Extended Mastery Engine's kill
+ * While the Extended Mastery Engine's kill
  * switch holds a KC (Core's `mentor.kill_switch.mastery.*` trip), that KC is
- * judged on the single-observation baseline (the pre-C.10 rule) on the
+ * judged on the single-observation baseline (the rule before corroboration) on the
  * persisted side too: the latest answer must be correct, no more. Mirrors the
  * `1` Oracle's controller applies to a rolled-back KC, so the map, the planner
  * and the parent's evidence agree with the live session's declaration.
  */
 export const MASTERY_ROLLBACK_CORROBORATION_MIN = 1;
 
-/** The corroboration a KC needs: the C.10 rule, or the Stage 7 baseline while rolled back. */
+/** The corroboration a KC needs: the corroboration rule, or the rollback baseline while rolled back. */
 export function corroborationMinFor(kcKey: string | undefined, rolledBackKcKeys?: ReadonlySet<string>): number {
   return kcKey !== undefined && rolledBackKcKeys?.has(kcKey) === true
     ? MASTERY_ROLLBACK_CORROBORATION_MIN

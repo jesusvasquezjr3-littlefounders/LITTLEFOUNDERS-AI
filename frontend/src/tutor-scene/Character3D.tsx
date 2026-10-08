@@ -70,7 +70,7 @@ export interface Character3DProps {
   /** Bump to replay the same one-shot action twice in a row. */
   actionKey?: number;
   /**
-   * Class III `point_at` (2026-09-04): a resolved screen-position bias for
+   * `point_at` (2026-09-04): a resolved screen-position bias for
    * `action: "point"`, already computed by the caller
    * (`tutor-scene/pointTarget.ts`) — this component never touches the DOM
    * itself, since resolving it is a layout read that must not happen inside
@@ -91,7 +91,7 @@ export interface Character3DProps {
    * The character's own materials are lit and need nothing; the mouth card is
    * the one unlit surface in the scene and has to be told what colour the light
    * is (`backdrops.ts` -> `mouthCardTint`). Defaulted so a caller that has no
-   * opinion — every test, and `/dev/scene-lab` — gets today's behaviour.
+   * opinion — `/dev/scene-lab` — gets today's behaviour.
    */
   backdrop?: SceneBackdropId;
   /**
@@ -131,7 +131,7 @@ export interface Character3DProps {
    * avatar's frame, so what reaches the screen is not a blob under the feet but
    * the middle band of its gradient, clipped square by the slot. Invisible on a
    * dark page and a hard-edged grey rectangle on a light one: exactly the class
-   * /AGENTS.md §1.14 names, where a value tuned under one condition is wrong
+   * of defect where a value tuned under one condition is wrong
    * under the one nobody photographed.
    */
   shadow?: boolean;
@@ -291,7 +291,7 @@ export function Character3D({
    */
   /*
    * `prefers-reduced-motion`: every pose is HELD at one representative frame
-   * instead of played, and the idle loop stops (Frontend Bible 04 §3, 08 §7).
+   * instead of played, and the idle loop stops.
    * The low tier alone does not hold poses: it is a performance decision, and a
    * gesture is how the learner sees what the character is doing.
    */
@@ -433,8 +433,8 @@ export function Character3D({
         startedFor.current = token;
         actionStart.current = state.clock.elapsedTime;
         /*
-         * Class III / S16 `audio_cue`, the STAGE side (the whiteboard side
-         * already shipped in S3 — TutorWhiteboard.tsx's per-bar `drop`).
+         * The `audio_cue`, the STAGE side (the whiteboard side
+         * is TutorWhiteboard.tsx's per-bar `drop`).
          * `celebrate` is the one action unambiguous enough to earn a sound
          * on its own: it already means "a real moment", unlike `nod`/`think`,
          * which fire constantly as filler. Gated on the SAME one-shot

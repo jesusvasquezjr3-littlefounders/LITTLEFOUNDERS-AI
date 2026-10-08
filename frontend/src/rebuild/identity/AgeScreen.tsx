@@ -9,13 +9,13 @@ import '../design/system.css';
 import './ageScreen.css';
 
 /*
- * The mandatory age question (A.3, A.4; S01.2): the route guard shows it before
+ * The mandatory age question: the route guard shows it before
  * any product content, for every account Core has not yet screened (a first
  * Google sign-in included), and never again once Core has a declaration.
  *
- * Two frames, found out from where it was mounted (W2S.2). As the whole screen
+ * Two frames, found out from where it was mounted. As the whole screen
  * (the guard wraps the app shells, onboarding and the full-screen layers) it is
- * a single-state screen (02 §4.5, rule 15): one hue, its own <main>, skip link,
+ * a single-state screen: one hue, its own <main>, skip link,
  * title and language. Inside a shell that already has a <main> (the guard sits
  * inside the sign-in shell on /verify-parent) it is that page's content only,
  * so the page keeps one <main>. The question itself is budgeted for the
@@ -26,18 +26,18 @@ export interface AgeScreenCopy {
   title: string; help: string; day: string; month: string; year: string;
   continue: string; exit: string; loading: string; saving: string;
   retry: string; unavailable: string; invalid: string;
-  /** E.4: the answer is kept once; no one changes it from their own account. */
+  /** The answer is kept once; no one changes it from their own account. */
   locked: string;
-  /** S-04 (OD-28): shown once the date reads 13 to 17, before the month is sent. */
+  /** Shown once the date reads 13 to 17, before the month is sent. */
   teenMonth: string;
-  /** A.4 (OD-3): a parent-created child is never asked their own age; their Tutor gives it. */
+  /** A parent-created child is never asked their own age; their Tutor gives it. */
   askTutorTitle: string;
   askTutorBody: string;
 }
 
 type AgeScreenProps = {
   copy: AgeScreenCopy; locale: string; dark: boolean; header?: ReactNode;
-  /** 'askTutor': a parent-created child with no age on record; only the Tutor can give it (A.4). */
+  /** 'askTutor': a parent-created child with no age on record; only the Tutor can give it. */
   state: 'loading' | 'error' | 'form' | 'saving' | 'askTutor'; error?: 'invalid' | 'unavailable';
   /** `birthMonth` (`YYYY-MM`) only for a date that reads 13 to 17, after the screen said what it is kept for. */
   onSubmit: (birthDate: string, birthMonth?: string) => void; onRetry: () => void; onExit: () => void;
@@ -48,7 +48,7 @@ function AgeQuestion({ copy, state, error, onSubmit, onRetry, onExit }: Omit<Age
   const [month, setMonth] = useState('');
   const [year, setYear] = useState('');
   const age = ageFromParts(day, month, year);
-  // S-04: a 13-17 date keeps its month and year so the account moves to adult at 18 (never the day).
+  // A 13-17 date keeps its month and year so the account moves to adult at 18 (never the day).
   const teen = age !== null && age >= 13 && age <= 17;
   function submit(event: FormEvent) {
     event.preventDefault();

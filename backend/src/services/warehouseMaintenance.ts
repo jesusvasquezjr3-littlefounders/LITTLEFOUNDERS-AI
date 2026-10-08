@@ -2,16 +2,16 @@ import { z } from 'zod';
 import { getConfig } from '../config.js';
 
 /*
- * H.4 and the Block H non-negotiables (GAP-FIX-R8): the analytics
+ * The analytics
  * warehouse's family-data maintenance is a watched job, `warehouse_retention`.
  *
  * dataintel runs two steps after every sync (db/sync.ts, every
  * SYNC_INTERVAL_MS, 5 minutes by default) and logs each run, a failed one
  * included, in warehouse_maintenance_log:
  *   warehouse_retention  the 400-day window over the learner-keyed raw events
- *                        and experiment rows (H.2, Appendix O 1.2)
+ *                        and experiment rows
  *   erasure_reapply      an erased account's rows never come back with a later
- *                        sync (E.6)
+ *                        sync
  * This reads dataintel's GET /api/v1/intel/maintenance/status (internal key)
  * the way services/warehouseAlerts.ts reads /alerts/undelivered, and
  * services/opsJobs.ts judges it with the other watched jobs, so

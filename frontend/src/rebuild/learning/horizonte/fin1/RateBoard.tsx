@@ -44,7 +44,7 @@ const axis = () => <line className="lf-fin-axis" x1={CHART.left} y1={FLOOR} x2={
 const marker = (x: number, y: number) => <circle className="lf-fin-marker" cx={x} cy={y} r="5" />;
 
 /*
- * F2.12: one board, four kinds. Each kind is a scrub or a dial over a model figure and ends in a typed number:
+ * One board, four kinds. Each kind is a scrub or a dial over a model figure and ends in a typed number:
  *  - effective: scrub the compounding periods of one year to see a balance grow; type the effective annual rate.
  *  - card: scrub the months of minimum payments; type the months to pay off, or the interest paid.
  *  - npv: slide the discount rate to watch each payment shrink to its worth today; type the net value at the task rate.

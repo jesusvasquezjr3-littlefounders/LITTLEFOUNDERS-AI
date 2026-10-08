@@ -15,7 +15,7 @@
  * quietly inflates a funnel. Anything cleverer than that is an arms race we
  * are not in.
  *
- * §1.9: the agent string is read from the request and used to make a
+ * The agent string is read from the request and used to make a
  * keep/drop decision. It is never stored, never attached to an event, and
  * never leaves the process.
  */

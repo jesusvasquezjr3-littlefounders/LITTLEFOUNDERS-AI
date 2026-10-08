@@ -1,7 +1,6 @@
 name: Learning practice-day retention sweep
 
-# The daily sweep of learning_practice_days (GAP-FIX-R1, weekly streak strip;
-# Bible 02 §9.6). Each practised local day is kept 400 days. The practice-day
+# The daily sweep of learning_practice_days (the weekly streak strip). Each practised local day is kept 400 days. The practice-day
 # trigger trims an active learner's own rows; this workflow asks Core, daily,
 # to run public.sweep_learning_practice_days for learners who stopped
 # practising.
@@ -17,7 +16,7 @@ name: Learning practice-day retention sweep
 # it is applied, Core answers 502 and this workflow fails loudly, deleting
 # nothing.
 #
-# WATCHED (H.4, GAP-FIX-R6): the last step records a heartbeat
+# WATCHED: the last step records a heartbeat
 # (`learning_retention`) and ops-job-watch.yml notifies a human when no
 # successful run lands within 36 hours.
 
@@ -35,7 +34,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      # The checkout carries scripts/ops-heartbeat.sh (H.4).
+      # The checkout carries scripts/ops-heartbeat.sh.
       - uses: actions/checkout@v4
 
       - name: Install Railway CLI
@@ -98,7 +97,7 @@ jobs:
           fi
           echo "learning-retention: ${removed} practice days past 400 days removed"
 
-      # H.4 (GAP-FIX-R6): leave the run in Core's audit trail
+      # Leave the run in Core's audit trail
       # (scripts/ops-heartbeat.sh); ops-job-watch.yml notifies a human when
       # this job goes quiet.
       - name: Record the heartbeat

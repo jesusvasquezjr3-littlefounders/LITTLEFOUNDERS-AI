@@ -5,12 +5,12 @@ import '../design/system.css';
 import './memorySelfReview.css';
 
 /*
- * THE TEEN'S OWN MEMORY GATE (OD-18, C.4).
+ * THE TEEN'S OWN MEMORY GATE.
  *
  * A self-reviewing teen (13-17, no linked guardian) is the reviewer of their
  * OWN Mentor memory notes: every proposed note parks until the teen approves
  * or deletes it. This is the surface for that decision, built from the
- * Frontend Bible (02) with no legacy component imports (rule 23).
+ * the rebuilt design system with no legacy component imports.
  *
  * The wire shape mirrors `PendingMemoryNote` in tutorApi.ts on purpose
  * (hand-mirrored wire shapes are this repo's convention, not drift).
@@ -19,12 +19,12 @@ import './memorySelfReview.css';
  * same feedback grammar the guardian gate uses. The one destructive-looking
  * action ("Delete") is a secondary button, not an error fill, because the
  * proposal was never applied to anything - rejecting it destroys no stored
- * data (Bible 02 §9.5 reserves the error hue for destructive actions).
+ * data (the error hue is reserved for destructive actions).
  *
- * GAP-FIX-R5 (C.4 self-review/deletion mechanism, OD-18, S01.4): a STORED
+ * A STORED
  * note is deletable too. "Delete this note" is a secondary action beside the
  * current note; it opens the rebuilt ConfirmDialog, whose confirm is the
- * error-hued destructive button (02 §9.5: the error hue is always behind a
+ * error-hued destructive button (the error hue is always behind a
  * confirmation), and a status line reports the outcome afterwards.
  */
 
@@ -33,7 +33,7 @@ const STORES: readonly MemoryStore[] = ['learner', 'pedagogy'];
 
 export interface MemoryProposal {
   id: string;
-  /** Which of the Mentor's two notes this replaces (C.4): who the teen is, or how they learn best. */
+  /** Which of the Mentor's two notes this replaces: who the teen is, or how they learn best. */
   store: MemoryStore;
   /** The note as proposed: what the Mentor would hold about this teen. */
   proposed: string;

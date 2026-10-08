@@ -1,8 +1,8 @@
-// Pinned copy of backend/src/services/horizonte/solids/polynet.ts (the Forge cannot import across services). Only the Vec3 line differs; solids.test.ts pins it to the backend text.
+// Pinned copy of backend/src/services/horizonte/solids/polynet.ts (the Forge cannot import across services). Only the Vec3 line differs.
 type Vec3 = readonly [number, number, number];
 
 /**
- * F4.2 nets of the solids that are not cubes: a rectangular prism, a triangular prism and a square pyramid.
+ * Nets of the solids that are not cubes: a rectangular prism, a triangular prism and a square pyramid.
  *
  * The cube engine in net.ts works on cells of a grid, which cannot hold a rectangle that is not a square or a triangle. This
  * one works on the solid itself: a solid is a list of faces and the edges they share, a net is a tree of hinges over the

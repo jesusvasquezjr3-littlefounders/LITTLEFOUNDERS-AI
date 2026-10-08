@@ -1,6 +1,5 @@
-// Forge's interactive-behaviour gate for v2 lessons (GAP-FIX-R1 learning;
-// B.7 "deterministic gates across the full interactive input range",
-// Appendix C 1.3's "interactive-behavior" per-gate pass rate).
+// Forge's interactive-behaviour gate for v2 lessons: deterministic checks
+// across the full interactive input range, with a per-gate pass rate.
 //
 // For every server-graded segment of an emitted document, this enumerates the
 // permitted input space from the payload's own bounds (grids, parts, ranges,
@@ -15,8 +14,8 @@
 //   - no permitted state throws, and none is refused as malformed;
 //   - off-grid, out-of-range and conservation-breaking states are refused;
 //   - the board's initial state (where the payload declares one) is not met;
-//   - where the rubric names a closed diagnostic for a wrong state (L1 card
-//     roles, GAP-FIX-R3), every such state stores exactly that code;
+//   - where the rubric names a closed diagnostic for a wrong state (card
+//     roles), every such state stores exactly that code;
 //   - a hostile response is never met and never throws; a seeded simulation
 //     graded without an attempt is refused (it fails closed).
 // A document that fails blocks review; the report carries the pass rate.
@@ -106,7 +105,7 @@ function replayPlace(start: { hundreds: number; tens: number; ones: number }, tr
 }
 
 /**
- * M7: every complete bar-model build over the text's quantities: each model,
+ * Bar-model: every complete bar-model build over the text's quantities: each model,
  * with and without its optional slot, every quantity and the unknown placed
  * once; only a comparison bar may stay without a number.
  */
@@ -140,7 +139,7 @@ function builtTrees(questions: string[], outcomes: string[], asked: string[]): J
   return out;
 }
 
-/** Every rule expression the L2 level allows, built the way the board builds it. */
+/** Every rule expression the rule-builder level allows, built the way the board builds it. */
 function ruleExprs(conditions: string[], level: string): Json[] {
   const atoms: Json[] = conditions.map((c) => ({ c }));
   if (level === 'single') return atoms;
@@ -164,7 +163,7 @@ function money(denominations: Json[], limit = MAX_STATES): Json[] {
 }
 
 /*
- * M2 and M3 (GAP-FIX-R5; Appendix P M2, M3, Parts 4.6 and 7.2): the spaces
+ * The number lines: the spaces
  * below compute what should be met from the payload and rubric alone (PAE in
  * whole basis points, order by strict pairwise comparison, fractions as snap
  * units), independently of the scorer they check.
@@ -256,7 +255,7 @@ export function behaviourSpace(segment: Json, rubric: Json): Space | null {
     }
     case 'math.number-line.whole.v2':
       if (p.hops) {
-        // M2 counting on (GAP-FIX-R2): every hop sequence from the current square that stays on the line.
+        // Whole-number line counting on: every hop sequence from the current square that stays on the line.
         const sequences: number[][] = [];
         const grow = (prefix: number[], at: number) => {
           if (prefix.length > 0) sequences.push(prefix);
@@ -277,7 +276,7 @@ export function behaviourSpace(segment: Json, rubric: Json): Space | null {
         invalid: [{ n: 0, d: p.maximumParts + 1 }, { n: 3, d: 2 }, { n: -1, d: p.minimumParts }],
         initial: { n: p.initialShaded, d: p.initialParts } };
     case 'math.bar-model.structure.v2': {
-      // M7 (GAP-FIX-R3): every complete build of both models, from an empty board.
+      // Bar-model: every complete build of both models, from an empty board.
       const ids = (p.quantities as Json[]).map((item) => item.id as string);
       const builds = barModelBuilds(ids);
       const parts = (slots: Json) => ['part-a', 'part-b', 'part-c'].filter((slot) => slot in slots).map((slot) => slots[slot]).sort().join('|');
@@ -296,7 +295,7 @@ export function behaviourSpace(segment: Json, rubric: Json): Space | null {
     case 'math.schema-diagram.structure.v2':
       return { inRange: SCHEMA_KINDS.map((schema) => ({ schema })), invalid: [{ schema: 'combine' }, {}], expectMet: (r) => r.schema === rubric.schema };
     case 'math.schema-diagram.slots.v2': {
-      // M8 (GAP-FIX-R2): every schema with every placement of the two quantities and the unknown.
+      // Schema-diagram: every schema with every placement of the two quantities and the unknown.
       const ids = [(p.quantities as Json[])[0]!.id as string, (p.quantities as Json[])[1]!.id as string, 'unknown'];
       const orders = [[0, 1, 2], [0, 2, 1], [1, 0, 2], [1, 2, 0], [2, 0, 1], [2, 1, 0]];
       const inRange = SCHEMA_KINDS.flatMap((schema) => orders.map((order) => ({ schema, slots: Object.fromEntries(SCHEMA_SLOTS[schema].map((slot, index) => [slot, ids[order[index]!]])) })));
@@ -324,7 +323,7 @@ export function behaviourSpace(segment: Json, rubric: Json): Space | null {
         invalid: [{ choice: 'not-an-option', reason: p.reasons[0].id }],
         expectMet: (r) => (rubric.acceptableChoiceIds as string[]).includes(r.choice) };
     case 'math.place-value.v2': {
-      // M5 (GAP-FIX-R2): every possible trade sequence up to one past the needed count, each with the right and a wrong written result.
+      // Place-value: every possible trade sequence up to one past the needed count, each with the right and a wrong written result.
       const start = placeValueScorerPayload(p as PlaceValuePayload);
       const ops = start.mode === 'compose' ? ['ten', 'hundred'] : ['borrow-ten', 'borrow-hundred'];
       const take = { hundreds: Math.floor(start.subtrahend / 100), tens: Math.floor(start.subtrahend / 10) % 10, ones: start.subtrahend % 10 };
@@ -362,7 +361,7 @@ export function behaviourSpace(segment: Json, rubric: Json): Space | null {
         for (const b of p.brackets as Json[]) { const upper = b.upToMinor ?? income; tax += Math.round(Math.max(0, Math.min(income, upper) - lower) * b.rateBasisPoints / 10_000); if (b.upToMinor === null) break; lower = b.upToMinor; }
         return tax;
       };
-      // M20 (GAP-FIX-R5): tax owed, the marginal rate and the average rate, each right or wrong, at every sampled income.
+      // Tax owed, the marginal rate and the average rate, each right or wrong, at every sampled income.
       const average = (income: number) => income === 0 ? 0 : Math.round(owed(income) * 10_000 / income);
       const marginalAt = (income: number) => {
         let lower = 0; let rate = 0;
@@ -392,7 +391,7 @@ export function behaviourSpace(segment: Json, rubric: Json): Space | null {
         invalid: [{ entries: Array.from({ length: p.maxEntries + 1 }, () => 'sale'), balance: '0' }, { entries: ['refund'], balance: '0' }] };
     }
     case 'logic.rule-checker.v2': {
-      // Every flip set, so every role combination (GAP-FIX-R3): with roles, each named pattern stores its own code.
+      // Every flip set, so every role combination: with roles, each named pattern stores its own code.
       const ids = (p.cards as Json[]).map((card) => card.id as string);
       const roles = rubric.roles as Record<string, string> | undefined;
       return { inRange: subsets(ids, 1).map((flipped) => ({ flipped })), invalid: [{ flipped: [] }, { flipped: ['not-a-card'] }],
@@ -400,7 +399,7 @@ export function behaviourSpace(segment: Json, rubric: Json): Space | null {
         ...(roles ? { expectDiagnostic: (r: Json) => selectionDiagnostic((r.flipped as string[]).map((card) => roles[card]!), r.flipped.length === ids.length) } : {}) };
     }
     case 'logic.euler.v2': {
-      // GAP-FIX-R4 (Appendix P L5): every diagram the learner may choose, every placement it allows, every occupancy
+      // Every diagram the learner may choose, every placement it allows, every occupancy
       // flag set and every conclusion; each wrong part stores its own code (structure, partial, occupancy, conclusion).
       const regionsOf = (relation: string) => relation === 'subset' ? ['second', 'both', 'neither'] : relation === 'disjoint' ? ['first', 'second', 'neither'] : ['first', 'second', 'both', 'neither'];
       const relations = p.choose_relation ? ['overlap', 'subset', 'disjoint'] : [p.relation as string];
@@ -437,7 +436,7 @@ export function behaviourSpace(segment: Json, rubric: Json): Space | null {
     case 'logic.flowchart.v2':
     case 'money.spend-decision.v2': {
       if (p.mode === 'build') {
-        // L6 / $9 built charts (GAP-FIX-R2): every tree of up to the declared questions, each asked once per path.
+        // flowchart built charts: every tree of up to the declared questions, each asked once per path.
         const trees = builtTrees((p.questions as Json[]).map((q) => q.id as string), (p.outcomes as Json[]).map((o) => o.id as string), []);
         const cases = rubric.cases as Json[];
         const walk = (tree: Json, answers: Json): string => tree.o ?? walk(answers[tree.q] ? tree.yes : tree.no, answers);
@@ -452,7 +451,7 @@ export function behaviourSpace(segment: Json, rubric: Json): Space | null {
     }
     case 'logic.sort-by-rule.v2':
     case 'money.needs-wants.v2': {
-      // GAP-FIX-R4 (Appendix P L10): with a rule switch, each item's pairs come from its own phase's bins.
+      // With a rule switch, each item's pairs come from its own phase's bins.
       const items = (p.items as Json[]).map((item) => item.id as string);
       const switchAt = (p.switch_after ?? items.length) as number;
       const pairsFor = (index: number) => ((index >= switchAt ? p.second_bins : p.bins) as Json[])
@@ -477,7 +476,7 @@ export function behaviourSpace(segment: Json, rubric: Json): Space | null {
     case 'logic.scam-spotter.v2':
     case 'money.scam-check.v2': {
       const ids = (p.messages as Json[]).map((m) => m.id as string);
-      // L12 cues (GAP-FIX-R2) never change the verdict: every flag set is swept with no ticks and with every cue ticked.
+      // Cues never change the verdict: every flag set is swept with no ticks and with every cue ticked.
       const cueIds = ((p.cues ?? []) as Json[]).map((c) => c.id as string);
       const variants = p.cues ? [{}, Object.fromEntries(ids.map((id) => [id, cueIds]))] : [null];
       return { inRange: subsets(ids).flatMap((flagged) => variants.map((cues) => cues === null ? { flagged } : { flagged, cues })),
@@ -489,7 +488,7 @@ export function behaviourSpace(segment: Json, rubric: Json): Space | null {
       return { inRange: money(p.denominations), invalid: [over, { counts: {} }] };
     }
     case 'money.making-change.v2': {
-      // $2 count-up (GAP-FIX-R2): each tray said counting up from the price; the right change also counted from zero (a review).
+      // $2 count-up: each tray said counting up from the price; the right change also counted from zero (a review).
       const change = p.paid_minor - p.price_minor;
       const said = (counts: Json, start: number) => {
         const out: number[] = []; let at = start;
@@ -505,7 +504,7 @@ export function behaviourSpace(segment: Json, rubric: Json): Space | null {
         expectMet: (r) => total(r.counts) === change && (r.sequence.length === 0 ? change === 0 : r.sequence.at(-1) === p.paid_minor) };
     }
     case 'money.unit-price.v2': {
-      // $6 (GAP-FIX-R2): the rounded exact unit price and a cent off for each offer, with every choice.
+      // $6: the rounded exact unit price and a cent off for each offer, with every choice.
       const scale = p.currency === 'local' ? 100 : 1;
       const offers = p.offers as Json[];
       const exact = (o: Json) => Math.round(o.price_minor * 100 / (o.quantity * scale)) / 100;
@@ -516,7 +515,7 @@ export function behaviourSpace(segment: Json, rubric: Json): Space | null {
         expectMet: (r) => r.choice === rubric.better_id && offers.every((o) => Math.abs(Number(r.unit_prices[o.id]) - o.price_minor / (o.quantity * scale)) <= 0.005 + 1e-9) };
     }
     case 'logic.rule-builder.v2': {
-      // L2 (GAP-FIX-R2): every rule the level allows, graded on the hidden scenarios by behaviour.
+      // Rule-builder: every rule the level allows, graded on the hidden scenarios by behaviour.
       const conditions = (p.conditions as Json[]).map((c) => c.id as string);
       const actions = (p.actions as Json[]).map((a) => a.id as string);
       const exprs = ruleExprs(conditions, p.level);
@@ -538,7 +537,7 @@ export function behaviourSpace(segment: Json, rubric: Json): Space | null {
     case 'story.dialogue-choice.v2':
       return { inRange: (p.replies as Json[]).map((option) => ({ choice: option.id })), invalid: [{ choice: 'not-an-option' }],
         expectMet: (r) => (rubric.acceptable_choice_ids as string[]).includes(r.choice) };
-    // Appendix A Part 3 concept boards (B.7 part 2).
+    // Concept boards.
     case 'money.amortization.v2': {
       const rows = amortizationSchedule(p.principal_minor, p.rate_bps, p.months);
       return { inRange: range(0, rows.length).flatMap((month) => { const balance = month === 0 ? p.principal_minor : rows[month - 1]!.balance; return [balance, balance + 5].map((b) => ({ month, balance: String(b) })); }),

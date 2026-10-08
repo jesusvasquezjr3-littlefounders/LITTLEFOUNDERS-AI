@@ -24,7 +24,7 @@ function ageOn(birthDate: string, now: Date): number | null {
   return age >= 0 && age < 120 ? age : null;
 }
 
-/** Core-only eligibility check for v2 teaching representations with exact Appendix P ranges. */
+/** Core-only eligibility check for v2 teaching representations with exact ranges. */
 export function lessonEligibilityForBirthDate(document: unknown, birthDate: string | null | undefined, now = new Date()): EligibilityResult {
   const policy = readLessonEligibility(document);
   if (!policy) return 'invalid-policy';

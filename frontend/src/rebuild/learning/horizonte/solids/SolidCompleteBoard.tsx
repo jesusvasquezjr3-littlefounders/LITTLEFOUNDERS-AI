@@ -44,7 +44,7 @@ function withDescendants(hinges: readonly Hinge[], face: number): Set<number> {
 }
 
 /*
- * F4.2, completion mode for the box, the triangular prism and the square pyramid: a few faces are already joined to the root and the
+ * Completion mode for the box, the triangular prism and the square pyramid: a few faces are already joined to the root and the
  * learner joins the rest, one face at a time, so the net folds into the solid and fits the sheet. A face is picked (tap, drag or the
  * Move to menu) and then hung on an edge of a face already in the net; the net unfolds as it grows and the fold preview shows it
  * closing. Tapping a face the learner added takes it back with everything that hangs from it. Core decides whether the net is

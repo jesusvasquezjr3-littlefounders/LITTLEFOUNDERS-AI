@@ -121,9 +121,8 @@ export interface ModelFooting {
 /**
  * The two numbers a character needs to stand somewhere, from the model itself.
  *
- * Shared with `scripts/verify-placement.ts` rather than reimplemented there:
- * a gate that computes footing its own way certifies a different product, which
- * is the same rule the placement solver is imported under.
+ * Shared with headless callers rather than reimplemented there: footing
+ * computed another way would be a different product.
  */
 export function modelFooting(model: Object3D, scale: number): ModelFooting {
   const box = modelBounds(model);

@@ -1,7 +1,7 @@
 import type { Response } from 'express';
 
 /**
- * Envelope error response (/AGENTS.md §1.6).
+ * Envelope error response.
  *
  * `extra` merges additional, typed fields onto `error` alongside `code` and
  * `message` — the envelope shape itself (`{ data: null, error: {...} }`)

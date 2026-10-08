@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { DoubleSide } from 'three';
 
 /*
- * Class III / S18 `props` (TUTOR_INSTRUMENTS.md §3.4): "Objects on the island
+ * The `props` instrument: "Objects on the island
  * a character can stand beside and use." The catalog calls this "genuinely
  * new — no prop system exists," and it still is: this is the FIRST object in
  * this scene that is neither a Blender-authored `.glb` character nor a flat
@@ -11,7 +11,7 @@ import { DoubleSide } from 'three';
  * already established for a flat plane, extended here to an actual object.
  *
  * PROCEDURAL, NOT BLENDER, ON PURPOSE: the 3D asset pipeline
- * (`/TUTOR_3D.md`) is for RIGGED CHARACTERS — meshopt geometry, KTX2
+ * is for RIGGED CHARACTERS — meshopt geometry, KTX2
  * textures, a skeleton, served by Depot. A static market stall has none of
  * that: no rig, no animation, no reason to round-trip through Blender and an
  * export pipeline for six boxes and a plane. `three.js` primitives, built
@@ -19,8 +19,8 @@ import { DoubleSide } from 'three';
  * object actually is.
  *
  * LIT, NOT UNLIT — deliberately, and this is the one property that matters
- * most: `/AGENTS.md` §1.14 already documents, at length, what happens to a
- * surface that opts out of the scene's lighting system (the Tutor's own
+ * most: a surface that opts
+ * out of the scene's lighting system looks wrong (the Tutor's own
  * mouth card, unlit, photographed as a cream-white rectangle at dusk).
  * `meshStandardMaterial` is a real PBR material, so this stall receives
  * `SceneLighting.tsx`'s `hemisphereLight`/`directionalLight` automatically —

@@ -4,8 +4,7 @@ import '../design/system.css';
 import './alliance.css';
 
 /*
- * C.15 on the Mentor stage: the goal-agreement opening move (Appendix D
- * §3.4; Frontend Bible 08 §2 response area).
+ * The goal-agreement opening move on the Mentor stage.
  *
  * On the learner's first message the Mentor restates, in the learner's own
  * words, what the session is for ("So today you want to figure out whether to

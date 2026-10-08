@@ -1,7 +1,7 @@
 import type { InsightRouteClass } from './insights';
 
 /*
- * First-party visitor identity + acquisition context (/INSIGHTS.md §7).
+ * First-party visitor identity + acquisition context.
  *
  * The cookie is OURS and only ours: set on `.littlefounders.ai` from our own
  * JavaScript, sent to our own API in the request body. No third-party
@@ -89,7 +89,7 @@ export function getAnonId(): string | null {
 export type Device = 'mobile' | 'tablet' | 'desktop';
 export type ReferrerClass = 'direct' | 'search' | 'social' | 'referral' | 'internal' | 'campaign';
 
-/** Viewport-derived, matching the §1.11 breakpoints. No user-agent string. */
+/** Viewport-derived, matching the app's breakpoints. No user-agent string. */
 export function detectDevice(): Device {
   const w = window.innerWidth;
   if (w < 768) return 'mobile';
@@ -100,7 +100,7 @@ export function detectDevice(): Device {
 /**
  * Coarse acquisition class — NEVER the raw referrer URL. A URL can carry
  * identifiers and query strings, which is precisely the free-text channel
- * §1.9 forbids; a class carries the marketing signal and nothing else.
+ * the privacy fence forbids; a class carries the marketing signal and nothing else.
  */
 export function classifyReferrer(): ReferrerClass {
   const params = new URLSearchParams(window.location.search);

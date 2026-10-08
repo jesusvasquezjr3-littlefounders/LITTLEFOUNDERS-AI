@@ -1,13 +1,12 @@
 import type { Locale } from '../context/schema.js';
 
 /*
- * The voice seam (/AGENTS.md §1.2, /ORACLE.md §3.3).
+ * The voice seam.
  *
  * The owner's stated intent is to replace Inworld with self-hosted speech once
  * there are recurring users. That migration is cheap only if nothing above
  * this interface knows the provider's name — so NOTHING outside
- * `oracle/src/voice/` may import a provider SDK or reference a provider URL,
- * and a test pins that.
+ * `oracle/src/voice/` may import a provider SDK or reference a provider URL.
  *
  * The interface is deliberately smaller than any provider's API. Oracle needs
  * two things: turn audio into text, and turn text into audio. Everything else
@@ -47,7 +46,7 @@ export interface SynthesisRequest {
  * Provider-agnostic on purpose (no phoneme/viseme detail, no provider field
  * names): the caption only ever needs "which word is playing right now",
  * and a narrower contract is a narrower thing to keep true across a future
- * provider swap (/AGENTS.md §1.2 — this seam is explicitly interim).
+ * provider swap (this seam is explicitly interim).
  */
 export interface WordTiming {
   word: string;
@@ -64,7 +63,7 @@ export interface SynthesisResult {
    * provider that never sends it at all. `null` is a fact ("no timing for
    * this clip"), never an estimate: a caption that cannot highlight in sync
    * with the real audio must fall back to prose, not to a guess dressed up
-   * as measured timing (/AGENTS.md §1.14 — confident-wrong beats absent
+   * as measured timing (confident-wrong beats absent
    * only when it is not actually wrong).
    */
   wordTimings: WordTiming[] | null;

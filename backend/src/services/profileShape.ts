@@ -1,14 +1,13 @@
 import { z } from 'zod';
 
 /*
- * E.12 standing guardrail: a profile's picture is a cartoon, never an image.
+ * Standing guardrail: a profile's picture is a cartoon, never an image.
  *
  * The avatar is a closed DiceBear Avataaars option set rendered on the
  * viewer's device, and the cover is one of ten token-gradient presets. No
  * image, URL or free text is ever stored or served in either field.
  *
- * This file is the Core half of a three-part guard (policy:
- * docs/rebuild/policies/SOCIAL-GOVERNANCE.md §4):
+ * This file is the Core half of a three-part guard:
  *   1. writes: the two routes accept only these shapes (below);
  *   2. the database refuses any other shape from every writer, including a
  *      direct browser write through the own-row policies

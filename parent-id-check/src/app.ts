@@ -21,7 +21,7 @@ export function createApp(deps: AppDeps = {}): express.Express {
     res.json({ data: { service: SERVICE, version: VERSION, status: 'ok' }, error: null });
   });
 
-  // Everything below /internal is service-to-service only (/AGENTS.md §1.5).
+  // Everything below /internal is service-to-service only.
   app.use('/internal', (req, res, next) => {
     const provided = req.get('x-internal-api-key') ?? '';
     const expected = config.INTERNAL_API_KEY;

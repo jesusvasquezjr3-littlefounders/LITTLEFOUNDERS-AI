@@ -93,7 +93,7 @@ import { assembleClip, decodeChunk } from './audioAssembly.js';
 import { isHandshakeRateLimited } from './handshakeRateLimit.js';
 
 /*
- * The one browser-facing socket (/AGENTS.md §1.5 Oracle exception).
+ * The one browser-facing socket.
  *
  * Everything defensive about this file is in the first lines of
  * `handleConnection`, and it is ordered cheapest-first so that an unwanted
@@ -102,9 +102,9 @@ import { isHandshakeRateLimited } from './handshakeRateLimit.js';
  * every one of those before a round trip to Core:
  *
  *   1. this process is not already at its concurrent-session ceiling
- *      (ORACLE.md §15.2 item 2 — per-process admission control; a plain
+ *      (per-process admission control; a plain
  *      `liveSessions.size` read, no I/O at all)
- *   2. this IP has not exceeded the handshake rate limit (§15.2 item 3 — see
+ *   2. this IP has not exceeded the handshake rate limit (see
  *      `handshakeRateLimit.ts`; one Redis round trip, fails open on an outage)
  *   3. a token is present at all
  *   4. it is not a Supabase JWT (named explicitly, so the log says what to fix)
@@ -118,7 +118,7 @@ import { isHandshakeRateLimited } from './handshakeRateLimit.js';
  * a resume racing a fresh connection for the same session.
  *
  * Gates 1 and 2 close with `CLOSE_CODES.SERVICE_DEGRADED` — the SAME code
- * gate 7 (moderation) already uses, deliberately: ORACLE.md's own text calls
+ * gate 7 (moderation) already uses, deliberately: the product treats
  * the frontend's existing "the tutor is resting" copy for that code the
  * honest surface for exactly this family of refusal, and a child does not
  * need to know WHICH internal control declined the connection. The `reason`
@@ -164,7 +164,7 @@ interface Live {
     * below. Decoding on arrival makes the concatenation a byte operation, which
     * is the only kind that is correct.
     */
-  /** `beganAtMs`: when the learner pressed the microphone (C.9 reply latency). */
+  /** `beganAtMs`: when the learner pressed the microphone (reply latency). */
   assembly: { mimeType: string; parts: Buffer[]; bytes: number; chars: number; beganAtMs: number } | null;
   microphone: boolean;
   closing: boolean;
@@ -173,7 +173,7 @@ interface Live {
    * returned `'busy'`) and was DEFERRED rather than refused — see the
    * `end_session` case and `releaseTurn`'s own comment.
    *
-   * Found by adversarial review, round 90 (2026-08-31, MEDIUM): before this
+   * Found by adversarial review: before this
    * flag existed, a busy `end_session` was refused outright — the ordinary
    * outcome of a learner pressing "Start over"/"Finish" on the frontend's
    * OWN `awaitingReply` window, which exists on every single turn — and
@@ -183,12 +183,12 @@ interface Live {
    * the socket's `close` handler saw `live.closing` still false and parked
    * the session exactly as it would an honest dropped connection — a
    * deliberate ending recorded as `learner_left` after the resume grace
-   * window, with no farewell ever delivered, contradicting /ORACLE.md
-   * §9.5's "not a timeout that kills a socket" outright.
+   * window, with no farewell ever delivered, contradicting the rule
+   * "not a timeout that kills a socket" outright.
    */
   endSessionRequested: boolean;
   /**
-   * OD-28 (M-04): an `end_session` with `recapFirst` arrived while another
+   * An `end_session` with `recapFirst` arrived while another
    * turn held the floor. The recap question is asked the moment the floor
    * frees (`releaseTurn`). Deliberately separate from `endSessionRequested`:
    * a recap keeps the session open, so a park that races it is an ordinary
@@ -196,7 +196,7 @@ interface Live {
    */
   recapRequested: boolean;
   /**
-   * OD-28 (M-04): the recap question now on screen was asked because the
+   * The recap question now on screen was asked because the
    * LEARNER pressed "end" (not a Mentor wrap-up or an accepted offer). While
    * it waits, an unanswered recap closes after `RECAP_ANSWER_WAIT_MS` and a
    * dropped socket closes `completed` instead of parking: the learner asked
@@ -215,7 +215,7 @@ interface Live {
   /**
    * Consecutive safety-flag writes Core did not confirm — deliberately its
    * OWN counter, not shared with `persistFailures`. Found while proving the
-   * round-29 (2026-08-30, CRITICAL) fix live: a personal_data-blocked turn
+   * (2026-08-30, CRITICAL) fix live: a personal_data-blocked turn
    * ALSO writes the learner's raw text via the ordinary `persistTurn` call
    * just above it, which succeeds against a healthy Core even when the flag
    * write is the one failing — so a SHARED counter gets reset back to zero
@@ -235,7 +235,7 @@ interface Live {
    * increment) and the tutor with `emission.seq` (the same counter AFTER it),
    * so every learner line collided with the tutor line before it and was
    * dropped. Every transcript in production is the tutor talking to itself —
-   * a guardian cannot read what their child said, which §1.9 makes an
+   * a guardian cannot read what their child said, which is an
    * invariant, and the owner's own written feedback to the Tutor was thrown
    * away by the database on arrival.
    *
@@ -272,7 +272,7 @@ interface Live {
   lastActivityAtMs: number;
   /**
    * This connection's own owner token for the distributed session-exclusivity
-   * claim (item 79 / RUNBOOK Round 119) — opaque, minted by `acquireLock` at
+   * claim — opaque, minted by `acquireLock` at
    * connection time. Carried so the heartbeat can RENEW the claim (keeping it
    * alive for the session's whole life without holding it forever — see
    * `SESSION_LOCK_TTL_MS`) and the close handler can RELEASE exactly the
@@ -296,17 +296,17 @@ const MIN_TURN_GAP_MS = 700;
  * this constant existed that instruction was the ONLY thing standing between a
  * content gap and an unbounded loop.
  *
- * Found by adversarial review, round 76 (2026-08-30, HIGH), and reproduced
+ * Found by adversarial review, and reproduced
  * rather than reasoned about: a SINGLE `learner_text` frame produced twenty
  * `turn` + `NO_SEGMENT` pairs, each pair a real model completion, a real judge
  * completion and a real Core round trip, plus paid author calls whenever the
- * ladder answered `needsGeneration`. That is the §1.0 "money leaves DIRECTLY"
+ * ladder answered `needsGeneration`. That is the "money leaves DIRECTLY"
  * shape exactly — an uncached retry loop that multiplies real spend per
  * learner utterance — and a real child would meanwhile have watched a long,
  * confusing burst of tutor turns scroll past.
  *
  * WHAT STOPPED IT AT TWENTY WAS NOT A GUARD, and the correction matters more
- * than the number. Round 74 filed this defect as "bounded only by the session
+ * than the number. An earlier note filed this defect as "bounded only by the session
  * turn cap"; measured, it was not — `SESSION_MAX_TURNS` is 120, the run ended
  * at turn 22 with the budget still `running` and no close frame. It stopped
  * because `TURN_HISTORY_WINDOW` is also 20, so the learner's own line
@@ -324,12 +324,12 @@ const MIN_TURN_GAP_MS = 700;
  * where the recovery turn moves the conversation somewhere the ladder can
  * reach. Past that the tutor keeps its recovery turn — a real, honest turn
  * that teaches the idea by hand — and simply stops asking, which is the same
- * "emit nothing rather than something generic" posture /ORACLE.md §7.3 already
+ * "emit nothing rather than something generic" posture the content ladder already
  * takes for an exhausted ladder.
  *
  * This bounds REPEATED FAILURES within one utterance and nothing else. The
  * ladder's own internal rungs (nearest-band search, the prerequisite walk, the
- * frontier fallback — round 59) all live inside a SINGLE `requestSegment` call
+ * frontier fallback) all live inside a SINGLE `requestSegment` call
  * and are untouched by this: a segment that is found, however many rungs down,
  * costs one attempt and serves normally.
  */
@@ -337,11 +337,11 @@ const MAX_SEGMENT_RETRIES = 1;
 /**
  * How often a live session re-checks that consent is still in force.
  *
- * EVERY TURN while a minor's microphone is actually open, because /ORACLE.md
- * §4.3 promises a guardian that revocation takes effect on the next turn and
+ * EVERY TURN while a minor's microphone is actually open, because the product
+ * promises a guardian that revocation takes effect on the next turn and
  * for two days it did not: the poll ran every fifth turn, so a guardian who
  * revoked mid-conversation could leave the child's microphone streaming for
- * four more. Documentation promised one thing, code did another, and the §16
+ * four more. Documentation promised one thing, code did another, and the release
  * checklist item was ticked.
  *
  * The cost of keeping the promise is one internal HTTP call per turn on
@@ -357,15 +357,15 @@ const CONSENT_RECHECK_EVERY_TURNS = 5;
 const HEARTBEAT_INTERVAL_MS = 30_000;
 
 /**
- * How long this socket's distributed session-exclusivity claim (item 79 /
- * RUNBOOK Round 119) survives without a renewal. Derived from the heartbeat
+ * How long this socket's distributed session-exclusivity claim
+ * survives without a renewal. Derived from the heartbeat
  * cadence, not chosen independently: it must outlive at least two missed
  * renewal ticks (a single transient Redis hiccup must not drop a claim out
  * from under a perfectly healthy, ongoing conversation — see the heartbeat's
  * own renewal comment for why a failed renewal never kills the socket), while
  * staying short enough that a crashed process's claim frees itself in a
  * bounded time rather than outliving the crash it was meant to survive
- * (Round 119 point 4 — this service's `restartPolicyMaxRetries: 10` treats
+ * (this service's `restartPolicyMaxRetries: 10` treats
  * crash-and-restart as routine, and a claim that outlives it for long would
  * regress today's actual behavior: a legitimate resume against a
  * freshly-restarted, necessarily-empty process succeeding immediately).
@@ -380,7 +380,7 @@ const SESSION_LOCK_TTL_MS = HEARTBEAT_INTERVAL_MS * 3;
 /**
  * Namespaced so `lib/lock.ts`'s test-mode `clearLocalClaims` can scope a
  * sweep to exactly this caller — see that function's own comment. Exported
- * (like `send`/`finalizeAllParked` above it) so `live-session.test.ts` can
+ * (like `send`/`finalizeAllParked` above it) so a test can
  * simulate a DIFFERENT replica already holding a session's claim — the one
  * scenario a bare `liveSessions.has()` can never be made to see from a test
  * in this same process, since `liveSessions` itself is only ever local.
@@ -401,9 +401,9 @@ export function sessionLockKey(sessionId: string): string {
  * gate re-runs — signature, replay, user match, judge readiness, consent — so
  * a resumed socket is exactly as authenticated as a first one.
  *
- * The park is THIS PROCESS'S MEMORY *and*, since round 143, a published
+ * The park is THIS PROCESS'S MEMORY *and* a published
  * snapshot any replica can adopt (`ws/parkStore.ts`). It used to be the LAST
- * structure holding Oracle at one replica (`/ORACLE.md` §16); the local map
+ * structure holding Oracle at one replica; the local map
  * below is now the FAST PATH — a same-replica reconnect gets the very objects
  * the last socket was using — and the shared record is the fallback that makes
  * a reconnect landing anywhere else resume the same lesson instead of starting
@@ -411,7 +411,7 @@ export function sessionLockKey(sessionId: string): string {
  * deliberately does not.
  *
  * AND THE SESSION LOCK DOES NOT COVER IT, which is the part that is easy to
- * get wrong from the outside (established round 142, 2026-09-01). The lock
+ * get wrong from the outside. The lock
  * refuses a SECOND CONCURRENT socket; it says nothing about a resume, because
  * the close handler below deliberately RELEASES the claim before parking, so
  * a genuine resume can re-acquire immediately instead of waiting out
@@ -480,7 +480,7 @@ void _parkedSegmentFrameMatchesTheWire;
  *
  * `.strict()` throughout, and validated on read: a record is an input from a
  * shared store, and a half-understood one must be REFUSED rather than
- * best-effort restored (/AGENTS.md §1.6, §1.14).
+ * best-effort restored.
  */
 const ParkRecordSchema = z
   .object({
@@ -509,8 +509,8 @@ interface ParkedSession {
    * `setTimeout`, but the AUTHORITY to end the session is a compare-and-delete
    * against this token. A park that another replica has already adopted no
    * longer matches, so this replica's timer declines to close a session
-   * somebody else is live on — the `ended_at=is.null` stomp `RUNBOOK.md`
-   * Round 142 traced, where the dead replica's close wins and the live
+   * somebody else is live on — the `ended_at=is.null` stomp
+   * traced earlier, where the dead replica's close wins and the live
    * replica's billed usage never reaches Core's ledger.
    *
    * `null` is not ambiguous here: nothing was published, so nothing could have
@@ -532,8 +532,8 @@ interface ParkedSession {
    * A copy of `Live.endSessionRequested`, taken at the moment this session
    * was parked — see that field's own comment for what sets it and why.
    *
-   * This is what lets `finalizeParked` tell apart the two shapes of park
-   * (item 71 / round 98, closed here): a genuinely dropped connection, where
+   * This is what lets `finalizeParked` tell apart the two shapes of park:
+   * a genuinely dropped connection, where
    * NOTHING else will ever call `runPostSessionReview` for this session, from
    * one that raced an in-flight `attemptEndSession` that WILL still reach
    * `finish()` — guaranteed, by construction, since `releaseTurn` (the one
@@ -611,7 +611,6 @@ function parkSession(sessionId: string, live: Live): ParkedSession {
  *     re-deriving that guarantee for a fleet, a session that has already asked
  *     to end simply never becomes adoptable: there is nothing left to resume,
  *     and its transcript continuity is held by the floor below regardless.
- *     (`RUNBOOK.md` Round 142's requirement 5.)
  */
 async function publishPark(sessionId: string, entry: ParkedSession): Promise<void> {
   if (entry.endSessionRequested) return;
@@ -621,7 +620,7 @@ async function publishPark(sessionId: string, entry: ParkedSession): Promise<voi
    * grows when a discarded speculative synthesis actually settles, so a
    * snapshot taken with promises still outstanding hands the adopting replica
    * a cost that is real money short — and that replica's close is the one
-   * Core will record. This is the one call site that answers Round 142's
+   * Core will record. This is the one call site that answers the
    * "unsettled paid-TTS promises" question: they are SETTLED, not dropped and
    * not carried.
    */
@@ -722,7 +721,7 @@ interface ResumedSession {
  * Nothing here is best-effort restored. `ParkRecordSchema` is `.strict()` and
  * the snapshot carries an explicit version, because a partially-understood
  * conversation is indistinguishable from a healthy one right up until a
- * transcript row or a dollar goes missing (/AGENTS.md §1.14).
+ * transcript row or a dollar goes missing.
  */
 async function adoptParkedSession(sessionId: string): Promise<ResumedSession | null> {
   const claim = await claimParkedSession(sessionId);
@@ -758,7 +757,7 @@ async function adoptParkedSession(sessionId: string): Promise<ResumedSession | n
   }
 
   /*
-   * The `Synthesizer`, rebuilt (Round 142's requirement 2). It is the one
+   * The `Synthesizer`, rebuilt. It is the one
    * thing in the snapshot that genuinely cannot travel — a closure over this
    * process's `SpeechScope` — so it is constructed here exactly the way the
    * first connection constructed it, from the record's PINNED session so the
@@ -769,7 +768,7 @@ async function adoptParkedSession(sessionId: string): Promise<ResumedSession | n
    * costs is re-synthesizing a line this learner hears again — real money, but
    * cents, and the shared speech cache (`voice/cache.ts`, 180-day TTL) already
    * absorbs most of it. `SpeechScope.inFlight` must NEVER be shared at all;
-   * `voice/speech.ts` records why, and Round 142 proved it serves one child's
+   * `voice/speech.ts` records why: it serves one child's
    * session audio into another child's session.
    */
   const speech = newSpeechScope(parsed.session);
@@ -859,7 +858,7 @@ async function finalizeParkedOnce(
 ): Promise<void> {
   /*
    * DID ANYONE ELSE TAKE THIS PARK? — the fleet-owned half of the grace
-   * window (`RUNBOOK.md` Round 142's requirement 4).
+   * window.
    *
    * The timer that brought us here is still a local `setTimeout`: a
    * distributed scheduler is a great deal of machinery for a question a local
@@ -868,7 +867,7 @@ async function finalizeParkedOnce(
    * a session another replica has since resumed — and because Core's close
    * filters on `ended_at IS NULL`, the DEAD replica's close wins and the live
    * conversation's real, billed usage never reaches the ledger at all. That
-   * is the precise accounting failure Round 142 traced.
+   * is the precise accounting failure.
    *
    * `unreachable` closes anyway, and that is a decision rather than a
    * fallthrough. Adoption itself REQUIRES the shared store — a resuming socket
@@ -879,7 +878,7 @@ async function finalizeParkedOnce(
    * against the alternative: declining to close on an unreachable store would
    * leave EVERY abandoned session open in Core's ledger for the whole
    * duration of any outage, cost unrecorded, `ended_at` null forever, with no
-   * process that will ever revisit it. A certain §1.0 blind flight versus a
+   * process that will ever revisit it. A certain blind flight versus a
    * narrow race — so this closes, and says so.
    */
   if (entry.parkOwner && opts.shuttingDown === true) {
@@ -925,12 +924,12 @@ async function finalizeParkedOnce(
    *
    * It used to be a bare `void closeSession({...})`. `finish()` — the OTHER
    * close path, the one that can lose the race to this one — has warned
-   * loudly on both `already-closed` and `failed` since round 98. This path
+   * loudly on both `already-closed` and `failed`. This path
    * had no branch at all, so when THIS side was the one that failed (Core
    * unreachable, a 5xx, a malformed envelope) the session's `ended_at`,
    * `close_reason` and entire cost were silently never written, and the only
    * trace anywhere was a row that stays open forever. That is precisely the
-   * "failure collapsed into emptiness" shape §1.14 forbids, and it was
+   * "failure collapsed into emptiness" shape that is forbidden, and it was
    * hiding in the half of the race nobody had instrumented.
    *
    * Observability ONLY — this deliberately does NOT retry and does NOT
@@ -944,12 +943,12 @@ async function finalizeParkedOnce(
    * money itself is NOT lost from view either way: `spendGuard.record()`
    * fires inside `addModelCost`/`addVoiceCost` at the moment of spend, so
    * every dollar already counts against the daily ceiling regardless of
-   * whether this row ever hears about it. See oracle/AGENTS.md item 71.
+   * whether this row ever hears about it..
    */
   void closeSession({
     sessionId,
     closeReason,
-    // C.16: a parked close is a silent dropout (or a shutdown's abandon):
+    // A parked close is a silent dropout (or a shutdown's abandon):
     // the learner_left script, whose re-engagement Core queues for return.
     ...entry.orchestrator.closeRecord(closeReason),
     // The transcript's own row count, not the model-turn count — see
@@ -1000,8 +999,8 @@ async function finalizeParkedOnce(
    */
 
   /*
-   * DEFER TO THE GRACEFUL CLOSE THAT IS STILL COMING (item 71 / round 98,
-   * closed here — was left open on purpose, see `finish()`'s own comment on
+   * DEFER TO THE GRACEFUL CLOSE THAT IS STILL COMING (
+   * was left open on purpose, see `finish()`'s own comment on
    * its unconditional review call for the other half of this fix).
    *
    * `entry.endSessionRequested` being true means this park raced an
@@ -1066,7 +1065,7 @@ async function finalizeParkedOnce(
  * the only caller is the SIGTERM handler below, always with `'abandoned'`.
  *
  * `forceReview: true` on every one of them: `finalizeParked`'s own deferral
- * (item 71) trusts a `finally`-chain elsewhere in this process to still call
+ * trusts a `finally`-chain elsewhere in this process to still call
  * `finish()` later, and shutdown is precisely the moment that trust runs out
  * — there is no "later" left to defer to. Skipping the review here on that
  * same trust would make it never run at all, for a session that had a real
@@ -1081,7 +1080,7 @@ async function finalizeParkedOnce(
  * ends every live session as `'abandoned'` instead of handing it to a sibling
  * replica. Cross-replica adoption covers a learner who DROPS; it deliberately
  * does not change what a deploy does to a learner mid-lesson, which
- * `RUNBOOK.md` Round 142 (requirement 6) calls an owner decision rather than a
+ * is an owner decision rather than a
  * refactor — and which would need a fleet-liveness signal this service does
  * not have, since "is a sibling still there to resume into?" is exactly the
  * question a process on its way out cannot answer about itself.
@@ -1119,7 +1118,7 @@ function releaseTurn(live: Live): void {
   live.inFlight = false;
   /*
    * A LEARNER WHO ASKED TO LEAVE WHILE SOMEONE ELSE'S TURN HELD THE FLOOR IS
-   * NOT MADE TO ASK AGAIN (round 90, 2026-08-31, MEDIUM — see
+   * NOT MADE TO ASK AGAIN (see
    * `Live.endSessionRequested`'s own comment for the failure this closes).
    *
    * This is the ONE place every turn's `finally` already funnels through
@@ -1161,11 +1160,11 @@ function refuseTurn(live: Live, why: 'busy' | 'too-soon'): void {
  * already closed — the case this guard exists for.
  *
  * A dropped send here used to be silent: no log, no error, nothing. Found by
- * adversarial review, round 81 (2026-08-31, MEDIUM), chasing a live,
+ * adversarial review, chasing a live,
  * intermittently-reproducing symptom (a turn written to Postgres within
  * seconds of a session starting, never reaching the screen, with a live
  * connection count that never dropped) — never conclusively pinned on this
- * function, but the silence itself was a real, independent gap: §1.0 ("make
+ * function, but the silence itself was a real, independent gap: the rule ("make
  * failure LOUD and distinguishable from emptiness") does not carve out an
  * exception for a socket that closed a moment before its last message tried
  * to leave. Every one of this file's other failure paths already logs;
@@ -1212,8 +1211,8 @@ async function attemptEndSession(live: Live): Promise<void> {
 }
 
 /**
- * OD-28 (owner review M-04): the learner pressed "end" (`end_session` with
- * `recapFirst`). The Mentor asks the C.16 recap question first and the
+ * The learner pressed "end" (`end_session` with
+ * `recapFirst`). The Mentor asks the recap question first and the
  * session stays open for one answer; when the recap cannot be asked (a
  * stopped session, a close already under way, an ended budget) the session
  * ends exactly as a plain `end_session` does. Busy is re-armed like
@@ -1240,7 +1239,7 @@ async function attemptRecapOnEnd(live: Live): Promise<void> {
 }
 
 /**
- * OD-28 (owner review M-04): how long the recap question asked on "end" waits
+ * How long the recap question asked on "end" waits
  * for its answer before the completed close is given anyway, so a learner who
  * pressed "end" and then says nothing is never held open. Driven by the
  * existing heartbeat (every `HEARTBEAT_INTERVAL_MS`), so the real wait is
@@ -1319,7 +1318,7 @@ function notePersist(live: Live, recorded: boolean): void {
 
 /**
  * `notePersist`'s sibling for safety-flag writes specifically — a SEPARATE
- * counter, not a shared one. Found by adversarial review, round 29
+ * counter, not a shared one. Found by adversarial review
  * (2026-08-30, CRITICAL): a blocked turn (e.g. `personal_data`) ALSO writes
  * the learner's raw text via the ordinary `persistTurn` above it, which
  * succeeds against a healthy Core even when the flag write is the one
@@ -1595,7 +1594,7 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
    * comes out. Ordered cheapest-first, each one a strict subset of the
    * remaining budget the next one would otherwise spend:
    *
-   * GATE 1 — THE SPEND CIRCUIT BREAKER (/ORACLE.md §15.2 item 1). Touches
+   * GATE 1 — THE SPEND CIRCUIT BREAKER. Touches
    * nothing but this process's own in-memory ledger — the cheapest possible
    * check, and the one most worth failing on first, since a tripped spend
    * ceiling means every other gate's work is certain to be wasted.
@@ -1612,7 +1611,7 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
 
   /*
    * GATE 2: this process is not already holding its configured ceiling of
-   * live sessions (ORACLE.md §15.2 item 2). Still a single `Map.size` read —
+   * live sessions. Still a single `Map.size` read —
    * no I/O — so it stays ahead of gate 3, which can genuinely reach Redis.
    */
   if (liveSessions.size >= getConfig().ORACLE_MAX_CONCURRENT_SESSIONS) {
@@ -1621,7 +1620,7 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
   }
 
   /*
-   * GATE 3: this IP has not exceeded the handshake rate limit (§15.2 item 3).
+   * GATE 3: this IP has not exceeded the handshake rate limit.
    * The one gate of the three that is genuinely async — memory-backed in
    * test/dev, Redis-backed in production — so it runs last among these
    * three despite still running ahead of every token/auth check below.
@@ -1652,7 +1651,7 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
   if (!verdict.ok) {
     /*
      * `replayed` IS `ALREADY_CONNECTED`, ONE CONNECTION EARLIER — chased down
-     * during RUNBOOK.md's Round 81/82 cold-mount investigation. A replayed
+     * during a cold-mount investigation. A replayed
      * token means a DIFFERENT socket already spent this exact single-use
      * nonce (`token.ts`'s `nonceLedger`) and, being first, is the one Oracle
      * is actually talking to — the SEVENTH GATE below refuses a second
@@ -1672,8 +1671,8 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
      * else"), so this reuses that vocabulary instead of inventing a fourth.
      *
      * `store_unreachable` is a THIRD, distinct shape, and not an auth failure
-     * at all — it is the SAME `nonceLedger`'s shared store (item 79 / RUNBOOK
-     * Round 119) failing CLOSED because it could not confirm this token
+     * at all — it is the SAME `nonceLedger`'s shared store
+     * failing CLOSED because it could not confirm this token
      * unused, most likely a Redis outage. Every other reason here really is
      * the client's fault; this one is ours, and the client already has a
      * close code and a copy for exactly that distinction (`SERVICE_DEGRADED`
@@ -1692,7 +1691,7 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
 
   const session = await fetchSessionContext(verdict.payload.sid);
   if (!session) {
-    // An unreadable session is NOT an empty session (§1.14). Refuse rather
+    // An unreadable session is NOT an empty session. Refuse rather
     // than starting one with defaults — defaults here would mean "not a minor,
     // no consent needed", which is the worst possible guess to get wrong.
     socket.close(CLOSE_CODES.SESSION_NOT_FOUND, 'session could not be resolved');
@@ -1706,7 +1705,7 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
 
   const readiness = moderationReadiness(session.isMinor);
   if (!readiness.ready) {
-    // Refused at the door rather than turn by turn (/ORACLE.md §6): a child
+    // Refused at the door rather than turn by turn: a child
     // sitting with a character who apologises forever is worse than an honest
     // "not available right now".
     console.error('[oracle] refusing a minor session: no moderation judge configured');
@@ -1735,10 +1734,10 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
    * zero-latency, same-process guard — unchanged, and still what catches the
    * overwhelming majority of real "second socket" attempts, since Oracle runs
    * as one replica per deploy by default. The distributed claim below is what makes this
-   * gate ACTUALLY hold once that stops being true (`oracle/AGENTS.md` item 79
-   * / `RUNBOOK.md` Round 119): a second socket for this session landing on a
+   * gate ACTUALLY hold once that stops being true:
+   * a second socket for this session landing on a
    * DIFFERENT process would find this process's `liveSessions` empty and sail
-   * through with no second check at all — which is exactly the gap Round 119
+   * through with no second check at all — which is exactly the gap that was
    * investigated, found real, and deliberately left open pending this work.
    */
   if (liveSessions.has(session.sessionId)) {
@@ -1748,7 +1747,7 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
 
   /*
    * THE FAIL-CLOSED DECISION — written here because this is the call site,
-   * per `oracle/AGENTS.md` item 79's own instruction that it be recorded
+   *'s own instruction that it be recorded
    * "prominently... exactly the way this repo's other architecture decisions
    * are documented."
    *
@@ -1759,7 +1758,7 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
    * treat as acquired). Reasoning, weighed against this repo's own existing
    * precedent rather than assumed:
    *
-   *   - §1.14 already has a fail-OPEN control — the rate limiter — and its
+   *   - The codebase already has a fail-OPEN control — the rate limiter — and its
    *     own comment states why: "a degraded limiter must never be able to
    *     take the platform down." That reasoning applies to an AVAILABILITY
    *     control, where the failure being guarded against (a flood) is
@@ -1774,7 +1773,7 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
    *     brief unavailability. Failing open here would not degrade the
    *     platform; it would silently REMOVE the protection during exactly the
    *     infrastructure instability (a Redis blip, a redeploy) it exists for
-   *     — RUNBOOK Round 119's own §3 named this precisely.
+   *     — the analysis behind this named it precisely.
    *   - Failing closed does NOT touch `GET /health`, which has never
    *     consulted Redis and still does not — so a Redis outage degrades
    *     Oracle's ability to START or RESUME a session, specifically, and
@@ -1782,7 +1781,7 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
    *     gate runs once, at connection time; see the heartbeat's renewal
    *     below for what an outage during an ONGOING session does instead —
    *     deliberately NOT this).
-   *   - The crash-and-restart regression Round 119 point 4 warned about (a
+   *   - The crash-and-restart regression that was warned about (a
    *     durable claim outliving the crashed process that held it) is why the
    *     claim carries a bounded TTL and is renewed periodically rather than
    *     held forever — see `SESSION_LOCK_TTL_MS` below — not a reason to
@@ -1828,7 +1827,7 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
    *
    * FAILS CLOSED, matching this file's other shared-store call site verbatim:
    * `{ seq: 0 }` and "could not ask" are different answers, and treating the
-   * second as the first is exactly the §1.14 defaulting-on-an-unconfirmed-read
+   * second as the first is exactly the defaulting-on-an-unconfirmed-read
    * shape (`getLearningStatsForUpdate` erasing a child's XP) — here it would
    * silently destroy a transcript instead. It costs nothing that was not
    * already lost: a socket only reaches this line by ACQUIRING the claim
@@ -1864,8 +1863,8 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
    * THE ONE FIELD THE RE-ATTACHED ORCHESTRATOR RE-READS from this connection's
    * own fresh context.
    *
-   * Found by adversarial review as round 56's deferred MEDIUM, closed as round
-   * 77 (2026-08-30): the orchestrator's `session` is set once at construction
+   * Found by adversarial review:
+   * the orchestrator's `session` is set once at construction
    * and never reassigned, so a resumed instance kept enforcing whatever
    * `isMinor` the FIRST connection fetched — for the whole grace window, and
    * indefinitely across repeated parks and resumes, since nothing ever
@@ -1895,7 +1894,7 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
        *
        * The turn also carries `emotion` — happy, thinking, encouraging, proud
        * — chosen per turn by the pedagogical controller, which is the
-       * blueprint's differentiator #2, "prosodia dirigida por pedagogía". Our
+       * product's differentiator #2, "prosodia dirigida por pedagogía". Our
        * TTS request has no emotion field, so the only route is an inline
        * direction tag in the text.
        *
@@ -1906,7 +1905,7 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
        *   [warm]   120,192 bytes   ← 23% MORE audio: the tag is SPOKEN
        *   <warm>   103,680 bytes   ← within 6%: not spoken
        *
-       * The blueprint recommends the square-bracket form. On this provider it
+       * The usual recommendation is the square-bracket form. On this provider it
        * would have a six-year-old hear "corchete warm cierra corchete" before
        * the answer to their question — a worse defect than the one it fixes,
        * aimed at the youngest users, and invisible to every test we have
@@ -1966,7 +1965,7 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
         return;
       }
       /*
-       * OD-28 (owner review M-04): the learner pressed "end", was asked the
+       * The learner pressed "end", was asked the
        * recap question and has not answered within `RECAP_ANSWER_WAIT_MS`.
        * They asked to leave, so they get the completed close now (the same
        * path as a second "end") rather than waiting out the idle window.
@@ -1995,7 +1994,7 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
        * renewal miss would trade a narrow, bounded exclusivity gap (another
        * connection attempt slipping through before the claim's TTL expires)
        * for a much worse, certain one (an active lesson cut off mid-turn) —
-       * the wrong side of this file's own §1.0 cost accounting. Logged, not
+       * the wrong side of this file's own cost accounting. Logged, not
        * silent, so a sustained outage is visible in the logs even though no
        * single session acts on it.
        */
@@ -2045,7 +2044,7 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
        * and only then is the speech memo dropped.
        *
        * PARK, PUBLISH, *THEN* RELEASE THE CLAIM — and the order is the fix,
-       * not an implementation detail (`RUNBOOK.md` Round 142's requirement 6).
+       * not an implementation detail.
        *
        * This used to release the claim FIRST and park afterwards, deliberately,
        * so a genuine resume need not wait out `SESSION_LOCK_TTL_MS`. At one
@@ -2072,7 +2071,7 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
        * release the claim, or a failed snapshot would strand this session
        * behind a claim nobody holds until its TTL expires.
        *
-       * OD-28 (owner review M-04): A SOCKET THAT GOES WHILE THE LEARNER'S OWN
+       * A SOCKET THAT GOES WHILE THE LEARNER'S OWN
        * "END" WAITS ON ITS RECAP is not a silent dropout: the learner asked
        * to leave. The request is put back exactly as a deferred `end_session`
        * would be (`Live.endSessionRequested`, copied onto the park entry, so
@@ -2145,7 +2144,7 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
         action: snapshot.lastTurn.turn.action,
         roleplayScene: snapshot.lastTurn.turn.roleplayScene ?? null,
         pointAt: snapshot.lastTurn.turn.pointAt ?? null,
-        // GAP-FIX-R2: the redrawn turn keeps its reply chips (already screened, moderated and key-checked).
+        // The redrawn turn keeps its reply chips (already screened, moderated and key-checked).
         ...(snapshot.lastTurn.turn.replies && snapshot.lastTurn.turn.replies.length > 0 ? { replies: snapshot.lastTurn.turn.replies } : {}),
         audioUrl: null,
         // No `turn_audio` follows a resume redraw (see the comment above) —
@@ -2176,9 +2175,9 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
 
   // The opening line. Deliberately after `ready`: the client waits for the 3D
   // stage's own onReady before it plays anything, and handing over speech
-  // while the assets resolve plays audio at a blank canvas (/TUTOR_3D.md §7b).
+  // while the assets resolve plays audio at a blank canvas.
   //
-  // C.16: a learner returning after a silent dropout or a budget interruption
+  // A learner returning after a silent dropout or a budget interruption
   // hears the re-engagement message that ending queued (Core decides it from
   // their previous closed session), never an opening that pretends nothing
   // happened. A Core that predates the field sends nothing: the greeting.
@@ -2186,9 +2185,6 @@ async function handleConnection(socket: WebSocket, request: IncomingMessage): Pr
 }
 
 /**
- * A.1 (FAQ 'cancelTutor': "your child's account is paused at once"),
- * Appendix M 2.1 criterion 2, F3-identity-site finish.
- *
  * Core pauses a kid-role account the moment its last verified Tutor link is
  * gone: sign-in, refresh, the session-token mint and every Core route refuse
  * it. A live socket opened BEFORE the pause holds a token Core already
@@ -2289,11 +2285,11 @@ async function onMessage(live: Live, raw: string): Promise<void> {
        * `farewell()`/`finish()` were simply never reached — while the
        * client tears its own socket down regardless, without waiting to
        * find out (`TutorExperience.tsx`'s `onRestart`/`onExit`). Found by
-       * adversarial review, round 90 (2026-08-31, MEDIUM): the session's
+       * adversarial review: the session's
        * own `close` handler then saw `live.closing` still false and parked
        * it exactly as an honest dropped connection, so a DELIBERATE ending
        * recorded as `learner_left` after the resume grace window, with no
-       * farewell ever delivered — contradicting /ORACLE.md §9.5's "not a
+       * farewell ever delivered — contradicting the rule "not a
        * timeout that kills a socket" outright. `attemptEndSession` re-arms
        * `Live.endSessionRequested` on anything but `'ok'` instead of
        * refusing, and `releaseTurn` — the one place every turn's `finally`
@@ -2309,7 +2305,7 @@ async function onMessage(live: Live, raw: string): Promise<void> {
 
     case 'session_end_response': {
       /*
-       * C.8/C.12: the learner's choice on the stop-or-continue offer. Refused
+       * The learner's choice on the stop-or-continue offer. Refused
        * unless an offer is actually open — a replayed or hand-crafted frame
        * steers nothing — and checked BEFORE the claim, like an unknown
        * segment: a refusal this cheap should not spend the turn slot.
@@ -2342,7 +2338,7 @@ async function onMessage(live: Live, raw: string): Promise<void> {
 
     case 'check_in_response': {
       /*
-       * C.19: the learner's answer to the system's check-in ("are we on the
+       * The learner's answer to the system's check-in ("are we on the
        * same page?") on the two reply chips. Refused unless a check-in is
        * actually open — a replayed or hand-crafted frame steers nothing —
        * and checked BEFORE the claim, like `session_end_response`. "Yes"
@@ -2375,7 +2371,7 @@ async function onMessage(live: Live, raw: string): Promise<void> {
 
     case 'goal_response': {
       /*
-       * C.15: the learner's answer to the goal restatement on the two equal
+       * The learner's answer to the goal restatement on the two equal
        * chips. Refused unless the goal check is actually open — a replayed or
        * hand-crafted frame steers nothing — and checked BEFORE the claim.
        * "Yes" starts the lesson on the agreed goal; "something else" asks
@@ -2408,7 +2404,7 @@ async function onMessage(live: Live, raw: string): Promise<void> {
     case 'adaptation_response':
       // Local state only — no upstream call, so no slot to claim.
       //
-      // Found by adversarial review, round 67 (2026-08-30, MEDIUM): a decline
+      // Found by adversarial review: a decline
       // used to be dropped entirely here — "local state only" meant no state
       // at all — so the tutor re-offered the identical adaptation on the very
       // next failure of the same skill. `declineAdaptation` now records it on
@@ -2485,7 +2481,7 @@ async function onMessage(live: Live, raw: string): Promise<void> {
 
     case 'learner_text':
     case 'learner_edit': {
-      // C.9: a typed reply's onset is when it arrived.
+      // A typed reply's onset is when it arrived.
       const arrivedAtMs = Date.now();
       const claim = claimTurn(live, arrivedAtMs);
       if (claim !== 'ok') return refuseTurn(live, claim);
@@ -2600,7 +2596,7 @@ async function onMessage(live: Live, raw: string): Promise<void> {
  */
 /**
  * Whether THIS turn is due a fresh, live consent check, per the cadence
- * `/ORACLE.md` §4.3 sets — for a minor with the mic on, that cadence is
+ * the consent policy sets — for a minor with the mic on, that cadence is
  * "every turn" (`CONSENT_RECHECK_MINOR_MIC_TURNS = 1`).
  */
 function dueForMicConsentRecheck(live: Live): boolean {
@@ -2652,7 +2648,7 @@ async function refreshMicConsent(live: Live): Promise<boolean> {
 
 /**
  * `onsetAtMs`: when the learner started speaking (the microphone press of a
- * streamed clip), for the C.9 reply latency; null for a single-frame clip,
+ * streamed clip), for the reply latency; null for a single-frame clip,
  * whose start is not known.
  */
 async function handleAudioClip(live: Live, audio: Buffer, mimeType: string, onsetAtMs: number | null = null): Promise<void> {
@@ -2664,7 +2660,7 @@ async function handleAudioClip(live: Live, audio: Buffer, mimeType: string, onse
     });
     return;
   }
-  // A.1 (F3-identity-site): a paused account's clip never reaches the STT
+  // A paused account's clip never reaches the STT
   // provider — see `admitTurn`.
   if (!(await admitTurn(live))) return;
   // Fresh, BEFORE anything is sent to the STT provider — see
@@ -2722,7 +2718,7 @@ async function handleLearnerTurn(
     viaMicrophone?: boolean;
     edit?: boolean;
     micConsentAlreadyChecked?: boolean;
-    /** C.9: how the words arrived and when the learner started answering. */
+    /** How the words arrived and when the learner started answering. */
     input?: LearnerInputMeta;
   } = {},
 ): Promise<void> {
@@ -2734,7 +2730,7 @@ async function handleLearnerTurn(
 
   /*
    * Consent is re-checked periodically DURING a session, not only at the
-   * door. /ORACLE.md §4.3 requires revocation to take effect on the next
+   * door. The consent policy requires revocation to take effect on the next
    * turn, and a guardian who revokes while their child is mid-session means
    * it now.
    *
@@ -2758,7 +2754,7 @@ async function handleLearnerTurn(
      * the rest of the session and the child kept streaming to the provider.
      *
      * The door already gets this right: `fetchSessionContext` returning `null`
-     * closes the socket. §1.14 — failure must be distinguishable from
+     * closes the socket. Failure must be distinguishable from
      * emptiness, and the caller must refuse. This is the same upstream
      * guarding the same child-safety property, so it refuses the same way.
      */
@@ -2822,7 +2818,7 @@ async function handleLearnerTurn(
    * DETERMINISTICALLY against the stored key before any model call. A
    * recognized answer produces a verdict-driven reaction turn; anything else —
    * unparseable, uncheckable, or the call failing — falls through to the
-   * ordinary conversation path, because unparseable is never wrong (§1.14).
+   * ordinary conversation path, because unparseable is never wrong.
    * Edits are excluded: a rephrasing is conversation by definition.
    */
   const checkable = live.orchestrator.checkableSegmentId;
@@ -2838,7 +2834,7 @@ async function handleLearnerTurn(
       live.lastSegmentFrame = null;
       /*
        * `learnerTurnSeq`, THE SAME WAY THE ORDINARY TEXT/EDIT CALL BELOW
-       * PASSES IT — round 67 (2026-08-30, HIGH). This call used to omit the
+       * PASSES IT. This call used to omit the
        * third argument entirely, on the reasoning (recorded on `deliver`'s
        * own parameter below, and now corrected) that a voice-check verdict
        * can never raise a safety flag. It can:
@@ -2851,7 +2847,7 @@ async function handleLearnerTurn(
        * per-model-turn counter, a different numbering space from
        * `tutor_turns.seq` — so a flag raised through a checked answer was
        * persisted against a row that does not exist, silently defeating
-       * both the guardian page's flagged-turn highlight (round 41) and
+       * both the guardian page's flagged-turn highlight and
        * migration 0054's recall exclusion for this class of flag.
        */
       await deliver(
@@ -2895,7 +2891,7 @@ async function deliver(
    * unavailable segment) — none of those react to fresh learner-authored
    * text, so none of them can produce a `safety` flag.
    *
-   * Found by adversarial review, round 67 (2026-08-30, HIGH): this comment
+   * Found by adversarial review: this comment
    * used to claim a voice-check verdict "cannot produce a `safety` flag in
    * the first place" — false, and the voice-check call site omitted this
    * parameter on that same false premise, so a flag raised through a spoken
@@ -2914,7 +2910,7 @@ async function deliver(
   segmentAttempt = 0,
 ): Promise<void> {
   /*
-   * C.16: A SCRIPTED LINE FOLLOWS THIS TURN (`TurnOutcome.after`) — the
+   * A SCRIPTED LINE FOLLOWS THIS TURN (`TurnOutcome.after`) — the
    * closing line after the Mentor's last turn, or the recap question after
    * it wrapped up. This turn goes out first, its voice is awaited so the
    * clip is not cut by the close, then the line, which carries the close.
@@ -2944,7 +2940,7 @@ async function deliver(
   const { emission, safety, budget, closeReason } = outcome;
 
   /*
-   * SPLIT DELIVERY (/ORACLE.md §6 intact): the text of an already-moderated
+   * SPLIT DELIVERY (moderation intact): the text of an already-moderated
    * turn ships NOW; the voice follows in `turn_audio` when synthesis and
    * storage settle. The learner reads the caption while the clip is still
    * being made, which removes the entire synthesis-and-store leg from the
@@ -2956,7 +2952,7 @@ async function deliver(
    * Captured ONCE, used for both the wire send below and the persisted
    * transcript row further down — the same object either way, never
    * recomputed a second time for storage. Found by adversarial review,
-   * round 35 (2026-08-30, HIGH): this board reached the learner's screen
+   * This board reached the learner's screen
    * and nowhere else, so replay and the guardian transcript viewer lost it
    * silently.
    */
@@ -2993,7 +2989,7 @@ async function deliver(
     ...(emission.turn.roleplayScene ? { roleplayScene: emission.turn.roleplayScene } : {}),
     ...(emission.turn.pointAt != null ? { pointAt: emission.turn.pointAt } : {}),
     /*
-     * GAP-FIX-R2 (Frontend Bible 08 §2 layer 5, §4, §9): the likely answers
+     * The likely answers
      * as reply chips, sent back as the learner's own words. Already within
      * budget, moderated with `say` and cleared against the open activity's
      * key (orchestrator.ts). Omitted when there are none.
@@ -3039,7 +3035,7 @@ async function deliver(
       moderation: emission.moderation,
       whiteboard: wireBoard,
       // Tutor v3's tray-demonstration steps, the same ones just sent on the
-      // wire frame above — migration 0067 closes the exact gap round 35
+      // wire frame above — migration 0067 closes the exact gap
       // found for `whiteboard`: unpersisted, this animation existed only for
       // the length of the live socket and vanished from replay and from the
       // guardian transcript viewer the instant the session ended.
@@ -3047,7 +3043,7 @@ async function deliver(
       savePlan: emission.turn.savePlan,
       roleplayScene: emission.turn.roleplayScene ?? null,
       pointAt: emission.turn.pointAt ?? null,
-      // C.18: the honesty facts ride the transcript row — Core scores the
+      // The honesty facts ride the transcript row — Core scores the
       // reveal against the real key it alone holds (tutor_turn_honesty).
       honesty: emission.honesty ?? null,
     }).then((recorded) => notePersist(live, recorded));
@@ -3059,14 +3055,14 @@ async function deliver(
      * `deliver` call came from fresh learner-authored text: an ordinary
      * text/edit turn OR a voice-check verdict, the two places a `safety`
      * flag can actually be produced (both callers now pass it — see the
-     * voice-check call site's own comment, round 67, 2026-08-30, HIGH).
+     * voice-check call site's own comment).
      * `safety.turnSeq` (the orchestrator's internal turn counter, a
      * DIFFERENT numbering space from `tutor_turns.seq`) is kept only as a
      * fallback for a caller this function does not currently have —
      * recording SOMETHING is still better than dropping the flag, but it
      * will not match a real transcript row, so `search_tutor_turns`
      * (migration 0054) can only exclude a flagged turn from episodic recall
-     * when the accurate seq reached here. Until round 67's fix, the
+     * when the accurate seq reached here. Before that fix, the
      * voice-check caller silently WAS that fallback case on every call —
      * omitting `learnerTurnSeq` for a path that can and does raise flags — so
      * a flagged spoken utterance's OWN transcript row was never identifiable
@@ -3075,7 +3071,7 @@ async function deliver(
      */
     /*
      * CHAINED THROUGH noteFlagPersist — its OWN counter, not `notePersist`'s.
-     * Found by adversarial review, round 29 (2026-08-30, CRITICAL): this used
+     * Found by adversarial review: this used
      * to be a bare fire-and-forget with no retry and no failure counter at
      * all, unlike its transcript-write siblings. Migration 0054's whole
      * recall exclusion is a `NOT EXISTS` against `tutor_safety_flags` — with
@@ -3105,17 +3101,17 @@ async function deliver(
     send(live.socket, { type: 'adaptation_offer', adaptation: emission.turn.offerAdaptation });
   }
 
-  // C.8/C.12: this turn asked "stop here, or one more?" — the stage shows two
-  // equal choices (Frontend Bible 08 §4). Never a default-accepted path: the
+  // This turn asked "stop here, or one more?" — the stage shows two
+  // equal choices. Never a default-accepted path: the
   // choice arrives as `session_end_response` or in the learner's own words.
   if (emission.sessionEndOffer === true) send(live.socket, { type: 'session_end_offer' });
 
-  // C.19: this turn is the system's check-in — the stage shows the two reply
-  // chips (Frontend Bible 08 §4: "a turn with chips, not a modal"). The
+  // This turn is the system's check-in — the stage shows the two reply
+  // chips ("a turn with chips, not a modal"). The
   // answer arrives as `check_in_response` or in the learner's own words.
   if (emission.checkIn === true) send(live.socket, { type: 'check_in' });
 
-  // C.15: this turn restated the session goal — the stage shows two equal
+  // This turn restated the session goal — the stage shows two equal
   // chips. The answer arrives as `goal_response` or in the learner's words.
   if (emission.goalCheck === true) send(live.socket, { type: 'goal_check' });
 
@@ -3137,7 +3133,7 @@ async function deliver(
        * panel would wait forever for a segment the server has already decided
        * will never come.
        *
-       * LOUD, not silent (§1.0 "blind flight"): reaching this line means the
+       * LOUD, not silent ("blind flight"): reaching this line means the
        * model ignored an explicit instruction AND the ladder had nothing for
        * this learner twice in a row, which is a content gap worth a line in
        * the log — in the same spirit as the ladder's own prerequisite and
@@ -3194,7 +3190,7 @@ async function serveSegment(
   attempt = 0,
 ): Promise<void> {
   /*
-   * The ladder, from this side (/ORACLE.md §7).
+   * The ladder, from this side.
    *
    * Core answers with a segment (tiers 1 and 2) or with an invitation to
    * generate one (tier 3). Generation is Oracle's, verification is Core's, and
@@ -3233,7 +3229,7 @@ async function serveSegment(
   });
 
   if (served !== null && 'liveSuspended' in served) {
-    // C.5: live generation is suspended for this content-risk category. No
+    // Live generation is suspended for this content-risk category. No
     // paid author or judge call is made for an item Core would refuse.
     console.warn(`[oracle] live generation suspended by Core (${served.reason}); no activity authored`);
     served = null;
@@ -3250,7 +3246,7 @@ async function serveSegment(
       allowedTypes: served.allowedTypes,
       recentTutorLines: live.orchestrator.recentTutorLines,
       isMinor: live.session.isMinor,
-      // Round 64 (2026-08-30, HIGH): neither of these reached tier-3
+      // Neither of these reached tier-3
       // generation before — a learner's interrupt could not actually stop
       // the paid author/judge calls, and their real cost never reached the
       // session's own ledger. `live.abort` is the SAME controller the
@@ -3270,7 +3266,7 @@ async function serveSegment(
   }
 
   if (served === null || 'needsGeneration' in served) {
-    // Emit nothing rather than something generic (/ORACLE.md §7.3). The tutor
+    // Emit nothing rather than something generic. The tutor
     // stays in conversation; the panel simply does not fill.
     /*
      * The frame still goes out so the client can clear its "preparing
@@ -3284,7 +3280,7 @@ async function serveSegment(
       message: 'No activity was available for that just now.',
     });
     /*
-     * THE RECURSION, now counted (round 76, 2026-08-30, HIGH). This recovery
+     * THE RECURSION, now counted. This recovery
      * turn goes out through the same `deliver()` as every other, so it can ask
      * for an activity of its own — and used to be able to do so for as long as
      * the model kept asking. `attempt + 1` is what `deliver()` measures against
@@ -3314,7 +3310,7 @@ async function serveSegment(
      * WHAT THE LADDER ACTUALLY SERVED, which is not necessarily the
      * `difficulty` we sent it a few lines above: the nearest-match search and
      * the prerequisite/frontier fallbacks can all answer with another band,
-     * correctly. Reported by Core since round 74 (2026-08-30) precisely so
+     * correctly. Reported by Core precisely so
      * the controller's ratchet stops adjusting from its own guess. The `??`
      * covers a Core that predates the field — see `ServedSegmentSchema`.
      */
@@ -3343,8 +3339,8 @@ async function finish(
   clearInterval(live.heartbeat);
 
   /*
-   * A GRACEFUL CLOSE CAN RACE AN ALREADY-PARKED SOCKET (round 90,
-   * 2026-08-31, MEDIUM — the deferred `end_session` this fixes is the
+   * A GRACEFUL CLOSE CAN RACE AN ALREADY-PARKED SOCKET (
+   * the deferred `end_session` this fixes is the
    * reason it becomes reachable). Deferring `end_session` until a busy
    * turn's `finally` frees the floor is real async time — long enough for
    * the client's own socket teardown (`TutorExperience.tsx` closes
@@ -3365,7 +3361,7 @@ async function finish(
   takeParked(live.session.sessionId);
 
   /*
-   * Found by adversarial review, round 24 (2026-08-30, MEDIUM): a blocked
+   * Found by adversarial review: a blocked
    * turn's discarded speculative synthesis is paid for but fired without
    * being awaited, so its cost only reaches `voiceCostUsd` whenever its own
    * promise happens to settle. If THIS turn was also the one that ended the
@@ -3397,7 +3393,7 @@ async function finish(
   const closeOutcome = await closeSession({
     sessionId: live.session.sessionId,
     closeReason: reason,
-    // C.16 / C.8 / C.12: which closing script this ending used, the opening
+    // Which closing script this ending used, the opening
     // the session began with, and the session-end signal's record.
     ...live.orchestrator.closeRecord(reason),
     // The transcript's own row count (both speakers), not the model-turn
@@ -3409,7 +3405,7 @@ async function finish(
   });
 
   /*
-   * FINALIZEPARKED WON THE RACE (round 98, 2026-08-31, MEDIUM). `takeParked`
+   * FINALIZEPARKED WON THE RACE. `takeParked`
    * above only cancels a park whose timer has not fired YET; here it already
    * has — `parkedSessions` had nothing left for it to cancel, `finish()`
    * proceeded anyway, and Core's `ended_at=is.null` filter matched zero rows
@@ -3426,7 +3422,7 @@ async function finish(
    * exceed `SESSION_RESUME_GRACE_MS` before the farewell is ever reached.
    *
    * Logged LOUDLY rather than treated as a success: a silent no-op here is
-   * exactly the "failure collapsed into emptiness" shape §1.14 forbids.
+   * exactly the "failure collapsed into emptiness" shape that is forbidden.
    * Cost reconciliation is deliberately NOT attempted here — computing a
    * correction that does not double-count `finalizeParked`'s own snapshot
    * would need either a fresh authoritative read of the row Core already
@@ -3442,7 +3438,7 @@ async function finish(
         `Core reports the session was already closed (its 'ended_at IS NULL' write matched zero rows), so ` +
         `this close's reason and cost were NOT persisted. The busy turn ahead of it outlasted ` +
         `SESSION_RESUME_GRACE_MS on its own, with no farewell involved. This turn's true final cost was ` +
-        `$${live.orchestrator.totalCostUsd.toFixed(5)} — reconcile manually if material. See RUNBOOK Round 98.`,
+        `$${live.orchestrator.totalCostUsd.toFixed(5)} — reconcile manually if material.`,
     );
   } else if (closeOutcome === 'failed') {
     console.warn(
@@ -3464,12 +3460,12 @@ async function finish(
    * this function only reaches this point after the busy turn ahead of the
    * farewell has settled, while `finalizeParked`'s own snapshot (when it
    * wins that race) is taken mid-turn, missing exactly the reply this
-   * function is closing out. Round 98 found this and correctly declined to
+   * function is closing out. A review found this and correctly declined to
    * suppress it — running both was a real, avoidable extra model call
-   * (§1.0's "directly" cost), but suppressing THIS one would have kept only
+   * (the "directly" cost), but suppressing THIS one would have kept only
    * the stale review as this session's lasting memory, which is worse.
    *
-   * Item 71 closes that follow-up on the OTHER side: `finalizeParked` now
+   * This closes that follow-up on the OTHER side: `finalizeParked` now
    * checks `Live.endSessionRequested` (copied onto its `ParkedSession` entry
    * at park time) before it fires ITS OWN review — a guaranteed sign, by
    * construction of `releaseTurn`'s own `finally`-chain, that a call exactly
@@ -3501,7 +3497,7 @@ async function finish(
   );
 
   /*
-   * C.16: what the closing state shows (Frontend Bible 08 §3–4) — which
+   * What the closing state shows — which
    * script ended the session, the act the completed close named, and the
    * lesson it will pick up from. Our own catalog text only.
    */
@@ -3514,7 +3510,7 @@ async function finish(
  * `transcribe()`'s two failure shapes look identical to a caller that only
  * gets a `string | null` back, and that collapse WAS the bug (found by
  * adversarial review sweep tutor-review-sweep-101, voice-audio-quality
- * dimension, 3/3 skeptics, HIGH; see RUNBOOK.md Round 102). "The child said
+ * dimension, 3/3 skeptics, HIGH;). "The child said
  * nothing intelligible" (a real call, a real empty transcript) and "the call
  * to the voice provider itself never came back" (a timeout, a dropped
  * connection, a provider 5xx — everything `VoiceUnavailableError` wraps, per
@@ -3601,7 +3597,7 @@ function dropSessionsForUser(userId: string, code: number, reason: string): { li
 /**
  * Lets index.ts shut the socket layer down without importing `ws` itself.
  *
- * `oracle/AGENTS.md` item 79 / `RUNBOOK.md` Round 119 point 5: a `ws` socket's
+ * A `ws` socket's
  * `close` EVENT — the thing that calls `parkSession`, a few hundred lines up
  * — fires once the closing handshake actually completes, which is NOT
  * synchronous with `.close()` being called below. The OLD version of this
@@ -3619,7 +3615,7 @@ function dropSessionsForUser(userId: string, code: number, reason: string): { li
  * Fixed by doing, SYNCHRONOUSLY and up front, exactly what each of those
  * sockets' own `close` handler would eventually have done anyway: park every
  * session that is still live right now, directly from its in-memory `Live`
- * object, and release its exclusivity claim (item 79) immediately rather than
+ * object, and release its exclusivity claim immediately rather than
  * leaving it to expire on `SESSION_LOCK_TTL_MS` — freeing it for whichever
  * instance answers next during a rolling redeploy, without that instance
  * waiting out the claim's TTL first. `parkSession` is the SAME function an

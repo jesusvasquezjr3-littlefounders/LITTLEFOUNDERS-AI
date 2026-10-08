@@ -15,36 +15,36 @@ import {
 } from './selfExplanation.js';
 
 /*
- * C.15 / C.14 — THE ALLIANCE CONTROLLER AND THE SELF-EXPLANATION MOVE AGAINST
- * APPENDIX F'S SIMULATED LEARNERS (Part 3, Stage 2).
+ * THE ALLIANCE CONTROLLER AND THE SELF-EXPLANATION MOVE AGAINST
+ * SIMULATED LEARNERS.
  *
- * The C.15 Definition of Done (b) asks that "the goal-agreement opening move
+ * The goal-agreement opening move
  * and the renegotiation trigger on repeated declines are both exercised and
- * pass in the simulated-student suite", and (c) that persona-continuity
- * re-establishment is verified "with a test scenario that deliberately
- * switches personas mid-relationship". Each persona is a deterministic script
- * of learner acts built from Appendix D's own profiles, with the behaviour the
+ * must pass in the simulated-student suite, and persona-continuity
+ * re-establishment is verified with a scenario that deliberately
+ * switches personas mid-relationship. Each persona is a deterministic script
+ * of learner acts built from the learner profiles, with the behaviour the
  * two objects must show:
  *
- *   repeated_decliner   §3.4's unnamed bond/task failure: turns down every way
+ *   repeated_decliner   unnamed bond/task failure: turns down every way
  *                       of working offered. MUST get the renegotiation before
  *                       a third offer; answers it and the session improves.
- *   reactant_teen       §3.6 autonomy threat: "something else" to the goal,
+ *   reactant_teen       autonomy threat: "something else" to the goal,
  *                       declines, brushes off the renegotiation and declines
  *                       again. MUST get its own goal adopted and the
  *                       renegotiation; the window must record NO improvement.
- *   persona_switcher    DoD (c): worked with one persona, now another. MUST be
+ *   persona_switcher    worked with one persona, now another. MUST be
  *                       introduced honestly, and a "last time we…" draft MUST
  *                       be caught.
- *   filler_explainer    §3.3's gamed prompt ("because it's right", "idk") and
+ *   filler_explainer    gamed prompt ("because it's right", "idk") and
  *                       Baker's gaming. MUST get ONE targeted follow-up, then
  *                       the reason stated by the Mentor, never a loop, and no
  *                       second prompt inside the spacing window.
  *   concept_explainer   names the idea. MUST pass on the first attempt.
  *   frustrated          Pekrun high value / low control: a wrong decision and a
  *                       stated wrong idea. MUST be asked "how" (not "why"),
- *                       and the wrong idea routed to the C.18 correction.
- *   masking             §1.6: polite, vague, never says yes or no. The goal
+ *                       and the wrong idea routed to the correction.
+ *   masking             polite, vague, never says yes or no. The goal
  *                       MUST end unconfirmed and the move MUST NOT loop.
  *   steady              agrees, accepts, explains. MUST get no renegotiation.
  */

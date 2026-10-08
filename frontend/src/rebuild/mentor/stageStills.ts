@@ -3,10 +3,9 @@ import { MENTOR_CHARACTERS, type MentorCharacter } from '../design/assets';
 
 /*
  * The pre-rendered stills the Mentor stage shows while the live model loads,
- * and instead of it on a low-power device, without WebGL or with data saver on
- * (Frontend Bible 08 §7, 07 §4). A still is only ever a manifest-registered
+ * and instead of it on a low-power device, without WebGL or with data saver on. A still is only ever a manifest-registered
  * render of the SAME character's real model in a catalogue pose; there is no
- * letter, glyph or look-alike fallback (02 rule 21). When a character has no
+ * letter, glyph or look-alike fallback. When a character has no
  * still, the stage shows its empty scene colour and says so (`onError`).
  *
  * Preference order for one request:
@@ -62,7 +61,7 @@ const still = (row: StillRow, fit: StageStill['fit']): StageStill => ({ id: row.
 type BandShape = 'young' | 'teen' | 'square';
 /*
  * The manifest id of a lesson band still: one per character, band shape, catalogue pose and colour mode.
- * Spelled per character so the asset gate (check-rebuild-assets) can see which registered stills are referenced.
+ * Spelled per character so every registered still referenced here is visible.
  */
 const LESSON_STILL_IDS: Record<MentorCharacter, (shape: BandShape, pose: string, theme: 'light' | 'dark') => string> = {
   rho: (shape, pose, theme) => `lesson.rho.${shape}.${pose}.${theme}`,
@@ -101,18 +100,18 @@ export function findStageStills({ character, poseId, theme, size, band }: {
   poseId: string;
   theme: 'light' | 'dark';
   size: 'full' | 'compact';
-  /** The compact band variant: the young band is taller than the teen one (B.23). */
+  /** The compact band variant: the young band is taller than the teen one. */
   band: 'young' | 'teen';
 }): StageStillSet | null {
   if (!MENTOR_CHARACTERS.includes(character)) return null;
-  // W3M.1: the full stage's per-pose stills (scripts/render-mentor-stage-stills.mjs): a 4:5 scene render per catalogue
-  // pose, so the fallback shows the state the stage is in (08 §7). The lesson band keeps its own band-shaped stills.
+  // The full stage's per-pose stills (scripts/render-mentor-stage-stills.mjs): a 4:5 scene render per catalogue
+  // pose, so the fallback shows the state the stage is in. The lesson band keeps its own band-shaped stills.
   if (size === 'full') {
     const exact = pick(STAGE_STILL_SLOT, character, theme, (row) => row.id === stageStillId(character, poseId, theme) && row.poseId === poseId);
     if (exact) return { base: still(exact, 'cover'), square: null };
   }
   // The lesson band stills (scene included, per band shape, pose and mode; scripts/render-mentor-lesson-stills.mjs):
-  // every character on the edge of its Diorama in the band, in the pose the compact stage is in (08 §7, §11).
+  // Every character on the edge of its Diorama in the band, in the pose the compact stage is in.
   if (size === 'compact') {
     const bandRow = lessonStill(character, band, poseId, theme);
     if (bandRow) {
@@ -120,7 +119,7 @@ export function findStageStills({ character, poseId, theme, size, band }: {
       return { base: still(bandRow, 'cover'), square: square ? still(square, 'cover') : null };
     }
   }
-  // The full stage: the character standing on its Diorama (the chooser's render, W2M.3) before the avatar's head crop,
+  // The full stage: the character standing on its Diorama (the chooser's render) before the avatar's head crop,
   // which read as a very large head on a full-size stage. It shows the idle pose, on the Diorama it was rendered on.
   if (size === 'full') {
     const scene = pick(CHOOSER_STILL_SLOT, character, theme, (row) => row.id === `mentor.${character}.chooser.${theme}`);
@@ -132,7 +131,7 @@ export function findStageStills({ character, poseId, theme, size, band }: {
 
 
 /**
- * The chooser's picture of one character (08 §8: the four real characters on
+ * The chooser's picture of one character (the four real characters on
  * the Diorama): a render of the character's real model standing on its
  * Diorama, per colour mode, or null when none is registered (the chooser then
  * shows the character's avatar render; never a stand-in).
@@ -145,17 +144,17 @@ export function findChooserStill(character: MentorCharacter, theme: 'light' | 'd
 
 
 /*
- * The full stage's rendered sequences (Frontend Bible 08 §7, 07 §4, §5; gap-fix round 8): in the fallback, a state
+ * The full stage's rendered sequences: in the fallback, a state
  * change plays one short sequence of the same character's real model moving into the pose, once, and settles on
  * that pose's still. Each sequence is registered in `mentor.stageSequence` (scripts/render-mentor-stage-sequences.mjs)
- * and names its end frame, the `mentor.stageStill` of the same character, pose and colour mode (07 §5: every rendered
+ * and names its end frame, the `mentor.stageStill` of the same character, pose and colour mode (every rendered
  * sequence has a still). A sequence whose still is missing is never offered: the stage would not settle on the pose.
  */
 export interface StageSequence {
   id: string;
   path: string;
   poseId: string;
-  /** How long the sequence plays once, in ms (its motion token, 07 §5). */
+  /** How long the sequence plays once, in ms (its motion token). */
   durationMs: number;
   /** The manifest id of the still it ends on. */
   endFrame: string;

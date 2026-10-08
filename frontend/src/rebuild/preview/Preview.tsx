@@ -11,8 +11,8 @@ import type { PreviewContext } from './registry/types';
 
 /*
  * The development-only preview entry (`rebuild.html`). It composes the
- * per-lane registries in `./registry/` (core, site, learn, mentor, family,
- * profile, staff): a lane adds its screens to its own registry file, never
+ * per-area registries in `./registry/` (core, site, learn, mentor,
+ * profile, staff): an area adds its screens to its own registry file, never
  * here. `?screen=` picks the screen; `?locale=`, `?theme=`, `?age=` and
  * `?register=` set the environment.
  */
@@ -27,7 +27,7 @@ export function Preview() {
   const [locale, setLocale] = useState<Locale>(initialLocale === 'es-MX' || initialLocale === 'pt-BR' ? initialLocale : 'en-US');
   const [theme, setTheme] = useState<'light' | 'dark'>(params.get('theme') === 'dark' ? 'dark' : 'light');
   const [screen, setScreen] = useState(params.get('screen') ?? 'home');
-  // S05.3f (B.23): the learner register a register-aware screen reads in.
+  // The learner register a register-aware screen reads in.
   const register: LearnerRegister = (['young', 'transition', 'teen', 'adult'] as const).find((value) => value === params.get('register')) ?? 'young';
   const [ageBand, setAgeBand] = useState<AgeBand>(['6-9', '10-12', '13-17', 'adult'].includes(params.get('age') ?? '') ? params.get('age') as AgeBand : '6-9');
   const t = translations[locale];

@@ -1,6 +1,6 @@
 import { exactKeys, isWhole } from './arrange.js';
 
-/* F2.17 calculus: a secant closing in on a tangent (G04), f and f' linked (G05), Riemann sums (G10) and the fundamental theorem (G11). */
+/* Calculus: a secant closing in on a tangent, f and f' linked, Riemann sums and the fundamental theorem. */
 
 export const COEFF_MAX = 9;
 export const SECANT_A_MAX = 3;

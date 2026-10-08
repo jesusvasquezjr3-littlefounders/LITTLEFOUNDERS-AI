@@ -1,9 +1,9 @@
 import type { Locale } from './copyBudget';
 
 /*
- * Plurals from the locale's own rules (Appendix P Part 5: pt-BR puts 0 in the
+ * Plurals from the locale's own rules (pt-BR puts 0 in the
  * "one" category, and plurals follow ICU/CLDR categories, never string
- * concatenation on `n === 1`; Bible 05 §5: numbers, currencies and plurals
+ * concatenation on `n === 1`; numbers, currencies and plurals
  * come from Intl with the full locale). A form keyed by CLDR category is
  * chosen with Intl.PluralRules; a category the copy does not carry (es-MX and
  * pt-BR "many" for millions) falls back to "other".

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # ops-heartbeat.sh <job> <ok:true|false> [bytes] [pending]
 #
-# H.4 / Appendix O 1.3: the last step of vault-backup.yml, pulse-backup.yml,
+# The last step of vault-backup.yml, pulse-backup.yml,
 # vault-drift.yml, learning-retention.yml and insights-maintenance.yml. Records the run in Core's audit trail through
 # POST /api/v1/internal/ops/heartbeat, called from INSIDE the Core container
 # (the same route to Core tutor-retention.yml uses), so INTERNAL_API_KEY and

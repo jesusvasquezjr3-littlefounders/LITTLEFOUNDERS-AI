@@ -30,11 +30,11 @@
 .lf-bar-model { display: grid; gap: var(--spacing-3); }
 .lf-bar-model-row { display: grid; grid-template-columns: minmax(88px, 140px) minmax(0, 1fr); align-items: center; gap: var(--spacing-3); font-weight: 800; }
 .lf-bar-model-track { position: relative; min-block-size: var(--target-base); background: var(--sunken); overflow: visible; border-radius: var(--rounded-sm); }
-/* The tape's segments take their series fill from the shared Pizarrón visual (pizarron/pizarron.css, 05 §2). */
+/* The tape's segments take their series fill from the shared Pizarrón visual (pizarron/pizarron.css). */
 .lf-bar-model-track i { display: block; min-block-size: inherit; }
 .lf-bar-model-track b { position: absolute; inset-inline-end: var(--spacing-2); inset-block-start: 50%; transform: translateY(-50%); color: var(--on-mint); }
 @container app (max-width: 420px) { .lf-bar-model-row { grid-template-columns: 1fr; gap: var(--spacing-1); } }
-/* GAP-FIX-R3 (M7 build, 05 §4): the learner adds bars, then fills each slot from its own picker; every control keeps the 48 px target and wraps. */
+/* M7 build: the learner adds bars, then fills each slot from its own picker; every control keeps the 48 px target and wraps. */
 .lf-bar-model-start { margin: 0; color: var(--content-muted, var(--content)); overflow-wrap: anywhere; }
 .lf-bar-model-build { display: grid; gap: var(--spacing-3); min-inline-size: 0; }
 .lf-bar-model-add { display: flex; flex-wrap: wrap; gap: var(--spacing-3); }
@@ -45,7 +45,7 @@
 .lf-schema-slot { display: grid; min-block-size: var(--target-base); gap: var(--spacing-1); padding: var(--spacing-2); border-radius: var(--rounded-md); background: var(--primary-soft); color: var(--primary-strong); min-inline-size: 0; overflow-wrap: anywhere; }
 .lf-schema-slot strong { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.5rem; line-height: 1; }
 .lf-schema-operator { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.5rem; text-align: center; }
-/* M8 (GAP-FIX-R2): the four schemas share one slot row; the compare and group totals read as the wider box. */
+/* M8: the four schemas share one slot row; the compare and group totals read as the wider box. */
 .lf-schema-diagram--group .lf-schema-slot[data-slot="total"], .lf-schema-diagram--compare .lf-schema-slot[data-slot="larger"] { outline: 2px solid var(--primary-strong); outline-offset: -2px; }
 .lf-schema-story { display: flex; flex-wrap: wrap; gap: var(--spacing-2); margin: 0 0 var(--spacing-3); }
 .lf-schema-story > div { display: grid; gap: var(--spacing-1); padding: var(--spacing-2) var(--spacing-3); border-radius: var(--rounded-md); background: var(--sunken); }
@@ -135,7 +135,7 @@
 .lf-worked-example-prediction { display: grid; gap: var(--spacing-2); padding-block-start: var(--spacing-2); border-block-start: 1px solid var(--outline); }
 .lf-worked-example-prediction .lf-button { inline-size: min(100%, 360px); }
 .lf-function-machine { display: grid; grid-template-columns: 1fr auto minmax(56px, 1fr) auto 1fr; align-items: center; gap: var(--spacing-2); min-block-size: 112px; }
-/* OD-28 (V-13): the machine keeps its height on a phone; the trial choice uses the shared control's compact size, so it and Run share one row and Run stays in the first view. */
+/* The machine keeps its height on a phone; the trial choice uses the shared control's compact size, so it and Run share one row and Run stays in the first view. */
 .lf-function-machine-value, .lf-function-machine-core { display: grid; place-items: center; min-block-size: var(--target-base); border-radius: var(--rounded-md); background: var(--sunken); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.25rem; font-weight: 800; }
 .lf-function-machine-core { background: var(--primary-soft); color: var(--primary-strong); }
 .lf-function-machine-arrow { font-size: 1.5rem; font-weight: 800; }
@@ -149,7 +149,7 @@
 .lf-cpa-concrete > span, .lf-cpa-pictorial > span, .lf-cpa-equation > span { color: var(--primary-strong); font-family: 'Plus Jakarta Sans', sans-serif; font-size: 2rem; font-weight: 800; }
 .lf-cpa-dots { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--spacing-2); min-block-size: 84px; padding: var(--spacing-3); border-radius: var(--rounded-lg); background: var(--sunken); }
 .lf-cpa-dots span { inline-size: 28px; block-size: 28px; border-radius: var(--rounded-full); background: var(--sky-strong); }
-/* The second group is the second series: mint with its diagonal pattern channel (05 §2). */
+/* The second group is the second series: mint with its diagonal pattern channel. */
 .lf-cpa-dots--right span { background-color: var(--mint-strong); background-image: repeating-linear-gradient(135deg, transparent 0 5px, var(--surface) 5px 7px); }
 .lf-cpa-pictorial > div { display: grid; place-items: center; min-block-size: 112px; padding: var(--spacing-3); border: 2px dashed var(--outline); border-radius: var(--rounded-lg); }
 .lf-cpa-pictorial .lf-cpa-dots { min-block-size: 0; padding: 0; background: transparent; }
@@ -186,10 +186,10 @@
   .lf-learning { padding: var(--spacing-8); }
   .lf-learning-content { gap: var(--spacing-5); margin-block-start: var(--spacing-6); }
   .lf-learning-board, .lf-learning-control-strip { padding: var(--spacing-6); }
-  /* As many pocket columns as fit at 160 px each: beside the Mentor stage a board is too narrow for three (S03.8, found by looking). */
+  /* As many pocket columns as fit at 160 px each: beside the Mentor stage a board is too narrow for three. */
   .lf-learning-controls { grid-template-columns: repeat(auto-fit, minmax(min(100%, 160px), 1fr)); gap: var(--spacing-4); }
   .lf-learning-control { align-items: stretch; flex-direction: column; border-block-start: 0; padding: var(--spacing-3); border-radius: var(--rounded-md); background: var(--sunken); }
   .lf-learning-actions { justify-self: end; inline-size: min(100%, 360px); }
 }
-/* GAP-FIX-R1: a non-scored step Core did not record keeps the learner on the step with this notice under the board. */
+/* A non-scored step Core did not record keeps the learner on the step with this notice under the board. */
 .lf-learning-view-failed { margin-block-start: var(--spacing-3); }

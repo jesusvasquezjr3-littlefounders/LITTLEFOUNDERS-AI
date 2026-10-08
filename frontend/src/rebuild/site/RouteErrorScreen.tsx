@@ -6,7 +6,7 @@ import { rebuildNamespaceCopy } from '../../i18n/rebuild';
 import { siteCopy } from './blocks';
 
 /*
- * X2, "this screen failed to load", rebuilt (W2 Lane 1). Shown by the route
+ * "This screen failed to load", rebuilt. Shown by the route
  * error boundary when a lazily loaded screen cannot download (routinely: a tab
  * left open across a release, whose chunk names no longer exist) or throws
  * while rendering. It never leaves a blank page (the defect it exists to
@@ -15,7 +15,7 @@ import { siteCopy } from './blocks';
  *
  * Two frames. Standalone (a full-screen layer failed: the lesson player, the
  * Mentor stage): the single-state screen, one hue, its own <main>, skip link,
- * title and language (02 §4.5, rule 15). Embedded (a page inside a shell
+ * title and language. Embedded (a page inside a shell
  * failed): the content only, so the shell keeps the one <main> and its
  * navigation, and the person can still go elsewhere.
  */

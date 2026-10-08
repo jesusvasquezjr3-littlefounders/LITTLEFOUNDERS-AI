@@ -111,8 +111,7 @@ export const ACTION_SECONDS: Record<CharacterAction, number> = {
 export const LOOPING_ACTIONS: ReadonlySet<CharacterAction> = new Set(['celebrate', 'dance', 'think']);
 
 /*
- * REDUCED MOTION HOLDS A POSE; IT DOES NOT PLAY ONE (Frontend Bible 04 §3,
- * 08 §7: "the character switches poses with a short cross-fade instead of
+ * REDUCED MOTION HOLDS A POSE; IT DOES NOT PLAY ONE ("the character switches poses with a short cross-fade instead of
  * animating. The idle loop stops. Every state stays visible").
  *
  * Dropping the action altogether would satisfy "no motion" and fail "every
@@ -176,8 +175,8 @@ const BIPED: Record<CharacterAction, (rig: Rig, p: number, t: number, bearing?: 
   point: (rig, p, _t, bearing) => {
     const reach = ease(Math.min(p * 2.5, 1)) * (1 - ease(Math.max((p - 0.7) * 3.3, 0)));
     /*
-     * Class III `point_at`: a SMALL lean toward a real screen-space target,
-     * on top of the S16 pose rather than replacing it — `bearing` is null
+     * `point_at`: a SMALL lean toward a real screen-space target,
+     * on top of the pose rather than replacing it — `bearing` is null
      * for the coarse, whole-plate gesture (no target resolved), so every
      * caller before this field existed reaches exactly as before.
      * `bearing.x` biases the SAME yaw axis the pose already leans on (arm Y,
@@ -417,9 +416,9 @@ const EMOTION_POSTURE: Record<CharacterEmotion, (rig: Rig, t: number) => void> =
  *     nothing to open.
  *   - Real lip-sync is the Tutor's viseme card, and that card is fitted for
  *     only TWO of the four characters — liruf and dina are dinosaurs whose
- *     mouths defeat a rectangular decal (TUTOR_3D.md §7.1). Wiring it into
+ *     mouths defeat a rectangular decal. Wiring it into
  *     lessons would animate half the cast and leave the other half inert, and
- *     it would carry the card's unresolved lighting debt (§6.1) onto the one
+ *     it would carry the card's unresolved lighting debt onto the one
  *     surface every learner sees.
  *   - The head and neck DO carry speech. A speaker's head moves with their
  *     cadence, and that reads as talking at every size a lesson uses — including
@@ -565,7 +564,7 @@ export function applyCharacterFrame(
   action: CharacterAction,
   frame: ActionFrame,
   /**
-   * Class III `point_at` (2026-09-04): a real screen-position bias for the
+   * `point_at` (2026-09-04): a real screen-position bias for the
    * `point` driver, resolved by the caller (`pointTarget.ts`) and ignored
    * by every other action — see `BIPED.point`'s own comment.
    */

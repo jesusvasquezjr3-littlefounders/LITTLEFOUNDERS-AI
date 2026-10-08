@@ -1,9 +1,8 @@
 /*
- * Shared shells (Frontend Bible 02 §4.4, §4.5, §7 rule 9, §8, §9.8; 03 §3.4;
- * S03.2). Layout changes by the `app` container width, never the viewport:
+ * Shared shells. Layout changes by the `app` container width, never the viewport:
  * phone (<640), tablet (640–839) and desktop (>=840, the side rail). Every
  * edge that can meet a device notch or home indicator pads to the safe area.
- * Separation is a fill step or a soft shadow, never a line (02 §4.4; K28).
+ * Separation is a fill step or a soft shadow, never a line.
  * Tokens and logical properties only.
  */
 
@@ -92,7 +91,7 @@
 }
 
 /*
- * The signed-in shells' <main> owns the content box (02 rule 23, D13): the
+ * The signed-in shells' <main> owns the content box: the
  * padding above and a centred maximum width, so no page carries a layout of
  * its own. The public site's sections run full width and pad themselves.
  */
@@ -110,7 +109,7 @@
 :where(.lf-rebuild .lf-shell-main) > * { inline-size: 100%; }
 
 /*
- * The route entrance (02 rule 14, 04 §2): the new page's content arrives
+ * The route entrance: the new page's content arrives
  * over --dur-transition on the enter easing, only on a real route change
  * (motion.tsx `replayRouteEntrance`, called by useRouteFocus). The fill mode
  * is `backwards`, never `both`, so no transform outlives the entrance and
@@ -128,7 +127,7 @@
 /* The skip link and route focus land on <main>: keep its start clear of a sticky header (site header, console app bar). */
 .lf-rebuild :is(.lf-shell--site, .lf-shell--console) .lf-shell-main { scroll-margin-block-start: calc(var(--target-min) + var(--spacing-6)); }
 
-/* ---- The docked tab bar: thumb zone on phones and tablets (03 §3.4) ---- */
+/* ---- The docked tab bar: thumb zone on phones and tablets ---- */
 .lf-rebuild .lf-tabbar {
   position: sticky;
   inset-block-end: 0;
@@ -164,9 +163,9 @@
 
 /*
  * Below 360 px, when every tab has its own icon, inactive tabs become 48 px icon targets and only the current tab
- * keeps a visible label (02 §7 rule 9). The hidden label stays in the accessibility tree as the link's name. The
- * unchosen Mentor tab (no picture, 02 rule 21) keeps its word. The bar gives the current label the room the
- * insets would take; the 8 px gap between targets stays (03 §3.4).
+ * keeps a visible label. The hidden label stays in the accessibility tree as the link's name. The
+ * unchosen Mentor tab (no picture) keeps its word. The bar gives the current label the room the
+ * insets would take; the 8 px gap between targets stays.
  */
 @container app (max-width: 359px) {
   .lf-rebuild .lf-tabbar:has(> .lf-nav-list--tab[data-icons='all']) { padding-inline: max(var(--spacing-2), env(safe-area-inset-left)) max(var(--spacing-2), env(safe-area-inset-right)); }
@@ -200,7 +199,7 @@
 .lf-rebuild .lf-appbar-menu { margin-inline-start: auto; }
 
 /*
- * Staff pages are dense dashboards and meet the 40-word first view (06 §3.1) only with the band the retired app bar
+ * Staff pages are dense dashboards and meet the 40-word first view only with the band the retired app bar
  * held above them; the families' consoles take that space back for content.
  */
 @container app (max-width: 839px) {
@@ -249,7 +248,7 @@
 }
 .lf-rebuild .lf-site-links, .lf-rebuild .lf-site-actions { display: none; }
 .lf-rebuild .lf-site-menu { margin-inline-start: auto; }
-/* A public page's h1 is the marketing display step, at least 3x the body (03 §3.2); the token steps with the container. */
+/* A public page's h1 is the marketing display step, at least 3x the body; the token steps with the container. */
 .lf-rebuild .lf-shell--site main h1 { font: var(--type-display-2xl); letter-spacing: var(--type-display-2xl-tracking); }
 .lf-rebuild .lf-site-footer {
   display: grid;
@@ -258,7 +257,7 @@
   padding-inline: max(var(--spacing-4), env(safe-area-inset-left)) max(var(--spacing-4), env(safe-area-inset-right));
   background: var(--surface);
 }
-/* Footer links are standalone targets, not links inside a sentence: they meet the 48 px floor (02 §8). */
+/* Footer links are standalone targets, not links inside a sentence: they meet the 48 px floor. */
 .lf-rebuild :is(.lf-site-footer, .lf-auth-footer) a {
   display: inline-flex;
   align-items: center;
@@ -327,7 +326,7 @@
   .lf-rebuild .lf-auth-art { display: block; inline-size: 100%; max-inline-size: calc(var(--spacing-10) * 9); }
 }
 
-/* ---- Full-bleed single-state screen (02 §4.5, rule 15) ---- */
+/* ---- Full-bleed single-state screen ---- */
 .lf-rebuild .lf-single-state--primary { background: var(--primary); color: var(--on-primary); --focus-color: var(--on-primary); }
 .lf-rebuild .lf-single-state--accent { background: var(--accent); color: var(--on-accent); --focus-color: var(--on-accent); }
 .lf-rebuild .lf-single-state--success { background: var(--success); color: var(--on-success); --focus-color: var(--on-success); }
@@ -372,7 +371,7 @@
 }
 .lf-rebuild .lf-single-state-actions > * { flex: 1 1 auto; }
 
-/* ---- Dashboard page: 7:5 from an 840 px container of its own (03 §3.3) ---- */
+/* ---- Dashboard page: 7:5 from an 840 px container of its own ---- */
 .lf-rebuild .lf-dashboard { container: lf-dashboard / inline-size; min-inline-size: 0; }
 .lf-rebuild .lf-dashboard-grid { display: grid; gap: var(--spacing-6); }
 .lf-rebuild .lf-dashboard-primary, .lf-rebuild .lf-dashboard-secondary { display: grid; gap: var(--spacing-5); align-content: start; min-inline-size: 0; }
@@ -380,7 +379,7 @@
   .lf-rebuild .lf-dashboard-grid--split { grid-template-columns: minmax(0, 7fr) minmax(0, 5fr); align-items: start; }
 }
 
-/* ---- Data table: stacked cards below an 840 px container (02 §9.8) ---- */
+/* ---- Data table: stacked cards below an 840 px container ---- */
 .lf-rebuild .lf-table-wrap { container: lf-table / inline-size; min-inline-size: 0; }
 .lf-rebuild .lf-table {
   inline-size: 100%;
@@ -436,7 +435,7 @@
   .lf-rebuild .lf-nav-link[aria-current='page'] { border: 2px solid Highlight; }
 }
 
-/* User-generated tokens wrap anywhere; kept last so no shell rule overrides it (02 §7 rule 8). */
+/* User-generated tokens wrap anywhere; kept last so no shell rule overrides it. */
 .lf-rebuild .lf-shell .ugc { overflow-wrap: anywhere; hyphens: none; min-inline-size: 0; }
 
 .lf-rebuild .lf-brand-mark { gap: var(--spacing-2); min-inline-size: var(--target-min); min-block-size: var(--target-min); justify-content: center; }

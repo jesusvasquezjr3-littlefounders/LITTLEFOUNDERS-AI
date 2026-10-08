@@ -7,7 +7,7 @@ import { VISEMES } from './mouthAtlas';
  * this turns that element's live loudness into a viseme index for the mouth
  * card. Nothing here knows about DeepSeek, Qwen or a transcript, which is the
  * point: the stage stays a rendering concern and the conversational layer
- * (/ORACLE.md) owns the words.
+ * owns the words.
  *
  * WHY AMPLITUDE AND NOT REAL VISEMES: real viseme timing needs a phoneme track,
  * and Qwen3-TTS does not return one. Amplitude is what is actually available on
@@ -15,7 +15,7 @@ import { VISEMES } from './mouthAtlas';
  * atlas rather than a rig — upgrading later means indexing the SAME eight
  * frames from a phoneme track instead of a loudness value. No model, no card
  * and no component changes when that day comes. That upgrade path is the whole
- * reason the mouth was built as an atlas (/TUTOR_3D.md §7.1).
+ * reason the mouth was built as an atlas.
  */
 
 /** Index into VISEMES. Named so call sites read as intent, not as magic numbers. */

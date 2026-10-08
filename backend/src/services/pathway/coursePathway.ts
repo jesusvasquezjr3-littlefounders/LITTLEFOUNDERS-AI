@@ -27,7 +27,7 @@ import {
 } from './pathwayPolicy.js';
 
 /*
- * B.6 / S05.3b — the pathway engine applied to one learner's course tree.
+ * The pathway engine applied to one learner's course tree.
  *
  * pathwayPolicy.ts owns the rules; this module is the adapter between those
  * rules and the CourseTree shape every learner route already serves. It takes
@@ -36,11 +36,11 @@ import {
  * with the pathway's:
  *
  *   - lesson state comes from the frontier (F1–F8), not from one flat order;
- *   - chapter state and access come from age eligibility (P1–P5), so a closed
+ *   - chapter state and access come from age eligibility, so a closed
  *     chapter is locked for every lesson in it whatever the learner has shown;
- *   - course progress is the pathway's (B1–B3), never another stage's lessons;
- *   - placement is required per pathway stage (P6), and the badge decision is
- *     the staged credential (B4–B5).
+ *   - course progress is the pathway's, never another stage's lessons;
+ *   - placement is required per pathway stage, and the badge decision is
+ *     the staged credential.
  *
  * Pure and deterministic: same tree and inputs, same output. Every read lives
  * in pathwayData.ts, so the rules stay testable on plain fixtures. The tree
@@ -55,22 +55,22 @@ export interface PathwayView {
   /** The stage whose chapters this learner's completion is measured on; null when the course is unavailable to them. */
   pathwayStage: PathwayStage | null;
   basis: PathwayBasis;
-  /** Every item the learner may start now. The first pathway item is the recommendation (F4). */
+  /** Every item the learner may start now. The first pathway item is the recommendation. */
   frontier: PathwayFrontierItem[];
-  /** Playable items in optional chapters: never required, never counted (P5, B3). */
+  /** Playable items in optional chapters: never required, never counted. */
   optional: PathwayFrontierItem[];
-  /** Topics whose skills are already shown (course or Mentor) but that are not the next step of their saga (F8). */
+  /** Topics whose skills are already shown (course or Mentor) but that are not the next step of their saga. */
   known: PathwayFrontierItem[];
   /**
-   * GAP-FIX-R5 (B.24, Block B autonomy "optional depth/enrichment tracks"):
+   * Optional depth/enrichment tracks:
    * enrichment lessons open now, served only where the learner's register
    * offers enrichment (13-17, adults). Never required, never counted.
    */
   enrichment: PathwayFrontierItem[];
-  /** GAP-FIX-R5: the levers the learner's register offers (REGISTERS[register].autonomy). */
+  /** The levers the learner's register offers (REGISTERS[register].autonomy). */
   autonomy: AutonomyOffer;
   blocked: PathwayBlockedItem[];
-  /** Unsatisfied prerequisites taught only outside the pathway: suggested, never required (F2, F5). */
+  /** Unsatisfied prerequisites taught only outside the pathway: suggested, never required. */
   advisorySkills: string[];
   progress: { passed: number; total: number; pct: number; skillsTaught: number; skillsShown: number; complete: boolean };
   badge: { earnedStages: PathwayStage[]; eligible: boolean; stage: PathwayStage | null; contentGap: boolean };
@@ -78,23 +78,23 @@ export interface PathwayView {
   /** The skills the pathway teaches, in pathway order, with how each is currently shown. */
   skills: Array<{ key: string; shown: KcSatisfaction }>;
   /**
-   * OD-25: chapters one stage above the learner's own that mastery can open
+   * Chapters one stage above the learner's own that mastery can open
    * early. `eligible` = every prerequisite skill is shown and the learner may
    * confirm; `opened` = confirmed, now an optional chapter.
    */
   earlyAccess: PathwayEarlyAccess[];
   /**
-   * OD-25: topics whose every taught skill is shown, at least one with the
+   * Topics whose every taught skill is shown, at least one with the
    * Mentor, that the learner may accept to count as done ("You have shown
    * mastery of X; unlock the next level?"). Never counted before they accept.
    */
   masteryOffers: Array<{ topicId: string; chapterId: string; skills: string[] }>;
-  /** OD-25: topics the learner accepted as done on Mentor mastery (read as credits, never as played or XP). */
+  /** Topics the learner accepted as done on Mentor mastery (read as credits, never as played or XP). */
   masteryCredited: string[];
   /**
    * Where earlier evidence (Mentor mastery, skills shown in another stage)
    * suggests the stage-entry placement should ask its first question: a prior,
-   * never a verdict (P6). Null when there is no graph evidence to offer.
+   * never a verdict. Null when there is no graph evidence to offer.
    */
   graphPriorFraction: number | null;
 }
@@ -145,15 +145,15 @@ export interface CoursePathwayInputs {
   earnedStages: ReadonlySet<PathwayStage>;
   /** Stages with an entry placement in this course (course_pathway_placements). */
   placedStages: ReadonlySet<PathwayStage>;
-  /** A B.1 course_placements row exists for this course. */
+  /** A course_placements row exists for this course. */
   hasLegacyPlacement: boolean;
-  /** OD-25: chapters this learner confirmed opening early (course_chapter_early_access). */
+  /** Chapters this learner confirmed opening early (course_chapter_early_access). */
   earlyOpenedChapterIds?: ReadonlySet<string>;
-  /** OD-25: topics this learner accepted as done on Mentor mastery (course_topic_mastery_credits). Their lessons arrive as credits. */
+  /** Topics this learner accepted as done on Mentor mastery (course_topic_mastery_credits). Their lessons arrive as credits. */
   masteryCreditedTopicIds?: ReadonlySet<string>;
-  /** OD-25 (W3L.1): topics whose Mentor-mastery offer this learner declined (course_topic_mastery_declines). Never offered again. */
+  /** Topics whose Mentor-mastery offer this learner declined (course_topic_mastery_declines). Never offered again. */
   masteryDeclinedTopicIds?: ReadonlySet<string>;
-  /** OD-24 legacy KC credits (ACTIVE KC keys), course evidence under E2. */
+  /** Legacy KC credits (ACTIVE KC keys), course evidence. */
   legacyCreditedKcs?: ReadonlySet<string>;
 }
 
@@ -162,8 +162,8 @@ const byPosition = <T extends { position: number }>(rows: readonly T[]): T[] => 
 /**
  * The stage a course's legacy chapters formed at cutover: the one stage every
  * legacy-policy chapter shares, or null when they disagree or none exist. A
- * B.1 course_placements row is the entry placement of exactly this stage (P6),
- * and a live full-course badge is the credential of exactly this stage (B5).
+ * course_placements row is the entry placement of exactly this stage,
+ * and a live full-course badge is the credential of exactly this stage.
  */
 export function legacyCourseStage(policies: ReadonlyArray<ChapterPolicy | null>): PathwayStage | null {
   const stages = new Set(policies.filter((p): p is ChapterPolicy => p !== null && p.source === 'legacy-age-tier').map((p) => p.stage));
@@ -186,7 +186,7 @@ function chaptersFromTree(tree: CourseTree, inputs: CoursePathwayInputs): {
     return {
       id: adventure.id,
       position: adventure.position,
-      // A chapter with no eligibility row is CLOSED (null policy), never guessed (P1).
+      // A chapter with no eligibility row is CLOSED (null policy), never guessed.
       policy: row ? chapterPolicy(row) : null,
       sagas: adventure.sagas.map((saga) => ({
         id: saga.id,
@@ -196,7 +196,7 @@ function chaptersFromTree(tree: CourseTree, inputs: CoursePathwayInputs): {
           topicIdByPath.set(path, topic.id);
           const kcs = inputs.topicKcs.get(topic.id);
           if (kcs) kcsByPath.set(path, kcs);
-          // OD-25: a topic the learner accepted as done on Mentor mastery reads as credited, like a placement credit.
+          // A topic the learner accepted as done on Mentor mastery reads as credited, like a placement credit.
           const masteryCredited = inputs.masteryCreditedTopicIds?.has(topic.id) ?? false;
           for (const lesson of topic.lessons) {
             if (lesson.optionalEnrichment) continue;
@@ -208,7 +208,7 @@ function chaptersFromTree(tree: CourseTree, inputs: CoursePathwayInputs): {
             path,
             position: topic.position,
             kind: (['teaching', 'review_spaced', 'review_interleaved', 'review_quest'] as const).find((k) => k === topic.kind) ?? 'teaching',
-            // GAP-FIX-R5: an enrichment lesson is never one of the lessons a topic requires (progress, badges, OD-25).
+            // An enrichment lesson is never one of the lessons a topic requires (progress, badges, early-access offers).
             lessonIds: byPosition(topic.lessons).filter((l) => !l.optionalEnrichment).map((l) => l.id),
             hardPrerequisites: topic.prerequisites.filter((p) => p.strength === 'hard').map((p) => p.path),
             reviewOf: topic.reviewOf,
@@ -229,11 +229,11 @@ function chaptersFromTree(tree: CourseTree, inputs: CoursePathwayInputs): {
 }
 
 /**
- * F8 (S05.3b) — a skill already shown is never locked. A topic whose every
+ * a skill already shown is never locked. A topic whose every
  * taught KC is satisfied (a complete topic elsewhere, in any open chapter, or
  * the Mentor's posterior at its own 0.80 bar) opens its first unpassed lesson
  * even when it is not yet its saga's next step. It is never recommended ahead
- * of the frontier and never completed by that evidence (B2): the learner can
+ * of the frontier and never completed by that evidence: the learner can
  * play it, and completion still needs graded lessons or placement credit.
  */
 function knownTopics(
@@ -261,7 +261,7 @@ function knownTopics(
   return out;
 }
 
-/** Optional chapters get their own frontier with the same rules, computed as if they were the pathway; never required (P5). */
+/** Optional chapters get their own frontier with the same rules, computed as if they were the pathway; never required. */
 function optionalFrontier(
   chapters: readonly PathwayChapter[],
   access: ReadonlyMap<string, ChapterAccess>,
@@ -280,7 +280,7 @@ function optionalFrontier(
 }
 
 /**
- * P6 prior for the stage-entry placement: the position, in pathway placement
+ * Prior for the stage-entry placement: the position, in pathway placement
  * order, of the first topic whose taught skills are not all shown yet — only
  * when some topic's skills ARE all shown, so an unmapped or fresh graph never
  * drags the first question down.
@@ -301,7 +301,7 @@ function graphPrior(chapters: readonly PathwayChapter[], access: ReadonlyMap<str
 }
 
 /**
- * OD-25 — which closed chapters mastery can open one stage early, from the
+ * Which closed chapters mastery can open one stage early, from the
  * graph as the age safeguard alone leaves it (a closed chapter's own topics
  * never count toward opening it). A confirmed chapter plays as optional.
  */
@@ -330,11 +330,11 @@ function earlyChapters(
 }
 
 /**
- * OD-25 — topics the learner may accept as done on Mentor mastery: in an open
+ * Topics the learner may accept as done on Mentor mastery: in an open
  * chapter, not complete, every taught skill shown and at least one shown with
  * the Mentor (graded course evidence alone already completes topics its own
  * way). Teaching topics only; a review keeps its graded practice. A topic the
- * learner declined is never offered again (the first answer is final, W3L.1).
+ * learner declined is never offered again (the first answer is final).
  */
 function masteryOffers(
   chapters: readonly PathwayChapter[],
@@ -365,7 +365,7 @@ function masteryOffers(
 const STAGE_REGISTER: Readonly<Record<PathwayStage, LearnerRegister>> = { child: 'young', tween: 'transition', teen: 'teen', adult: 'adult' };
 
 /**
- * GAP-FIX-R5: the enrichment lessons open now. A topic's enrichment opens once
+ * The enrichment lessons open now. A topic's enrichment opens once
  * the learner has reached it (it is on the frontier, known or complete) in a
  * chapter they may play; a passed enrichment lesson is not offered again.
  */
@@ -395,7 +395,7 @@ function enrichmentItems(tree: CourseTree, access: ReadonlyMap<string, ChapterAc
 export function applyCoursePathway(tree: CourseTree, inputs: CoursePathwayInputs): PathwayCourseTree {
   const { chapters, kcsByPath, topicIdByPath, evidence } = chaptersFromTree(tree, inputs);
   const baseResolution = resolvePathway(inputs.age, chapters.map((c) => ({ id: c.id, policy: c.policy })));
-  // OD-25: a chapter the learner confirmed opening early plays as optional; every other rule reads this access.
+  // A chapter the learner confirmed opening early plays as optional; every other rule reads this access.
   const earlyAccess = earlyChapters(chapters, baseResolution.access, kcsByPath, inputs, evidence);
   const access = new Map(baseResolution.access);
   for (const early of earlyAccess) if (early.state === 'opened') access.set(early.chapterId, 'optional');
@@ -410,7 +410,7 @@ export function applyCoursePathway(tree: CourseTree, inputs: CoursePathwayInputs
   const legacyStage = legacyCourseStage(chapters.map((c) => c.policy));
   const stage = resolution.pathwayStage;
   const placementRequired = stage !== null && !inputs.placedStages.has(stage) && !(inputs.hasLegacyPlacement && legacyStage === stage);
-  // GAP-FIX-R5 (B.24): the register decides the levers; enrichment only where it offers depth tracks.
+  // The register decides the levers; enrichment only where it offers depth tracks.
   const autonomy = autonomyOffer(STAGE_REGISTER[resolution.learnerStage]);
   const reached = new Set([...frontier.items, ...optional, ...known].map((i) => i.topicId));
   const enrichment = autonomy.enrichment ? enrichmentItems(tree, access, reached, evidence, chapters) : [];
@@ -511,7 +511,7 @@ export function lessonChapterAccess(tree: { adventures: ReadonlyArray<AdventureN
   return null;
 }
 
-/** The badge row a completed pathway earns (Rule B4). Null when nothing new is earned. */
+/** The badge row a completed pathway earns. Null when nothing new is earned. */
 export function pathwayBadgeAward(view: PathwayView): { award_key: PathwayStage; pathway_stage: PathwayStage; basis: 'own_stage' | 'younger_bridge' | 'older_early' } | null {
   if (!view.badge.eligible || view.badge.stage === null) return null;
   const basis = view.basis === 'own-stage' ? 'own_stage' : view.basis === 'younger-bridge' ? 'younger_bridge' : view.basis === 'older-early' ? 'older_early' : null;

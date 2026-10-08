@@ -6,8 +6,8 @@ import type { MentorData, MentorNotebook } from './mentorData';
 import type { MasteryEvidence } from '../MentorDecisions';
 
 /*
- * Fixtures for the Mentor screen's secondary views (the development preview
- * and the unit tests): a learning map with every state, a notebook with a
+ * Fixtures for the Mentor screen's secondary views (the development preview):
+ * a learning map with every state, a notebook with a
  * plan, kept boards and a recap, past talks and one saved talk to replay. The
  * words are what Core and the model would send in that language.
  */
@@ -69,7 +69,7 @@ export function transcriptFixture(locale: Locale, character: SessionSummary['cha
   };
 }
 
-/** GAP-FIX-R2: the evidence behind the Mentor's decisions, as Core projects it (numbers and closed labels). */
+/** The evidence behind the Mentor's decisions, as Core projects it (numbers and closed labels). */
 export function masteryFixture(locale: Locale): MasteryEvidence {
   return { items: [
     { kcKey: 'money.make-change', title: w(locale, 'Give change by counting up', 'Dar cambio contando hacia arriba', 'Dar troco contando para cima'),

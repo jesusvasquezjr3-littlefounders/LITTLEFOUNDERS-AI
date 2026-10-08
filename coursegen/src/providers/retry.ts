@@ -1,7 +1,7 @@
 // Transport-retry: jittered exponential backoff 0.5s→8s, max 4 attempts,
 // ONLY for retryable errors (429/5xx/network/timeout). Non-retryable errors
 // (4xx other than 429) throw immediately. SEPARATE counter from the
-// schema-corrective retries in pipeline/write.ts / plan.ts (COURSE_ENGINE.md §4).
+// schema-corrective retries in pipeline/write.ts / plan.ts.
 
 import { isRateLimitError, isRetryableError, retryAfterMsOf } from './errors.js';
 

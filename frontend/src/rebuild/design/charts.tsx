@@ -4,23 +4,22 @@ import { DataTable, type TableColumn } from './shells';
 import './charts.css';
 
 /*
- * The shared chart primitives of the rebuilt frontend (W2T.3): a trend over
+ * The shared chart primitives of the rebuilt frontend: a trend over
  * ordered points (line or columns), a bar chart of categories, and a
- * sparkline. They follow Frontend Bible 05 §2, §5 and §6, which the staff
- * console's figures share with the lesson boards:
+ * sparkline. The staff console's figures share these rules with the lesson boards:
  *
  *   - series hues are `sky`, `mint` and `berry` (strong tones) in that fixed
  *     order, and from the second series on a second channel (a dashed or
  *     dotted line, a patterned column) so colour never carries a series alone;
  *     a fourth or later series takes the neutral overflow marks. `primary` is
- *     never a series: it marks the point being read (selection, 02 §4.2);
+ *     never a series: it marks the point being read (selection);
  *   - gridlines are decorative (`outline`), the base line is the 2 px `edge`;
  *   - every word is HTML beside the SVG (axis ends, legend, readout), never
  *     SVG text, so labels wrap in translation and never overlap or rotate;
  *   - the SVG is `aria-hidden`: the figure is named by its label, described by
  *     its summary (chart type, axes, key takeaway, written by the caller), and
  *     read point by point from the keyboard (arrow keys, Home, End) through a
- *     polite readout, or all at once through **Show as table** (05 §6);
+ *     polite readout, or all at once through **Show as table**;
  *   - no motion of their own, so reduced motion needs nothing.
  *
  * Copy is the caller's: these components hold no strings of their own.
@@ -42,7 +41,7 @@ export interface VizLabels {
 
 const WIDTH = 600;
 const HEIGHT = 200;
-/** Series 2 and 3 carry a second channel besides the hue (05 §2 `series-pattern`). */
+/** Series 2 and 3 carry a second channel besides the hue (`series-pattern`). */
 const DASH = ['', '10 6', '2 6'] as const;
 
 /** A round upper bound for the scale, so the top gridline reads as a number people use. */
@@ -209,7 +208,7 @@ export interface VizBar { id: string; label: string; value: number; valueText: s
 
 /**
  * Categories compared by length: a label, a bar on a shared baseline, and the
- * value written out. Every value is text, so the list is its own table (05 §6);
+ * value written out. Every value is text, so the list is its own table;
  * the bar only repeats it. `max` fixes the scale (a share of a known total).
  */
 export function BarChart({ label, rows, max }: { label: string; rows: readonly VizBar[]; max?: number }) {

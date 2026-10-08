@@ -8,7 +8,7 @@ const timeValueRubric = { tolerance: { absolute: '0.05' }, review: { absolute: '
 const rate = (kind: 'effective-rate' | 'card-payoff' | 'cash-flow') => ({ type: kind });
 
 export const FIN1_FIXTURES: readonly HorizonteFixture[] = [
-  /* ── F1.10 compound interest ── */
+  /* ── compound interest ── */
   {
     id: 'compound-thirty',
     title: text('Grow a deposit', 'Haz crecer un depósito', 'Faça um depósito crescer'),
@@ -37,7 +37,7 @@ export const FIN1_FIXTURES: readonly HorizonteFixture[] = [
     },
   },
 
-  /* ── F2.11 time value of money and annuities ── */
+  /* ── time value of money and annuities ── */
   {
     id: 'receive-three',
     title: text('Order three prizes', 'Ordena tres premios', 'Ordene três prêmios'),
@@ -123,7 +123,7 @@ export const FIN1_FIXTURES: readonly HorizonteFixture[] = [
     },
   },
 
-  /* ── F2.12 effective rate, credit card, NPV and IRR ── */
+  /* ── effective rate, credit card, NPV and IRR ── */
   {
     id: 'effective-monthly',
     title: text('The rate you really pay', 'La tasa que de verdad pagas', 'A taxa que você realmente paga'),

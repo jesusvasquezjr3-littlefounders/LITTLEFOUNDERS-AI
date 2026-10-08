@@ -20,12 +20,12 @@ import { useMicrophone, type Microphone } from '../session/useMicrophone';
 import { useTutorSocket, type TutorSocket } from '../session/useTutorSocket';
 
 /*
- * The Mentor screen's session, as one controller (Frontend Bible 08; Block C).
+ * The Mentor screen's session, as one controller.
  *
  * It keeps every server contract the legacy screen honoured, rewritten for the
- * rebuilt screen rather than imported from it (02 rule 23):
+ * rebuilt screen rather than imported from it:
  *
- *   - bootstrap: preferences, openings, the C.1 age calibration and the B.23
+ *   - bootstrap: preferences, openings, the age calibration and the
  *     register are read before anything is offered; a failed preferences or
  *     openings read is "unavailable", never an invented default character;
  *   - the daily session limit (SESSION_LIMIT) is remembered for the learner's
@@ -35,22 +35,22 @@ import { useTutorSocket, type TutorSocket } from '../session/useTutorSocket';
  *     and a dropped connection is resumed quietly once;
  *   - a guided review accepted in a lesson (`?review=`) starts its weak-skill
  *     session once, when the day allows one;
- *   - the microphone exists only where Core's C.2 policy allows it (the offers
+ *   - the microphone exists only where Core's policy allows it (the offers
  *     before a session, the session's own answer after, a guardian's live
  *     revocation above both); hands-free listening opens only between turns and
  *     never while the learner is typing;
  *   - the wait for a reply has a ceiling, the learner can cut the Mentor off,
  *     and every server refusal is carried through as a code the screen words;
- *   - how the session ended (C.16) is captured before the socket is released,
+ *   - how the session ended is captured before the socket is released,
  *     so the closing state shows the server's own script.
  *
- *   - W2M.3: the learner's own island (T1a: companion, island, light,
+ *   - the learner's own island (companion, island, light,
  *     nickname, how the Mentor explains) is saved to Core before it is shown;
  *     a board is kept in the notebook by naming its turn, never its content;
  *     the learning map, the notebook and past conversations are read through
  *     one small interface (`mentorData.ts`).
  *
- *   - W2M.4 (T1c, T1d, OD-28): a live activity is graded by Core and its
+ *   - a live activity is graded by Core and its
  *     result reported to Oracle; the learner can change their last message,
  *     start over, and pressing end asks the recap question first (a second
  *     press leaves at once).
@@ -70,7 +70,7 @@ export interface MentorClosing {
 }
 
 export interface MentorMic {
-  /** Whether the microphone control exists on this screen right now (C.2). */
+  /** Whether the microphone control exists on this screen right now. */
   present: boolean;
   /** Why it does not, when Core said so. */
   blockedBy: MicBlockedReason | null;
@@ -84,7 +84,7 @@ export interface MentorSessionOptions {
   userId: string | null;
   /** A guided review accepted in a lesson (`/tutor?review=<skill>`), already validated by the route. */
   reviewSkill: string | null;
-  /** OD-43: the lesson a guided review was opened from, or null. */
+  /** The lesson a guided review was opened from, or null. */
   reviewLessonId?: string | null;
 }
 
@@ -93,7 +93,7 @@ const SESSION_LIMIT_DAY = 'lf.tutor.sessionLimitDay.';
 const REPLY_CEILING_MS = 25_000;
 const END_GRACE_MS = 4_000;
 /**
- * OD-28 (M-04): the recap question waits this long for an answer, then the talk
+ * The recap question waits this long for an answer, then the talk
  * closes as the learner asked. Mirrors Oracle's `RECAP_ANSWER_WAIT_MS` (`ws/server.ts`,
  * enforced on the heartbeat), so the screen and the server agree on the same wait.
  * A draft in the field or a reply on its way holds it.
@@ -154,7 +154,7 @@ export function useMentorSession({ getToken, userId, reviewSkill, reviewLessonId
   const [hasDraft, setHasDraft] = useState(false);
   const [ending, setEnding] = useState(false);
   const [pendingText, setPendingText] = useState<string | null>(null);
-  /** OD-28 (M-04): the turn on screen when the learner pressed end; the recap question is the next turn. */
+  /** The turn on screen when the learner pressed end; the recap question is the next turn. */
   const [endPressSeq, setEndPressSeq] = useState<number | null>(null);
   const userRef = useRef(userId);
   userRef.current = userId;
@@ -175,7 +175,7 @@ export function useMentorSession({ getToken, userId, reviewSkill, reviewLessonId
         fetchLearnerRegister((path, init) => api(path, { token: auth, method: init?.method, body: init?.body })),
       ]);
       if (cancelled) return;
-      // The youngest register is the most protective reading when Core's is unknown (B.23).
+      // The youngest register is the most protective reading when Core's is unknown.
       setAgeBand(register.status === 'ready' ? register.value.copy_band : '6-9');
       if (!prefs.data || !offered.data) { setPhase('unavailable'); return; }
       const { catalog: offeredCatalog, personalized: chosen, ...kept } = prefs.data;
@@ -258,7 +258,7 @@ export function useMentorSession({ getToken, userId, reviewSkill, reviewLessonId
   const start = useCallback((input: Omit<StartSessionInput, 'wantsVoice'>, firstText: string | null = null) =>
     begin({ ...input, wantsVoice: voiceBlocked === null }, firstText), [begin, voiceBlocked]);
 
-  /* B.26 / OD-1: the guided review the learner accepted in a lesson starts once. */
+  /* The guided review the learner accepted in a lesson starts once. */
   const reviewStarted = useRef(false);
   useEffect(() => {
     if (!reviewSkill || reviewStarted.current || session || phase !== 'openings' || !offers?.canStart || startError === 'SESSION_LIMIT') return;
@@ -339,7 +339,7 @@ export function useMentorSession({ getToken, userId, reviewSkill, reviewLessonId
   }, [phase, closing, token, getToken]);
 
   /*
-   * The learner ends it (OD-28, M-04): the first press asks the Mentor's recap
+   * The learner ends it: the first press asks the Mentor's recap
    * question, which keeps the session open for one answer; a second press
    * leaves at once with the completed close. If the server answers neither,
    * the screen closes anyway.
@@ -372,7 +372,7 @@ export function useMentorSession({ getToken, userId, reviewSkill, reviewLessonId
     return () => window.clearTimeout(timer);
   }, [ending, phase, socket.history]);
 
-  /* T1c "start over": the session closes at once (no recap question) and the openings come back, re-read for today. */
+  /* "start over": the session closes at once (no recap question) and the openings come back, re-read for today. */
   const restart = useCallback(() => {
     if (phase !== 'conversing') return;
     socket.endSession();
@@ -421,7 +421,7 @@ export function useMentorSession({ getToken, userId, reviewSkill, reviewLessonId
     policy: turn?.policy ?? null, turnSeq, microphone, onTurn: handleClip,
   });
 
-  /* C.2: where the microphone may exist, from Core's answer for this learner. */
+  /* Where the microphone may exist, from Core's answer for this learner. */
   const blockedBy: MicBlockedReason | null = phase === 'conversing' && session
     ? (socket.micRevoked ? 'CONSENT_REQUIRED' : narrowBlockedReason(session.microphoneBlockedBy) ?? (socket.microphone ? null : 'VOICE_UNAVAILABLE'))
     : offers ? micBlockedForOffers(offers) : 'VOICE_UNAVAILABLE';
@@ -449,7 +449,7 @@ export function useMentorSession({ getToken, userId, reviewSkill, reviewLessonId
     void microphone.start();
   }, [phase, offers, startError, begin, microphone, handleClip, speaking, turnSeq, socket]);
 
-  /* T1c: the learner rephrases their last message; the conversation drops the pair it replaces. */
+  /* The learner rephrases their last message; the conversation drops the pair it replaces. */
   const editLast = useCallback((text: string) => {
     const trimmed = text.trim();
     if (!trimmed || phase !== 'conversing') return;
@@ -458,7 +458,7 @@ export function useMentorSession({ getToken, userId, reviewSkill, reviewLessonId
     setAwaitingReply(true);
   }, [phase, speaking, turnSeq, socket]);
 
-  /* T1c: a live activity is graded by Core (the key never reaches the browser). A failed check is null, never a wrong answer. */
+  /* A live activity is graded by Core (the key never reaches the browser). A failed check is null, never a wrong answer. */
   const gradeActivity = useCallback(async (segmentId: string, answer: unknown, attempt: number): Promise<ActivityGrade | null> => {
     const auth = token ?? await getToken();
     if (!auth) return null;
@@ -491,7 +491,7 @@ export function useMentorSession({ getToken, userId, reviewSkill, reviewLessonId
   }, [phase, offers, startError, start, speaking, turnSeq, socket]);
 
   /*
-   * T1a / 08 §8: every choice is saved to Core first and only then shown (a
+   * Every choice is saved to Core first and only then shown (a
    * refused save keeps what was there and the sheet says so). The chosen
    * character fills every Mentor slot; a companion is never the Mentor itself.
    */
@@ -507,7 +507,7 @@ export function useMentorSession({ getToken, userId, reviewSkill, reviewLessonId
   }, [token, getToken, preferences?.companion]);
   const chooseCharacter = useCallback((character: MentorCharacter) => updatePreferences({ character }), [updatePreferences]);
 
-  /* T1g: keep the current conversation's board in the notebook. One quiet retry: the request is idempotent. */
+  /* Keep the current conversation's board in the notebook. One quiet retry: the request is idempotent. */
   const keepBoard = useCallback(async (turnSeq: number): Promise<boolean> => {
     const auth = token ?? await getToken();
     const sessionId = sessionRef.current?.sessionId;

@@ -12,7 +12,7 @@ import { SegmentPrompt } from './segmentKit';
 
 type NumberLineSegment = Extract<LessonClientSegment, { type: 'math.number-line.whole.v2' }>;
 type Verdict = 'met' | 'review';
-/** M2 answers: one point, counting on (the hops), or every labelled item placed (GAP-FIX-R5). */
+/** M2 answers: one point, counting on (the hops), or every labelled item placed. */
 export type NumberLineAnswer = { value: string; hops?: number[] } | { placements: Record<string, string> };
 type Labels = { back: string; practice: string; progress: string; board: string; line: string; place: string;
   reset: string; hint: string; check: string; checking: string; again: string; continue: string; left: string; right: string; met: string; review: string; unavailable: string; marker: string;
@@ -33,7 +33,7 @@ const copy: Record<Locale, Labels> = {
 };
 
 /**
- * The M2 pilot. Appendix P scopes the whole-number line to ages 6-9 (V2_AGE_SCOPE), so there is no 10-12 pilot:
+ * The M2 pilot. The whole-number line is scoped to ages 6-9 (V2_AGE_SCOPE), so there is no 10-12 pilot:
  * a 10-12 document of this kind is refused as invalid, exactly as Core refuses it.
  */
 export function numberLinePilotDocument(locale: Locale, ageBand: '6-9' = '6-9'): unknown {
@@ -56,9 +56,9 @@ export function NumberLineBoard({ document, segment, onBack, onGrade, sequence }
 }) {
   const t = copy[document.locale];
   const { minimum, maximum, step, initial } = segment.payload;
-  // M2 / $2 (GAP-FIX-R2): with hop sizes, the learner counts ON from the current square; the point is where the hops land.
+  // M2 / $2: with hop sizes, the learner counts ON from the current square; the point is where the hops land.
   const hopSizes = segment.payload.hops;
-  // M2 (GAP-FIX-R5): with items, each labelled item is placed in turn; Core grades their order, then each one's distance.
+  // M2: with items, each labelled item is placed in turn; Core grades their order, then each one's distance.
   const items = segment.payload.items;
   const [hops, setHops] = useState<number[]>([]);
   const [placed, setValue] = useState(initial);
@@ -138,7 +138,7 @@ export function NumberLineBoard({ document, segment, onBack, onGrade, sequence }
           </div>
         </div>
         <footer className="lf-learning-foot">
-          {/* GAP-FIX-R6 (B.20): the author's feedback, else the board's line naming where the point landed. */}
+          {/* The author's feedback, else the board's line naming where the point landed. */}
           <LessonFeedback verdict={verdict}>{verdict === 'met' && segment.feedback?.met ? segment.feedback.met : verdict === 'review' && segment.feedback?.not_yet ? segment.feedback.not_yet : verdict ? `${t[verdict]} ${readout}.` : null}</LessonFeedback>
           <div className="lf-learning-actions"><Button variant="accent" disabled={pending || !ready} onClick={check}>{pending ? t.checking : verdict === 'met' ? sequence ? t.continue : t.again : t.check}</Button></div>
         </footer>

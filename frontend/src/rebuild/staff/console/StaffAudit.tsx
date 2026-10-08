@@ -7,12 +7,12 @@ import { CopyId, Facts, LoadFailure, Loading, Metrics, Pager, shortId, StaffPage
 import { fill, useConsoleCopy } from './staffConsoleCopy';
 
 /*
- * S9 Audit log (manage_support). An append-only record: nothing here writes.
+ * Audit log (manage_support). An append-only record: nothing here writes.
  * Action, actor, subject and dates filter on the server (Core's
  * AuditQuerySchema: exact matches, inclusive days), so a filter covers the
  * whole log and not just the visible page; the search box only narrows the
- * page already loaded, and says so. G.3's live-activity review verdicts
- * (`admin.tutor_activity.review`) and A.5's justification and revocation rows
+ * page already loaded, and says so. Live-activity review verdicts
+ * (`admin.tutor_activity.review`) and justification and revocation rows
  * appear here like every other privileged action.
  */
 

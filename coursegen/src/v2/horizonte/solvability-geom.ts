@@ -9,7 +9,7 @@ import {
 } from './geom2.js';
 
 /*
- * F0.4 solvability checkers for the geom2 and balance packs' public-payload types. Each one reads the PUBLIC payload alone for everything the
+ * Solvability checkers for the geom2 and balance packs' public-payload types. Each one reads the PUBLIC payload alone for everything the
  * payload determines, so release-time verification with no key still proves it; the key is compared only when context.answerKey is present.
  * The pure lattice, move, cover and proof functions are the packs' own (imported, never copied), so a checker and its pack gate cannot drift.
  */

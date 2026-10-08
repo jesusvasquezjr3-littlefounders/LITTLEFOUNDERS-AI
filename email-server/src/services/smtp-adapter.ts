@@ -6,7 +6,7 @@ import type { EmailAdapter, SendRequest, SendResult } from './adapter.js';
  * on localhost. Haraka (relay_internal) treats the localhost connection as
  * relaying and forwards it to Amazon SES over TLS + SMTP AUTH. The internal hop
  * is intentionally plaintext-on-loopback; the sensitive hop (Haraka -> SES) is
- * encrypted. See email-server/haraka/README.md.
+ * encrypted.
  */
 export interface SmtpAdapterOptions {
   host: string;

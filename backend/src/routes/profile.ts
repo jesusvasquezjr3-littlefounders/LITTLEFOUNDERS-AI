@@ -70,7 +70,7 @@ import {
  * (mutual 404 — never leaks WHO blocked whom).
  */
 
-// E.12: the cover preset list and the avatar option set live in
+// The cover preset list and the avatar option set live in
 // services/profileShape.ts, next to the read-side projection.
 export { COVER_PRESETS } from '../services/profileShape.js';
 
@@ -112,12 +112,12 @@ function publicShape(profile: FullProfileRow, avatarOptions: unknown) {
 }
 
 /*
- * E.9: no follower or following COUNT leaves Core, on any profile surface.
+ * No follower or following COUNT leaves Core, on any profile surface.
  * The lists themselves stay (people can still see who they are connected
  * to); the number that invites comparison with others does not exist on the
  * wire, so no screen can put it next to XP, streaks or badges.
  *
- * E.13: a minor's activity date is a pattern-of-life signal that locates the
+ * A minor's activity date is a pattern-of-life signal that locates the
  * child in time; it is withheld from every viewer but the child.
  */
 function statsShape(s: LearningStatsRow, withActivityDate = true) {
@@ -134,7 +134,7 @@ function courseBadgesShape(rows: Awaited<ReturnType<typeof getCompletedCourseBad
 }
 
 /*
- * How the viewer may connect to the subject (E.1 + E.8), decided by tier:
+ * How the viewer may connect to the subject, decided by tier:
  *   follow           an open follow (the subject is an adult and the viewer
  *                    may make its own connections)
  *   guardianRequest  a request the subject's guardian decides (child)
@@ -157,7 +157,7 @@ async function connectionMode(viewerId: string, subjectId: string, viewerTier: S
 }
 
 /**
- * OD-6, E.5: the Tutor pill for this viewer. Only an account that holds the
+ * The Tutor pill for this viewer. Only an account that holds the
  * parent role and is a currently ID-verified parent is a Tutor, and the
  * relationship rule of `tutorBadgeVisible` decides who else sees it. The
  * people lists apply the same role gate (socialVisibility).
@@ -165,13 +165,13 @@ async function connectionMode(viewerId: string, subjectId: string, viewerTier: S
 async function tutorVerdict(viewerId: string, subjectId: string): Promise<boolean> {
   if (!(await hasRole(subjectId, 'parent'))) return false;
   const shown = await tutorBadgeVisible(viewerId, subjectId);
-  // Appendix J (E.5, Tutor-Badge Cross-Population Visibility): the database
+  // Tutor-badge cross-population visibility: the database
   // counts every badge shown to someone else, and whether the two are related.
   if (shown && viewerId !== subjectId) noteSocialProtectionEvent('tutor_badge_shown', viewerId, subjectId);
   return shown;
 }
 
-/** The fields a minor may not set to something that locates them off-platform (E.13). */
+/** The fields a minor may not set to something that locates them off-platform. */
 function unsafeFields(fields: { username?: string; displayName?: string }): ('username' | 'displayName')[] {
   const out: ('username' | 'displayName')[] = [];
   if (fields.username !== undefined && profileFieldFlags(fields.username).length > 0) out.push('username');
@@ -196,7 +196,7 @@ export function ownProfileRouter(): Router {
     ]);
     if (!profiles?.[0]) return fail(res, 502, 'INTERNAL', 'Profile unreachable');
     const minor = tier === null || MINOR_SOCIAL_TIERS.includes(tier);
-    // S-03 (OD-27): only a teen can have (or be offered) the discoverable
+    // Only a teen can have (or be offered) the discoverable
     // choice; an unreadable answer reads as private and not offered.
     const discoverability = tier === 'teen'
       ? await readTeenDiscoverability(user.id) ?? { eligible: false, enabled: false, reason: null }
@@ -209,21 +209,21 @@ export function ownProfileRouter(): Router {
       birthDate: profiles[0].birth_date,
       learningStats: statsShape(stats),
       courseBadges: courseBadgesShape(completedBadges),
-      // OD-6, E.5: the owner's own Tutor verdict (a currently ID-verified
+      // The owner's own Tutor verdict (a currently ID-verified
       // parent), the same one other people's views are bound to.
       isTutor: tutor,
-      // E.8: the account's own social tier, so the owner sees why their
+      // The account's own social tier, so the owner sees why their
       // profile is private and where their requests are. Unreadable = null.
-      // S-03 (OD-27): `discoverable` is additive; `privateProfile` is false for
+      // `discoverable` is additive; `privateProfile` is false for
       // an opted-in, still-eligible 16-17-year-old.
       social: {
         tier,
         privateProfile: tier !== 'adult' && !discoverability.enabled,
-        // OD-9 4.2: `reason` names why an otherwise eligible teen is not
+        // `reason` names why an otherwise eligible teen is not
         // offered it (DATA_PRACTICE_CONSENT_REQUIRED); null otherwise.
         discoverable: { canChoose: discoverability.eligible, enabled: discoverability.enabled, reason: discoverability.reason },
       },
-      // E.13: the owner (a minor) learns which field hides their profile.
+      // The owner (a minor) learns which field hides their profile.
       profileReview: minor
         ? reviewProfileFields({ username: profiles[0].username, displayName: profiles[0].display_name })
         : { flagged: false, fields: [] },
@@ -231,12 +231,12 @@ export function ownProfileRouter(): Router {
   });
 
   /*
-   * S-03 (OD-27 (2)): a 16- or 17-year-old opts in to (or out of) a
+   * A 16- or 17-year-old opts in to (or out of) a
    * discoverable profile. Explicit (a literal boolean), revocable (off always
    * works), audited in the database transaction. Children, 13-to-15-year-olds,
    * a teen whose age evidence cannot prove 16 (no birth month or birth date),
    * a flagged profile and every adult are refused turning it on. Private is
-   * the default and nothing turns it on but this call. OD-9 4.2: a migrated
+   * the default and nothing turns it on but this call. A migrated
    * teen whose Tutor has not consented to 'sharing.discoverable_profile' is
    * refused by name (DATA_PRACTICE_CONSENT_REQUIRED).
    */
@@ -260,7 +260,7 @@ export function ownProfileRouter(): Router {
       return fail(res, 400, 'VALIDATION_ERROR', parsed.error.issues[0]?.message ?? 'Invalid input');
     }
     const user = authedUser(res);
-    // A.6: the kid-role Settings screen must not silently edit the profile
+    // The kid-role Settings screen must not silently edit the profile
     // username — the sign-in identifier derives from it (kidEmail), so an
     // unsupervised change strands the account behind its old handle. Kid
     // accounts keep display name and locale; the username is fixed.
@@ -269,7 +269,7 @@ export function ownProfileRouter(): Router {
       if (roles === null) return fail(res, 502, 'INTERNAL', 'Could not verify account roles');
       if (roles.includes('kid')) return fail(res, 403, 'KID_USERNAME_LOCKED', 'A child account cannot change its username');
     }
-    // E.13: a minor's name and handle are reviewed before the write; the
+    // A minor's name and handle are reviewed before the write; the
     // database refuses the same values from any writer (profile_fields_guard).
     if (parsed.data.username !== undefined || parsed.data.displayName !== undefined) {
       const tier = await readSocialTier(user.id);
@@ -326,9 +326,9 @@ export function ownProfileRouter(): Router {
   });
 
   /*
-   * E.8: the independent teen's own connection requests. The subject is
+   * The independent teen's own connection requests. The subject is
    * always the session; nobody else can read or decide this queue, and no
-   * guardian is asked (OD-3: none exists in this flow).
+   * guardian is asked (none exists in this flow).
    */
   router.get('/connection-requests', async (req, res) => {
     const query = z.object({ offset: z.coerce.number().int().min(0).max(100000).default(0) }).strict().safeParse(req.query);
@@ -366,9 +366,8 @@ export function ownProfileRouter(): Router {
   });
 
   /*
-   * E.3 from the teen's own queue (GAP-FIX-R5 social; OD-8's report action
-   * for unwanted contact; D-19: adults may ask a teen to connect, and the
-   * E.3 pattern trigger is one of the limits on them). The teen reports or
+   * The teen's own queue: the report action for unwanted contact. Adults may ask a teen to connect, and the
+   * repeated-contact pattern trigger is one of the limits on them. The teen reports or
    * blocks the requester of a request addressed to the session, pending or
    * closed without a connection in the last 30 days, by request id: no
    * profile visibility is needed to protect oneself. Both feed the pattern
@@ -421,7 +420,7 @@ export function ownProfileRouter(): Router {
     return ok(res, { requestId: req.params.requestId, blocked: true });
   });
 
-  /** E.8: the followed account removes a follower (the teen manages its own connections). */
+  /** The followed account removes a follower (the teen manages its own connections). */
   router.delete('/followers/:username', async (req, res) => {
     const user = authedUser(res);
     const username = req.params.username.toLowerCase();
@@ -436,8 +435,7 @@ export function ownProfileRouter(): Router {
   });
 
   /*
-   * E.3 and E.8 by user id (GAP-FIX-R8 social; Block E Standard component 2;
-   * Appendix J 2.1 criterion 2). The session's own connections are addressed
+   * By user id. The session's own connections are addressed
    * by the user id Core already sends on every list row, so an account
    * without a @username (the default for a new account) can still be removed,
    * unfollowed, reported and blocked by the person it is connected to.
@@ -486,7 +484,7 @@ export function ownProfileRouter(): Router {
     if (!followed) return res;
     const done = await deleteFollow(user.accessToken, user.id, followed);
     if (!done) return fail(res, 502, 'INTERNAL', 'Could not unfollow');
-    // Appendix J (E.2 audit completeness): a real unfollow, reconciled with its audit row.
+    // Audit completeness: a real unfollow, reconciled with its audit row.
     noteSocialProtectionEvent('unfollow', user.id, followed);
     return ok(res, { userId: followed, following: false });
   });
@@ -531,7 +529,7 @@ export function publicProfilesRouter(): Router {
   interface Resolved { profile: FullProfileRow; access: Exclude<ProfileAccess, 'none'>; viewerTier: SocialTier; subjectTier: SocialTier }
 
   /*
-   * Appendix J (E.1, Cross-Family Discovery Rate): every resolution of an
+   * Cross-family discovery rate: every resolution of an
    * existing profile is counted with its verdict and the surface that asked
    * (a profile, a followers/following list, or an action on the account).
    * The database stores the tier pair and whether the two are related, never
@@ -545,7 +543,7 @@ export function publicProfilesRouter(): Router {
   }
 
   /**
-   * Profile lookup with the E.1/E.8/E.13 access verdict. NOT_FOUND for "doesn't
+   * Profile lookup with the access verdict. NOT_FOUND for "doesn't
    * exist", "blocked" and "not visible" alike — never leaks which. A private
    * teen resolves to 'card'; callers that need the whole profile require 'full'.
    */
@@ -581,7 +579,7 @@ export function publicProfilesRouter(): Router {
     if (connection === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not check connection eligibility');
     const avatarOptions = avatars?.[0]?.options ?? {};
     if (access === 'card') {
-      // E.8 private-by-default teen: who they are is not shown until they accept.
+      // Private-by-default teen: who they are is not shown until they accept.
       const requestPending = await hasPendingTeenRequest(user.id, profile.user_id);
       if (requestPending === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not check the request');
       return ok(res, {
@@ -598,7 +596,7 @@ export function publicProfilesRouter(): Router {
     }
     const [following, tutor, stats, completedBadges] = await Promise.all([
       isFollowing(user.id, profile.user_id),
-      // E.5: the badge is a verified-adult signal shown only inside an
+      // The badge is a verified-adult signal shown only inside an
       // established relationship (linked kid, mutual approved follow, self,
       // staff) — never to an unconnected kid-role viewer.
       tutorVerdict(user.id, profile.user_id),
@@ -641,16 +639,16 @@ export function publicProfilesRouter(): Router {
     const { profile, access, viewerTier, subjectTier } = resolved;
     if (profile.user_id === user.id) return fail(res, 400, 'VALIDATION_ERROR', 'You cannot request yourself');
     if (subjectTier === 'guardian') {
-      // E.1: only an already-visible relationship may ask a child's guardian.
+      // Only an already-visible relationship may ask a child's guardian.
       if (access !== 'full') return fail(res, 404, 'NOT_FOUND', 'No such profile');
       const requestId = await requestSocialConnection(user.id, profile.user_id);
       if (!requestId) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not record the connection request');
       return res.status(202).json({ data: { requestId, status: 'pending', following: false, decidedBy: 'guardian' }, error: null });
     }
     if (subjectTier !== 'teen') return fail(res, 400, 'VALIDATION_ERROR', 'This connection does not use approval');
-    // E.8: the teen decides. A child cannot ask (its Tutor manages its connections).
+    // The teen decides. A child cannot ask (its Tutor manages its connections).
     if (viewerTier === 'guardian') return fail(res, 403, 'GUARDIAN_MANAGED_CONNECTIONS', 'A Tutor manages this account\'s connections');
-    // GAP-FIX-R8 social (E.3, E.8): the teen decides about someone they can
+    // The teen decides about someone they can
     // identify and open by handle, so an account without a @username (the
     // default for a new account) chooses one before it can ask. Edges formed
     // before this rule stay manageable through the id routes.
@@ -677,7 +675,7 @@ export function publicProfilesRouter(): Router {
     if (!resolved) return fail(res, 404, 'NOT_FOUND', 'No such profile');
     const { profile, viewerTier, subjectTier } = resolved;
     if (profile.user_id === user.id) return fail(res, 400, 'VALIDATION_ERROR', 'You cannot follow yourself');
-    // Appendix J (E.1, Unauthorized Connection Attempt Rate): every attempt and each refusal.
+    // Unauthorized connection attempt rate: every attempt and each refusal.
     noteSocialProtectionEvent('follow_attempt', user.id, profile.user_id);
     if (subjectTier === 'guardian') {
       noteSocialProtectionEvent('follow_refused_guardian', user.id, profile.user_id);
@@ -713,7 +711,7 @@ export function publicProfilesRouter(): Router {
       || await hasPendingTeenRequest(user.id, profile.user_id) === true)) return fail(res, 404, 'NOT_FOUND', 'No such profile');
     const done = await deleteFollow(user.accessToken, user.id, profile.user_id);
     if (!done) return fail(res, 502, 'INTERNAL', 'Could not unfollow');
-    // Appendix J (E.2 audit completeness): a real unfollow (not a withdrawn
+    // Audit completeness: a real unfollow (not a withdrawn
     // request), reconciled with its audit row.
     if (wasFollowing) noteSocialProtectionEvent('unfollow', user.id, profile.user_id);
     return ok(res, { following: false });
@@ -743,7 +741,7 @@ export function publicProfilesRouter(): Router {
     return ok(res, { blocked: false });
   });
 
-  // E.3: report a profile. Bounded, child-safe input: a predefined category
+  // Report a profile. Bounded, child-safe input: a predefined category
   // and an optional short note. The target must be a profile the caller can
   // currently reach (the same non-discovery boundary as block; a private
   // teen's card counts), and the session user is always the reporter.

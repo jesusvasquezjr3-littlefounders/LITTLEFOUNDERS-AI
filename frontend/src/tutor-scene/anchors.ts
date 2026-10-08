@@ -8,7 +8,7 @@
  * changes size, and — because a coordinate in this system is a `Vector3` — it is
  * also a component that imports `three`. That would drag the whole renderer into
  * the product layer and out of the lazy route it is deliberately confined to
- * (frontend/AGENTS.md: `three` must only ever be reached through a lazy route).
+ * (`three` must only ever be reached through a lazy route).
  *
  * So a DOM component asks for `'lead.head'`. The scene publishes what that means
  * this frame, on this island, for this cast. The two halves never share a type
@@ -52,7 +52,7 @@
  *                       must never overlap the cast.
  *
  * The five-mark budget is a composition decision, not an arbitrary cap: the
- * closed set of openings the tutor can offer is at most five (/ORACLE.md), and
+ * closed set of openings the tutor can offer is at most five, and
  * a sixth simultaneous floating control would be a layout problem no anchor
  * position can solve.
  */

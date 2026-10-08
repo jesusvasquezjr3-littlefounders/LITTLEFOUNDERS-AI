@@ -41,20 +41,20 @@ import { v2ApproachOf, v2SegmentsForApproach } from './v2SegmentFamilies.generat
 
 export type CheckResult = 'invalid' | 'incomplete' | 'review' | 'met';
 export type OnGrade = (answer: Allocation, segmentId: string, document: LessonClientDocument) => CheckResult | Promise<CheckResult>;
-/** M1/M2/M3 answers: one value, counting-on hops, placed items, or a fraction line's pair (GAP-FIX-R5). */
+/** M1/M2/M3 answers: one value, counting-on hops, placed items, or a fraction line's pair. */
 export type NumberLineGradeAnswer = NumberLineAnswer | FractionLineAnswer;
 export type OnGradeNumberLine = (answer: NumberLineGradeAnswer, segmentId: string, document: LessonClientDocument) => 'invalid' | 'met' | 'review' | Promise<'invalid' | 'met' | 'review'>;
 export type OnGradeFractionArea = (answer: { n: number; d: number }, segmentId: string, document: LessonClientDocument) => 'invalid' | 'met' | 'review' | Promise<'invalid' | 'met' | 'review'>;
 export type OnGradeBarModel = (answer: Record<string, unknown>, segmentId: string, document: LessonClientDocument) => 'invalid' | 'met' | 'review' | Promise<'invalid' | 'met' | 'review'>;
 export type OnGradeSchemaDiagram = (answer: Record<string, unknown>, segmentId: string, document: LessonClientDocument) => 'invalid' | 'met' | 'review' | Promise<'invalid' | 'met' | 'review'>;
 export type OnGradeWorkedExample = (answer: { values: Record<string, string> }, segmentId: string, document: LessonClientDocument) => 'invalid' | 'met' | 'review' | Promise<'invalid' | 'met' | 'review'>;
-/** B.12: a reasoning answer returns the decision verdict and, separately, the judgment quality of the reason. */
+/** A reasoning answer returns the decision verdict and, separately, the judgment quality of the reason. */
 export type OnGradeReasoning = (answer: { choice: string; reason: string }, segmentId: string, document: LessonClientDocument) => ReasoningGrade | Promise<ReasoningGrade>;
-/** GAP-FIX-R1: one grader for every newly gradable visual and first-release family (the answer is whatever the board built). */
+/** One grader for every newly gradable visual and first-release family (the answer is whatever the board built). */
 export type OnGradeAny = (answer: unknown, segmentId: string, document: LessonClientDocument) => SegmentGrade | Promise<SegmentGrade>;
-/** GAP-FIX-R1 (OD-17): Core's view receipt for a non-scored step; false keeps the learner on the step. */
+/** Core's view receipt for a non-scored step; false keeps the learner on the step. */
 export type OnView = (segmentId: string, document: LessonClientDocument) => Promise<boolean>;
-/** GAP-FIX-R5 (B.24): pin the learner's approach with Core; the pinned id, or null when it could not be saved. */
+/** Pin the learner's approach with Core; the pinned id, or null when it could not be saved. */
 export type OnChooseApproach = (approachId: string, document: LessonClientDocument) => Promise<string | null>;
 const copy = { 'en-US': en, 'es-MX': es, 'pt-BR': pt };
 
@@ -65,7 +65,7 @@ const FAMILY_TYPES = new Set(['logic.rule-checker.v2', 'logic.euler.v2', 'logic.
 
 function canRender(segment: LessonClientSegment, onGrade?: OnGrade, onGradeNumberLine?: OnGradeNumberLine, onGradeFractionArea?: OnGradeFractionArea, onGradeBarModel?: OnGradeBarModel, onGradeSchemaDiagram?: OnGradeSchemaDiagram, onGradeWorkedExample?: OnGradeWorkedExample, onGradeReasoning?: OnGradeReasoning, onGradeAny?: OnGradeAny): boolean {
   if (isHorizonteSegment(segment)) return canRenderHorizonte(segment, !!onGradeAny);
-  // A formerly presentation-only visual that the document now grades needs the generic grader (Appendix P Part 7).
+  // A formerly presentation-only visual that the document now grades needs the generic grader.
   if (segment.grading === 'server' && (FAMILY_TYPES.has(segment.type) || (V2_CONCEPT_TYPES as readonly string[]).includes(segment.type) || ['visual.chart.v2', 'visual.goal-bullet.v2', 'visual.percent-grid.v2', 'math.place-value.v2', 'logic.savings-rule.v2',
     'money.running-ledger.v2', 'visual.growth-comparison.v2', 'visual.tax-bracket.v2', 'math.ratio-table.v2'].includes(segment.type))) return !!onGradeAny;
   switch (segment.type) {
@@ -98,7 +98,7 @@ function canRender(segment: LessonClientSegment, onGrade?: OnGrade, onGradeNumbe
     case 'money.needs-wants.v2': case 'logic.scam-spotter.v2': case 'money.scam-check.v2': case 'money.coin-tray.v2': case 'money.making-change.v2':
     case 'story.branch.v2': case 'story.dialogue-choice.v2': case 'story.would-you-rather.v2': return !!onGradeAny;
     case 'money.unit-price.v2': case 'logic.rule-builder.v2': return !!onGradeAny;
-    // Appendix A Part 3 concept boards: explored boards render anywhere; graded ones need the generic grader (checked above).
+    // Concept boards: explored boards render anywhere; graded ones need the generic grader (checked above).
     case 'money.amortization.v2': case 'econ.supply-demand.v2': case 'money.opportunity-cost.v2': case 'money.inflation.v2': case 'money.rule-of-72.v2':
     case 'money.debt-payoff.v2': case 'money.diversification.v2': case 'money.lemonade-stand.v2': return true;
     default: {
@@ -111,11 +111,11 @@ function canRender(segment: LessonClientSegment, onGrade?: OnGrade, onGradeNumbe
 
 /** The pilot renderer refuses any document it cannot display in full. */
 /**
- * GAP-FIX-R1 (OD-17, OD-24, B.7): the general ordered-segment player. Any mix
+ * The general ordered-segment player. Any mix
  * of supported segments plays in order with progress across all of them; the
  * M1 fading rules apply only to groups declared in `representation_progressions`
  * (Core validates them). A segment this build cannot render, or a document it
- * cannot parse because it is newer, is the B.4 update-required screen.
+ * cannot parse because it is newer, is the update-required screen.
  */
 export function LessonDocumentView({ raw, locale, ageBand, onBack, onGrade, onGradeNumberLine, onGradeFractionArea, onGradeBarModel, onGradeSchemaDiagram, onGradeWorkedExample, onGradeReasoning, onGradeAny, onView, onHelpUsed, onComplete, metSegmentIds = [], attemptedSegmentIds = [], viewedSegmentIds = [], mentorStage = null, adventureTheme = null, theme = 'light', previewSequence = false, narrationAudio, approachId = null, onChooseApproach, attemptSeeds }: {
   raw: unknown; locale: Locale; ageBand: AgeBand; onBack: () => void; onGrade?: OnGrade; onGradeNumberLine?: OnGradeNumberLine; onGradeFractionArea?: OnGradeFractionArea; onGradeBarModel?: OnGradeBarModel; onGradeSchemaDiagram?: OnGradeSchemaDiagram; onGradeWorkedExample?: OnGradeWorkedExample; onGradeReasoning?: OnGradeReasoning;
@@ -125,12 +125,12 @@ export function LessonDocumentView({ raw, locale, ageBand, onBack, onGrade, onGr
   viewedSegmentIds?: string[];
   onComplete?: () => Promise<boolean>;
   mentorStage?: LessonMentorStage | null; adventureTheme?: AdventureTheme | null; theme?: 'light' | 'dark'; previewSequence?: boolean;
-  /** B.18 (GAP-FIX-R3): Core's resolved narration, segment id -> public URL. */
+  /** Core's resolved narration, segment id -> public URL. */
   narrationAudio?: Readonly<Record<string, string>>;
-  /** GAP-FIX-R5 (B.24): the approach Core pinned on this run (null before choosing), and how to pin one. */
+  /** The approach Core pinned on this run (null before choosing), and how to pin one. */
   approachId?: string | null;
   onChooseApproach?: OnChooseApproach;
-  /** F3.0: the seeds Core issued with this run's attempts, segment id to seed; a seeded Horizonte board never runs without its own. */
+  /** The seeds Core issued with this run's attempts, segment id to seed; a seeded Horizonte board never runs without its own. */
   attemptSeeds?: Readonly<Record<string, string>>;
 }) {
   // A Horizonte piece's pack downloads when a document names it; until then there is nothing true to draw.
@@ -141,7 +141,7 @@ export function LessonDocumentView({ raw, locale, ageBand, onBack, onGrade, onGr
   const supported = loaded.document.segments.every((segment) => canRender(segment, onGrade, onGradeNumberLine, onGradeFractionArea, onGradeBarModel, onGradeSchemaDiagram, onGradeWorkedExample, onGradeReasoning, onGradeAny));
   if (loaded.document.locale !== locale || loaded.document.age_band !== ageBand) return unavailable(locale, onBack, 'invalid');
   if (!supported) return <UpdateRequired locale={locale} onBack={onBack} />;
-  // W2L.3 (B.8): every board's stage slot reads Core's projection from here; the allocation pilot keeps its own prop.
+  // Every board's stage slot reads Core's projection from here; the allocation pilot keeps its own prop.
   return <LessonStageProvider stage={mentorStage} ageBand={loaded.document.age_band} theme={theme} adventureTheme={adventureTheme}>
     <LessonPlayerProvider stage={mentorStage} theme={theme} onHelpUsed={onHelpUsed} narrationAudio={narrationAudio}>
       <AttemptSeedProvider seeds={attemptSeeds}>
@@ -166,7 +166,7 @@ function ValidatedLessonView({ document, onBack, onGrade, onGradeNumberLine, onG
 }) {
   const [viewFailed, setViewFailed] = useState(false);
   /*
-   * GAP-FIX-R5 (B.24, Block B autonomy): a lesson with approaches plays the
+   * A lesson with approaches plays the
    * steps before its chains, then asks which strategy to practise, then plays
    * only the chosen chain and the steps after it. Before the choice the played
    * list stops at the chains; the total counts the suggested chain.
@@ -204,7 +204,7 @@ function ValidatedLessonView({ document, onBack, onGrade, onGradeNumberLine, onG
         setIndex((current) => Math.min(current + 1, segments.length));
       })();
     } } : undefined;
-  // 04 §4.1: one exercise replaces another with the exercise slide; the first one is simply there.
+  // One exercise replaces another with the exercise slide; the first one is simply there.
   const choosing = !segment && !!approaches && !chosen;
   return <SequenceTransition step={segment ? `${lessonVersionKey(document)}:${segment.id}` : `${lessonVersionKey(document)}:${choosing ? 'approach' : 'end'}`}>{board()}</SequenceTransition>;
 
@@ -225,7 +225,7 @@ function ValidatedLessonView({ document, onBack, onGrade, onGradeNumberLine, onG
   return viewFailed ? <>{view}<div className="lf-learning-view-failed"><InlineNotice tone="error" live>{playerCopy(document.locale).viewFailed}</InlineNotice></div></> : view;
 
   function renderSegment(segment: LessonClientSegment, key: string) {
-  // B.7 part 3 / Appendix P Parts 1-3 / OD-16 (gap-fix round 7): who may see a kind is decided once, by the shared
+  // Who may see a kind is decided once, by the shared
   // V2_AGE_SCOPE that loadLessonClientDocument (and Core) already ran. The player never adds a stricter band guard.
   const any = onGradeAny ? (answer: unknown, id: string) => onGradeAny(answer, id, document) : undefined;
   if (isHorizonteSegment(segment)) return <HorizonteSegmentView key={key} document={document} segment={segment} onBack={onBack} sequence={sequence} onGrade={any} unavailable={() => unavailable(document.locale, onBack)} />;
@@ -303,7 +303,7 @@ function ValidatedLessonView({ document, onBack, onGrade, onGradeNumberLine, onG
 }
 
 /**
- * B.4 (GAP-FIX-R1): the lesson is newer than this app. The learner is asked
+ * The lesson is newer than this app. The learner is asked
  * to update the app, never told the lesson is broken; Reload drops cached
  * lazy chunks and reloads with a cache-busting query, and Back stays second.
  */

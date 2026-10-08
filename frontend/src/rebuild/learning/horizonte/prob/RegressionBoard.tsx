@@ -52,7 +52,7 @@ function equation(line: LineTenths, locale: Locale, t: Words): { tex: string; pl
 }
 
 /*
- * H11: points on a square grid and a line the learner moves with two sliders (slope and intercept, in steps of a tenth).
+ * Points on a square grid and a line the learner moves with two sliders (slope and intercept, in steps of a tenth).
  * Each point hangs a square on the line whose side is its distance to the line; the written sum of the squares falls as the
  * line fits. The answer is the pair of numbers; Core holds the one line that makes the squares smallest.
  */

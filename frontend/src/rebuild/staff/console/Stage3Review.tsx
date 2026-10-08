@@ -9,10 +9,10 @@ import {
 } from './stage3Api';
 
 /*
- * Appendix C Part 3 Stage 3 (Pedagogical Human Review), GAP-FIX-R6 learning,
- * inside the lesson review sheet (the lesson's current content) and the G.2
+ * Pedagogical Human Review,
+ * inside the lesson review sheet (the lesson's current content) and the
  * version sheet (one v2 version). It shows whether a passing review covers the
- * content, and records one: the six Block B checks and the four Stage 3
+ * content, and records one: the six content checks and the four pedagogical
  * questions, each with a result and a named finding, a resolution and a note
  * for every open Forge flag, and the Content Author (never the reviewer; Core
  * leaves the reviewer out of the list and Vault refuses it anyway). Core
@@ -100,7 +100,7 @@ function Stage3Form({ api, state, onSaved }: { api: StaffApi; state: Stage3State
   </form>;
 }
 
-/** The Stage 3 panel of one lesson (current content) or one v2 version. */
+/** The pedagogical review panel of one lesson (current content) or one v2 version. */
 export function Stage3Review({ api, lessonId, versionId, onRecorded }: { api: StaffApi; lessonId: string; versionId?: string; onRecorded?: () => void }) {
   const { copy, locale } = useConsoleCopy();
   const format = useFormats(locale);

@@ -5,12 +5,12 @@
  * WHY THIS MUST BE MEASURED BEFORE IT IS SHIPPED. The tutor already chooses an
  * `emotion` for every single turn — happy, thinking, encouraging, proud — from
  * a closed vocabulary, and the synthesizer never receives it: the call site
- * passes `turn.say` and drops the rest. That is the blueprint's differentiator
+ * passes `turn.say` and drops the rest. That is the product's differentiator
  * #2, "prosodia dirigida por pedagogía", computed and discarded, and it is the
  * fourth field found in one day travelling correctly into something that
  * ignores it.
  *
- * The blueprint says Inworld renders inline direction tags — `[warm]`,
+ * The assumption is that Inworld renders inline direction tags — `[warm]`,
  * `[excited]` — as real audio events. Our TTS request has no emotion field, so
  * inline tags are the only route. And if that is wrong, the tag is not ignored:
  * it is SPOKEN. A child asks why money grows and the tutor answers "corchete

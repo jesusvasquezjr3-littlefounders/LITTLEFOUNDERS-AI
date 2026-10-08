@@ -5,9 +5,9 @@ import { useOneShot, withPressFeedback } from './motion';
 import './controls.css';
 
 /*
- * The shared control set of the rebuilt frontend (Frontend Bible 02; S03.1).
+ * The shared control set of the rebuilt frontend.
  * Every rebuilt surface imports its controls from here and never from the
- * legacy application (02 rule 23).
+ * legacy application.
  */
 export { Button, ButtonGroup, ButtonLink, IconButton, TileButton, type ButtonProps, type ButtonSize, type ButtonVariant, type IconButtonVariant } from './buttons';
 export { ConfirmDialog, DestructiveAction, Dialog, Menu, Popover, Sheet, Tooltip,
@@ -42,9 +42,9 @@ export function StatusMark({ correct }: { correct: boolean }) {
 }
 
 /**
- * Answer option on the full-bleed lesson screen (02 `answer-idle` /
+ * Answer option on the full-bleed lesson screen (`answer-idle` /
  * `answer-selected`): a rounded rectangle that chooses one of several. It
- * follows the feedback grammar of 02 §9.2: selecting bumps, a correct answer
+ * follows the feedback grammar: selecting bumps, a correct answer
  * bumps again, "not yet" wobbles. Never a celebration.
  */
 export function AnswerChoice({ label, selected, disabled, onSelect, verdict = null }: {

@@ -4,14 +4,14 @@ import '../design/system.css';
 import './socialTiers.css';
 
 /*
- * E.13: a minor's username or name carries something that could let a
+ * A minor's username or name carries something that could let a
  * stranger find them outside LittleFounders (a contact, a link, another
  * platform's handle, a school, a street or postal code, a birth year). Until
  * it changes, nobody outside the family sees the profile. This says so, to
  * the right person:
  *   self      an independent teen, who can change both fields
  *   kidSelf   a child, who can change the name but asks its Tutor about the
- *             username (A.6 keeps a child's username fixed)
+ *             username (a child's username stays fixed)
  *   guardian  the Tutor, in the Family panel, about a named child
  * Copy-only, no transport.
  */

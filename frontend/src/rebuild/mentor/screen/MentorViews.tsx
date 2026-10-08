@@ -14,9 +14,9 @@ import { mapSteps, waitsOn } from './mapModel';
 import type { MentorData, MentorNotebook } from './mentorData';
 
 /*
- * The Mentor screen's secondary views (T1a, T1e-T1g), each the body of a sheet
+ * The Mentor screen's secondary views, each the body of a sheet
  * opened from the menu: the stage stays the screen, these are details behind a
- * tap (06 §4). Every view has its loading, failed and empty states, and none
+ * tap. Every view has its loading, failed and empty states, and none
  * shows anything Core did not send.
  */
 
@@ -71,16 +71,14 @@ const dateOf = (iso: string, locale: Locale, time = false) => {
   return Number.isNaN(value.getTime()) ? '' : new Intl.DateTimeFormat(locale, time ? { dateStyle: 'medium', timeStyle: 'short' } : { dateStyle: 'medium' }).format(value);
 };
 
-/* ------------------------------------------------------------------ T1a */
-
 const NICKNAME = /^[\p{L}\p{N}][\p{L}\p{N} '_-]*$/u;
 
 /**
- * The learner's own island (T1a): a friend beside the Mentor, the island, its
+ * The learner's own island: a friend beside the Mentor, the island, its
  * light, a nickname (the only name the Mentor is ever told; Core refuses a
  * real name), and how the Mentor explains. Each choice is saved to Core before
  * it is shown; a refused save keeps what was there and says so. The Mentor
- * itself is chosen in its own sheet (08 §8).
+ * itself is chosen in its own sheet.
  */
 export function PersonaliseView({ copy, catalog, preferences, character, onSave }: {
   copy: MentorPersonaliseCopy; catalog: TutorCatalog | null; preferences: TutorPreferences; character: MentorCharacter;
@@ -138,14 +136,12 @@ export function PersonaliseView({ copy, catalog, preferences, character, onSave 
   </div>;
 }
 
-/* ------------------------------------------------------------------ T1f */
-
 const STATE_TONE: Record<TutorMapNode['state'], 'success' | 'reward' | 'primary' | 'sky' | null> = {
   mastered: 'success', needs_review: 'reward', in_progress: 'primary', available: 'sky', locked: null,
 };
 
 /**
- * The learning map (T1f): the skills in steps, each with its state in words
+ * The learning map: the skills in steps, each with its state in words
  * (never colour alone, never red), and a skill that is not open yet naming the
  * one it waits on. Outside a conversation a startable skill starts a practice
  * conversation; during one the map is read-only and says why.
@@ -156,7 +152,7 @@ export function LearningMapView({ copy, decisionsCopy, locale, data, canStart, c
 }) {
   const [load, retry] = useLoad<TutorMapResponse>(() => data.map());
   return <div className="lf-mentor-view" data-view="map">
-    {/* GAP-FIX-R2 (Appendix D §2.6): the same evidence the verified Tutor reads, read-only, above the map. */}
+    {/* The same evidence the verified Tutor reads, read-only, above the map. */}
     <MapDecisions copy={decisionsCopy} locale={locale} data={data} />
     <Loaded load={load} loading={copy.loading} failed={copy.failed} retry={copy.retry} onRetry={retry}>{(map) => {
       if (map.nodes.length === 0) return <p data-copy-role="body">{copy.empty}</p>;
@@ -199,10 +195,8 @@ function MapDecisions({ copy, locale, data }: { copy: MentorDecisionsCopy; local
   </section>;
 }
 
-/* ------------------------------------------------------------------ T1g */
-
 /**
- * The plan and the kept boards (T1g): the savings plan the learner and the
+ * The plan and the kept boards: the savings plan the learner and the
  * Mentor built, the boards the learner chose to keep, and a recap of the last
  * conversation. Each board is drawn in the shared Pizarrón frame exactly as it
  * was shown, never recomputed.
@@ -250,7 +244,7 @@ export function NotebookView({ copy, boardCopy, data, locale }: {
   </div>;
 }
 
-/** "Keep board" under a live board (T1c/T1g): names the turn; Core copies the board it really drew. */
+/** "Keep board" under a live board: names the turn; Core copies the board it really drew. */
 export function KeepBoard({ copy, seq, onKeep }: { copy: MentorNotebookCopy; seq: number; onKeep: (seq: number) => Promise<boolean> }) {
   const [status, setStatus] = useState<'idle' | 'keeping' | 'kept' | 'failed'>('idle');
   useEffect(() => setStatus('idle'), [seq]);
@@ -262,10 +256,8 @@ export function KeepBoard({ copy, seq, onKeep }: { copy: MentorNotebookCopy; seq
   </div>;
 }
 
-/* ------------------------------------------------------------------ T1e */
-
 /**
- * Past conversations (T1e): who it was with, what kind of talk, when and how
+ * Past conversations: who it was with, what kind of talk, when and how
  * long. Pressing one replays it on the stage. A row never carries a score: a
  * number on a list of talks reads as a grade on each.
  */

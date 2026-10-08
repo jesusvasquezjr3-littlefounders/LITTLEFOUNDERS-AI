@@ -1,6 +1,6 @@
 import { isRecord, isWholeIn, exactKeys, sameMultiset, type ArrangePiece, type ClassState, type Solution } from './arrange.js';
 
-/** F2.1: x squared, x and 1 tiles, positive and negative. A zero pair is one positive and one negative tile of the same kind. */
+/** x squared, x and 1 tiles, positive and negative. A zero pair is one positive and one negative tile of the same kind. */
 export const TILE_KINDS = ['sq', 'bar', 'unit'] as const;
 export type TileKind = (typeof TILE_KINDS)[number];
 export const TILE_CLASSES = ['sq-pos', 'sq-neg', 'bar-pos', 'bar-neg', 'unit-pos', 'unit-neg'] as const;

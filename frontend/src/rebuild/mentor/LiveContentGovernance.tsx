@@ -15,20 +15,20 @@ import './alliance.css';
 import './liveContent.css';
 
 /*
- * C.5 / C.6 IN THE STAFF CONSOLE. Three panels a content reviewer (the
+ * LIVE CONTENT GOVERNANCE IN THE STAFF CONSOLE. Three panels a content reviewer (the
  * `manage_content` grant) works from:
  *
  *   1. STATUS. Per content-risk category (everyday / sensitive topics): the
  *      share of live-generated Mentor activities staff review now, its floor
- *      (15% / 50%, Appendix E §3.1.1), whether it was raised after an issue
+ *      (15% / 50%), whether it was raised after an issue
  *      and how many clean reviews restore it, whether live activities are
- *      paused and why (Stage 7), and the reviews past the SLA; plus the
+ *      paused and why, and the reviews past the SLA; plus the
  *      content judge's calibration.
  *   2. REVIEW. One sampled activity and three EQUAL decisions (approve, a
  *      quality issue, a safety issue). Equal on purpose: a reviewer is never
  *      nudged toward approving. A rejection raises the category's rate at
  *      once (Core decides that; this surface only reports the verdict).
- *   3. PACKS. Curated activity packs waiting for a human release (C.6):
+ *   3. PACKS. Curated activity packs waiting for a human release:
  *      publish or archive. Core re-checks the tutor-pack.v1 contract on the
  *      stored content; a refusal lists every reason.
  *

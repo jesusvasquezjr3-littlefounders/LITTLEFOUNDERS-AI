@@ -1,5 +1,5 @@
 /*
- * `npm run verify:tutor` — the gate named in /AGENTS.md §5.
+ * `npm run verify:tutor` — the privacy-boundary check.
  *
  * WHY A SCRIPT AND NOT JUST THE TEST SUITE. The unit tests prove that the
  * pieces behave; this proves that the two properties which would actually harm
@@ -57,7 +57,7 @@ const VALID_CONTEXT = {
 
 /*
  * Every field on this list is something a well-meaning developer might
- * plausibly add "just for better personalization". Each one is a §1.9
+ * plausibly add "just for better personalization". Each one is a privacy
  * violation, and each one must be refused by the schema rather than by
  * somebody noticing in review.
  */

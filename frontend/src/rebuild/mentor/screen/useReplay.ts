@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { beatHoldMs, type ReplayBeat } from './replayModel';
 
 /*
- * The replay's clock (T1e): which line is on the stage, whether it plays, and
+ * The replay's clock: which line is on the stage, whether it plays, and
  * the transport the learner drives (play or pause, the previous or next line,
  * from the start). A Mentor line with its voice clip moves on when the clip
  * ends (the stage reports it); a backstop timer keeps a clip that never loads

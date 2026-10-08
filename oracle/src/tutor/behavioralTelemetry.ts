@@ -4,10 +4,10 @@ import { isHintRequest, isTellRequest } from './hintLadder.js';
 import { countWords, foldText, isHedging, isOffTopic, isTerseReply, normalizeAnswer } from './telemetryLexicon.js';
 
 /*
- * C.9 — THE BEHAVIORAL TELEMETRY LAYER (Appendix D §1.3–1.4, §1.7).
+ * THE BEHAVIORAL TELEMETRY LAYER.
  *
- * The first of the three components the Block C Real-Time Interaction
- * Standard places beside the pedagogy controller: the friction proxy. It
+ * The first of the three components
+ * placed beside the pedagogy controller: the friction proxy. It
  * reads only what a tutoring session already produces — the learner's words,
  * when they answered, whether a server-verified answer was right, whether
  * they asked for help — and computes, per learner turn, the STRENGTH of eight
@@ -16,52 +16,51 @@ import { countWords, foldText, isHedging, isOffTopic, isTerseReply, normalizeAns
  *   latencyShift    a slow reply (for its channel: typed, spoken or activity)
  *                   that ended in a miss, a terse, hedged or off-topic reply.
  *                   A slow reply that ends in a right or thoughtful answer is
- *                   productive thinking and does not count (§1.3).
+ *                   productive thinking and does not count.
  *   rapidResponse   a reply far faster than the learner's own baseline that
  *                   was wrong on an item their history does not predict they
- *                   know: Baker's rapid guessing (§1.4).
+ *                   know: Baker's rapid guessing.
  *   verbosityDrop   the learner's messages shrink against their own opening
  *                   messages, or turn into minimal replies ("k", "idk"). Never
  *                   an absolute length: a teen who is terse from the start is
- *                   not dropping (§1.6, developmental masking).
+ *                   not dropping (developmental masking).
  *   repeatedAnswer  the same wrong answer again (digits or number words, any
  *                   locale), or the same message again.
  *   hedging         a rise in uncertainty language ("no sé", "I guess").
  *   offTopic        a rise in contentful messages that share nothing with the
  *                   lesson.
  *   hintAbuse       help requested again with no attempt in between, or
- *                   requested at a rapid pace: hint abuse (§1.4–1.5).
+ *                   requested at a rapid pace: hint abuse.
  *   fastKnownMiss   a fast miss on an item the learner's history says they
- *                   know: carelessness, not gaming (§1.4). RECORDED, but NOT
+ *                   know: carelessness, not gaming. RECORDED, but NOT
  *                   fused into the disengagement signal — it wants a "check
  *                   it again" nudge, which the controller already gives.
  *
  * WHAT IT OUTPUTS: numbers. Signal strength per channel in [0, 1] (1 = the
  * channel's evidence reached its proposed threshold), how many channels are
  * elevated, and whether the fused disengagement signal fired. It NEVER
- * outputs, stores or reports an emotion label (Appendix D §1.7): nothing
- * here names a feeling, and the adversarial suite (`telemetryGym.test.ts`)
- * asserts that across every simulated learner.
+ * outputs, stores or reports an emotion label: nothing
+ * here names a feeling.
  *
  * WHAT IT DRIVES: the fused disengagement signal fires only when at least
  * `minChannels` independent channels are elevated at once (corroboration, not
- * one noisy cue), and firing produces exactly one thing: the C.19 check-in
+ * one noisy cue), and firing produces exactly one thing: the check-in
  * ("I want to make sure I'm actually helping — are we on the same page?"),
  * the Mentor's required repair-initiation move. The learner's answer routes
  * through the adaptation-offer mechanism (`checkIn.ts`). Most turns take no
  * action at all — the Default-to-Inaction Rate is instrumented here
- * (`evaluatedTurns` against `actionTurns`) and is a Stage 7 trigger below 85%.
+ * (`evaluatedTurns` against `actionTurns`) and is a rollback trigger below 85%.
  *
- * STAGE 7 KILL SWITCH (Appendix F Part 3): `TUTOR_BEHAVIORAL_TELEMETRY=shadow`
+ * STAGE 7 KILL SWITCH: `TUTOR_BEHAVIORAL_TELEMETRY=shadow`
  * keeps computing and recording but never checks in; `off` stops it. Either
- * reverts to the pre-C.9 baseline (time/turn caps only).
+ * reverts to the baseline without it (time/turn caps only).
  *
- * Every threshold is PROPOSED, PENDING CALIBRATION (Threshold Recalibration
- * Log). Appendix D §1.6 is explicit that affect detection from these channels
- * lands in a "moderately useful, far from certain" range; that is why the
+ * Every threshold is PROPOSED, PENDING CALIBRATION.
+ * Affect detection from these channels is known to land in a
+ * "moderately useful, far from certain" range; that is why the
  * output is a low-stakes question, never a declaration.
  *
- * Pure and serializable: it rides the park snapshot (snapshotFence.test.ts).
+ * Pure and serializable: it rides the park snapshot.
  */
 
 export type TelemetryMode = 'act' | 'shadow' | 'off';
@@ -126,13 +125,13 @@ export interface TelemetryConfig {
   /** Observations after a firing (or after the learner's reply) before it may fire again. */
   rearmAfterObservations: number;
   /**
-   * Appendix D §1.3: a long wait that ends in a right or thoughtful answer is
+   * A long wait that ends in a right or thoughtful answer is
    * productive confusion, not disengagement. Always true in production; the
    * switch exists so the simulated suite can prove it matters.
    */
   productiveSlownessExempt: boolean;
   /**
-   * Appendix D §1.4: a fast miss on a known item is carelessness and wants a
+   * A fast miss on a known item is carelessness and wants a
    * different response from gaming, so it is recorded but not fused. Always
    * false in production; the switch exists for the same reason.
    */
@@ -547,7 +546,7 @@ export class BehavioralTelemetry {
     return { observation: this.state.count, evaluated: true, strengths, elevated, fired: false };
   }
 
-  // ── The C.19 check-in lifecycle ────────────────────────────────────────────
+  // ── The check-in lifecycle ────────────────────────────────────────────
 
   /** A check-in fired (or was carried) and the next Mentor turn must carry it. */
   get checkInDue(): boolean {

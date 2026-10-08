@@ -6,13 +6,12 @@ import { findChooserStill } from './stageStills';
 import './mentorChooser.css';
 
 /*
- * THE MENTOR CHOOSER, ONE COMPONENT FOR EVERY SURFACE (Frontend Bible 08 §8;
- * 07 §4; OD-6). "The chooser shows the four real characters on the Diorama,
+ * THE MENTOR CHOOSER, ONE COMPONENT FOR EVERY SURFACE. "The chooser shows the four real characters on the Diorama,
  * rendered from the models": each row leads with the character standing on
  * its Diorama in the idle pose (`mentor.chooserStill`), with its name and one
  * line of at most six words. Where no Diorama render is registered it falls
  * back to the character's avatar render, never a stand-in, a letter or a
- * look-alike (02 rule 21).
+ * look-alike.
  *
  * Used by the first-run onboarding (identity/OnboardingFlow.tsx, the 'mentor'
  * step, where most learners choose) and by the Mentor screen's chooser sheet.

@@ -1,11 +1,10 @@
 import type { HintLevel } from './hintLadder.js';
 
 /*
- * C.18 — HONEST FEEDBACK: the anti-sycophancy constraint and the per-turn
- * facts behind the answer-reveal-rate metric (Product C.18, Appendix D §3.7,
- * Appendix F §1.2 "Answer-Reveal Rate" and "Sycophancy Audit Score").
+ * HONEST FEEDBACK: the anti-sycophancy constraint and the per-turn
+ * facts behind the answer-reveal-rate metric.
  *
- * WHY THIS IS A CONSTRAINT AND NOT A STYLE NOTE. Appendix D §3.7 quantifies
+ * WHY THIS IS A CONSTRAINT AND NOT A STYLE NOTE. The research quantifies
  * the failure: general-purpose LLMs asked to tutor reveal the solution about
  * two thirds of the time and give incorrect feedback on a learner's error
  * more often than not (MathDial), and sycophantic answers are rated MORE
@@ -26,8 +25,8 @@ import type { HintLevel } from './hintLadder.js';
  * Every detector here is PRECISION-FIRST and lexical, like its siblings in
  * `prompt.ts`: a false positive on the blocking check costs one repair
  * attempt, a false negative on the metric is caught later by the calibrated
- * judge and human spot-check Appendix F names as the metric's authoritative
- * source (C.21/C.23, later checkpoints). None of them is a model call.
+ * judge and human spot-check that is the metric's authoritative
+ * source. None of them is a model call.
  */
 
 /** Which kind of learner evidence the turn is reacting to, when it is reacting to one. */
@@ -35,7 +34,7 @@ export type VerdictContext = 'after_incorrect' | 'after_correct' | 'after_unsoun
 
 /**
  * Whether the turn sits inside a collaborative-repair or hint-ladder
- * sequence — the denominator of the Answer-Reveal Rate (Appendix F §1.2).
+ * sequence — the denominator of the Answer-Reveal Rate.
  * `open_activity` is the third place a reveal defeats the teaching: an
  * ungraded activity is on the learner's screen.
  */
@@ -45,8 +44,7 @@ export type SequenceKind = 'hint_ladder' | 'repair' | 'open_activity' | 'none';
  * The per-turn honesty facts, sent with the transcript row to Core
  * (`POST /tutor/internal/turns`, `honesty`) and stored in
  * `tutor_turn_honesty`. HAND-MIRRORED in Core's `TurnHonestyBody`
- * (`backend/src/routes/tutor.ts`) and the migration's CHECK lists;
- * `npm run honesty:check` (root) keeps the three copies identical.
+ * (`backend/src/routes/tutor.ts`) and the migration's CHECK lists.
  */
 export interface TurnHonesty {
   sequenceKind: SequenceKind;
@@ -274,7 +272,7 @@ export function statesTheAnswer(say: string): boolean {
 
 /*
  * PRAISE, SPECIFIC OR GENERIC — the Sycophancy Audit Score's general
- * measure (Appendix F §1.2), recorded per turn as a PROXY until the sampled
+ * measure, recorded per turn as a PROXY until the sampled
  * transcript audit exists. "Specific" means the praising sentence (or the
  * one right after it) points at something the learner did: a number, one of
  * the learner's own words, or an action verb addressed to them ("contaste",
@@ -356,7 +354,7 @@ export function classifyPraise(say: string, learnerText: string): 'specific' | '
 }
 
 /*
- * ── GAP-FIX-R2: REPLY CHIPS (Frontend Bible 08 §2 layer 5, §4, §9) ─────────
+ * ── REPLY CHIPS ─────────
  *
  * A Mentor turn may offer up to three LIKELY ANSWERS as reply chips, so a
  * 6-9 learner without a microphone taps instead of typing ("reply chips come
@@ -365,9 +363,9 @@ export function classifyPraise(say: string, learnerText: string): 'specific' | '
  * activity: a chip that reads the key aloud is a reveal the learner did not
  * ask for, one tap away. Every chip passes, in order:
  *
- *   1. the `option` Copy Budget (Frontend Bible 06: 8 words, 5 for ages 6-9,
+ *   1. the `option` Copy Budget (8 words, 5 for ages 6-9,
  *      x1.25 for es-MX/pt-BR, one sentence), MIRRORED from
- *      frontend/src/rebuild/design/copyBudget.ts and pinned by test;
+ *      frontend/src/rebuild/design/copyBudget.ts;
  *   2. the answer-statement check above (`statesTheAnswer`);
  *   3. Core's KEY-BASED reveal check against the open activity's stored key
  *      (`POST /tutor/internal/reveal-check`, `answerReveal.ts`), when an

@@ -1,5 +1,5 @@
 /*
- * GAP-FIX-R1 learning (Appendix A Part 2; B.7 part 2): the pure models behind
+ * The pure models behind
  * the interaction primitives in operations.tsx. Nothing here draws or grades:
  * boards compute their state from the canonical concept model, and these
  * helpers only turn that state into positions, crossings and token counts.

@@ -1,5 +1,5 @@
 /*
- * C.18 — writes one Mentor turn's honesty facts to `tutor_turn_honesty`,
+ * Writes one Mentor turn's honesty facts to `tutor_turn_honesty`,
  * adding the one fact only Core can establish: whether the turn stated the
  * open activity's REAL answer key (`answerReveal.ts`).
  *
@@ -18,7 +18,7 @@ import { serviceRest } from '../supabaseRest.js';
 import { getTutorSegment, getTutorSession } from '../tutorData.js';
 import { revealsAnswerKey } from './answerReveal.js';
 
-/** Mirrors oracle/src/tutor/feedbackHonesty.ts `TurnHonesty` (checked by `npm run honesty:check`). */
+/** Mirrors oracle/src/tutor/feedbackHonesty.ts `TurnHonesty`. */
 export interface TurnHonestyInput {
   sequenceKind: 'hint_ladder' | 'repair' | 'open_activity' | 'none';
   hintLevel: 'reask' | 'indirect' | 'misconception' | 'fill_blank' | 'tell' | null;

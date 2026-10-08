@@ -2,8 +2,8 @@ import type { Locale } from '../design/copyBudget';
 import type { PlacementAsk, PlacementFlow, PlacementResult, PlacementScreen } from './placementFlow';
 
 /*
- * W2L.2: preview fixtures for the placement flow (L4). A fixed flow per state,
- * so every screen can be reached by a URL and audited as it is; the handlers
+ * Preview fixtures for the placement flow. A fixed flow per state,
+ * so every screen can be reached by a URL; the handlers
  * move between the preview's states instead of calling Core. The real route
  * drives the same view with usePlacementFlow.
  */

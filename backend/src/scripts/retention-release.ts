@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 /*
  * `npm run learning:retention-release` — freezes a release's Delayed
- * Retention (Appendix C 1.1, GAP-FIX-R4) so the next release is judged
+ * Retention so the next release is judged
  * against it: "establish release-1 baseline per KC, then require no decline
  * release over release".
  *
  * The first release recorded is the release-1 baseline (log it as the
- * baseline row in docs/rebuild/mentor/THRESHOLD-RECALIBRATION-LOG.md). Each
+ * baseline row in the threshold recalibration log). Each
  * later release records the reviews of its own period: from the previous
  * recorded release's period end to now. A release is recorded once; running
  * it again for the same id changes nothing.
@@ -18,7 +18,7 @@
  *              longest window's reach); ignored once a release is recorded.
  *   --dry-run  prints the cells the release would freeze and records nothing.
  *
- * Operator tool, run at release time (after release:readiness passes). Reads
+ * Operator tool, run at release time. Reads
  * and one service-role write; no model call, costs nothing. Exit code 1 when
  * a read or the write fails.
  */

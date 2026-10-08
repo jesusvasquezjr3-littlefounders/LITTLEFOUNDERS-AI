@@ -3,14 +3,10 @@ import { rebuildNamespaceCopy, type RebuildNamespace } from '../../i18n/rebuild'
 import { checkCopy, type AgeBand, type CopyRole, type Locale } from '../design/copyBudget';
 
 /*
- * Shared helpers for the per-namespace copy-budget contract tests (Frontend
- * Bible 06 §3, OD-13). One test file per rebuilt namespace lives beside this
- * one (`core.test.ts`, `site.test.ts`, ... `staff.test.ts`); each wave-2 lane
- * adds the budget loop for a new key group to its own file only.
+ * Shared helpers for per-namespace copy-budget checks.
  *
- * Every file first proves it is exhaustive: the namespace's top-level keys
- * must equal the groups the file budgets, so a key added without a budget
- * fails here instead of shipping unmeasured.
+ * A namespace's top-level keys must equal the groups budgeted, so a key
+ * added without a budget is flagged instead of shipping unmeasured.
  */
 
 export const LOCALES = ['en-US', 'es-MX', 'pt-BR'] as const;

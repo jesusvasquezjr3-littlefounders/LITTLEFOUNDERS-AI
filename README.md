@@ -178,7 +178,6 @@ Oracle's daily spend ceiling (`DAILY_SPEND_CEILING_USD`) is enforced per process
 - **Dev machines differ.** This repo is worked from an 8 GB Apple M2 and from a 32 GB Windows box. Measure the machine you are on before running several servers or browsers at once.
 - **Windows.** Edits can land as CRLF while the repo is LF (a small change shows as a whole-file rewrite). In PowerShell `bash` is WSL's; use Git Bash for the shell scripts.
 - **`frontend/vercel.json` carries the cache policy.** `/assets/*` is content-hashed and immutable; `/fonts/*`, `/basis/*` and the stable-named media folders are cached for days, so regenerating one of those files requires renaming it.
-- **Old citations.** Many source comments cite documents, requirement ids and gates that no longer exist (`ORACLE.md`, `DESIGN.md`, "Bible 02", "OD-28", `check-*.mjs`). They are history. Remove them when you touch the file; never treat them as rules.
 - **English-only identifiers and documentation.** Routes, tables, files, i18n keys, comments, commit messages and docs are in English; only locale text is translated.
 
 ## License

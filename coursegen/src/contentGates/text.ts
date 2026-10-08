@@ -1,10 +1,8 @@
-// Text measurement shared by the Forge content gates (B.14, B.18, OD-13).
+// Text measurement shared by the Forge content gates.
 //
-// Word and sentence counting deliberately mirror the Frontend Bible's
-// reference tool (docs/littlefounders-spec/frontend/verification-tools/
-// copy-budget-audit.reference.mjs), so a string that passes here is measured
-// the same way when the rebuilt app renders it: "a word is any run of letters
-// or digits ('25%', "Sofía's" and '60' each count as one)" (Bible 06 §3).
+// Word and sentence counting deliberately mirror the copy-budget audit, so a
+// string that passes here is measured the same way when the app renders it: "a word is any run of letters
+// or digits ('25%', "Sofía's" and '60' each count as one)".
 
 const COMBINING_DIACRITICS_RE = new RegExp('[\\u0300-\\u036f]', 'g');
 
@@ -30,12 +28,12 @@ export function plainText(markdown: string): string {
 
 const WORD_RE = /[\p{L}\p{N}][\p{L}\p{N}'’.,%$-]*/gu;
 
-/** Bible 06 word count (identical expression to the reference audit). */
+/** Word count. */
 export function countWords(text: string): number {
   return (text.trim().match(WORD_RE) ?? []).length;
 }
 
-/** Bible 06 sentence count (identical split to the reference audit). */
+/** Sentence count. */
 export function countSentences(text: string): number {
   const cleaned = text.replace(/\b(Dr|Mr|Mrs|Ms|Sr|Sra|Srta|St)\./g, '$1').trim();
   return cleaned

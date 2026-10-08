@@ -1,6 +1,6 @@
 /**
- * Horizonte F2.6: the expression engine behind the equation editor. Pure and import-free, so a byte copy is valid in the
- * browser (synced) and in Forge (copied, pinned by a test). It never evaluates learner text: it tokenizes by character code,
+ * The expression engine behind the equation editor. Pure and import-free, so a byte copy is valid in the
+ * browser (synced) and in Forge (copied). It never evaluates learner text: it tokenizes by character code,
  * parses with a bounded recursive descent into a small AST, and decides equivalence by exact rational sampling.
  *
  * Bounds (a hostile or careless input costs a bounded amount of work, never a hang): 64 characters, 64 AST nodes, nesting

@@ -73,7 +73,7 @@ function sliceNote(t: SpaceText, locale: Locale, payload: SurfacePayload, slice:
 }
 
 /*
- * F4.7: a surface is a third real variable. Two inputs (a rate and a term, or a price and a quantity) make one output (an amount
+ * A surface is a third real variable. Two inputs (a rate and a term, or a price and a quantity) make one output (an amount
  * or a profit). The learner turns the mesh, slices it into a 2D curve under a slider, reads the lettered options and picks the one
  * the question asks for. The answer is { choice }; Core holds the key and the browser never says met.
  */

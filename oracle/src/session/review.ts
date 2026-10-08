@@ -30,7 +30,7 @@ import type { SessionContext } from '../core/client.js';
  *   observation it must compress or drop an old one. `null` means "nothing
  *   new worth writing", and short sessions should usually say null.
  *
- * - §1.9 IS IN THE PROMPT AND RE-CHECKED HERE. No surnames, no locations,
+ * - THE PRIVACY RULE IS IN THE PROMPT AND RE-CHECKED HERE. No surnames, no locations,
  *   no school names, no identifying details. The nickname is the only name
  *   that may appear. A response that smells of identifiers is dropped whole.
  *
@@ -39,13 +39,13 @@ import type { SessionContext } from '../core/client.js';
  *
  * - ITS OWN CALL IS BILLED, AND IT SAYS SO. The call below is a real,
  *   separately-paid completion against the same pedagogical model an ordinary
- *   turn uses, and nothing read its `usage` until round 78 — so a cost every
+ *   turn uses, and nothing read its `usage` until it was fixed — so a cost every
  *   session with a real conversation in it incurs was invisible to the ledger,
- *   permanently. It is now added to that session's own recorded cost (§15)
+ *   permanently. It is now added to that session's own recorded cost
  *   from `runPostSessionReview`'s `finally`, so it is reported on EVERY path
  *   out of the review and not only the one where a note is written — the money
- *   is spent whatever happens to the answer, which is the same reason round 64
- *   made tier-3's cost a callback rather than a return value.
+ *   is spent whatever happens to the answer, which is the same reason
+ *   tier-3's cost is a callback rather than a return value.
  */
 
 const REVIEW_SYSTEM = [
@@ -91,12 +91,12 @@ const TRANSCRIPT_FENCE_SHAPE = /<<<(?:END_)?SESSION_TRANSCRIPT_[A-Za-z0-9_-]*>>>
  * (`orchestrator.ts`'s `conversationMessages`/recall/placement paths) wraps
  * it. It matters MORE here than at a live turn: this call's OUTPUT is
  * persisted as `learner_memory` and re-injected into EVERY future session as
- * the tutor's own trusted notes (§4.1's fourteenth context field) — a
+ * the tutor's own trusted notes (the fourteenth context field) — a
  * successfully manipulated review becomes a cross-session, elevated-trust
  * payload, not a single bad turn a moderation pass might still catch.
  */
 /**
- * `nonce` is returned alongside the block (round 55, 2026-08-30, HIGH) so the
+ * `nonce` is returned alongside the block so the
  * caller can pass it to `moderateTutorOutput`'s own `nonce` echo-check — the
  * same defense `orchestrator.ts`'s per-turn fence already gets. The generic
  * `PROMPT_LEAK_MARKERS` addition in `safety/moderation.ts` catches a full
@@ -148,8 +148,8 @@ function parseProposal(raw: string): ReviewProposal | null {
 /**
  * Sends this review's own model spend to the session it belongs to.
  *
- * Found by adversarial review, round 78 (2026-08-30, MEDIUM): this call's
- * `usage` was never even read. The sibling gap round 64 closed (tier-3
+ * Found by adversarial review: this call's
+ * `usage` was never even read. The sibling gap closed earlier (tier-3
  * generation) happens DURING a session, so it could be folded into the
  * orchestrator's running total; this one happens after `closeSession` has
  * already written `costUsd` in BOTH close paths (`ws/server.ts`'s `finish()`
@@ -161,7 +161,7 @@ function parseProposal(raw: string): ReviewProposal | null {
  * forget when a price changes.
  *
  * NEVER THROWS, never retries, and swallows nothing quietly: a provider that
- * reports no usage at all is LOUD rather than counted as zero (§1.14 — an
+ * reports no usage at all is LOUD rather than counted as zero (an
  * uncounted call and a free one are different facts), and a Core write that
  * does not land says so. This function's failure mode is "this one review's
  * cost is uncounted", never "the review failed".
@@ -169,7 +169,7 @@ function parseProposal(raw: string): ReviewProposal | null {
 /**
  * What the model call actually spent, filled in by `review()` and read by the
  * wrapper below. A mutable box rather than a return value for the same reason
- * round 64 made tier-3's cost a CALLBACK: the money is spent long before the
+ * tier-3's cost is a CALLBACK: the money is spent long before the
  * function knows whether it has anything worth returning, and every one of the
  * six ways this review can decide "nothing to write" is a `return null`.
  */
@@ -187,7 +187,7 @@ async function reportReviewCost(sessionId: string, spend: ReviewSpend): Promise<
   const promptTokens = spend.usage?.prompt_tokens ?? 0;
   const completionTokens = spend.usage?.completion_tokens ?? 0;
   if (promptTokens === 0 && completionTokens === 0) {
-    // A call we made and cannot price is NOT a free call (§1.14). Saying so is
+    // A call we made and cannot price is NOT a free call. Saying so is
     // the whole difference between a known gap and blind flight.
     console.warn(
       '[oracle] post-session review reported no token usage — its real cost is UNCOUNTED for this session',
@@ -202,8 +202,7 @@ async function reportReviewCost(sessionId: string, spend: ReviewSpend): Promise<
    * spent the moment the completion answers (see `review()`'s own "THE MONEY
    * IS SPENT HERE" comment) — a Core write that fails must not also make this
    * real, already-billed call invisible to the circuit breaker that exists
-   * specifically to catch spend Core never heard about (/ORACLE.md §15.2
-   * item 1).
+   * specifically to catch spend Core never heard about.
    */
   spendGuard.record(costUsd);
   const recorded = await addSessionCost({ sessionId, costUsd, reason: 'post_session_review' });
@@ -218,9 +217,9 @@ async function reportReviewCost(sessionId: string, spend: ReviewSpend): Promise<
  * Run the review for a finished session and persist what it learned.
  *
  * Fire-and-forget from the socket's finish path: `void runPostSessionReview(…)`.
- * Returns what it wrote, for the tests and for nothing else.
+ * Returns what it wrote, for diagnostics and for nothing else.
  *
- * The `finally` is the whole point of this wrapper (round 78): the review's own
+ * The `finally` is the whole point of this wrapper: the review's own
  * paid model call must reach the session's cost ledger on EVERY path out of
  * `review()` below — a malformed proposal, an identifier-shaped note, a judge
  * refusal, a Core write that did not land — because all of them happen after
@@ -265,14 +264,14 @@ async function review(
   /*
    * NEVER WRITE OVER REAL MEMORY BASED ON A FAILED READ OF IT.
    *
-   * Found by adversarial review, round 28 (2026-08-30, HIGH): `learnerBrief`
+   * Found by adversarial review: `learnerBrief`
    * arriving empty means one of two very different things — this learner
    * genuinely has no memory yet, or Core's read of it just failed — and
    * this function used to treat both identically, telling the model "(empty)"
    * either way. The model then proposes a note "from scratch," which
    * `updateLearnerMemory` WRITES AS A FULL REPLACEMENT — so a transient read
    * failure on session N+1 could silently and permanently erase everything
-   * sessions 1..N had accumulated. This is the exact §1.14
+   * sessions 1..N had accumulated. This is the exact
    * failure-must-be-distinguishable-from-emptiness shape this codebase's own
    * `getLearningStatsForUpdate` incident already named. `learnerBriefDegraded`
    * is Core's own signal that the read failed; when it is set, this review
@@ -326,8 +325,8 @@ async function review(
       return null;
     }
     /*
-     * THE MONEY IS SPENT HERE, whatever happens to the answer below (round 78,
-     * 2026-08-30) — so it is marked spent BEFORE the body is read, not after.
+     * THE MONEY IS SPENT HERE, whatever happens to the answer below
+     * — so it is marked spent BEFORE the body is read, not after.
      * A 200 we then fail to parse is still a billed completion, and marking it
      * afterwards would lose exactly the call whose reply went wrong. Recorded
      * on the box the wrapper reads in its `finally`, so the cost reaches the
@@ -354,7 +353,7 @@ async function review(
   if (proposal.learner === null && proposal.pedagogy === null) return proposal;
 
   /*
-   * The §1.9 re-check. The prompt forbids identifiers; this catches a drift.
+   * The identifier re-check. The prompt forbids identifiers; this catches a drift.
    * Coarse on purpose: an at-sign, a URL, or a phone-shaped run of digits has
    * no business in a note about pedagogy, so the whole proposal is dropped
    * rather than trimmed — a partially sanitized belief is not a belief we
@@ -381,14 +380,14 @@ async function review(
 
   /*
    * THE REGEX ABOVE ONLY CATCHES DIGIT/URL-SHAPED IDENTIFIERS. Found by
-   * adversarial review, round 42 (2026-08-30, HIGH): a surname, a school
+   * adversarial review: a surname, a school
    * name, or a neighborhood contains none of those shapes and sailed
    * straight through — "Se llama Sofía Hernández López y va a la Escuela
    * Primaria Benito Juárez" is not suspicious to a single regex, and this
    * note is not merely SHOWN to a child once: it is persisted and re-injected
    * VERBATIM, UNFENCED, as trusted system-prompt text into EVERY future
    * session (`prompt.ts`'s "Your own notes on who this learner is") — a
-   * direct §1.9 violation ("no surnames, no locations... sent to a
+   * direct privacy violation ("no surnames, no locations... sent to a
    * third-party AI API") repeating itself forever once written once.
    *
    * `moderateTutorOutput`'s judge already carries a `personal_information`
@@ -396,14 +395,14 @@ async function review(
    * this kind of free-text classification a regex cannot do — reused here
    * rather than standing up a second judge. `requireModelPass: true`
    * UNCONDITIONALLY, regardless of `isMinor`: unlike a live spoken turn
-   * (time-sensitive, an adult may run on the deterministic pass alone per
-   * §6), this write is permanent and this call has no client waiting on a
+   * (time-sensitive, an adult may run on the deterministic pass alone),
+   * this write is permanent and this call has no client waiting on a
    * clock, so the fail-closed judge always runs — a memory note about ANY
    * learner deserves the same protection before it is believed forever.
    */
   /*
-   * COMBINED INTO ONE JUDGE CALL, NOT TWO (round 120, 2026-08-31, MEDIUM,
-   * `tutor-review-sweep-101`, cost-efficiency dimension). This used to call
+   * COMBINED INTO ONE JUDGE CALL, NOT TWO.
+   * This used to call
    * `moderateTutorOutput` separately for `proposal.learner` and
    * `proposal.pedagogy` — two full, billed judge round trips whenever a
    * review proposes both notes — where `orchestrator.ts`'s own
@@ -429,7 +428,7 @@ async function review(
    * detail). A verdict the JUDGE (not the deterministic pass) raised on the
    * combined text cannot be narrowed to one field without spending a SECOND
    * billed call — the exact cost this fix removes — so it is logged as
-   * spanning both rather than guessed at: §1.14's "no fabricated specifics"
+   * spanning both rather than guessed at: "no fabricated specifics"
    * applies to a log line exactly as much as to a claim about test results.
    */
   const parts = (
@@ -500,7 +499,7 @@ async function review(
    * compare-and-swap (`write_learner_memory_pair_checked`, migration 0061,
    * wrapping `write_learner_memory_checked`, migration 0059) actually able
    * to detect a concurrent session's write. Found by
-   * adversarial review, round 51 (2026-08-30, MEDIUM): this used to be
+   * adversarial review: this used to be
    * omitted entirely, so Core computed its own "expected before" from a
    * fresh read taken immediately before the RPC call — a value that, by
    * construction, always matches whatever the row currently holds. See

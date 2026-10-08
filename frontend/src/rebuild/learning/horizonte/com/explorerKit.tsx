@@ -13,7 +13,7 @@ import '../horizonte.css';
 import './explorer.css';
 
 /*
- * F2.17: one choice and one whole number. The learner predicts first (a choice), then explores a figure until the
+ * One choice and one whole number. The learner predicts first (a choice), then explores a figure until the
  * number shows. The board sends { predict, value } when both are made; Core holds the key and the rule.
  */
 

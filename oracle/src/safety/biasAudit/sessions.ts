@@ -2,7 +2,7 @@ import type { Locale } from '../../context/schema.js';
 import type { VariantGroup } from './fixtures.js';
 
 /*
- * C.20 — FUSED-OUTPUT PARITY: the same learner behaviour, written in
+ * FUSED-OUTPUT PARITY: the same learner behaviour, written in
  * different dialects and as speech-to-text output, must produce the same
  * Behavioral Telemetry Layer decisions (the same check-ins, on the same
  * turns). Component-level parity (`fixtures.ts`) is necessary but not

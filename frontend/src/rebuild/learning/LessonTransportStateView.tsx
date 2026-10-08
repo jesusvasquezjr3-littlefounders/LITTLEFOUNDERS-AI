@@ -4,10 +4,10 @@ import './learning.css';
 import './lessonTransportState.css';
 
 /*
- * W2L.3 adds Core's lesson refusals that no retry can change, each said
- * plainly with the way back (B.26: task-scoped, no blame): a lesson the path
+ * Core's lesson refusals that no retry can change, each said
+ * plainly with the way back (task-scoped, no blame): a lesson the path
  * has not reached (`LESSON_LOCKED`), a course whose prerequisite is not done
- * (`COURSE_PREREQUISITE_REQUIRED`, B.2) and a lesson that does not exist.
+ * (`COURSE_PREREQUISITE_REQUIRED`) and a lesson that does not exist.
  */
 export type LessonTransportState = 'opening' | 'offline' | 'load-error' | 'placement' | 'locked' | 'prerequisite' | 'not-found';
 
@@ -43,7 +43,7 @@ const copy: Record<Locale, Record<LessonTransportState, {
   },
 };
 
-/** Exported for the Copy Budget test. */
+/** Exported for the Copy Budget. */
 export const lessonTransportCopy = copy;
 
 /** Reusable presentation only; the host owns network state and retry policy. */
@@ -57,7 +57,7 @@ export function LessonTransportStateView({ state, locale, onBack, onRetry }: {
       <div className="lf-transport-state-content">
         <h1 data-copy-role="heading">{t.heading}</h1>
         <p data-copy-role="body">{t.body}</p>
-        {/* Indeterminate and still: a loading state is not one of the three idle loops (02 §9.4). */}
+        {/* Indeterminate and still: a loading state is not one of the three idle loops. */}
         {state === 'opening' ? <div className="lf-transport-state-progress" role="progressbar"
           aria-label={t.heading} /> : null}
       </div>

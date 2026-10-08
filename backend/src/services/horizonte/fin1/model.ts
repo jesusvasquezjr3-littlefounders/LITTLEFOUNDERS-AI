@@ -1,5 +1,5 @@
 /*
- * The fin1 pack's pure finance model (F1.10 compound interest, F2.11 time value of money, F2.12 effective rate,
+ * The fin1 pack's pure finance model (compound interest, time value of money, effective rate,
  * credit card, NPV and IRR). Money is integer cents, a rate is a whole number of basis points (or a whole percent
  * where a slider moves it), and every rounding is half up (a tie goes toward +infinity) at the step named beside the
  * function. BigInt keeps every intermediate exact, so no float comparison decides a verdict. No I/O, no clock.
@@ -41,7 +41,7 @@ export function normalizeDecimal(text: string): string {
   return /^-?\d+(\.\d+)?$/.test(text) ? text.replace(/(\.\d*?)0+$/, '$1').replace(/\.$/, '') : text;
 }
 
-/* ───────────────────────────── F1.10 compound interest ───────────────────────────── */
+/* ───────────────────────────── compound interest ───────────────────────────── */
 
 export const COMPOUND_RATE = { min: 1, max: 12 } as const;
 export const COMPOUND_YEARS = { min: 1, max: 40 } as const;
@@ -125,7 +125,7 @@ export const meetsChallenge = (principalCents: number, challenge: CompoundChalle
 export const challengeReachable = (principalCents: number, challenge: CompoundChallenge): boolean =>
   meetsChallenge(principalCents, challenge, COMPOUND_RATE.max, Math.min(challenge.maximumYears, COMPOUND_YEARS.max));
 
-/* ───────────────────────────── F2.11 time value and annuities ───────────────────────────── */
+/* ───────────────────────────── time value and annuities ───────────────────────────── */
 
 export const TV_RATE = { min: 100, max: 2000 } as const;
 export const TV_PAYMENTS = { min: 2, max: 5 } as const;
@@ -272,7 +272,7 @@ export function keySolutionSound(payload: TimeValuePayload, solution: Slots): bo
   return flows.length === wanted.length && wanted.every((slot) => (solution[slot] ?? []).length === 1);
 }
 
-/* ───────────────────────────── F2.12 effective rate, card, NPV, IRR ───────────────────────────── */
+/* ───────────────────────────── effective rate, card, NPV, IRR ───────────────────────────── */
 
 export const COMPOUNDINGS = [1, 2, 4, 12, 52, 365] as const;
 export const EFFECTIVE_NOMINAL = { min: 100, max: 6000 } as const;

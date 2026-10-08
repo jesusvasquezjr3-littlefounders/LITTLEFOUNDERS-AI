@@ -7,14 +7,14 @@ import '../design/system.css';
 import './register.css';
 
 /*
- * B.23 (S05.3f) — the graduation moment. Around ages 10 to 12, children begin
- * discounting simplistic praise (Appendix B §2.9); at 13 the register turns
+ * The graduation moment. Around ages 10 to 12, children begin
+ * discounting simplistic praise; at 13 the register turns
  * teen. When Core says a learner has just moved into an older register, this
  * card says, once, what changes for them: the Mentor steps back, feedback
  * names the exact skill, the choices get bigger. It is written in the NEW
  * register's words and budget.
  *
- * Information, never a celebration: the graduation is not on OD-7's closed
+ * Information, never a celebration: the graduation is not on the closed
  * milestone list, so there is no motion, no medal and no reward here. One
  * action records that the learner saw it; the host then removes the card.
  * Presentation only: the host owns transport.
@@ -70,7 +70,7 @@ export function RegisterGraduationView({ into, locale, dark, onAcknowledge, fixt
     <ul className="lf-graduation-changes">
       {t.changes.map((change) => <li key={change} data-copy-role="body">{change}</li>)}
     </ul>
-    {/* A polite, neutral notice: a save that failed is never the learner's fault and never the error hue here (B.26). */}
+    {/* A polite, neutral notice: a save that failed is never the learner's fault and never the error hue here. */}
     {failed ? <div className="lf-graduation-failed"><InlineNotice tone="info" live>{t.failed}</InlineNotice></div> : null}
     <Button variant="accent" onClick={acknowledge} aria-disabled={pending || undefined}>{t.action}</Button>
   </section>;

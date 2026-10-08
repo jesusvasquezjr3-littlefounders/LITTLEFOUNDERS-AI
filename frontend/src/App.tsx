@@ -20,16 +20,16 @@ import { staffShellRoutes } from '@/app-routes/staff';
 import { useEffect, useState } from 'react';
 
 /*
- * The route table, composed (W2 Lane 0). Each wave-2 lane owns one module
+ * The route table, composed. Each area owns one module
  * under src/app-routes/ (site, learn, mentor, profile, staff) that
- * exports its child routes with their guards; core.tsx (Lane 0) holds the dev
+ * exports its child routes with their guards; core.tsx holds the dev
  * harnesses, the standalone states and the route of last resort. This file
  * only decides which rebuilt shell (src/app-shell/) each group renders in:
  *
  *   SiteShell         the public pages
  *   AuthShell         sign-in, sign-up, recovery, verification, OAuth landing
  *   LearnerShell /    every signed-in page but the console: the learner app, or
- *   TutorShell        the Tutor console for a verified parent (OD-6)
+ *   TutorShell        the Tutor console for a verified parent
  *   StaffShell        /admin, items filtered by the staff grants
  *   single-state      not found, a suspended account, account deletion
  *   (none)            the full-screen layers: onboarding, account upgrade,
@@ -38,7 +38,7 @@ import { useEffect, useState } from 'react';
  */
 
 /*
- * First-party usage beacon (/INSIGHTS.md), mounted ONCE above every route
+ * First-party usage beacon, mounted ONCE above every route
  * group — the lesson player lives OUTSIDE the app shell, so a layout-level
  * beacon died on every lesson entry, silently discarding lesson events.
  * Renders nothing; transmits nothing without a session + analyticsEnabled.
@@ -59,7 +59,7 @@ export function App() {
 
   /*
    * Dissolve the boot veil index.html armed before the first paint
-   * (Bible 02 rule 2, 04 §2; see index.html). Here rather than in main.tsx because an
+   * (see index.html). Here rather than in main.tsx because an
    * effect at the app root is the first moment React has actually COMMITTED —
    * calling it beside createRoot().render() would only mean "render was
    * requested", which under concurrent rendering can be several frames early,

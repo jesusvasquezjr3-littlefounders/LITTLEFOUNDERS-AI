@@ -3,7 +3,7 @@
 // NEVER has a user JWT (it's an offline CLI, not a request handler), so
 // every call here is service-role, bypassing RLS on purpose: hierarchy rows
 // land as 'draft'/'review' and are invisible to clients until a human (or
-// Core) flips them to 'published' (COURSE_ENGINE.md §4/§6).
+// Core) flips them to 'published'.
 
 import { getConfig, requirePublishKeys } from '../env.js';
 
@@ -52,8 +52,8 @@ async function vaultRest<T>(path: string, init: RestInit = {}): Promise<RestResu
  * sagas/topics omit `status`, so a re-run never clobbers an operator's prior
  * 'published' flip — but LESSONS explicitly include `status: 'review'`
  * (publish.ts), so REGENERATING a published lesson downgrades it to review on
- * purpose: new kid-facing content always re-enters the human release gate
- * (§1.9 / COURSE_ENGINE.md §6). Re-run verification, then release through
+ * purpose: new kid-facing content always re-enters the human release gate.
+ * Re-run verification, then release through
  * Core after a regeneration.
  */
 export async function vaultUpsert<T>(table: string, rows: readonly unknown[], onConflict: string): Promise<T[]> {

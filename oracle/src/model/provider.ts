@@ -20,7 +20,7 @@ export interface ChatMessage {
 
 export interface CompletionResult {
   text: string;
-  /** Reported usage, for the per-session cost ledger (/ORACLE.md §15). */
+  /** Reported usage, for the per-session cost ledger. */
   promptTokens: number;
   completionTokens: number;
 }
@@ -69,7 +69,7 @@ interface ChatResponse {
  * Throws `ModelUnavailableError` rather than returning a fallback string. The
  * caller decides what a child hears when the model is down, and that decision
  * must be a scripted line chosen on purpose — not an empty completion that
- * happens to render as silence (§1.14: failure must stay distinguishable from
+ * happens to render as silence (failure must stay distinguishable from
  * emptiness).
  */
 export async function complete(
@@ -83,7 +83,7 @@ export async function complete(
      * investigation could not answer that question (2026-09-04).
      *
      * The empty-completion warning below is counted by `tutor:converse`, which
-     * reported 38 of them in one paid run. Rounds 71-75 then spent five
+     * reported 38 of them in one paid run. A later series then spent five
      * experiments hunting the cause inside the TURN pipeline — and measured it
      * at 0 in 80 protected calls, against an unprotected positive control that
      * fired at 43%. The turn path is clean, and was already fixed on
@@ -91,7 +91,7 @@ export async function complete(
      * no way to say which.
      *
      * A counter that sums three call sites into one number cannot be acted on:
-     * it is the §1.14 rule about a metric measuring the harness's assumptions,
+     * it is the mistake of a metric measuring the harness's assumptions,
      * one layer down. So every caller names itself, and the next run answers
      * the question instead of raising it.
      */
@@ -104,12 +104,12 @@ export async function complete(
   }
 
   /*
-   * Found by adversarial review, round 24 (2026-08-30, HIGH): `withTimeout`
+   * Found by adversarial review: `withTimeout`
    * below races an already-invoked fetch — on OUR timeout it stops waiting,
    * but the real HTTP request to DeepSeek keeps running and can still be
    * billed on the provider's side with nothing in our own ledger to show
    * for it, on top of whatever the following retry attempt then spends.
-   * `AGENTS.md` item 25 fixed the identical pattern at the three voice
+   * The identical pattern was already fixed at the three voice
    * provider call sites; this is the single highest-volume paid call in the
    * whole service (every turn) and had never gotten the same fix.
    * `AbortSignal.any` combines the caller's OWN interruption signal (a
@@ -233,7 +233,7 @@ export async function complete(
       .join(' ');
     /*
      * THE REQUEST'S SHAPE, because the response's shape was only half the
-     * question (round 76, 2026-09-04).
+     * question.
      *
      * `model:probe-empty` measures the protected turn path at 0 in 80 calls
      * while production runs at ~14% on prompts of the same size — and once the
@@ -242,7 +242,7 @@ export async function complete(
      * nothing in the logs could describe the data.
      *
      * ROLES AND LENGTHS ONLY, never content: this array holds the learner's
-     * own fenced words, and §1.9 does not have an exception for debugging. A
+     * own fenced words, and the privacy rule does not have an exception for debugging. A
      * count of characters per role, in order, is enough to tell a
      * learner-answering turn from a system-prompted one, a short history from
      * a long one, and a retry from a first attempt — which is the whole

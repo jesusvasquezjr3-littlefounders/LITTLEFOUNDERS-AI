@@ -1,5 +1,5 @@
 /**
- * Horizonte F2.4 and F2.5: the pure models behind the function graph and the line system. Exact rational arithmetic
+ * The pure models behind the function graph and the line system. Exact rational arithmetic
  * (BigInt), no float comparison decides a verdict. Import-free, so the synced browser copy is byte-identical.
  */
 
@@ -83,7 +83,7 @@ function exactKeys(value: unknown, required: readonly string[], optional: readon
 
 const isInt = (value: unknown, low: number, high: number): value is number => typeof value === 'number' && Number.isInteger(value) && value >= low && value <= high;
 
-/* ── F2.4: the function graph ─────────────────────────────────────────────── */
+/* ── the function graph ─────────────────────────────────────────────── */
 
 export const GRAPH_FAMILIES = ['line', 'quadratic', 'exponential'] as const;
 export type GraphFamily = (typeof GRAPH_FAMILIES)[number];
@@ -315,7 +315,7 @@ export function curveFunction(curve: GraphFamily, params: Readonly<Record<string
   return a === null || base === null || base <= 0 ? null : (x) => a * base ** x;
 }
 
-/* ── F2.5: the line system ────────────────────────────────────────────────── */
+/* ── the line system ────────────────────────────────────────────────── */
 
 export interface PlaneLine { a: number; b: number; c: number }
 export interface PlanePoint { x: number; y: number }

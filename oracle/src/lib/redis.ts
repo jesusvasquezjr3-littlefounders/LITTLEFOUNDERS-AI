@@ -11,7 +11,7 @@ import { withTimeout } from './http.js';
  * limiter imports it — a cache is not a reason to open another socket, another
  * reconnect loop and another thing that can be down.
  *
- * EVERY RULE THIS CLIENT LIVES BY IS §1.14's, and none of them is new:
+ * EVERY RULE THIS CLIENT LIVES BY IS A SET OF EXISTING ONES, and none of them is new:
  *
  *  - It is connected in the BACKGROUND by index.ts, after the listener opens.
  *    Awaiting a client that retries its initial connect forever — which
@@ -39,7 +39,7 @@ if (!isTestOrDev) {
  * The rate limiter's store issues a command the moment it is constructed, and
  * it is constructed at module load — before index.ts connects, which it does in
  * the background on purpose so the listener never waits on optional
- * infrastructure (§1.14). "Not connected yet, at boot" and "not connected, an
+ * infrastructure. "Not connected yet, at boot" and "not connected, an
  * hour in" need opposite answers: the first should WAIT a beat, the second must
  * fail immediately so a Redis outage cannot add latency to every request.
  */

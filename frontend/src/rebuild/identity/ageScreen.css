@@ -1,9 +1,9 @@
 /*
- * The age question (A.3). Standalone, it sits on a tint of the single-state
- * screen's hue (02 §4.5: every element on a single-state screen is a tint or a
+ * The age question. Standalone, it sits on a tint of the single-state
+ * screen's hue (every element on a single-state screen is a tint or a
  * contrasting fill of its hue, never a jump to a neutral page); embedded in the
  * sign-in shell's column, it is that column's content. Fixed steps by the `app`
- * container, never fluid or by the viewport (02 §6, §7 rule 9).
+ * container, never fluid or by the viewport.
  */
 /* Embedded: the shell's page already paints the background and the height. */
 .lf-rebuild.lf-age-root--embedded { min-block-size: 0; background: none; }

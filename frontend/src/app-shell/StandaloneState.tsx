@@ -6,7 +6,7 @@ import { ConnectedStandaloneHeader } from './StandaloneHeader';
 
 /*
  * A standalone state route (not found, a suspended account, a scheduled or
- * completed deletion) on the rebuilt single-state screen (02 §4.5, rule 15):
+ * completed deletion) on the rebuilt single-state screen:
  * one hue fills the page, shared brand and display controls, a skip link, route focus, the
  * document title and language. The page supplies exactly one <h1>.
  */

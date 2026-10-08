@@ -3,7 +3,7 @@ import type { Strategy } from '../context/schema.js';
 import { HINT_LEVELS, HINT_LEVEL_WORDING, type HintLevel } from './hintLadder.js';
 
 /*
- * C.17: age-band-differentiated dialogue calibration (Appendix D §3.6).
+ * Age-band-differentiated dialogue calibration.
  *
  * The Mentor's hint pacing and scaffolding style follow the learner's AGE
  * BAND, the same four registers as B.23 (young child 6–9, tween 10–12, teen
@@ -26,20 +26,20 @@ import { HINT_LEVELS, HINT_LEVEL_WORDING, type HintLevel } from './hintLadder.js
  *                coding scheme, applied across all four personas).
  *   adult        as teen, in a direct register.
  *
- * NOT ASSUMED CORRECT ON ADOPTION. Appendix D §3.6 is explicit that no
- * tutoring RCT backs these calibrations, so the SPEC requires an A/B test
+ * NOT ASSUMED CORRECT ON ADOPTION. No
+ * tutoring RCT backs these calibrations, so an A/B test is required,
  * measured through the alliance-bond and session-closing telemetry. The
  * variant arrives from Core (`dialogueCalibration` in the session context):
- * `calibrated` (the policy above) or `control` (the uniform, pre-C.17
- * register every learner had before). Core assigns it through the H.7
- * experiment runtime; OD-26 opened enrolment to adults, teens (their own
+ * `calibrated` (the policy above) or `control` (the uniform, pre-calibration
+ * register every learner had before). Core assigns it through the
+ * experiment runtime; enrolment is open to adults, teens (their own
  * analytics opt-in) and tweens (a verified guardian's consent), and children
- * 6-9 always receive the SPEC's calibrated default. In either arm, a teen or
+ * 6-9 always receive the calibrated default. In either arm, a teen or
  * adult turn still runs the controlling-language gate (CONTROLLING_GATE_BANDS).
  *
  * PRIVACY. The band never enters the sealed model context (still 14 fields,
  * `tier` unchanged). The register note is a fixed, band-free style
- * instruction appended to the turn like the C.15 continuity note: it says how
+ * instruction appended to the turn like the continuity note: it says how
  * to speak, never how old the learner is.
  */
 
@@ -49,12 +49,12 @@ export const DIALOGUE_VARIANTS = ['calibrated', 'control'] as const;
 export type DialogueVariant = (typeof DIALOGUE_VARIANTS)[number];
 /**
  * How the variant was decided:
- *   experiment           enrolled in the running H.7 experiment
- *   not_eligible         the band is outside the experiment's allowed bands (every minor, per OD-23)
+ *   experiment           enrolled in the running experiment
+ *   not_eligible         the band is outside the experiment's allowed bands (every minor,)
  *   no_consent           a kid account without active guardian analytics consent
  *   no_experiment        no running experiment for this surface
  *   runtime_unavailable  the experiment runtime could not answer (never a guess)
- *   rollback             the C.17 Stage 7 automatic rollback is in force (control for everyone)
+ *   rollback             the automatic rollback is in force (control for everyone)
  *   tier_fallback        an older Core sent no calibration: the band is derived from the tier
  *   operator_off         TUTOR_DIALOGUE_CALIBRATION=off (control for everyone)
  */
@@ -105,7 +105,7 @@ export function resolveCalibration(
   return base;
 }
 
-/** The younger-child ladder: the indirect hint is dropped (Appendix D §3.6, Wood/Bruner/Ross). */
+/** The younger-child ladder: the indirect hint is dropped (Wood/Bruner/Ross). */
 export const YOUNG_CHILD_LADDER: readonly HintLevel[] = ['reask', 'misconception', 'fill_blank', 'tell'];
 
 const YOUNG_CHILD_WORDING: Record<HintLevel, string> = {
@@ -159,17 +159,16 @@ export interface DialoguePolicy {
 
 /**
  * The bands whose turns always run the controlling-language gate, in BOTH
- * arms of the C.17 experiment (C.17; Appendix D §3.6; the Tier 1 rule "the
+ * arms of the experiment (the rule "the
  * teen/adult register never delivers controlling language silently").
  *
- * The gate follows the BAND, never the variant. Before OD-26 only adults
- * could reach the control arm; OD-26 opened C.17 to teens (and tweens), so a
+ * The gate follows the BAND, never the variant. At first only adults
+ * could reach the control arm; the experiment later opened to teens (and tweens), so a
  * 13-17 learner can now be assigned `control`, and a variant-keyed gate let
  * "you have to…" reach them uncaught, unrepaired and uncounted. The control
  * arm keeps what the experiment compares (the uniform ladder, wording, no
  * register note, no ask-first pacing); the gate is a style constraint, and it
  * also makes the controlling-language counts comparable between the arms.
- * `review-calibration:check` fails if a policy branch stops using it.
  */
 export const CONTROLLING_GATE_BANDS: readonly DialogueBand[] = ['teen', 'adult'];
 
@@ -180,7 +179,7 @@ export function controllingGateFor(band: DialogueBand): boolean {
 
 /**
  * The policy for a band and variant. `control` is the uniform register every
- * learner had before C.17: the full ladder, the original wording, no note,
+ * learner had before calibration: the full ladder, the original wording, no note,
  * no ask-first. The controlling-language gate is NOT part of the register
  * being compared: it follows the band in both arms (`controllingGateFor`).
  */
@@ -275,7 +274,7 @@ export function controllingLanguage(say: string): string | null {
 export const CONTROLLING_LANGUAGE_CORRECTION =
   'used controlling language ("you need to", "you have to", "you must", "you should", or the same in the session language). This learner responds to choice, not orders. Say the same thing again as an invitation with a reason — "you could try…", "one option is…", "want to…?" — and keep everything else';
 
-// ── the per-session record (C.17 Appendix F §1.2) ──────────────────────────
+// ── the per-session record ──────────────────────────
 
 export const DialogueCalibrationSnapshotSchema = z
   .object({
@@ -285,7 +284,7 @@ export const DialogueCalibrationSnapshotSchema = z
     controllingDelivered: z.number().int().min(0),
     pacingOffers: z.number().int().min(0),
     unilateralStyleChanges: z.number().int().min(0),
-    // Added by the gap-fix round (C.24 tell_honored; OD-13 budget; OD-6 self-naming).
+    // Added later (tell_honored; mentor turn budget; self-naming).
     // Defaulted so a snapshot written before them still restores.
     tellDelivered: z.number().int().min(0).default(0),
     tellWithdrawn: z.number().int().min(0).default(0),
@@ -320,14 +319,14 @@ export interface DialogueCalibrationReport extends DialogueCalibration {
   controllingDelivered: number;
   pacingOffers: number;
   unilateralStyleChanges: number;
-  /** C.13: turns that answered an explicit "just tell me" (C.24 rubric.tell_honored). */
+  /** Turns that answered an explicit "just tell me" (rubric.tell_honored). */
   tellDelivered: number;
-  /** C.13: tell requests whose answer turn the learner cut off or a safety response replaced. */
+  /** Tell requests whose answer turn the learner cut off or a safety response replaced. */
   tellWithdrawn: number;
-  /** OD-13: Mentor turns over the Copy Budget, caught on the first attempt / delivered anyway. */
+  /** Mentor turns over the Copy Budget, caught on the first attempt / delivered anyway. */
   budgetCaught: number;
   budgetDelivered: number;
-  /** OD-6: turns where the Mentor called itself a tutor, bot or assistant. */
+  /** Turns where the Mentor called itself a tutor, bot or assistant. */
   selfNamingCaught: number;
   selfNamingDelivered: number;
 }

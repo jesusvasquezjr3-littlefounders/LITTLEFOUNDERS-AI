@@ -22,7 +22,7 @@ const shaped = (value: unknown, required: readonly string[], optional: readonly 
 const asGrade = (grade: { verdict: V2Grade['verdict']; diagnostic: V2Grade['diagnostic'] }): V2Grade => ({ verdict: grade.verdict, diagnostic: grade.diagnostic });
 const payloadOf = (segment: unknown): unknown => (isRecord(segment) ? segment.payload : undefined);
 
-/* ── F1.10 ──
+/* ── Compound interest ──
  * Response { predict, rate, years, explain? }. Without `explain` the learner is still exploring: valid. With it, three
  * parts are marked against the private key and the public challenge: the prediction (the option nearest the true value),
  * the sliders (they reach the challenge) and the explanation. All three right is met; one wrong is review/miss, two
@@ -48,7 +48,7 @@ function compoundGrade(segment: unknown, response: unknown, rubric: unknown): V2
   return { verdict: 'review', diagnostic: wrong === 1 ? 'miss' : wrong === 2 ? 'partial' : 'value' };
 }
 
-/* ── F2.11 ──
+/* ── Time value of money ──
  * Response { slots, value? }: the payments the learner placed on the timeline, then the worth they typed for that very
  * arrangement. The key holds the best arrangement(s) and the number tolerance; the number's target is computed from the
  * learner's own arrangement. Without `value` the learner is still arranging: valid. Both right is met; otherwise the
@@ -87,10 +87,10 @@ function timeValueGrade(segment: unknown, response: unknown, rubric: unknown): V
   return { verdict: 'review', diagnostic: 'value' };
 }
 
-/* ── F2.12 ──
+/* ── Effective rate, credit card, NPV and IRR ──
  * Response { value, final? }: a typed number. Without `final: true` the learner is still working: valid. The key's target
  * must be the model's own answer for the case (a wrong key never grades) and its tolerance bands must be well formed; the
- * grade is then the F0.3 number.tolerance verdict (met, review/tolerance, review/value).
+ * grade is then the number.tolerance verdict (met, review/tolerance, review/value).
  */
 function rateGrade(segment: unknown, response: unknown, rubric: unknown): V2Grade {
   const payload = ratePayload.safeParse(payloadOf(segment));

@@ -5,8 +5,7 @@ import pt from '../../i18n/pt-BR/rebuild-learn.json';
 import type { Locale } from '../design/copyBudget';
 
 /*
- * W2L: the learner lane's rebuilt copy (`rebuild-learn.json`, budgeted in
- * rebuild/copy-budget/learn.test.ts). Placeholders are `{name}`; a count picks
+ * The learner lane's rebuilt copy (`rebuild-learn.json`). Placeholders are `{name}`; a count picks
  * its `…One` / `…Other` form by the locale's plural rules.
  */
 export const learnCopy: Record<Locale, typeof en> = { 'en-US': en, 'es-MX': es, 'pt-BR': pt };
@@ -28,9 +27,9 @@ export interface LearnLinks {
   territory: (slug: string) => string;
   rhythm: string;
   journal: string;
-  /** L-04: goals together (13 to 17). Optional so older hosts and previews still type-check. */
+  /** Goals together (13 to 17). Optional so older hosts and previews still type-check. */
   together?: string;
-  /** Bible 08 §8 (GAP-FIX-R1): the Mentor screen the home card opens. Optional for older hosts and previews. */
+  /** The Mentor screen the home card opens. Optional for older hosts and previews. */
   mentor?: string;
 }
 

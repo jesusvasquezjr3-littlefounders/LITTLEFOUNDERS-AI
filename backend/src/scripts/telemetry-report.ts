@@ -1,20 +1,20 @@
 #!/usr/bin/env node
 /*
- * `npm run tutor:telemetry-report` — the monitor for Product C.9 (the
- * Behavioral Telemetry Layer) and C.19 (the disengagement check-in),
- * Appendix F §1.2 and Part 3 Stage 7.
+ * `npm run tutor:telemetry-report` — the monitor for the
+ * Behavioral Telemetry Layer and the disengagement check-in,
+ * and the layer's rollback.
  *
- *   C.9    Default-to-Inaction Rate: of the learner turns the layer evaluated
+ *   - Default-to-Inaction Rate: of the learner turns the layer evaluated
  *          (act mode), the share on which it took no action. High by design;
- *          below the 85% floor it is a defect and a Stage 7 trigger. Split by
+ *          below the 85% floor it is a defect and a rollback trigger. Split by
  *          persona, with the mean strength of each channel across firings
  *          (which signals are driving check-ins).
- *   C.19   Disengagement-Repair Initiation Rate: of the fired signals a Mentor
+ *   - Disengagement-Repair Initiation Rate: of the fired signals a Mentor
  *          turn could have carried, the share that produced the check-in. A
  *          HARD 100% invariant: one undelivered firing is a defect. Also the
  *          check-in answers and how many "not really" repairs carried an
  *          adaptation offer.
- *   Stage 7 the Kill-Switch Trigger Log (Appendix F §1.3): every automatic
+ *   - Rollback: the Kill-Switch Trigger Log: every automatic
  *          rollback, its cause and its resolution time, and whether one is in
  *          force now (Oracle then runs the layer in shadow).
  *
@@ -26,8 +26,7 @@
  *     npm run tutor:telemetry-report -- [--since=YYYY-MM-DD] [--json] [--resolve="root cause …"]
  *
  * Exit code 1 on a defect; "insufficient data" is printed, never passed off
- * as healthy. Every threshold is provisional — see
- * docs/rebuild/mentor/THRESHOLD-RECALIBRATION-LOG.md.
+ * as healthy. Every threshold is provisional.
  */
 
 import { serviceRest } from '../services/supabaseRest.js';
@@ -47,7 +46,7 @@ import {
 const PAGE = 1000;
 const MAX_ROWS = 200_000;
 
-/** Reads every row of a window, paginated. Null on ANY failed page (§1.14: never a partial report). */
+/** Reads every row of a window, paginated. Null on ANY failed page (never a partial report). */
 async function readAll<T>(path: string): Promise<T[] | null> {
   const out: T[] = [];
   for (let offset = 0; offset < MAX_ROWS; offset += PAGE) {

@@ -1,4 +1,4 @@
-/* fin1 boards: F1.10 compound interest, F2.11 time value, F2.12 rate and return. A neutral surface with line style as well as colour; tokens only. */
+/* fin1 boards: compound interest, time value, rate and return. A neutral surface with line style as well as colour; tokens only. */
 .lf-fin { display: grid; gap: var(--spacing-3); justify-items: start; min-inline-size: 0; }
 .lf-fin > * { max-inline-size: 100%; }
 .lf-fin-chart { inline-size: 100%; max-inline-size: 30rem; block-size: auto; border-radius: var(--rounded-sm); background: var(--sunken); }
@@ -29,7 +29,7 @@
 .lf-fin-info > p { margin: 0; }
 .lf-fin-strip-help { margin: 0; }
 
-/* F2.11 timeline: one cell per year, each a drop zone that holds one 64 px payment handle. */
+/* Timeline: one cell per year, each a drop zone that holds one 64 px payment handle. */
 .lf-fin-timeline { display: flex; flex-wrap: wrap; gap: var(--spacing-2); margin: 0; padding: 0; list-style: none; }
 .lf-fin-year { display: grid; gap: var(--spacing-1); align-content: start; justify-items: start; inline-size: 7.5rem; min-block-size: 12rem; padding: var(--spacing-2); border: 2px solid var(--outline); border-radius: var(--rounded-sm); background: var(--sunken); outline: 2px solid transparent; text-align: start; }
 .lf-fin-year[data-drop-armed='true'] { outline-color: var(--primary-strong); outline-style: dashed; }

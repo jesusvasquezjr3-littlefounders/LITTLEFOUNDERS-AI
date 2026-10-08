@@ -5,18 +5,17 @@ import { loadLearningQaSignals, type LearningQaSignals } from './learningQaSigna
 import { loadEngagementHealth, type EngagementHealthReport } from './engagementHealth.js';
 
 /*
- * S05.3d: the content team's learning-quality reads and decisions.
+ * The content team's learning-quality reads and decisions.
  *
- *   B.19  practice success band per lesson (70-85% default hypothesis), the
- *         calibration reviews it opens and the Threshold Recalibration Log;
- *   B.12  Judgment-Quality Signal Differentiation (Appendix C);
- *   B.5   Replay Non-Regression Messaging Display Rate (Appendix C);
- *   B.9   Decision Journal Coverage & Resurfacing Rate (Appendix C 1.1).
+ *   - practice success band per lesson (70-85% default hypothesis), the
+ *     calibration reviews it opens and the Threshold Recalibration Log;
+ *   - Judgment-Quality Signal Differentiation;
+ *   - Replay Non-Regression Messaging Display Rate;
+ *   - Decision Journal Coverage & Resurfacing Rate.
  *
  * Every call is service-role and reaches Core only behind requireRole(admin)
  * plus requireAdminPermission('manage_content'); the SQL functions re-check
  * the actor for every write. Nothing here reads or returns a learner id.
- * Policy: docs/rebuild/PRACTICE-DIFFICULTY-CALIBRATION.md.
  */
 
 /** Mirrors the seeded default band (practice_difficulty_calibration migration). */
@@ -25,16 +24,16 @@ export const DEFAULT_PRACTICE_BAND = { lowerPct: 70, upperPct: 85, minSample: 30
 export const PRACTICE_BAND_GUARD_RAILS = { lowestLower: 50, highestUpper: 95, minimumWidth: 5 } as const;
 export const REVIEW_WINDOW_DAYS = 28;
 /**
- * Appendix C "Judgment-Quality Signal Differentiation": the judgment must
+ * Judgment-Quality Signal Differentiation: the judgment must
  * diverge from correctness for a non-trivial share of attempts. Proposed,
  * pending calibration (Threshold Recalibration Log): below 10% divergence over
  * at least 30 judged attempts the lesson's reasoning items need review.
  */
 export const JUDGMENT_DIVERGENCE_FLOOR = 0.1;
 export const JUDGMENT_MIN_ATTEMPTS = 30;
-/** Appendix C "Replay Non-Regression Messaging Display Rate" target. */
+/** "Replay Non-Regression Messaging Display Rate" target. */
 export const REPLAY_NOTICE_TARGET = 1;
-/** Appendix C Threshold Recalibration Log cadence: quarterly for the first year (proposed). */
+/** Threshold Recalibration Log cadence: quarterly for the first year (proposed). */
 export const BAND_REVIEW_CADENCE_DAYS = 90;
 
 export type PracticeBandStatus = 'insufficient_sample' | 'below_band' | 'in_band' | 'above_band';
@@ -50,7 +49,7 @@ export function classifyPracticeBand(input: { firstAttempts: number; successes: 
 
 export type JudgmentSignalStatus = 'insufficient_sample' | 'distinct' | 'tracks_correctness';
 
-/** Whether the reasoning signal measures something correctness does not (Appendix C). */
+/** Whether the reasoning signal measures something correctness does not. */
 export function classifyJudgmentSignal(input: { attempts: number; divergentShare: number }): JudgmentSignalStatus {
   if (input.attempts < JUDGMENT_MIN_ATTEMPTS) return 'insufficient_sample';
   return input.divergentShare < JUDGMENT_DIVERGENCE_FLOOR ? 'tracks_correctness' : 'distinct';
@@ -117,29 +116,29 @@ export type JudgmentDifferentiationRow = z.infer<typeof JudgmentRow>;
 
 const DisplayRateRow = z.object({ below_best: count, shown: count, display_rate: z.coerce.number().min(0).max(1).nullable() });
 
-// S05.3e (B.21, B.24): Appendix C's rest-day utilization and autonomy adoption.
+// Rest-day utilization and autonomy adoption.
 const RestDayRow = z.object({
   learners_with_lapse: count, kept_by_rest_days: count, restarted: count,
   utilization_rate: z.coerce.number().min(0).max(1).nullable(), rest_days_used: count,
 });
 const AutonomyRow = z.object({
-  // GAP-FIX-R5 (B.24, Block B autonomy): approach and enrichment join path, Mentor and pace.
+  // Approach and enrichment join path, Mentor and pace.
   lever: z.enum(['path', 'approach', 'enrichment', 'mentor', 'pace']), offered: count, exercised: count,
   adoption_rate: z.coerce.number().min(0).max(1).nullable(),
 });
-// GAP-FIX-R7 (Appendix C 1.1, B.9): Decision Journal Coverage & Resurfacing Rate.
+// Decision Journal Coverage & Resurfacing Rate.
 const NarrativeRow = z.object({
   journal_entries_recorded: count, journal_entries_resurfaced: count,
   story_decisions_made: count, story_decisions_journaled: count, story_decisions_without_consent: count,
 });
-/** Diagnostic: the first release window is the baseline (Appendix C "no fixed target"). */
+/** Diagnostic: the first release window is the baseline ("no fixed target"). */
 export const DECISION_JOURNAL_BASELINE = 'release-1' as const;
 export interface DecisionJournalCoverage {
   decisionsMade: number; decisionsJournaled: number; withoutConsent: number; coverage: number | null;
   recorded: number; resurfaced: number; resurfacingRate: number | null; baseline: typeof DECISION_JOURNAL_BASELINE;
 }
 
-/** The two halves of the B.9 metric from one learning_narrative_metrics row; null before the coverage migration. */
+/** The two halves of the decision-journal metric from one learning_narrative_metrics row; null before the coverage migration. */
 export function decisionJournalCoverage(row: unknown): DecisionJournalCoverage | null {
   const parsed = NarrativeRow.safeParse(row);
   if (!parsed.success) return null;
@@ -156,7 +155,7 @@ export function decisionJournalCoverage(row: unknown): DecisionJournalCoverage |
 
 export type MotivationMetrics = { restDays: z.infer<typeof RestDayRow>; autonomy: z.infer<typeof AutonomyRow>[] };
 
-// GAP-FIX-R1 (Appendix C 1.1, Appendix P Parts 4.5 and 8): the v2 receipt signals (0207).
+// The v2 receipt signals (0207).
 const TransferRow = z.object({ kc: z.string(), item_role: z.enum(['practice', 'transfer']), first_attempts: count, successes: count,
   success_share: z.coerce.number().min(0).max(1) });
 const ErrorSplitRow = z.object({ family: z.enum(['structure', 'answer']), diagnostic: z.string(), errors: count });
@@ -209,15 +208,15 @@ export interface LearningQualityReport {
    */
   motivation: MotivationMetrics | null;
   /**
-   * B.28 (S05.3f): session efficiency and Mentor resolution efficiency, with
+   * Session efficiency and Mentor resolution efficiency, with
    * their trend. Null until the *_engagement_health.sql migration is applied.
    */
   engagementHealth: EngagementHealthReport | null;
-  /** GAP-FIX-R1: transfer vs practice, structure vs answer errors, first unaided stage and d′; null until 0207 is applied. */
+  /** Transfer vs practice, structure vs answer errors, first unaided stage and d′; null until 0207 is applied. */
   v2Signals: V2LearningSignals | null;
-  /** GAP-FIX-R2: Appendix P Part 8 parity, d′ pre/post, A/B and coverage; Appendix C 1.3 B.1/B.2/B.4 and defect escapes. Null until 0216 and 0218. */
+  /** Scorer parity, d′ pre/post, A/B and coverage; QA rates and defect escapes. Null until 0216 and 0218. */
   qaSignals: LearningQaSignals | null;
-  /** GAP-FIX-R7: Appendix C 1.1 decision-journal coverage and resurfacing (B.9). Null until the coverage migration is applied. */
+  /** Decision-journal coverage and resurfacing. Null until the coverage migration is applied. */
   decisionJournal: DecisionJournalCoverage | null;
   thresholds: {
     judgmentDivergenceFloor: number; judgmentMinAttempts: number; replayNoticeTarget: number; bandReviewCadenceDays: number;

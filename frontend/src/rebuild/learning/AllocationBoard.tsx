@@ -220,7 +220,7 @@ export function AllocationBoard({ document, segment, onBack, onCheck, mentorStag
           </>}>
           {(showTable) => <>
           <div className={showTable ? 'lf-learning-left lf-learning-left--visually-hidden' : 'lf-learning-left'} aria-live="polite" aria-atomic="true"><span data-copy-role="body">{t.left}</span> <strong data-copy-role="data">{amount(left)}</strong></div>
-          {/* Bible 05 §7 Money row (GAP-FIX-R1): the Wallet's own pocket rows, so the lesson and the Wallet teach one interaction. */}
+          {/* The Wallet's own pocket rows, so the lesson and the Wallet teach one interaction. */}
           <div className="lf-learning-controls" role="group" aria-label={t.balance}>
             <PocketSplit mode="stepper" bar={false} labels={{ save: t.save, spend: t.spend, share: t.share }} values={allocation} step={item.step}
               max={(pocket) => allocation[pocket] + left} valueText={(_, value) => amount(value)} stepLabels={() => ({ decrease: t.remove, increase: t.add })}
@@ -235,7 +235,7 @@ export function AllocationBoard({ document, segment, onBack, onCheck, mentorStag
           </>}
         </TeachingChartBoard>
         <footer className="lf-learning-foot">
-          {/* GAP-FIX-R6 (B.20): the author's feedback names what was done; the board's own met and hint lines are the fallback. */}
+          {/* The author's feedback names what was done; the board's own met and hint lines are the fallback. */}
           <LessonFeedback verdict={verdict}>{verdict === 'met' ? segment.feedback?.met ?? t.met : verdict === 'review' ? segment.feedback?.not_yet ?? t.review : verdict ? t[verdict] : null}</LessonFeedback>
           <div className="lf-learning-actions">
             <Button variant="accent" disabled={pending} onClick={check}>{pending ? t.checking : verdict === 'met' ? sequence ? t.continue : t.again : t.check}</Button>

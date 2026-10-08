@@ -1,7 +1,7 @@
 import type { GateProblem } from '../../pipeline/gates.js';
 import type { ForgeGuidance, ForgeHorizontePack } from './types.js';
 
-/* Must stay identical to the Core and browser literals: `check-v2-lesson-capability-parity.mjs` compares the three. */
+/* Must stay identical to the Core and browser literals. */
 export const BALANCE_CAPABILITIES = {
   'math.equation-balance.v2': ['visual.equation-balance.v1', 'operation.balance-ops.v1', 'operation.number-input.v1', 'visual.math-notation.v1'],
   'math.visual-proof.v2': ['visual.visual-proof.v1', 'operation.drag-pieces.v1', 'operation.predict-choice.v1', 'operation.number-input.v1'],
@@ -34,7 +34,7 @@ const idOf = (segment: Record<string, unknown>) => (typeof segment.id === 'strin
 const keyOf = (answerKeys: Record<string, unknown> | undefined, segmentId: string): unknown =>
   (answerKeys && Object.hasOwn(answerKeys, segmentId) ? answerKeys[segmentId] : undefined);
 
-/* ---------- F1.8: a route must exist ---------- */
+/* ---------- a route must exist ---------- */
 
 type Pan = { x: number; u: number };
 type Scale = { l: Pan; r: Pan };
@@ -111,7 +111,7 @@ function balanceProblems(segment: Record<string, unknown>, answerKeys?: Record<s
   return found;
 }
 
-/* ---------- F1.15: the key must match the geometry it names ---------- */
+/* ---------- the key must match the geometry it names ---------- */
 
 type Visual = 'parallelogram-area' | 'triangle-area' | 'trapezoid-area' | 'circle-area' | 'circumference-unroll' | 'pythagoras-proof' | 'odd-sum-proof';
 const FORMULAS: Readonly<Record<Visual, { correct: string; pool: readonly string[] }>> = {

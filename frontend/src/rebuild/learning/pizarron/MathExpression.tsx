@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import type { Locale } from '../../design/copyBudget';
 
 /*
- * Bible 05 §5 and Appendix P Parts 5-6 (GAP-FIX-R2): mathematical notation is
+ * Mathematical notation is
  * rendered with KaTeX, loaded only when a board actually shows notation (a
  * document that declares `visual.math-notation.v1`). The TeX is authored
  * locale-neutral with '.' decimals; pt-BR writes the decimal comma, which
@@ -18,7 +18,7 @@ function loadKatex(): Promise<Katex> {
   return katexLoad;
 }
 
-/** The TeX a locale reads: pt-BR's decimal comma as '{,}' (Appendix P Part 5). */
+/** The TeX a locale reads: pt-BR's decimal comma as '{,}'. */
 export function localizeTex(tex: string, locale: Locale): string {
   return locale === 'pt-BR' ? tex.replace(/(\d)\.(\d)/g, '$1{,}$2') : tex;
 }

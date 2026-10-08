@@ -3,19 +3,18 @@ import { insertAuditLog, serviceRest, serviceRestRaw } from '../supabaseRest.js'
 import { TRANSCRIPT_RUBRIC } from './transcriptRubric.js';
 
 /*
- * Product C.23 — THE CALIBRATION PROCESS FOR EVERY AUTOMATED EVALUATION JUDGE
- * (Appendix E §2.1, §3.2; Appendix F §1.3 Judge–Human Agreement Rate).
+ * THE CALIBRATION PROCESS FOR EVERY AUTOMATED EVALUATION JUDGE
+ * (Judge–Human Agreement Rate).
  *
  * No AI judge is trusted for any decision until it reproduces a human panel's
  * judgement on a human-rated seed set, and that calibration is re-run on a
- * defined cadence. The three steps, in order, are the Khan Academy pattern
- * Appendix E §2.1 describes:
+ * defined cadence. The three steps, in order, are the Khan Academy pattern:
  *
  *   1. the HUMANS agree with each other (inter-rater agreement, raw AND
  *      chance-corrected, so a seed set where nearly everything passes cannot
  *      manufacture agreement);
  *   2. the JUDGE agrees with the panel's majority, in EVERY stratum, not on
- *      average (Appendix E §1.2: judge reliability collapses on the hard,
+ *      average (judge reliability collapses on the hard,
  *      borderline cases, so the weakest stratum decides), with enough items
  *      of both labels that an approve-everything judge cannot pass, and with
  *      two of the documented judge biases checked (verbosity: agreement must
@@ -23,7 +22,7 @@ import { TRANSCRIPT_RUBRIC } from './transcriptRubric.js';
  *      the same model family as the author it judges);
  *   3. the calibration goes STALE after the cadence, and a failed spot check
  *      un-trusts the judge until a new calibration passes (the automatic
- *      recalibration trigger of Appendix F §1.3).
+ *      recalibration trigger).
  *
  * This module is the single standard for every judge in `JUDGE_REGISTRY`.
  * Core recomputes every number from the raw labels and verdicts (never from
@@ -33,16 +32,14 @@ import { TRANSCRIPT_RUBRIC } from './transcriptRubric.js';
  * `*_mentor_judge_calibration_registry.sql`), refusing any row whose claimed
  * verdict, scope or stratum result does not follow from its own numbers.
  *
- * GOVERNANCE. This standard is Tier 1 (Appendix E §3.1: a judge that gates
+ * GOVERNANCE. This standard is Tier 1 (a judge that gates
  * a release is part of the evaluation machinery). The thresholds may be
  * raised by a human decision at any time and never lowered without full
- * human review; `npm run judge-calibration:check` refuses a lowered value in
- * this file or in the migration, and `npm run governance:check` refuses any
- * change to this file without a Tier 1 change-record row.
+ * human review.
  *
- * ZERO SPEND (OD-23). Nothing here calls a model. The paid step, running the
+ * ZERO SPEND. Nothing here calls a model. The paid step, running the
  * real judge over the seed set, is owner-run in Oracle behind an explicit
- * approval variable; see docs/rebuild/mentor/JUDGE-CALIBRATION-POLICY.md.
+ * approval variable.
  */
 
 // ── vocabularies ────────────────────────────────────────────────────────────
@@ -88,12 +85,12 @@ export type TrustState = (typeof TRUST_STATES)[number];
 // ── the pre-registered standard ─────────────────────────────────────────────
 
 /**
- * EVERY VALUE IS "PROPOSED, PENDING CALIBRATION" (Appendix F §1.4) and is
- * listed in docs/rebuild/mentor/THRESHOLD-RECALIBRATION-LOG.md. The floors
+ * EVERY VALUE IS "PROPOSED, PENDING CALIBRATION" and is
+ * listed in the threshold recalibration log. The floors
  * below are the minimums the migration's CHECKs also enforce.
  */
 export const CALIBRATION_FLOORS = {
-  /** Appendix E §2.1: the panel agrees with itself about 85% of the time. */
+  /** The panel agrees with itself about 85% of the time. */
   interRaterAgreement: 0.85,
   /** Fleiss' kappa across the panel ("substantial" agreement starts at 0.61). */
   interRaterKappa: 0.6,
@@ -124,7 +121,7 @@ export interface JudgeStandard {
   minPerLabel: number;
   /** A spot check re-verifies with smaller strata. */
   spotCheck: { minItemsPerStratum: number; minItemsPerQuestion: number; minPerLabel: number };
-  /** Appendix F §1.3: monthly in the first year (with grace). */
+  /** Monthly in the first year (with grace). */
   maxAgeDays: number;
   /** The status says "due soon" this many days before the calibration goes stale. */
   dueSoonDays: number;
@@ -141,7 +138,7 @@ export interface JudgeDefinition {
   /** Questions a passed calibration must include (the judge is useless without them). */
   requiredQuestions: readonly CalibrationQuestion[];
   strata: readonly CalibrationStratum[];
-  /** Appendix F §1.3 cadence. Moving to quarterly is a recorded Tier 1 decision. */
+  /** Cadence. Moving to quarterly is a recorded Tier 1 decision. */
   cadence: 'monthly';
   standard: JudgeStandard;
   /** The owner-run harness that produces a run file (paid only with the env approval). */
@@ -342,7 +339,7 @@ export function cohenKappa(a: readonly JudgeLabel[], b: readonly JudgeLabel[]): 
 /**
  * The panel's label for one (item, question): the label more than half the
  * raters gave. Without a majority: `fail` when any tied label is `fail`
- * (half the panel suspects a defect, which is not a pass — the S06.12 rule),
+ * (half the panel suspects a defect, which is not a pass),
  * otherwise `not_applicable` (the panel does not agree there was an
  * opportunity, so the pair is not used against the judge).
  */
@@ -355,7 +352,7 @@ export function panelLabel(labels: readonly JudgeLabel[]): JudgeLabel {
   return tied.includes('fail') ? 'fail' : 'not_applicable';
 }
 
-/** The model family, for the self-enhancement check (Appendix E §1.2). */
+/** The model family, for the self-enhancement check. */
 export function modelFamily(model: string | null | undefined): string {
   const m = (model ?? '').toLowerCase();
   const families: [string, RegExp][] = [
@@ -583,7 +580,7 @@ export interface JudgeTrust {
   dueSoon: boolean;
   ageDays: number | null;
   scope: string[];
-  /** The end of the first year of the cadence (monthly until then, per Appendix F §1.3). */
+  /** The end of the first year of the cadence (monthly until then). */
   firstYearEndsAt: string | null;
 }
 
@@ -596,7 +593,7 @@ const DAY = 86_400_000;
  *   failed                  the latest full calibration failed (a failed
  *                           recalibration un-trusts a judge that passed before)
  *   recalibration_required  a spot check of the current calibration failed
- *                           (Appendix F §1.3's automatic trigger): only a new
+ *                           (the automatic trigger): only a new
  *                           passed calibration restores trust
  *   stale                   passed, but not re-verified within the cadence
  *   passed                  trusted, within its scope, until `dueAt`
@@ -655,7 +652,7 @@ export function trustedIdentity(trust: JudgeTrust, model: unknown, promptHash: u
   );
 }
 
-// ── Stage 3 of a Tier 2 change (Appendix F Part 3) ──────────────────────────
+// ── A Tier 2 change ──────────────────────────
 
 export interface Stage3Claim {
   judgeId: string;
@@ -669,10 +666,10 @@ export interface Stage3Claim {
 }
 
 /**
- * Whether the judge may gate this Tier 2 change. Appendix F Stage 3: "A
+ * Whether the judge may gate this Tier 2 change. A
  * judge that has not been calibrated, or whose calibration has gone stale
  * ... may not gate this stage — an uncalibrated judge routes the change
- * directly to Stage 4 as if it were Tier 1." Every refusal below means
+ * directly to human review as if it were Tier 1." Every refusal below means
  * exactly that routing, never a pass.
  */
 export function verifyStage3(claim: Stage3Claim, rows: readonly CalibrationRecordRow[]): { mayGate: true } | { mayGate: false; reasons: string[] } {

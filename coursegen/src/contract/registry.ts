@@ -1,5 +1,5 @@
 // Forge-only derived registry over the copied contract (NOT part of the
-// byte-diffed contract-parity set in src/contract/check.ts — this file has
+// byte-diffed contract set in src/contract/check.ts — this file has
 // no frontend counterpart). Builds type→family/schema lookups straight from
 // the family `*Schemas` arrays so the 56-type list can never drift from the
 // actual Zod contract: add a type to a family schema.ts and it appears here
@@ -38,7 +38,7 @@ const FAMILY_SCHEMAS: Record<FamilyName, readonly z.ZodTypeAny[]> = {
   maker: makerSchemas,
 };
 
-/** `story` is the only ungraded/content family (LESSON_ENGINE.md §4). */
+/** `story` is the only ungraded/content family. */
 export const CONTENT_FAMILIES: readonly FamilyName[] = ['story'];
 
 /** Flow types self-drive (timers, simulations, branching) — no plain Check button. */

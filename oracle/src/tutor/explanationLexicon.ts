@@ -1,14 +1,14 @@
 import { foldText, wordsIn } from './telemetryLexicon.js';
 
 /*
- * C.14 / C.15 — THE LEARNER-TEXT READERS OF THE SELF-EXPLANATION MOVE AND THE
+ * THE LEARNER-TEXT READERS OF THE SELF-EXPLANATION MOVE AND THE
  * ALLIANCE CONTROLLER.
  *
  * Three questions are asked of a learner's words here, each deterministically
- * (no model call, OD-23 zero spend, and testable in milliseconds):
+ * (no model call, zero spend, and testable in milliseconds):
  *
  *   1. `classifyExplanation`: after "why did you pick that?", does the reply
- *      CITE the idea behind the decision (Appendix D §3.3: "does it cite the
+ *      CITE the idea behind the decision ("does it cite the
  *      actual relevant concept, or is it filler?")?
  *   2. `classifyGoalReply`: after the Mentor restates the session goal, did
  *      the learner agree, ask for something else, or neither?
@@ -16,14 +16,14 @@ import { foldText, wordsIn } from './telemetryLexicon.js';
  *      did it just ask the learner to make a money decision?
  *
  * The first two read what a child types or says, so both are registered in
- * the C.20 bias audit (`safety/biasAudit/registry.ts`) with paired regional,
+ * the bias audit (`safety/biasAudit/registry.ts`) with paired regional,
  * vernacular, code-switched, child-spelled and speech-to-text fixtures. They
  * read FOLDED text (lower case, no accents), the same as every other reader,
  * so a spoken "porque asi ahorro" is read like the typed "porque así ahorro".
  *
- * PRECISION OF THE QUALITY CHECK. It is deliberately lightweight, as the SPEC
- * asks: it answers "did they name the idea", not "is the reasoning correct".
- * Correctness of a stated idea is the C.18 misconception reader's job
+ * PRECISION OF THE QUALITY CHECK. It is deliberately lightweight, as intended:
+ * it answers "did they name the idea", not "is the reasoning correct".
+ * Correctness of a stated idea is the misconception reader's job
  * (`statedMisconception.ts`), which the orchestrator runs on the same reply.
  * A false "filler" costs one targeted follow-up question; a false "concept"
  * costs one missed follow-up. Neither is ever shown to the learner as a
@@ -182,7 +182,7 @@ export function conceptsNamed(text: string): ConceptFamily[] {
 export type ExplanationQuality = 'concept' | 'off_concept' | 'filler';
 
 /**
- * The lightweight explanation-quality check (Appendix D §3.3). `families` is
+ * The lightweight explanation-quality check. `families` is
  * the set of ideas the decision rests on (`familiesForDecision`); a reply
  * that names one of them is `concept`; a reply that gives no reason at all
  * is `filler`; a contentful reply naming none of them is `off_concept`.
@@ -262,7 +262,7 @@ export function answersDecision(reply: string, tutorQuestion: string): boolean {
   return wordsIn(r).some((w) => w.length >= 4 && optionWords.has(w));
 }
 
-// ── C.15: the learner's answer to the goal-agreement restatement ────────────
+// ── The learner's answer to the goal-agreement restatement ────────────
 
 export type GoalReply = 'agree' | 'other' | 'unclear';
 

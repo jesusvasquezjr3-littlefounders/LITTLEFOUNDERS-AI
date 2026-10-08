@@ -3,11 +3,11 @@ import { call, courseRefusal, type CourseState } from './course';
 import type { LearnTransport } from './learnHome';
 
 /*
- * W2L.2 (L3): the course world, as GET /learn/courses/:slug/tree serves it.
+ * The course world, as GET /learn/courses/:slug/tree serves it.
  *
  * One read for both course engines (Core answers the tree under either; under
- * the B.6 pathway engine each chapter also carries `pathwayAccess`), refused
- * exactly as the course screen's entry is refused (the age safeguard, B.2, an
+ * the pathway engine each chapter also carries `pathwayAccess`), refused
+ * exactly as the course screen's entry is refused (the age safeguard, a prerequisite course, an
  * unknown course, a lost connection). Everything on the map is what Core
  * computed: topic states come from graded passes and the spaced-review layer
  * (`review-due`, 0016), lesson states and chapter locks from the unlock rules
@@ -27,7 +27,7 @@ const sagaSchema = z.object({ id: z.string().min(1), slug: z.string(), title: lo
 const adventureSchema = z.object({
   id: z.string().min(1), slug: z.string(), title: localized, theme: z.string(),
   state: z.enum(['locked', 'available', 'completed']), progress, sagas: z.array(sagaSchema),
-  /** B.6 pathway engine only: the learner's own path, an extra (younger) chapter, or one the age safeguard closes (OD-16). */
+  /** Pathway engine only: the learner's own path, an extra (younger) chapter, or one the age safeguard closes. */
   pathwayAccess: z.enum(['pathway', 'optional', 'closed']).optional(),
 });
 
@@ -58,7 +58,7 @@ export async function fetchTerritory(slug: string, request: LearnTransport): Pro
 /*
  * The six scene themes a chapter can declare (database/migrations/0007:
  * `adventures.theme` is a closed CHECK list). Each has its own scene art in
- * the manifest (`scene.<theme>.art`, 07 §3); an unknown theme draws no scene
+ * the manifest (`scene.<theme>.art`); an unknown theme draws no scene
  * rather than a stand-in.
  */
 export const SCENE_THEMES = ['archipelago', 'forest', 'city', 'valley', 'kingdom', 'cosmos'] as const;

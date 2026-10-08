@@ -2,8 +2,7 @@ import { createContext, useContext, useEffect, useLayoutEffect, useRef, useState
 import type { AgeBand, Locale } from './copyBudget';
 
 /*
- * Overlay infrastructure (Frontend Bible 02 rules 12 and 13, §9.8, §11 item 10;
- * S03.2). Every overlay renders into its own host appended to <body>, so it is
+ * Overlay infrastructure. Every overlay renders into its own host appended to <body>, so it is
  * `position: fixed` against the real viewport and never inside a scrolling,
  * transformed or contained ancestor. One stack orders every dismissable layer:
  * Escape closes only the topmost one, and a modal layer makes everything
@@ -109,7 +108,7 @@ export function layerStackSnapshot() {
 }
 
 /* ---------------------------------------------------------------------------
- * Scroll lock that never moves the page (02 rule 13).
+ * Scroll lock that never moves the page.
  * ------------------------------------------------------------------------- */
 
 let lockCount = 0;
@@ -137,7 +136,7 @@ export function useScrollLock(active: boolean) {
 }
 
 /* ---------------------------------------------------------------------------
- * Focus: trap inside a modal, give focus back on close (02 §11 item 10).
+ * Focus: trap inside a modal, give focus back on close.
  * ------------------------------------------------------------------------- */
 
 const TABBABLE = [

@@ -1,4 +1,4 @@
-// `maker` family — payload/answer Zod schemas (LESSON_ENGINE.md §5.8, types 51–56).
+// `maker` family — payload/answer Zod schemas (types 51–56).
 
 import { z } from 'zod'
 import { idSchema, idText, markdownLite, segmentSchema } from '../../core/schemaBase.js'

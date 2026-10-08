@@ -2,7 +2,7 @@
  * Spoken-answer normalization — "cuarenta y dos", "tres pesos con cincuenta
  * centavos", "4 2" → a number. Deterministic, three locales, no model.
  *
- * FAILURE POSTURE (§1.14): returning null means "I could not read a number
+ * FAILURE POSTURE: returning null means "I could not read a number
  * out of this", and the caller MUST treat that as a no-op conversation turn,
  * never as a wrong answer. Child speech through STT is noisy; an unparseable
  * utterance must not decrement anyone's mastery.

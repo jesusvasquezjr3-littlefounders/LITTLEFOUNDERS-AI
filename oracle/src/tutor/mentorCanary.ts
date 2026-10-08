@@ -1,11 +1,11 @@
 /*
- * C.22 / Appendix F Part 3 Stage 5: the canary delivery path, Oracle's half.
+ * The canary delivery path, Oracle's half.
  *
- * Core resolves a learner's arm of a running `mentor.canary` H.7 experiment
+ * Core resolves a learner's arm of a running `mentor.canary` experiment
  * at session start and sends it in the NEGOTIATED session context (never in
  * the sealed 14-field model context): `{ proposalId, arm, overrides }`. The
- * overrides move registered Tier 2 parameters (docs/rebuild/mentor/governance/
- * registry.json `tier2Parameters`) and nothing else:
+ * overrides move registered Tier 2 parameters
+ * (`tier2Parameters.generated.ts`) and nothing else:
  *
  *   - a key that is not a registered Tier 2 parameter REFUSES the whole
  *     canary: the session runs the approved defaults and reports no arm, so a
@@ -15,12 +15,11 @@
  *     the leads approved;
  *   - the control arm carries no override and runs the defaults;
  *   - a session in the minor posture (`session.isMinor`) REFUSES any canary,
- *     control arm included (OD-23: experiments are adults only). Core never
+ *     control arm included (experiments are adults only). Core never
  *     sends one to a minor; this is the second, independent fence.
  *
- * The id / bounds table is generated from the registry
- * (`tier2Parameters.generated.ts`, `npm run canary:check`). This file is
- * Tier 1 (component governance.model).
+ * The id / bounds table is in
+ * `tier2Parameters.generated.ts`.
  */
 
 import { z } from 'zod';
@@ -86,7 +85,7 @@ const defaults = (): Omit<CanaryConfigs, 'report' | 'applied' | 'refused'> => ({
 export function applyCanary(canary: MentorCanary | null | undefined, posture: { isMinor: boolean } = { isMinor: true }): CanaryConfigs {
   const base = defaults();
   if (!canary) return { ...base, report: null, applied: {}, refused: null };
-  // OD-23: never for a session in the minor posture, whatever Core sent. The default posture is the safe one.
+  // Never for a session in the minor posture, whatever Core sent. The default posture is the safe one.
   if (posture.isMinor) return { ...base, report: null, applied: {}, refused: 'the session is in the minor posture (OD-23: adults only)' };
   const unknown = Object.keys(canary.overrides).filter((key) => !isTier2(key));
   if (unknown.length > 0) {

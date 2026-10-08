@@ -93,7 +93,7 @@ function opLabel(op: BalanceOp, t: Copy): string {
 const DOMAIN = { whole: true, min: 0, max: BALANCE_MAX_ANSWER } as const;
 
 /*
- * F1.8: a scale holds `a x + b = c x + d`. The learner picks one operation at a time (drag its chip onto the scale, tap the
+ * A scale holds `a x + b = c x + d`. The learner picks one operation at a time (drag its chip onto the scale, tap the
  * chip then the scale, or the Move to menu) and it is done on both pans, so the scale stays level. The two "one pan only"
  * moves tip it, which teaches why; Undo levels it again and a tipped scale cannot be checked. The answer is the ordered
  * operations plus x, typed once x stands alone. Core holds x and the key route.

@@ -7,14 +7,14 @@ import type { IdentityCue } from './cues.js';
 import { scriptedSay, type AuditScript, type ScriptStep } from './scripts.js';
 
 /*
- * C.18 / C.20 / Appendix D §3.7 — THE EQUITY-DRIFT HARNESS.
+ * THE EQUITY-DRIFT HARNESS.
  *
  * Replays one scripted session through the REAL orchestrator (the real
  * prompt builder, controller, repair loop and honesty readers), with only the
  * model call answered by a `Responder`:
  *
  *   stub  the zero-spend scripted model (scripts.ts), cue-blind by
- *         construction: what the dry run and CI run (OD-23);
+ *         construction: what the dry run and CI run;
  *   live  the configured model, owner-run and paid (scripts/equity-audit.ts
  *         refuses it without EQUITY_AUDIT_LIVE=approved).
  *
@@ -23,7 +23,7 @@ import { scriptedSay, type AuditScript, type ScriptStep } from './scripts.js';
  * The clock is virtual (a fixed start, 25 seconds per learner step), so the
  * controller's timing reads are identical for every cue.
  *
- * Per delivered turn the harness keeps the orchestrator's own C.18 honesty
+ * Per delivered turn the harness keeps the orchestrator's own honesty
  * facts (`TurnEmission.honesty`: praise specific or generic, a sycophantic
  * draft caught, an affirmation delivered, an answer statement), and every
  * model request body. The bodies prove the variation was CONTROLLED: with the
@@ -135,7 +135,7 @@ export function sessionFor(cue: IdentityCue): SessionContext {
     skillStates: [],
     /*
      * The adult moderation posture: a minor's posture adds a paid judge call
-     * per turn, and moderation is audited separately (C.20, bias audit). The
+     * per turn, and moderation is audited separately (bias audit). The
      * register still follows the tier (tween): what is measured is the
      * Mentor's feedback, and the moderation posture is held fixed.
      */

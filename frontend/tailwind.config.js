@@ -1,8 +1,3 @@
-/**
- * Token implementation of /DESIGN.md — values map 1:1 to its YAML front matter.
- * Do NOT add values here that DESIGN.md doesn't define.
- */
-
 /** @type {import('tailwindcss').Config} */
 export default {
   darkMode: 'class',
@@ -69,7 +64,7 @@ export default {
       glass: 'var(--lf-shadow-glass)',
       'glass-sm': 'var(--lf-shadow-glass-sm)',
       pop: 'var(--lf-shadow-pop)',
-      // The tactile tier (/DESIGN.md §Tactile). Prefer the `.lf-tactile`
+      // The tactile tier. Prefer the `.lf-tactile`
       // component class, which also carries the press; these exist for a
       // surface that needs the ridge without being pressable.
       tactile: 'var(--lf-shadow-tactile)',
@@ -78,7 +73,7 @@ export default {
     extend: {
       maxWidth: {
         container: '1200px',
-        // The gamified reading measures (/DESIGN.md §Tactile → Layout): a
+        // The gamified reading measures: a
         // lesson stays narrow enough to hold one thought, a dashboard may use
         // the freed width. Both are deliberately under `container`.
         lesson: '768px',

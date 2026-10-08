@@ -3,17 +3,16 @@ import { mapLiveRow, type LiveFeed } from '@/rebuild/staff/console/generationApi
 import { can, type StaffViewer } from '@/rebuild/staff/console/staffConsoleApi';
 
 /*
- * Lane 6 (staff): the Generation page's push transport (W2T.2), carried over
+ * Staff: the Generation page's push transport, carried over
  * from the legacy Live Monitor. Supabase Realtime on `generation_runs_live`
  * (its RLS, since generation_live_manage_content, admits a superadmin or an
- * admin holding manage_content, the G.1 grant of the Generation screen; the
+ * admin holding manage_content, the grant of the Generation screen; the
  * table carries no personal data) only ACCELERATES what the rebuilt page already polls from Core every
- * 4 s. The rebuilt console never imports the Supabase client (02 rule 23), so
+ * 4 s. The rebuilt console never imports the Supabase client, so
  * the route host hands it this feed, or none where the public Supabase
  * variables are not deployed.
  *
- * Two library behaviours shape it (verified against @supabase/realtime-js by
- * the legacy regression test, carried over in __tests__/staffLiveFeed.test.ts):
+ * Two library behaviours shape it (verified against @supabase/realtime-js):
  * `client.channel(topic)` returns the EXISTING channel for a registered topic,
  * and `.on(...)` after `.subscribe()` throws. The client is a module
  * singleton, so a fixed topic latched after the first remount: every attempt
@@ -29,7 +28,7 @@ const REAUTH_MS = 10 * 60 * 1000;
 let topicSeq = 0;
 
 export function createLiveFeed(getClient: () => SupabaseClient | null, getToken: () => Promise<string | null>, viewer: StaffViewer): LiveFeed | undefined {
-  // G.1: a viewer without manage_content never attempts the subscription the
+  // A viewer without manage_content never attempts the subscription the
   // database would refuse (it reads nothing); Core polling is refused too.
   if (!can(viewer, 'manage_content')) return undefined;
   const client = getClient();

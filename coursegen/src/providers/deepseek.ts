@@ -1,4 +1,4 @@
-// DeepSeek — the author provider (plan/write/localize), COURSE_ENGINE.md §5.
+// DeepSeek — the author provider (plan/write/localize).
 
 import { getConfig } from '../env.js';
 import { ProviderCompletionExhaustedError, ProviderHttpError, ProviderNotConfiguredError, isRetryableError } from './errors.js';

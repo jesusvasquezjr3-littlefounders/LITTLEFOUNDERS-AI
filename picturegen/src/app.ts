@@ -26,7 +26,7 @@ export function createApp(deps: AppDeps = {}): express.Express {
     });
   });
 
-  // Everything under /api/v1 is service-to-service only (/AGENTS.md §1.5),
+  // Everything under /api/v1 is service-to-service only,
   // same header convention as the sibling internal services: x-internal-api-key,
   // constant-time compared.
   app.use('/api/v1', (req, res, next) => {

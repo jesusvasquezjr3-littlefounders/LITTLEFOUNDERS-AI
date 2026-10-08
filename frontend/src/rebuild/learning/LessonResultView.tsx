@@ -18,7 +18,7 @@ export const lessonCompletionReceiptSchema = z.object({
   version_id: id,
   locale: z.enum(['en-US', 'es-MX', 'pt-BR']),
   first_try_correct: z.number().int().nonnegative().safe(),
-  // GAP-FIX-R1 (OD-17): a lesson made only of non-scored steps completes with zero graded steps.
+  // A lesson made only of non-scored steps completes with zero graded steps.
   graded_count: z.number().int().nonnegative().safe(),
   viewed_count: z.number().int().nonnegative().safe().optional(),
   hints_used: z.number().int().nonnegative().safe().optional(),
@@ -26,7 +26,7 @@ export const lessonCompletionReceiptSchema = z.object({
   duration_seconds: z.number().int().positive().safe(),
   previous_best_percent: z.number().int().min(0).max(100),
   /*
-   * B.5 (S05.3d): Core's own replay facts. When present they decide the
+   * Core's own replay facts. When present they decide the
    * notice; the browser never infers "your best is kept" on its own. Optional
    * only so a sample fixture without them still renders.
    */
@@ -36,16 +36,16 @@ export const lessonCompletionReceiptSchema = z.object({
     best_score_kept: z.boolean(),
     xp_policy: z.literal('improvement_only'),
   }).strict().optional(),
-  /* B.12: counts only; never the reasons themselves or how each was judged. */
+  /* Counts only; never the reasons themselves or how each was judged. */
   judgment: z.object({
     assessed: z.number().int().nonnegative().safe(), sound: z.number().int().nonnegative().safe(),
     partial: z.number().int().nonnegative().safe(), unsupported: z.number().int().nonnegative().safe(),
   }).strict().optional(),
   /*
-   * S05.3e. B.20: the closed OD-7 list Core says this completion reached (the
+   * The closed milestone list Core says this completion reached (the
    * screen celebrates nothing else; see design/milestones.ts) and the skill
-   * behind the XP, so the tally reads as information, not payment. B.21: the
-   * streak after this run. B.24: today's lessons against the learner's pace.
+   * behind the XP, so the tally reads as information, not payment. The
+   * streak after this run. Today's lessons against the learner's pace.
    */
   celebrations: z.array(z.string().max(40)).max(10).optional(),
   recognition: z.object({ skills: z.array(z.string().min(1).max(80)).min(1).max(2) }).strict().optional(),
@@ -64,7 +64,7 @@ export type LessonCompletionReceipt = z.infer<typeof lessonCompletionReceiptSche
 const copy: Record<Locale, { done: string; preview: string; score: (correct: number, total: number) => string; xp: string; accuracy: string;
   time: string; comparison: string; today: string; best: string; newBest: string; savedBest: (best: number) => string;
   reasoned: string; plan: (done: number, goal: number) => string; continue: string; unavailable: string; figured: (skill: string) => string; streak: (days: number) => string; paceDone: string;
-  /** B.23 (S05.3f): the heading and recognition line per register (the young register keeps `done` and `figured`). */
+  /** The heading and recognition line per register (the young register keeps `done` and `figured`). */
   plainDone: string; showed: (skill: string) => string; built: (skill: string) => string; skillOnly: (skill: string) => string }> = {
   'en-US': { done: 'Lesson complete!', preview: 'Sample result', score: (a, n) => `${a}/${n} on first try.`,
     xp: 'XP earned', accuracy: 'First-try accuracy', time: 'Time', comparison: 'Today vs your best', today: 'Today', best: 'Best',
@@ -90,10 +90,10 @@ const copy: Record<Locale, { done: string; preview: string; score: (correct: num
 };
 
 /*
- * OD-28 (owner review item V-12): lesson completion gets a confetti burst. It is
- * the registered in-house motion asset `celebration.lesson-complete.confetti`
- * (07 §5, scripts/generate-lesson-confetti.mjs), part of the lesson-complete
- * milestone moment (OD-7, B.20): mounted only inside the `Celebration` the
+ * Lesson completion gets a confetti burst. It is
+ * the registered in-house motion asset `celebration.lesson-complete.confetti`,
+ * part of the lesson-complete
+ * milestone moment: mounted only inside the `Celebration` the
  * screen opens when Core names that milestone. `MotionAsset` plays it once
  * while that celebration plays and shows its designated static frame for
  * reduced motion, a revisit or a settled moment. Every piece lands above its
@@ -106,25 +106,25 @@ function LessonConfetti({ medal }: { medal: boolean }) {
   </span>;
 }
 
-/** Exported for the Copy Budget test: every string the result screen can show. */
+/** Every string the result screen can show. */
 export const lessonResultCopy = copy;
 
 /**
  * Shape validation is display-only; the caller must obtain a completion
  * receipt from authenticated Core. `onNoticeShown` fires once, when the
  * "saved best is still X" notice is actually on screen (the numerator of
- * Appendix C's replay-notice display rate); a fixture never reports it.
+ * replay-notice display rate); a fixture never reports it.
  */
 export function LessonResultView({ rawReceipt, locale, onContinue, fixture = false, dark, onNoticeShown, register = 'young', courseSlug = null, mentor = null }: {
   /** The learner's own Mentor (the same character and scene as their lesson). Absent: the screen shows the medal instead. */
   mentor?: LessonMentorStage | null;
   rawReceipt: unknown; locale: Locale; onContinue: () => void; fixture?: boolean;
-  /** W2L.3: the course the lesson was opened from, so an earned badge shows that course's own icon. */
+  /** The course the lesson was opened from, so an earned badge shows that course's own icon. */
   courseSlug?: string | null;
   /**
-   * B.23 (S05.3f): the learner's register, from Core. It changes the reward
+   * The learner's register, from Core. It changes the reward
    * framing (the recognition line, whether the medal shows, whether XP leads
-   * or reads as data), never the tokens or components (OD-4). Unknown reads
+   * or reads as data), never the tokens or components. Unknown reads
    * as the youngest register.
    */
   register?: LearnerRegister;
@@ -156,9 +156,9 @@ export function LessonResultView({ rawReceipt, locale, onContinue, fixture = fal
   const newBest = receipt.replay ? receipt.replay.notice === 'new_best' : accuracy > receipt.previous_best_percent;
   const duration = `${Math.floor(receipt.duration_seconds / 60)}:${String(receipt.duration_seconds % 60).padStart(2, '0')}`;
   const number = new Intl.NumberFormat(locale);
-  // B.20 / OD-7: motion only for what Core put on the closed list. Lesson complete
+  // Motion only for what Core put on the closed list. Lesson complete
   // is on that list, so when Core names it the screen celebrates once through the
-  // shared motion system (S03.7): the medal pops, the tiles rise in sequence, the
+  // shared motion system: the medal pops, the tiles rise in sequence, the
   // numbers count up and the bars fill. The part classes are inert outside a
   // playing `Celebration`; reduced motion and a revisit show the settled frame.
   const celebrateLesson = mayCelebrate(receipt.celebrations, 'lesson-complete');
@@ -182,7 +182,7 @@ export function LessonResultView({ rawReceipt, locale, onContinue, fixture = fal
   const timeTile = (order: number) => <div className={`lf-result-stat${tile(order).className ? ` ${tile(order).className}` : ''}`} style={tile(order).style} key="time"><strong data-copy-role="data">{duration}</strong><span data-copy-role="body">{t.time}</span></div>;
   // A tally that leads for young learners; plain data after capability for teens and adults.
   const tiles = (reward.currency === 'data' ? [accuracyTile, timeTile, xpTile] : [xpTile, accuracyTile, timeTile]).map((render, index) => render(index + 1));
-  // B.24: the learner's own plan for today, met by this lesson: a plain status, never a celebration.
+  // The learner's own plan for today, met by this lesson: a plain status, never a celebration.
   const paceDone = receipt.pace ? receipt.pace.goal_met && receipt.pace.passed_today === receipt.pace.goal : false;
   // A first completion has no earlier best to compare with.
   const showComparison = !receipt.replay || receipt.replay.kind !== 'first' || keptBest;
@@ -190,7 +190,7 @@ export function LessonResultView({ rawReceipt, locale, onContinue, fixture = fal
     <p className={`lf-result-streak ${celebrationPart('pop').className}`} data-copy-role="body" data-celebrate={milestone}>
       <img src="/rebuild/art/streak-flame.svg" alt="" className="lf-result-streak-mark" />{t.streak(receipt.streak.days)}</p>
   </Celebration> : null;
-  // W2L.3 (OD-7, B.20): the course and badge milestones Core named for this completion. One moment on the result:
+  // The course and badge milestones Core named for this completion. One moment on the result:
   // the badge when one was earned (it is the course's), otherwise the finished course; nothing when Core named neither.
   const celebrateBadge = mayCelebrate(receipt.celebrations, 'badge-earned');
   const celebrateCourse = mayCelebrate(receipt.celebrations, 'course-complete');
@@ -201,7 +201,7 @@ export function LessonResultView({ rawReceipt, locale, onContinue, fixture = fal
         {celebrateBadge ? <CourseBadge slug={courseSlug} size="sm" /> : null}
         {celebrateBadge ? lessonCopy.badgeEarned : lessonCopy.courseComplete}</p>
     </Celebration> : null;
-  // The streak and today's plan are information the learner returns for, so they are always shown; only a milestone moves (OD-7).
+  // The streak and today's plan are information the learner returns for, so they are always shown; only a milestone moves.
   const streakStatic = !streakLine && receipt.streak && receipt.streak.days > 0
     ? <p className="lf-result-streak" data-copy-role="body"><img src="/rebuild/art/streak-flame.svg" alt="" className="lf-result-streak-mark" />{t.streak(receipt.streak.days)}</p> : null;
   const planPips = receipt.pace && !paceDone
@@ -217,7 +217,7 @@ export function LessonResultView({ rawReceipt, locale, onContinue, fixture = fal
           return mentor ? <ResultMentor character={mentor.character} calm={REGISTERS[register].mentor.animation === 'calm'} fallback={medal} /> : medal;
         })()}
         <h1 data-copy-role="heading">{heading}</h1>
-        {/* B.20: the skill behind the XP leads; the first-try count lives in the accuracy tile. B.23: framed per register. */}
+        {/* The skill behind the XP leads; the first-try count lives in the accuracy tile. Framed per register. */}
         {skill ? <p className="lf-result-figured" data-copy-role="body">{recognition(skill)}</p>
           : keptBest || receipt.graded_count === 0 ? null
             : <p data-copy-role="body">{t.score(receipt.first_try_correct, receipt.graded_count)}</p>}
@@ -231,7 +231,7 @@ export function LessonResultView({ rawReceipt, locale, onContinue, fixture = fal
           <strong data-copy-role="data">{receipt.judgment.sound}/{receipt.judgment.assessed}</strong>
           <span data-copy-role="body">{t.reasoned}</span></p> : null}
         {showComparison ? <section className={`lf-result-compare${tile(4).className ? ` ${tile(4).className}` : ''}`} style={tile(4).style} aria-label={t.comparison}>
-          {/* B.5: a lower run leads with the kept best; the notice itself names the comparison. */}
+          {/* A lower run leads with the kept best; the notice itself names the comparison. */}
           {keptBest ? <p className="lf-result-saved-best" data-copy-role="body">{t.savedBest(receipt.previous_best_percent)}</p>
             : <div className="lf-result-compare-head"><h2 data-copy-role="heading">{t.comparison}</h2>
               {newBest ? <span className="lf-result-best-note" data-copy-role="body">{t.newBest}</span> : null}</div>}

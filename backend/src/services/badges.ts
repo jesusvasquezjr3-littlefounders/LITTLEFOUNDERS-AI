@@ -5,10 +5,10 @@ import { badgeShareImageStillReferencedElsewhere } from './supabaseRest.js';
 export { BADGE_LINK_CUTOVER, BADGE_LINK_ROUTE_RETIRES_AT, BADGE_SHARE_LIFETIME_DAYS, badgeLinksRetired } from './badgeLinkWindow.js';
 
 /*
- * Legacy achievement links (Product 10 Block F; OD-20, 24 September 2026).
+ * Legacy achievement links (24 September 2026).
  *
  * THE LEGACY LINK ARCHITECTURE IS RETIRING. Links (`/badge/{token}` plus a
- * world-readable Depot image) issued BEFORE the OD-20 cutover keep their F.2
+ * world-readable Depot image) issued BEFORE the cutover keep their
  * controls — noindex, a 30-day expiry and per-share revocation that also
  * purges the image — until they expire. After BADGE_LINK_ROUTE_RETIRES_AT
  * every such link has necessarily expired (the database refuses new rows
@@ -16,13 +16,12 @@ export { BADGE_LINK_CUTOVER, BADGE_LINK_ROUTE_RETIRES_AT, BADGE_SHARE_LIFETIME_D
  * the public route answers 410 without reading anything, and the sweep
  * (routes/badgePublic.ts, `badge-link-retirement.yml`) removes any image a
  * visit never purged. The dated removal of the remaining code, the Vercel
- * rewrite and the table is the runbook in
- * docs/rebuild/policies/ACHIEVEMENT-SHARING.md.
+ * rewrite and the table is the last step of retiring them.
  */
 
 /**
  * A legacy link is live only while ALL of these hold: the route is not yet
- * retired, the link was issued before the OD-20 cutover, it is un-revoked
+ * retired, the link was issued before the cutover, it is un-revoked
  * and it is inside its window. The public read route evaluates this on
  * EVERY request (revocation/expiry take effect immediately, not on a job's
  * schedule).
@@ -38,7 +37,7 @@ export function isBadgeShareActive(
 }
 
 /**
- * Deletes the Depot object behind a legacy badge image (F.2: revocation is
+ * Deletes the Depot object behind a legacy badge image (revocation is
  * not done until the image's OWN storage location stops serving, not merely
  * the /badge/{token} page 404ing). Depot's DELETE is idempotent for our
  * purposes: a 404 means the object is already gone, which is the state we
@@ -67,7 +66,7 @@ export type BadgeImagePurgeOutcome = 'purged' | 'still-referenced' | 'failed';
  * Purges the Depot object behind one dead legacy share — but ONLY when no
  * other LIVE share references the same content-addressed object (two shares
  * of the same achievement deduplicated to one image). A failed reference
- * read skips the delete entirely (§1.14: never destroy on an ambiguous
+ * read skips the delete entirely (never destroy on an ambiguous
  * read) and reports `failed` so the sweep retries it.
  */
 export async function purgeBadgeImage(share: {

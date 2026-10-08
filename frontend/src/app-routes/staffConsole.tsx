@@ -24,8 +24,8 @@ import { reportsView, StaffReports } from '@/rebuild/staff/console/StaffReports'
 import { StaffEmails } from '@/rebuild/staff/console/StaffEmails';
 
 /*
- * Lane 6 (staff): the route hosts of the rebuilt staff console (W2T.1). The
- * rebuilt screens import nothing outside src/rebuild and src/i18n (02 rule 23),
+ * Staff: the route hosts of the rebuilt staff console. The
+ * rebuilt screens import nothing outside src/rebuild and src/i18n,
  * so this bridge hands them Core, under the staff member's own session, and
  * the grants the auth context holds. Each host renders inside the route guard
  * of ./staff.tsx and the staff shell, so a screen only mounts for someone the
@@ -39,7 +39,7 @@ async function call<T>(getToken: () => Promise<string | null>, path: string, bod
     if (!result.error) return { ok: true, data: result.data };
     // lib/api reports a failed fetch as INTERNAL; a browser that says it is offline gets the offline state instead.
     const code = typeof navigator !== 'undefined' && navigator.onLine === false ? 'OFFLINE' : result.error.code;
-    // A refusal that itemizes its reasons (C.6's PACK_CONTRACT_FAILED) keeps them.
+    // A refusal that itemizes its reasons (PACK_CONTRACT_FAILED) keeps them.
     const failures = (result.error as { failures?: unknown }).failures;
     return Array.isArray(failures) ? { ok: false, code, failures: failures.filter((entry): entry is string => typeof entry === 'string') } : { ok: false, code };
   } catch {
@@ -48,7 +48,7 @@ async function call<T>(getToken: () => Promise<string | null>, path: string, bod
 }
 
 /**
- * W2T.3: a file Core renders (the analytics reports, the intel and raw-event
+ * A file Core renders (the analytics reports, the intel and raw-event
  * exports). These routes answer bytes on success and the usual envelope on
  * failure, and need the Bearer header, which a plain link cannot carry. The
  * X-LF-Export-* headers (truncation and paging of the raw export) are the
@@ -100,7 +100,7 @@ export function StaffRolesRoute() {
   return <StaffAccess api={api} onNavigate={(href) => onNavigate(href)} />;
 }
 
-/** E.4 (OD-3): the staff-reviewed age correction queue (manage_users). */
+/** The staff-reviewed age correction queue (manage_users). */
 export function StaffAgeCorrectionsRoute() {
   return <StaffAgeCorrections api={useStaffConsole().api} />;
 }
@@ -119,7 +119,7 @@ export function StaffEmailsRoute() {
 }
 
 /*
- * W2T.2: Content, Generation and Mentor quality.
+ * Content, Generation and Mentor quality.
  *
  * The lesson review's preview is the LEARNER'S OWN RENDERER, not a console
  * imitation of it: a reviewer approves what a child will see. Only schema 2
@@ -155,7 +155,7 @@ export function StaffMentorQualityRoute() {
 }
 
 /*
- * W2T.3: Analytics & Health and Learning intel (with Insights). The device
+ * Analytics & Health and Learning intel (with Insights). The device
  * opt-out is this browser's own flag (lib/analytics): it stops the trackers
  * here and affects nobody else, so the host hands the screen that one switch.
  */

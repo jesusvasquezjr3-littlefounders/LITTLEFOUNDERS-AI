@@ -7,12 +7,12 @@ import { useShellLocale } from '@/app-shell/ShellRoot';
 import type { StartAction, TutorAction } from '@/rebuild/site/blocks';
 
 /*
- * The bridge between the public pages and the application (W2 Lane 1): the
+ * The bridge between the public pages and the application: the
  * rebuilt surfaces in rebuild/site/ read no session, router or analytics, so
  * this hook hands them the session-aware calls to action.
  *
  *   start   A visitor starts a guest session and lands on onboarding (the
- *           "Start free" entry, M1; a guest already has a session, so
+ *           "Start free" entry; a guest already has a session, so
  *           RequireAuth lets /onboarding through). Anyone signed in (a guest
  *           included) continues to the app instead (a marketing call to action
  *           is session-aware). A failed start is reported beside the button.
@@ -21,7 +21,7 @@ import type { StartAction, TutorAction } from '@/rebuild/site/blocks';
  *           anyone else signed in the app, where the navigation offers
  *           verification to an adult who is not yet a Tutor. The legacy page
  *           sent every signed-in non-parent to /verify-parent, a child and a
- *           teen included; minor safeguards follow age (OD-3), so it no longer
+ *           teen included; minor safeguards follow age, so it no longer
  *           does.
  *
  * The acquisition goals are reported exactly as before (trackMarketingGoal

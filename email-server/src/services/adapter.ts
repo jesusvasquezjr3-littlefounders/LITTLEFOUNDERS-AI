@@ -1,5 +1,5 @@
 // Engine adapter interface. The real engine (Postal/Maddy/Haraka/Stalwart —
-// decision OPEN, see README.md) implements EmailAdapter; consumers of
+// decision OPEN) implements EmailAdapter; consumers of
 // POST /api/v1/send never change when it lands.
 
 export interface SendRequest {

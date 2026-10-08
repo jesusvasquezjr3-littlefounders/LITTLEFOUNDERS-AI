@@ -3,10 +3,10 @@ import { childPathFixture, placementPathFixture } from './coursePathFixtures';
 import type { Shelf, ShelfCourse, ShelfState } from './learnHome';
 
 /*
- * W2L.1 preview and test fixtures for the learner home and the course
+ * Preview and test fixtures for the learner home and the course
  * screen's linear engine. They are shaped exactly like GET /learn/courses and
- * GET /learn/courses/:slug/tree (the schemas parse them in the tests) and
- * stand in for Core only in the preview and the audits; the authenticated
+ * GET /learn/courses/:slug/tree and
+ * stand in for Core only in the preview; the authenticated
  * routes always render Core's own answer. Titles follow the published
  * catalog's four courses.
  */
@@ -47,7 +47,7 @@ export function teenShelf(): Shelf {
   ] };
 }
 
-/** A young child under the pathway engine: a teen-only course is listed and closed by age (OD-16). */
+/** A young child under the pathway engine: a teen-only course is listed and closed by age. */
 export function youngPathwayShelf(): Shelf {
   const pathway = (basis: NonNullable<ShelfCourse['pathway']>['basis'], recommendedLessonId: string | null) =>
     ({ learnerStage: 'child' as const, pathwayStage: basis === 'unavailable' ? null : 'child' as const, basis, recommendedLessonId });
@@ -116,7 +116,7 @@ export function homePreviewShelf(key: string): ShelfState {
     case 'empty': return { status: 'ready', shelf: { courses: [] } };
     case 'teen': return { status: 'ready', shelf: teenShelf() };
     case 'young': return { status: 'ready', shelf: youngPathwayShelf() };
-    // B.3: the featured course failed to assemble, so Core left it off the shelf and named it.
+    // The featured course failed to assemble, so Core left it off the shelf and named it.
     case 'unavailable': return { status: 'ready', shelf: {
       courses: childShelf().courses.filter((entry) => entry.slug !== 'financial-education'),
       unavailableFeaturedCourse: { slug: 'financial-education', title: SHELF_TITLES['financial-education'] },

@@ -2,12 +2,12 @@ import { copyLimit, wordCount, type AgeBand, type Locale } from '../../design/co
 
 /*
  * The speech plate holds the Mentor's CURRENT turn only, as a caption within
- * the Copy Budget (Frontend Bible 08 §2 layer 3, §5; 06 §3: the `mentor` role,
+ * the Copy Budget (the `mentor` role,
  * 20 words and 2 sentences, 12 words for ages 6–9, x1.25 in Spanish and
  * Portuguese).
  *
  * A live turn is written by the model and can be longer. It is never cut and
- * never ends in an ellipsis (02 D1): it is shown as consecutive caption pages,
+ * never ends in an ellipsis: it is shown as consecutive caption pages,
  * each within the budget, broken at sentence ends first, then at clause
  * punctuation, then between words. The learner moves to the next page; the
  * transcript keeps the whole turn.

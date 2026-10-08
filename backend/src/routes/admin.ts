@@ -364,7 +364,7 @@ const GRANTABLE_ROLES = ['parent', 'kid', 'bigfounder', 'admin', 'superadmin'] a
 const RoleMutationSchema = z.object({
   userId: z.string().uuid(),
   role: z.enum(GRANTABLE_ROLES),
-  // A.5: a staff grant of the parent role must carry an audited
+  // A staff grant of the parent role must carry an audited
   // justification — the badge means "verified", and a staff grant is not
   // an ID check, so the reason must be reconstructable afterwards.
   justification: z.string().trim().min(10).max(200).optional(),
@@ -431,7 +431,7 @@ export function adminRouter(): Router {
 
   router.use(requireAuth, requireRole(['admin', 'superadmin']));
   router.use('/users', requireAdminPermission('manage_users'));
-  // E.4 (OD-3): deciding a self-registered account's age correction is a user-account decision.
+  // Deciding a self-registered account's age correction is a user-account decision.
   router.use('/age-corrections', requireAdminPermission('manage_users'));
   // The Content screen also loads lesson and Tutor review queues. Guard every
   // endpoint it uses, including mutations and direct API requests.
@@ -439,7 +439,7 @@ export function adminRouter(): Router {
   router.use('/generation', requireAdminPermission('manage_content'));
   router.use('/moderation', requireAdminPermission('manage_content'));
   router.use('/tutor/review-queue', requireAdminPermission('manage_content'));
-  // C.5/C.6: the live-content governance status and the curated-pack release
+  // The live-content governance status and the curated-pack release
   // gate are content decisions, like the review queue.
   router.use('/tutor/live-content', requireAdminPermission('manage_content'));
   router.use('/tutor/packs', requireAdminPermission('manage_content'));
@@ -449,7 +449,7 @@ export function adminRouter(): Router {
   router.use(/^\/intel-export\.(?:csv|xlsx)$/, requireAdminPermission('view_analytics'));
   router.use('/health/services', requireAdminPermission('view_analytics'));
   router.use('/learning/retention', requireAdminPermission('view_analytics'));
-  // C.24: the Mentor-quality dashboard is read with the analytics grant. The
+  // The Mentor-quality dashboard is read with the analytics grant. The
   // named-owner rule for acknowledging, resolving and reviewing is enforced in
   // the service; naming an owner also needs manage_users.
   router.use('/mentor-quality', requireAdminPermission('view_analytics'));
@@ -457,9 +457,9 @@ export function adminRouter(): Router {
   router.use('/emails', requireAdminPermission('manage_support'));
   router.use('/audit', requireAdminPermission('manage_support'));
   router.use('/tutor/retention-status', requireAdminPermission('manage_support'));
-  // H.4: the backup and drift-probe watchdog status sits beside the retention sweep's.
+  // The backup and drift-probe watchdog status sits beside the retention sweep's.
   router.use('/ops', requireAdminPermission('manage_support'));
-  // E.3 report escalation queue: support-adjacent tooling per G.1's mapping.
+  // Report escalation queue: support-adjacent tooling.
   router.use('/reports', requireAdminPermission('manage_support'));
   // IP exclusions and non-read intelligence operations change operational
   // state. A read-only analytics grant cannot authorize those changes.
@@ -474,7 +474,7 @@ export function adminRouter(): Router {
    * Automatic detection for the exclusion panel: remember which addresses the
    * team actually works from, so excluding office/home traffic is one click
    * rather than "go find out what your IP is". Runs AFTER the role gate, so
-   * only admin/superadmin addresses are ever recorded (§1.9 — no visitor,
+   * only admin/superadmin addresses are ever recorded (no visitor,
    * parent or kid address is written here). Fire-and-forget and deduped
    * in-process: the console must not pay for it.
    */
@@ -485,7 +485,7 @@ export function adminRouter(): Router {
 
   /** Web-analytics overview (Plausible): aggregate KPIs + daily timeseries, optionally filtered. */
   /*
-   * Appendix J social-layer metrics for E.8 and E.13 (policy: SOCIAL-TIERS.md):
+   * Social-layer metrics:
    * accounts by social tier (Age-Tier Differentiation), the Profile-Content
    * Safety Review Coverage (in scope / reviewed / flagged, and the same for
    * the guardian tier the metric names) and the teen consent queue. Counts
@@ -504,7 +504,7 @@ export function adminRouter(): Router {
   });
 
   /*
-   * Appendix J metrics for E.10, E.11 and E.12 (policy: SOCIAL-GOVERNANCE.md):
+   * Social governance metrics:
    * Social-Data Retention-Policy Compliance (rows past each written window,
    * edges that expose a child without a current guardian's decision, the last
    * sweep), the live-catalog messaging scan (unreviewed schema objects, target
@@ -527,14 +527,14 @@ export function adminRouter(): Router {
   });
 
   /*
-   * Appendix J Part 1.1-1.2 metrics for E.1-E.5 (DoD 2.1(3); migration
+   * Social protection metrics (migration
    * social_protection_metrics): Cross-Family Discovery Rate, Unauthorized
    * Connection Attempt Rate, Guardian-Approval Queue Latency, Report Rate and
    * Resolution Time, Repeated-Contact Pattern Escalation Rate, Age-Tier
    * Boundary Integrity, Tutor-Badge Cross-Population Visibility,
    * Family-Panel Social Visibility Adoption and Audit-Log Completeness for
    * Social Events, over the last `days`. Counts and durations only; the
-   * verdicts compare them with the Appendix targets. A malformed answer
+   * verdicts compare them with their targets. A malformed answer
    * fails the read.
    */
   const SocialProtectionQuery = z.object({ days: z.coerce.number().int().min(1).max(366).default(30) }).strict();
@@ -547,7 +547,7 @@ export function adminRouter(): Router {
   });
 
   /*
-   * Appendix J Deletion-Request Clarity for E.6 (policy: ACCOUNT-DELETION.md):
+   * Deletion-Request Clarity:
    * requests by initiator and population, the stated-timeline rate, the
    * within-SLA completion rate and the open/overdue queue. Counts only.
    */
@@ -561,7 +561,7 @@ export function adminRouter(): Router {
   });
 
   /*
-   * Appendix M Part 1 (1.1-1.4): the Block A acquisition and identity
+   * The acquisition and identity
    * metrics (public.identity_metrics), each marked as a release-gate target
    * or diagnostic, plus the adversarial metrics with the suite that proves
    * them. Counts only; guarded by the '/analytics' view_analytics mount.
@@ -576,7 +576,7 @@ export function adminRouter(): Router {
   });
 
   /*
-   * Appendix O Part 1.1 (H.1): Teen/Guest Consent-Adjacent Disclosure
+   * Teen/Guest Consent-Adjacent Disclosure
    * Coverage over the last `days`, against its 100% target
    * (public.analytics_disclosure_coverage). Counts only; guarded by the
    * '/analytics' view_analytics mount. A malformed answer fails the read.
@@ -740,7 +740,7 @@ export function adminRouter(): Router {
   });
 
   /*
-   * DOCUMENTED EXCEPTION to the §1.6 envelope (like Depot's public file
+   * DOCUMENTED EXCEPTION to the response envelope (like Depot's public file
    * route): the SUCCESS path of the three export routes streams raw file
    * bytes — a download, not an API payload. Every error path still answers
    * the normal {data,error} envelope.
@@ -794,7 +794,7 @@ export function adminRouter(): Router {
    * Reads answer 502 rather than an empty list when Vault is unreachable: a
    * panel that renders "no exclusions" during an outage would tell an operator
    * their staff traffic is being counted when it is not (or the reverse), and
-   * this surface exists precisely to be trusted (§1.14).
+   * this surface exists precisely to be trusted.
    */
   router.get('/analytics/exclusions', async (req, res) => {
     const parsed = ExclusionQuerySchema.safeParse(req.query);
@@ -1276,15 +1276,15 @@ export function adminRouter(): Router {
     ok(res, { timeline });
   });
 
-  // A.5: the real revocation trigger path — a staff action following a
+  // The real revocation trigger path — a staff action following a
   // fraud report. The database writes the revoked row (latest-row-wins
   // resolver) and the audit row carrying the deciding actor and reason in ONE
   // transaction (revoke_parent_verification); a write Core cannot confirm
-  // answers 502, never 'revoked'. GAP-FIX-R6: the same transaction ends the
+  // answers 502, never 'revoked'. The same transaction ends the
   // Tutor's powers (tutor_revocation_cascade): every verified guardian link is
   // revoked, open invites are withdrawn and the parent role is removed, so
   // every requireRole(['parent']) and verified-link check refuses the adult
-  // and a child left with no verified guardian is paused (A.1).
+  // and a child left with no verified guardian is paused.
   const VerificationRevokeSchema = z.object({
     reason: z.string().trim().min(10).max(300),
   }).strict();
@@ -1304,7 +1304,7 @@ export function adminRouter(): Router {
   });
 
   // ── Content (course publish gate) ──────────────────────────────────────────
-  // Vault's release_course refusal codes → §1.6 envelope errors, one distinct
+  // Vault's release_course refusal codes → envelope errors, one distinct
   // SCREAMING_SNAKE code per cause so the console (errors.api.<CODE>) can tell
   // an archived course from a missing locale. Unknown future RPC codes degrade
   // to the generic RELEASE_BLOCKED rather than crashing the route.
@@ -1315,16 +1315,16 @@ export function adminRouter(): Router {
     LESSONS_NOT_REVIEWABLE: { status: 409, code: 'RELEASE_LESSONS_NOT_REVIEWABLE' },
     INCOMPLETE_LOCALES: { status: 409, code: 'RELEASE_INCOMPLETE_LOCALES' },
     VERIFICATION_REQUIRED: { status: 409, code: 'RELEASE_VERIFICATION_REQUIRED' },
-    // S05.4c: the attestation is fresh but does not pass every Forge release
+    // The attestation is fresh but does not pass every Forge release
     // gate Vault requires (forge_release_gates).
     VERIFICATION_INCOMPLETE: { status: 409, code: 'RELEASE_VERIFICATION_INCOMPLETE' },
-    // S05.4c: release_lesson only publishes into an already-live course.
+    // release_lesson only publishes into an already-live course.
     COURSE_RELEASE_REQUIRED: { status: 409, code: 'RELEASE_COURSE_RELEASE_REQUIRED' },
-    // G.3 (GAP-FIX-R5): Vault re-checks the staff actor of every status
+    // Vault re-checks the staff actor of every status
     // decision (superadmin, or admin with manage_content).
     FORBIDDEN: { status: 403, code: 'FORBIDDEN' },
-    // GAP-FIX-R6 (Appendix C Part 3 Stage 3): Vault's release gate refuses content
-    // no passing Stage 3 pedagogical review covers; the release rolled back whole.
+    // Vault's release gate refuses content
+    // no passing pedagogical review covers; the release rolled back whole.
     STAGE3_REVIEW_REQUIRED: { status: 409, code: 'RELEASE_STAGE3_REVIEW_REQUIRED' },
   };
 
@@ -1357,7 +1357,7 @@ export function adminRouter(): Router {
     ok(res, { id: courseId.data, status: status.data });
   });
 
-  // ── G.2: a new v2 version of a live lesson waits for a staff release ──────
+  // ── A new v2 version of a live lesson waits for a staff release ──────
   /*
    * Forge's reviewed publication records a pending activation for a lesson
    * that is already published (`*_v2_staff_release_approval.sql`); nothing a
@@ -1399,13 +1399,13 @@ export function adminRouter(): Router {
     return versionOutcome(res, await rejectLessonVersion(authedUser(res).id, params.data.lessonId, params.data.versionId, body.data.reason), params.data, 'rejected');
   });
 
-  // ── Appendix C Part 3 Stage 3: the pedagogical review of a lesson or a version ──
+  // ── The pedagogical review of a lesson or a version ──
   /*
-   * GAP-FIX-R6. The Pedagogical Reviewer (manage_content, never the Content
-   * Author of the same content) answers the six Block B checks and the four
-   * Stage 3 questions, each with a named finding, and resolves every Stage 3
+   * The Pedagogical Reviewer (manage_content, never the Content
+   * Author of the same content) answers the six checks and the four
+   * review questions, each with a named finding, and resolves every
    * flag Forge raised. GET serves what the form needs for the lesson's current
-   * content, or for one v2 version (?versionId=, the G.2 queue); POST records
+   * content, or for one v2 version (?versionId=, the release queue); POST records
    * the review. Vault re-checks everything and derives pass or fail; a release
    * of content no passing review covers is refused (RELEASE_STAGE3_REVIEW_REQUIRED).
    */
@@ -1438,7 +1438,7 @@ export function adminRouter(): Router {
   });
 
   /*
-   * GAP-FIX-R6 (G.2, Appendix C Part 3 Stage 3): a pending version is released
+   * A pending version is released
    * or rejected after the reviewer has PLAYED it. This returns that version's
    * document as a learner would be served it (answerless, the Mentor stage
    * projected, narration resolved; staffLessonPreview.ts), plus `playable`,
@@ -1454,7 +1454,7 @@ export function adminRouter(): Router {
   });
 
   /*
-   * GAP-FIX-R6: a preview answer, checked against the document's own answer
+   * A preview answer, checked against the document's own answer
    * key with the learner's scorer, so the reviewer sees the feedback a child
    * gets. NOTHING is recorded: no run, receipt, evidence or event; the key
    * never leaves Core. `document_version_id` names a version (the Live updates
@@ -1491,7 +1491,7 @@ export function adminRouter(): Router {
   });
 
   /*
-   * G.2 / Appendix N 1.2: every bypass of the release check with its 30-day
+   * Every bypass of the release check with its 30-day
    * retroactive check, and the Release-Verification Bypass Rate (target 0)
    * and Justification & Retroactive-Check Completeness (target 100%).
    */
@@ -1504,7 +1504,7 @@ export function adminRouter(): Router {
     ok(res, report);
   });
 
-  // ── Learning quality (S05.3d: B.19 difficulty band, B.12 judgment, B.5 replay notice) ──
+  // ── Learning quality (difficulty band, judgment, replay notice) ──
   // Behind '/content' → manage_content. The SQL functions re-check the actor on every write.
   const LearningQualityQuery = z.object({ days: z.coerce.number().int().min(7).max(180).default(REVIEW_WINDOW_DAYS) });
   const band = z.number().int().min(0).max(100);
@@ -1554,7 +1554,7 @@ export function adminRouter(): Router {
     ok(res, { id: reviewId.data, status: 'resolved' });
   });
 
-  // Appendix C 1.3 (GAP-FIX-R2): a defect found in released content, and the Forge gate that should have caught it.
+  // A defect found in released content, and the Forge gate that should have caught it.
   const DefectEscapeBody = z.object({
     lessonId: z.string().uuid(),
     gateId: z.string().regex(/^forge\.[a-z0-9][a-z0-9.-]{2,80}$/),
@@ -1569,7 +1569,7 @@ export function adminRouter(): Router {
   });
 
   /*
-   * Appendix C 1.3 / Stage 6 (gap-fix round 7): the escape opened a
+   * The escape opened a
    * gate-effectiveness review; staff close it with what changed. The outcome
    * and a note are required; only a changed gate names its commit or version.
    * The SQL writer re-checks manage_content and audits.
@@ -1605,7 +1605,7 @@ export function adminRouter(): Router {
     ok(res, { lessonId: body.data.lessonId, status: 'set' });
   });
 
-  // ── Moderation (lesson review gate, §1.9) ──────────────────────────────────
+  // ── Moderation (lesson review gate) ──────────────────────────────────
   router.get('/moderation', async (_req, res) => {
     const lessons = await listReviewLessons();
     if (!lessons) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the review queue');
@@ -1627,7 +1627,7 @@ export function adminRouter(): Router {
       return fail(res, 400, 'VALIDATION_ERROR', 'lessonId must be a uuid and status one of draft|review|published|archived');
     }
     // Publishing a lesson is a release through Vault's release_lesson
-    // preflight (Product G.2): the same Forge verification as a course release.
+    // preflight: the same Forge verification as a course release.
     const result = await setLessonStatus(lessonId.data, status.data, authedUser(res).id);
     if (result.outcome === 'blocked') {
       const refusal = RELEASE_REFUSALS[result.code] ?? { status: 409, code: 'RELEASE_BLOCKED' };
@@ -1637,12 +1637,12 @@ export function adminRouter(): Router {
     ok(res, { id: lessonId.data, status: status.data });
   });
 
-  // ── Tutor live-content review queue (/ORACLE.md §7.3) ─────────────────────
+  // ── Tutor live-content review queue ─────────────────────
   /*
    * The post-hoc human review of LIVE-generated tutor activities. Segments
    * are sampled into `review_status='pending'` at persist time (this file's
    * sibling `tutorLadder`/`persistAndServe` path); this is the READER that
-   * §15.2 admitted did not exist — the sampling protects nobody until a
+   * did not exist before — the sampling protects nobody until a
    * human sees what it sampled. The payload includes the answer key: the
    * reviewer is staff, and judging an exercise without its answer is judging
    * half of it.
@@ -1654,10 +1654,10 @@ export function adminRouter(): Router {
   });
 
   /*
-   * C.5: a staff verdict is also the INPUT of the dynamic sampling rate and
+   * A staff verdict is also the INPUT of the dynamic sampling rate and
    * of the judge's concordance. A rejection is a real quality or safety
    * issue: it raises that content-risk category's sampling rate at once, and
-   * too many of them suspend live generation for the category (Stage 7).
+   * too many of them suspend live generation for the category.
    * `issue` classifies a rejection (quality | safety); an older console that
    * sends none still records a rejection, counted as an issue of unstated
    * class. The segment status and the governance log move in ONE transaction
@@ -1686,7 +1686,7 @@ export function adminRouter(): Router {
     });
     if (outcome === null) return fail(res, 502, DATA_UNAVAILABLE, 'Could not record the review');
     if (outcome === 'not_pending') return fail(res, 409, 'ALREADY_DECIDED', 'This activity was already reviewed');
-    // G.3: the central audit row 'admin.tutor_activity.review' is written by
+    // The central audit row 'admin.tutor_activity.review' is written by
     // record_tutor_live_review itself, in the transaction that records the
     // verdict (migration audited_staff_decisions): the decision and its
     // staff-wide trail commit together or not at all.
@@ -1694,7 +1694,7 @@ export function adminRouter(): Router {
   });
 
   /*
-   * C.5: what staff need to see to act — per content-risk category, the
+   * What staff need to see to act — per content-risk category, the
    * current sampling rate (baseline or elevated, and how many clean
    * decisions restore the baseline), whether live generation is suspended
    * and why, the pending review backlog past the SLA, and the judge's
@@ -1733,7 +1733,7 @@ export function adminRouter(): Router {
     });
   });
 
-  // ── C.6: the curated activity-pack release gate ────────────────────────────
+  // ── The curated activity-pack release gate ────────────────────────────
   router.get('/tutor/packs', async (req, res) => {
     const status = z.enum(PACK_STATUSES).optional().safeParse(req.query.status);
     if (!status.success) return fail(res, 400, 'VALIDATION_ERROR', 'status must be review|published|archived');
@@ -1765,13 +1765,13 @@ export function adminRouter(): Router {
     return fail(res, 502, DATA_UNAVAILABLE, 'Could not update the pack');
   });
 
-  // ── C.24: the consolidated Mentor-quality and engagement-health dashboard ──
+  // ── The consolidated Mentor-quality and engagement-health dashboard ──
   /*
    * One read for the product/pedagogy team: every consolidated signal from
    * the evaluation loop's latest snapshot (with the ones not instrumented yet
    * listed as such), the active flags with their owner roles, the named
    * owners, and the weekly review record. A failed read is a 502, never an
-   * empty, calm dashboard (§1.14).
+   * empty, calm dashboard.
    */
   router.get('/mentor-quality', async (_req, res) => {
     const dashboard = await getMentorQualityDashboard(new Date(), authedUser(res).id);
@@ -1816,9 +1816,9 @@ export function adminRouter(): Router {
   });
 
   /*
-   * GAP-FIX-R2 (Appendix C 1.2): a named owner records a per-release manual
-   * audit (B.25 dark patterns and B.22 variable-ratio rewards: the Safety and
-   * Trust lead; B.20 reward framing: the pedagogical lead). A fail carries its
+   * A named owner records a per-release manual
+   * audit (dark patterns and variable-ratio rewards: the Safety and
+   * Trust lead; reward framing: the pedagogical lead). A fail carries its
    * findings; a pass has none. Vault enforces the owner and writes the audit row.
    */
   const ReleaseAuditBody = z.object({
@@ -1850,7 +1850,7 @@ export function adminRouter(): Router {
     return fail(res, 502, DATA_UNAVAILABLE, 'Could not update the owners');
   });
 
-  // ── Tutor retention sweep health (/ORACLE.md §15.2 item 4, closed 2026-08-31) ─
+  // ── Tutor retention sweep health ─
   /*
    * The nightly 90-day sweep reports what IT deleted to its own caller (a
    * GitHub Actions runner), but nobody was watching whether the workflow
@@ -1863,7 +1863,7 @@ export function adminRouter(): Router {
   router.get('/tutor/retention-status', async (_req, res) => {
     const status = await getTutorRetentionStatus();
     // A failed READ (database unreachable) is not the same claim as "the
-    // sweep has never run" (§1.14) — the former is a 502, the latter is a 200
+    // sweep has never run" — the former is a 502, the latter is a 200
     // whose own `stale: true` says so.
     if (!status) return fail(res, 502, DATA_UNAVAILABLE, 'Could not load the retention sweep status');
     ok(res, status);
@@ -1881,13 +1881,13 @@ export function adminRouter(): Router {
     ok(res, page);
   });
 
-  // ── Report escalation queue (E.3 — manage_support) ─────────────────────────
+  // ── Report escalation queue (manage_support) ─────────────────────────
   /*
    * The platform-level review queue every social report routes to, plus the
    * pattern-triggered cases opened automatically by migration 0108. Reports
    * carry only the predefined category and the capped optional note; the
    * case carries the subject account id. Resolution is a staff decision and
-   * records the deciding actor in the central audit trail (G.3).
+   * records the deciding actor in the central audit trail.
    */
   const ReportsQuerySchema = z.object({
     limit: z.coerce.number().int().min(1).max(200).default(50),
@@ -1895,8 +1895,8 @@ export function adminRouter(): Router {
   });
 
   /*
-   * E.4 (OD-3) / Appendix J 1.1: the staff-reviewed age correction queue.
-   * A decision is applied and audited (G.3) by decide_age_correction in one
+   * The staff-reviewed age correction queue.
+   * A decision is applied and audited by decide_age_correction in one
    * transaction; the database also refuses a requester deciding their own
    * request and a decider without manage_users.
    */
@@ -1951,7 +1951,7 @@ export function adminRouter(): Router {
     ok(res, { subjectId: subjectId.data, status: 'resolved' });
   });
 
-  // ── Roles & Access (superadmin only — §1.4) ────────────────────────────────
+  // ── Roles & Access (superadmin only) ────────────────────────────────
   const superadminOnly = requireRole(['superadmin']);
 
   router.get('/roles', superadminOnly, async (_req, res) => {
@@ -1976,15 +1976,15 @@ export function adminRouter(): Router {
       if (!parsed.data.justification) {
         return fail(res, 400, 'VALIDATION_ERROR', 'A parent-role staff grant requires a justification');
       }
-      // A.5 (Appendix M 1.2, target 100%): the role and its audited
+      // The role and its audited
       // justification commit in ONE transaction; the database also refuses a
       // parent role that arrives any other way without an ID check.
       const outcome = await grantParentRoleWithJustification(parsed.data.userId, actorId, parsed.data.justification);
       if (outcome === 'invalid') return fail(res, 400, 'VALIDATION_ERROR', 'A parent-role staff grant requires a justification');
-      // OD-3 section 2: the age record outranks the grant (kid role, under-13
-      // origin, declared minor band). Correct the record in the E.4 age review.
+      // The age record outranks the grant (kid role, under-13
+      // origin, declared minor band). Correct the record in the age review.
       if (outcome === 'minor_record') return fail(res, 409, 'AGE_RECORD_MINOR', 'The account age record is a minor record; correct it through the age review first');
-      // A.5 (GAP-FIX-R6): a revoked verification is not cleared by a staff grant.
+      // A revoked verification is not cleared by a staff grant.
       if (outcome === 'revoked') return fail(res, 409, 'PARENT_VERIFICATION_REVOKED', 'Staff revoked the verification of this adult; the parent role cannot be granted again');
       if (outcome === 'rejected') return fail(res, 409, 'ROLE_REJECTED', 'The database rejected this role change (see role invariants)');
       if (outcome === 'unavailable') return fail(res, 502, DATA_UNAVAILABLE, 'Could not confirm the grant and its justification');
@@ -1998,7 +1998,7 @@ export function adminRouter(): Router {
   });
 
   /*
-   * G.1 / G.4 (GAP-FIX-R5): a revocation names the revoking superadmin. Vault's
+   * A revocation names the revoking superadmin. Vault's
    * revoke_staff_grant removes the grant with this actor on its audit row and,
    * for an elevated grant, records the access-review decision 'revoked' in the
    * same transaction. 'not_held' is the requested end state (nothing to
@@ -2037,7 +2037,7 @@ export function adminRouter(): Router {
     revokeOutcome(res, outcome, 'The database rejected this permission change', { userId: parsed.data.userId, permission: parsed.data.permission });
   });
 
-  // ── G.4: the quarterly access review (Appendix N 1.1) ────────────────────
+  // ── The quarterly access review ────────────────────
   /*
    * Only elevated grants are reviewed: the admin and superadmin roles and
    * the four staff permissions, never a family role. A grant is due when
@@ -2079,7 +2079,7 @@ export function adminRouter(): Router {
     ok(res, { userId: body.data.userId, kind: grant.data.kind, grant: grant.data.grant, outcome: body.data.outcome, recorded: true });
   });
 
-  // ── H.4: the operations watchdog (manage_support) ──────────────────────────
+  // ── The operations watchdog (manage_support) ──────────────────────────
   /*
    * The daily Vault and Pulse backups and the schema drift probe, next to
    * the retention sweep's own status: per job the last successful run and
@@ -2136,7 +2136,7 @@ export function adminRouter(): Router {
     }
   });
 
-  // ── Insights (first-party learning/usage telemetry, /INSIGHTS.md) ─────────
+  // ── Insights (first-party learning/usage telemetry) ─────────
   // Reads the 0023 SQL views via the service role. Aggregation happens in
   // Postgres; these routes only validate, fetch, and envelope.
 
@@ -2305,7 +2305,7 @@ export function adminRouter(): Router {
       });
     }
     /*
-     * Deliberate §1.6 envelope exception, not an oversight: this is a file
+     * Deliberate response envelope exception, not an oversight: this is a file
      * download, and the frontend's export reader (AdminInsightsPage.tsx)
      * calls res.text() on this exact path and pastes the response straight
      * into the downloaded .csv Blob. Wrapping it as {data,error} would put

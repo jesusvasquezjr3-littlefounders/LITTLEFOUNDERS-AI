@@ -2,8 +2,7 @@ import { z } from 'zod';
 import { serviceRest, serviceRestRaw } from './supabaseRest.js';
 
 /*
- * Appendix J Part 1.1-1.2 for E.1-E.5 (DoD 2.1(3): a requirement is done only
- * when at least one of its metrics is instrumented). The database owns the
+ * Social-protection metrics. The database owns the
  * counting (migration social_protection_metrics): Core reports the events
  * only it sees through record_social_protection_event, which stores counts by
  * day, tier pair and relation, never an identifier, and reads the nine
@@ -46,7 +45,7 @@ const Count = z.number().int().min(0);
 const Rate = z.number().min(0).max(1).nullable();
 const Hours = z.number().min(0).nullable();
 
-/** The nine Appendix J metrics, in the order the SPEC lists them. `social:check` pins these keys. */
+/** The nine social-protection metrics. */
 export const SOCIAL_PROTECTION_METRIC_KEYS = [
   'discovery', 'unauthorizedConnections', 'approvalLatency', 'reports', 'patternEscalation',
   'ageBoundary', 'tutorBadge', 'familySocialPanel', 'auditCompleteness',
@@ -84,7 +83,7 @@ export async function readSocialProtectionMetrics(days: number): Promise<SocialP
 }
 
 /**
- * The Appendix J verdicts, derived from the counts. Targets: discovery,
+ * The verdicts, derived from the counts. Targets: discovery,
  * age-boundary bypasses and the badge shown across populations are zero;
  * pattern escalation and audit completeness are 100%. null means no
  * population in the window (never a pass by default).

@@ -21,7 +21,7 @@ export interface BoardLabelProps {
 const SHIFT = { start: '0%', middle: '-50%', end: '-100%', top: '0%', bottom: '-100%' } as const;
 
 /**
- * A word on a board (Frontend Bible 05 section 5): HTML laid over the drawing, never SVG text, because a word grows in
+ * A word on a board: HTML laid over the drawing, never SVG text, because a word grows in
  * translation and SVG text does not wrap. SVG text stays for short numerals and symbols. Put it inside a `lf-hz-drawing`
  * host that wraps the SVG, so the percentages below resolve against the drawing and the label follows it when it scales.
  */

@@ -130,7 +130,7 @@ const hintFor = (t: SpaceText, diagnostic: string | undefined, kind: FormulaPayl
 };
 
 /*
- * F4.7 (fix round): a surface from a typed formula z = f(x, y). A slope or a gradient is read at a dot, a walk is stepped downhill
+ * A surface from a typed formula z = f(x, y). A slope or a gradient is read at a dot, a walk is stepped downhill
  * with buttons or the arrow keys, and a build is typed as a formula that must pass through numbered dots. The slopes are never
  * shown: the learner works them out. The board never says met; the answer is { answer: [text] } and Core scores it exactly.
  */

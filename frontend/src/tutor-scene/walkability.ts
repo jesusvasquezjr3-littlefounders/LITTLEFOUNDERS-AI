@@ -93,7 +93,7 @@ export function isCellWalkable(mask: WalkMask, x: number, z: number): boolean {
   const gx = Math.floor(((x - minX) / (maxX - minX)) * resolution);
   const gz = Math.floor(((z - minZ) / (maxZ - minZ)) * resolution);
   // Off the grid is off the island: refusing is the same answer the ground
-  // sampler gives by returning null rather than 0 (/AGENTS.md §1.14).
+  // sampler gives by returning null rather than 0.
   if (gx < 0 || gz < 0 || gx >= resolution || gz >= resolution) return false;
   const bit = gz * resolution + gx;
   return ((mask.cells[bit >> 3] ?? 0) >> (bit & 7)) % 2 === 1;

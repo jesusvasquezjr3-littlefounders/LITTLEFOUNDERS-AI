@@ -1,4 +1,4 @@
-// `choice` family — payload/answer Zod schemas (LESSON_ENGINE.md §5.2, types 6–13).
+// `choice` family — payload/answer Zod schemas (types 6–13).
 
 import { z } from 'zod'
 import {

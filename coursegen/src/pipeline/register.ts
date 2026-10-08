@@ -1,4 +1,4 @@
-// Audience registers — COURSE_ENGINE.md §3.3. The catalog's CONCEPTS are
+// Audience registers. The catalog's CONCEPTS are
 // audience-agnostic; the RENDERING is not. `--register adult` regenerates
 // the SAME blueprints as a parallel course (content is always REGENERATED
 // per register — never filtered down or dressed up from the kid version;
@@ -6,7 +6,7 @@
 // documented anti-pattern this module exists to avoid).
 //
 // `kid` is the default and its vocabulary hard-gate is NEVER a catalog
-// toggle — it's a §1.9 child-safety invariant, so `resolveRegister` ignores
+// toggle — it's a child-safety invariant, so `resolveRegister` ignores
 // whatever `taxonomy.registers.kid` might say and always returns
 // `vocabularyGates: true` for kid. `adult` reads `taxonomy.registers.adult`
 // when the catalog declares it, and otherwise falls back to the built-in
@@ -50,7 +50,7 @@ export function resolveRegister(taxonomy: TaxonomyFile | undefined, register: Re
   const adultConfig = taxonomy?.registers?.adult;
   return {
     register,
-    // COURSE_ENGINE.md §3.3: adult register has no vocabulary ceiling by
+    // Adult register has no vocabulary ceiling by
     // default; a catalog MAY opt back into gating via vocabulary_gates:true.
     vocabularyGates: adultConfig?.vocabulary_gates ?? false,
     fullPalette: true,

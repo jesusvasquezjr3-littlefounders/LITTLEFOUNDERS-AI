@@ -32,14 +32,14 @@ export const schedulePayload = z.object({
 const problem = (ctx: z.RefinementCtx, path: string, message: string | null) => { if (message) ctx.addIssue({ code: 'custom', path: [path], message }); };
 
 export const FIN2_SEGMENTS = [
-  /** F2.13 (N19): sort a month of money into earned, passive, expenses, assets and liabilities; the goal is passive greater than expenses. */
+  /** Sort a month of money into earned, passive, expenses, assets and liabilities; the goal is passive greater than expenses. */
   z.object({
     ...hzBase, type: z.literal('money.cash-flow.v2'), grading: hzServer, visual: hzVisual('statement-board'), labels, payload: statementPayload,
   }).strict().superRefine((value, ctx) => {
     problem(ctx, 'payload', statementProblem(value.payload));
     problem(ctx, 'labels', statementLabelsProblem(value.payload, value.labels));
   }),
-  /** F2.14 (N16, N17, N24, Q20, R08): SWOT, Eisenhower, a 2x2, a weighted decision matrix and a business model canvas on one grid piece. */
+  /** SWOT, Eisenhower, a 2x2, a weighted decision matrix and a business model canvas on one grid piece. */
   z.object({
     ...hzBase, type: z.literal('reasoning.decision-grid.v2'), grading: hzServer,
     visual: z.union([hzVisual('swot'), hzVisual('eisenhower'), hzVisual('two-by-two'), hzVisual('decision-matrix'), hzVisual('business-canvas')]),
@@ -48,7 +48,7 @@ export const FIN2_SEGMENTS = [
     problem(ctx, 'payload', gridProblem(value.visual.type, value.payload));
     problem(ctx, 'labels', gridLabelsProblem(value.visual.type, value.payload, value.labels));
   }),
-  /** F2.15 (F14, O20): a Gantt, a kanban and an assemblable timeline of tasks, dependencies and deadlines. */
+  /** A Gantt, a kanban and an assemblable timeline of tasks, dependencies and deadlines. */
   z.object({
     ...hzBase, type: z.literal('plan.schedule-board.v2'), grading: hzServer,
     visual: z.union([hzVisual('gantt'), hzVisual('kanban'), hzVisual('timeline')]),

@@ -6,10 +6,10 @@ import { rebuildNamespaceCopy } from '../../i18n/rebuild';
 import './site.css';
 
 /*
- * The public site's building blocks (M1–M4, W2 Lane 1), composed from the
- * shared controls only (02 rule 23). A page is a neutral page with coloured
- * bands (02 §4.5: many independent pieces of content), laid out by the `app`
- * container width (02 §7 rule 9): the hero splits 7:5 from 840 px (03 §3.3),
+ * The public site's building blocks, composed from the
+ * shared controls only. A page is a neutral page with coloured
+ * bands (many independent pieces of content), laid out by the `app`
+ * container width: the hero splits 7:5 from 840 px,
  * the art moves above the copy below 400 px, and section paddings vary
  * (tight / default / loose / band) so no three sections share one rhythm.
  *
@@ -39,9 +39,9 @@ export function follow(href: string, onNavigate?: Navigate, after?: () => void) 
 }
 
 /**
- * The page's main call to action (02 §9.5: accent, the one "press me" hue).
- * A visitor starts a guest session, no sign-up (the SPEC's "Start free" entry,
- * M1); anyone already signed in continues where they left off. The bridge
+ * The page's main call to action (accent, the one "press me" hue).
+ * A visitor starts a guest session, no sign-up (the "Start free" entry);
+ * anyone already signed in continues where they left off. The bridge
  * decides which, from the session; the label never promises more than that.
  */
 export type StartAction =
@@ -67,24 +67,24 @@ export function StartButton({ action, copy, onNavigate, origin, size = 'lg', bre
 
 /**
  * The Tutor call to action on the family pages. A visitor is offered the brand
- * line (OD-6: "Become your child's Tutor"); a verified parent goes to the
+ * line ("Become your child's Tutor"); a verified parent goes to the
  * family; anyone else signed in goes back into the app, where the navigation
  * offers verification to an adult who is not yet a Tutor (never to a child or
- * a teen: minor safeguards follow age, OD-3).
+ * a teen: minor safeguards follow age).
  */
 export type TutorAction = { kind: 'visitor'; onFollow?: () => void } | { kind: 'parent' } | { kind: 'member'; href: string };
 
 export function TutorButton({ action, copy, onNavigate }: { action: TutorAction; copy: SiteCopy; onNavigate?: Navigate }) {
   if (action.kind === 'parent') return <ButtonLink variant="accent" size="lg" href="/learn" onClick={follow('/learn', onNavigate)}>{copy.openApp}</ButtonLink>;
   if (action.kind === 'member') return <ButtonLink variant="accent" size="lg" href={action.href} onClick={follow(action.href, onNavigate)}>{copy.openApp}</ButtonLink>;
-  // The approved brand line is `brand` copy (06 §3.3), so it is a link styled as the accent button, not a budgeted action.
+  // The approved brand line is `brand` copy, so it is a link styled as the accent button, not a budgeted action.
   return <a className="lf-button lf-button--accent lf-button--lg lf-button-link" href="/signup?intent=tutor" data-copy-role="brand"
     data-cta="become-tutor" onClick={follow('/signup?intent=tutor', onNavigate, action.onFollow)}>{copy.becomeTutor}</a>;
 }
 
 export type SectionTone = 'loose' | 'default' | 'tight' | 'band' | 'soft';
 
-/** One section of a public page. `band` is the full-colour block every page carries once (03 §3.3). */
+/** One section of a public page. `band` is the full-colour block every page carries once. */
 export function SiteSection({ tone = 'default', heading, headingId, children, split, className }: {
   tone?: SectionTone; heading?: ReactNode; headingId?: string; children: ReactNode; split?: 'start' | 'end'; className?: string;
 }) {
@@ -99,9 +99,8 @@ export function SiteSection({ tone = 'default', heading, headingId, children, sp
 
 
 /**
- * The four Mentor characters, each a render of its real 3D model (02 rule 21,
- * 07 §4), named by `MENTOR_NAMES` so the name can never disagree with the
- * picture. A genuinely uniform collection, marked as one (03 §3.3).
+ * The four Mentor characters, each a render of its real 3D model, named by `MENTOR_NAMES` so the name can never disagree with the
+ * picture. A genuinely uniform collection, marked as one.
  */
 export function MentorCast({ label, size = 'lg' }: { label: string; size?: 'md' | 'lg' }) {
   const { theme } = useRebuildEnvironment();
@@ -120,7 +119,7 @@ export function MentorCast({ label, size = 'lg' }: { label: string; size?: 'md' 
  * A decision with consequences, not a quiz (M2, M3): no option is right or
  * wrong, picking another swaps the consequence in place, and the consequence
  * is announced politely without moving focus. It uses the shared "choose one"
- * control (02 §9.5), so the demo is the product's own control.
+ * control, so the demo is the product's own control.
  */
 export function DecisionDemo<T extends string>({ name, question, options, prompt, art }: {
   name: string; question: string; prompt: string;
@@ -141,7 +140,7 @@ export function DecisionDemo<T extends string>({ name, question, options, prompt
   </div>;
 }
 
-/** Numbered steps as a staircase on wide containers (03 §3.3), one reading column below. */
+/** Numbered steps as a staircase on wide containers, one reading column below. */
 export function SiteSteps({ label, steps }: { label: string; steps: readonly { title: string; body: string }[] }) {
   return <ol className="lf-site-steps" data-uniform="sequence" aria-label={label}>
     {steps.map((step, index) => <li key={step.title} className="lf-site-step">

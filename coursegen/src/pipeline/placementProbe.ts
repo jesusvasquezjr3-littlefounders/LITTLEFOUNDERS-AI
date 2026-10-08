@@ -1,8 +1,7 @@
 // placementProbe.ts — authors and deterministically gates ONE per-topic
-// placement-quiz probe (COURSE_ENGINE.md §3.2's "future onboarding/placement
-// phase", now built). A probe is authored ONCE per catalog teaching topic at
+// placement-quiz probe. A probe is authored ONCE per catalog teaching topic at
 // generation time, from catalog/topic content only — never per learner, so
-// /AGENTS.md §1.9 (no minor PII to any provider) is satisfied by
+// no minor PII reaches any provider, by
 // construction. The LIVE placement quiz Core serves at runtime is 100%
 // deterministic: it only ever reads and grades this pre-authored content,
 // mirroring the "deterministic gate before/instead of LLM judgment" posture
@@ -81,7 +80,7 @@ export function gatePlacementProbe(probe: PlacementProbe): PlacementProbeGateRes
 
 /**
  * WHO this probe is for, and in WHAT domain. REQUIRED, and deliberately not
- * defaulted (/AGENTS.md §1.14): the previous prompt hardcoded "a children's
+ * defaulted: the previous prompt hardcoded "a children's
  * financial-literacy course", so every probe authored for the 12-18
  * entrepreneurship and investing catalogs would have inherited a 6-year-old's
  * register and the wrong domain — the same shape of defect as the visual
@@ -92,7 +91,7 @@ export interface ProbeAudience {
   subject: string;
   /** The catalog age band this course is written for, e.g. "6-7", "12-18". */
   ages: string;
-  /** COURSE_ENGINE.md §3.3 register — decides tone, not difficulty. */
+  /** Register — decides tone, not difficulty. */
   register: 'kid' | 'adult';
 }
 
@@ -110,7 +109,7 @@ export interface AuthorPlacementProbeDeps {
 }
 
 /**
- * Stated POSITIVELY on both branches (/AGENTS.md §1.14): a generative model
+ * Stated POSITIVELY on both branches: a generative model
  * told only what NOT to do invents a default, and the default it invents for
  * an unqualified "quiz question" is a children's one. Each register says what
  * the register IS.

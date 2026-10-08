@@ -56,12 +56,12 @@ import v2FixtureDocuments from '../fixtures/v2FixtureDocuments.generated.json';
 import { segmentCapabilities, type LessonClientSegment } from '../../learning/lessonDocument';
 
 /*
- * Lane 2 (learn): the lesson player in every state, the teaching boards at the
+ * Learn: the lesson player in every state, the teaching boards at the
  * ages each serves, results, placement, the course path, narrative and rhythm.
  */
 
 /*
- * The preview's compact-stage fixture. OD-19: this stays fixed to Dina on
+ * The preview's compact-stage fixture. This stays fixed to Dina on
  * diorama-a ONLY here — the authenticated lesson route consumes the real
  * server-resolved projection instead.
  */
@@ -75,12 +75,12 @@ type Verdict = 'met' | 'review' | 'invalid';
 const verdict = (result: string): Verdict => result === 'met' || result === 'review' ? result : 'invalid';
 
 /*
- * W2L.1: the learner pages render no <main> of their own (on a real route the
+ * The learner pages render no <main> of their own (on a real route the
  * learner shell's is the one landmark); the preview stands in for the shell.
  */
 const LearnPreviewHost = ({ children }: { children: ReactNode }) => <main className="lf-learn-preview-host">{children}</main>;
 
-/* W2L.1: the learner pages' links, as preview screens (a plain press opens that screen in place). */
+/* The learner pages' links, as preview screens (a plain press opens that screen in place). */
 const previewLinks: LearnLinks = {
   home: '?screen=learnhome', course: () => '?screen=course', lesson: () => '?screen=lesson', placement: () => '?screen=placement',
   territory: () => '?screen=territory', rhythm: '?screen=rhythm', journal: '?screen=journal', together: '?screen=together', mentor: '?screen=mentor',
@@ -88,7 +88,7 @@ const previewLinks: LearnLinks = {
 const REPORT_COPY = { 'en-US': enProfile.report, 'es-MX': esProfile.report, 'pt-BR': ptProfile.report } as const;
 
 /*
- * W2L.2: the placement flow on the shared single-state screen, as its route
+ * The placement flow on the shared single-state screen, as its route
  * mounts it (sky hue, no app navigation), in every state (`?flow=`); a press
  * moves to the next fixture state in place. `?mentor=` is the chosen
  * character (`none` before a choice).
@@ -128,10 +128,10 @@ const board = (build: (context: PreviewContext) => unknown) => framed((context) 
 });
 
 /*
- * GAP-FIX-R4 (Appendix P Part 8 DoD; Bible 05 §8): one Forge fixture segment
+ * One Forge fixture segment
  * staged as its own lesson, `?seg=<lesson id>:<segment id>`, at the age band
  * its lesson serves (null at any other age). The documents are the emitter's
- * own output (agent/tools/sync-v2-preview-fixtures.mjs), so the audits measure
+ * own output, so a review sees
  * the logic, money, story, Mentor, chart and concept boards as learners get them.
  */
 type FixtureDocument = Record<string, unknown> & { age_band: string; segments: Array<{ id: string }> };
@@ -158,18 +158,18 @@ export const learnPreviewScreens: PreviewRegistry = {
   fixture: framed(({ screen, locale, ageBand, params, go }) => <LessonDocumentView key={`${screen}:${locale}:${ageBand}:${params.get('seg')}`}
     raw={previewFixtureSegment(locale, ageBand, params.get('seg'))} locale={locale} ageBand={ageBand} onBack={() => go('home')}
     attemptSeeds={previewFixtureSeeds(locale, params.get('seg'))}
-    // A decide-and-justify step has its own grader (reasoning quality, B.12); without it the view refuses the step.
+    // A decide-and-justify step has its own grader (reasoning quality); without it the view refuses the step.
     onGradeAny={async () => ({ verdict: 'review' as const })} onGradeReasoning={async () => ({ verdict: 'review' as const })} />),
   opening: transport,
   offline: transport,
   loaderror: transport,
   upgrade: refusal,
   invalid: refusal,
-  // GAP-FIX-R5 (08 §3, §11): `?offer=1` opens the guided-review offer beside the lesson, in one stage-request store as the
-  // lesson layer holds it, so the compact Mentor is `encouraging` while it is open (verify-compact-stage.mjs).
+  // `?offer=1` opens the guided-review offer beside the lesson, in one stage-request store as the
+  // lesson layer holds it, so the compact Mentor is `encouraging` while it is open.
   lesson: framed(({ locale, ageBand, theme, register, params, go }) => withOffer(params.get('offer') === '1', <LessonDocumentView key={`${locale}:${ageBand}`} raw={allocationPilotDocument(locale, ageBand)} locale={locale} ageBand={ageBand}
     theme={theme} onBack={() => go('home')} mentorStage={params.get('stage') === '1' ? PREVIEW_MENTOR_STAGE : null}
-    // GAP-FIX-R3 (08 §11): `?adventure=<theme>` draws the adventure scene as the band's backdrop (the compact-stage audit's theme states).
+    // `?adventure=<theme>` draws the adventure scene as the band's backdrop (the compact stage's theme states).
     adventureTheme={loadAdventureThemeProjection(params.get('adventure'))}
     onGrade={(allocation) => {
       const item = learningFixtures[ageBand].item;
@@ -191,22 +191,22 @@ export const learnPreviewScreens: PreviewRegistry = {
       return verdict(scoreV2Visual('money.allocation.v2', { total: item.total, step: item.step }, allocation, { minimumSave: item.minimumSave }));
     }} />),
   numberline: framed(({ locale, ageBand, go }) => <LessonDocumentView key={`numberline:${locale}:${ageBand}`}
-    // Appendix P M2: the whole-number line is open to ages 6-9 only.
+    // The whole-number line is open to ages 6-9 only.
     raw={ageBand === '6-9' ? numberLinePilotDocument(locale, ageBand) : null} locale={locale} ageBand={ageBand}
     onBack={() => go('home')} onGradeNumberLine={(answer) => verdict(scoreV2Visual('math.number-line.whole.v2', { minimum: 0, maximum: 10, step: 1 },
       answer, { target: 7, tolerance_share: 0.05 }))} />),
-  // The S05.3b course path's fixtures, now on the one course screen (W2L.1) under the pathway engine.
+  // The course path's fixtures, now on the one course screen under the pathway engine.
   coursepath: framed(({ locale, theme, ageBand, params, go }) => <LearnPreviewHost><CourseView key={`coursepath:${locale}`} fixture locale={locale} dark={theme === 'dark'} ageBand={ageBand}
     slug="financial-education" state={coursePathPreviewStates[params.get('path') ?? 'child'] ?? coursePathPreviewStates.child!}
     courseTitles={{ entre: 'Entrepreneurship' }} links={previewLinks} onNavigate={previewNavigate(go)} onRetry={() => go('coursepath')}
-    // OD-25 (`?path=offers`): the preview answers yes without Core; the real route re-reads the course.
+    // `?path=offers`: the preview answers yes without Core; the real route re-reads the course.
     onOpenEarly={async () => 'done'} onAcceptMastery={async () => 'done'} onDeclineMastery={async () => 'done'} /></LearnPreviewHost>),
-  // W2L.1 (L2): the one course screen in every state, both course engines (`?course=`).
+  // The one course screen in every state, both course engines (`?course=`).
   course: framed(({ locale, theme, ageBand, params, go }) => <LearnPreviewHost><CourseView key={`course:${locale}:${params.get('course')}`} fixture locale={locale} dark={theme === 'dark'} ageBand={ageBand}
     slug="financial-education" state={coursePreviewStates[params.get('course') ?? 'linear'] ?? coursePreviewStates.linear!} inProgress={params.get('building') === '1'}
     courseTitles={Object.fromEntries(Object.entries(SHELF_TITLES).map(([slug, title]) => [slug, title[locale]]))}
     links={previewLinks} onNavigate={previewNavigate(go)} onRetry={() => go('course')} /></LearnPreviewHost>),
-  // W2L.1 (L1): the learner home in every state (`?home=`, `?rhythm=`, `?graduation=1`).
+  // The learner home in every state (`?home=`, `?rhythm=`, `?graduation=1`).
   learnhome: framed(({ locale, theme, ageBand, params, go }) => {
     const home = params.get('home') ?? 'child';
     const shelf = homePreviewShelf(home);
@@ -226,7 +226,7 @@ export const learnPreviewScreens: PreviewRegistry = {
     state={journalPreviewStates(locale)[params.get('journal') ?? 'list'] ?? journalPreviewStates(locale).list!}
     onBack={() => go('home')} onRetry={() => go('journal')} onMore={() => {}}
     onClear={async () => true} /></LearnPreviewHost>),
-  // L-04 (OD-27 (1)): goals together in every state (`?together=ready|empty|reached|closed|loading|error|offline`).
+  // Goals together in every state (`?together=ready|empty|reached|closed|loading|error|offline`).
   together: framed(({ locale, theme, params, go }) => <LearnPreviewHost><TogetherView key={`together:${locale}:${params.get('together')}`} fixture locale={locale}
     dark={theme === 'dark'} state={togetherPreviewStates[params.get('together') ?? 'ready'] ?? togetherPreviewStates.ready!} candidates={togetherCandidatesFixture}
     reportCopy={REPORT_COPY[locale]} onBack={() => go('learnhome')} onRetry={() => go('together')} onLoadCandidates={() => {}}
@@ -245,7 +245,7 @@ export const learnPreviewScreens: PreviewRegistry = {
     onBack={() => go('home')} onRetry={() => {}} onOpenPath={() => {}} onOpenMentor={() => {}}
     onSavePace={async (goal) => ({ goal, chosen: true, passedToday: 1, goalMet: goal <= 1 })} /></LearnPreviewHost>),
   resultmilestone: framed(({ locale, go }) => <LessonResultView locale={locale} onContinue={() => go('home')} fixture rawReceipt={milestoneReceipt(locale)} mentor={{ character: 'zara', scene: 'diorama-a' }} />),
-  // W2L.3: the course and badge milestones Core named, the badge showing the course it was earned in.
+  // The course and badge milestones Core named, the badge showing the course it was earned in.
   resultbadge: framed(({ locale, go }) => <LessonResultView locale={locale} onContinue={() => go('home')} fixture courseSlug="investing"
     rawReceipt={{ ...milestoneReceipt(locale), celebrations: ['lesson-complete', 'course-complete', 'badge-earned'], streak: undefined, pace: undefined }} />),
   resultregister: framed(({ locale, register, go }) => <LessonResultView key={`resultregister:${register}`} locale={locale} onContinue={() => go('home')} fixture
@@ -266,13 +266,13 @@ export const learnPreviewScreens: PreviewRegistry = {
     replay: { kind: 'replay', notice: 'best_kept', best_score_kept: true, xp_policy: 'improvement_only' },
     judgment: { assessed: 2, sound: 1, partial: 1, unsupported: 0 },
   }} />),
-  // W2L.2 (L3): the course world in every state (`?map=`), both course engines.
+  // The course world in every state (`?map=`), both course engines.
   territory: framed(({ locale, theme, ageBand, params, go }) => <LearnPreviewHost><TerritoryMapView key={`territory:${locale}:${params.get('map')}`} fixture
     locale={locale} dark={theme === 'dark'} ageBand={ageBand} slug="financial-education"
     state={territoryPreviewStates[params.get('map') ?? 'linear'] ?? territoryPreviewStates.linear!}
     courseTitles={Object.fromEntries(Object.entries(SHELF_TITLES).map(([slug, title]) => [slug, title[locale]]))}
     links={previewLinks} onNavigate={previewNavigate(go)} onRetry={() => go('territory')} /></LearnPreviewHost>),
-  // W2L.2 (L4): the placement flow in every state.
+  // The placement flow in every state.
   placement: framed((context) => <PlacementPreview {...context} />),
   placementoutcome: framed(({ locale, theme, params, go }) => <PlacementOutcomeView key={`placement:${locale}:${params.get('start')}:${params.get('path')}`} fixture locale={locale}
     dark={theme === 'dark'} onStart={() => go('home')} onEarlier={() => go('home')} rawFrame={{
@@ -298,7 +298,7 @@ export const learnPreviewScreens: PreviewRegistry = {
   barmodel: framed(({ locale, ageBand, go }) => <LessonDocumentView key={`barmodel:${locale}:${ageBand}`} raw={ageBand === '10-12' ? barModelPilotDocument(locale) : null} locale={locale} ageBand={ageBand} onBack={() => go('home')}
     onGradeBarModel={(answer, segmentId) => {
       const kind = segmentId === 'bar-structure-01' ? 'math.bar-model.structure.v2' : 'math.bar-model.answer.v2';
-      // GAP-FIX-R3 (M7): the pilot's private key, a comparison with its total ("Ana has 12 more than Leo; together 50").
+      // The pilot's private key, a comparison with its total ("Ana has 12 more than Leo; together 50").
       const rubric = segmentId === 'bar-structure-01' ? { model: 'comparison', slots: { smaller: 'unknown', larger: null, difference: 'ana-more', total: 'together' } } : { target: 19 };
       return verdict(scoreV2Visual(kind, { quantityIds: ['together', 'ana-more'], values: [50, 12] }, answer, rubric));
     }} />),

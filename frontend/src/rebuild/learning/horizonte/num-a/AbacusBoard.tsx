@@ -30,7 +30,7 @@ const MOVE_ORDER: readonly Move[] = ['add-1', 'take-1', 'add-5', 'take-5'];
 const shift = (digit: number, move: Move): number | null => { const next = digit + MOVES[move]; return next >= 0 && next <= ABACUS_MAX_DIGIT ? next : null; };
 
 /*
- * A06: one to four rods, each with a five bead and four one beads. The learner taps a bead, or drags an add or take chip onto
+ * One to four rods, each with a five bead and four one beads. The learner taps a bead, or drags an add or take chip onto
  * a rod; "Move to" is the keyboard path. The answer is one digit per rod; Core holds the target.
  */
 function Abacus({ document, segment, onBack, sequence, onGrade }: Omit<HorizonteBoardProps, 'segment'> & { segment: AbacusSegment }) {

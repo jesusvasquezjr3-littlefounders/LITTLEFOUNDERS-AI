@@ -11,8 +11,7 @@ import type { FlowTree, RuleExpr } from './v2SegmentFamilies.generated';
 import './familyBoards.css';
 
 /*
- * GAP-FIX-R2 learning: the boards that build and test (Appendix P $6, L2,
- * L6/$9). Each sends only ids and canonical numbers; Core grades the unit
+ * The boards that build and test ($6, L2, L6/$9). Each sends only ids and canonical numbers; Core grades the unit
  * prices and choice, the compiled rule and the built chart against its
  * private rubric (hidden scenarios for the rule and the chart), never the
  * layout. Every action is a tap or keyboard control (no drag-only paths).
@@ -37,7 +36,7 @@ export function UnitPriceBoard({ document, segment, onBack, sequence, onGrade }:
   const grading = useSegmentGrade(segment.id, onGrade);
   const [prices, setPrices] = useState<Record<string, string | null>>({});
   const [choice, setChoice] = useState<string | null>(null);
-  // GAP-FIX-R4 (Bible 05 §3): Reset remounts the typed answers (they keep their own text) and clears the choice.
+  // Reset remounts the typed answers (they keep their own text) and clears the choice.
   const [round, setRound] = useState(0);
   const format = useMemo(() => {
     const money = new Intl.NumberFormat(document.locale, { style: 'currency', currency: localCurrency[document.locale], maximumFractionDigits: 2 });

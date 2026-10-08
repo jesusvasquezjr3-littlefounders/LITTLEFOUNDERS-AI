@@ -7,14 +7,14 @@ import { acknowledgeGraduation, noteLearnerRegister, resolveLearnerRegister } fr
 import { LEARNER_REGISTER_POLICY_VERSION, REGISTERS } from '../services/learnerRegisterPolicy.js';
 
 /*
- * /api/v1/learn/register (S05.3f, B.23). Mounted inside learnRouter, behind
+ * /api/v1/learn/register. Mounted inside learnRouter, behind
  * its requireAuth + requireAgeScreen. Only the caller's own register: there is
  * no id in any path, and the client never states its age or band.
  *
  * GET  /register             the register Core resolved from age evidence, the
  *                            policy version the UI must match, and the
  *                            graduation still owed (shown once, never a
- *                            celebration: OD-7's list does not include it).
+ *                            celebration: the celebration list does not include it).
  * POST /register/graduation  the learner acknowledges the graduation into the
  *                            register they are in now. 404 when none is owed.
  */

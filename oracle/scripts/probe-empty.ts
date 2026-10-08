@@ -63,7 +63,7 @@
  * threshold it was built to study, and every 0/12 would then be a true reading
  * of a condition the failure does not live in.
  *
- * Round 74 does two things about that, and the first matters more than the
+ * This version does two things about that, and the first matters more than the
  * second. It RECORDS `prompt_tokens` on every call and reports min/median/max
  * per condition, so this file stops being unable to say what size it tested
  * at — that number should have been here from the first round. And it adds a
@@ -91,11 +91,11 @@
  * Seven rounds of conditions were compared against a variable that had already
  * been neutralised in every arm. The controls were not controls.
  *
- * Third, and this is what round 75 is for: one protected arm did fire (1/12,
+ * Third, and this is what the larger N is for: one protected arm did fire (1/12,
  * `R71 attempt-0, no nudge`). At N=12, one event cannot be told apart from
  * zero, and the difference decides real work — a residual near 8% accounts for
  * the paid converse gate's empty-completion count on its own, and a true 0%
- * would mean those come from somewhere else entirely. Round 75 raises N on the
+ * would mean those come from somewhere else entirely. This version raises N on the
  * protected arms and keeps one unprotected arm as a positive control, so the
  * reproduction is re-confirmed in the same run that measures the residual.
  *
@@ -112,11 +112,11 @@
  * correction, quote REMOVED` / `quoting own prior text`) was measured ONLY
  * at `historyTurns: 20` — never at the short/medium history a repair retry
  * early in a real conversation actually runs at. Closed with the same
- * discipline as round 45: two new conditions, same real retry shape (temp
+ * discipline as the full-window conditions: two new conditions, same real retry shape (temp
  * 0.2 + the correction message) at `historyTurns: 3` and `10`. Result: 0/12
  * empty at BOTH — indistinguishable from the existing full-window
  * measurement. The short-history residual hypothesis does not hold either;
- * round 63's own ~8% was statistical variance from a smaller, less
+ * the earlier live ~8% was statistical variance from a smaller, less
  * tightly-controlled live sample, not a real gap in the reminder's reach.
  */
 
@@ -150,7 +150,7 @@ const CONTEXT: TutorContext = {
 
 /**
  * THE SEVEN FIELDS `CONTEXT` LEAVES EMPTY, filled the way a real turn fills
- * them (round 74).
+ * them.
  *
  * Sizes are at or near each field's schema cap on purpose. The question is
  * whether prompt SIZE is the variable, so the arm that tests it has to reach
@@ -256,7 +256,7 @@ interface Condition {
   temperature: number;
   correction: boolean;
   /*
-   * ROUND 71'S `braceNudge` IS GONE, not merely unused (round 76).
+   * ROUND 71'S `braceNudge` IS GONE, not merely unused.
    *
    * It was reverted from the product after `probe-empty` refuted it, and this
    * file now builds its messages with the product's own `buildTurnMessages`.
@@ -265,18 +265,18 @@ interface Condition {
    * which is how the 43->24 and 43->17 numbers got believed in the first place.
    */
   /**
-   * Round 72 (2026-09-04): the tier the CONTEXT declares.
+   * The tier the CONTEXT declares.
    *
    * Every condition before this one ran at tier 2, and every "0%" this file
-   * reports was measured there. The failure that motivated round 71 was
+   * reports was measured there. The failure that motivated the earlier conditions was
    * measured somewhere else entirely — a tier-1 walk, 43 whitespace
-   * completions in 48 turns — and round 71's conditions came back 0/12 at
+   * completions in 48 turns — and those conditions came back 0/12 at
    * tier 2 for all three, which does not refute the tier-1 number so much as
    * fail to reach it. Tier is the untested variable between the two.
    */
   tier?: 1 | 2 | 3;
   /**
-   * Round 73 (2026-09-04): the MANEUVER, which every condition before this
+   * The MANEUVER, which every condition before this
    * one omitted entirely.
    *
    * A real turn does not end at the learner's line. `strategyInstruction`
@@ -289,7 +289,7 @@ interface Condition {
    */
   maneuver?: boolean;
   /**
-   * Round 74 (2026-09-04): the SEVEN CONTEXT FIELDS this probe has always
+   * The SEVEN CONTEXT FIELDS this probe has always
    * left empty, and with them the prompt's actual size.
    *
    * `false`/absent keeps the stub context every round so far measured — the
@@ -302,7 +302,7 @@ interface Condition {
   /** How many prior turns to put in the context. */
   historyTurns: number;
   /**
-   * Round 45 (2026-08-30): the REAL repair path sends a SECOND message before
+   * The REAL repair path sends a SECOND message before
    * the shape reminder — `Your previous reply ${turnCorrection}.` — and one
    * repair reason, the repeated-sentence correction, is the only one of seven
    * that quotes up to 60 chars of the model's OWN prior output back to it
@@ -377,7 +377,7 @@ const CONDITIONS: Condition[] = [
    * with `--only R75 --n 40`: two protected at the history lengths that broke
    * the unprotected ones, and one UNPROTECTED positive control, so a run that
    * finds 0/40 twice still has to show the failure it claims to have closed.
-   * A control that cannot fail is not evidence, which is the mistake round 71
+   * A control that cannot fail is not evidence, which is the mistake the earlier probe
    * shipped on.
    */
   { name: 'R75 protected, 20-turn history', temperature: 0.6, correction: true, historyTurns: 20, tier: 1 },
@@ -396,7 +396,7 @@ const CONDITIONS: Condition[] = [
   { name: 'full window (20 turns)', temperature: 0.6, correction: false, historyTurns: 20 },
   { name: 'full window + the retry correction', temperature: 0.6, correction: true, historyTurns: 20 },
   /*
-   * Round 45's hypothesis, isolated: same window, same temperature (0.2 is
+   * The earlier hypothesis, isolated: same window, same temperature (0.2 is
    * what the real repeated-sentence retry actually uses — see
    * `orchestrator.ts`'s repair-loop lowering it on attempt 1), same shape
    * reminder, same correction message — the ONLY difference between these
@@ -417,13 +417,13 @@ const CONDITIONS: Condition[] = [
     repairQuotesOwnText: true,
   },
   /*
-   * Round 63 (2026-08-30): a real live session hit the scripted fallback
+   * A real live session hit the scripted fallback
    * TWICE in a 5-turn conversation, at SHORT history. Traced to a genuine
    * repeated-sentence repair whose retry (temp 0.2, the real correction
    * message) came back empty. Every condition above that uses the real
    * retry shape (temp 0.2 + a correction message) was only ever measured
-   * at `historyTurns: 20` — the "0%" this file's own header comment and
-   * `oracle/AGENTS.md` cite for the shape reminder was never actually
+   * at `historyTurns: 20` — the "0%" this file's own header comment cites
+   * for the shape reminder was never actually
    * measured at the short/medium history a repair retry early in a real
    * conversation actually runs at. These two conditions close that gap.
    */
@@ -468,10 +468,10 @@ function historyOf(turns: number): TutorContext['turnHistory'] {
 
 /**
  * How many calls per condition. Small enough to be cheap, large enough to see
- * a difference — and round 74 showed exactly where that stops being true.
+ * a difference — and an earlier run showed exactly where that stops being true.
  *
  * Twelve separates 0% from 58% comfortably, which is what every round until
- * now needed. It cannot separate 0% from 8%: one event either way. Round 75's
+ * now needed. It cannot separate 0% from 8%: one event either way. The current
  * question IS that difference, so `--n` raises it for a focused run, and
  * `--only <substring>` runs just the arms that question needs instead of
  * paying for all nineteen.
@@ -493,7 +493,7 @@ interface Outcome {
   contentChars: number;
   completionTokens: number;
   /**
-   * THE NUMBER THIS FILE SHOULD HAVE RECORDED FROM ROUND ONE (round 74).
+   * THE NUMBER THIS FILE SHOULD HAVE RECORDED FROM ROUND ONE.
    *
    * The only measured correlate of a real whitespace completion is that its
    * prompt was over 2100 tokens. Seven rounds of conditions were compared
@@ -535,7 +535,7 @@ async function once(condition: Condition, context: TutorContext): Promise<Outcom
         ? QUOTING_CORRECTION(priorTutorText)
         : NON_QUOTING_CORRECTION;
   /*
-   * BUILT BY THE PRODUCT'S OWN `buildTurnMessages` (round 76, 2026-09-04).
+   * BUILT BY THE PRODUCT'S OWN `buildTurnMessages`.
    *
    * This array was hand-written here, in parallel with the orchestrator's own
    * copy, for every round up to 75 — and rounds 74/75 ended on a gap that

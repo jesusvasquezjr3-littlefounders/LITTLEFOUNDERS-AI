@@ -6,9 +6,9 @@ import {
 import type { SessionSummary, SessionTranscript, TutorWhiteboardWire } from '../session/types';
 
 /*
- * What the Mentor screen's secondary views read from Core (T1e-T1g), as one
+ * What the Mentor screen's secondary views read from Core, as one
  * small interface: the real route binds it to the signed-in learner's token,
- * the development preview and the tests hand it fixtures. Each read answers
+ * the development preview hands it fixtures. Each read answers
  * null when Core could not, so every view has an honest error state rather
  * than an empty one that looks like "nothing yet".
  */
@@ -23,15 +23,15 @@ export interface MentorNotebook {
 }
 
 export interface MentorData {
-  /** The learning map (T1f): the knowledge-component graph as this learner sees it. */
+  /** The learning map: the knowledge-component graph as this learner sees it. */
   map(): Promise<TutorMapResponse | null>;
-  /** What the Mentor decided about this learner, and on what evidence (Appendix D §2.6), read-only in the map sheet. */
+  /** What the Mentor decided about this learner, and on what evidence, read-only in the map sheet. */
   mastery(): Promise<MasteryEvidence | null>;
-  /** The plan and the kept boards (T1g), with a recap of the last conversation. */
+  /** The plan and the kept boards, with a recap of the last conversation. */
   notebook(): Promise<MentorNotebook | null>;
-  /** Past conversations, newest first (T1e). */
+  /** Past conversations, newest first. */
   sessions(): Promise<SessionSummary[] | null>;
-  /** One past conversation, to replay it (T1e). */
+  /** One past conversation, to replay it. */
   transcript(sessionId: string): Promise<SessionTranscript | null>;
 }
 

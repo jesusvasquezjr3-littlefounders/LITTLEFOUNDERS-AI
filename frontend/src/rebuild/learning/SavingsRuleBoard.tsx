@@ -94,7 +94,7 @@ export function SavingsRuleBoard({ document, segment, onBack, sequence, onGrade 
             conditions={[{ id: 'goal-met', label: t.goalMet, valueText: met ? t.yes : t.no }, { id: 'goal-day', label: t.goalDay, valueText: selected.goalDay ? t.yes : t.no }]}
             linkText={link ? t[link] : '?'} outcomeText={resultLabel} />}>
           {() => <div className="lf-rule-controls">
-            {/* Bible 05 §3: Reset restores the authored start (no connective chosen, the first case, an empty graded rule) and clears the verdict. */}
+            {/* Reset restores the authored start (no connective chosen, the first case, an empty graded rule) and clears the verdict. */}
             <Button onClick={() => { grading.reset(); setLink(null); setCaseIndex(0); setComparator(null); setThreshold(0); setRuleLink(null); }}
               disabled={grading.met || link === null && caseIndex === 0 && comparator === null && threshold === 0 && ruleLink === null}>{t.reset}</Button>
             <SegmentedControl legend={t.link} legendHidden name={`${linkName}-link`} value={link}

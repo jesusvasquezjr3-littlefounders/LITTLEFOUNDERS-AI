@@ -9,7 +9,7 @@ import { LearningQaSignals, type DefectEscapeBody, type GateReviewOutcomeResult 
 import './learningQuality.css';
 
 /*
- * S05.3d staff surface for the content and learning-design team (B.19: the
+ * Staff surface for the content and learning-design team (the
  * target band must be a visible, tracked metric per lesson). It shows Core's
  * report and records calibration decisions through Core, which re-checks the
  * content permission and the database guard rails. It never shows a learner.
@@ -33,11 +33,11 @@ type Copy = {
   signals: string; signalsPending: string; transfer: (kc: string, practice: string, transfer: string) => string; transferNone: string;
   errorSplit: (structure: number, answer: number) => string; errorNone: string; unaided: string; stage: Record<'concrete' | 'pictorial' | 'abstract', string>;
   detection: (dPrime: string, responses: number) => string; detectionNone: string;
-  /** GAP-FIX-R3 (Appendix P L1, Part 4.5): the rule-card selection codes by name. */
+  /** The rule-card selection codes by name. */
   selection: string; selectionCode: Record<SelectionCode, string>;
-  /** GAP-FIX-R4 (Appendix P L5, L10): the Euler and rule-switch codes by name. */
+  /** The Euler and rule-switch codes by name. */
   reasoningCodes: string; reasoningCode: Record<ReasoningCode, string>;
-  /** GAP-FIX-R7 (Appendix C 1.1, B.9): decision-journal coverage and resurfacing. */
+  /** Decision-journal coverage and resurfacing. */
   journal: string; journalPending: string; journalCoverage: (kept: number, made: number, share: string) => string; journalNone: string;
   journalResurfaced: (back: number, kept: number) => string; journalResurfacedNone: string; journalConsent: (n: number) => string; journalBaseline: string;
 };
@@ -156,9 +156,9 @@ export function LearningQualityPanel({ state, locale, dark, onRetry, onSync, onR
   onRetry: () => void;
   onSync: () => Promise<boolean>;
   onResolve: (reviewId: string, body: ReviewDecisionBody) => Promise<DecisionOutcome>;
-  /** GAP-FIX-R2 (Appendix C 1.3): records a defect escape through Core. */
+  /** Records a defect escape through Core. */
   onRecordEscape?: (body: DefectEscapeBody) => Promise<boolean>;
-  /** Gap-fix round 7 (Appendix C 1.3 / Stage 6): closes the gate-effectiveness review an escape opened. */
+  /** Closes the gate-effectiveness review an escape opened. */
   onResolveGateReview?: (reviewId: string, body: GateReviewBody) => Promise<GateReviewOutcomeResult>;
   fixture?: boolean;
 }) {
@@ -223,7 +223,7 @@ export function LearningQualityPanel({ state, locale, dark, onRetry, onSync, onR
       {report.replayNotice.belowTarget ? <p className="lf-quality-flag" data-copy-role="body">{t.replayLow}</p> : null}
     </section>
 
-    {/* GAP-FIX-R7: Appendix C 1.1 Decision Journal Coverage & Resurfacing Rate (B.9), diagnostic; the first release window is the baseline. */}
+    {/* Decision Journal Coverage & Resurfacing Rate, diagnostic; the first release window is the baseline. */}
     <section className="lf-quality-block" aria-labelledby={`${headingId}-journal`} data-metric="decision-journal">
       <h3 id={`${headingId}-journal`} data-copy-role="heading">{t.journal}</h3>
       {!report.decisionJournal ? <p data-copy-role="body">{t.journalPending}</p> : <>
@@ -236,7 +236,7 @@ export function LearningQualityPanel({ state, locale, dark, onRetry, onSync, onR
       </>}
     </section>
 
-    {/* S05.3e: Appendix C's rest-day utilization (B.21) and autonomy adoption (B.24), diagnostic. */}
+    {/* Rest-day utilization and autonomy adoption, diagnostic. */}
     <section className="lf-quality-block" aria-labelledby={`${headingId}-motivation`}>
       <h3 id={`${headingId}-motivation`} data-copy-role="heading">{t.motivation}</h3>
       {!report.motivation ? <p data-copy-role="body">{t.motivationPending}</p> : <>
@@ -249,13 +249,13 @@ export function LearningQualityPanel({ state, locale, dark, onRetry, onSync, onR
       </>}
     </section>
 
-    {/* GAP-FIX-R1: transfer vs practice, structure vs answer, the M1 first unaided stage and d′ (Appendix C 1.1, Appendix P Part 8). */}
+    {/* Transfer vs practice, structure vs answer, the M1 first unaided stage and d′. */}
     <section className="lf-quality-block" aria-labelledby={`${headingId}-signals`}>
       <h3 id={`${headingId}-signals`} data-copy-role="heading">{t.signals}</h3>
       {!report.v2Signals ? <p data-copy-role="body">{t.signalsPending}</p> : <V2Signals signals={report.v2Signals} t={t} percent={percent} nameOf={nameOf} />}
     </section>
 
-    {/* GAP-FIX-R2: Appendix P Part 8 parity, d′ pre/post, A/B and coverage; Appendix C 1.3 B.1, B.2, B.4 and defect escapes. */}
+    {/* Parity, d′ pre/post, A/B and coverage, and defect escapes. */}
     <LearningQaSignals signals={report.qaSignals ?? null} locale={locale} {...(onRecordEscape ? { onRecordEscape } : {})}
       {...(onResolveGateReview ? { onResolveGateReview } : {})} />
   </section>;
@@ -323,7 +323,7 @@ function ReviewForm({ locale, name, review, t, onResolve, onResolved }: {
       <TextField label={t.lower} inputMode="numeric" value={lower} onChange={(event) => setLower(event.target.value.replace(/\D/g, '').slice(0, 2))} />
       <TextField label={t.upper} inputMode="numeric" value={upper} onChange={(event) => setUpper(event.target.value.replace(/\D/g, '').slice(0, 2))} />
     </div> : null}
-    {/* The system text area (02 rule 23, §3 input: a sunken fill, no resting line), with its hint as the field's help. */}
+    {/* The system text area (a sunken fill, no resting line), with its hint as the field's help. */}
     <TextAreaField label={t.note} help={t.noteHint} value={note} maxLength={600} onChange={(event) => setNote(event.target.value)} />
     {status === 'band' || status === 'conflict' || status === 'error' ? <InlineNotice tone="error" live>
       {status === 'band' ? t.bandInvalid : status === 'conflict' ? t.conflict : t.retry}</InlineNotice> : null}

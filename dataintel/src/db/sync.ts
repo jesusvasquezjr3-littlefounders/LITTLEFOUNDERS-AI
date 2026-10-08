@@ -92,7 +92,7 @@ export interface SyncHealth {
  * recent success — the point is to show whether sync is currently erroring,
  * not to hide it behind a stale success timestamp from before it broke.
  *
- * Never throws (AGENTS.md §1.14 — /health must not depend on optional
+ * Never throws (/health must not depend on optional
  * infrastructure): skips the query entirely while duckdb isn't ready, and
  * swallows any query failure (e.g. the table not existing yet) into the same
  * "nothing has synced" null/null shape a fresh warehouse would report.
@@ -679,10 +679,10 @@ export async function syncAll(): Promise<{
     }
   }
 
-  // E.6: a batch read from Vault just before an account was erased must not
+  // A batch read from Vault just before an account was erased must not
   // bring its rows back (services/erasure.ts).
   // A failure is recorded in warehouse_maintenance_log (ok = FALSE) by the
-  // step itself and fails Core's `warehouse_retention` watched job (H.4).
+  // step itself and fails Core's `warehouse_retention` watched job.
   try {
     tables.erasure_reapplied = await applyErasureTombstones();
   } catch (err) {
@@ -690,7 +690,7 @@ export async function syncAll(): Promise<{
     tables.erasure_reapplied = -1;
   }
 
-  // H.2 / Appendix O 1.2: the warehouse copy of raw events (and the learner-
+  // The warehouse copy of raw events (and the learner-
   // keyed experiment rows) keeps the raw store's 400-day window, never longer
   // (services/warehouseRetention.ts). Runs after every sync, so a batch that brought an
   // already-expired row in cannot keep it.

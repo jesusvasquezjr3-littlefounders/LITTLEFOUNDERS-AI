@@ -1,4 +1,4 @@
-// `arrange` family — pure validators (LESSON_ENGINE.md §5.4, §6).
+// `arrange` family — pure validators.
 // Malformed answers → score 0, never throw. All partial credit uses the shared
 // scoring helpers (kendall, footrule, positional, ratio, linearFalloff).
 

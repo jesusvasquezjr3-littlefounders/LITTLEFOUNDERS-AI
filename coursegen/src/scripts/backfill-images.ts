@@ -4,7 +4,7 @@
 //
 //   npm run images:backfill -- --course <slug> [--locale <es-MX|en-US|pt-BR>] [--reuse-only] [--dry-run] [--max-usd <n>]
 //
-// OD-28 (owner review D-03): any invocation that can make a PAID Prism request
+// Any invocation that can make a PAID Prism request
 // (neither --reuse-only nor --dry-run, and for a restyle also --confirm-spend)
 // refuses to start without the owner-approved USD ceiling `--max-usd <n>`
 // (pipeline/spendGuard.ts, shared with generate/generate:track). The ceiling
@@ -17,14 +17,14 @@
 // illustration plan that lacks one, and PATCHes ONLY the `document` column
 // back via PostgREST.
 //
-// G.2 (owner queue F-09, option a): a PUBLISHED lesson is never patched in
+// A PUBLISHED lesson is never patched in
 // place. Its content changes only through a release, and Vault refuses the
 // write anyway (live_lesson_document_guard). Published documents are still
 // read as free art donors, but each one is skipped and counted in the summary
 // (`skippedPublished`) so the operator can demote the lesson, backfill it in
 // review, and release it again through the verified preflight.
 //
-// Invariants (mirrors the images stage — COURSE_ENGINE.md §4, AGENTS.md §8d):
+// Invariants (mirrors the images stage):
 //  - We START from the stored `document` and only ADD `image_url` fields. The
 //    sibling `audio` column and any per-segment audio stamps inside the document
 //    are never read or rewritten (structuredClone inside illustrateSegments
@@ -63,7 +63,7 @@ import { spendCeilingRefusal } from '../pipeline/spendGuard.js';
 import { vaultSelect, vaultPatch } from '../vault/restClient.js';
 import type { LessonDocumentParsed } from '../contract/schema.js';
 
-// ── Pure orchestration (dependency-injected — see backfillImages.test.ts) ────
+// ── Pure orchestration (dependency-injected) ────
 
 export interface BackfillDocRow {
   lessonId: string;
@@ -72,14 +72,14 @@ export interface BackfillDocRow {
   locale: string;
   /** Null/undefined means legacy art and is never eligible as a free donor. */
   illustrationStyleVersion?: string | null;
-  /** The lesson's status. A 'published' document is a donor only, never written (G.2). */
+  /** The lesson's status. A 'published' document is a donor only, never written. */
   lessonStatus?: string;
   /** The STORED client-safe document, passed straight to illustrateSegments (never re-parsed/stripped). */
   document: LessonDocumentParsed;
 }
 
 /**
- * The PATCH body — `document` always (§8d / audio-untouched invariant), plus
+ * The PATCH body — `document` always (audio is left untouched), plus
  * `illustration_style_version` ONLY on a restyle pass. A normal backfill adds
  * missing art to a document whose generation is unchanged and must leave the
  * stamp alone; a restyle deliberately moves the document to the current
@@ -172,9 +172,9 @@ export interface BackfillOptions {
    * Required, not optional, for a paid restyle. `illustrateSegments` takes an
    * OPTIONAL ledger and this path never supplied one, so repairing the
    * financial-education catalog — 3,397 redraws, more with verifier retries —
-   * would have run with no kill switch of any kind behind it. AGENTS.md §1.14
-   * asks that budget guards actually BIND; an unbounded four-figure loop over a
-   * live catalog is the case it was written for.
+   * would have run with no kill switch of any kind behind it. Budget guards
+   * must actually BIND; an unbounded four-figure loop over a
+   * live catalog is the case for that.
    *
    * Stopping early is SAFE by construction: each lesson is patched and stamped
    * as a unit, so an interrupted pass leaves finished lessons current and
@@ -208,7 +208,7 @@ export interface BackfillSummary {
   usdSpent: number;
   /** Paid modes: true when --max-usd stopped the pass before every document was processed. */
   stoppedOnBudget: boolean;
-  /** G.2: documents of published lessons left untouched (a live lesson changes only through a release). */
+  /** Documents of published lessons left untouched (a live lesson changes only through a release). */
   skippedPublished: number;
 }
 
@@ -232,7 +232,7 @@ export async function backfillImages(deps: BackfillDeps, opts: BackfillOptions):
   const paid = spendAllowed(opts);
 
   /*
-   * OD-28 (D-03): a pass that may pay states the owner-approved ceiling. This
+   * A pass that may pay states the owner-approved ceiling. This
    * runs first, before the Prism probe, the Vault read or any config, so a
    * refused invocation touches nothing. The CLI checks the same predicate
    * before it even builds its dependencies.
@@ -303,7 +303,7 @@ export async function backfillImages(deps: BackfillDeps, opts: BackfillOptions):
 
   const allRows = await deps.listDocuments(opts.courseSlug);
   const inScope = opts.locale ? allRows.filter((r) => r.locale === opts.locale) : allRows;
-  // G.2: a published lesson is never rewritten in place — only reported.
+  // A published lesson is never rewritten in place — only reported.
   const rows = inScope.filter((r) => r.lessonStatus !== 'published');
   summary.skippedPublished = inScope.length - rows.length;
   for (const row of inScope.filter((r) => r.lessonStatus === 'published')) {
@@ -359,7 +359,7 @@ export async function backfillImages(deps: BackfillDeps, opts: BackfillOptions):
   }
 
   /*
-   * OD-23/OD-28: `paid` is the only thing that lets this loop reach Prism's
+   * `paid` is the only thing that lets this loop reach Prism's
    * paid path. A --dry-run used to run the full paid illustration pass here
    * (it only skipped the Vault write), so previewing a backfill paid for it.
    * It now runs reuse-only, exactly like a restyle dry-run: the preview shows
@@ -797,7 +797,7 @@ async function main(): Promise<void> {
     );
     process.exit(1);
   }
-  // OD-28 (D-03): refuse before any config, Vault or provider is touched.
+  // Refuse before any config, Vault or provider is touched.
   const refusal = spendCeilingRefusal({
     command: 'images:backfill',
     flag: '--max-usd',

@@ -1,9 +1,9 @@
 /*
  * kcTopicMap.ts — keeps database/seeds/kc_topic_map.v1.json in lockstep with
- * the curriculum YAML (B.6, S05.3a).
+ * the curriculum YAML.
  *
  * The map says which of the Mentor's shared knowledge components each topic
- * teaches (authored in the map, reviewed with the B.6 pathway policy) and
+ * teaches (authored in the map, reviewed with the pathway policy) and
  * repeats three facts the YAML owns: every topic's kind, a review topic's
  * review_of, and hard topic prerequisites (`requires`). Core derives review
  * links and simulates the frontier from those repeated facts without reading

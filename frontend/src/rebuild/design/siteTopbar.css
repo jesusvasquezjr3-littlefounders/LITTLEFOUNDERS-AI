@@ -19,7 +19,7 @@
   color: var(--content);
   cursor: pointer;
 }
-/* The visible circle is 40 px; the pressable area meets the 48 px floor (02 §8). */
+/* The visible circle is 40 px; the pressable area meets the 48 px floor. */
 .lf-rebuild .lf-topbar-round::before { content: ''; position: absolute; inset: calc(var(--spacing-1) * -1); border-radius: var(--rounded-full); }
 .lf-rebuild .lf-topbar-round:hover { background: var(--primary-soft); }
 .lf-rebuild .lf-topbar-round:focus-visible { outline: var(--focus-width) solid var(--focus-color); outline-offset: var(--focus-offset); }

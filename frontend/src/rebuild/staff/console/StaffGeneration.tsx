@@ -14,7 +14,7 @@ import { fill, labelOf, useConsoleCopy, type ConsoleCopy } from './staffConsoleC
 import type { Locale } from '../../design/copyBudget';
 
 /*
- * S7 Generation (manage_content), W2T.2: how Forge behaved on every course
+ * Generation (manage_content): how Forge behaved on every course
  * generation, in four views of one page.
  *
  *   Live         the active runs, polled from Core every 4 s (the reliable
@@ -29,7 +29,7 @@ import type { Locale } from '../../design/copyBudget';
  *                the cost forecast.
  *   Coach        the deterministic diagnosis and its evidence-backed proposals.
  *
- * Read-only: nothing here changes content or starts a run (OD-23 zero spend).
+ * Read-only: nothing here changes content or starts a run (zero spend).
  * Every figure is written as text; a chart only repeats it.
  */
 
@@ -535,7 +535,7 @@ function CoachView({ api }: { api: StaffApi }) {
       extra: typeof min === 'number' ? fill(t.body.lowest, { n: money.score(min) }) : undefined }] : [];
   });
   const perLesson = report.outcomes.published > 0 ? report.cost.totalUsd / report.outcomes.published : null;
-  // Core sends facts only; every word is this locale's and every number is Intl-formatted (02 section 1.2, rule 16).
+  // Core sends facts only; every word is this locale's and every number is Intl-formatted.
   const actions = report.proposedActions.filter(isCoachAction);
   const coachLines = (action: CoachAction): { label: string; proposal: string; evidence: string[] } => {
     if (action.tag === 'cost:cache') {

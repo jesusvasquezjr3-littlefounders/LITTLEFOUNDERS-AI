@@ -4,11 +4,11 @@ import sharp from 'sharp';
 import { launchBrowser, openPage, warmDevServer } from './lesson-engine/browser.mjs';
 
 /*
- * The compact lesson stage's band stills (Frontend Bible 08 §7, §11; 07 §4;
- * B.8; 02 rule 21), locally and at zero spend: no image model, no paid service.
+ * The compact lesson stage's band stills, locally and at zero spend: no image
+ * model, no paid service.
  *
- * 08 §11 puts the learner's chosen character on the edge of its Diorama inside
- * the lesson band, and 08 §7 says the fallback (while the live model loads, and
+ * The learner's chosen character stands on the edge of its Diorama inside
+ * the lesson band, and the fallback (while the live model loads, and
  * instead of it on a low-power device, without WebGL or with data saver on)
  * keeps the same layout: a pre-rendered still of the same character and pose.
  * Only Dina had band stills; the other three fell back to the square avatar
@@ -33,7 +33,7 @@ import { launchBrowser, openPage, warmDevServer } from './lesson-engine/browser.
  *
  * The files are drafts: `src/rebuild/assets/manifest.json` registers them
  * (`lesson.compactMentorStill`) with `reviewStatus: "draft"` until the owner
- * approves the character-render family (07 §7, OD-14).
+ * approves the character-render family.
  *
  * Prerequisites (gitignored): the runtime models in `public/scenes/` and the
  * Basis transcoder in `public/basis/`; a Vite dev server:

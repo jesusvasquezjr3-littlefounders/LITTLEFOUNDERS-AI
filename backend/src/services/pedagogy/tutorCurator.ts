@@ -2,22 +2,21 @@
  * THE SKILL/KC CURATOR — the V4 harness backlog's "skill distiller/curator
  * loop", built on the SAME propose-only shape `coursegen/src/pipeline/coach.ts`
  * already established for Forge: offline, free (zero LLM calls), deterministic,
- * and PROPOSE-ONLY. It reads real (or, for its tests, realistic synthetic)
+ * and PROPOSE-ONLY. It reads real (or realistic synthetic)
  * session evidence — which misconceptions actually recur, which KCs actually
  * get attempted — and cross-references it against the two things a human
  * curates by hand: the misconception catalog (`database/seeds/kc_graph.v1.json`,
  * migration 0052) and the pedagogical skill catalogue
- * (`oracle/skills/moves/*.md`, §20.1 of /ORACLE.md).
+ * (`oracle/skills/moves/*.md`).
  *
  * NEVER WRITES ANYTHING. This module produces a `CurationReport` and a
  * markdown rendering of it; nothing here calls a write endpoint, and nothing
  * calls a model. Applying a proposal means a human editing a `.md` skill file
  * or `kc_graph.v1.json` in an ordinary reviewed commit — the same PR-as-
- * approval-gate this codebase already uses for pedagogical skills (§20.1:
- * "today every skill is hand-written and enters through code review — the
+ * approval-gate this codebase already uses for pedagogical skills ("today every skill is hand-written and enters through code review — the
  * pull request IS the approval gate... it never writes to the live
  * catalogue"), extended here to the misconception catalog and the graph.
- * This is the ROADMAP.md §15.1 governance rule applied to what the tutor is
+ * This is the governance rule applied to what the tutor is
  * taught to teach, not only to what it says live: nothing autonomous reaches
  * a child, and nothing autonomous reaches the CURRICULUM either.
  *
@@ -54,8 +53,8 @@ export interface CurationMisconception {
  * Only what this analysis needs from a parsed `oracle/skills/moves/*.md`
  * file — deliberately decoupled from oracle's own richer `PedagogicalSkill`
  * type (strategies, tiers, mastery band, body, onceOnly): backend cannot
- * import oracle's TS source across the package boundary (§1.2 "11
- * independent npm packages — no workspaces"), and this analysis has no use
+ * import oracle's TS source across the package boundary (the
+ * packages are independent — no workspaces), and this analysis has no use
  * for those fields anyway.
  */
 export interface CurationSkillRef {
@@ -175,7 +174,7 @@ function findCoverageGaps(input: CurationInput): CurationAction[] {
 
 /**
  * CHECK 3 — content gaps. A KC with no `skill_key` falls through to tier-3
- * live generation on EVERY request (§7.3's own cost class, and exactly the
+ * live generation on EVERY request (the same cost class, and exactly the
  * gap `contentBridgeAudit.ts` names but does not rank). Ranking by real
  * attempt volume tells a human which unmapped KC to author for FIRST.
  */
@@ -207,7 +206,7 @@ function findContentGaps(input: CurationInput): CurationAction[] {
  * mastered first, reviewed more, and is by definition the easier half of the
  * pair); when real attempts on both ends show the dependent doing AT LEAST
  * AS WELL as its prerequisite, that is worth a human's look at the graph —
- * never an automatic edit (§15.1). Gated on a minimum sample on BOTH ends so
+ * never an automatic edit. Gated on a minimum sample on BOTH ends so
  * this stays silent rather than noisy while real usage is still thin, which,
  * as of this tool's first run against this repository, it is everywhere.
  */

@@ -4,7 +4,7 @@ import { getConfig } from '../env.js';
 import { acquireLock, clearLocalClaims, type LockAcquireOutcome } from '../lib/lock.js';
 
 /*
- * The live-session token (/ORACLE.md §3.2, /AGENTS.md §1.5 Oracle exception).
+ * The live-session token.
  *
  * Core mints it; the browser carries it on ONE websocket; Oracle verifies and
  * burns it. It is deliberately not a Supabase JWT and Oracle rejects one:
@@ -49,8 +49,8 @@ function sign(body: string, secret: string): string {
 
 /**
  * Mints a token. Lives here rather than only in Core so the two sides can
- * never drift: Oracle's own tests sign with this function and verify with the
- * next one, and Core imports the same format from its own copy of the spec.
+ * never drift: this function signs and the next one verifies with the
+ * same format, and Core imports the same format from its own copy.
  */
 export function mintSessionToken(
   payload: Omit<SessionTokenPayload, 'jti'> & { jti?: string },
@@ -66,8 +66,8 @@ export function mintSessionToken(
 
 /**
  * Tracks spent nonces so a token works exactly once — on a SHARED store, not
- * a process-local Map, per `oracle/AGENTS.md` item 79 / `RUNBOOK.md` Round
- * 119: a websocket is pinned to one process for its whole life, but the
+ * a process-local Map:
+ * a websocket is pinned to one process for its whole life, but the
  * VERIFICATION that burns the nonce happens at connection time, before that
  * pinning exists — on N>1 replicas a second socket for a replayed token could
  * land on a DIFFERENT process than the first and find an empty local Map.
@@ -82,13 +82,13 @@ export function mintSessionToken(
  * migration exists to prevent (a second, independent `TutorOrchestrator` for
  * one session — duplicate paid model calls, a corrupted transcript row
  * count). Treating "can't confirm" as "assume unused" would silently accept
- * that risk. §1.14's own precedent points the other way for a CORRECTNESS
+ * that risk. The precedent points the other way for a CORRECTNESS
  * control: `getLearningStatsForUpdate` returning zeros on a transient failure
  * (instead of refusing) is the exact shape of bug this guards against —
  * defaulting toward "proceed" on an unconfirmed read. The cost is a session
  * that cannot START or RESUME during a genuine Redis outage — not a session
  * that drops or a healthcheck that fails; `GET /health` has never depended on
- * Redis and still does not (§1.14's "Liveness must not depend on optional
+ * Redis and still does not ("Liveness must not depend on optional
  * infrastructure").
  *
  * ── WHY THIS IS SAFE TO CALL ON EVERY CONNECTION, NOT JUST WHEN N>1 ─────────
@@ -125,7 +125,7 @@ export const nonceLedger = {
  * Verifies and burns a token.
  *
  * The signature is compared in constant time on fixed-width digests, for the
- * §1.14 reason: a length pre-check on a raw string throws RangeError on any
+ * following reason: a length pre-check on a raw string throws RangeError on any
  * multi-byte character, turning a forged token into a 500 instead of a 401.
  */
 export async function verifySessionToken(token: string, now = Date.now()): Promise<TokenVerdict> {

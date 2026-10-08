@@ -19,7 +19,7 @@ const MOTION_NAME = { slide: 'moveSlide', turn: 'moveTurn', flip: 'moveFlip' } a
 const shift = (tile: readonly Cell[], anchor: Cell): Cell[] => tile.map((cell) => ({ x: cell.x + anchor.x, y: cell.y + anchor.y }));
 
 /*
- * F2.8 tessellation: a floor of square cells and one tile. The learner places copies until the floor is covered. A copy is
+ * Tessellation: a floor of square cells and one tile. The learner places copies until the floor is covered. A copy is
  * the tile as it is, turned half a turn or flipped over (only the motions the floor offers), slid so the lower-left corner of
  * its box sits on the anchor; the anchors, and the motion of each when more than a slide is offered, are the whole answer.
  * A tap names the square the copy's first square lands on, so a tap never needs the box corner to be free.

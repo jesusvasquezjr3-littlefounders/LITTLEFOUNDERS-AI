@@ -1,11 +1,11 @@
-// The v2 plan-authoring stage (GAP-FIX-R1 learning; OD-17: authoring targets
-// the verified v2 contract through Appendix C's release pipeline; OD-23:
-// every paid path has a zero-spend dry-run and an owner runbook).
+// The v2 plan-authoring stage (authoring targets the verified v2 contract
+// through the release pipeline; every paid path has a zero-spend dry-run and
+// an owner runbook).
 //
-// Appendix C Stage 0 fixes a lesson's skeleton: identity, age pathway, KCs,
-// segment kinds with their locale-neutral numbers and the private rubrics.
-// Stage 1 authors every learner-visible string per market. This stage does
-// Stage 1 with a model (DeepSeek, the same provider configuration Forge uses
+// A lesson's skeleton fixes identity, age pathway, KCs, segment kinds with
+// their locale-neutral numbers and the private rubrics. Authoring then writes
+// Every learner-visible string per market. This stage does the
+// Authoring with a model (DeepSeek, the same provider configuration Forge uses
 // everywhere): it hands the model the skeleton, the brief, the controlled
 // glossary and the Copy Budget roles, and asks for the copy in the exact
 // shape the skeleton declares. The result is parsed back into a V2 plan
@@ -35,7 +35,7 @@ export type V2Responder = (request: ChatCompleteRequest, options: CompleteOption
 
 export const AUTHOR_LOCALES: readonly V2Locale[] = V2_LOCALES;
 
-/** A Stage 0 skeleton: a plan whose copy strings are empty placeholders ("") in the exact shape each segment needs. */
+/** A skeleton: a plan whose copy strings are empty placeholders ("") in the exact shape each segment needs. */
 export type V2Skeleton = V2LessonPlan;
 
 /** Blank every string in a value, keeping its shape (a skeleton from any plan). */
@@ -46,7 +46,7 @@ export function blankCopy(value: unknown): unknown {
   return value;
 }
 
-/** The Stage 0 skeleton of a plan: same structure and rubrics, every learner-visible string blank. */
+/** The skeleton of a plan: same structure and rubrics, every learner-visible string blank. */
 export function skeletonOf(plan: V2LessonPlan): V2Skeleton {
   return {
     ...plan,
@@ -129,8 +129,7 @@ export function fixtureResponder(reference: V2LessonPlan): V2Responder {
 }
 
 /**
- * Appendix C Part 1.3 (Forge Gate Pass Rate per gate, on FIRST submission;
- * GAP-FIX-R7): what the first draft of a lesson got right, per market, before
+ * Forge Gate Pass Rate per gate, on FIRST submission: what the first draft of a lesson got right, per market, before
  * any corrective round told the model what to fix. `evaluated` is false when
  * the reply failed the plan schema (unparseable): the gates never ran, so the
  * draft counts as a gate 1 (contract) failure and never as a pass of 2-19.
@@ -148,7 +147,7 @@ export function firstSubmissionOf(outcome: { unparseable: true } | { unparseable
 }
 
 /**
- * Stage 1 for one skeleton: prompt, merge, emit, gate; up to two corrective
+ * Authoring for one skeleton: prompt, merge, emit, gate; up to two corrective
  * rounds with the itemized problems. The caller owns the responder (the live
  * DeepSeek chokepoint under a ledger, or the fixture responder) and the spend
  * ceiling refusal.

@@ -3,10 +3,9 @@ import { resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 /*
- * The gentle "not yet" cue for a missed lesson answer (owner decision OD-28,
- * review item L-02: "Wrong answers get a dedicated, gentle 'not yet' sound").
+ * The gentle "not yet" cue for a missed lesson answer.
  *
- * Synthesized procedurally, at zero spend (OD-23): no provider, no network, no
+ * Synthesized procedurally, at zero spend: no provider, no network, no
  * recorded or licensed sample. The file is a pure function of the constants
  * below, so it is reproducible byte for byte and can never drift from this
  * generator:
@@ -14,12 +13,10 @@ import { fileURLToPath } from 'node:url';
  *   node scripts/synthesize-not-yet-sound.mjs          writes public/sounds/edu/not_yet.wav
  *   node scripts/synthesize-not-yet-sound.mjs --check  fails if the checked-in file differs
  *
- * The asset gate (`check-rebuild-assets.mjs`, in `spec:check`) imports
- * `synthesize()` and runs the same comparison for the manifest row that names
- * this script as its `generator`.
+ * `synthesize()` returns the bytes of the generated file.
  *
- * Why it is gentle (Product 10 B.26: no non-verbal shame signal, sound
- * included; Frontend 02 §8 "not yet": no red, nothing is spent):
+ * Why it is gentle (no non-verbal shame signal, sound included; "not yet":
+ * no red, nothing is spent):
  *
  *   - Two soft notes descending a major third, E5 (659.26 Hz) to C5
  *     (523.25 Hz). Both belong to one major triad, so the pair is consonant
@@ -37,8 +34,7 @@ import { fileURLToPath } from 'node:url';
  *   - Short: 0.42 s in total, the second note overlapping the first by 30 ms
  *     so the pair sounds like one phrase. The second note is slightly softer,
  *     so the cue settles rather than insists.
- *   - Quiet: the peak is normalized to -12 dBFS (the gate refuses any sound
- *     cue above -9 dBFS). The player also applies its own low SFX volume.
+ *   - Quiet: the peak is normalized to -12 dBFS. The player also applies its own low SFX volume.
  *   - 22,050 Hz mono 16-bit PCM WAV: every partial is far below the 11 kHz
  *     Nyquist limit, and the file stays under 20 KB.
  */

@@ -6,18 +6,18 @@ import { rebuildNamespaceCopy } from '../../i18n/rebuild';
 import { siteCopy, StartButton, type Navigate, type StartAction } from './blocks';
 
 /*
- * M7, the public badge-link page, rebuilt (S10L.3). It replaced the last
+ * The public badge-link page, rebuilt. It replaced the last
  * legacy body a product route rendered (legacy Button, Card, LoadingOverlay
  * and i18next copy). The route bridge (routes/marketing/BadgeLandingPage.tsx)
- * owns the fetch, the OD-20 retirement date and the session-aware call to
+ * owns the fetch, the retirement date and the session-aware call to
  * action; this surface reads no session, router or analytics.
  *
- * OD-20: new shares are images a parent sends, so no new link is issued. A
+ * New shares are images a parent sends, so no new link is issued. A
  * link issued before the cutover renders here until it expires; Core refuses
  * a revoked, expired or post-cutover link and the page says the link expired.
- * Nothing here tracks the viewer (Appendix L counts shares, never reach), and
+ * Nothing here tracks the viewer (shares are counted, never reach), and
  * the page shows the badge image with no celebration: it is a stranger's view
- * of another family's milestone, not the learner's own moment (OD-7).
+ * of another family's milestone, not the learner's own moment.
  */
 export interface BadgePayload {
   firstName: string;
@@ -67,7 +67,7 @@ export function BadgeLanding({ locale, state, start, onNavigate, header }: {
     <div className="lf-badge-landing" data-screen="badge-landing" data-state="ready" data-kind={state.payload.achievementKind}>
       {/* The share image Depot rendered for this badge (a server render of our own art, not a manifest slot). */}
       <img className="lf-badge-landing-image" src={state.payload.imageUrl} alt={fill(copy.imageAlt, values)} width={1080} height={1920} />
-      {/* A first name and a course label are user and catalogue text: they wrap anywhere (02 §7 rule 8). */}
+      {/* A first name and a course label are user and catalogue text: they wrap anywhere. */}
       <h1 className="lf-badge-landing-title" data-copy-role="heading">{title}</h1>
       <p data-copy-role="body">{copy.body}</p>
     </div>

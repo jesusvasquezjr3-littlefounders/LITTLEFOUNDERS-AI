@@ -5,7 +5,7 @@ import '../design/system.css';
 import './sessionPreferences.css';
 
 /*
- * The signed-in app's own session controls (W2 Lane 0): the mode and signing
+ * The signed-in app's own session controls: the mode and signing
  * out. Settings uses the same icon-only mode control as the global header.
  * Presentation only: the route supplies the effective mode and the actions.
  */

@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
 /*
- * Layer 1 of the injection stack, and the one that does the most work
- * (/ORACLE.md §5): the model never emits prose that is rendered as given. It
+ * Layer 1 of the injection stack, and the one that does the most work:
+ * the model never emits prose that is rendered as given. It
  * emits a JSON object against this schema, and invalid JSON is a DISCARDED
  * turn, not a displayed one.
  *
@@ -14,8 +14,8 @@ import { z } from 'zod';
  * script, an instruction to the client, or an exfiltrated context.
  *
  * The emotion and action vocabularies are the SAME closed sets the 2D rig and
- * the 3D stage already speak (frontend `components/characters/control/types.ts`,
- * /TUTOR_3D.md §4), so a valid turn drives the cast with no translation layer
+ * the 3D stage already speak (frontend `components/characters/control/types.ts`),
+ * so a valid turn drives the cast with no translation layer
  * and an invalid one cannot reach the renderer at all.
  */
 
@@ -45,7 +45,7 @@ export const ACTIONS = [
 ] as const;
 
 /**
- * Class III / S17 `roleplay` (TUTOR_INSTRUMENTS.md §3.4): the closed set of
+ * `roleplay`: the closed set of
  * PRE-AUTHORED scene ids, hand-mirrored against the actual content catalog
  * at `frontend/src/rebuild/mentor/session/roleplay.ts` — widen both together, never
  * one ahead of the other.
@@ -58,7 +58,7 @@ export const ROLEPLAY_SCENE_IDS = ['lemonade_change'] as const;
  * `ask` keeps the conversation going, `segment` hands the right-hand panel a
  * lesson activity, `close` ends the session. There is deliberately no
  * `redirect`, `fetch`, `remember` or `escalate`: the model has no tools with
- * side effects (§5 layer 3), so it has no verbs for them either.
+ * side effects, so it has no verbs for them either.
  */
 export const NEXT_STEPS = ['ask', 'segment', 'close'] as const;
 
@@ -66,10 +66,10 @@ export const NEXT_STEPS = ['ask', 'segment', 'close'] as const;
  * A request for an activity, by MEANING rather than by content.
  *
  * The model says "I want to practise this skill at about this difficulty"; it
- * never authors the activity here. Authoring goes through the content ladder
- * (/ORACLE.md §7), where tier 1 serves a human-published segment and tier 3
+ * never authors the activity here. Authoring goes through the content ladder,
+ * where tier 1 serves a human-published segment and tier 3
  * runs the full gate-and-judge pipeline. Letting the model inline an exercise
- * in its turn would route around every guard in §7.3.
+ * in its turn would route around every guard in the content ladder.
  */
 export const SegmentRequestSchema = z
   .object({
@@ -96,7 +96,7 @@ export const SegmentRequestSchema = z
      */
     rationale: z.string().min(1).max(400),
     /**
-     * ROADMAP.md V4 sprint 2 backlog: a hint so the ladder can prefer a
+     * A hint so the ladder can prefer a
      * VISUAL catalog segment over its own frontier fallback (Core's
      * last-resort "what should this learner do next", which can be
      * completely unrelated to the story the tutor just told). Best-effort
@@ -121,19 +121,19 @@ export const SegmentRequestSchema = z
 
 /**
  * THE CLOSED SET `preferredTypes` MAY EVER ACTUALLY CARRY PAST THIS FILE
- * (widened 2026-09-02, /TUTOR_INSTRUMENTS.md Sprint 1 — was `interest_peek`/
+ * (widened 2026-09-02 — was `interest_peek`/
  * `number_line` only).
  *
- * THE CURATION RULE, stated once so a future addition has a test to pass
+ * THE CURATION RULE, stated once so a future addition has a rule to meet
  * rather than a judgment call to make: every graded type in the Lesson
  * Engine's OWN `money` family (`frontend/src/lesson-engine/families/money/
  * schema.ts` — this product's dedicated subject, not a borrowed one), plus
  * `number_line`, which is the graded sibling of the whiteboard's own
- * `open_number_line` (§20.5) for exactly the same counting-up story. Nothing
+ * `open_number_line` for exactly the same counting-up story. Nothing
  * outside that boundary is added on a guess — a type from `arrange` or
  * `analyze` earns its way in only when a real transcript shows the tutor
  * reaching for a story that family actually serves, the same evidence bar
- * `/ORACLE.md`'s own drift detectors are held to.
+ * the other drift detectors are held to.
  */
 export const PREFERRED_SEGMENT_TYPES = [
   'coin_count',
@@ -187,8 +187,7 @@ export function sanitizePreferredTypes(
 
 /**
  * One step of an on-screen demonstration over the OPEN active activity (Tutor
- * v3, /ORACLE.md; widened to 4 families 2026-09-02,
- * /TUTOR_INSTRUMENTS.md Sprint 2).
+ * v3; widened to 4 families 2026-09-02).
  *
  * STILL ONE FLAT, CLOSED SCHEMA — verbs from a fixed enum, every value a bare
  * number or a short id, no free text and no target outside the widget. Adding
@@ -234,9 +233,9 @@ export const DemoStepSchema = z
   .strict();
 
 /**
- * ONE STEP OF A LIVE VALUE SEQUENCE — V4's "whiteboard" (/ORACLE.md §20.5).
+ * ONE STEP OF A LIVE VALUE SEQUENCE — V4's "whiteboard".
  *
- * A closed arithmetic vocabulary, exactly the §5 discipline `DemoStepSchema`
+ * A closed arithmetic vocabulary, exactly the discipline `DemoStepSchema`
  * already uses: a three-item operator enum and one bounded number. There is
  * no free text and nothing to draw beyond a running quantity — an injection
  * that reaches this field can change a number on a board, and nothing else.
@@ -265,7 +264,7 @@ export const WhiteboardStepSchema = z
  * THIS IS `kind: 'sequence'` — one of three board shapes `WhiteboardSchema`
  * (below) now accepts. Kept as its own named schema, rather than inlined
  * into the union, because it is the proven reference implementation
- * (/ORACLE.md §20.5) the other two follow: nothing about ITS shape changed
+ * the other two follow: nothing about ITS shape changed
  * to make room for them.
  */
 export const WhiteboardSequenceSchema = z
@@ -294,12 +293,12 @@ export const WhiteboardSequenceSchema = z
   .strict();
 
 /**
- * ONE SIDE OF A TWO-QUANTITY COMPARISON (V4, /ORACLE.md §20.5 backlog).
+ * ONE SIDE OF A TWO-QUANTITY COMPARISON (V4).
  *
  * A bare bounded number plus the short label that says WHICH quantity it is
  * ("Tienda A", "Ahorro de Ana") — without a label, two bars are just two
  * numbers with nothing to tell them apart. `value` is bounded exactly like
- * `WhiteboardSequenceSchema.start`, the same closed-numeric posture §5
+ * `WhiteboardSequenceSchema.start`, the same closed-numeric posture the schema
  * already applies everywhere on this turn.
  */
 export const WhiteboardCompareSideSchema = z
@@ -327,8 +326,8 @@ export const WhiteboardCategorySchema = z
   .strict();
 
 /**
- * `kind: 'compare'` — TWO QUANTITIES, SIDE BY SIDE (V4, /ORACLE.md §20.5
- * backlog: "same schema family, straightforward once sequence is proven
+ * `kind: 'compare'` — TWO QUANTITIES, SIDE BY SIDE (V4:
+ * "same schema family, straightforward once sequence is proven
  * live"). For a story that puts two things next to each other for the
  * learner to weigh — two prices, two ways to save, two options in a budget
  * decision — rather than one quantity that moves over time (`sequence`).
@@ -363,10 +362,9 @@ export const WhiteboardCompareSchema = z
   .strict();
 
 /**
- * A LIVE VISUAL COMPARING SEVERAL NAMED THINGS AT ONE MOMENT (V4 backlog,
- * ROADMAP.md "UI generativa acotada" / blueprint §10.4 — the first bounded
- * slice of it, scoped deliberately narrow; see that section's own comment
- * for what remains explicitly out of scope).
+ * A LIVE VISUAL COMPARING SEVERAL NAMED THINGS AT ONE MOMENT (V4):
+ * the first bounded
+ * slice of it, scoped deliberately narrow.
  *
  * `sequence` covers ONE quantity moving through TIME; `compare` covers
  * exactly TWO static quantities weighed against each other. This is a third,
@@ -392,7 +390,7 @@ export const WhiteboardCategoriesSchema = z
   .strict();
 
 /**
- * ONE MARKED POINT ON A `marked_line` BOARD (V4, /ORACLE.md §20.5 backlog).
+ * ONE MARKED POINT ON A `marked_line` BOARD (V4).
  *
  * A bounded value plus the short label naming what it represents ("Lo que
  * tienes", "La bicicleta") — the value alone is a dot with no story.
@@ -406,7 +404,7 @@ export const WhiteboardMarkSchema = z
 
 /**
  * `kind: 'marked_line'` — ONE OR MORE VALUES PLACED ON A LINE BETWEEN TWO
- * REFERENCES (V4, /ORACLE.md §20.5 backlog). For a story about WHERE a
+ * REFERENCES (V4). For a story about WHERE a
  * number sits — a savings amount against a price, a value inside a budget
  * range — rather than a quantity that moves over time (`sequence`) or two
  * quantities weighed against each other with no shared line (`compare`).
@@ -427,8 +425,7 @@ export const WhiteboardMarkSchema = z
  * scored activity reached through `segmentRequest.preferredTypes`, not
  * through this field. Reusing that exact string for an ungraded, live,
  * tutor-drawn visual would make two unrelated concepts share one name in
- * the same prompt and the same doc section (/ORACLE.md §20.5 already
- * discusses both `preferredTypes` and `whiteboard.kind` side by side).
+ * the same prompt and the same doc section.
  */
 export const WhiteboardMarkedLineSchema = z
   .object({
@@ -464,7 +461,7 @@ export const WhiteboardTokenGroupSchema = z
      * cross-field and lives in `computeTokens`: it must be a denomination that
      * actually EXISTS in this board's currency. A "7-peso coin" passes every
      * per-field bound and would teach a child something false about the money
-     * in their own hand (§1.14: generated content verified for SUBJECT, not
+     * in their own hand (generated content verified for SUBJECT, not
      * only for form).
      */
     denomination: z.number().positive().max(1_000),
@@ -474,8 +471,8 @@ export const WhiteboardTokenGroupSchema = z
   .strict();
 
 /**
- * `kind: 'tokens'` — DISCRETE, DENOMINATED OBJECTS ON THE TABLE
- * (/TUTOR_INSTRUMENTS.md §3.2, Sprint 6). The first instrument in the catalog
+ * `kind: 'tokens'` — DISCRETE, DENOMINATED OBJECTS ON THE TABLE.
+ * The first instrument in the catalog
  * that is not a chart.
  *
  * WHY IT EXISTS, in the tutor's own words. `oracle/skills/moves/
@@ -510,7 +507,7 @@ export const WhiteboardTokensSchema = z
   .strict();
 
 
-/* ── WAVE 1 INSTRUMENTS (/TUTOR_INSTRUMENTS.md Sprints 7-8) ───────────────────
+/* ── WAVE 1 INSTRUMENTS ───────────────────
  *
  * Five shapes, each demanded by a move that names the staging it needs. They
  * share one rule with every kind above them, and it is the rule that decides
@@ -529,7 +526,7 @@ export const BarModelPartSchema = z
   .strict();
 
 /**
- * `kind: 'bar_model'` — THE SINGAPORE BAR (/TUTOR_INSTRUMENTS.md §3.2 family B).
+ * `kind: 'bar_model'` — THE SINGAPORE BAR.
  *
  * The single most-used representation in primary mathematics teaching, and the
  * one this catalog was missing entirely: a word problem redrawn as comparable
@@ -553,7 +550,7 @@ export const WhiteboardBarModelSchema = z
   .strict();
 
 /**
- * `kind: 'part_whole'` — THE NUMBER BOND (/TUTOR_INSTRUMENTS.md §3.2 family B).
+ * `kind: 'part_whole'` — THE NUMBER BOND.
  *
  * One whole and its two parts, joined, so that adding and subtracting stop
  * being two procedures and become one relationship read in two directions. It
@@ -576,8 +573,8 @@ export const WhiteboardPartWholeSchema = z
   .strict();
 
 /**
- * `kind: 'flow'` — WHAT CAME IN, WHAT WENT OUT, WHAT IS LEFT
- * (/TUTOR_INSTRUMENTS.md §3.2 family F). The highest-leverage instrument in the
+ * `kind: 'flow'` — WHAT CAME IN, WHAT WENT OUT, WHAT IS LEFT.
+ * The highest-leverage instrument in the
  * catalog: it closes five misconceptions at once, all of them the core confusion
  * of the entrepreneurship strand — `revenue-is-profit`, `profit-is-revenue`,
  * `cost-equals-price`, `adds-costs-to-revenue`, `saving-is-leftover`.
@@ -601,8 +598,7 @@ export const WhiteboardFlowSchema = z
   .strict();
 
 /**
- * `kind: 'goal_bar'` — THE GOAL, AND WHAT IS ALREADY SAVED
- * (/TUTOR_INSTRUMENTS.md §3.2 family E).
+ * `kind: 'goal_bar'` — THE GOAL, AND WHAT IS ALREADY SAVED.
  *
  * `find-what-is-missing.md` is a design specification, verbatim: "draw the bar
  * BEFORE any operation: the goal end to end, and the part already saved shaded
@@ -628,8 +624,7 @@ export const WorkedStepSchema = z
   .strict();
 
 /**
- * `kind: 'worked'` — THE CALCULATION, LINE BY LINE, INCLUDING THE CHECK
- * (/TUTOR_INSTRUMENTS.md §3.2 family C).
+ * `kind: 'worked'` — THE CALCULATION, LINE BY LINE, INCLUDING THE CHECK.
  *
  * `worked-example-think-aloud.md` asks for something no other kind draws:
  * "deliberately show the moment of CHECKING… undo the operation." Every board
@@ -650,7 +645,7 @@ export const WhiteboardWorkedSchema = z
   .strict();
 
 
-/* ── THE CANONICAL PRIMARY-MATHS VOCABULARY (/TUTOR_INSTRUMENTS.md §3.1 source 3)
+/* ── THE CANONICAL PRIMARY-MATHS VOCABULARY
  *
  * Ten frames, open number lines, arrays, fraction strips and equal partitions
  * are not inventions of this catalog: they are the representations primary
@@ -777,7 +772,7 @@ export const WhiteboardPartitionSchema = z
   .strict();
 
 
-/* ── DECISION AND COMPARISON (/TUTOR_INSTRUMENTS.md §3.2 families D and F) ──── */
+/* ── DECISION AND COMPARISON ──── */
 
 /** One option on a `table` board: what it costs and how much of it you get. */
 export const TableOptionSchema = z
@@ -853,8 +848,8 @@ export const WhiteboardTwoBinsSchema = z
   .strict();
 
 /**
- * `kind: 'grab'` — Class II, the first Hand mode (S9, /TUTOR_INSTRUMENTS.md
- * §3.3): "drags tokens, chips and labels into piles, bins or cells." Where
+ * `kind: 'grab'` — Class II, the first Hand mode:
+ * "drags tokens, chips and labels into piles, bins or cells." Where
  * `two_bins` above is the tutor SHOWING a classification while talking, this
  * is the LEARNER doing the classifying — items start unplaced and stay that
  * way until tapped, then tapped again onto a bin (the Lesson Engine's own
@@ -862,7 +857,7 @@ export const WhiteboardTwoBinsSchema = z
  * drag-and-drop is exactly the interaction class that reads worst on a
  * phone, which is most of this product's real traffic).
  *
- * UNGRADED BY CONSTRUCTION (§8.1 decision D) — no field here for which bin
+ * UNGRADED BY CONSTRUCTION — no field here for which bin
  * an item "belongs" in, unlike `two_bins.items[].bin` or `SortedItemSchema`.
  * There is no answer key for the server to defend and no placement for the
  * model to pre-decide: identity is the item's own ARRAY POSITION (as
@@ -883,8 +878,8 @@ export const WhiteboardGrabSchema = z
   .strict();
 
 /**
- * `kind: 'fill'` — Class II, the second Hand mode (S9, /TUTOR_INSTRUMENTS.md
- * §3.3): "taps to fill a ten frame, a bar, a jar — counting with a finger."
+ * `kind: 'fill'` — Class II, the second Hand mode:
+ * "taps to fill a ten frame, a bar, a jar — counting with a finger."
  * The second interactive whiteboard kind, same `WhiteboardShell` `interactive`
  * mode `grab` introduced (`role="group"`, not `role="img"` — see that kind's
  * own comment). Where `grab` is about WHICH bin, `fill` is about HOW MANY:
@@ -918,7 +913,7 @@ export const WhiteboardWhatifBranchSchema = z
   .strict();
 
 /**
- * `kind: 'whatif'` — Class II, S10 (/TUTOR_INSTRUMENTS.md §3.3): "moves a
+ * `kind: 'whatif'` — Class II: "moves a
  * value and watches the board answer. The server pre-computes every
  * branch; the client still only draws." Where `sequence_compare` shows two
  * FIXED trajectories side by side at once, `whatif` is the LEARNER exploring
@@ -951,7 +946,7 @@ export const WhiteboardWhatifSchema = z
   .strict();
 
 /**
- * `kind: 'your_turn'` — Class II, S10 (/TUTOR_INSTRUMENTS.md §3.3): "the
+ * `kind: 'your_turn'` — Class II: "the
  * Tutor demonstrates, then hands the instrument over — the scaffold-fade two
  * moves ask for" (`oracle/skills/moves/scaffold-fading.md`'s FULL → LAST STEP
  * THEIRS → FIRST STEP YOURS → ALONE ladder; `concrete-to-abstract.md`'s same
@@ -1114,7 +1109,7 @@ export const WhiteboardChanceSchema = z
   .strict();
 
 
-/* ── OPERATIONS AND REAL-MONEY ARTEFACTS (§3.2 families C and F) ────────────── */
+/* ── OPERATIONS AND REAL-MONEY ARTEFACTS ────────────── */
 
 /**
  * `kind: 'deal'` — REPARTIR DE A UNO, WITH THE REMAINDER VISIBLE AND APART.
@@ -1499,7 +1494,7 @@ export const WhiteboardBeforeAfterSchema = z
 
 /**
  * THE CLOSED SET OF BOARD SHAPES (V4). A discriminated union on `kind`,
- * never free-form — the same §5 discipline every other model-facing schema
+ * never free-form — the same discipline every other model-facing schema
  * on this turn already follows. `parseTurn`'s own fail-open guard
  * (`WhiteboardSchema.safeParse`, below) validates whichever member `kind`
  * names and nulls the whole board on anything else, so an unrecognised
@@ -1557,9 +1552,9 @@ export const WhiteboardSchema = z.discriminatedUnion('kind', [
 ]);
 
 /**
- * GAP-FIX-R2: at most three reply chips on screen at once (Frontend Bible 08
- * §2). HAND-MIRRORED in `frontend/src/rebuild/mentor/session/useTutorSocket.ts`
- * (`REPLY_CHIP_MAX`); `npm run honesty:check` keeps the copies identical.
+ * At most three reply chips on screen at once.
+ * HAND-MIRRORED in `frontend/src/rebuild/mentor/session/useTutorSocket.ts`
+ * (`REPLY_CHIP_MAX`).
  */
 export const REPLY_CHIP_MAX = 3;
 
@@ -1590,7 +1585,7 @@ export const TutorTurnSchema = z
     next: z.enum(NEXT_STEPS),
     segmentRequest: SegmentRequestSchema.nullable().optional(),
     /**
-     * Set when the tutor is offering to adapt (/ORACLE.md §11). The client
+     * Set when the tutor is offering to adapt. The client
      * renders an accept/decline affordance; the tutor never applies it itself.
      */
     offerAdaptation: z
@@ -1613,7 +1608,7 @@ export const TutorTurnSchema = z
      */
     whiteboard: WhiteboardSchema.nullable().optional(),
     /**
-     * Class V (migration 0069, TUTOR_INSTRUMENTS.md §3.6): "persist the
+     * Class V (migration 0069): "persist the
      * board this turn just drew as the learner's ongoing savings plan."
      * Server-computed nothing new — Core copies `whiteboard` verbatim into
      * `tutor_plans` (a plain overwrite, see that migration's own comment on
@@ -1638,7 +1633,7 @@ export const TutorTurnSchema = z
      */
     savePlan: z.boolean().default(false),
     /**
-     * Class III / S17 (TUTOR_INSTRUMENTS.md §3.4): "two characters act a
+     * Class III: "two characters act a
      * transaction with their own cloned voices while the learner decides."
      * A closed id into a small, PRE-AUTHORED catalog
      * (`frontend/src/rebuild/mentor/session/roleplay.ts`) — the model NAMES a scene,
@@ -1649,7 +1644,7 @@ export const TutorTurnSchema = z
      */
     roleplayScene: z.enum(ROLEPLAY_SCENE_IDS).nullable().optional(),
     /**
-     * GAP-FIX-R2 (Frontend Bible 08 §2 layer 5, §4, §9; C.13/C.14): up to
+     * Up to
      * three LIKELY ANSWERS the learner can tap instead of typing, sent as the
      * learner's own words. Free text, so it is moderated in the SAME call as
      * `say` (orchestrator.ts). Each chip must also fit the `option` Copy
@@ -1934,7 +1929,7 @@ export function parseTurn(raw: string): TurnParse {
      * A BOARD THAT DOES NOT CHECK OUT IS NO BOARD — the same fail-open
      * posture `computeSequence` already gives a whiteboard whose arithmetic
      * is wrong (see `preferredTypes`'s doc comment above), extended to a
-     * whiteboard whose SHAPE is wrong. Found live, round 39 (2026-08-30):
+     * whiteboard whose SHAPE is wrong. Found live:
      * a real session had the model set `whiteboard.unit` to a value outside
      * `day|week|month|year`, which failed `TutorTurnSchema`'s strict parse
      * and discarded the ENTIRE turn — a real, well-taught reply to the

@@ -17,7 +17,7 @@ const chipId = (piece: string, origin: string) => `${piece}@${origin}`;
 const splitChip = (id: string): [string, string] => { const at = id.indexOf('@'); return [id.slice(0, at), id.slice(at + 1)]; };
 
 /*
- * F2.11: payments on a timeline. An order task holds every payment already, one per year, and the learner swaps them; an
+ * Payments on a timeline. An order task holds every payment already, one per year, and the learner swaps them; an
  * annuity task starts with an empty timeline and the learner places each equal payment on a year. A chip is dragged onto a
  * year, or picked and sent with "Move to". Each payment shows its worth from the OTHER side than the one asked for (worth
  * at the end when the answer is worth today, and the reverse), so the number the learner types is always one reasoning

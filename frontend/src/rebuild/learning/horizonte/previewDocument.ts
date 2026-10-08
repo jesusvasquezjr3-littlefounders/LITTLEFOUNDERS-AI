@@ -6,7 +6,7 @@ export function horizonteFixture(pack: string, id: string): HorizonteFixture | n
   return HORIZONTE_FIXTURES[pack]?.find((fixture) => fixture.id === id) ?? null;
 }
 
-/** One pack fixture staged as its own lesson document (preview, audit and tests only; the player never builds one). */
+/** One pack fixture staged as its own lesson document (preview only; the player never builds one). */
 export function horizonteFixtureDocument(pack: string, id: string, locale: HorizonteLocale): Record<string, unknown> | null {
   const fixture = horizonteFixture(pack, id);
   if (!fixture) return null;

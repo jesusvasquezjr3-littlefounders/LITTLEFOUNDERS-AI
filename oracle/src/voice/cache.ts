@@ -28,8 +28,8 @@ import { redisGet, redisSetEx } from '../lib/redis.js';
  *   3. NOTHING NEW TO OPERATE. No table, no migration, no bucket, no eviction
  *      job — Redis expires entries itself.
  *
- * Rejected: a database table (Oracle has no database credentials, by design
- * and by test — /ORACLE.md §3.1); Depot itself (content-addressed by the AUDIO
+ * Rejected: a database table (Oracle has no database credentials, by design);
+ * Depot itself (content-addressed by the AUDIO
  * hash, which we only know AFTER paying for the audio, so it can dedupe
  * storage but can never prevent a synthesis); and an in-process map alone, for
  * reason 1.

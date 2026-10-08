@@ -2,7 +2,7 @@
 // catalog:check CLI — `npm run catalog:check [-- <path>]`.
 // With no path, validates EVERY course directory under coursegen/curriculum/
 // (today: financial-education; entrepreneurship/investing land alongside it
-// per COURSE_ENGINE.md §3.1b — siblings may be mid-authoring, that's an
+// alongside it — siblings may be mid-authoring, that's an
 // acceptable transient state to report, not crash on). With a path,
 // validates just that course directory.
 //

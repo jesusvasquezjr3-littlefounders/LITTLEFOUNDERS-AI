@@ -52,8 +52,8 @@ export interface FindSpotsOptions {
    *
    * A single number cannot express this cast: Dina and Liruf need 2.61 m
    * between them, while Rho and Zara need 1.18 m, and applying the first figure
-   * to all four leaves two of them with nowhere to stand on `diorama-a`
-   * (measured by `npm run verify:placement`). Indices are positions in the
+   * to all four leaves two of them with nowhere to stand on `diorama-a`.
+   * Indices are positions in the
    * caller's cast, and the k-th spot returned belongs to the k-th member, so
    * the caller can state the rule for any pair.
    */
@@ -82,7 +82,7 @@ export interface FindSpotsOptions {
    * NEGATIVE spreads them, which is what a personalization audition wants: four
    * candidates are a ring you look along, not a huddle, and packing the first
    * three into the highest-scoring arc leaves the fourth with nowhere to stand
-   * at all on a 6.5 m island (measured by `npm run verify:placement`).
+   * at all on a 6.5 m island.
    */
   grouping?: number;
   /**
@@ -143,7 +143,7 @@ export interface FindSpotsOptions {
   clearance?: number;
   /**
    * May the LEAD (the first member, the one the Mentor stage frames) stand
-   * here? A hard gate, like `isWalkable`: Frontend Bible 08 §2 says nothing
+   * here? A hard gate, like `isWalkable`: nothing
    * decorative covers the character's face or hands, and the Dioramas are one
    * mesh, so the ammonite, the palms and the bushes cannot be hidden, only
    * stood clear of. `occlusion.ts` `corridorClear` answers it from the stage's
@@ -390,7 +390,7 @@ export function findStandingSpots(ground: Object3D, options: FindSpotsOptions): 
   const remaining = [...candidates];
   while (chosen.length < count && remaining.length > 0) {
     /*
-     * 08 §2: the lead's face and hands are never behind the scenery in a stage
+     * The lead's face and hands are never behind the scenery in a stage
      * shot. With nobody chosen yet a candidate's value IS its score, and
      * `remaining` is sorted by score, so the first candidate that passes the
      * gate is the best one: the raycasts stop there instead of running for
@@ -398,8 +398,8 @@ export function findStandingSpots(ground: Object3D, options: FindSpotsOptions): 
      */
     if (chosen.length === 0 && leadCorridorClear) {
       const found = remaining.findIndex((candidate) => leadCorridorClear(candidate));
-      // No clear spot at all (an island this gate was not measured on): a lead partly
-      // behind a prop beats an empty stage, and `verify:placement` names it.
+      // No clear spot at all (an island this check was not run on): a lead partly
+      // behind a prop beats an empty stage.
       const clear = found === -1 ? 0 : found;
       chosen.push(remaining[clear]!);
       remaining.splice(clear, 1);

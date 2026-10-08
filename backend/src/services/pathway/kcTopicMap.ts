@@ -1,11 +1,11 @@
 import { z } from 'zod';
 
 /*
- * B.6 (S05.3a) — the topic → knowledge-component map, the one bridge between
+ * The topic → knowledge-component map, the one bridge between
  * the course catalog and the Mentor's knowledge-component graph (0052).
  *
- * WHY A MAP AND NOT A SECOND GRAPH. The SPEC forbids a course-specific
- * progression model parallel to the Mentor's (Product 10 B.6). The course
+ * WHY A MAP AND NOT A SECOND GRAPH. A course-specific
+ * progression model parallel to the Mentor's is forbidden. The course
  * engine therefore owns no competency nodes of its own: each topic declares
  * which of the SHARED KCs it teaches, and review topics inherit the KCs of
  * the teaching topics they cite. Mastery, prerequisites and review cards stay
@@ -140,7 +140,7 @@ export function deriveTopicKcLinks(map: KcTopicMap): TopicKcLink[] {
  *  - every review topic derives at least one KC and every citation resolves;
  *  - the Mentor's own bridge (kc.skill_key = "course/topic-slug") points at a
  *    topic that links that KC, so the two brains cannot disagree about where a
- *    KC is taught (the contradiction B.6 exists to prevent).
+ *    KC is taught (the contradiction the shared graph exists to prevent).
  */
 export function validateKcTopicMap(map: KcTopicMap, graph: readonly GraphKcLite[]): MapIssue[] {
   const issues: MapIssue[] = [];
@@ -197,8 +197,8 @@ export function validateKcTopicMap(map: KcTopicMap, graph: readonly GraphKcLite[
     if (!kc.skill_key) continue;
     const [courseSlug, topicSlug] = kc.skill_key.split('/');
     // Financial Education V2 replaced the legacy three-level catalog whose
-    // paths this B.6 map describes. Its canonical lesson ids are verified
-    // against hierarchy.rows.json by seedKcGraph.test.ts; do not reject those
+    // paths this map describes. Its canonical lesson ids
+    // come from hierarchy.rows.json; do not reject those
     // current bridges merely because the retired V1 map cannot resolve them.
     if (courseSlug === 'financial-education' && /^fe-(?:69|1012|1317|adult)-/.test(topicSlug ?? '')) continue;
     const course = map.courses.find((c) => c.course === courseSlug);

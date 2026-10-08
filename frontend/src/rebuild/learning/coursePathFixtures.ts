@@ -3,8 +3,7 @@ import type { CourseState } from './course';
 
 /*
  * Preview and test fixtures for the course path, one per server population.
- * They are shaped exactly like GET /learn/courses/:slug/path (the schema
- * parses them in CourseView.test.tsx) and stand in for Core only in the
+ * They are shaped exactly like GET /learn/courses/:slug/path and stand in for Core only in the
  * preview; the authenticated route always renders Core's own answer.
  */
 
@@ -50,7 +49,7 @@ export function childPathFixture(): CoursePath {
       skill('money.needs', loc('Needs and wants', 'Necesidades y deseos', 'Necessidades e desejos'), 'none'),
       skill('money.change', loc('Make change', 'Dar cambio', 'Dar troco'), 'none'),
     ],
-    // GAP-FIX-R5: the young register's mechanism is a binary pick of the next topic; no enrichment track.
+    // The young register's mechanism is a binary pick of the next topic; no enrichment track.
     autonomy: { path: 'binary', approach: false, enrichment: false, mentor: true, pace: true },
     enrichment: [],
     earlyAccess: [], masteryOffers: [], masteryCreditedTopicIds: [],
@@ -85,7 +84,7 @@ export function adultPathFixture(): CoursePath {
       skill('life.cushion', loc('Keep a cushion', 'Tener un colchón', 'Ter uma reserva'), 'none'),
       skill('life.compare', loc('Compare prices', 'Comparar precios', 'Comparar preços'), 'none'),
     ],
-    // GAP-FIX-R5: an adult has every lever, and one optional depth lesson is open.
+    // An adult has every lever, and one optional depth lesson is open.
     autonomy: { path: 'open', approach: true, enrichment: true, mentor: true, pace: true },
     enrichment: [{ ...item('a-deep', loc('A monthly plan', 'Un plan mensual', 'Um plano mensal'), loc('Plan for a surprise bill', 'Planea un gasto sorpresa', 'Planeje uma conta surpresa'), 'ch-adults', 'next', 'optional'),
       reason: 'enrichment' as const, access: 'optional' as const }],
@@ -124,7 +123,7 @@ export function bridgePathFixture(): CoursePath {
 }
 
 /**
- * OD-25: a 10-year-old on the child chapters who mastered what the teen
+ * A 10-year-old on the child chapters who mastered what the teen
  * chapter needs (it may open one stage early, after they confirm) and showed
  * a topic's skill with the Mentor (they may accept it as done).
  */
@@ -140,7 +139,7 @@ export function offersPathFixture(): CoursePath {
 
 const ready = (path: CoursePath): CourseState => ({ status: 'ready', detail: { engine: 'pathway', path } });
 
-/** The course screen under the pathway engine, one state per server population (W2L.1: the one course screen). */
+/** The course screen under the pathway engine, one state per server population (the one course screen). */
 export const coursePathPreviewStates: Record<string, CourseState> = {
   child: ready(childPathFixture()),
   adult: ready(adultPathFixture()),

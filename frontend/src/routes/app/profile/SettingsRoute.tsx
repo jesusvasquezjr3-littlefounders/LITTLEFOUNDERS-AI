@@ -18,27 +18,27 @@ import { DiscoverableSetting, parseDiscoverable, type DiscoverableState } from '
 import { AgeRecordSetting } from '@/app-routes/AgeRecordSetting';
 
 /*
- * /profile/settings (P3): the data plane of the rebuilt Settings page.
+ * /profile/settings: the data plane of the rebuilt Settings page.
  *
  *   details    GET /profile, then PATCH /profile with only the fields that
- *              changed (plus the language). A child's username is never sent
- *              (A.6); Core's refusals map to the field they concern:
- *              USERNAME_TAKEN, PROFILE_FIELD_UNSAFE (E.13, with `fields`),
+ *              changed (plus the language). A child's username is never sent;
+ *              Core's refusals map to the field they concern:
+ *              USERNAME_TAKEN, PROFILE_FIELD_UNSAFE (with `fields`),
  *              KID_USERNAME_LOCKED.
  *   sign-in    POST /auth/change-email and /auth/change-password, both
  *              re-verified by Core with the current password. No email row
- *              for a child (A.6) and none for a guest (nothing to change yet).
+ *              for a child and none for a guest (nothing to change yet).
  *   blocked    GET /profile/blocked, DELETE /profiles/:username/block.
- *   found      OD-27 (2): a 16-17-year-old's choice to be found, offered only
+ *   found      a 16-17-year-old's choice to be found, offered only
  *              where GET /profile's `social.discoverable.canChoose` says so
  *              (DiscoverableSetting writes PUT /profile/discoverable).
  *   age        AgeRecordSetting reads GET /auth/age-screen and shows the
- *              locked declaration (S-04, E.4) to a self-managed teen only.
+ *              locked declaration to a self-managed teen only.
  *   panels     the rebuilt panels with their own data planes: the analytics
- *              choice (H.1), the memory self-review (OD-18), how the Mentor
- *              adapts (C.7), the mode and sign-out (Lane 0), research at 18
+ *              choice, the memory self-review, how the Mentor
+ *              adapts, the mode and sign-out, research at 18
  *              (H-25: the young adult answers after their Tutor's yes lapsed),
- *              account deletion (E.6). Each decides its own visibility from
+ *              account deletion. Each decides its own visibility from
  *              Core's answer.
  */
 

@@ -10,7 +10,7 @@ import { captureLandingContext } from '@/lib/visitor';
 // Motion assets load their player only when their surface needs it.
 
 // Snapshot UTM + referrer BEFORE React mounts and the SPA can navigate —
-// they exist only on the landing URL (/INSIGHTS.md §7). Transmits nothing.
+// they exist only on the landing URL. Transmits nothing.
 captureLandingContext();
 
 /*

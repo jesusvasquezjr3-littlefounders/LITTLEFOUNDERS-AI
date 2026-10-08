@@ -5,10 +5,9 @@ import type { CharacterId, MentorShot } from './vocabulary';
  * shot.
  *
  * SPLIT OUT OF `StageShell` ON PURPOSE, for the same reason `shots.ts` imports
- * nothing: this file is pure, so the mapping can be unit-tested without a GPU, a
- * socket or a WebGL context. `StageShell` pulls in `three` through the renderer,
- * and a test that has to boot the renderer to check an arithmetic table is a
- * test nobody runs. `StageShell` re-exports everything here, so product code
+ * nothing: this file is pure, so the mapping needs no GPU, socket or WebGL
+ * context. `StageShell` pulls in `three` through the renderer.
+ * `StageShell` re-exports everything here, so product code
  * still has one place to import from.
  */
 
@@ -17,12 +16,12 @@ import type { CharacterId, MentorShot } from './vocabulary';
  *
  * Named for what the camera is doing rather than for what the client is
  * fetching, because that is the only thing the shell reacts to. The product
- * lifecycle these correspond to is /ORACLE.md §9.
+ * lifecycle these correspond to is the session lifecycle.
  */
 export type StagePhase =
   /** Waiting on the token, the preferences and the island. The wide, living shot. */
   | 'arriving'
-  /** Making the place theirs, in the place itself (/ORACLE.md §10). */
+  /** Making the place theirs, in the place itself. */
   | 'personalizing'
   /** The tutor greets and offers, in close-up. */
   | 'introducing'
@@ -31,7 +30,7 @@ export type StagePhase =
   /** The kind goodbye: a pull back to the island, not a summary box. */
   | 'closing'
   /**
-   * A saved conversation, performed again on the same island (/ORACLE.md §12).
+   * A saved conversation, performed again on the same island.
    *
    * A PHASE AND NOT A SCREEN, which is the whole difference between this and
    * what shipped. Replay used to be a disclosure inside a list — rows of text
@@ -40,7 +39,7 @@ export type StagePhase =
    * stored turns: the same character, the same island, the same emotions and
    * actions, the same shot vocabulary, the same caption over the same crown.
    * Everything it needs was already in the schema (migration 0047), so it is
-   * frontend work with no contract change, exactly as §12 predicted.
+   * frontend work with no contract change.
    */
   | 'replaying'
   /** The Tutor API could not be reached. The island stays; the talking rests. */
@@ -50,8 +49,7 @@ export type StagePhase =
  * The runtime mirror of the union.
  *
  * Written out rather than derived, so `satisfies` fails to compile when the two
- * drift. A phase the union knows about and this list does not is a phase no
- * test ever visits.
+ * drift.
  */
 export const STAGE_PHASES = [
   'arriving',
@@ -73,7 +71,7 @@ export const STAGE_PHASES = [
  *
  * It is a function rather than a ternary at the call site so that the one
  * sentence this feature rests on — the candidates are really there, during
- * exactly one phase — is a thing a test can ask about without a renderer.
+ * exactly one phase — can be asked about without a renderer.
  * Returns null, never an empty array: null is what the scene reads as "the
  * ordinary cast", and an empty audition would be an island with nobody on it.
  */
@@ -91,10 +89,10 @@ export interface StageShotInput {
   /**
    * True when the speaking character's mouth actually moves.
    *
-   * `liruf` and `dina` have no mouth card (/TUTOR_3D.md §7.1), so closing the
+   * `liruf` and `dina` have no mouth card, so closing the
    * camera on them frames the one thing that is not working. They get
    * `closeup-wide` instead: off-axis, further back, hands in shot. That is
-   * /ORACLE.md §2.2's PRIMARY decision ("they frame wider"), not the fallback
+   * the primary decision ("they frame wider"), not the fallback
    * that shipped, which left them at the island shot where nothing about them
    * was legible either.
    */
@@ -116,7 +114,7 @@ export interface StageShotInput {
    * The ONE input the `replaying` phase adds, and it exists so the camera can
    * do at the end of a replay exactly what it does at the end of a session:
    * pull back to the island. A replay that simply stopped on a close-up would
-   * end by freezing on a face; the pull back IS the goodbye (/ORACLE.md §9.5),
+   * end by freezing on a face; the pull back IS the goodbye,
    * and a re-performance that skips it is not a re-performance of the session
    * that was recorded.
    *
@@ -133,20 +131,17 @@ export interface StageShotInput {
    * tutor's head, filling the screen, with one ear in the middle of it. The
    * geometry is dissected in `shots.ts` beside the shot's own removal.
    *
-   * The mapping was wrong before the geometry was: three authoritative
-   * documents say a live segment must not change the framing at all.
-   * /ORACLE.md §9.3 — "the character's on-screen height is the same with a
-   * segment and without one; a lesson that visibly shoves the tutor aside to
-   * make room for itself reads as two products sharing a screen". /ORACLE.md
-   * §16 makes it a shipping gate — "the character's measured on-screen height
-   * unchanged with and without a live segment". /DESIGN.md → Screen Recipes →
-   * Tutor repeats it as "identical". Every shot in the vocabulary sits at its
+   * The mapping was wrong before the geometry was: a live segment must not
+   * change the framing at all. The character's on-screen height is the same
+   * with a segment and without one; a lesson that visibly shoves the tutor
+   * aside to make room for itself reads as two products sharing a screen.
+   * Every shot in the vocabulary sits at its
    * own distance, so ANY shot change changes that height; the flag therefore
    * cannot legally reach this function.
    *
    * Getting the tutor out from behind the plate is `composition.ts`'s job, and
    * it does it by shifting the AIM and never the distance, which is exactly the
-   * property those three sentences are asking for.
+   * property that rule asks for.
    */
 }
 
@@ -175,7 +170,7 @@ export function shotForPhase({
     case 'conversing':
       /*
        * An adaptation is a question one character asks in front of another, so
-       * it wants both of them in frame (/ORACLE.md §9.4). It is the ONLY thing
+       * it wants both of them in frame. It is the ONLY thing
        * that moves the camera during a conversation: an arriving activity does
        * not, because the plate is chrome laid over the same shot rather than a
        * new scene, and the learner should not feel the room change because a
@@ -184,7 +179,7 @@ export function shotForPhase({
       if (adaptationOffered) return 'two-shot';
       return speaking;
     case 'closing':
-      // The pull back IS the goodbye (/ORACLE.md §9.5). The director damps
+      // The pull back IS the goodbye. The director damps
       // toward it over roughly two seconds, and that travel is the performance.
       return 'establishing';
     case 'replaying':

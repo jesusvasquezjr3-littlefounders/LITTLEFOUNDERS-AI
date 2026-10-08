@@ -3,8 +3,8 @@ import type { TutorWhiteboardWire } from '../session/types';
 
 /*
  * One example of every whiteboard shape Oracle can send, with the server's
- * computed fields filled in as Oracle fills them. Used by the board's unit
- * tests (every kind renders) and the development preview (`?board=<kind>`).
+ * computed fields filled in as Oracle fills them. Used by the development
+ * preview (`?board=<kind>`).
  * The words are what a model would write for a learner in that language.
  */
 

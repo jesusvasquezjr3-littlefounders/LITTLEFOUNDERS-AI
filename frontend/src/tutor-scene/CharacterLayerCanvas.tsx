@@ -246,7 +246,7 @@ function LayerScene({
      * character rather than the frame — the intro screen showed 3,136 triangles
      * for a cast of four whose true cost is 106,208. A readout that under-reports
      * by thirty times is worse than none: it is the "over budget in red for a
-     * scene inside its budget" mistake of TUTOR_3D.md §6 with the sign flipped.
+     * scene inside its budget" mistake with the sign flipped.
      */
     gl.info.autoReset = false;
     return () => {
@@ -285,7 +285,7 @@ function LayerScene({
        * OFF SCREEN IS NOT DRAWN. A transcript ten lines long has three or four
        * on screen; the rest cost their animation update and nothing else. This
        * is the single biggest reason a whole lesson of characters is
-       * affordable on the phones §1.0 cares about.
+       * affordable on the mid-range phones families use.
        */
       if (
         rect.width < 1 ||

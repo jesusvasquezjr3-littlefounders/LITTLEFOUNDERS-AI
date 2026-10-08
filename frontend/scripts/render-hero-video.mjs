@@ -16,7 +16,7 @@ import { launchBrowser, openPage, warmDevServer } from './lesson-engine/browser.
  * in LOOP seconds, and the last second is cross-faded onto the first so that
  * what little is not periodic (the characters' breathing) does not show at the
  * seam. Frames are rendered at 1.5x and reduced with Lanczos to the delivered
- * size (07 §3: supersample, then downsample).
+ * size (supersample, then downsample).
  *
  * Frames go to a scratch folder; Blender's bundled FFmpeg encodes them
  * (scripts/hero-video-encode.py; no other encoder is installed or needed):

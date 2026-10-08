@@ -1,26 +1,23 @@
-// Forge gates 18 and 19 (S05.3f). Policy:
-// docs/rebuild/LEARNER-REGISTER-AND-WELLBEING-POLICY.md. Both read the one
-// learner register policy Core owns (learnerRegisterPolicy.generated.ts, a
-// byte-identical copy checked by `npm run spec:check`).
+// Forge gates 18 and 19. Both read the one learner register policy Core owns
+// (learnerRegisterPolicy.generated.ts, a byte-identical copy of Core's).
 //
 // GATE 18 — shame, family-finance framing and manipulation language
-// (Appendix C Part 3, Stage 2, gate 4 "shame-language", extended by B.27 and
-// by B.25's content half). Over every learner-visible string of the document:
+// Over every learner-visible string of the document:
 //
 //   BLOCKING
 //     * self-global language: a verdict on who the learner is ("you're not a
-//       saver", "no eres bueno para el dinero"), in any state (B.26);
+//       saver", "no eres bueno para el dinero"), in any state;
 //     * trait praise ("you're so smart"): praise names the step, not the child;
 //     * moralizing a family's real money ("poor families are lazy", "tus
-//       papás malgastan"), anywhere, story included (B.27);
-//     * a loss mechanic: `scoring.hearts` set, or lives/hearts copy (OD-1);
-//     * a purchase or advertising lure (B.25; OD-5: no paywall exists).
-//   REVIEW (the Stage 3 reviewer decides: a story may say "hurry" to a
+//       papás malgastan"), anywhere, story included;
+//     * a loss mechanic: `scoring.hearts` set, or lives/hearts copy;
+//     * a purchase or advertising lure (no paywall exists).
+//   REVIEW (the human reviewer decides: a story may say "hurry" to a
 //   character, or teach how "last chance" sales pressure works)
 //     * time-pressure, parasocial-pressure and social-pressure language;
-//     * a timed drill (a segment declaring seconds): B.25 checklist MN-02.
+//     * a timed drill (a segment declaring seconds).
 //
-// GATE 19 — the age register (B.23). The tier's ages map to one or more
+// GATE 19 — the age register. The tier's ages map to one or more
 // registers (a tier such as "8-10" spans two); the strictest applies:
 //
 //   BLOCKING

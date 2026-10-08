@@ -11,10 +11,9 @@ import { DIMENSION_TITLES, PERIOD_LABELS, type PlausibleDimensionKey, type Plaus
  * filters in force, when it was generated, and the standing caveat that
  * excluded internal traffic only stops counting from the day it was excluded.
  *
- * Colours are Frontend Bible 02 section 3 tokens (02 D8: one design system,
+ * Colours are the design-system tokens (one design system,
  * the staff console included), as ExcelJS ARGB. The same values as the PDF's
- * REPORT_TOKENS (analyticsReport.ts); `analyticsReportTokens.test.ts` fails on
- * any colour here that is not a token. Headers use the Nunito family name so a
+ * REPORT_TOKENS (analyticsReport.ts); every colour here must be a token. Headers use the Nunito family name so a
  * machine with the house fonts shows them; Excel substitutes otherwise.
  */
 
@@ -28,7 +27,7 @@ export const BRAND = {
   onPrimary: 'FFFFFFFF', // --on-primary
 } as const;
 
-/** Frontend Bible 02 section 6: Fredoka for headings, Nunito for body text. */
+/** Fredoka for headings, Nunito for body text. */
 export const BRAND_FONTS = { heading: 'Fredoka', body: 'Nunito' } as const;
 
 const SHEET_TITLE_LIMIT = 31; // Excel's hard cap on a worksheet name

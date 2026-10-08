@@ -1,4 +1,4 @@
-// The 9 deterministic gates — COURSE_ENGINE.md §4 "gate" stage. Free, no
+// The 9 deterministic gates. Free, no
 // network calls, run in order. Gate 1 (contract) gates the rest: if the raw
 // JSON doesn't parse against the Zod contract there is no typed document to
 // run gates 2-5 against.
@@ -24,16 +24,14 @@ import type { MarketInventory } from '../contentGates/regional.js';
 import { runRewardMechanicGate } from './rewardMechanicGate.js';
 import { runAgeRegisterGate, runWellbeingLanguageGate } from './wellbeingGates.js';
 
-// 11-13 are the Forge content gates (src/contentGates): 11 redundancy (B.18),
-// 12 Law 2 tone (B.14), 13 Copy Budget (OD-13). 14-16 are the lesson-policy
-// gates (src/contentGates/policyGates.ts): 14 concept cap (B.17), 15 mentor
-// misjudgment (B.11), 16 regional adaptation (B.16).
-// 17: the reward-mechanic structural gate (Appendix C Stage 2 gate 7, B.22,
-// S05.3e; rewardMechanicGate.ts). Numbered clear of the content gates
-// (11-16) so the lists merge without renumbering.
-// 18: shame, family-finance and manipulation language (Appendix C Stage 2
-// gate 4, B.26, B.27, B.25). 19: the age register (B.23). Both S05.3f
-// (wellbeingGates.ts), numbered after 17 for the same reason.
+// 11-13 are the Forge content gates (src/contentGates): 11 redundancy,
+// 12 Law 2 tone, 13 Copy Budget. 14-16 are the lesson-policy
+// gates (src/contentGates/policyGates.ts): 14 concept cap, 15 mentor
+// misjudgment, 16 regional adaptation.
+// 17: the reward-mechanic structural gate (rewardMechanicGate.ts). Numbered
+// clear of the content gates (11-16) so the lists merge without renumbering.
+// 18: shame, family-finance and manipulation language. 19: the age register.
+// Both (wellbeingGates.ts), numbered after 17 for the same reason.
 export type GateNumber = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 | 19;
 
 export interface GateProblem {
@@ -46,7 +44,7 @@ export interface GateReport {
   ok: boolean;
   problems: GateProblem[];
   document?: LessonDocumentParsed;
-  /** Flags for the Stage 3 pedagogical reviewer that do not block (B.22 mystery-reward language). */
+  /** Flags for the pedagogical reviewer that do not block (mystery-reward language). */
   review?: GateProblem[];
 }
 
@@ -118,7 +116,7 @@ export const NON_VISIBLE_KEYS = new Set([
   // fire-and-forget track (2026-07-26): only `icon`/`ask_icon` were frozen, so
   // the translator turned `b_icon: "cookie"` into pt-BR "biscoito" — an icon
   // name that cannot render. Every `*_icon` key is a Material Symbols ligature,
-  // never prose; nonVisibleKeys.test pins all of them now.
+  // never prose.
   'a_icon',
   'b_icon',
   'artifact_kind',
@@ -128,8 +126,6 @@ export const NON_VISIBLE_KEYS = new Set([
   // Enum payload/answer vocab missed by the original list — discovered when
   // localize.ts translated fill_blank's `mode: "typed"` into pt-BR prose and
   // broke contract validation (first real QA run, 2026-07-13). The
-  // enum-coverage test in gates.test.ts now derives this requirement from
-  // the schemas themselves, so a new enum key can't silently slip through.
   'mode',
   'commands',
   'scale',
@@ -475,7 +471,7 @@ export function runRationaleAndCanonGate(document: LessonDocumentParsed): GatePr
   return [...rationaleGate(document), ...canonGate(document)];
 }
 
-// ---- Gate 6: anti-genericity (deterministic, COURSE_ENGINE.md §4 gate 6) ---
+// ---- Gate 6: anti-genericity (deterministic) ---
 //
 // Cheap garbage never reaches the (paid) judge — a two-phase pattern shared
 // with gates 2-5. Three independent detectors, all deterministic:
@@ -1842,7 +1838,7 @@ function trivialStrategy(document: LessonDocumentParsed): GateProblem[] {
      * IMPERFECT_ORDER_CEILING (60), so one wrong slot can never reach a 70 threshold
      * however many slots there are. Left as it was, the gate would reject content the
      * engine already grades correctly — a gate must mirror the code that runs, or it
-     * is a heuristic pretending to be a proof (§gate-8 contract).
+     * is a heuristic pretending to be a proof.
      *
      * It is kept rather than deleted because it is still load-bearing for a document
      * that lowers its own pass_threshold to 60 or less: there the cap stops being
@@ -2515,7 +2511,7 @@ export interface GateContext {
   facts: FactsFile;
   /** Powers gate 6a's near-duplicate check against the topic title (document.meta.title is always checked regardless). */
   topicTitle?: string;
-  /** COURSE_ENGINE.md §3.3 — adult register skips gate 2 (the Piaget vocabulary gate is a kid-only invariant). */
+  /** Adult register skips gate 2 (the Piaget vocabulary gate is a kid-only invariant). */
   skipVocabularyGate?: boolean;
   /**
    * The APPROVED plan's segment types, in order — gate 10's input.
@@ -2524,14 +2520,14 @@ export interface GateContext {
    */
   plannedSegmentTypes?: readonly string[];
   /**
-   * Audience register for the OD-13 Copy Budget (gate 13): the kid register uses
+   * Audience register for the Copy Budget (gate 13): the kid register uses
    * the 6-9 limits when the tier reaches below age 10; adult never does.
    * Defaults to kid, the stricter reading.
    */
   register?: 'kid' | 'adult';
   /**
-   * The lesson's catalog policy (S05.4b): declared density and later concepts
-   * (B.17), the mentor-misjudgment flag (B.11) and market scenarios (B.16).
+   * The lesson's catalog policy: declared density and later concepts
+   *, the mentor-misjudgment flag and market scenarios.
    * Absent (a document with no catalog behind it), gate 16 still rejects
    * another market's context in the document.
    */
@@ -2553,7 +2549,7 @@ export interface GateContext {
  * segment per skeleton entry, IN THE SAME ORDER, with the SAME `type`"
  * (write.ts). Nine gates then ran on the result and not one of them looked at
  * a segment's type, so whether the author actually obeyed was never checked —
- * a rule stated in a prompt and pinned by nothing.
+ * a rule stated in a prompt and enforced by nothing.
  *
  * It does not always obey. The production lesson "Mismo deseo, distinta razón"
  * (financial-education) ships opening with `sort_buckets`: a graded challenge
@@ -2636,10 +2632,10 @@ export function runAllGates(rawDocument: unknown, ctx: GateContext): GateReport 
     // catches text that reads like an adult paragraph BEFORE a paid judge call.
     ...runReadabilityGate(document, ctx.tier),
     ...runPlanFidelityGate(document, ctx.plannedSegmentTypes),
-    // Gates 11-13 (Appendix C Stage 2 order: redundancy B.18, tone B.14, Copy
-    // Budget OD-13). Deterministic and free; see src/contentGates/.
+    // Gates 11-13 (redundancy, tone, Copy
+    // Budget). Deterministic and free; see src/contentGates/.
     ...runLessonContentGates(document, audienceForTier(ctx.taxonomy, ctx.tier, ctx.register ?? 'kid')).problems,
-    // Gates 14-16 (S05.4b): concept cap B.17, mentor misjudgment B.11, regional adaptation B.16.
+    // Gates 14-16: concept cap, mentor misjudgment, regional adaptation.
     ...runLessonPolicyGates(document, ctx.lessonPolicy, ctx.markets).problems,
     ...rewardProblems,
     ...wellbeingProblems,

@@ -1,4 +1,4 @@
-// images stage — OPTIONAL per slot (COURSE_ENGINE.md §4). Fills the lesson's
+// images stage — OPTIONAL per slot. Fills the lesson's
 // AI illustrations by asking Prism (picturegen/) for each one. Prism owns the
 // whole image concern: the art-director judge (LF visual identity), the
 // Qwen-Image generation, the pictorial verifier, Depot storage, and the cache

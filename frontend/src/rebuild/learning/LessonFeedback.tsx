@@ -7,12 +7,12 @@ export type LessonFeedbackVerdict = 'met' | 'review' | 'invalid' | 'incomplete' 
 const tone: Record<LessonFeedbackVerdict, NoticeTone> = { met: 'success', review: 'retry', invalid: 'retry', incomplete: 'retry', unavailable: 'error' };
 
 /**
- * The lesson foot's feedback row (02 §9.2) on the shared `Banner`: a correct
+ * The lesson foot's feedback row on the shared `Banner`: a correct
  * answer is the success banner, "not yet" is warning gold with a cross (never
  * the error hue, never a penalty), and only a failed check is an error. The
  * status region stays mounted, so every verdict is announced exactly once.
  * A correct answer and a "not yet" each play their short cue as the verdict
- * arrives (OD-28: the gentle not-yet sound); the words carry the meaning.
+ * arrives (the gentle not-yet sound); the words carry the meaning.
  */
 export function LessonFeedback({ verdict, children }: { verdict: LessonFeedbackVerdict | null; children?: ReactNode }) {
   const shown = verdict && children ? verdict : null;

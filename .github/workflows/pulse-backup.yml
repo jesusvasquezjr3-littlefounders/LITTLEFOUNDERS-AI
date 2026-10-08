@@ -5,7 +5,7 @@ name: Pulse backup
 # and mechanism as vault-backup.yml (separate disk & service from the live
 # volume; `railway ssh` writes straight to the container filesystem).
 # ClickHouse events are deliberately NOT dumped here: the raw analytics
-# store is loss-tolerant by decision (RUNBOOK.md § Pulse) and a ClickHouse
+# store is loss-tolerant by decision and a ClickHouse
 # logical dump at this size isn't worth a daily cron.
 
 on:
@@ -21,10 +21,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      # H.5 (Appendix O 1.2): the dump is encrypted on the runner before it is
-      # stored anywhere, with the tested OD-9 backup tool (AES-256-GCM, a
+      # The dump is encrypted on the runner before it is
+      # stored anywhere, with the tested backup tool (AES-256-GCM, a
       # manifest with the key fingerprint, the plaintext deleted). The full
-      # checkout also carries scripts/ops-heartbeat.sh (H.4).
+      # checkout also carries scripts/ops-heartbeat.sh.
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
@@ -131,7 +131,7 @@ jobs:
         run: |
           set -euo pipefail
           # Encrypted backups and their manifests; the last pattern ages out the
-          # plaintext dumps written before H.5 was closed.
+          # plaintext dumps written before dumps were encrypted.
           for PATTERN in 'pulse-*.dump.lfbk' 'pulse-*.dump.lfbk.manifest.json' 'pulse-*.dump'; do
             n=1
             until railway ssh --service filebase -i ~/.ssh/railway_backup_key -- \
@@ -142,7 +142,7 @@ jobs:
             done
           done
 
-      # H.4: leave the run in Core's audit trail (scripts/ops-heartbeat.sh);
+      # Leave the run in Core's audit trail (scripts/ops-heartbeat.sh);
       # ops-job-watch.yml notifies a human when this job goes quiet.
       - name: Record the heartbeat
         if: success()

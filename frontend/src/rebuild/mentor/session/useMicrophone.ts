@@ -4,7 +4,7 @@ import type { MutableRefObject } from 'react';
 /*
  * Push-to-talk, deliberately.
  *
- * NOT open-mic voice activity detection, and the reason is §1.9 rather than
+ * NOT open-mic voice activity detection, and the reason is privacy rather than
  * engineering taste: an always-listening microphone in a child's room captures
  * everything said near it, including by people who never agreed to anything.
  * Hold-to-talk means the learner decides, every single time, exactly what
@@ -79,7 +79,7 @@ export type MicPermission = 'idle' | 'requesting' | 'granted' | 'denied' | 'unsu
  * Oracle's inbound audio ceiling, mirrored from `oracle/src/ws/protocol.ts`.
  *
  * It is duplicated rather than imported because the frontend may only ever
- * reach Core, never an internal service (frontend/AGENTS.md). The two numbers
+ * reach Core, never an internal service. The two numbers
  * must agree: a larger value here produces a frame Zod rejects at the socket,
  * which surfaces to a child as a turn that silently never happened.
  */
@@ -235,11 +235,11 @@ export function useMicrophone(enabled: boolean, options: MicrophoneOptions = {})
   /*
    * THE SAME PROMISE, ON A REVOCATION MID-SESSION, NOT JUST ON LEAVING.
    *
-   * Found by adversarial review, 2026-08-30 (MEDIUM): `stop()` deliberately
+   * `stop()` deliberately
    * keeps `streamRef` warm between holds — a repeated push-to-talk press
    * should not re-prompt for the microphone every time — and `release()`,
    * the only thing that actually stops the hardware tracks, used to run
-   * only on unmount. But a guardian's ONE-PRESS revoke (/ORACLE.md §4.3)
+   * only on unmount. But a guardian's ONE-PRESS revoke
    * flips `enabled` false in this SAME component instance, because the
    * tutor deliberately keeps running in text-and-choices mode rather than
    * unmounting — so the browser's own mic-in-use indicator stayed lit for

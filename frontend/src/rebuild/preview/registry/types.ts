@@ -5,17 +5,16 @@ import type { LearnerRegister } from '../../design/learnerRegisterPolicy.generat
 
 /*
  * One screen of the development-only preview entry (`rebuild.html?screen=`).
- * Each wave-2 lane registers its screens in its own file under
- * `preview/registry/` (core, site, learn, mentor, family, profile, staff);
- * `Preview.tsx` only composes the registries, so two lanes adding screens never
- * edit the same file. A screen id is unique across all registries
- * (`registry.test.ts`).
+ * Each area registers its screens in its own file under
+ * `preview/registry/` (core, site, learn, mentor, profile, staff);
+ * `Preview.tsx` only composes the registries, so two areas adding screens never
+ * edit the same file. A screen id is unique across all registries.
  */
 export interface PreviewContext {
   locale: Locale;
   theme: 'light' | 'dark';
   ageBand: AgeBand;
-  /** S05.3f (B.23): the learner register a register-aware screen reads in (`?register=`). */
+  /** The learner register a register-aware screen reads in (`?register=`). */
   register: LearnerRegister;
   /** The page's query string, read once at load (fixtures pick their state from it). */
   params: URLSearchParams;

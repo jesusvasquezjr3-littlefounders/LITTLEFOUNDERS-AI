@@ -1,10 +1,10 @@
 /*
- * A LIVE ACTIVITY ON THE MENTOR SCREEN, AS DATA (product inventory T1c: "do
- * activities in a side panel (Check)"; Frontend Bible 08 §2 layer 4).
+ * A LIVE ACTIVITY ON THE MENTOR SCREEN, AS DATA ("do
+ * activities in a side panel (Check)").
  *
  * Oracle serves one Lesson Engine segment at a time (Core's catalog, bank or a
  * live-authored item). The legacy screen drew it with the legacy lesson
- * engine's 57 renderers, which the rebuild may not import (02 rule 23). This
+ * engine's 57 renderers, which the rebuild may not import. This
  * module reads the segment types the Mentor actually serves into a small set of
  * interaction shapes the rebuilt screen draws with the 02 controls, and builds
  * the answer in exactly the shape Core's grader reads

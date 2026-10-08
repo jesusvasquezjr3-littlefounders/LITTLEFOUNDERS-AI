@@ -19,7 +19,7 @@ const sign = z.union([z.literal(1), z.literal(-1)]);
 const step = z.union([z.literal(5), z.literal(10), z.literal(15), z.literal(30)]);
 const coeffs = z.tuple([whole(-9, 9), whole(-9, 9), whole(-9, 9), whole(-9, 9)]);
 
-/* ── F2.16 ── */
+/* ── Networks and counting ── */
 
 const node = z.object({ id: hzId, x: whole(0, 100), y: whole(0, 100) }).strict();
 const edge = z.object({ id: hzId, from: hzId, to: hzId, weight: whole(1, 9).optional() }).strict();
@@ -28,7 +28,7 @@ export const pathPayload = z.object({ nodes: z.array(node).min(NODE_MIN).max(NOD
 export const treePayload = z.object({ items: z.array(hzId).min(TREE_ITEM_MIN).max(TREE_ITEM_MAX), pick: whole(2, 3), mode: z.enum(TREE_MODES), first: hzId.optional() }).strict();
 export const pascalPayload = z.object({ rows: whole(PASCAL_ROWS_MIN, PASCAL_ROWS_MAX), multiple: whole(PASCAL_MULTIPLE_MIN, PASCAL_MULTIPLE_MAX) }).strict();
 
-/* ── F2.17 ── */
+/* ── Trigonometry and calculus ── */
 
 export const unitCirclePayload = z.object({
   ask: z.enum(['cos', 'sin']), level, sign, side: z.enum(['upper', 'lower', 'right', 'left']).optional(), step, start: whole(0, 359),
@@ -39,7 +39,7 @@ export const derivativeLinkPayload = z.object({ lead: sign, roots: z.tuple([whol
 export const riemannPayload = z.object({ coeffs, from: whole(-3, 6), to: whole(-3, 6), method: z.enum(RIEMANN_METHODS), tolerance: z.number().min(0.01).max(20) }).strict();
 export const accumulationPayload = z.object({ coeffs, from: whole(-4, 3), to: whole(-4, 8), target: whole(-99, 99) }).strict();
 
-/* ── F2.18 ── */
+/* ── Bits and gates ── */
 
 export const bitsPayload = z.object({ bits: whole(BITS_MIN, BITS_MAX), target: whole(1, 2 ** BITS_MAX - 1) }).strict();
 export const gatesPayload = z.object({
@@ -57,7 +57,7 @@ export const CALCULUS_TYPE = 'calculus.explorer.v2';
 export const CIRCUITS_TYPE = 'computing.bits-gates.v2';
 
 export const COM_SEGMENTS = [
-  /** F2.16 (J01, J03, J08, J09): the odd nodes or a walk over every bridge, the cheapest route, the outcomes of a choice tree, the multiples in Pascal's triangle. */
+  /** The odd nodes or a walk over every bridge, the cheapest route, the outcomes of a choice tree, the multiples in Pascal's triangle. */
   z.object({
     ...hzBase, type: z.literal(NETWORK_TYPE), grading: hzServer,
     visual: z.union([hzVisual('graph'), hzVisual('shortest-path'), hzVisual('choice-tree'), hzVisual('pascal')]),
@@ -66,18 +66,18 @@ export const COM_SEGMENTS = [
     problem(ctx, 'payload', networkProblem(value.visual.type, value.payload));
     problem(ctx, 'labels', networkLabelsProblem(value.visual.type, value.payload, value.labels));
   }),
-  /** F2.17 (F02, F03): find the angle on the unit circle or on the wave, after predicting where it falls. */
+  /** Find the angle on the unit circle or on the wave, after predicting where it falls. */
   z.object({
     ...hzBase, type: z.literal(TRIG_TYPE), grading: hzServer, visual: z.union([hzVisual('unit-circle'), hzVisual('circle-wave')]),
     payload: z.union([unitCirclePayload, circleWavePayload]),
   }).strict().superRefine((value, ctx) => problem(ctx, 'payload', explorerProblem(value.visual.type, value.payload))),
-  /** F2.17 (G04, G05, G10, G11): a secant closing on a tangent, f and f' linked, Riemann sums and the fundamental theorem. */
+  /** A secant closing on a tangent, f and f' linked, Riemann sums and the fundamental theorem. */
   z.object({
     ...hzBase, type: z.literal(CALCULUS_TYPE), grading: hzServer,
     visual: z.union([hzVisual('secant'), hzVisual('derivative-link'), hzVisual('riemann'), hzVisual('accumulation')]),
     payload: z.union([secantPayload, derivativeLinkPayload, riemannPayload, accumulationPayload]),
   }).strict().superRefine((value, ctx) => problem(ctx, 'payload', explorerProblem(value.visual.type, value.payload))),
-  /** F2.18 (J21, J12): switch bits to make a number, and place gates so a circuit gives a truth table. */
+  /** Switch bits to make a number, and place gates so a circuit gives a truth table. */
   z.object({
     ...hzBase, type: z.literal(CIRCUITS_TYPE), grading: hzServer, visual: z.union([hzVisual('bits'), hzVisual('gates')]),
     labels: labels.optional(), payload: z.union([bitsPayload, gatesPayload]),

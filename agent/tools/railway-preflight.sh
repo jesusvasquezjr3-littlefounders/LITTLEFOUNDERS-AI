@@ -105,7 +105,7 @@ required_services=(
   dataintel
   oracle
 )
-# DEPLOYMENT.md §6: these app services sleep after ~10-15 min idle and wake on
+# These app services sleep after ~10-15 min idle and wake on
 # request, so a present service with NO active instances at all is an expected
 # state — WARN, never FAIL. The allowlist never excuses a crash: any instance
 # in a crashed/failed state hard-fails the preflight for every service. Every
@@ -229,11 +229,11 @@ check_variables audiogen TTS_API_KEY
 check_variables picturegen IMAGE_API_KEY
 check_variables littlefounders-backend DATAINTEL_URL DATAINTEL_INTERNAL_KEY
 
-# ── Oracle, the AI Tutor runtime (/ORACLE.md) ────────────────────────────────
+# ── Oracle, the AI Tutor runtime ────────────────────────────────
 #
 # INWORLD_API_KEY is deliberately NOT required: voice is an enhancement and
 # `VOICE_PROVIDER=none` is a supported posture in which the tutor runs
-# captioned and silent (/ORACLE.md §14). The model keys ARE required, because
+# captioned and silent. The model keys ARE required, because
 # without them every session falls back to scripted lines — the tutor is live
 # and cannot teach.
 check_variables oracle INTERNAL_API_KEY TUTOR_SESSION_SECRET CORE_URL CORE_INTERNAL_KEY MODEL_API_KEY JUDGE_API_KEY

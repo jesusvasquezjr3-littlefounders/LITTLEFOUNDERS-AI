@@ -196,8 +196,8 @@ function union(a: HudRect, b: HudRect): HudRect {
  * width to a surface that is not on the right at all — it then trucked the
  * camera a third of a screen sideways AND, on a fitting shot, pulled it back by
  * the full 1.9x padding ceiling. That is the "island became a sliver" report,
- * produced by the composition solver rather than by the layout. The unit test
- * missed it because its fixture was a sheet flush to the bottom edge with no
+ * produced by the composition solver rather than by the layout. It was
+ * missed because the fixture was a sheet flush to the bottom edge with no
  * inset, which is the one geometry where raw pixels happen to give the right
  * answer.
  */

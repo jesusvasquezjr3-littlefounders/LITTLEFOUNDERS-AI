@@ -1,4 +1,4 @@
-// plan stage — blueprint → segment skeleton (COURSE_ENGINE.md §4).
+// plan stage — blueprint → segment skeleton.
 // DeepSeek, temp 0.3, JSON mode.
 //
 // MIX RULES are enforced by REPLANNING first and repairing only as a last
@@ -60,7 +60,7 @@ export const planSkeletonSchema = z.object({
 export type PlanSegment = z.infer<typeof planSegmentSchema>;
 export type PlanSkeleton = z.infer<typeof planSkeletonSchema>;
 
-// Spaced-review layer (COURSE_ENGINE.md §3.1) — review-kind topics ground
+// Spaced-review layer — review-kind topics ground
 // their plan/write prompts in the teaching topics they consolidate.
 export type ReviewTopicKind = 'review_spaced' | 'review_interleaved' | 'review_quest';
 
@@ -88,7 +88,7 @@ export const CONSOLIDATION_INSTRUCTION =
 export const INTERLEAVE_INSTRUCTION = 'Interleave at least 2 distinct source topics within this lesson plan.';
 
 /**
- * COURSE_ENGINE.md §3.1/§4 — connect-to-prior. Never a cold restart.
+ * Connect-to-prior. Never a cold restart.
  *
  * Production incident 2026-08-03: the judge's concreteness dimension kept
  * failing lessons whose opener DID mention the prior lesson — e.g. "como
@@ -219,13 +219,13 @@ export interface PlanContext {
   /** Derived per-topic competency graph context; authored YAML remains the source of truth. */
   competency?: CompetencyPromptContext;
   /**
-   * Connect-to-prior (COURSE_ENGINE.md §3.1/§4): the previous slot's
+   * Connect-to-prior: the previous slot's
    * micro_objective in the linear walk — same topic's previous lesson, or
    * the last lesson of the previous topic when this lesson is position 1.
    * Undefined ONLY for the course's very first lesson (exempt).
    */
   prior?: string;
-  /** Audience registers (COURSE_ENGINE.md §3.3). Absent = kid, no prompt changes. */
+  /** Audience registers. Absent = kid, no prompt changes. */
   register?: { fullPalette: boolean; toneDirectiveEs?: string };
 }
 
@@ -366,7 +366,7 @@ export function describeMixRuleViolations(
 }
 
 /**
- * Deterministic MIX RULES repair (COURSE_ENGINE.md §4):
+ * Deterministic MIX RULES repair:
  *  1. Every segment.type must be in the allowed palette.
  *  2. First segment must be a `story` family (content) type.
  *  3. At least MIN_DISTINCT_TYPES distinct types across the lesson.
@@ -471,7 +471,7 @@ export function planRepair(
 }
 
 /*
- * PREFIX-CACHE DISCIPLINE (AGENTS.md "Mass generation" #12): the rules used
+ * PREFIX-CACHE DISCIPLINE: the rules used
  * to splice per-lesson conditionals MID-LIST and renumber everything, so
  * even the always-true rules changed bytes between a money and a non-money
  * lesson — the shared prefix died a few hundred tokens in, and the ~10KB
@@ -585,7 +585,7 @@ export interface PlanDeps {
 }
 
 /**
- * QA/authoring override (COURSE_ENGINE.md §4 addendum) — builds a
+ * QA/authoring override — builds a
  * `PlanSkeleton` directly from a catalog lesson's `forced_types`, bypassing
  * `planLesson`'s DeepSeek call and MIX RULES entirely (no MIN_SEGMENTS/
  * MIN_DISTINCT_TYPES enforcement — this is a deliberate, hand-pinned

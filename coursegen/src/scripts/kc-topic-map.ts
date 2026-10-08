@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /*
- * kc:map — the B.6 topic → KC map sync gate (S05.3a).
+ * kc:map — the topic → KC map sync gate.
  *
  *   npm run kc:map              check: exit 1 on any drift from the curriculum
  *   npm run kc:map -- --write   refresh kinds, review_of, requires and order

@@ -5,14 +5,14 @@ import { analyse, successCount } from '../horizonte/sim2/model.js';
 import { isRecord, type HzBuilder, type HzSpace, type Json } from './shared.js';
 
 /*
- * The five seeded simulations (F0.3): a response carries the seed Core issued for the attempt, and Core replays the run
+ * The five seeded simulations: a response carries the seed Core issued for the attempt, and Core replays the run
  * from it. The gate has no learner, so forgeV2Behaviour.ts hands each builder its own fixed, synthetic attempt and grades
  * every state under it. A builder returns null without one, so the staff preview and every other caller still fail closed.
  *
  * What is derived here without the scorer's code: the chance of a chance or Galton piece (reduced fractions over the public
  * weights and the binomial), the exact edges of a bootstrap (the sum distribution of one resample), how a run's edges are
  * read off its sorted sums, the floor and the tolerance (integer arithmetic). What is shared with the scorer on purpose: the
- * seeded draws (pinned by the golden vectors of seed.test.ts), the coverage replay and answer, and the life-sim dynamics
+ * seeded draws, the coverage replay and answer, and the life-sim dynamics
  * and exact answer set. Every key is checked against its derived value; a mismatch returns null (fail closed).
  */
 

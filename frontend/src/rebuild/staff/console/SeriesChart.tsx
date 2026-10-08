@@ -4,8 +4,8 @@ import { fill, useConsoleCopy } from './staffConsoleCopy';
 
 /*
  * A value over ordered points (a run's lessons, runs over time, heartbeat
- * snapshots) for the Generation page, drawn by the design system's TrendChart
- * (W2T.3): columns in the first series hue, the latest and highest values
+ * snapshots) for the Generation page, drawn by the design system's TrendChart:
+ * columns in the first series hue, the latest and highest values
  * written as the figure's summary, the first and last point under the plot, the readout naming the
  * point under the pointer or the keyboard, and Show as table. `compact` draws
  * a small multiple (one stage over time) as a sparkline with its label and

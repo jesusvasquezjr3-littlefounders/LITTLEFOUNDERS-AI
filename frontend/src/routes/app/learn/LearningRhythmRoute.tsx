@@ -11,17 +11,16 @@ import { fetchRhythm, savePace, type MotivationTransport, type RhythmState } fro
 
 /*
  * /learn/rhythm — the thin transport wrapper around the rebuilt learner rhythm
- * (B.21 habit streak, B.24 autonomy levers; S05.3e). Core decides everything:
+ * (habit streak, autonomy levers). Core decides everything:
  * how the streak reads today, the learner's pace and their Mentor. The rebuilt
- * surface imports nothing from the legacy app (Bible 02 rule 23); wave 2
- * composes it into the finished learner navigation.
+ * surface imports nothing from the legacy app.
  */
 export function LearningRhythmRoute() {
   const navigate = useNavigate();
   const { i18n } = useTranslation();
   const { isDark } = useTheme();
   const { getToken } = useAuth();
-  // Bible 06 §7 (GAP-FIX-R4): the band the learner shell resolved once from Core's register; the youngest outside it.
+  // The band the learner shell resolved once from Core's register; the youngest outside it.
   const ageBand = useRebuildEnvironment().ageBand ?? '6-9';
   const [state, setState] = useState<RhythmState>({ status: 'loading' });
   const [revision, setRevision] = useState(0);

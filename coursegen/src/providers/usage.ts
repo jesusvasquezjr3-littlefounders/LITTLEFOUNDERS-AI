@@ -1,7 +1,7 @@
 // Usage ledger — one JSONL line per provider call, appended to
 // runs/<run-id>/ledger.jsonl, plus an in-memory running total the kill
 // switches (FORGE_MAX_TOKENS_PER_RUN / FORGE_MAX_USD_PER_RUN) check before
-// every call (COURSE_ENGINE.md §4 "Budget").
+// every call.
 
 import { appendFile, mkdir, readFile } from 'node:fs/promises';
 import path from 'node:path';

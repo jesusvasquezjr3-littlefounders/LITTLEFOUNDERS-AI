@@ -2,7 +2,7 @@ import type { Locale } from '../../design/copyBudget';
 import type { ReadingChartKind } from './chartModel.generated';
 
 /*
- * Horizonte F1.0: the learner-facing words of the twelve reading charts in
+ * The learner-facing words of the twelve reading charts in
  * three locales: the reader (tap a mark, then step through the marks), one line
  * that says how to read each kind (Copy Budget body: at most 12 words, two
  * sentences), and the few captions the drawings carry. The words of the data

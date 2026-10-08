@@ -1,5 +1,5 @@
 /*
- * LEGACY all-or-nothing day streak. Since S05.3e (B.21) the LEARNING streak
+ * LEGACY all-or-nothing day streak. The LEARNING streak
  * runs on the lapse-tolerant habit model in habitStreak.ts (and its SQL twin
  * inside complete_lesson). No product path calls `nextStreak` any more: it
  * stays as the documented legacy rule; do not use it for anything new.

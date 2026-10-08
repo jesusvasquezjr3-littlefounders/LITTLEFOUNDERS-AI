@@ -5,7 +5,7 @@
  * attempt/evidence aggregates from Vault, cross-references them against
  * `oracle/skills/moves/*.md`, and prints a PROPOSE-ONLY markdown report. See
  * `services/pedagogy/tutorCurator.ts` for the analysis itself (pure,
- * deterministic, unit-tested) — this file is only the I/O around it, same
+ * deterministic) — this file is only the I/O around it, same
  * split `coursegen/coachCli.ts` uses for `pipeline/coach.ts`.
  *
  * NEVER WRITES ANYTHING. See tutorCurator.ts's own header for why.
@@ -84,7 +84,7 @@ async function main(): Promise<void> {
   const skills = readSkillCatalogue();
 
   const kcs = await getActiveKcs();
-  // A null read is a FAILED fetch, never "zero active KCs" (§1.14) — the
+  // A null read is a FAILED fetch, never "zero active KCs" — the
   // same distinction audit-content-bridge.ts already draws on this exact call.
   if (kcs === null) {
     throw new Error('could not read the kc table — refusing to report a curation summary from an unanswered query');

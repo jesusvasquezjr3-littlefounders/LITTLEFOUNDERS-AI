@@ -27,21 +27,21 @@ export function learningQualityFixture(): Record<string, unknown> {
     ],
     replayNotice: { below_best: 10, shown: 9, display_rate: 0.9, target: 1, belowTarget: true },
     thresholds: { judgmentDivergenceFloor: 0.1, judgmentMinAttempts: 30, replayNoticeTarget: 1, bandReviewCadenceDays: 90 },
-    // GAP-FIX-R7: Appendix C 1.1 decision-journal coverage (B.9), one lost write in eight.
+    // Decision-journal coverage, one lost write in eight.
     decisionJournal: { decisionsMade: 48, decisionsJournaled: 42, withoutConsent: 3, coverage: 0.875, recorded: 40, resurfaced: 14, resurfacingRate: 0.35, baseline: 'release-1' as const },
-    // S05.3e: rest-day utilization (B.21) and autonomy adoption (B.24).
+    // Rest-day utilization and autonomy adoption.
     motivation: {
       restDays: { learners_with_lapse: 40, kept_by_rest_days: 31, restarted: 12, utilization_rate: 0.775, rest_days_used: 52 },
       autonomy: [
         { lever: 'path' as const, offered: 120, exercised: 34, adoption_rate: 0.2833 },
-        // GAP-FIX-R5: the approach choice (10+) and optional enrichment (13+).
+        // The approach choice (10+) and optional enrichment (13+).
         { lever: 'approach' as const, offered: 60, exercised: 21, adoption_rate: 0.35 },
         { lever: 'enrichment' as const, offered: 30, exercised: 12, adoption_rate: 0.4 },
         { lever: 'pace' as const, offered: 80, exercised: 22, adoption_rate: 0.275 },
         { lever: 'mentor' as const, offered: 80, exercised: 51, adoption_rate: 0.6375 },
       ],
     },
-    // GAP-FIX-R2 QA signals, with the gap-fix round 7 gate-effectiveness reviews (one overdue, one fresh).
+    // QA signals, with the gate-effectiveness reviews (one overdue, one fresh).
     qaSignals: {
       scorerParity: { graded: 40, reported: 38, agreed: 38, agreement_share: 1, refusedButClientValid: 0, target: 1 },
       detectionByPhase: [], cueHits: { responses: 0, hits: 0, missed: 0, false_ticks: 0, diagnostic: true },

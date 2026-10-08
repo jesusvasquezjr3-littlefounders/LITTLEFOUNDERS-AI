@@ -1,4 +1,3 @@
-/** Binding contract: Frontend Bible 06, sections 3–5. */
 export type CopyRole = 'action' | 'heading' | 'body' | 'prompt' | 'option' | 'mentor' | 'narrative' | 'data' | 'brand' | 'legal';
 export type Locale = 'en-US' | 'es-MX' | 'pt-BR';
 export type AgeBand = '6-9' | '10-12' | '13-17' | 'adult';

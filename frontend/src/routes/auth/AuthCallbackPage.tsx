@@ -9,14 +9,14 @@ import { playPlatformSound } from '@/lib/sound';
 import { OAuthCallbackScreen } from '@/rebuild/identity/RecoveryScreens';
 
 /*
- * `/auth/callback` (A5): GoTrue returns here after a Google sign-in with the
+ * `/auth/callback`: GoTrue returns here after a Google sign-in with the
  * session in the URL fragment, or an error. The tokens go to the shared
  * session (as an email sign-in does) and leave the address bar and history at
  * once; the entry is replaced, so Back cannot replay it.
  *
  * Then Learn, through RequireAuth: an account Core has not screened (every
  * first Google sign-in) meets the mandatory age question before anything else
- * opens (A.3). This page never decides that itself.
+ * opens. This page never decides that itself.
  *
  * Funnel: Core says whether the account was created just now (the client
  * cannot tell), so a first Google sign-in reports `signup_complete` and a
@@ -57,7 +57,7 @@ export function AuthCallbackPage() {
       configureInsights({ enabled: analyticsEnabled, getToken });
       trackInsight(newAccount ? 'signup_complete' : 'login_complete', { routeClass: 'marketing' });
       void flushInsights();
-      // GAP-FIX-R5: a pending Tutor invite continues on its landing (the Google round trip keeps no router state).
+      // A pending Tutor invite continues on its landing (the Google round trip keeps no router state).
       navigate(continueAfterSignIn(undefined, APP_HOME), { replace: true });
     });
   }, [completeOAuth, getToken, navigate]);

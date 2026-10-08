@@ -5,7 +5,7 @@ export const hasOnly = (value: unknown, keys: readonly string[]): value is Recor
   isRecord(value) && Object.keys(value).length === keys.length && keys.every((key) => Object.hasOwn(value, key));
 export const inRange = (value: unknown, low: number, high: number): value is number => whole(value) && value >= low && value <= high;
 
-/** A derived answer, or the one rule the payload breaks. Every pack check reads the same result, so the contract, the scorer and the tests agree. */
+/** A derived answer, or the one rule the payload breaks. Every pack check reads the same result, so the contract and the scorer agree. */
 export type Solved<Answer> = { readonly ok: true; readonly answer: Answer } | { readonly ok: false; readonly path: string; readonly message: string };
 export const solved = <Answer>(answer: Answer): Solved<Answer> => ({ ok: true, answer });
 export const broken = (path: string, message: string): Solved<never> => ({ ok: false, path, message });
@@ -46,7 +46,7 @@ export function riseForRun(line: Line, run: number): number | null {
   return across > 0 && up % across === 0 ? up / across : null;
 }
 
-/** D15: a rising line and a run; the learner sets the rise of the triangle that stays on the line. The answer is the rise. */
+/** a rising line and a run; the learner sets the rise of the triangle that stays on the line. The answer is the rise. */
 export function solveSlopeTriangle(payload: unknown): Solved<number> {
   if (!hasOnly(payload, ['grid', 'line', 'run', 'start'])) return broken('', 'The payload is a grid, a line, a run and a start');
   const { grid, line, run, start } = payload;
@@ -62,7 +62,7 @@ export function solveSlopeTriangle(payload: unknown): Solved<number> {
 
 export type RateOfChange = { grid: Grid; origin: Point; rate: number; at: number; start: number };
 
-/** D16: a start point and a steady rate per step; the learner sets the value reached at a later step. The answer is that value. */
+/** a start point and a steady rate per step; the learner sets the value reached at a later step. The answer is that value. */
 export function solveRateOfChange(payload: unknown): Solved<number> {
   if (!hasOnly(payload, ['grid', 'origin', 'rate', 'at', 'start'])) return broken('', 'The payload is a grid, an origin, a rate, a step and a start');
   const { grid, origin, rate, at, start } = payload;
@@ -83,7 +83,7 @@ export type LinkedViews = { grid: Grid; given: readonly [Point, Point]; start: L
 export const isLineFit = (value: unknown, grid: Grid): value is LineFit =>
   hasOnly(value, ['m', 'b']) && inRange(value.m, -SLOPE_LIMIT, SLOPE_LIMIT) && inRange(value.b, grid.yMin, grid.yMax);
 
-/** D18: two points of a table the line must pass through; the learner edits slope and intercept. The answer is the whole slope and intercept. */
+/** Two points of a table the line must pass through; the learner edits slope and intercept. The answer is the whole slope and intercept. */
 export function solveLinkedViews(payload: unknown): Solved<LineFit> {
   if (!hasOnly(payload, ['grid', 'given', 'start'])) return broken('', 'The payload is a grid, two given points and a start');
   const { grid, given, start } = payload;

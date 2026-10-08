@@ -5,7 +5,7 @@ import type { BiasAuditReport } from './audit.js';
 import { AUDITED_COMPONENTS, componentHash, FUSED_DECISION, REPO_ROOT, type AuditedComponent } from './registry.js';
 
 /*
- * C.20 — THE AUDIT TRACKING LOG (Appendix F Part 1.3, "Bias-Audit Coverage":
+ * THE AUDIT TRACKING LOG (bias-audit coverage:
  * 100% of the lexical/prosodic components, on a semi-annual recurring cadence
  * or immediately upon any material change to the component).
  *
@@ -14,8 +14,8 @@ import { AUDITED_COMPONENTS, componentHash, FUSED_DECISION, REPO_ROOT, type Audi
  * Two rules make the cadence enforceable rather than a calendar promise:
  *
  *   MATERIAL CHANGE  a component whose sources hash differently from the
- *                    latest entry has changed since it was last audited. The
- *                    Oracle test suite fails (`biasAudit.test.ts`) until the
+ *                    latest entry has changed since it was last audited, and
+ *                    stays unaudited until the
  *                    audit is rerun and recorded (`npm run bias-audit --
  *                    --record`), which only records a passing run.
  *   CADENCE          `npm run bias-audit -- --check` also fails when the
@@ -24,11 +24,11 @@ import { AUDITED_COMPONENTS, componentHash, FUSED_DECISION, REPO_ROOT, type Audi
  *                    overdue audit is a red run somebody sees.
  *
  * A live-only component (the model judge) is recorded as `pending_live` until
- * an owner-approved live run (OD-23: zero paid spend during the migration)
+ * an owner-approved live run (zero paid spend during the migration)
  * adds its evidence; Bias-Audit Coverage counts it as NOT covered until then.
  */
 
-/** Proposed, pending calibration (Threshold Recalibration Log): semi-annual. */
+/** Proposed, pending calibration: semi-annual. */
 export const CADENCE_DAYS = 183;
 
 const LOG_PATH = path.join(REPO_ROOT, 'oracle/src/safety/biasAudit/audit-log.json');
@@ -46,7 +46,7 @@ const EntrySchema = z
       .strict(),
     knownGaps: z.array(z.object({ item: z.string(), group: z.string(), reason: z.string() }).strict()),
     sessions: z.array(z.object({ id: z.string(), ok: z.literal(true) }).strict()),
-    /** Human review of the run (policy §5); null until a reviewer signs it. */
+    /** Human review of the run; null until a reviewer signs it. */
     reviewedBy: z.string().nullable(),
     notes: z.string(),
   })
@@ -78,7 +78,7 @@ export function daysSinceAudit(entry: AuditLogEntry | null, now: Date): number {
   return Math.floor((now.getTime() - Date.parse(`${entry.date}T00:00:00Z`)) / 86_400_000);
 }
 
-/** Appendix F "Bias-Audit Coverage": share of registered components with passing evidence in the latest entry. */
+/** Bias-audit coverage: share of registered components with passing evidence in the latest entry. */
 export function coverage(entry: AuditLogEntry | null, components: readonly AuditedComponent[] = AUDITED_COMPONENTS): number {
   if (components.length === 0) return 1;
   const covered = components.filter(

@@ -1,8 +1,7 @@
 import { z } from 'zod';
 
 /*
- * C.15 — THE ALLIANCE CONTROLLER (Appendix D §3.4; Appendix F §1.2, Part 2
- * worked example, Part 3 Stage 7).
+ * THE ALLIANCE CONTROLLER.
  *
  * The working alliance — BOND, GOAL agreement and TASK agreement (Bordin,
  * 1979) — is the most cross-domain-validated predictor of whether a helping
@@ -27,14 +26,14 @@ import { z } from 'zod';
  *          you more right now?"). Each trigger is followed for
  *          `improvementWindow` learner turns to see whether the session got
  *          better (no further decline, no disengagement firing, no "not
- *          really" at a check-in): the Stage 7 input.
+ *          really" at a check-in): the rollback input.
  *   BOND   Whether the Mentor referenced something specific the learner did
- *          (C.18's praise classification of every delivered turn), and the
+ *          (the honesty layer's praise classification of every delivered turn), and the
  *          end-of-session bond proxy ("did I get what you were going for
  *          today?"), which the learner answers after the session closes and
  *          Core records per persona.
  *   CONTINUITY  Whether this persona has worked with this learner before,
- *          decided by Core from the persistent persona-rapport history (C.7):
+ *          decided by Core from the persistent persona-rapport history:
  *          `first_meeting`, `persona_switch`, `memory_gap` or `continuing`.
  *          In the first three the Mentor re-establishes bond/goal/task
  *          framing instead of acting falsely familiar: a written
@@ -45,7 +44,7 @@ import { z } from 'zod';
  * THE STAGE 7 KILL SWITCH (`mode`): `act` does everything above; `shadow`
  * suspends the renegotiation trigger and the continuity re-establishment
  * (recorded, never acted on) and keeps the passive bond/goal tracking — the
- * rollback Appendix F Part 3 specifies; `off` does nothing. The mode is the
+ * rollback; `off` does nothing. The mode is the
  * stricter of the operator's TUTOR_ALLIANCE_CONTROLLER and Core's automatic
  * rollback verdict (`allianceMode` in the session context).
  *
@@ -98,7 +97,7 @@ export interface AllianceConfig {
   memoryGapNoteTurns: number;
 }
 
-/** Every value is PROPOSED, PENDING CALIBRATION (docs/rebuild/mentor/THRESHOLD-RECALIBRATION-LOG.md). */
+/** Every value is PROPOSED, PENDING CALIBRATION. */
 export const ALLIANCE_DEFAULTS: AllianceConfig = {
   renegotiateAfterDeclines: 2,
   improvementWindow: 4,
@@ -156,7 +155,7 @@ export const EMPTY_ALLIANCE: AllianceSnapshot = {
   missedTurns: 0,
 };
 
-/** What Core records at close (Goal-Agreement Completion, Renegotiation Trigger Rate, Stage 7). */
+/** What Core records at close (Goal-Agreement Completion, Renegotiation Trigger Rate). */
 export interface AllianceReport {
   mode: 'act' | 'shadow';
   continuity: ContinuityKind | null;
@@ -382,7 +381,7 @@ export class AllianceController {
     if (this.renegotiationDue) this.state.missedTurns += 1;
   }
 
-  /** A safety stop, a closing or the C.19 check-in (itself a renegotiation of the task) took the moment. */
+  /** A safety stop, a closing or the check-in (itself a renegotiation of the task) took the moment. */
   supersedeRenegotiation(): void {
     const e = this.inFlight();
     if (e !== undefined) e.outcome = 'superseded';
@@ -408,7 +407,7 @@ export class AllianceController {
 
   // ── bond ──
 
-  /** C.18's praise classification of one delivered Mentor turn. */
+  /** The honesty layer's praise classification of one delivered Mentor turn. */
   notePraise(praise: 'specific' | 'generic' | null): void {
     if (this.mode === 'off' || praise === null) return;
     if (praise === 'specific') this.state.bondSpecificTurns += 1;
@@ -507,8 +506,8 @@ const SHARED_HISTORY = new RegExp(
  * Whether a Mentor line claims a shared history with the learner ("last time
  * we…", "I remember you", "good to see you again"). Used only for a first
  * meeting or a persona switch (`requiresFreshStart`), where any such claim is
- * false: the turn is repaired once and never delivered (Appendix D §3.4:
- * "manufactured intimacy breaks trust worse than an honest fresh start").
+ * false: the turn is repaired once and never delivered:
+ * "manufactured intimacy breaks trust worse than an honest fresh start".
  * Reading the learner's OWN earlier sessions ("you practised saving before")
  * is allowed and not matched.
  */

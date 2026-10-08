@@ -21,7 +21,7 @@ import type { MentorPhase } from './useMentorSession';
  *            replay | roleplay | first-visit
  *   ?board=<whiteboard kind>  ?character=  ?companion=  ?light=  ?guardian=1  ?mic=on|off|consent|policy
  *   ?sheet=transcript|grown-up|chooser|personalise|map|notebook|history  ?data=ready|empty|failed|loading
- *   ?replies=1 (the likely-answer chips)  ?recap=1 (the OD-28 recap's 'Finish now' chip)  ?dialog=start-over (GAP-FIX-R5)
+ *   ?replies=1 (the likely-answer chips)  ?recap=1 (the recap's 'Finish now' chip)  ?dialog=start-over
  */
 
 const CATALOG: TutorCatalog = {
@@ -99,7 +99,7 @@ export function MentorScreenPreview({ locale, theme, ageBand, params }: { locale
   const turn: TutorTurnState | null = phase === 'conversing' && state !== 'thinking' ? {
     seq: 3, text, emotion: state === 'error' ? 'encouraging' : 'happy', action: board ? 'point' : 'idle', audioUrl: null, audioPending: false, wordTimings: null,
     next: 'ask', policy: null, demonstrate: null, whiteboard: board, roleplayScene: state === 'roleplay' ? 'lemonade_change' : null, pointAt: null,
-    // GAP-FIX-R2: `?replies=1` shows the likely-answer chips a Mentor turn can carry (08 §2 layer 5).
+    // `?replies=1` shows the likely-answer chips a Mentor turn can carry.
     replies: params.get('replies') === '1' ? REPLIES[locale] : [],
     // A roleplay fixture starts its scene at once: the introducing line's voice is still "on its way".
     ...(state === 'roleplay' ? { audioPending: true } : {}),
@@ -127,7 +127,7 @@ export function MentorScreenPreview({ locale, theme, ageBand, params }: { locale
     calibrationSaving: false, calibrationError: false, starting: false, startError: state === 'limit' ? 'SESSION_LIMIT' : null,
     socket, turn, speechUrl: null, audioKey: 3, speaking: false, awaitingReply: state === 'thinking', replyTimedOut: false, resuming: false, ending: false,
     history: [{ speaker: 'tutor', text: TURNS[locale].ask, seq: 1 }, { speaker: 'learner', text: locale === 'en-US' ? 'Save them' : locale === 'es-MX' ? 'Ahorrarlas' : 'Poupar', seq: 2 }, { speaker: 'tutor', text, seq: 3 }],
-    // GAP-FIX-R5 (08 §10 item 5): the recap's one 'Finish now' chip, so the Copy Budget and Text Fit audits measure it.
+    // The recap's one 'Finish now' chip, so it is reachable from the preview.
     recapOpen: params.get('recap') === '1' && phase === 'conversing',
     closing: phase === 'closing' ? { sessionId: 'preview', script: state === 'closing-safety' ? 'safety_stop' : 'completed', effort: 'recovered', topic: state === 'closing-safety' ? null : (copy.mentorSessionEnd as { previewTopic?: string }).previewTopic ?? null, summary: null, xp: null } : null,
     mic: { present: mic === 'on' && (phase === 'openings' || phase === 'conversing'), blockedBy: mic === 'consent' ? 'CONSENT_REQUIRED' : mic === 'policy' ? 'POLICY_BLOCKED' : mic === 'off' ? 'VOICE_UNAVAILABLE' : null,

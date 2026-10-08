@@ -1,6 +1,6 @@
 import type { Together, TogetherPerson, TogetherState } from './together';
 
-/* L-04 (OD-27 (1)): preview and test fixtures for goals together. Cartoon option sets only; no real person. */
+/* Preview and test fixtures for goals together. Cartoon option sets only; no real person. */
 
 const person = (username: string, displayName: string, isSelf = false): TogetherPerson => ({ username, displayName, avatarOptions: { seed: username }, isSelf });
 const inDays = (days: number) => new Date(Date.UTC(2026, 9, 1 + days)).toISOString();

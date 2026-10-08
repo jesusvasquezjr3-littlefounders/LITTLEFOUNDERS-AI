@@ -18,7 +18,7 @@ PATTERNS=(
 
 # Declared-placeholder exemption.
 #
-# /AGENTS.md §1.14 forbids relaxing a Zod schema for tests, so a fixture for a
+# Relaxing a Zod schema is forbidden for tests, so a fixture for a
 # `z.string().min(16)` credential MUST itself be 16+ chars — which is exactly
 # what the last pattern above looks for. Rather than weakening either rule, we
 # exempt values that follow the project's placeholder convention.

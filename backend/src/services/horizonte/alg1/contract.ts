@@ -7,18 +7,18 @@ import { areaTex, readArea, AREA_MAX_COEFFICIENT, SQUARE_BOUNDS } from './area.j
 import { equationTex, readCards, CARD_MAX_SIDE, CARD_MAX_SUPPLY, DISGUISES } from './cards.js';
 import { readTileCounts, tileTex, TILE_MAX_PER_CLASS } from './tiles.js';
 
-/** The problem in TeX, with the spoken form in the lesson's own language as its accessible name (Bible 05 section 5). */
+/** The problem in TeX, with the spoken form in the lesson's own language as its accessible name. */
 export const algebraNotation = z.object({ tex: mathNotation, spokenText: z.string().trim().min(1).max(160) }).strict();
 const compact = (tex: string): string => tex.replace(/\s+/g, '');
 
 const tileCount = z.number().int().min(0).max(TILE_MAX_PER_CLASS);
-/** F2.1 / D02 / B27: the tiles to simplify; the payload carries the tiles, never the zero pairs. */
+/** The tiles to simplify; the payload carries the tiles, never the zero pairs. */
 export const algebraTilesPayload = z.object({
   counts: z.object({ 'sq-pos': tileCount, 'sq-neg': tileCount, 'bar-pos': tileCount, 'bar-neg': tileCount, 'unit-pos': tileCount, 'unit-neg': tileCount }).strict(),
 }).strict();
 
 const face = z.string().regex(/^(unk|unk-neg|(pos|neg)-[1-9])$/);
-/** F2.2 / D06: the equation as cards, plus the supply cards that go onto both sides. */
+/** The equation as cards, plus the supply cards that go onto both sides. */
 export const algebraCardsPayload = z.object({
   disguise: z.enum(DISGUISES),
   left: z.array(face).min(1).max(CARD_MAX_SIDE),
@@ -28,7 +28,7 @@ export const algebraCardsPayload = z.object({
 
 const term = z.string().regex(/^[0-2]:-?[1-9][0-9]?$/);
 const pool = (minimum: number, maximum: number) => z.array(term).min(minimum).max(maximum);
-/** F2.3 / D09 / D10 / D11: one area model; `fill` says what the learner places. */
+/** One area model; `fill` says what the learner places. */
 export const areaModelPayload = z.discriminatedUnion('fill', [
   z.object({ fill: z.literal('cells'), rows: z.array(term).min(1).max(2), cols: z.array(term).min(2).max(3), pool: pool(2, 10) }).strict(),
   z.object({ fill: z.literal('edges'), cells: z.array(term).length(4), pool: pool(4, 10) }).strict(),
@@ -72,7 +72,7 @@ export const ALG1_SEGMENTS = [
   }),
 ] as const;
 
-/** F0.3 arrangement.slots: a key is one to eight slot maps of class ids, since pieces of a class are interchangeable. */
+/** The arrangement.slots shape: a key is one to eight slot maps of class ids, since pieces of a class are interchangeable. */
 const arrangementRubric = z.object({
   solutions: z.array(z.record(hzId, z.array(hzId).max(SLOT_CAPACITY))).min(1).max(MAX_SOLUTIONS),
   ordered: z.literal(false).optional(),

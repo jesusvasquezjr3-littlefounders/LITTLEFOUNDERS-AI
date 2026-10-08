@@ -20,19 +20,19 @@ import '../design/system.css';
 import './mentorStage.css';
 
 /*
- * THE MENTOR STAGE: the one isolated component of Frontend Bible 08 §7.
+ * THE MENTOR STAGE: the one isolated component.
  *
  * The chosen character, a real-time render of its real 3D model, standing on
- * its Diorama. The Mentor screen shows it full size (08 §2, §6) and the lesson
- * player shows the SAME component at its compact size (08 §11, B.8); nothing
- * else in the rebuilt frontend reaches the 3D engine (`npm run spec:check`
- * names this file and `learning/CompactMentorStage.tsx`, which wraps it).
+ * its Diorama. The Mentor screen shows it full size and the lesson
+ * player shows the SAME component at its compact size; nothing
+ * else in the rebuilt frontend reaches the 3D engine (this file and
+ * `learning/CompactMentorStage.tsx`, which wraps it).
  *
- * Documented interface (08 §7; the future mobile wrapper shares it, OD-12):
+ * Documented interface (the future mobile wrapper shares it):
  *   inputs   character, state, board open or closed, age band; plus the size,
  *            the colour mode, the Diorama and its light, the companion the
  *            learner invited (and its pose while it speaks in a roleplay
- *            scene), the D7 milestone a celebration is for, the closing
+ *            scene), the milestone a celebration is for, the closing
  *            script, the accessible name and the voice clip;
  *   outputs  onReady (the stage is showing the character: which mode, why it
  *            is not live, how long the first render took against the 2.5 s
@@ -40,7 +40,7 @@ import './mentorStage.css';
  *
  * The UI requests a state; `stageStates.ts` says which catalogue pose plays it.
  * The stage never fakes a state: a celebration without a closed-list milestone
- * is shown as idle (OD-7). How it renders on this device is `stageMode.ts`:
+ * is shown as idle. How it renders on this device is `stageMode.ts`:
  * live 3D, the same 3D with poses held for reduced motion, or pre-rendered
  * stills (no WebGL, low power, data saver, under 30 fps at the lowest tier, or
  * a renderer error).
@@ -49,7 +49,7 @@ import './mentorStage.css';
 /** The reduced-motion cross-fade's fade-down (--dur-micro, 150 ms): the held pose changes while the scene is faded. */
 const HELD_SWITCH_MS = 150;
 /**
- * How long the still fallback waits for a state change's sequence before it settles on the still instead (08 §7): a
+ * How long the still fallback waits for a state change's sequence before it settles on the still instead: a
  * sequence that arrived later would replay a gesture after the learner has already seen the pose.
  */
 export const SEQUENCE_WAIT_MS = 600;
@@ -57,7 +57,7 @@ export const SEQUENCE_WAIT_MS = 600;
 /**
  * The bytes of one rendered sequence, or null when it cannot play now. With data saver on only a copy the
  * browser already holds is used (`only-if-cached`): the fallback never downloads motion the learner asked it
- * to spare (08 §7), and the still carries the state instead.
+ * to spare, and the still carries the state instead.
  */
 async function loadSequence(sequence: StageSequence, saveData: boolean): Promise<Blob | null> {
   if (typeof fetch !== 'function' || typeof URL === 'undefined' || typeof URL.createObjectURL !== 'function') return null;
@@ -76,26 +76,26 @@ const TutorStage = lazy(() => import('../../tutor-scene/TutorStage').then((modul
 
 export type MentorStageSize = 'full' | 'compact';
 export type MentorStageScene = 'diorama-a' | 'diorama-b';
-/** The Diorama's light (T1a): Core's backdrop ids; `auto` follows the colour mode. */
+/** The Diorama's light: Core's backdrop ids; `auto` follows the colour mode. */
 export type MentorStageLight = NonNullable<TutorStageProps['backdrop']>;
 export const MENTOR_STAGE_LIGHTS: readonly MentorStageLight[] = ['auto', 'dawn', 'day', 'dusk', 'night'];
 
 /**
  * The shot the stage holds when the screen names none, chosen by looking at
- * all four characters on both Dioramas at 375 and 1280 px (W2M.1, W2M.3):
- *   - the compact lesson band keeps the wide close-up (its look before W2M.1);
+ * all four characters on both Dioramas at 375 and 1280 px:
+ *   - the compact lesson band keeps the wide close-up (its earlier look);
  *   - at full size the close-up, because the wide close-up on `diorama-a` puts
  *     a rock in front of the legs and hands of the tall characters;
  *   - except Dina on `diorama-a`: she is short and wide, and the engine's
  *     close-up scales to height, so on a phone it filled the stage with her
- *     head and lost the Diorama (08 §2: the character ON its Diorama). The wide
+ *     head and lost the Diorama (the character ON its Diorama). The wide
  *     close-up shows all of her on the island, which is also the legacy
  *     engine's rule for the two characters without a mouth card
  *     (`shotForPhase`). On `diorama-b` the wide close-up buries her in a bush,
  *     so the close-up stays there.
- * Since gap-fix round 1 the placement solver also keeps the lead's face and
- * hands out of every stage shot's camera corridor (`tutor-scene/occlusion.ts`,
- * checked on both Dioramas by `npm run verify:placement`), so no shot choice
+ * The placement solver also keeps the lead's face and
+ * hands out of every stage shot's camera corridor (`tutor-scene/occlusion.ts`),
+ * so no shot choice
  * here has to work around a prop.
  */
 export function defaultStageShot(character: MentorCharacter, scene: MentorStageScene, size: MentorStageSize): MentorShot {
@@ -133,25 +133,25 @@ export function mentorStageLabel(copy: MentorStageCopy, character: MentorCharact
 export interface MentorStageProps {
   character: MentorCharacter;
   state: MentorStageState;
-  /** The teaching board is open (08 §2 layer 4): on a phone-width stage the scene lifts so the character stays in view above it. */
+  /** The teaching board is open: on a phone-width stage the scene lifts so the character stays in view above it. */
   board?: boolean;
   ageBand: AgeBand;
   size?: MentorStageSize;
   theme: 'light' | 'dark';
   scene?: MentorStageScene;
-  /** The Diorama's light (T1a). Default `auto`: it follows the colour mode. */
+  /** The Diorama's light. Default `auto`: it follows the colour mode. */
   light?: MentorStageLight;
   /**
-   * A second real character the learner invited to the island (T1a), standing
+   * A second real character the learner invited to the island, standing
    * beside the Mentor. Never the Mentor itself. The still fallback shows the
    * Mentor alone.
    */
   companion?: MentorCharacter | null;
   /** The companion's pose while it speaks in a roleplay scene (Class III `roleplay`). */
   companionPose?: MentorCompanionPose | null;
-  /** The D7 milestone a `celebrating` state is for. Without one the stage does not celebrate. */
+  /** The milestone a `celebrating` state is for. Without one the stage does not celebrate. */
   milestone?: Milestone | null;
-  /** How the session ended, for `closing` (C.16). */
+  /** How the session ended, for `closing`. */
   closing?: MentorClosingScript | null;
   /** Bump to play the same state's gesture again (a second miss gets a second nod). */
   beat?: number;
@@ -175,13 +175,13 @@ export interface MentorStageProps {
   onReady?: (event: MentorStageReady) => void;
   onError?: (event: MentorStageError) => void;
   /**
-   * Device conditions the host already knows, over the browser's own probe (08 §7): the future mobile wrapper
-   * (OD-12) knows the device's power and data mode, and the preview shows each fallback without emulating one.
+   * Device conditions the host already knows, over the browser's own probe: the future mobile wrapper
+   * knows the device's power and data mode, and the preview shows each fallback without emulating one.
    */
   environment?: Partial<StageEnvironment>;
   className?: string;
   /**
-   * B.8 / Bible 08 §11 (GAP-FIX-R3): a decorative backdrop drawn inside the
+   * A decorative backdrop drawn inside the
    * compact band, under the scene layer (the lesson's adventure scene). The
    * band stays one element, so the lesson layout's side column still applies.
    */
@@ -240,15 +240,15 @@ export function MentorStage({
   currentLoadingKey.current = loadingKey;
 
   /*
-   * Reduced motion: a pose change is a short cross-fade, not a movement (08 §7).
+   * Reduced motion: a pose change is a short cross-fade, not a movement.
    * The scene fades down, the held pose switches while it is faded, and the
    * scene fades back up. A repeated state (a second miss) fades the same way.
-   * The still fallback changes state the same way (W3M.1), and plays motion
-   * where it may (gap-fix round 8, 08 §7: "sequences play once per state
+   * The still fallback changes state the same way, and plays motion
+   * where it may ("sequences play once per state
    * change and settle"): under the fade the pose's rendered sequence of the
    * real model comes in, plays once, and ends on that pose's still, which
    * stays. Idle is a still and never plays one; reduced motion keeps the fade
-   * alone (07 §5: every sequence has a still); with data saver on only a
+   * alone (every sequence has a still); with data saver on only a
    * sequence the browser already holds plays. A missing or late sequence
    * settles on the still, as before.
    */
@@ -342,7 +342,7 @@ export function MentorStage({
     if (reason === 'render-error') onError?.({ reason });
   }, [onError]);
 
-  // The catalogue idle loop takes the hero object's idle slot (02 §9.4, 08 §3): one of the three, and only while live.
+  // The catalogue idle loop takes the hero object's idle slot: one of the three, and only while live.
   const idle = useIdleMotion('hero', mode === 'live');
 
   /*
@@ -373,7 +373,7 @@ export function MentorStage({
   const visualReadyMs = sameLoad ? firstRenderMs : null;
   const showStill = !!stills && (mode === 'still' || !stillGone || !sameLoad);
   const stillVisible = showStill && (mode === 'still' || !liveVisible);
-  // Bible 08 section 7: paint the approved catalogue still before constructing
+  // Paint the approved catalogue still before constructing
   // the CPU-heavy live renderer. Loading a model must never delay the first
   // genuine character visual. The live-ready signal remains separate.
   const rendered3d = mode !== 'still' && (paintedStillKey === loadingKey || unavailableStillKey === loadingKey || !stills);

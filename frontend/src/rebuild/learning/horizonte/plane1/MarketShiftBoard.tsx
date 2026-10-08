@@ -12,7 +12,7 @@ type MarketSegment = Extract<HorizonteSegment, { type: 'econ.market-shift.v2' }>
 const clampTo = (value: number, low: number, high: number) => Math.min(high, Math.max(low, value));
 
 /*
- * N09, N13: a market and one shift of a curve. The learner says whether the price goes up or down and then puts the
+ * A market and one shift of a curve. The learner says whether the price goes up or down and then puts the
  * price marker where the curves meet after the shift. The answer is the direction and the whole price; Core holds it.
  */
 function MarketShift({ document, segment, onBack, sequence, onGrade }: Omit<HorizonteBoardProps, 'segment'> & { segment: MarketSegment }) {

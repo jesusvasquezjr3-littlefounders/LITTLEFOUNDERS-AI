@@ -1,17 +1,16 @@
 #!/usr/bin/env node
 /*
  * Regenerates every browser and home-screen icon from the one brand mark,
- * `/rebuild/brand/mark.svg` (manifest id `brand.mark`, Frontend Bible 07 §1
- * and §3: our own flat asset in token hues, no stock figures, no gradient
- * text; 02 D8: one system for marketing too).
+ * `/rebuild/brand/mark.svg` (manifest id `brand.mark`: our own flat
+ * asset in token hues, no stock figures, no gradient text; one system for
+ * marketing too).
  *
  *   public/favicon-48.png        the tab icon the prerendered pages link
  *   public/favicon.ico           32 + 48 px, for the browsers that ask for /favicon.ico
  *   public/apple-touch-icon.png  180 px on the primary ground (iOS fills transparency with black)
  *   public/icon-192.png, icon-512.png  the web app manifest icons (512 is also the JSON-LD logo)
  *
- * The icons were the legacy raster logo (gradient text and two stock child
- * figures) until gap-fix round 2. `npm run seo:icons`; the static server,
+ * `npm run seo:icons`; the static server,
  * Chrome launch and DevTools client are shared with render-cards.mjs.
  */
 
@@ -20,7 +19,7 @@ import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { FRONTEND, launchChrome, openPage, startServer, waitFor } from './cdp.mjs';
 
-/** The registered brand mark (the asset gate checks this script carries its path). */
+/** The registered brand mark (the registered path). */
 const MARK = '/rebuild/brand/mark.svg';
 /** Primary token (tokens.css --primary): the apple-touch ground, so the rounded corners never turn black. */
 const PRIMARY = '#5c55fd';

@@ -2,42 +2,42 @@ import { z } from 'zod';
 import { ADAPTATIONS, type Adaptation } from '../context/schema.js';
 
 /*
- * C.7 — THE LEARNER DISPOSITION PROFILE, AS ORACLE READS AND FEEDS IT.
+ * THE LEARNER DISPOSITION PROFILE, AS ORACLE READS AND FEEDS IT.
  *
  * The mastery model answers "what does this learner know"; nothing answered
  * "how does this learner learn best". Core keeps a persistent, cross-session
  * disposition profile (`learner_disposition_profile`), populated at every
- * close from what the Behavioral Telemetry Layer (C.9) and the Alliance
- * Controller (C.15) observed, and sends a derived, closed-vocabulary
+ * close from what the Behavioral Telemetry Layer and the Alliance
+ * Controller observed, and sends a derived, closed-vocabulary
  * projection of it in the session context. The pedagogy controller reads it
  * ALONGSIDE the mastery values when it selects a strategy; it never replaces
- * them (C.7: "additive to, not a replacement for").
+ * them ("additive to, not a replacement for").
  *
  * THE PRIVACY BOUNDARY. The projection travels in the SESSION context
  * (`core/client.ts`), which Oracle keeps server-side. It is NOT a field of the
- * sealed model context (`context/schema.ts`, 14 fields, pinned by
- * `privacy-contract-docs.test.ts`), so nothing about a child's disposition
+ * sealed model context (`context/schema.ts`, 14 fields),
+ * so nothing about a child's disposition
  * ever reaches a third-party model: it changes WHICH strategy the controller
  * picks and which written line the system uses, never what the model is told
  * about the learner. Every field is a closed label or a number; none is an
  * emotion, none is free text.
  *
  * WHAT IT CHANGES (each bounded, each reported at close in `applied` so a
- * parent-facing explanation and the audit can read what it did — Appendix D
- * §2.6's "interpretable, never a black box"):
+ * parent-facing explanation and the audit can read what it did —
+ * "interpretable, never a black box"):
  *
  *   stuck_degrade_early     `persistence: disengages_early` and/or
  *                           `helpStyle: tell_early` lower the number of
  *                           questioning turns without progress after which the
  *                           controller degrades SOCRATIC/FLUENCY to FADED (a
  *                           worked partial example) from 3 to 2 (both: 1).
- *                           Appendix D §3.3: "a disengaging one gets moved to
+ *                           "a disengaging one gets moved to
  *                           telling sooner".
- *   scaffolded_explanation  `explanation: needs_scaffold` makes the C.14
+ *   scaffolded_explanation  `explanation: needs_scaffold` makes the
  *                           self-explanation prompt a sentence stem.
  *   seeded_declines         adaptations the learner turned down across
  *                           sessions and never took are not offered again
- *                           unprompted (cross-session task agreement, C.15).
+ *                           unprompted (cross-session task agreement).
  *   idle_nudge_paced        a learner whose typical reply takes longer than
  *                           the strategy's idle nudge is not nudged before
  *                           their own pace.

@@ -3,10 +3,10 @@ import type enProfile from '../../i18n/en-US/rebuild-profile.json';
 import { Button, Dialog, InlineNotice, RadioGroup, TextAreaField } from '../design/controls';
 
 /*
- * E.3's report, on a profile (P6). Child-safe by construction: one of Core's
+ * The report, on a profile. Child-safe by construction: one of Core's
  * five predefined categories and an optional note capped at the 140
  * characters Core accepts. The reporter is always the session; the dialog
- * names nobody. E.10: the note is not a message to the person; the dialog
+ * names nobody. The note is not a message to the person; the dialog
  * says only the safety team reads it. A failure keeps what was chosen and
  * typed; the route reports success only on Core's receipt.
  */

@@ -1,4 +1,4 @@
-/* F1.6 fraction wall, bars, product grid and measuring tiles: equal parts in rows. Tokens only. */
+/* Fraction wall, bars, product grid and measuring tiles: equal parts in rows. Tokens only. */
 .lf-wall-scroll { max-inline-size: 100%; overflow-x: auto; }
 .lf-wall { --wall-gap: 2px; display: grid; gap: var(--spacing-2); inline-size: min(100%, 36rem); min-inline-size: calc(var(--cells, 0) * var(--target-min) + (var(--cells, 0) - 1) * var(--wall-gap)); }
 /* A wall whose cells are buttons keeps 8 px between them; the rows above it share the gap so equal parts stay aligned. */

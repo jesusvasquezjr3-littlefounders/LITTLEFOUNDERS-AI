@@ -8,10 +8,10 @@
 // 5. 0031's release_course publishes only preflight-qualified rows and recounts
 //    loudly — row locks cannot block concurrent INSERTs, so a blanket
 //    `status <> 'published'` UPDATE could publish unverified late content.
-// 6. S05.4c: the latest release_course and release_lesson refuse through the
+// 6. the latest release_course and release_lesson refuse through the
 //    one shared verification function, which requires every Forge release
 //    gate and counts v2 activations; lessons/courses status and the live v2
-//    pointer are guarded against direct API-role publication (Product G.2).
+//    pointer are guarded against direct API-role publication.
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -26,8 +26,8 @@ const fail = (msg) => { console.error(`FAIL: ${msg}`); failed = true; };
 
 // railway-migrate.sh ships each migration base64-encoded as ONE command-line
 // argument, and a Windows command line is capped at 32,767 characters. Found
-// in the S05.4c lane review: a 24,913-byte migration failed with "Argument
-// list too long" in railway-migrate.test.mjs, while 22,799 bytes (0025, the
+// in review: a 24,913-byte migration failed with "Argument
+// list too long", while 22,799 bytes (0025, the
 // largest shipped) applies. Fail here, in seconds, instead of on the owner's
 // production run: split a larger migration in two.
 const MAX_MIGRATION_BYTES = 23000;
@@ -83,8 +83,8 @@ if (retireGames) {
 
 // Every definition of release_course (0031 and each later replacement) keeps
 // the preflight pins; the LATEST definition is the one production runs, and
-// since the S05.4c release-gate manifest it must also require every Forge
-// release gate (Product G.2). Found by content, not number: lanes renumber.
+// since the release-gate manifest it must also require every Forge
+// release gate. Found by content, not number: lanes renumber.
 const releaseDefinitions = files.filter((f) => /create or replace function public\.release_course\(/i.test(readFileSync(join(dir, f), 'utf8')));
 for (const releaseGate of releaseDefinitions) {
   const sql = readFileSync(join(dir, releaseGate), 'utf8');
@@ -110,7 +110,7 @@ const functionBody = (f, fn) => {
 };
 const latestRelease = releaseDefinitions.at(-1);
 if (latestRelease && !latestRelease.startsWith('0031_')) {
-  // S05.4c: the verification half of the preflight is one shared function.
+  // The verification half of the preflight is one shared function.
   if (!/from public\.forge_release_verification_refusal\(p_course_id\)/i.test(functionBody(latestRelease, 'release_course'))) {
     fail(`${latestRelease}: the latest release_course must refuse through forge_release_verification_refusal`);
   }
@@ -134,7 +134,7 @@ if (latestRelease && !latestRelease.startsWith('0031_')) {
     fail(`${verification ?? 'migrations'}: forge_release_verification_refusal must refuse an attestation whose content watermark is not current`);
   }
 }
-// S05.4c lane review (G.2): a single lesson is released only through the same
+// Lane review: a single lesson is released only through the same
 // preflight, and no API role can publish by writing a status.
 const lessonRelease = latestDefinition('release_lesson');
 if (lessonRelease && !/from public\.forge_release_verification_refusal\(v_course_id\)/i.test(functionBody(lessonRelease, 'release_lesson'))) {

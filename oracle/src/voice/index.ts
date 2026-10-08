@@ -19,7 +19,7 @@ import {
  * captioned above the character's head and mirrored in the 2D bubble, the
  * lesson panel works, grading works, XP works. What is missing is the sound.
  *
- * /ORACLE.md §14 states the principle this encodes: speech is an enhancement,
+ * The principle this encodes: speech is an enhancement,
  * the lesson is the product.
  */
 

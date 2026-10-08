@@ -1,6 +1,6 @@
 /*
- * Core's half of Product C.15 (the Alliance Controller) and C.14 (the
- * self-explanation move).
+ * Core's half of the Alliance Controller and the
+ * self-explanation move.
  *
  *   1. THE CLOSE RECORD. Oracle reports, at close, the Alliance Controller's
  *      session state (continuity move, goal agreement, adaptation offers /
@@ -15,21 +15,20 @@
  *   2. THE BOND PROXY. The learner answers "did I get what you were going for
  *      today?" after the session closes (`POST /tutor/sessions/:id/alliance-check`):
  *      their own session only, once, within a day, never after a safety stop.
- *   3. THE METRICS (Appendix F §1.2): Goal-Agreement Completion Rate (near
+ *   3. THE METRICS: Goal-Agreement Completion Rate (near
  *      100% above a turn floor), Adaptation-Offer Renegotiation Trigger Rate
  *      (diagnostic), Alliance Bond Proxy Score per persona (diagnostic),
  *      Self-Explanation Quality-Check Pass Rate (diagnostic) and the
  *      Disposition-Profile Completeness Rate (diagnostic). Pure summaries,
- *      unit-tested without a database; `npm run tutor:alliance-report`.
- *   4. THE STAGE 7 AUTOMATIC ROLLBACK (Appendix F Part 3): a persona's bond
+ *      computed without a database; `npm run tutor:alliance-report`.
+ *   4. THE AUTOMATIC ROLLBACK: a persona's bond
  *      proxy more than 15% below its established baseline, or the latest 50
  *      renegotiations not improving sessions, makes Core send Oracle
  *      `allianceMode: 'shadow'` — the renegotiation trigger and the continuity
  *      re-establishment are suspended, the passive tracking continues. A trip
  *      is written to `audit_logs` and HOLDS until an operator resolves it.
  *
- * Vocabularies are HAND-MIRRORED from Oracle and the migration;
- * `npm run alliance:check` keeps them identical.
+ * Vocabularies are HAND-MIRRORED from Oracle and the migration.
  */
 
 import { z } from 'zod';
@@ -124,14 +123,14 @@ export const SelfExplanationReportBody = z
   });
 export type SelfExplanationReport = z.infer<typeof SelfExplanationReportBody>;
 
-/** Every threshold here is PROPOSED, PENDING CALIBRATION (THRESHOLD-RECALIBRATION-LOG.md). */
+/** Every threshold here is PROPOSED, PENDING CALIBRATION. */
 export const ALLIANCE_THRESHOLDS = {
   /** Goal-Agreement Completion Rate counts sessions with at least this many learner turns. */
   goalTurnFloor: 3,
   /** "Near 100%": below this completion rate (with enough sessions) the metric is a defect. */
   goalCompletionTarget: 0.95,
   reportMinSessions: 50,
-  /** Stage 7: a persona's bond proxy dropping more than this share below its baseline trips the switch. */
+  /** A persona's bond proxy dropping more than this share below its baseline trips the switch. */
   bondDropShare: 0.15,
   /** Baseline window: answers older than the current window, back this many days. */
   bondBaselineDays: 90,
@@ -139,7 +138,7 @@ export const ALLIANCE_THRESHOLDS = {
   bondCurrentDays: 14,
   bondBaselineMinAnswers: 50,
   bondCurrentMinAnswers: 30,
-  /** Stage 7: the most recent renegotiations judged for improvement. */
+  /** The most recent renegotiations judged for improvement. */
   renegotiationSample: 50,
   /** Below this improved share over the full sample, renegotiation is "no measurable improvement". */
   renegotiationImprovedFloor: 0.5,
@@ -291,7 +290,7 @@ export interface SelfExplanationRow {
   outcome: string;
 }
 
-/** Goal-Agreement Completion Rate (Appendix F §1.2): near 100% above the turn floor. */
+/** Goal-Agreement Completion Rate: near 100% above the turn floor. */
 export function summarizeGoalAgreement(rows: AllianceSessionRow[], t = ALLIANCE_THRESHOLDS): {
   eligible: number;
   agreed: number;
@@ -354,7 +353,7 @@ export function summarizeRenegotiation(rows: RenegotiationRow[]): {
 
 const bondValue = (answer: string | null): number | null => (answer === 'yes' ? 1 : answer === 'partly' ? 0.5 : answer === 'no' ? 0 : null);
 
-/** Alliance Bond Proxy Score per persona (diagnostic; the Stage 7 input). */
+/** Alliance Bond Proxy Score per persona (diagnostic; the rollback input). */
 export function summarizeBondProxy(rows: AllianceSessionRow[]): Record<string, { answered: number; score: number | null; specificShare: number | null }> {
   const out: Record<string, { answered: number; score: number | null; specificShare: number | null; sum: number; specific: number; praised: number }> = {};
   for (const r of rows) {
@@ -415,7 +414,7 @@ export function summarizeCompleteness(activeLearners: number, currentProfiles: n
   };
 }
 
-// ── 4. The Stage 7 automatic rollback ───────────────────────────────────────
+// ── 4. The automatic rollback ───────────────────────────────────────
 
 export const ALLIANCE_KILL_SWITCH_TRIGGERED = 'mentor.kill_switch.alliance.triggered';
 export const ALLIANCE_KILL_SWITCH_RESOLVED = 'mentor.kill_switch.alliance.resolved';
@@ -493,8 +492,8 @@ export function resetAllianceKillSwitchCache(): void {
  * The kill-switch state for a new session's context (cached per process).
  * A trip in force → shadow. Otherwise the condition is evaluated over data
  * after the latest resolution; a trip is written to `audit_logs` (personas and
- * numbers only) and holds until resolved. A FAILED read is not evidence
- * (§1.14): `act` with `degraded`, not cached.
+ * numbers only) and holds until resolved. A FAILED read is not evidence:
+ * `act` with `degraded`, not cached.
  */
 export async function getAllianceKillSwitch(now: Date = new Date(), t = ALLIANCE_THRESHOLDS): Promise<AllianceKillSwitchState> {
   if (cache !== null && now.getTime() - cache.at < t.killSwitchCacheMs) return cache.state;
@@ -546,7 +545,7 @@ export async function resolveAllianceKillSwitch(note: string): Promise<boolean> 
   return insertAuditLog(null, ALLIANCE_KILL_SWITCH_RESOLVED, 'tutor', { component: 'alliance_controller', note: note.slice(0, 500) });
 }
 
-/** The Kill-Switch Trigger Log for the Alliance Controller (Appendix F §1.3). */
+/** The Kill-Switch Trigger Log for the Alliance Controller. */
 export function allianceKillSwitchLog(rows: AuditRow[]): {
   triggeredAt: string;
   causes: AllianceKillSwitchCause[];

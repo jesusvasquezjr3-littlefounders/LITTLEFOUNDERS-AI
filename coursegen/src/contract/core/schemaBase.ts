@@ -1,4 +1,4 @@
-// Zod building blocks for the lesson document — LESSON_ENGINE.md §3.
+// Zod building blocks for the lesson document
 // Families build their segment schemas with segmentSchema(); the top-level
 // composition (all 56 types) lives in lesson-engine/schema.ts.
 
@@ -84,7 +84,7 @@ const envelopeShape = {
     .object({ character: characterIdSchema, emotion: characterEmotionSchema.optional() })
     .optional(),
   audio_segment_id: z.string().optional(),
-  /** B.18 (Mayer's redundancy principle): how this segment uses the voice
+  /** Mayer's redundancy principle: how this segment uses the voice
    *  channel. Omitted: every narrated field is read aloud exactly as shown, so
    *  each narrated on-screen block must stay caption-length. text_only: the
    *  segment is not narrated at all (Echo skips it). differentiated: Echo reads

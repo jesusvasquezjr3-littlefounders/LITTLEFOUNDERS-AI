@@ -5,7 +5,7 @@ import {
 } from './comShared.js';
 
 /*
- * F2.18 bits and logic gates. Hand-mirrored from backend/src/services/horizonte/com/circuits.ts.
+ * Bits and logic gates. Hand-mirrored from backend/src/services/horizonte/com/circuits.ts.
  * Both boards are graded by rule: the bits must add up to the target, the gates must give the expected outputs.
  */
 

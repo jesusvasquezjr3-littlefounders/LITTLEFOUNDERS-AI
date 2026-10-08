@@ -13,7 +13,7 @@ import { STACK_MAX_HEIGHT, STACK_PIECE } from './stack.js';
 const solidId = z.enum(SOLID_IDS);
 const countKind = z.enum(COUNT_KINDS);
 
-/** F4.1: a few solids to turn and compare; the learner names the one that has the searched count, then counts something else on it. */
+/** a few solids to turn and compare; the learner names the one that has the searched count, then counts something else on it. */
 export const viewerPayload = z.object({
   solids: z.array(solidId).min(VIEWER_MIN_SOLIDS).max(SOLID_IDS.length).refine((list) => new Set(list).size === list.length, 'Each solid is listed once'),
   find: z.object({ kind: countKind, count: z.number().int().min(0).max(VIEWER_COUNT_LIMIT) }).strict(),
@@ -23,7 +23,7 @@ export const viewerPayload = z.object({
 const netCell = z.tuple([z.number().int().min(0).max(7), z.number().int().min(0).max(7)]);
 const netEdge = z.number().int().min(1).max(NET_EDGE_LIMIT);
 
-/** F4.2: `label` names the squares of a given cube net; `complete` finishes a partial net so it folds into a cube; `area` asks for its surface area. */
+/** `label` names the squares of a given cube net; `complete` finishes a partial net so it folds into a cube; `area` asks for its surface area. */
 export const netPayload = z.discriminatedUnion('mode', [
   z.object({
     mode: z.literal('label'),
@@ -46,7 +46,7 @@ const solidSpec = z.object({ kind: z.enum(POLY_KINDS), dims: z.array(polyLength)
 const sheetSide = z.number().int().min(SHEET_LIMITS.min).max(SHEET_LIMITS.max);
 
 /**
- * F4.2 for a rectangular prism, a triangular prism and a square pyramid. `label` names the panels of a named net, `complete`
+ * Nets for a rectangular prism, a triangular prism and a square pyramid. `label` names the panels of a named net, `complete`
  * hangs the loose faces from the right hinges so the net fits a sheet, and `area` asks for the surface area from the net.
  */
 export const solidNetPayload = z.discriminatedUnion('mode', [
@@ -68,7 +68,7 @@ export const solidNetPayload = z.discriminatedUnion('mode', [
 
 const heightList = z.array(z.number().int().min(0).max(STACK_MAX_HEIGHT)).min(2).max(3);
 
-/** F4.3: rebuild a stack of cubes from its views; `fewest` asks for the smallest number of cubes that shows them. */
+/** Rebuild a stack of cubes from its views; `fewest` asks for the smallest number of cubes that shows them. */
 export const stackPayload = z.object({
   size: z.union([z.literal(2), z.literal(3)]),
   start: z.array(heightList).min(2).max(3),

@@ -1,4 +1,4 @@
-/* F2.9 and F2.10 probability boards: the tree, natural frequencies and the regression with residual squares. Tokens only. */
+/* Probability boards: the tree, natural frequencies and the regression with residual squares. Tokens only. */
 .lf-prob { display: grid; gap: var(--spacing-3); justify-items: start; }
 .lf-prob-chart { display: block; inline-size: 100%; max-inline-size: 42rem; block-size: auto; border-radius: var(--rounded-sm); background: var(--sunken); color: var(--content); }
 .lf-prob-chart text { pointer-events: none; fill: currentColor; }
@@ -9,7 +9,7 @@
 .lf-prob-tray { display: flex; flex-wrap: wrap; gap: var(--spacing-2); padding: var(--spacing-2); border: 2px dashed transparent; border-radius: var(--rounded-sm); }
 .lf-prob-tray[data-drop-armed='true'] { border-color: var(--sky-strong); background: var(--sky-soft); }
 
-/* The tree is HTML (Bible 05 section 5): its words wrap and grow in translation. Lines are the muted content tone, 3:1 on the board. */
+/* The tree is HTML: its words wrap and grow in translation. Lines are the muted content tone, 3:1 on the board. */
 .lf-prob-tree { container: probtree / inline-size; display: grid; gap: var(--spacing-2); inline-size: 100%; max-inline-size: 42rem; padding: var(--spacing-3); border-radius: var(--rounded-sm); background: var(--sunken); color: var(--content); }
 .lf-prob-root { position: relative; justify-self: center; padding: var(--spacing-2) var(--spacing-4); border: 3px solid var(--content); border-radius: var(--rounded-sm); background: var(--surface); font-size: 1.5rem; font-weight: 800; line-height: 1.2; text-align: center; }
 .lf-prob-root::after, .lf-prob-leaves::after { content: ''; position: absolute; inset-inline: 0; margin-inline: auto; inline-size: 3px; block-size: var(--spacing-2); background: var(--content-muted); }

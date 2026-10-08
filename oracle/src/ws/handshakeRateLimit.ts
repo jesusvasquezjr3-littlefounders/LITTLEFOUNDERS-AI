@@ -3,14 +3,14 @@ import { redisClient } from '../lib/redis.js';
 import { withTimeout } from '../lib/http.js';
 
 /*
- * ORACLE.md §15.2 item 3 — the websocket handshake has no rate limit of its
+ * The websocket handshake has no rate limit of its
  * own.
  *
  * `middleware/rateLimit.ts`'s `globalRateLimiter` never sees this path: the
  * `WebSocketServer` in `ws/server.ts`'s `attachTutorSocket` is attached
  * directly to the raw HTTP server (`{ server: httpServer, path: '/ws/tutor' }`),
- * so the upgrade never enters Express at all. Token minting (Core-side,
- * ORACLE.md §15's "what holds" list) already bounds an UNAUTHENTICATED flood —
+ * so the upgrade never enters Express at all. Token minting (Core-side)
+ * already bounds an UNAUTHENTICATED flood —
  * nothing without a valid, unused, unexpired session token gets past gate 3 in
  * `handleConnection` — but that leaves the handshake PATH itself unbounded:
  * the TCP+TLS+HTTP-upgrade cost of every attempt, valid token or not. This is
@@ -26,7 +26,7 @@ import { withTimeout } from '../lib/http.js';
  * (so this is exercised by a real test without a live Redis — the same reason
  * that file swaps to `MemoryStore` there) and Redis-backed in production, on
  * the one connection `lib/redis.ts` already owns. It FAILS OPEN on any store
- * error: this is an AVAILABILITY control, not an authorization one (§1.14),
+ * error: this is an AVAILABILITY control, not an authorization one,
  * and an unreachable Redis must never be able to refuse every connection to
  * the one process serving everybody.
  */

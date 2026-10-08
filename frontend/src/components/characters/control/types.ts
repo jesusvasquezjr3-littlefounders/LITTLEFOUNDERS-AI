@@ -1,7 +1,7 @@
 // Character Control — the emotion/action vocabulary the 3D character layer and
-// the pose catalogue speak for the four Mentor characters (LESSON_ENGINE.md §9).
+// the pose catalogue speak for the four Mentor characters.
 // A character is only ever drawn from its real 3D model or a registered still of
-// it (Frontend Bible 02 rule 21); the legacy 2D rig this file once mapped to is gone.
+// it; the legacy 2D rig this file once mapped to is gone.
 
 export const CHARACTER_IDS = ['dina', 'liruf', 'rho', 'zara'] as const
 export type CharacterId = (typeof CHARACTER_IDS)[number]

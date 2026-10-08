@@ -16,7 +16,7 @@ const TILT_LIMIT = 14;
 const TILT_FLOOR = 3;
 
 /*
- * H06: dots sit on a beam and the learner slides the pivot until the beam is level. The beam tilts toward the heavier
+ * Dots sit on a beam and the learner slides the pivot until the beam is level. The beam tilts toward the heavier
  * side (the sum of distances from the pivot), and both pulls are written out. The answer is the pivot position, which
  * Core compares with the mean of the dots.
  */

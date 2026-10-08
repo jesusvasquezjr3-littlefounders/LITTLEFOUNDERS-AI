@@ -2,12 +2,12 @@ import { z } from 'zod';
 import { serviceRest } from './supabaseRest.js';
 
 /*
- * Appendix C Part 3, Stage 3 (Pedagogical Human Review), GAP-FIX-R6 learning.
+ * Pedagogical human review.
  *
  * A Pedagogical Reviewer, never the Content Author of the same content, runs
- * the six checks of Block B's Pedagogical Design Standard and the four Stage 3
- * questions (B.23 register, B.24 autonomy, B.12 reasoning, B.11 fallibility)
- * and resolves every Stage 3 flag Forge raised. "A review that only says
+ * * the six checks of the Pedagogical Design Standard and the four review
+ * questions (register, autonomy, reasoning, fallibility)
+ * and resolves every flag Forge raised. "A review that only says
  * approved ... does not count as complete": every item carries a named finding.
  *
  * Vault holds the record and the gate (`*_lesson_pedagogical_reviews.sql`,
@@ -38,7 +38,7 @@ export type Stage3ItemId = (typeof STAGE3_ITEMS)[number]['id'];
 export const STAGE3_REFUSAL = 'STAGE3_REVIEW_REQUIRED';
 const STAGE3_PREFIX = `${STAGE3_REFUSAL}: `;
 
-/** The PostgREST error body of a release Vault refused for want of a passing Stage 3 review. */
+/** The PostgREST error body of a release Vault refused for want of a passing pedagogical review. */
 export function stage3RefusalMessage(body: unknown): string | null {
   if (!body || typeof body !== 'object') return null;
   const message = (body as { message?: unknown }).message;

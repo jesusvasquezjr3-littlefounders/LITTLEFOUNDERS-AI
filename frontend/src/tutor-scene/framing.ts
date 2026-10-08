@@ -4,7 +4,7 @@
  * Pure arithmetic, deliberately, and separated from `CharacterStage` for the
  * same reason `composition.ts` is separate from the camera director: the part
  * that can be wrong in a way nobody photographs is the arithmetic, and the only
- * thing that keeps it honest is a test that states what each term is for.
+ * thing that keeps it honest is stating what each term is for.
  *
  * The inputs are MEASURED off the model (`modelBounds`), never declared. A
  * declared height is what put a quadruped's feet against the bottom edge:

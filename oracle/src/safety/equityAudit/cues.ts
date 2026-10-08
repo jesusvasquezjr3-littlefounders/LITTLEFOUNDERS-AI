@@ -1,12 +1,12 @@
 import type { Locale } from '../../context/schema.js';
 
 /*
- * C.18 / C.20 / Appendix D §3.7 — THE IDENTITY CUES THE EQUITY-DRIFT AUDIT
+ * THE IDENTITY CUES THE EQUITY-DRIFT AUDIT
  * VARIES.
  *
- * Appendix D §3.7: "Audit for equity-correlated praise/leniency drift as a
+ * The principle: "Audit for equity-correlated praise/leniency drift as a
  * concrete, testable fairness check (vary learner-presented identity cues
- * against identical inputs, measure feedback-content drift)". C.20 Law 5
+ * against identical inputs, measure feedback-content drift)". It
  * names the harm: "a mentor whose judgment of a child is quietly less
  * accurate for some children than others".
  *
@@ -15,7 +15,7 @@ import type { Locale } from '../../context/schema.js';
  * the NICKNAME (`Call the learner "<nickname>"`, prompt.ts) and the LOCALE.
  * Gender and ethnicity are never fields; they reach the model only as what a
  * name suggests, so names are the instrument. Age (`tier`) is held fixed: it
- * legitimately changes the register (B.23, C.17) and is not an equity cue.
+ * legitimately changes the register and is not an equity cue.
  *
  * THE SETS. Per locale, names grouped by the gender a reader would infer and
  * by the name's origin, two names per cell, so a single name's quirk cannot

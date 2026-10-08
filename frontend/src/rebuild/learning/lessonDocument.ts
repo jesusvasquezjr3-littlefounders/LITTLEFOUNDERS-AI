@@ -12,7 +12,7 @@ const locale = z.enum(['en-US', 'es-MX', 'pt-BR']);
 const ageBand = z.enum(['6-9', '10-12', '13-17', 'adult']);
 
 /*
- * OD-19 / S05.2bh: the compact lesson Mentor stage projection contract,
+ * The compact lesson Mentor stage projection contract,
  * mirrored hand-for-hand with Core's v2LessonDocument.ts. `mentor_stage` is
  * answerless public metadata on the document and the shape of the
  * response-level projection the authenticated lesson route resolves. The
@@ -30,7 +30,7 @@ export const mentorStageSchema = z.object({
 export type LessonMentorStage = z.infer<typeof mentorStageSchema>;
 
 /*
- * B.8 (GAP-FIX-R1 learning): the adventure scene theme Core projects beside
+ * The adventure scene theme Core projects beside
  * `mentor_stage` (Core's ADVENTURE_THEMES). Closed on both sides; an unknown
  * theme simply draws no scene band.
  */
@@ -43,11 +43,11 @@ const eligibility = z.object({ minimum_age: z.number().int().min(0).max(119), ma
   .refine((value) => value.minimum_age <= value.maximum_age, 'Invalid age eligibility');
 const positiveInteger = z.number().int().positive().safe();
 const nonnegativeInteger = z.number().int().nonnegative().safe();
-/** M3 (GAP-FIX-R5): mirrors Core's `lineNumber`, a fraction or decimal a fraction line shows. */
+/** M3: mirrors Core's `lineNumber`, a fraction or decimal a fraction line shows. */
 const lineNumber = z.string().regex(/^((0|[1-9]\d{0,2})\/([1-9]\d{0,2})|(0|[1-9]\d{0,2})(\.\d{1,6})?)$/);
 
 const segmentBase = { id, prompt: z.string().trim().min(1).max(500), ...v2SegmentExtras };
-/** Appendix P Parts 1/4.2/7: these visuals may be server-graded or explored ungraded (Core's `optionalServer`). */
+/** These visuals may be server-graded or explored ungraded (Core's `optionalServer`). */
 const optionalServer = z.enum(['server', 'none']);
 const allocationSegment = z.object({
   ...segmentBase,
@@ -73,7 +73,7 @@ const numberLineSegment = z.object({
   type: z.literal('math.number-line.whole.v2'),
   grading: z.literal('server'),
   visual: z.object({ type: z.literal('number-line') }).strict(),
-  // M2 (GAP-FIX-R2): mirrors Core's optional count-on hop sizes; (GAP-FIX-R5) and its ordered labelled items.
+  // M2: mirrors Core's optional count-on hop sizes; and its ordered labelled items.
   payload: z.object({ minimum: nonnegativeInteger, maximum: positiveInteger, step: positiveInteger, initial: nonnegativeInteger,
     hops: z.array(positiveInteger).min(1).max(3).optional(),
     items: z.array(z.object({ id, label: z.string().trim().min(1).max(40) }).strict()).min(2).max(4).optional() }).strict()
@@ -89,7 +89,7 @@ const fractionNumberLineSegment = z.object({
   type: z.literal('math.number-line.fraction.v2'),
   grading: z.literal('server'),
   visual: z.object({ type: z.literal('number-line') }).strict(),
-  // M3 (GAP-FIX-R5): mirrors Core's comparison and equivalents pairs.
+  // M3: mirrors Core's comparison and equivalents pairs.
   payload: z.object({
     maximumWhole: z.union([z.literal(1), z.literal(2)]), divisions: positiveInteger.max(12), initialUnits: nonnegativeInteger,
     spokenText: z.string().trim().min(1).max(120), compare_values: z.tuple([lineNumber, lineNumber]).optional(),
@@ -124,10 +124,10 @@ const fractionAreaSegment = z.object({
     'Invalid fraction-area range',
   ),
 }).strict();
-// M7 (GAP-FIX-R3): the schema-neutral payload is the synced families module's (the text's quantities and the unknown's label).
+// M7: the schema-neutral payload is the synced families module's (the text's quantities and the unknown's label).
 const barModelStructureSegment = z.object({ ...segmentBase, type: z.literal('math.bar-model.structure.v2'), grading: z.literal('server'), visual: z.object({ type: z.literal('bar-model') }).strict(), payload: barModelPayload }).strict();
 const barModelAnswerSegment = z.object({ ...segmentBase, type: z.literal('math.bar-model.answer.v2'), grading: z.literal('server'), visual: z.object({ type: z.literal('bar-model') }).strict(), payload: barModelPayload }).strict();
-// M8 (GAP-FIX-R2): Core's schema-neutral payload (v2SegmentFamilies); the schema and slot places stay private.
+// M8: Core's schema-neutral payload (v2SegmentFamilies); the schema and slot places stay private.
 const schemaDiagramStructureSegment = z.object({ ...segmentBase, type: z.literal('math.schema-diagram.structure.v2'), grading: z.literal('server'), visual: z.object({ type: z.literal('schema-diagram') }).strict(), payload: schemaDiagramPayload }).strict();
 const schemaDiagramSlotsSegment = z.object({ ...segmentBase, type: z.literal('math.schema-diagram.slots.v2'), grading: z.literal('server'), visual: z.object({ type: z.literal('schema-diagram') }).strict(), payload: schemaDiagramPayload }).strict();
 const schemaDiagramAnswerSegment = z.object({ ...segmentBase, type: z.literal('math.schema-diagram.answer.v2'), grading: z.literal('server'), visual: z.object({ type: z.literal('schema-diagram') }).strict(), payload: schemaDiagramPayload }).strict();
@@ -264,12 +264,12 @@ const workedExampleSegment = z.object({
       expression: z.string().trim().min(1).max(80),
       result: z.string().trim().min(1).max(40),
       spokenText: z.string().trim().min(1).max(120),
-      // Bible 05 §5 (GAP-FIX-R2): optional TeX rendered with KaTeX; spokenText stays the accessible name.
+      // Optional TeX rendered with KaTeX; spokenText stays the accessible name.
       notation: mathNotation.optional(),
     }).strict()).min(3).max(4),
     fade_count: nonnegativeInteger.max(3),
     response_step_ids: z.array(id).min(2).max(3),
-    // M9 (GAP-FIX-R1): the optional written algorithm, mirrored with Core.
+    // M9: the optional written algorithm, mirrored with Core.
     algorithm: longArithmeticSchema.optional(),
   }).strict().refine((value) => value.fade_count < value.steps.length
     && new Set(value.steps.map((step) => step.id)).size === value.steps.length
@@ -285,7 +285,7 @@ const functionMachineSegment = z.object({
   payload: z.object({
     examples: z.array(z.object({ input: nonnegativeInteger.max(12), output: nonnegativeInteger.max(200) }).strict()).min(3).max(5),
     multiplierMaximum: positiveInteger.max(12), offsetMaximum: nonnegativeInteger.max(100),
-    // GAP-FIX-R2: the learner's rule is written in KaTeX notation (declares visual.math-notation.v1).
+    // The learner's rule is written in KaTeX notation (declares visual.math-notation.v1).
     notation: z.literal(true).optional(),
   }).strict().refine((value) => {
     if (new Set(value.examples.map((example) => example.input)).size !== value.examples.length) return false;
@@ -310,7 +310,7 @@ const cpaCountSegment = z.object({
 }).strict();
 
 /**
- * B.12 (Law 4): decide, then say why. Mirrors Core's `decideJustify`. The
+ * Decide, then say why. Mirrors Core's `decideJustify`. The
  * labels are public; which choice is acceptable and how each reason is judged
  * stay in Core's private answer key, so the browser can never grade either.
  */
@@ -328,7 +328,7 @@ const decideJustifySegment = z.object({
     === value.choices.length + value.reasons.length, 'Invalid decision reasons'),
 }).strict();
 
-/* B.7 part 1 (GAP-FIX-R1): a teaching chart of any first-release kind, mirrored with Core's `chart`. */
+/* A teaching chart of any first-release kind, mirrored with Core's `chart`. */
 const chartQuestion = z.object({ prompt: z.string().trim().min(1).max(160), options: z.array(z.object({ id, label: z.string().trim().min(1).max(80) }).strict()).min(2).max(4) }).strict();
 const chartSegment = z.object({
   ...segmentBase,
@@ -368,9 +368,9 @@ export const REQUIRED_SEGMENT_CAPABILITIES = {
   'math.function-machine.v2': ['visual.function-machine.v1', 'operation.try-input.v1', 'operation.guess-rule.v1', 'operation.held-out-check.v1'],
   'math.cpa-count.v2': ['visual.cpa-count.v1', 'operation.count-objects.v1', 'operation.symbolic-answer.v1'],
   'reasoning.decide-justify.v2': ['visual.decision-card.v1', 'operation.choose-option.v1', 'operation.justify-choice.v1'],
-  // B.7 part 1: plus `visual.<kind>.v1` for the drawn kind, and choose-option when it asks a question.
+  // Plus `visual.<kind>.v1` for the drawn kind, and choose-option when it asks a question.
   'visual.chart.v2': ['operation.show-table.v1'],
-  // GAP-FIX-R1 learning (Appendix P Part 8 first release; B.8, B.9, B.11).
+  // First-release logic, money, story and Mentor segments.
   'logic.rule-checker.v2': ['visual.rule-cards.v1', 'operation.flip-card.v1'],
   'logic.euler.v2': ['visual.euler.v1', 'operation.place-in-region.v1', 'operation.move-menu.v1'],
   'logic.flowchart.v2': ['visual.flowchart.v1', 'operation.step-flowchart.v1'],
@@ -384,12 +384,12 @@ export const REQUIRED_SEGMENT_CAPABILITIES = {
   'story.branch.v2': ['visual.story-scene.v1', 'operation.choose-option.v1'],
   'story.dialogue-choice.v2': ['visual.dialogue.v1', 'operation.choose-option.v1'],
   'story.would-you-rather.v2': ['visual.would-you-rather.v1', 'operation.choose-option.v1'],
-  // GAP-FIX-R2: $6 unit prices and the L2 rule builder; a built flowchart (L6/$9, 13+) also needs operation.build-flowchart.v1.
+  // $6 unit prices and the L2 rule builder; a built flowchart (L6/$9, 13+) also needs operation.build-flowchart.v1.
   'money.unit-price.v2': ['visual.ratio-table.v1', 'operation.number-input.v1', 'operation.choose-option.v1'],
   'logic.rule-builder.v2': ['visual.rule-builder.v1', 'operation.build-rule.v1', 'operation.case-step.v1'],
   'voice.mentor-turn.v2': ['visual.speech-plate.v1'],
   'voice.mentor-episode.v2': ['visual.speech-plate.v1', 'operation.step-replay.v1'],
-  // GAP-FIX-R1 learning (Appendix A Parts 2 and 3; B.7 part 2).
+  // Concept board segments.
   'money.amortization.v2': ['visual.amortization.v1', 'operation.step-replay.v1', 'operation.number-input.v1'],
   'econ.supply-demand.v2': ['visual.supply-demand.v1', 'operation.drag-point.v1', 'operation.curve-shift.v1'],
   'money.opportunity-cost.v2': ['visual.token-chooser.v1', 'operation.trade-off-chooser.v1'],
@@ -448,7 +448,7 @@ export const lessonClientDocumentSchema = z.object({
   segments: z.array(segment).min(1).max(80),
   representation_progressions: z.array(representationProgression).min(1).max(20).optional(),
   mentor_stage: mentorStageSchema.optional(),
-  // B.24 / Product 10 Block B autonomy (GAP-FIX-R5, Core's v2ApproachesSchema): equally valid graded chains; the learner picks one.
+  // Autonomy (Core's v2ApproachesSchema): equally valid graded chains; the learner picks one.
   approaches: v2ApproachesSchema.optional(),
 }).strict().superRefine((document, ctx) => {
   const ids = new Set<string>();
@@ -479,12 +479,12 @@ export const lessonClientDocumentSchema = z.object({
     if ((V2_CONCEPT_TYPES as readonly string[]).includes(value.type) && !conceptAllowed(value.type as V2ConceptType, document.age_band)) {
       ctx.addIssue({ code: 'custom', path: ['segments', index, 'type'], message: 'This concept board is not open to this age pathway' });
     }
-    // B.7 part 3 / Appendix P age ranges and generic parameters (Core's shared v2AgeScopeProblem, GAP-FIX-R2).
+    // Age ranges and generic parameters (Core's shared v2AgeScopeProblem).
     const scopeKey = value.type === 'money.allocation.v2' && value.visual.type !== 'stacked-bar' ? `${value.type}:${value.visual.type}` : value.type;
     const scopeProblem = v2AgeScopeProblem(scopeKey, document) ?? v2PayloadScopeProblem(value, document.age_band) ?? horizonteScopeProblem(value, document);
     if (scopeProblem) ctx.addIssue({ code: 'custom', path: ['segments', index], message: scopeProblem });
   }
-  // OD-17 / B.7 (GAP-FIX-R1): mixed documents may surround the M7 chains, which stay contiguous and ordered (Core's contiguousChains).
+  // Mixed documents may surround the M7 chains, which stay contiguous and ordered (Core's contiguousChains).
   if (!contiguousChains(document.segments.map((value) => value.type), ['math.bar-model.structure.v2', 'math.bar-model.answer.v2'])) {
     ctx.addIssue({ code: 'custom', path: ['segments'], message: 'Bar-model pilot requires an ordered structure and answer pair' });
   }
@@ -518,7 +518,7 @@ export const lessonClientDocumentSchema = z.object({
       ctx.addIssue({ code: 'custom', path: ['required_capabilities'], message: 'Unexpected capability declaration' });
     }
   }
-  // GAP-FIX-R5 (Core's v2PublicLessonSchema): the register decides who is offered the approach choice; chains complete and gradable.
+  // Core's v2PublicLessonSchema: the register decides who is offered the approach choice; chains complete and gradable.
   const approachProblem = v2ApproachesProblem(document, autonomyOfferForBand(document.age_band).approach);
   if (approachProblem) ctx.addIssue({ code: 'custom', path: ['approaches'], message: approachProblem });
   for (const [index, value] of document.segments.entries()) {
@@ -551,8 +551,8 @@ export type LessonLoadResult = { status: 'ready'; document: LessonClientDocument
 /**
  * The renderer capabilities one segment needs (the kind's list, plus the drawn
  * chart kind, the build mode or notation). The document must declare exactly
- * the union over its segments. GAP-FIX-R4: exported so the preview can stage
- * one Forge fixture segment as its own lesson for the audits.
+ * the union over its segments. Exported so the preview can stage
+ * one Forge fixture segment as its own lesson.
  */
 export function segmentCapabilities(value: LessonClientSegment): readonly string[] {
   return value.type === 'money.allocation.v2' && value.visual.type !== 'stacked-bar'

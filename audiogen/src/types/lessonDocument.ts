@@ -1,12 +1,10 @@
 /*
- * Structural copy of the CLIENT-SAFE LessonDocument contract — LESSON_ENGINE.md
- * §3, §5.1, §12. Per the "no workspaces" convention (§3: "Core imports this
- * contract [as a] copy, validated by tests — no workspaces"), Echo keeps its
- * own narrow mirror instead of importing frontend/src/lesson-engine directly.
+ * Structural copy of the CLIENT-SAFE LessonDocument contract. Per the "no workspaces"
+ * convention, Echo keeps its own narrow mirror instead of importing frontend/src/lesson-engine directly.
  *
  * Echo never receives answer keys — this mirror intentionally omits `answer`.
  * Only the shapes Echo actually reads (envelope + the 5 `story` family
- * payloads, per §12) are modeled; other families' payloads are read as opaque
+ * payloads) are modeled; other families' payloads are read as opaque
  * `Record<string, unknown>` since Echo never narrates into them beyond the
  * shared envelope fields (`prompt_md`, `explanation_md`).
  */
@@ -63,7 +61,7 @@ export interface CheckpointPayload {
   mood_prompt_md?: string;
 }
 
-/** Envelope shared by every segment (LESSON_ENGINE.md §3). `answer` deliberately absent. */
+/** Envelope shared by every segment. `answer` deliberately absent. */
 export interface LessonSegment {
   id: string;
   type: string;
@@ -76,7 +74,7 @@ export interface LessonSegment {
   narrator?: { character: string; emotion?: string };
   audio_segment_id?: string;
   /**
-   * B.18 (Mayer's redundancy principle) voice-channel choice, mirrored from the
+   * Mayer's redundancy principle: voice-channel choice, mirrored from the
    * Forge contract (coursegen/src/contract/core/schemaBase.ts). text_only: this
    * segment produces no narration. differentiated: the prompt clip reads
    * script_md, never the on-screen prompt_md.

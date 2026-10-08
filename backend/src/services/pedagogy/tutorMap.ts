@@ -5,7 +5,7 @@
  * (sessionPlan.ts), not a parallel one built from course topics: the map's
  * whole promise is "this is where you are and why", and a map drawn over a
  * different structure than the brain plans against would be a beautiful lie.
- * Node states are derived server-side, deterministically, and unit-tested.
+ * Node states are derived server-side, deterministically.
  */
 
 import { MASTERY_CORROBORATION_MIN, MASTERY_DISPLAY_THRESHOLD, MASTERY_PREREQ_THRESHOLD, corroborationMinFor } from './bkt.js';
@@ -34,10 +34,10 @@ export interface TutorMapNode {
   mastery: number | null;
   attempts: number;
   /**
-   * C.10: the consecutive correct answers the learner's latest attempts on
+   * The consecutive correct answers the learner's latest attempts on
    * this KC end in — the EVIDENCE behind "mastered", exposed so a parent-
    * facing explanation can say "2 correct in a row" rather than "the AI
-   * decided" (Appendix D §2.6).
+   * decided".
    */
   consecutiveCorrect: number;
   skillKey: string | null;
@@ -59,22 +59,22 @@ export function deriveNodeState(input: {
   attempts: number;
   reviewDue: boolean;
   prereqsMet: boolean;
-  /** C.10: trailing consecutive correct answers on this KC. */
+  /** Trailing consecutive correct answers on this KC. */
   consecutiveCorrect: number;
   /**
-   * The corroboration this KC needs (`corroborationMinFor`): the C.10 rule by
-   * default, the single-observation baseline while the Stage 7 mastery kill
+   * The corroboration this KC needs (`corroborationMinFor`): the corroboration rule by
+   * default, the single-observation baseline while the mastery kill
    * switch holds the KC.
    */
   corroborationMin?: number;
 }): MapNodeState {
   if (input.reviewDue) return 'needs_review';
   /*
-   * C.10: "mastered" needs the posterior, enough evidence overall AND the
+   * "mastered" needs the posterior, enough evidence overall AND the
    * latest evidence corroborating it — a KC whose last answer was wrong, or
    * that crossed the bar on one lucky answer, is still in progress. Derived
    * on every read, so it is provisional by construction: a later miss
-   * demotes it at once (the Appendix D §2.3 demotion rule).
+   * demotes it at once (the demotion rule).
    */
   if (
     input.pKnown >= MASTERY_DISPLAY_THRESHOLD &&
@@ -163,7 +163,7 @@ export async function buildTutorMap(
    * CONTINUE opens exactly what the planner would teach first — the map and
    * the session can never disagree about "where were we". This calls the
    * planner's PURE ranking directly, over the rows already fetched above,
-   * rather than `buildSessionPlan` (found by adversarial review, round 37,
+   * rather than `buildSessionPlan` (found by adversarial review,
    * 2026-08-30, MEDIUM — see `rankPlanKcs`'s own doc comment for the full
    * defect: a redundant second fetch of these same four tables, and a
    * silent collapse of "nothing to continue" with "that redundant fetch

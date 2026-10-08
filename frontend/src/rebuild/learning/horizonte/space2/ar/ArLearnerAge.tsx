@@ -4,7 +4,7 @@ import { arAgeFromScreen } from './arAge';
 import { ArPilotContext, type ArPilotEnvironment } from './arPilot';
 
 /*
- * F4.9: gives the AR board the signed-in learner's real age (a band read from Core, see arAge.ts). It is mounted only when
+ * Gives the AR board the signed-in learner's real age (a band read from Core, see arAge.ts). It is mounted only when
  * the pilot flag is on and the app supplied no age, so a build with the flag off never asks Core anything for the pilot.
  * Until Core answers, and whenever it cannot, the age is null and the pilot stays closed. The signed-in learner and the token
  * source come from the environment's `learner`, which the app supplies (the rebuilt UI imports nothing from the legacy auth

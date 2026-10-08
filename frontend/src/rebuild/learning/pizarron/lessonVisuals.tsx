@@ -13,7 +13,7 @@ import '../taxBracket.css';
 import './pizarron.css';
 
 /*
- * THE LESSON PICTURES OF THE SHARED PIZARRÓN (product B.7: "one component set"
+ * THE LESSON PICTURES OF THE SHARED PIZARRÓN (one component set
  * for the lessons and the Mentor's board).
  *
  * These are the pictures the lesson boards draw beside their interactive
@@ -23,7 +23,7 @@ import './pizarron.css';
  * model, its controls and its table; the picture lives here, so the Mentor's
  * board and every lesson draw from one set.
  *
- * Hue rules (05 §2): series are sky, mint and berry in that order, with the
+ * Hue rules: series are sky, mint and berry in that order, with the
  * pattern channel from the second series on (mint diagonal, berry dots) and
  * the neutral crosshatch overflow for a fourth or later series. `primary`
  * only marks the learner's own selection (a prediction, the placed marker).
@@ -143,7 +143,7 @@ export function StackedSlicesVisual({ label, slices }: { label: string; slices: 
 export function BaseTenVisual({ label, hundreds, tens, ones, hundredsText, tensText, onesText }: {
   label: string; hundreds?: number; tens: number; ones: number; hundredsText?: string; tensText: string; onesText: string;
 }) {
-  // Bible 05 §7: hundreds are flats (a 10 x 10 square), tens are rods, ones are units.
+  // Hundreds are flats (a 10 x 10 square), tens are rods, ones are units.
   const flats = hundredsText !== undefined;
   return <Picture name="base-ten" label={label} className={`lf-place-value-plot${flats ? ' lf-place-value-plot--three' : ''}`}>
     {flats ? <div className="lf-place-value-group"><span data-copy-role="data">{hundredsText}</span>
@@ -228,7 +228,7 @@ export function GoalBulletVisual({ label, progress, target }: { label: string; p
   const goal = 300 * clamp(target);
   return <Picture name="goal-bullet" label={label} className="lf-goal-visual">
     <svg viewBox="0 0 300 84" preserveAspectRatio="none" aria-hidden="true" focusable="false">
-      {/* The track and the goal band are ground, like gridlines (05 §2): the target line and the fill carry the values. */}
+      {/* The track and the goal band are ground, like gridlines: the target line and the fill carry the values. */}
       <rect x="0" y="24" width="300" height="36" rx="12" className="lf-goal-track" data-board-decoration="" />
       <rect x="0" y="24" width={goal} height="36" rx="12" className="lf-goal-band" data-board-decoration="" />
       <rect x="0" y="30" width={300 * clamp(progress)} height="24" rx="8" className="lf-goal-fill" />

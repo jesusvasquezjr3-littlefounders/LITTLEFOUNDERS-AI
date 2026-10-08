@@ -82,7 +82,7 @@ export function runtimeRouter(liveSessions: () => number): Router {
     const voice = getVoiceProvider().available;
 
     // The model is the only hard requirement. Voice is an enhancement
-    // (/ORACLE.md §14) and moderation is only mandatory for a minor.
+    // and moderation is only mandatory for a minor.
     const canStart = model && moderation.ready;
 
     return ok(res, {
@@ -117,7 +117,7 @@ export function runtimeRouter(liveSessions: () => number): Router {
        * Reported because a missing manifest is otherwise invisible: everything
        * still works, every line is still spoken, and every one of them is
        * billed again. `0` on a deployment with a voice provider means
-       * `npm run speech:pregenerate` has never been run here (/ORACLE.md §15.1).
+       * `npm run speech:pregenerate` has never been run here.
        */
       pregeneratedLines: pregeneratedCount(),
       pregeneratedAt: pregeneratedGeneratedAt(),

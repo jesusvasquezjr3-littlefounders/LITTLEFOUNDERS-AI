@@ -52,7 +52,7 @@ export interface QualitySettings {
    */
   reducedMotion: boolean;
   /**
-   * Whether the HUD's material keeps its `backdrop-filter` (/DESIGN.md §Lumen).
+   * Whether the HUD's material keeps its `backdrop-filter`.
    *
    * The only setting here that costs the COMPOSITOR rather than the renderer,
    * and the only one measured outside three.js. Profiled 2026-08-22 on the
@@ -100,7 +100,7 @@ export const QUALITY_SETTINGS: Readonly<Record<QualityTier, QualitySettings>> = 
 /**
  * What the browser is willing to tell us. Every field is nullable ON PURPOSE:
  * `deviceMemory` is Chromium-only and `hardwareConcurrency` can be withheld by
- * privacy modes. Per /AGENTS.md §1.14, "the browser did not answer" must stay
+ * privacy modes. "The browser did not answer" must stay
  * distinguishable from "the answer was zero" — collapsing them would push
  * every Safari and Firefox user onto the low tier for no reason.
  */

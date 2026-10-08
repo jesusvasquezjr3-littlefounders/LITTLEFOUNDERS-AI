@@ -1,7 +1,7 @@
 name: Tutor skill & KC curation
 
 # WHAT DOES THE LIVE CURRICULUM SAY WE SHOULD AUTHOR NEXT?
-# (/ORACLE.md §20.6, backend/src/services/pedagogy/tutorCurator.ts)
+# (backend/src/services/pedagogy/tutorCurator.ts)
 #
 # `curate:tutor-skills` reads the live KC graph, the misconception catalog and
 # real learner attempt/evidence aggregates from Vault, cross-references them
@@ -11,15 +11,15 @@ name: Tutor skill & KC curation
 # exists, and so on.
 #
 # IT NEVER WRITES ANYTHING, WHICH IS PRECISELY WHY A SCHEDULE IS SAFE HERE.
-# ROADMAP.md §15.1 ("nothing autonomous reaches a child") extends to the
+# The rule that nothing autonomous reaches a child extends to the
 # curriculum itself: applying a proposal means a human editing a skill file or
 # `kc_graph.v1.json` in an ordinary reviewed commit — the PR-as-approval-gate
-# /ORACLE.md §20.1 already established. This workflow adds a CADENCE to the
+# already established. This workflow adds a CADENCE to the
 # reading, and changes nothing about the approving. `tutorCurator.ts` imports
 # only a TYPE from `kcData.ts` and has no runtime client at all; the CLI
 # wrapper's own last line is "Nothing was written."
 #
-# WHY SCHEDULE IT AT ALL, GIVEN §20.6 ARGUED AGAINST IT. That argument was
+# WHY SCHEDULE IT AT ALL, GIVEN THAT AN EARLIER NOTE ARGUED AGAINST IT. That argument was
 # "its proposals are a standing authoring backlog, not a regression to catch,
 # so an operator running it by hand is the right cadence" — sound about the
 # REPORT, wrong about the INPUTS. Every input moves without anyone touching
@@ -39,7 +39,7 @@ name: Tutor skill & KC curation
 # GREEN IS THE NORMAL STATE, AND A RED RUN MEANS A FAILED READ, NOT A FULL
 # BACKLOG. `curate-tutor-skills.ts` exits 0 with proposals and non-zero ONLY
 # when a query went unanswered (it refuses to report a curation summary from a
-# null read, §1.14). Proposals must never fail this job: a workflow that is
+# null read). Proposals must never fail this job: a workflow that is
 # permanently red is one everybody learns to ignore — the same rule
 # vault-drift.yml states for pending-vs-drift.
 #
@@ -130,7 +130,7 @@ jobs:
           {
             echo "### Tutor skill & KC curation"
             echo ""
-            echo "Propose-only (/ORACLE.md §20.6). Nothing here was written to the catalogue —"
+            echo "Propose-only. Nothing here was written to the catalogue —"
             echo "applying a proposal means a human editing a skill file or \`kc_graph.v1.json\`"
             echo "in an ordinary reviewed commit."
             echo ""

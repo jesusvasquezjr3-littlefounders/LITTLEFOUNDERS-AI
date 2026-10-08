@@ -1,4 +1,4 @@
-/* E.8 / E.13 social-tier surfaces: tokens only, light and dark via data-theme. */
+/* Social-tier surfaces: tokens only, light and dark via data-theme. */
 .lf-rebuild.lf-social-tier-card {
   min-block-size: 0;
   display: grid;
@@ -6,7 +6,7 @@
   padding: var(--spacing-4);
   border-radius: var(--rounded-lg);
   background: var(--surface);
-  /* 02 §4.4: a neutral card separates by a soft elevation, never an outline drawn around it. */
+  /* A neutral card separates by a soft elevation, never an outline drawn around it. */
   box-shadow: var(--elevation-card);
 }
 .lf-rebuild.lf-social-tier-card > .lf-button { justify-self: start; }

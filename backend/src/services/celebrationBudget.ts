@@ -1,7 +1,7 @@
 import type { CompletionStreak } from './supabaseRest.js';
 
 /*
- * THE CELEBRATION BUDGET (B.20, OD-7; Frontend Bible 02 D7 and rule 17).
+ * THE CELEBRATION BUDGET.
  *
  * Celebration effects (confetti, floating XP or coin amounts, spring
  * overshoot) are reserved for a CLOSED list of milestones. Core decides which

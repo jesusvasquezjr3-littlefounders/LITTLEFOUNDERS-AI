@@ -1,4 +1,4 @@
-/* GAP-FIX-R1: the weekly streak strip (Bible 04 §4.3). Shape, glyph and word carry each state; today wears a 3 px ring. */
+/* The weekly streak strip. Shape, glyph and word carry each state; today wears a 3 px ring. */
 .lf-streak-strip { margin-block: var(--spacing-2); }
 .lf-streak-strip-days { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: var(--spacing-1); list-style: none; padding: 0; margin: 0; }
 .lf-streak-day { display: grid; justify-items: center; gap: var(--spacing-1); }

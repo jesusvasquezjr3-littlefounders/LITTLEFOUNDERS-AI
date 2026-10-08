@@ -38,7 +38,7 @@ import '../../design/system.css';
 import './mentorScreen.css';
 
 /*
- * THE MENTOR SCREEN (Frontend Bible 08 §2–§6; D13, rules 21–23).
+ * THE MENTOR SCREEN.
  *
  * The screen IS the stage: the chosen character on its Diorama is the
  * dominant area on every width, never a chat window. Top to bottom on a phone:
@@ -53,29 +53,28 @@ import './mentorScreen.css';
  *   4  the board     on demand, in the shared Pizarrón frame: over the lower
  *                    stage on a phone, beside the character on a desktop;
  *   5  response      2-3 reply chips, the flat text field, and the microphone
- *                    only where C.2 allows it.
+ *                    only where policy allows it.
  *
- * The full conversation is a secondary sheet (the transcript). Block C shows up
- * as Mentor turns with equal chips: the hint ladder (C.13: "a hint" and "just
+ * The full conversation is a secondary sheet (the transcript). The following show up
+ * as Mentor turns with equal chips: the hint ladder ("a hint" and "just
  * tell me" travel as the learner's own words, which Oracle's ladder reads),
- * adaptation offers (C.15), the stop-or-continue offer (C.8/C.12), the goal
- * check (C.15), the check-in (C.19) and the closing (C.16) with the bond proxy
- * (C.15). Age bands change presence and wording, never components (08 §9):
+ * adaptation offers, the stop-or-continue offer, the goal
+ * check, the check-in and the closing with the bond proxy. Age bands change presence and wording, never components:
  * chips lead for 6-9, the field leads for 13+.
  *
- * W2M.3 (T1a-T1g): the menu also opens the learner's own island (T1a), the
- * learning map (T1f), the notebook (T1g) and past talks (T1e), each a
+ * The menu also opens the learner's own island, the
+ * learning map, the notebook and past talks, each a
  * secondary sheet; a past talk replays ON THE STAGE, the character performing
  * each saved line with its board, never a list of bubbles. A board can be kept
  * in the notebook. A roleplay scene the Mentor names plays beat by beat in the
  * plate, the companion the learner invited speaking its part beside the
- * Mentor. A first visit opens the chooser once (08 §8: the learner chooses).
+ * Mentor. A first visit opens the chooser once (the learner chooses).
  *
- * W2M.4 (T1c, T1d, OD-28): a live activity is drawn with the 02 controls and
+ * A live activity is drawn with the shared controls and
  * graded by Core; "say it another way", "change my last message" and "start
  * over" are back; the lesson's step is said in words; pressing close asks the
  * recap question first, and a second press leaves. There is no minutes-left
- * clock: a countdown on a learner surface is a dark pattern (DP-01), so the
+ * clock: a countdown on a learner surface is a dark pattern, so the
  * gentle "almost done" notice is the only word about time.
  */
 
@@ -151,14 +150,14 @@ export interface MentorScreenSession {
   scene: MentorStageScene;
   /** The session speaks: Core allowed voice for it (the roleplay clips play only then). */
   voice: boolean;
-  /** The friend the learner invited to the island (T1a), never the Mentor itself. */
+  /** The friend the learner invited to the island, never the Mentor itself. */
   companion: MentorCharacter | null;
   light: MentorStageLight;
   nickname: string | null;
-  /** What Core holds for the learner's island (T1a), once read. */
+  /** What Core holds for the learner's island, once read. */
   preferences: TutorPreferences | null;
   catalog: TutorCatalog | null;
-  /** False until the learner has saved any choice: the first visit opens the chooser once (08 §8). */
+  /** False until the learner has saved any choice: the first visit opens the chooser once. */
   personalized: boolean;
   offers: TutorOffers | null;
   calibrationSaving: boolean;
@@ -176,7 +175,7 @@ export interface MentorScreenSession {
   ending: boolean;
   history: readonly { speaker: 'learner' | 'tutor'; text: string; seq: number }[];
   closing: MentorClosing | null;
-  /** OD-28 (M-04): the learner pressed close and the Mentor asked the recap question; a second press leaves. */
+  /** The learner pressed close and the Mentor asked the recap question; a second press leaves. */
   recapOpen: boolean;
   mic: { present: boolean; blockedBy: MicBlockedReason | null; denied: boolean; recording: boolean; microphone: Pick<Microphone, 'subscribe'> };
   retry: () => void;
@@ -185,20 +184,20 @@ export interface MentorScreenSession {
   sendText: (text: string) => void;
   pressMic: () => void;
   endSession: () => void;
-  /** T1c "start over": the conversation closes at once and the openings come back. */
+  /** "start over": the conversation closes at once and the openings come back. */
   restart: () => void;
-  /** T1c: rephrase the learner's last message. */
+  /** Rephrase the learner's last message. */
   editLast: (text: string) => void;
-  /** T1c: Core grades a live activity (null when the check itself failed). */
+  /** Core grades a live activity (null when the check itself failed). */
   gradeActivity: (segmentId: string, answer: unknown, attempt: number) => Promise<ActivityGrade | null>;
-  /** T1c: a finished activity goes to Oracle, and the Mentor reacts to it. */
+  /** A finished activity goes to Oracle, and the Mentor reacts to it. */
   reportActivity: (outcome: ActivityOutcome) => void;
   chooseCharacter: (character: MentorCharacter) => Promise<boolean>;
-  /** Saves a T1a choice to Core; resolves false when Core refused it (nothing changes). */
+  /** Saves an island choice to Core; resolves false when Core refused it (nothing changes). */
   updatePreferences: (patch: Partial<TutorPreferences>) => Promise<boolean>;
-  /** Keeps the current conversation's board of turn `seq` in the notebook (T1g). */
+  /** Keeps the current conversation's board of turn `seq` in the notebook. */
   keepBoard: (seq: number) => Promise<boolean>;
-  /** The learning map, the notebook and past talks (T1e-T1g). */
+  /** The learning map, the notebook and past talks. */
   data: MentorData;
   answerAlliance: (answer: BondProxyAnswer) => Promise<AllianceCheckResult>;
   setHasDraft: (draft: boolean) => void;
@@ -218,13 +217,13 @@ export interface MentorScreenProps {
   onLeave: () => void;
   /** The closing state's one action: back to the learning path. */
   onPath: () => void;
-  /** A secondary sheet open from the first render (the development preview and its audits). */
+  /** A secondary sheet open from the first render (the development preview). */
   initialSheet?: MentorSheet | null;
-  /** A past talk replaying from the first render (the development preview and its audits). */
+  /** A past talk replaying from the first render (the development preview). */
   initialReplay?: { summary: SessionSummary; beats: ReplayBeat[] } | null;
-  /** Hold a roleplay scene on its current beat (the development preview and its audits). */
+  /** Hold a roleplay scene on its current beat (the development preview). */
   roleplayFrozen?: boolean;
-  /** The start-over ConfirmDialog open from the first render (the development preview and its audits, GAP-FIX-R5). */
+  /** The start-over ConfirmDialog open from the first render (the development preview). */
   initialConfirmRestart?: boolean;
 }
 
@@ -233,11 +232,11 @@ export type MentorSheet = 'transcript' | 'grownUp' | 'chooser' | 'personalise' |
 
 interface Opening { id: string; label: string; input: Omit<StartSessionInput, 'wantsVoice'> }
 
-/** 2-3 openings (08 §2 layer 5): where the learner left off first, one flagged skill as an offer, then the course and a curated question. */
+/** 2-3 openings: where the learner left off first, one flagged skill as an offer, then the course and a curated question. */
 export function openingsFor(offers: TutorOffers, copy: MentorScreenCopy, context?: { locale: Locale; ageBand: AgeBand }): Opening[] {
   /*
-   * W3M.1 (08 §2 layer 5, 06): a chip is an `option`, at most 8 words (5 for ages 6-9). A topic title comes from
-   * the catalogue and can be long; a chip it would overflow says the generic line instead (never cut, 02 D1).
+   * A chip is an `option`, at most 8 words (5 for ages 6-9). A topic title comes from
+   * the catalogue and can be long; a chip it would overflow says the generic line instead (never cut).
    */
   const limit = context ? copyLimit('option', { ...context, surface: 'app' }) : null;
   const named = (template: string, topic: string, generic: string) => {
@@ -261,10 +260,10 @@ export function openingsFor(offers: TutorOffers, copy: MentorScreenCopy, context
   return list.slice(0, 3);
 }
 
-/** The state the character plays (08 §3), from what the session is doing. The UI requests it; the stage never fakes it. */
+/** The state the character plays, from what the session is doing. The UI requests it; the stage never fakes it. */
 export function stageStateFor(session: MentorScreenSession, { board, delivering, drafting, missed = false }: {
   board: boolean; delivering: boolean; drafting: boolean;
-  /** The learner's last activity was a miss (T1c): the Mentor meets it warmly (08 §3, B.26). */
+  /** The learner's last activity was a miss: the Mentor meets it warmly. */
   missed?: boolean;
 }): MentorStageState {
   if (session.phase === 'closing') return 'closing';
@@ -272,7 +271,7 @@ export function stageStateFor(session: MentorScreenSession, { board, delivering,
   if (session.mic.recording || drafting) return 'listening';
   if (session.awaitingReply || session.socket.thinking) return 'thinking';
   if (session.speaking || delivering) return board ? 'demonstrating' : 'speaking';
-  // 08 §3: encouraging after a miss, or while offering a guided review (C.15, D9); never disappointment.
+  // Encouraging after a miss, or while offering a guided review; never disappointment.
   if (session.turn?.emotion === 'encouraging' || session.socket.adaptationOffer !== null || missed) return 'encouraging';
   return 'idle';
 }
@@ -293,7 +292,7 @@ function useSplitLayout(ref: React.RefObject<HTMLElement>) {
 }
 
 /**
- * 08 §6: the stage is never smaller than the response area. With large text on
+ * The stage is never smaller than the response area. With large text on
  * a narrow phone the response area can outgrow the stage's 55%; the stage then
  * grows with it (the screen scrolls) instead of shrinking under it.
  */
@@ -310,7 +309,7 @@ function useResponseBlock(root: React.RefObject<HTMLElement>, response: React.Re
   });
 }
 
-/** The microphone's level, drawn without re-rendering the screen (08 §3: the indicator is in the response area, not on the character). */
+/** The microphone's level, drawn without re-rendering the screen (the indicator is in the response area, not on the character). */
 function MicLevel({ microphone, label }: { microphone: Pick<Microphone, 'subscribe'>; label: string }) {
   const bar = useRef<HTMLSpanElement>(null);
   useEffect(() => microphone.subscribe((level) => {
@@ -322,7 +321,7 @@ function MicLevel({ microphone, label }: { microphone: Pick<Microphone, 'subscri
   </span>;
 }
 
-/** 08 §3, §5: while the Mentor speaks, each caption page stays up about as long as it takes to say it (a child's pace). */
+/** While the Mentor speaks, each caption page stays up about as long as it takes to say it (a child's pace). */
 export const CAPTION_MS_PER_WORD = 400;
 export const CAPTION_MIN_PAGE_MS = 1500;
 export function captionPageMs(page: string): number {
@@ -336,7 +335,7 @@ function SpeechPlate({ text, locale, ageBand, copy, status, speaker = null, page
   /** Turn the caption's pages by themselves every `pageMs` (a roleplay beat plays without a Next press). */
   pageMs?: number | null;
   /**
-   * The Mentor is saying this turn aloud: the caption follows the voice (08 §3 "the speech plate text shown as it
+   * The Mentor is saying this turn aloud: the caption follows the voice ("the speech plate text shown as it
    * is spoken"), each page held for its own length and settling on the last; Next still moves on sooner.
    */
   paced?: boolean;
@@ -367,7 +366,7 @@ interface ReplayState { summary: SessionSummary; beats: ReplayBeat[] | null; fai
 /** One empty talk for every render without a replay: the clock restarts only when the talk itself changes. */
 const NO_BEATS: readonly ReplayBeat[] = [];
 
-/** A past talk on the stage (T1e): its transport, in the response area. */
+/** A past talk on the stage: its transport, in the response area. */
 function ReplayControls({ copy, clock, total, sound, name, onTalk }: {
   copy: MentorReplayCopy; clock: ReturnType<typeof useReplay>; total: number; sound: boolean; name: string; onTalk: () => void;
 }) {
@@ -406,11 +405,11 @@ export function MentorScreen({ header, session, copy: all, locale, theme, guardi
   const [chooseFailed, setChooseFailed] = useState(false);
   const [editing, setEditing] = useState(false);
   const [confirmRestart, setConfirmRestart] = useState(initialConfirmRestart);
-  /** The last finished activity's result, shown until the next activity or the learner's next word (T1c). */
+  /** The last finished activity's result, shown until the next activity or the learner's next word. */
   const [activityResult, setActivityResult] = useState<ActivityOutcome | null>(null);
   const turn = session.phase === 'conversing' ? session.turn : null;
 
-  /* T1e: a past talk replaying on the stage, outside any conversation. */
+  /* A past talk replaying on the stage, outside any conversation. */
   const [replay, setReplay] = useState<ReplayState | null>(initialReplay ? { ...initialReplay, failed: false } : null);
   const replayOn = replay !== null && session.phase !== 'conversing';
   const clock = useReplay(replay?.beats ?? NO_BEATS);
@@ -429,7 +428,7 @@ export function MentorScreen({ header, session, copy: all, locale, theme, guardi
   const name = MENTOR_NAMES[character];
   const title = session.known || replayOn ? name : copy.documentTitle;
 
-  /* 08 §8: the first visit opens the chooser once; closing it keeps (and records) the character shown. */
+  /* The first visit opens the chooser once; closing it keeps (and records) the character shown. */
   const firstVisit = useRef(false);
   useEffect(() => {
     if (firstVisit.current || !session.known || session.personalized || session.phase !== 'openings' || initialSheet) return;
@@ -467,7 +466,7 @@ export function MentorScreen({ header, session, copy: all, locale, theme, guardi
   });
   const roleplayCopy = roleplay && isRoleplayScene(roleplay.scene) ? all.mentorRoleplay.scenes[roleplay.scene] : null;
 
-  /* 08 §3: the thinking pose at once; the one-word status only after about 1.5 s. */
+  /* The thinking pose at once; the one-word status only after about 1.5 s. */
   const waiting = session.phase === 'conversing' && (session.awaitingReply || session.socket.thinking || (!turn && !session.resuming));
   const [longWait, setLongWait] = useState(false);
   useEffect(() => {
@@ -529,18 +528,18 @@ export function MentorScreen({ header, session, copy: all, locale, theme, guardi
   const offerOpen = session.phase === 'conversing' && (live.adaptationOffer !== null || live.sessionEndOffer || live.checkInOpen || live.goalCheckOpen);
   const between = session.phase === 'conversing' && !offerOpen && !!turn && !session.awaitingReply && !session.ending && !roleplay && !session.recapOpen;
   const ladder = between && turn!.next === 'ask';
-  // "Say it another way" (T1c): once the lesson is under way, never over a board or an activity.
+  // "Say it another way": once the lesson is under way, never over a board or an activity.
   const explain = between && turn!.seq > 1 && !boardOpen && !segment;
   const boardChip = !!board && !boardOpen && session.phase === 'conversing' && !session.recapOpen;
   /*
-   * 08 §2 layer 5, §4, §9 (GAP-FIX-R2): the likely answers the Mentor's turn offers (`turn.replies`, already
+   * The likely answers the Mentor's turn offers (`turn.replies`, already
    * screened by Oracle), sent as the learner's own words. They come before the hint ladder, so a 6-9 learner
    * without a microphone taps an answer instead of typing it.
    */
   const replies = between && turn!.next === 'ask' ? turn!.replies : [];
   /*
-   * 08 §2: at most three reply chips; the board comes back first, then the likely answers, then the hint ladder,
-   * then another way. C.13 mandates an explicit "just tell me" escape hatch, so while the ladder applies the tell
+   * At most three reply chips; the board comes back first, then the likely answers, then the hint ladder,
+   * then another way. An explicit "just tell me" escape hatch is mandatory, so while the ladder applies the tell
    * chip always keeps its place: the chips cut to fit are the last ones that are not it, in order.
    */
   const chips = [
@@ -575,7 +574,7 @@ export function MentorScreen({ header, session, copy: all, locale, theme, guardi
   const fieldShown = session.phase === 'conversing' || (session.phase === 'openings' && !!offers?.canAskOpen && canStart);
   const busy = session.phase === 'conversing' && (session.ending || session.resuming);
 
-  /* The menu (08 §2 layer 1): what the learner can open from here, by what is happening. */
+  /* The menu: what the learner can open from here, by what is happening. */
   const outside = session.known && (session.phase === 'openings' || session.phase === 'closing') && !replayOn;
   const reading = session.known && (outside || session.phase === 'conversing') && !replayOn;
   const open = (next: MentorSheet) => () => { if (next === 'chooser') setChooseFailed(false); setSheet(next); };
@@ -628,7 +627,7 @@ export function MentorScreen({ header, session, copy: all, locale, theme, guardi
     ? <div className="lf-mentor-closing" ref={response as React.RefObject<HTMLDivElement>}>
           <SessionClosing copy={all.mentorSessionEnd} locale={locale} dark={dark} script={session.closing.script}
             effort={session.closing.effort} topic={session.closing.topic} summary={session.closing.summary} xp={session.closing.xp} onBack={onPath} />
-          {/* T1d: the talk is kept, and it can be heard again from past talks (never after a safety stop). */}
+          {/* The talk is kept, and it can be heard again from past talks (never after a safety stop). */}
           {session.closing.sessionId && session.closing.script !== 'safety_stop' && session.history.length > 0
             ? <p className="lf-mentor-saved" data-copy-role="body">{copy.savedReplay}</p> : null}
           {session.closing.sessionId
@@ -683,7 +682,7 @@ export function MentorScreen({ header, session, copy: all, locale, theme, guardi
                 <IconButton glyph="microphone" label={copy.talk} variant="soft" onClick={session.pressMic} />
               </div>
               : null;
-  // 08 §9: the chips lead for 6-12, the field leads for 13 and older, in the DOM (and so the Tab order), not only visually.
+  // The chips lead for 6-12, the field leads for 13 and older, in the DOM (and so the Tab order), not only visually.
   const fieldFirst = session.ageBand === '13-17' || session.ageBand === 'adult';
   const responseEl = replayOn
     ? <section className="lf-mentor-response" ref={response}>
@@ -817,7 +816,7 @@ export function MentorScreen({ header, session, copy: all, locale, theme, guardi
       <p data-copy-role="body">{copy.grownUpBody}</p>
     </Sheet>
     <Sheet open={sheet === 'chooser'} onClose={closeSheet} heading={copy.chooser.heading} closeLabel={copy.sheetClose}>
-      {/* 08 §8: the shared chooser, the four characters on their Diorama (also the onboarding's mentor step). */}
+      {/* The shared chooser, the four characters on their Diorama (also the onboarding's mentor step). */}
       <MentorChooser label={copy.chooser.heading} lines={copy.chooser.lines} chosen={session.character} saving={choosing}
         chosenLabel={copy.chooser.chosen} savingLabel={copy.chooser.saving} onChoose={(candidate) => void choose(candidate)} />
       {chooseFailed ? <InlineNotice tone="error" live>{copy.chooser.failed}</InlineNotice> : null}

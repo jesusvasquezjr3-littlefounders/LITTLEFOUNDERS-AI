@@ -1,14 +1,10 @@
 import type { BadgeKind } from './badge.js';
 
 /*
- * The achievement image's central marks (OD-20; Frontend Bible 07 section 1:
- * no emoji as interface art, class B assets of our own). Each mark is the
- * class B asset registered in the rebuilt frontend's manifest under the same
- * id (frontend/src/rebuild/assets/manifest.json, review family
- * `achievement-share`, so the owner's style approval applies), drawn in token
- * colours only. Depot deploys on its own, so the drawings are inlined here;
- * the frontend asset gate (scripts/check-rebuild-assets.mjs) fails when a
- * `body` below differs from its registered SVG, whitespace aside.
+ * The achievement image's central marks (no emoji as interface art, our own
+ * assets). Each mark is drawn in token colours only. Depot deploys on its
+ * own, so the drawings are inlined here; keep each `body` below equal to its
+ * registered SVG in the frontend manifest, whitespace aside.
  */
 export interface BadgeMark {
   assetId: string;

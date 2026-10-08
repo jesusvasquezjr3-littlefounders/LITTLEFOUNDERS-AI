@@ -21,7 +21,7 @@ const point = (degrees: number, length: number) => ({ x: C + length * Math.sin((
 const twoDigits = (minute: number) => String(minute).padStart(2, '0');
 
 /*
- * A14: an analog clock. The learner sets the hour and the minutes with the steppers, or taps the face to point the
+ * An analog clock. The learner sets the hour and the minutes with the steppers, or taps the face to point the
  * minute hand; the minute hand moves in the steps the author allows. The answer is the time as minutes after 12:00; Core holds it.
  */
 function Clock({ document, segment, onBack, sequence, onGrade }: Omit<HorizonteBoardProps, 'segment'> & { segment: ClockSegment }) {

@@ -11,24 +11,23 @@ import './rhythm.css';
 import { MENTOR_NAMES, type Pace, type RhythmState, type StreakView } from './motivation';
 
 /*
- * B.21 / B.24 (S05.3e) — the learner's rhythm: their habit streak and their
+ * The learner's rhythm: their habit streak and their
  * own choices.
  *
- * The streak (Frontend Bible 02 §9.6): the live run, the best streak and the
+ * The streak: the live run, the best streak and the
  * days practised, the rest days left this week and the rule in one line. A
  * broken run reads "Streak resting" with the best still visible, never "lost";
  * a guardian's holiday pause reads as paused. No loss or guilt copy, no
- * reminder, no counter of missed days, and nothing here celebrates (OD-7: the
+ * reminder, no counter of missed days, and nothing here celebrates (the
  * 7-, 30- and 100-day marks celebrate on the lesson result, once).
  *
- * The choices (B.24): pace (how many lessons a day is the learner's plan,
+ * The choices: pace (how many lessons a day is the learner's plan,
  * saved at once), the next lesson (the course path's frontier) and the Mentor.
- * Layering (Bible 06): two tabs, the streak first, so the youngest learner's
+ * Layering: two tabs, the streak first, so the youngest learner's
  * first view stays within the Copy Budget.
  * Avatar customization is deliberately absent: it is not an autonomy lever.
  *
- * A dashboard of independent cards: a neutral page with coloured cards
- * (rule 15). Presentation only: the host owns transport and navigation.
+ * A dashboard of independent cards: a neutral page with coloured cards. Presentation only: the host owns transport and navigation.
  */
 
 type Copy = {
@@ -100,7 +99,7 @@ export function LearningRhythmView({ state, locale, dark, ageBand, onBack, onRet
   state: RhythmState;
   locale: Locale;
   dark: boolean;
-  /** Bible 06 §7 (GAP-FIX-R4): the learner's Copy Budget band, as Core's register gives it. */
+  /** The learner's Copy Budget band, as Core's register gives it. */
   ageBand?: AgeBand;
   onBack: () => void;
   onRetry: () => void;

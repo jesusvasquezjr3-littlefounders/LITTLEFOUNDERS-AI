@@ -3,22 +3,21 @@ import { NAV_MARKS } from '@/rebuild/design/navMarks';
 import { APP_HOME } from './home';
 
 /*
- * One navigation definition per shell (W2 "Shells and routing", Lane 0).
+ * One navigation definition per shell.
  *
- * Lane 0 owns this file. Each entry is a SLOT: an id, the copy key of its
+ * Each entry is a SLOT: an id, the copy key of its
  * label (`rebuild-core.json` → `appShell.nav` / `appShell.staff`), the path it
- * points at and the wave-2 lane (`owner`) whose route that is. A lane that
+ * points at and the area (`owner`) whose route that is. An area that
  * moves or renames its route changes the slot's `path` here (and nothing
- * else); adding, removing or reordering a slot is a Lane 0 change, because
- * the order and who sees what are product decisions (owner proposals in
- * docs/rebuild/sprints/W2-SHELLS-AND-ROUTING.md).
+ * else); adding, removing or reordering a slot is a shell change, because
+ * the order and who sees what are product decisions.
  *
  * Navigation hides what a person cannot open; it never authorises anything.
  * Every destination is still enforced by its route guard and by Core.
  */
 
 export { APP_HOME };
-/** The Mentor stage's route (Lane 3). The learner's tab shows the chosen character's name, never this path's word. */
+/** The Mentor stage's route. The learner's tab shows the chosen character's name, never this path's word. */
 export const MENTOR_PATH = '/tutor';
 
 export type Lane = 'core' | 'site' | 'learn' | 'mentor' | 'profile' | 'staff';
@@ -31,8 +30,8 @@ export interface NavSlot<Label extends string = AppNavLabel> {
   path: string;
   owner: Lane;
   /**
-   * The slot's class B navigation mark (07 section 1, manifest slot `nav.icon`). Every slot has one, so the
-   * phone tab bar can show inactive tabs as 48 px icons below a 360 px container (02 section 7 rule 9).
+   * The slot's navigation mark (manifest slot `nav.icon`). Every slot has one, so the
+   * phone tab bar can show inactive tabs as 48 px icons below a 360 px container.
    */
   iconAssetId: string;
 }
@@ -54,7 +53,7 @@ export const SLOTS = {
   backToApp: { id: 'back-to-app', label: 'backToApp', path: APP_HOME, owner: 'core', iconAssetId: NAV_MARKS.backToApp },
 } as const satisfies Record<string, NavSlot>;
 
-/** Staff console sections in menu order; one per page of app-routes/staffGrants.ts that is not a redirect (tested). */
+/** Staff console sections in menu order; one per page of app-routes/staffGrants.ts that is not a redirect. */
 export const STAFF_SLOTS: readonly NavSlot<StaffNavLabel>[] = [
   { id: 'overview', label: 'overview', path: '/admin', owner: 'staff', iconAssetId: NAV_MARKS.overview },
   { id: 'content', label: 'content', path: '/admin/content', owner: 'staff', iconAssetId: NAV_MARKS.content },
@@ -82,7 +81,7 @@ export function canOpenConsole(account: Pick<ShellAccount, 'roles' | 'adminPermi
   return account.roles.includes('admin') && account.adminPermissions.some((grant) => (STAFF_GRANTS as readonly string[]).includes(grant));
 }
 
-/** The verified parent (the Tutor, OD-6) gets the Tutor console; everyone else the learner app. */
+/** The verified parent (the Tutor) gets the Tutor console; everyone else the learner app. */
 export function appShellKind(account: Pick<ShellAccount, 'roles'>): 'tutor' | 'learner' {
   return account.roles.includes('parent') ? 'tutor' : 'learner';
 }

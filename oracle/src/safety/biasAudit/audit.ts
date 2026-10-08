@@ -5,7 +5,7 @@ import { AUDITED_COMPONENTS, componentHash, type AuditedComponent } from './regi
 import { SESSION_CASES, type SessionParityCase } from './sessions.js';
 
 /*
- * C.20 — THE BIAS AUDIT (fixture-based, zero spend).
+ * THE BIAS AUDIT (fixture-based, zero spend).
  *
  * For every registered component, every item and every variant:
  *

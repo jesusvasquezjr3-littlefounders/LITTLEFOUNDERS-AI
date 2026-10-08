@@ -7,7 +7,7 @@ import { faceNormal, solidMesh, type SolidId, type Vec3 } from './model.generate
 import { PERSPECTIVE_LENS, SCENE_SIZE, cameraPose, composeScene, viewBasis, type LabelMode, type SolidView } from './projection.generated';
 
 /*
- * OD-35: the one lazy 3D viewer. Budget: one body mesh, two line passes (3 draw calls), under 200 triangles, no shadows,
+ * The one lazy 3D viewer. Budget: one body mesh, two line passes (3 draw calls), under 200 triangles, no shadows,
  * a cut between the fixed views (never a tween), HTML labels laid out by composeScene with the matching perspective lens.
  * It rides the shared tutor-scene canvas and its adaptive governor; it never touches the Mentor stage.
  */

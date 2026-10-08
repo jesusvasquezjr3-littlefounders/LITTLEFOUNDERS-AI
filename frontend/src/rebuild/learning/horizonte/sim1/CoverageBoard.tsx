@@ -21,7 +21,7 @@ const INSET = 36;
 const TICKS = [0, 0.25, 0.5, 0.75, 1] as const;
 
 /*
- * H26: 100 samples of the same population, each with its confidence interval. The learner picks the level and the sample size and
+ * 100 samples of the same population, each with its confidence interval. The learner picks the level and the sample size and
  * counts how many intervals cover the true share. Whether one covers is decided with integer arithmetic (`covers`), never from the
  * drawn ends. Core replays the same seeded samples to grade the choice.
  */

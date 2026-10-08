@@ -1,20 +1,20 @@
 /*
- * Client API layer for Product 10 E.8 (the independent teen's self-managed
- * connections) and the private profile card.
+ * Client API layer for the independent teen's self-managed
+ * connections and the private profile card.
  *
  * Core and the database decide everything: who is a teen, who may ask, who
  * decides (always the teen the request targets, from the session), and what
  * a viewer may see. This file only carries requests and validates the
  * answers, so a malformed response is a failure, never an invented state.
  * Transport-only and dependency-injected; it imports nothing from the legacy
- * app (Bible 02 rule 23).
+ * app.
  */
 
 export interface Transport { baseUrl: string; token: string; fetchImpl?: typeof fetch }
 export type Result<T> = { ok: true; value: T } | { ok: false; code: string };
 
 export interface TeenRequest { requestId: string; requestedAt: string; username: string | null; displayName: string | null }
-/** A follower, addressed by user id: an account without a @username is still listed and actionable (GAP-FIX-R8 social). */
+/** A follower, addressed by user id: an account without a @username is still listed and actionable. */
 export interface Follower { userId: string; username: string | null; displayName: string }
 
 const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null;
@@ -78,7 +78,7 @@ export async function decideTeenRequest(transport: Transport, requestId: string,
 }
 
 /**
- * E.3 from the teen's own queue (GAP-FIX-R5 social): report the requester of a
+ * From the teen's own queue: report the requester of a
  * request addressed to the session. Only a 201 receipt naming the same request confirms it.
  */
 export async function reportTeenRequest(transport: Transport, requestId: string, category: string, note: string | null): Promise<Result<'reported'>> {
@@ -102,7 +102,7 @@ export async function blockTeenRequest(transport: Transport, requestId: string):
 
 /**
  * The session's followers (already filtered by Core to accounts it may see).
- * GAP-FIX-R8 social (E.3, E.8): every row is kept, handle-less ones included,
+ * Every row is kept, handle-less ones included,
  * because each is addressed by the user id Core sends; a row without a valid
  * id is a malformed answer, never a silently dropped person.
  */
@@ -131,7 +131,7 @@ export async function removeFollower(transport: Transport, userId: string): Prom
   return { ok: false, code: answer.status === 200 ? 'UNAVAILABLE' : errorCode(answer.envelope) };
 }
 
-/** E.3 on a list entry (GAP-FIX-R8 social): report one of the session's own connections by user id. 201 with the same id confirms it. */
+/** On a list entry: report one of the session's own connections by user id. 201 with the same id confirms it. */
 export async function reportConnection(transport: Transport, userId: string, category: string, note: string | null): Promise<Result<'reported'>> {
   if (!UUID.test(userId)) return { ok: false, code: 'VALIDATION_ERROR' };
   const answer = await call(transport, `/profile/connections/${userId}/report`, 'POST', note === null ? { category } : { category, note });

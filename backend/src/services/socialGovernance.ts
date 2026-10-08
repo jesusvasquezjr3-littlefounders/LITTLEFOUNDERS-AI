@@ -2,19 +2,18 @@ import { z } from 'zod';
 import { serviceRestRaw } from './supabaseRest.js';
 
 /*
- * E.10, E.11 and E.12 standing guardrails, Core side
- * (policy: docs/rebuild/policies/SOCIAL-GOVERNANCE.md).
+ * Social-governance standing guardrails, Core side.
  *
  * The database owns the rules: the retention sweep, the consent rule for an
  * edge that exposes a child, the live-catalog messaging scan and the metric
  * are SQL functions (migrations social_standing_guardrails and
  * social_graph_retention). Core only calls them with the service role and
  * validates what comes back. An unreadable or malformed answer is null, and
- * every caller turns null into a 502, never into a reassuring zero (§1.14).
+ * every caller turns null into a 502, never into a reassuring zero.
  */
 
 /**
- * E.11 retention windows, in days. The database's
+ * Retention windows, in days. The database's
  * public.social_retention_windows() is what the sweep applies; this copy lets
  * the metric route say whether the deployed database still matches the
  * written policy, and `guardrails:check` compares all three literally.
@@ -30,7 +29,7 @@ export const SOCIAL_RETENTION_WINDOWS = {
 } as const;
 
 /**
- * E.10 vocabulary: a route, table, column or function whose name carries one
+ * Messaging vocabulary: a route, table, column or function whose name carries one
  * of these words is a person-to-person messaging surface until the policy's
  * review says otherwise. Same list as public.social_messaging_surfaces() and
  * `guardrails:check`.
@@ -70,7 +69,7 @@ export const SocialRetentionRun = z.object({
   resolvedCasesDeleted: Count,
   noticesDeleted: Count,
   unconsentedEdgesRemoved: Count,
-  // L-04 (OD-27 (1)), migration cooperative_goals_retention. Optional so this
+  // Migration cooperative_goals_retention. Optional so this
   // Core still reads a database that has not applied it yet.
   coopGoalsReconciled: Count.optional(),
   coopGoalsDeleted: Count.optional(),

@@ -148,7 +148,7 @@ export function createApp(adapter: EmailAdapter = new NoopAdapter()): express.Ex
     res.status(404).json({ data: null, error: { code: 'NOT_FOUND', message: 'Route not found' } });
   });
 
-  // §1.6: every response uses the envelope, including 500s. Without this,
+  // Every response uses the envelope, including 500s. Without this,
   // Express's default handler answers with an HTML page carrying a stack
   // trace — a malformed JSON body or a failed adapter.send() would both
   // leak absolute paths to the caller.

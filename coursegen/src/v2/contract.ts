@@ -1,13 +1,12 @@
-// Forge's view of the verified v2 lesson document contract (S05.4c).
+// Forge's view of the verified v2 lesson document contract.
 //
 // The contract itself is Core's: backend/src/services/v2LessonDocument.ts
 // (`v2PublicLessonSchema` + `validateV2LessonForGrading`) is the strict parser
 // every delivered v2 lesson must pass, and the browser keeps its own
 // fail-closed copy. The packages share no code by design, so Forge keeps only
 // what it needs to ASSEMBLE a document: the segment kinds and the renderer
-// capabilities each kind requires. That map is the third hand-maintained copy
-// and `node agent/tools/check-v2-lesson-capability-parity.mjs` fails when it
-// drifts from Core's or the browser's. Everything else (payload ranges,
+// capabilities each kind requires. That map is the third hand-maintained copy,
+// and must be kept in step with Core's and the browser's. Everything else (payload ranges,
 // pathway ages, pilot constants, rubric shapes) is decided by Core's parser:
 // the dry-run emitter's output is validated by Core itself
 // (`npm --prefix backend run forge-v2:check`), never by a Forge re-implementation.
@@ -36,11 +35,10 @@ export const V2_SEGMENT_CAPABILITIES = {
   'math.worked-example.v2': ['visual.worked-example.v1', 'operation.step-replay.v1', 'operation.predict-next.v1', 'operation.backward-fade.v1', 'operation.number-input.v1'],
   'math.function-machine.v2': ['visual.function-machine.v1', 'operation.try-input.v1', 'operation.guess-rule.v1', 'operation.held-out-check.v1'],
   'math.cpa-count.v2': ['visual.cpa-count.v1', 'operation.count-objects.v1', 'operation.symbolic-answer.v1'],
-  // B.12 (S05.3d): decide, then say why. Core's private rubric grades the choice and, separately, the reason.
+  // Decide, then say why. Core's private rubric grades the choice and, separately, the reason.
   'reasoning.decide-justify.v2': ['visual.decision-card.v1', 'operation.choose-option.v1', 'operation.justify-choice.v1'],
-  // B.7 part 1: plus `visual.<kind>.v1` for the drawn kind, and choose-option when it asks a question.
+  // Plus `visual.<kind>.v1` for the drawn kind, and choose-option when it asks a question.
   'visual.chart.v2': ['operation.show-table.v1'],
-  // GAP-FIX-R1 learning (Appendix P Part 8 first release; B.8, B.9, B.11).
   'logic.rule-checker.v2': ['visual.rule-cards.v1', 'operation.flip-card.v1'],
   'logic.euler.v2': ['visual.euler.v1', 'operation.place-in-region.v1', 'operation.move-menu.v1'],
   'logic.flowchart.v2': ['visual.flowchart.v1', 'operation.step-flowchart.v1'],
@@ -54,12 +52,11 @@ export const V2_SEGMENT_CAPABILITIES = {
   'story.branch.v2': ['visual.story-scene.v1', 'operation.choose-option.v1'],
   'story.dialogue-choice.v2': ['visual.dialogue.v1', 'operation.choose-option.v1'],
   'story.would-you-rather.v2': ['visual.would-you-rather.v1', 'operation.choose-option.v1'],
-  // GAP-FIX-R2: $6 unit prices and the L2 rule builder; a built flowchart (L6/$9, 13+) also needs operation.build-flowchart.v1.
+  // $6 unit prices and the L2 rule builder; a built flowchart (L6/$9, 13+) also needs operation.build-flowchart.v1.
   'money.unit-price.v2': ['visual.ratio-table.v1', 'operation.number-input.v1', 'operation.choose-option.v1'],
   'logic.rule-builder.v2': ['visual.rule-builder.v1', 'operation.build-rule.v1', 'operation.case-step.v1'],
   'voice.mentor-turn.v2': ['visual.speech-plate.v1'],
   'voice.mentor-episode.v2': ['visual.speech-plate.v1', 'operation.step-replay.v1'],
-  // GAP-FIX-R1 learning (Appendix A Parts 2 and 3; B.7 part 2).
   'money.amortization.v2': ['visual.amortization.v1', 'operation.step-replay.v1', 'operation.number-input.v1'],
   'econ.supply-demand.v2': ['visual.supply-demand.v1', 'operation.drag-point.v1', 'operation.curve-shift.v1'],
   'money.opportunity-cost.v2': ['visual.token-chooser.v1', 'operation.trade-off-chooser.v1'],
@@ -71,9 +68,9 @@ export const V2_SEGMENT_CAPABILITIES = {
   ...HORIZONTE_FORGE_CAPABILITIES,
 } as const;
 
-/** The Mentor-voiced kinds (B.8, B.11): the only v2 segments that carry a narration channel. */
+/** The Mentor-voiced kinds: the only v2 segments that carry a narration channel. */
 export const V2_MENTOR_VOICE_TYPES = ['voice.mentor-turn.v2', 'voice.mentor-episode.v2'] as const;
-/** The story-decision kinds (B.9): their graded choice ids feed the decision journal. */
+/** The story-decision kinds: their graded choice ids feed the decision journal. */
 export const V2_STORY_TYPES = ['story.branch.v2', 'story.dialogue-choice.v2', 'story.would-you-rather.v2'] as const;
 
 export type V2SegmentType = keyof typeof V2_SEGMENT_CAPABILITIES;
@@ -102,10 +99,10 @@ export interface V2Segment {
   payload: Record<string, unknown>;
   /** Up to two help ladder steps shown on request as one Mentor speech-plate turn each. */
   help?: string[];
-  /** GAP-FIX-R6 (B.20, Bible 02 §9.2): the graded step's banner text; `met` names what was done right, `not_yet` is a hint. */
+  /** The graded step's banner text; `met` names what was done right, `not_yet` is a hint. */
   feedback?: { met?: string; not_yet?: string; choice_hints?: Record<string, string> };
   item_role?: 'practice' | 'transfer';
-  /** Appendix P Part 8 (GAP-FIX-R2): L12/$11 pre/post items and the representation variant an A/B compares. */
+  /** L12/$11 pre/post items and the representation variant an A/B compares. */
   item_phase?: 'pre' | 'post';
   variant?: string;
   knowledge_component_id?: string;
@@ -133,7 +130,7 @@ export interface V2PublicDocument {
   segments: V2Segment[];
   representation_progressions?: unknown[];
   mentor_stage?: { character: string; scene: string };
-  /** B.24 / Block B autonomy (GAP-FIX-R5): two or three equally valid, fully graded chains for one skill (10+). */
+  /** Autonomy: two or three equally valid, fully graded chains for one skill (10+). */
   approaches?: { options: Array<{ id: string; label: string; segment_ids: string[] }> };
 }
 
@@ -152,7 +149,7 @@ export function requiredCapabilities(segments: readonly Pick<V2Segment, 'type' |
           ? [`visual.${segment.visual.type}.v1`, ...V2_SEGMENT_CAPABILITIES[segment.type], ...(segment.payload?.question ? ['operation.choose-option.v1'] : [])]
           : (segment.type === 'logic.flowchart.v2' || segment.type === 'money.spend-decision.v2') && segment.payload?.mode === 'build'
             ? [...V2_SEGMENT_CAPABILITIES[segment.type], 'operation.build-flowchart.v1']
-            // Bible 05 §5 (GAP-FIX-R2): TeX notation on a worked step or the function machine's rule needs the KaTeX renderer.
+            // TeX notation on a worked step or the function machine's rule needs the KaTeX renderer.
             : (segment.type === 'math.worked-example.v2' && Array.isArray(segment.payload?.steps) && (segment.payload.steps as Array<{ notation?: unknown }>).some((step) => step.notation))
               || (segment.type === 'math.function-machine.v2' && segment.payload?.notation === true)
               ? [...V2_SEGMENT_CAPABILITIES[segment.type], 'visual.math-notation.v1']
@@ -170,20 +167,20 @@ export function requiredCapabilities(segments: readonly Pick<V2Segment, 'type' |
  */
 export function isNonCopyKey(key: string): boolean {
   return key === 'id' || key === 'currency' || key === 'mode' || key === 'unit' || key.endsWith('_ids') || key.endsWith('_id')
-    // GAP-FIX-R1: structural ids and enums of the new families (flowchart edges, Euler relation, node kind, Mentor role, audio reference).
+    // Structural ids and enums of the new families (flowchart edges, Euler relation, node kind, Mentor role, audio reference).
     || key === 'start' || key === 'yes' || key === 'no' || key === 'relation' || key === 'kind' || key === 'role' || key === 'audio_ref'
     // Chart data: link endpoints and calendar dates are identifiers, not copy.
     || key === 'from' || key === 'to' || key === 'date' || key === 'end'
-    // Horizonte F1.0: a heatmap cell names its column and row by id.
+    // a heatmap cell names its column and row by id.
     || key === 'col' || key === 'row'
-    // GAP-FIX-R2: a rule builder's level and a flowchart's build mode are contract vocabulary.
+    // A rule builder's level and a flowchart's build mode are contract vocabulary.
     || key === 'level'
-    // GAP-FIX-R4: an L1 rule's kind is contract vocabulary.
+    // An L1 rule's kind is contract vocabulary.
     || key === 'rule_kind'
-    // GAP-FIX-R2 charts: a swimlane node's lane and a Venn region's set list are ids.
+    // Charts: a swimlane node's lane and a Venn region's set list are ids.
     || key === 'lane' || key === 'sets'
     // TeX notation is locale-neutral data (spokenText carries the words).
     || key === 'notation'
-    // GAP-FIX-R5 (M3): the numbers a fraction line compares or shows as equivalents are data; the board formats them per locale.
+    // The numbers a fraction line compares or shows as equivalents are data; the board formats them per locale.
     || key === 'compare_values' || key === 'equivalent_values';
 }

@@ -1,8 +1,8 @@
 /*
- * The Mentor stage (Frontend Bible 08). A full-bleed scene, never boxed in a
+ * The Mentor stage. A full-bleed scene, never boxed in a
  * card: no border, no radius, no shadow. The full size fills the area the
- * screen gives it (08 §2, §6); the compact size is the lesson band, whose phone
- * height comes from the register policy (B.23: 110, 96 or 80 px for 6-9, 10-12
+ * screen gives it; the compact size is the lesson band, whose phone
+ * height comes from the register policy (110, 96 or 80 px for 6-9, 10-12
  * and 13+) and whose wide placement is the lesson layout's (learning/mentorStage.css).
  */
 .lf-mentor-stage {
@@ -16,7 +16,7 @@
 .lf-mentor-stage--compact { block-size: var(--lf-mentor-band-size, 96px); background: var(--primary); }
 
 .lf-mentor-stage-scene { position: absolute; inset: 0; isolation: isolate; }
-/* GAP-FIX-R3 (08 §11): the lesson's adventure scene as the band's own backdrop, under the scene layer. */
+/* The lesson's adventure scene as the band's own backdrop, under the scene layer. */
 .lf-mentor-stage-backdrop { position: absolute; inset: 0; }
 .lf-mentor-stage-backdrop .lf-art { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; max-inline-size: none; object-fit: cover; }
 .lf-mentor-stage-live { position: absolute; inset: 0; opacity: 0; }
@@ -28,11 +28,11 @@
 /* A transparent avatar render stands on the scene colour, feet toward the floor of the stage. */
 .lf-mentor-stage-still--contain { object-fit: contain; object-position: center bottom; }
 .lf-mentor-stage-still[data-leaving='true'] { opacity: 0; }
-/* A rendered Mentor sequence (08 §7) plays over the pose still it starts from; the scene isolates the stacking. */
+/* A rendered Mentor sequence plays over the pose still it starts from; the scene isolates the stacking. */
 .lf-mentor-stage-sequence { z-index: 1; }
 
 /*
- * The board (08 §2 layer 4, §6): on a stage narrower than the desktop split it
+ * The board: on a stage narrower than the desktop split it
  * slides up over the lower stage. The scene then renders in the part of the
  * stage the board leaves free, so the camera frames the whole character there
  * (cropping the scene instead would cut off the head). The screen sets how much
@@ -46,13 +46,13 @@
 /* Only the 3D fading in over its still travels. */
 @media (prefers-reduced-motion: no-preference) {
   .lf-mentor-stage-live, .lf-mentor-stage-still { transition: opacity var(--dur-component) var(--ease-standard); }
-  /* The still fallback (W3M.1, 08 §7): a state change fades to the next pose's still once and settles. */
+  /* The still fallback: a state change fades to the next pose's still once and settles. */
   .lf-mentor-stage[data-render-mode='still'] > .lf-mentor-stage-scene { transition: opacity var(--dur-micro) var(--ease-standard); }
   .lf-mentor-stage[data-render-mode='still'] > .lf-mentor-stage-scene[data-swap='out'] { opacity: 0.2; }
 }
 
 /*
- * Reduced motion (08 §7): the character does not animate between poses; the
+ * Reduced motion: the character does not animate between poses; the
  * scene fades down, the held pose changes, and it fades back up (a short
  * cross-fade, no travel). The live 3D appearing over its still is the same
  * brief cross-fade.
@@ -63,7 +63,7 @@
 }
 
 /*
- * The Mentor screen's regions by width (08 §6): the stage is the dominant area
+ * The Mentor screen's regions by width: the stage is the dominant area
  * and never smaller than the response area. Phone: stacked, the stage about
  * 58% of the height. Tablet (600-1023 px): the stage keeps about half. Desktop
  * (1024 px and up): the stage takes the left 7 of 12 columns, the speech plate,

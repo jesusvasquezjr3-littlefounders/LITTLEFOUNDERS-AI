@@ -1,5 +1,5 @@
 /*
- * The lesson layout's placement of the compact Mentor stage (Bible 08 §11). The
+ * The lesson layout's placement of the compact Mentor stage. The
  * stage's own look and phone band height live with the stage
  * (mentor/mentorStage.css); on a wide container the band becomes the side
  * column of 4 of 12 columns, left of the question.
@@ -11,8 +11,8 @@
   .lf-learning--with-stage .lf-learning-content { grid-column: 5 / -1; margin-block-start: 0; }
 }
 /*
- * W2L.3: every v2 board places the stage slot under its progress row (lessonStage.tsx), so the side column is
- * keyed on the band's presence instead of a class each board would have to repeat (Bible 08 §11: 4 of 12 columns
+ * Every v2 board places the stage slot under its progress row (lessonStage.tsx), so the side column is
+ * keyed on the band's presence instead of a class each board would have to repeat (4 of 12 columns
  * beside the question from a tablet container; below it, the band under the progress row).
  */
 @container app (min-width: 640px) {
@@ -23,13 +23,13 @@
   .lf-learning-inner:has(> .lf-mentor-band) > .lf-learning-content { margin-block-start: 0; }
 }
 /*
- * GAP-FIX-R3 (Bible 08 §11): with no stage projected, the adventure scene alone keeps the band's class contract and
+ * With no stage projected, the adventure scene alone keeps the band's class contract and
  * height (the register's 110/96/80 px on a phone), so the layout above never changes shape.
  */
 .lf-mentor-band--scene { position: relative; inline-size: 100%; block-size: var(--lf-mentor-band-size, 96px); overflow: hidden; background: var(--primary); }
 .lf-mentor-band--scene .lf-art { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; max-inline-size: none; object-fit: cover; }
 /*
- * GAP-FIX-R3 (08 §11 "the band may show the active adventure's scene"): the Mentor's own render is opaque, so with an
+ * The Mentor's own render is opaque, so with an
  * adventure backdrop the scene layer takes the middle of the phone band and the adventure shows on both sides; in the
  * 4-of-12 side column the adventure fills the top and the Mentor stands in the lower part. One band either way.
  */

@@ -7,22 +7,21 @@ import { BadgeLanding, type BadgeLandingState, type BadgePayload } from '@/rebui
 import { useSiteActions } from './siteActions';
 
 /*
- * /badge/:token — the LEGACY badge-link landing page (0072/0073), retiring
- * under OD-20: new shares are images the parent sends, so no new link is
+ * /badge/:token — the LEGACY badge-link landing page (0072/0073), retiring:
+ * new shares are images the parent sends, so no new link is
  * issued. Links issued before the cutover render here until they expire
  * (Core enforces revocation, expiry and the cutover on every read). From
  * BADGE_LINK_ROUTE_RETIRES_AT every such link has expired, so the page
- * shows the expired state without asking Core; removing the route is the
- * dated runbook in docs/rebuild/policies/ACHIEVEMENT-SHARING.md.
+ * shows the expired state without asking Core.
  *
- * The body is the rebuilt M7 surface (rebuild/site/BadgeLanding.tsx, S10L.3);
+ * The body is the rebuilt surface (rebuild/site/BadgeLanding.tsx);
  * this bridge owns the fetch and the session-aware call to action.
  *
- * No viewer tracking: the badge_link_click event is retired (Appendix L
- * under OD-20 counts shares initiated, never viewer reach).
+ * No viewer tracking: the badge_link_click event is retired (shares initiated
+ * are counted, never viewer reach).
  */
 
-/** Mirrors backend/src/services/badgeLinkWindow.ts; `npm run sharing:check` keeps them equal. */
+/** Mirrors backend/src/services/badgeLinkWindow.ts. */
 export const BADGE_LINK_ROUTE_RETIRES_AT = '2026-10-24T00:00:00.000Z';
 
 export function BadgeLandingPage() {

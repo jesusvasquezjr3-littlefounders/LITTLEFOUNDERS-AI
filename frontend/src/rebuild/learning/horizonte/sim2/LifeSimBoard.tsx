@@ -38,7 +38,7 @@ function marksOf(finish: number, floor: number, life: boolean): { worth: Mark[];
 }
 
 /*
- * The drawing is the plot alone. Every word and figure of the axes is HTML beside it (Bible 05 section 5): the y labels are zero-height
+ * The drawing is the plot alone. Every word and figure of the axes is HTML beside it: the y labels are zero-height
  * rows spread over the plot's height, which is where the evenly spaced ticks of `axisOf` fall, and the x labels are zero-width columns.
  */
 function FuturesChart({ label, locale, futures, series, axis, periods, yearsEach, marks, yearsLabel, shorts }: {
@@ -87,7 +87,7 @@ function Measures({ caption, head, rows }: { caption: string; head: readonly [st
 }
 
 /*
- * F3.3: live a year or twenty in compressed time. The learner moves one slider over a few choices (a stock share, a spending level,
+ * Live a year or twenty in compressed time. The learner moves one slider over a few choices (a stock share, a spending level,
  * the cover bought, the pay sent to debt) and sees the same 100 seeded futures under each: a fan of lines, green where a future
  * reaches the target and keeps its cash above the floor. The count of green futures is what the check is about. Whether a future
  * succeeds is whole-number arithmetic in the model; Core replays the same seeded futures to grade the choice.

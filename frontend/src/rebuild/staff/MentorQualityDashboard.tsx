@@ -21,13 +21,13 @@ import '../mentor/alliance.css';
 import './mentorQuality.css';
 
 /*
- * C.24 IN THE REBUILT STAFF CONSOLE: the one place the product/pedagogy team
- * watches the Mentor (Appendix E §3.1 Tier 3). Four panels:
+ * THE MENTOR-QUALITY DASHBOARD IN THE STAFF CONSOLE: the one place the
+ * product/pedagogy team watches the Mentor. Four panels:
  *
- *   1. STATUS. How fresh the numbers are (Appendix F §1.4: within 24 hours;
+ *   1. STATUS. How fresh the numbers are (within 24 hours;
  *      older reads "out of date" in words, never looks calm), how the last
  *      hourly check went, and any owner role nobody is named for.
- *   2. NEEDS REVIEW. Every open flag (C.21's anomaly flags), urgent first,
+ *   2. NEEDS REVIEW. Every open flag (the anomaly flags), urgent first,
  *      with its owner role. Only the NAMED owner of that role sees the
  *      actions: acknowledge, then resolve with the root cause in words. Core
  *      enforces the same rule against the database; hiding the buttons is a
@@ -82,7 +82,7 @@ export interface MentorQualityCopy {
   reviewSigned: string;
   reviewAlready: string;
   signal: Record<string, Record<string, string>>;
-  /** GAP-FIX-R4 (Appendix C 1.1): the per-KC / per-window and per-age-band rows of the learning signals. */
+  /** The per-KC / per-window and per-age-band rows of the learning signals. */
   breakdown: {
     show: string;
     hide: string;
@@ -93,7 +93,7 @@ export interface MentorQualityCopy {
     skill: string;
     baseline: string;
     noBaseline: string;
-    /** GAP-FIX-R7 (Appendix C 1.1, B.9): the two halves of the decision-journal metric and its release-1 baseline. */
+    /** The two halves of the decision-journal metric and its release-1 baseline. */
     journalCoverage: string;
     journalResurfacing: string;
     journalBaseline: string;
@@ -101,7 +101,7 @@ export interface MentorQualityCopy {
 }
 
 /**
- * Signals whose breakdown the dashboard lists (Appendix C 1.1: per KC and window, per KC and age band; the
+ * Signals whose breakdown the dashboard lists (per KC and window, per KC and age band; the
  * decision journal's coverage next to its resurfacing rate).
  */
 export const BREAKDOWN_SIGNALS: readonly string[] = ['learning.delayed_retention', 'learning.time_to_mastery', 'learning.decision_journal'];
@@ -321,7 +321,7 @@ export function MentorQualityReview({ copy, locale, dark, data, onReview }: {
   </Panel>;
 }
 
-/** The whole surface, for the isolated preview and the wave-2 console. */
+/** The whole surface, for the isolated preview and the console. */
 export function MentorQualityDashboard(props: {
   copy: MentorQualityCopy; locale: string; dark: boolean; phase: 'loading' | 'ready' | 'failed'; data: MentorQualityDashboardData | null;
   onAcknowledge: (id: string) => Promise<FlagActionResult>; onResolve: (id: string, note: string) => Promise<FlagActionResult>;

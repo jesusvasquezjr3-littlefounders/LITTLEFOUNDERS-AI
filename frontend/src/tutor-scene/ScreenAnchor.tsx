@@ -97,7 +97,7 @@ const MIN_READABLE_PX = 12;
  * The floor under an INTERACTIVE anchored node's rendered short side, in CSS
  * pixels.
  *
- * /DESIGN.md §Layout makes 44 px non-negotiable, and until this existed the
+ * 44 px is non-negotiable, and until this existed the
  * rule was enforced in the stylesheet and broken on the glass: `min-h-11` is
  * 44 px of layout, and the depth scale below then multiplied it by 0.75. The
  * number is the design floor exactly; the room a control needs in order to
@@ -245,7 +245,7 @@ export interface AnchorOptions {
    * covered is to disappear: `WorldChip` hides itself, so a chip behind the
    * lesson plate stops being a tab stop the learner cannot see. The caption is
    * the exception the whole mechanism exists for — it is the deaf learner's
-   * entire channel (/ORACLE.md §1 step 4), so it may never hide, which leaves
+   * entire channel, so it may never hide, which leaves
    * moving as the only answer available to it.
    */
   avoid?: boolean;
@@ -269,7 +269,7 @@ export interface AnchorOptions {
    * Never disappear. Slide back into the frame instead of being culled.
    *
    * FOR THE SPEECH CAPTION AND NOTHING ELSE, and it closes a defect that was
-   * measured rather than reasoned about. /DESIGN.md → Screen Recipes → Tutor
+   * measured rather than reasoned about. The Tutor screen
    * already states the rule — "a WorldChip hides, and the speech caption MOVES,
    * because it is the deaf learner's whole channel and may never hide" — and
    * `avoid` only ever implemented half of it. `avoid` escapes viewport-anchored
@@ -295,7 +295,7 @@ export interface AnchorOptions {
    *
    * THE WEAKER HALF OF `keepInFrame`, AND IT EXISTS FOR THE AUDITION. A
    * candidate's name plate rides that candidate's crown, and it is the surface
-   * a learner taps to choose them (/ORACLE.md §10). Measured on
+   * a learner taps to choose them. Measured on
    * `/dev/tutor-lab` at 375x812 with the camera held still: Liruf's cluster
    * projected to x = 321 with a half-width of 55, so its right edge landed at
    * 376 against a 375 px viewport and the ordinary box cull removed it. **One
@@ -306,7 +306,7 @@ export interface AnchorOptions {
    * without any orb at all.
    *
    * Clamping is right here for the reason it is wrong for a chip on a rim pad.
-   * /DESIGN.md's rule against it — "a chip pressed flat against the frame edge
+   * The design rule against it — "a chip pressed flat against the frame edge
    * points at nothing" — is about a control naming a PLACE that has left the
    * picture. This one names a PERSON who is still standing in it, two
    * centimetres away, fully rendered. Sliding the plate 1 px inward keeps it
@@ -326,7 +326,7 @@ export interface AnchorOptions {
    * 12 px is where a two-word chip stops being readable, and every chip on this
    * layer is held well above it by the 44 px TAP floor anyway. The speech
    * caption has no tap floor — nobody presses it — so 12 was the only thing
-   * under it, and /DESIGN.md §Lumen → Type calls exactly that size "not a size,
+   * under it, and the type scale calls exactly that size "not a size,
    * an apology" and has the stylesheet neutralise `lf-caption` on chrome to
    * stop it happening. The depth scale then reintroduced it on the one node the
    * same section calls "the largest type on the stage after the character".
@@ -398,7 +398,7 @@ export function useAnchorSlot(
        * under 44 px — "Talk with Dina" at 44x33, "Ask Liruf to head off" at
        * 36x36, "Move the sun to Dusk" at 56x33 — every one of them authored at
        * the 44 px minimum and every one of them multiplied down by its distance
-       * from the camera. /DESIGN.md calls 44 px non-negotiable, and a control
+       * from the camera. The design calls 44 px non-negotiable, and a control
        * that meets it in the stylesheet and misses it on the glass has met
        * nothing.
        *
@@ -646,7 +646,7 @@ export function AnchorProjector() {
           }
           /*
            * It slides back in rather than leaving. See `keepInFrame`: the rule
-           * /DESIGN.md states — the caption MOVES, it never hides — was only
+           * the design states — the caption MOVES, it never hides — was only
            * half implemented, because `avoid` escapes fixed CHROME and nothing
            * escaped the frame EDGE.
            *
@@ -849,10 +849,10 @@ const PROJECTED_STYLE_PROPS = [
  * those the stale `position: fixed` was the only thing keeping them out of
  * layout.
  *
- * `verify:tutor-ui` caught it within one run: at mobile-es the speech caption
+ * Seen at mobile-es: the speech caption
  * came out overlapping the microphone dock by 323x67 px — the escape
  * arithmetic is fine, the boxes it was escaping had moved. Reverting this one
- * property returns the gate to green while `top`/`left`/`margin` still go
+ * property fixes it while `top`/`left`/`margin` still go
  * back, which is all the caption ever needed.
  *
  * Being left `fixed` is also the correct resting state rather than a

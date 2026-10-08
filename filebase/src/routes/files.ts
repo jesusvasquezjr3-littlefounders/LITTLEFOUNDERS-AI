@@ -21,7 +21,7 @@ import { unlink } from 'node:fs/promises';
 
 /*
  * Management API — POST/GET/DELETE under /api/v1/files. Mounted behind the
- * INTERNAL_API_KEY gate in app.ts (/AGENTS.md §1.5: internal services are
+ * INTERNAL_API_KEY gate in app.ts (internal services are
  * never called directly from the browser). Public reads live in
  * routes/download.ts instead.
  */

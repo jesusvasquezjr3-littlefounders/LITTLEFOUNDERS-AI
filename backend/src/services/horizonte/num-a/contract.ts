@@ -42,7 +42,7 @@ export const rulerPayload = z.object({ unit: rulerUnit, from: z.number().int().m
 export const panBalancePayload = z.object({
   left: z.array(weight).max(BALANCE_MAX_FIXED), right: z.array(weight).max(BALANCE_MAX_FIXED), weights: z.array(weight).min(1).max(BALANCE_MAX_LOOSE),
 }).strict();
-/** F1.3: a line of equal gaps and the given numbers to place on its marks; the payload never carries where each belongs. */
+/** a line of equal gaps and the given numbers to place on its marks; the payload never carries where each belongs. */
 export const orderLinePayload = z.object({
   scale: z.number().int().refine((scale) => ORDER_SCALES.includes(scale), 'A whole, tenths or hundredths scale'),
   low: z.number().int().min(0).max(ORDER_MAX_UNITS),
@@ -50,7 +50,7 @@ export const orderLinePayload = z.object({
   count: z.number().int().min(ORDER_MIN_COUNT).max(ORDER_MAX_COUNT),
   values: z.array(z.number().int().min(0).max(ORDER_MAX_UNITS)).min(ORDER_MIN_VALUES).max(ORDER_MAX_VALUES),
 }).strict().refine((value) => orderSetup(value) !== undefined, 'Distinct numbers that each sit on a mark of the line');
-/** F1.7: an object drawn from one mark to another against a ruler, to be read by the learner. */
+/** An object drawn from one mark to another against a ruler, to be read by the learner. */
 export const rulerReadPayload = z.object({
   unit: rulerUnit, object: z.string().refine((object) => READ_OBJECTS.includes(object), 'An allowed object'),
   from: z.number().int().min(0).max(RULER_MAX - 1), to: z.number().int().min(1).max(RULER_MAX), max: z.number().int().min(4).max(RULER_MAX),

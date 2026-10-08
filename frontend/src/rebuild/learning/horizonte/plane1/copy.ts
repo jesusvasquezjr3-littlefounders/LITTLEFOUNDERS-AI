@@ -1,8 +1,8 @@
 import type { HorizonteCopy } from '../boardTypes';
 
 /*
- * The words of the eight plane boards (F1.9, F1.11, F1.12), native in en-US, es-MX and pt-BR. Slots like {n} are filled by the
- * board. Every line fits the Copy Budget of its role at the strictest band (06 §3); the words that sit beside a number are
+ * The words of the eight plane boards, native in en-US, es-MX and pt-BR. Slots like {n} are filled by the
+ * board. Every line fits the Copy Budget of its role at the strictest band; the words that sit beside a number are
  * data, which the budget leaves free.
  */
 export const PLANE1_COPY = {

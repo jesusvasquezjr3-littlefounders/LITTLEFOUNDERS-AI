@@ -1,7 +1,7 @@
 /*
  * `npm run voices:register -- --confirm` — PAID, calls the real DashScope
  * qwen-voice-enrollment API once per character/locale (12 calls, one per
- * trimmed sample). OPERATOR-OPT-IN per /AGENTS.md BOUNDARIES: does nothing
+ * trimmed sample). OPERATOR-OPT-IN: does nothing
  * — makes zero network calls — unless invoked with the `--confirm` flag.
  *
  * Prereq: `npm run trim:samples` must have already produced clean output

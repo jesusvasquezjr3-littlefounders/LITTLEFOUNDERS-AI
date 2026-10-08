@@ -1,5 +1,5 @@
 // v2:author and v2:publish — the owner-run v2 authoring and publication
-// commands (GAP-FIX-R1 learning; OD-17, OD-23, OD-24).
+// commands.
 //
 //   npm run v2:author -- --skeleton <plan.json> --out <plan.json> --dry-run [--reference <plan.json>] [--run-id <id>]
 //   npm run v2:author -- --skeleton <plan.json> --out <plan.json> --max-usd <n>       (paid, owner-run)
@@ -16,11 +16,10 @@
 // (spendCeilingRefusal) and runs under the usage ledger. v2:publish never
 // spends; without --dry-run it runs verify:course and calls Vault's reviewed
 // publication transaction (publish_v2_lesson_version) per market.
-// Appendix C Part 1.3 (GAP-FIX-R7): every v2:author run, dry run included,
+// Every v2:author run, dry run included,
 // appends its first draft's failed gates per market to gate-submissions.jsonl
 // in the run directory (`--run-id <id>` -> runs/<id>/, else the directory of
 // --out) and prints the per-gate first-submission pass rate of that directory.
-// Runbook: docs/content/FORGE-V2-RELEASE.md.
 
 import { readFileSync, writeFileSync } from 'node:fs';
 import path from 'node:path';
@@ -55,7 +54,7 @@ export function parse(argv: string[]): Args {
 const PACKAGE_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 
 /**
- * Appendix C Part 1.3 (GAP-FIX-R7): the run directory `v2:author` logs its
+ * The run directory `v2:author` logs its
  * first-submission gate results into. `--run-id <id>` shares `runs/<id>/`
  * with other drafts of the same authoring batch (and with a v1 run of that
  * id); without it, the directory of `--out`, where the usage ledger lives.
@@ -101,7 +100,7 @@ export async function author(args: Args, responderOverride?: V2Responder): Promi
     await ledger.hydrate({ maxTokens: config.FORGE_MAX_TOKENS_PER_RUN, maxUsd: Math.min(config.FORGE_MAX_USD_PER_RUN, maxUsd!) });
   }
   const result = await authorV2Plan(skeleton, responderOverride ?? (dryRun ? fixtureResponder(reference) : completeDeepSeek), { operation: 'v2-author', ledger, courseContext });
-  // Appendix C Part 1.3 (GAP-FIX-R7): the first draft's gates, per market, blocked or not, dry run included. A log failure never fails the stage.
+  // The first draft's gates, per market, blocked or not, dry run included. A log failure never fails the stage.
   const runDir = v2AuthorRunDir(args);
   try {
     await recordV2FirstSubmission(runDir, source.lesson_id, result.firstSubmission);
@@ -164,7 +163,7 @@ export async function publish(args: Args): Promise<number> {
     if (rows.length !== 1 || typeof rows[0]?.status !== 'string') { console.error(`v2:publish: course ${args.course} is not uniquely present in Vault`); return 1; }
     initialCourse = rows[0].status !== 'published';
   }
-  // B.18 (GAP-FIX-R3): `--audio-manifest <file>` (audio_ref -> asset) checks differentiated narration; `--require-narration-audio` blocks on a gap.
+  // `--audio-manifest <file>` (audio_ref -> asset) checks differentiated narration; `--require-narration-audio` blocks on a gap.
   const audioManifest = typeof args['audio-manifest'] === 'string' ? JSON.parse(readFileSync(path.resolve(args['audio-manifest']), 'utf8')) as Record<string, unknown> : {};
   // `--lesson-ids <ids.json>` (from v2:hierarchy): rewrite each plan's slug lesson_id to its public.lessons uuid, so document.lesson_id equals p_lesson_id (0221).
   let plans = loaded.map((entry) => entry.plan!);
@@ -192,12 +191,12 @@ export async function publish(args: Args): Promise<number> {
   });
   if (!result.ok) { console.error(`v2:publish: stopped at ${result.stage}:\n  ${result.problems.join('\n  ')}`); return 1; }
   console.log(`v2:publish: ${result.stage} — ${result.documents.length} document(s), ${result.calls.length} publication call(s)${dryRun ? ' written to publish-calls.json, nothing sent' : ' accepted by Vault'}`);
-  // G.2: a live lesson's new version waits for a human staff release.
+  // A live lesson's new version waits for a human staff release.
   for (const gap of result.narrationWithoutAudio ?? []) console.log(`v2:publish: narration flagged: ${gap}`);
   for (const pending of result.pendingApproval ?? []) {
     console.log(`v2:publish: ${pending.lessonId} ${pending.locale} ${pending.versionId} waits for a staff release (staff console, Content, Live updates)`);
   }
-  // Appendix C Stage 3 (GAP-FIX-R6): every flag a human must judge, recorded for the Stage 3 pedagogical review.
+  // Every flag a human must judge, recorded for the pedagogical review.
   for (const record of result.stage3 ?? []) {
     console.log(`v2:publish: ${record.lessonId} ${record.locale} ${record.versionId}: ${record.items.length} Stage 3 review flag(s)${dryRun ? '' : ' recorded'}; a Stage 3 review resolves them before release`);
   }

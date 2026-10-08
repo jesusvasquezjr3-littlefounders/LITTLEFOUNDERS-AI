@@ -1,7 +1,7 @@
 /*
- * F1.15 visual proofs and cut-and-rearrange. Every figure is a set of rigid pieces: a base polygon plus a start pose and
+ * Visual proofs and cut-and-rearrange. Every figure is a set of rigid pieces: a base polygon plus a start pose and
  * an end pose `{ angle, dx, dy }`, applied as R(angle) v + (dx, dy) in a y-up plane. Moving a piece never stretches or
- * rounds it, so "same pieces, same area" holds by construction and the model tests check it. The key (the right formula
+ * rounds it, so "same pieces, same area" holds by construction. The key (the right formula
  * and the numeric value) is derived here too, so a publish-time check can prove a key matches the geometry it names.
  */
 import { canonicalRational, canonicalText, ratio, sameRational, type Rational } from './numeric.js';

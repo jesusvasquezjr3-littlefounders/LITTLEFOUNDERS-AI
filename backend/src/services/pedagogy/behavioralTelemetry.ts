@@ -1,5 +1,5 @@
 /*
- * Core's half of Product C.9 (the Behavioral Telemetry Layer) and C.19 (the
+ * Core's half of the Behavioral Telemetry Layer and the
  * disengagement check-in and repair-initiation move).
  *
  *   1. THE CLOSE RECORD. Oracle reports, at close, how the layer ran (act or
@@ -9,23 +9,22 @@
  *      `tutor_telemetry_firing` (migration *_mentor_behavioral_telemetry).
  *      Signal strength only: the strict body refuses any extra field, so an
  *      emotion label cannot even be sent.
- *   2. THE METRICS (Appendix F §1.2): the Default-to-Inaction Rate (high by
- *      design; the Stage 7 floor is 85%) and the Disengagement-Repair
+ *   2. THE METRICS: the Default-to-Inaction Rate (high by
+ *      design; the rollback floor is 85%) and the Disengagement-Repair
  *      Initiation Rate (a hard 100% invariant: every fired signal produced the
- *      check-in). Pure summaries, unit-tested without a database;
+ *      check-in). Pure summaries, computed without a database;
  *      `npm run tutor:telemetry-report` prints them.
- *   3. THE STAGE 7 AUTOMATIC ROLLBACK (Appendix F Part 3). Core evaluates the
+ *   3. THE AUTOMATIC ROLLBACK. Core evaluates the
  *      kill-switch condition over the trailing window of act-mode sessions and
  *      sends Oracle `behavioralTelemetryMode: 'shadow'` in every new session's
  *      context while it holds: the layer keeps measuring and stops acting,
- *      which is the pre-C.9 baseline. A trip is written to `audit_logs`
+ *      which is the baseline before the layer existed. A trip is written to `audit_logs`
  *      (the Kill-Switch Trigger Log) and HOLDS until an operator resolves it
  *      (`tutor:telemetry-report -- --resolve="…"`): a rollback is lifted by a
  *      root cause, never by the window going quiet.
  *
  * The vocabularies are HAND-MIRRORED from Oracle
- * (`oracle/src/tutor/behavioralTelemetry.ts`) and the migration's CHECKs;
- * `npm run telemetry:check` keeps them identical.
+ * (`oracle/src/tutor/behavioralTelemetry.ts`) and the migration's CHECKs.
  */
 
 import { z } from 'zod';
@@ -34,21 +33,21 @@ import { insertAuditLog, serviceRest } from '../supabaseRest.js';
 /**
  * The optional session-context fields Core sends only to an Oracle that
  * announces it can parse them (`x-oracle-context-fields`). Mirrors Oracle's
- * `core/client.ts` CONTEXT_OPTIONAL_FIELDS (checked by `npm run telemetry:check`).
+ * `core/client.ts` CONTEXT_OPTIONAL_FIELDS.
  */
 export const CONTEXT_OPTIONAL_FIELDS = [
   'opening',
   'behavioralTelemetryMode',
-  // C.7 / C.15 (S06.5): server-side only; see services/pedagogy/disposition.ts and alliance.ts.
+  // Server-side only; see services/pedagogy/disposition.ts and alliance.ts.
   'dispositionProfile',
   'allianceContinuity',
   'allianceMode',
-  // C.11 / C.17 (S06.10/S06.11): see services/pedagogy/spacedReview.ts and dialogueCalibration.ts.
+  // See services/pedagogy/spacedReview.ts and dialogueCalibration.ts.
   'spacedReviewMode',
   'dialogueCalibration',
-  // C.22 Stage 5 (GAP-FIX-R3): the canary arm; see services/pedagogy/mentorCanary.ts.
+  // The canary arm; see services/pedagogy/mentorCanary.ts.
   'canary',
-  // C.10 Stage 7 (GAP-FIX-R4): the Extended Mastery Engine rollback; see mentorIntegrity.ts getMasteryKillSwitch.
+  // The Extended Mastery Engine rollback; see mentorIntegrity.ts getMasteryKillSwitch.
   'corroborationRollbackKcKeys',
 ] as const;
 
@@ -64,7 +63,7 @@ export const TELEMETRY_CHANNELS = [
 ] as const;
 export type TelemetryChannel = (typeof TELEMETRY_CHANNELS)[number];
 
-/** Mirrors Oracle's REPORTED_CHECK_IN_OUTCOMES (checked by `npm run telemetry:check`). */
+/** Mirrors Oracle's REPORTED_CHECK_IN_OUTCOMES. */
 export const CHECK_IN_OUTCOMES = [
   'aligned',
   'misaligned',
@@ -122,12 +121,11 @@ export type BehavioralTelemetryReport = z.infer<typeof BehavioralTelemetryReport
 
 /**
  * Every threshold here is PROPOSED, PENDING CALIBRATION
- * (docs/rebuild/mentor/THRESHOLD-RECALIBRATION-LOG.md).
  */
 export const TELEMETRY_THRESHOLDS = {
-  /** Appendix F Stage 7: the Default-to-Inaction floor. */
+  /** The Default-to-Inaction floor. */
   defaultToInactionFloor: 0.85,
-  /** Appendix F §1.2: the Disengagement-Repair Initiation Rate is a hard invariant. */
+  /** The Disengagement-Repair Initiation Rate is a hard invariant. */
   repairInitiationTarget: 1,
   /** The kill-switch evaluates act-mode sessions closed in this trailing window. */
   killSwitchWindowDays: 14,
@@ -227,7 +225,7 @@ export interface DefaultToInactionSummary {
   byPersona: Record<string, { evaluatedTurns: number; actionTurns: number; rate: number | null }>;
 }
 
-/** Default-to-Inaction Rate (Appendix F §1.2): high by design; the Stage 7 floor is 85%. */
+/** Default-to-Inaction Rate: high by design; the rollback floor is 85%. */
 export function summarizeDefaultToInaction(
   sessions: TelemetrySessionRow[],
   thresholds = TELEMETRY_THRESHOLDS,
@@ -288,7 +286,7 @@ const COLUMN: Record<TelemetryChannel, keyof TelemetryFiringRow> = {
 };
 
 /**
- * Disengagement-Repair Initiation Rate (Appendix F §1.2): a HARD invariant.
+ * Disengagement-Repair Initiation Rate: a HARD invariant.
  * A firing superseded by a safety stop or a closing, or one whose session
  * ended before any Mentor turn could carry it, had no opportunity and is not
  * counted; ONE undelivered firing is a defect, whatever the sample.
@@ -322,7 +320,7 @@ export function summarizeRepairInitiation(firings: TelemetryFiringRow[]): Repair
   };
 }
 
-// ── 3. The Stage 7 automatic rollback ───────────────────────────────────────
+// ── 3. The automatic rollback ───────────────────────────────────────
 
 export const KILL_SWITCH_TRIGGERED = 'mentor.kill_switch.behavioral_telemetry.triggered';
 export const KILL_SWITCH_RESOLVED = 'mentor.kill_switch.behavioral_telemetry.resolved';
@@ -338,7 +336,7 @@ export interface KillSwitchVerdict {
   missedCheckIns: number;
 }
 
-/** The Stage 7 condition over one window of act-mode data (pure). */
+/** The rollback condition over one window of act-mode data (pure). */
 export function evaluateKillSwitch(
   sessions: TelemetrySessionRow[],
   firings: TelemetryFiringRow[],
@@ -401,7 +399,7 @@ export function resetKillSwitchCache(): void {
  *     with its cause and numbers (no ids of learners, no text).
  *   - At most the 20,000 most recent sessions and firings of the window are
  *     read: past that volume the verdict is taken on the most recent sample.
- *   - A FAILED read is not evidence (§1.14): the verdict is `act` with
+ *   - A FAILED read is not evidence: the verdict is `act` with
  *     `degraded`, and it is not cached, so the next session asks again. The
  *     rollback is a response to measured over-intervention; the operator's
  *     TUTOR_BEHAVIORAL_TELEMETRY switch remains available at any time.
@@ -471,7 +469,7 @@ export interface KillSwitchLogEntry {
   resolutionHours: number | null;
 }
 
-/** The Kill-Switch Trigger Log (Appendix F §1.3): count, cause and resolution time of every trip. */
+/** The Kill-Switch Trigger Log: count, cause and resolution time of every trip. */
 export function killSwitchLog(rows: AuditRow[]): KillSwitchLogEntry[] {
   const ordered = [...rows].sort((a, b) => a.created_at.localeCompare(b.created_at));
   const out: KillSwitchLogEntry[] = [];

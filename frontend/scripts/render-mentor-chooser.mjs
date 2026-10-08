@@ -4,9 +4,9 @@ import sharp from 'sharp';
 import { launchBrowser, openPage, warmDevServer } from './lesson-engine/browser.mjs';
 
 /*
- * The Mentor chooser's pictures (Frontend Bible 08 §8: "the four real
- * characters on the Diorama, rendered from the models"; 07 §4; OD-14), locally
- * and at zero spend: no image model, no paid service.
+ * The Mentor chooser's pictures (the four real characters on the Diorama,
+ * rendered from the models), locally and at zero spend: no image model, no
+ * paid service.
  *
  * Each picture is the rebuilt Mentor stage itself (`MentorStage`, the one
  * component the Mentor screen and the lesson show), rendering the character's
@@ -24,7 +24,7 @@ import { launchBrowser, openPage, warmDevServer } from './lesson-engine/browser.
  *
  * The files are drafts: `src/rebuild/assets/manifest.json` registers them
  * (`mentor.chooserStill`) with `reviewStatus: "draft"` until the owner approves
- * the character-render family (07 §7, OD-14); a release build refuses drafts.
+ * the character-render family; a release build refuses drafts.
  *
  * Prerequisites (gitignored): the runtime models in `public/scenes/` and the
  * Basis transcoder in `public/basis/`; a Vite dev server:
@@ -43,7 +43,7 @@ const SHOT = process.env.CHOOSER_SHOT ?? 'closeup-wide';
  * a landscape viewport (WIDE) and the 4:5 picture is cut from its centre.
  * CHOOSER_SHOTS=dina=approach overrides a shot.
  */
-/* On diorama-b a bush stands in front of Dina's standing spot (seen in W2M.1 and here): her picture is taken on diorama-a. */
+/* On diorama-b a bush stands in front of Dina's standing spot (seen in the chooser): her picture is taken on diorama-a. */
 const SCENES = { dina: 'diorama-a', ...Object.fromEntries((process.env.CHOOSER_SCENES ?? '').split(',').filter(Boolean).map((pair) => pair.split('='))) };
 const WIDE = new Set((process.env.CHOOSER_WIDE ?? 'dina').split(',').filter(Boolean));
 const WIDE_VIEW = { width: 700, height: 500 };

@@ -15,7 +15,7 @@ type NetSegment = Extract<HorizonteSegment, { type: 'geometry.cube-net.v2' }>;
 type Names = Readonly<Record<number, FaceName>>;
 
 /*
- * F4.2, naming mode: six squares laid out as a net, a few already named. The learner names the rest by dragging a name chip onto a
+ * Naming mode: six squares laid out as a net, a few already named. The learner names the rest by dragging a name chip onto a
  * square, tapping a chip then a square, or with "Move to"; tapping a named square takes its name back. The answer is the name of
  * every square; Core holds the one correct naming, the browser never says met.
  */

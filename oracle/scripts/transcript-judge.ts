@@ -1,9 +1,9 @@
 /*
- * `npm run transcript-judge` — C.21: the live transcript judge's dry-run path.
+ * `npm run transcript-judge` — the live transcript judge's dry-run path.
  *
  *   --batch=<file>     REQUIRED: the batch Core exports:
  *                        npm --prefix backend run tutor:evaluate -- --export-judge-batch=<file>
- *                      or, for a C.23 calibration, the gold set:
+ *                      or, for a calibration, the gold set:
  *                        npm --prefix backend run tutor:judge-calibration -- --export-gold-batch=<file>
  *   (no mode flag)     DRY RUN, zero spend: the batch's intended labels stand in
  *                      for the judge ("fixture scorer"); prints the plan, the
@@ -11,12 +11,12 @@
  *   --replay=<file>    recompute agreement from an earlier LIVE output.
  *   --live             OWNER-RUN ONLY: one paid judge call per transcript.
  *                      Refused unless TRANSCRIPT_JUDGE_LIVE=approved and a judge
- *                      key is configured (OD-23).
+ *                      key is configured.
  *   --out=<file>       write the run (verdicts, judge identity, rubric hash).
  *
  * Every result is labelled "uncalibrated: Tier 3 information only". A judge
- * may gate or record nothing until it is calibrated against a human panel
- * (C.23, Appendix E §3.2); Core's schema refuses judge-scored rows. A LIVE
+ * may gate or record nothing until it is calibrated against a human panel;
+ * Core's schema refuses judge-scored rows. A LIVE
  * run over the gold batch is recorded as a calibration by Core:
  *   npm --prefix backend run tutor:judge-calibration -- --record --judge=transcript_judge
  *     --run=<this --out file> --ratings=a.json,b.json --recorded-by="…" --note="…"

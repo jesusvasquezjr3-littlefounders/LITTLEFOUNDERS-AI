@@ -20,7 +20,7 @@ const MANY = 40;
 const LEAST_PIECE_PX = 3;
 
 /*
- * F4.6, the stack: coins or bills are stacked to scale beside things whose height is known, and the learner sets how many
+ * The stack: coins or bills are stacked to scale beside things whose height is known, and the learner sets how many
  * with a handle that rests on a few counts (drag, arrow keys, or the Move to menu). The question is a total worth or a height;
  * the other is printed live, so a stack of a million in bills can be seen to be as tall as a person. Thickness is a teaching
  * figure (a coin 2 mm, a bill 0.1 mm), not a measurement of any real currency. Core holds the key; the browser never says met.

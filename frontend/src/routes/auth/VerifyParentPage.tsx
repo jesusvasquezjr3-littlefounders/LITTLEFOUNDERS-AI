@@ -7,13 +7,13 @@ import { failureCode } from './failureCode';
 import { VERIFICATION_CHECKS, VerifyParentScreen, type VerificationCheck, type VerifyValues, type VerifyView } from '@/rebuild/identity/VerifyParentScreen';
 
 /*
- * `/verify-parent` (A7): universal to Tutor (the `parent` role) through ID
+ * `/verify-parent`: universal to Tutor (the `parent` role) through ID
  * verification (the Guardian OCR flow). The photo goes to Core and on to
  * Guardian for an in-memory verdict; it is never stored anywhere.
  *
  * The status is Core's answer (GET /verification/parent), never the `parent`
  * role: a staff grant or a revoked verification must not read as "already a
- * Tutor" (A.5). PARENT_VERIFICATION_REVOKED ends at the support address; a
+ * Tutor". PARENT_VERIFICATION_REVOKED ends at the support address; a
  * child account (FORBIDDEN) is told who can verify, with no retry that could
  * never succeed; an account whose age record is under 18 (AGE_RECORD_MINOR)
  * is sent to the staff-reviewed age correction; any other failure is a retry,
@@ -24,7 +24,7 @@ type Verdict = { verified: boolean; checks?: Record<string, boolean> };
 function statusView(code: string): VerifyView {
   if (code === 'PARENT_VERIFICATION_REVOKED') return { kind: 'revoked' };
   if (code === 'FORBIDDEN') return { kind: 'ineligible' };
-  // F3-identity-site: the account's own age record is under 18 (A.2, E.4, OD-3).
+  // The account's own age record is under 18.
   if (code === 'AGE_RECORD_MINOR') return { kind: 'minor' };
   return { kind: 'status-error', retrying: false };
 }
@@ -55,7 +55,7 @@ export function VerifyParentPage() {
     form.set('givenNames', values.givenNames);
     form.set('surnames', values.surnames);
     form.set('birthDate', values.birthDate);
-    // A.5: no document type. It cannot be checked against the image, so it is not collected.
+    // No document type. It cannot be checked against the image, so it is not collected.
     form.set('document', values.document);
     const { data, error } = await api<Verdict>('/verification/parent', { formData: form, token });
     if (error) {

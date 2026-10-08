@@ -1,4 +1,4 @@
-/* F2.13 to F2.15 shared: zones that take pieces, the piece tray and the text lines. Tokens only. */
+/* Shared: zones that take pieces, the piece tray and the text lines. Tokens only. */
 .lf-slotboard { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--spacing-4); justify-items: start; container: lf-slotboard / inline-size; }
 .lf-slotboard-tablewrap { inline-size: 100%; min-inline-size: 0; overflow-x: auto; }
 .lf-slotboard-tablewrap:focus-visible { outline: var(--focus-width) solid var(--focus-color); outline-offset: var(--focus-offset); }

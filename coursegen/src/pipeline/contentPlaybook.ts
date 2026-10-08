@@ -10,8 +10,7 @@
 // formative feedback), child cognitive development (Piaget: pre-operational
 // tier1, concrete-operational tier2, early formal-operational tier3), and
 // engagement research (self-determination theory — autonomy/competence/
-// relatedness; the curiosity gap; narrative stakes). Sources are catalogued in
-// COURSE_ENGINE.md §"Content quality".
+// relatedness; the curiosity gap; narrative stakes).
 //
 // Kept deliberately tight: it ships in every write/review prompt, so every line
 // must earn its tokens by changing what the model produces.

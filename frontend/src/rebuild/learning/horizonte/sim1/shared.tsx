@@ -41,7 +41,7 @@ export function traceIndices(count: number, points = 120): number[] {
   return [...picked].sort((a, b) => a - b);
 }
 
-/** The host carries the role itself, or the audit counts the SVG numerals as body words. */
+/** The host carries the role itself, or the SVG numerals count as body words. */
 export function Chart({ label, height, children, labels }: { label: string; height: number; children: ReactNode; labels?: ReactNode }) {
   return <div className="lf-hz-drawing lf-sim-drawing" data-copy-role="data">
     <svg className="lf-sim-chart" viewBox={`0 0 ${VIEW_W} ${height}`} role="img" aria-label={label} focusable="false" data-copy-role="data">{children}</svg>

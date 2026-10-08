@@ -148,7 +148,7 @@ export function horizontePacksFor(raw: unknown): HorizontePackId[] {
 /** The packs a document needs that are not loaded yet; empty means it can be validated and played now. */
 export function missingHorizontePacks(raw: unknown): HorizontePackId[] { return horizontePacksFor(raw).filter((id) => !loaded.has(id)); }
 export function loadHorizontePacksFor(raw: unknown): Promise<void> { return loadHorizontePacks(horizontePacksFor(raw)); }
-/** Preview, audit and tests stage any piece, so they load every pack up front; the player never calls this. */
+/** Preview stages any piece, so it loads every pack up front; the player never calls this. */
 export function loadAllHorizontePacks(): Promise<void> { return loadHorizontePacks(Object.keys(PACK_LOADERS) as HorizontePackId[]); }
 
 const TYPE_LIST = Object.keys(HORIZONTE_CAPABILITIES) as [string, ...string[]];

@@ -14,8 +14,8 @@ import { serviceRest } from './supabaseRest.js';
  * The reason, measured in production on 2026-08-28: 31 accounts exist, and
  * `signup_complete` has fired ZERO times across every single day any of them
  * were created. A console that only reads the event stream reports "no signups
- * ever" with total confidence. That is /AGENTS.md §1.14 — an absence has to be
- * distinguishable from a fault — and it cannot be resolved from inside the
+ * ever" with total confidence. An absence has to be
+ * distinguishable from a fault, and that cannot be resolved from inside the
  * stream, because a stream that records nothing looks identical whether nobody
  * came or nothing was recorded.
  *
@@ -149,7 +149,7 @@ export interface AudienceSummary {
  *
  * A quiet day has to render as a zero and not as a gap, for the same reason the
  * analytics timeseries does: a chart that simply stops reads as a broken view
- * rather than as the honest answer "nobody came" (§1.14, and the
+ * rather than as the honest answer "nobody came" (see the
  * `fillDailySeries` note in pulse.ts).
  */
 function fillDays(byDay: Map<string, AudienceSeriesPoint>, days: number): AudienceSeriesPoint[] {

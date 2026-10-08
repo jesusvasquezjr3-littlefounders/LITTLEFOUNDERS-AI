@@ -12,7 +12,7 @@
  * So the route PATTERN and the link BUILDER are now the same fact in the same
  * file. App.tsx registers LESSON_ROUTE_PATH; everything that navigates calls
  * lessonPath(). They cannot drift, because changing one without the other no
- * longer type-checks or passes paths.test.ts.
+ * longer type-checks.
  *
  * Keyed by `lesson.id` (a UUID), never `lesson.slug`: LessonRoute reads
  * :lessonId straight into GET /learn/lessons/:id, and Core looks that up by id.
@@ -42,13 +42,13 @@ export function lessonPath(lessonId: string): string {
 export const COURSE_ROUTE_PATH = 'learn/:courseSlug' as const;
 export const PLACEMENT_ROUTE_PATH = 'learn/:courseSlug/placement' as const;
 export const TERRITORY_ROUTE_PATH = 'learn/:courseSlug/territory' as const;
-/** B.6 (S05.3b): the rebuilt course path on the pathway engine. */
+/** The rebuilt course path on the pathway engine. */
 export const COURSE_PATH_ROUTE_PATH = 'learn/:courseSlug/path' as const;
-/** B.9 (S05.3c): the learner's decision journal. A static segment, so it ranks above learn/:courseSlug. */
+/** The learner's decision journal. A static segment, so it ranks above learn/:courseSlug. */
 export const DECISION_JOURNAL_ROUTE_PATH = 'learn/journal' as const;
-/** B.21 / B.24 (S05.3e): the learner's streak, pace and choices. A static segment, like the journal. */
+/** The learner's streak, pace and choices. A static segment, like the journal. */
 export const LEARNING_RHYTHM_ROUTE_PATH = 'learn/rhythm' as const;
-/** L-04 (OD-27 (1)): teen cooperative goals. A static segment, like the journal. */
+/** Teen cooperative goals. A static segment, like the journal. */
 export const TOGETHER_ROUTE_PATH = 'learn/together' as const;
 
 export function coursePath(courseSlug: string): string {
@@ -86,7 +86,7 @@ export function togetherPath(): string {
 }
 
 /**
- * B.26 / OD-1 (S05.3f): the Mentor's guided review of one skill, opened only
+ * The Mentor's guided review of one skill, opened only
  * when the learner accepts the offer. The Mentor starts a weak-skill session
  * for that course/topic key (TutorExperience reads `review`).
  */
@@ -101,7 +101,7 @@ export function guidedReviewSkillFrom(search: string): string | null {
   return value !== null && /^[a-z0-9-]+\/[a-z0-9-]+$/.test(value) ? value : null;
 }
 
-/** OD-43: the lesson a guided review was opened from, or null. */
+/** The lesson a guided review was opened from, or null. */
 export function guidedReviewLessonFrom(search: string): string | null {
   const value = new URLSearchParams(search).get('lesson');
   return value !== null && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value) ? value : null;

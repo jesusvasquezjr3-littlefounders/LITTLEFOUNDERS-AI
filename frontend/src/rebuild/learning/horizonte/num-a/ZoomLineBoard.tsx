@@ -21,7 +21,7 @@ const AXIS = 76;
 const HEIGHT = 140;
 
 /*
- * A13: a number line that zooms from whole numbers into tenths and then hundredths. The marker moves by tapping the line or by the
+ * A number line that zooms from whole numbers into tenths and then hundredths. The marker moves by tapping the line or by the
  * stepper, whose buttons are the keyboard path; the answer is the marker's whole-number position on the finest grid.
  * Zooming in keeps the marker and shows one tick of the coarser level on each side of it. Core holds the target.
  */

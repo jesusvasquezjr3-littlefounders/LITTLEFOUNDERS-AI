@@ -1,10 +1,10 @@
-// The 56-type palette prompt (COURSE_ENGINE.md §4/§5) — the single source
+// The 56-type palette prompt — the single source
 // DeepSeek's plan/write prompts render from. PALETTE_GUIDE is typed against
-// a hand-written literal union (ExerciseTypeId) mirroring LESSON_ENGINE.md
-// §5 exactly, so TypeScript refuses to compile if a type is added to a
+// a hand-written literal union (ExerciseTypeId) mirroring the lesson engine's
+// exercise types exactly, so TypeScript refuses to compile if a type is added to a
 // family schema and forgotten here — the runtime half of that guarantee
 // (that ExerciseTypeId still matches the ACTUAL contract, not just this
-// file's belief about it) is `src/__tests__/palette.test.ts`.
+// file's belief about it) is not checked at compile time.
 
 import type { TaxonomyFile } from '../../catalog/schema.js';
 import { ALL_TYPES, TYPE_TO_FAMILY, type FamilyName } from '../../contract/registry.js';
@@ -20,7 +20,7 @@ export type ExerciseTypeId =
   | 'story_branch' | 'dialogue_choice' | 'flash_match' | 'lightning_round' | 'would_you_rather'
   | 'code_order' | 'robot_path' | 'debug_hunt' | 'balance_scale' | 'measure_read' | 'machine_io';
 
-/** One terse line per type: pedagogical trigger + exact payload/answer field contract (LESSON_ENGINE.md §5). */
+/** One terse line per type: pedagogical trigger + exact payload/answer field contract. */
 export const PALETTE_GUIDE: Record<ExerciseTypeId, string> = {
   // -- story (content, ungraded, xp:0) --
   story_dialogue: 'Narrative beat via character lines. payload:{lines:[{character,emotion?,action?,text_md}] 1-12}. No answer.',
@@ -119,11 +119,11 @@ export interface AllowedTypesResult {
 }
 
 /**
- * Palette SUBSETTING (COURSE_ENGINE.md §4): filter the full 56-type palette
+ * Palette SUBSETTING: filter the full 56-type palette
  * down to what a given age tier may draw from — family allowlist first,
  * then named exceptions punch (extra-allowed) or close (banned) holes.
  *
- * `opts.fullPalette` (COURSE_ENGINE.md §3.3, adult register) bypasses tier
+ * `opts.fullPalette` bypasses tier
  * subsetting entirely — every type in the closed canon is allowed, no
  * allowlist/exception lookups at all.
  */

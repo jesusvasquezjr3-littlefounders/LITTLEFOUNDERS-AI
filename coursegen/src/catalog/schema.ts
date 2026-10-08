@@ -1,4 +1,4 @@
-// Zod schemas for the curriculum catalog files — COURSE_ENGINE.md §3.
+// Zod schemas for the curriculum catalog files
 //
 // Two intentional widenings versus the terse task brief, discovered against
 // the real `coursegen/curriculum/financial-education/*.yaml` authored by a
@@ -36,14 +36,14 @@ export const ageTierSchema = z.object({
   forbidden_vocabulary: z.record(z.string().min(2).max(8), z.array(z.string().min(1).max(120))),
 });
 
-// ---- audience registers (COURSE_ENGINE.md §3.3) ----------------------------
+// ---- audience registers ----------------------------
 //
 // Minimal, additive Zod: taxonomy.yaml MAY declare a `registers` block; when
 // absent (every catalog authored before this field existed), the pipeline
 // falls back to kid-default behavior entirely in code (pipeline/register.ts)
 // — no catalog change required, so existing curriculum keeps validating
 // unchanged. `vocabulary_gates` is the only field with real teeth (kid's own
-// Piaget hard-gate is NEVER controlled by this — it's a §1.9 invariant, not
+// Piaget hard-gate is NEVER controlled by this — it's a child-safety invariant, not
 // a catalog toggle); `tone_es`/`palette` are prompt-injection hints only.
 export const registerConfigSchema = z.object({
   default: z.boolean().optional(),
@@ -66,7 +66,7 @@ export const taxonomyFileSchema = z.object({
   // Named exception lists (`tier1_extra_allowed`, `tier1_banned_types`, and
   // any future `tierN_*` list) — a flat map keeps this open-ended.
   type_exceptions: z.record(z.string().min(1).max(60), z.array(z.string().min(1).max(60))),
-  /** Optional — §3.3. Absent = kid-only behavior, unchanged from pre-register catalogs. */
+  /** Optional. Absent = kid-only behavior, unchanged from pre-register catalogs. */
   registers: registersSchema.optional(),
 });
 
@@ -115,7 +115,7 @@ export const catalogFileSchema = z.object({
     description: localized(600),
     authoring_locale: z.enum(LOCALE_KEYS),
     /**
-     * Optional (COURSE_ENGINE.md §3.1b) — the course-level prerequisite
+     * Optional — the course-level prerequisite
      * edge for future placement/unlock (e.g. `investing` requires
      * `financial-education` + `entrepreneurship`). Kebab course slugs, NOT
      * resolved against other course directories here — a single-course
@@ -143,7 +143,7 @@ export type CatalogFile = z.infer<typeof catalogFileSchema>;
 
 // ---- adventures/*.yaml -------------------------------------------------------
 
-/** One market's scenario for a lesson (B.16 market-scenario authoring contract). */
+/** One market's scenario for a lesson (market-scenario authoring contract). */
 export const marketScenarioSchema = z
   .object({
     /** Author brief (authoring locale) describing the market's own situation, amounts and context. */
@@ -173,10 +173,10 @@ export const lessonBlueprintSchema = z.object({
    */
   renamed_from: slugSchema.optional(),
   /**
-   * B.24 / Product 10 Block B autonomy (GAP-FIX-R5): an optional depth or
+   * Autonomy lever: an optional depth or
    * enrichment lesson. Core serves it on the course path as optional ("Explore
    * further") to the registers whose mechanism offers enrichment (13-17,
-   * adults) and never counts it toward progress, badges or OD-25 unlocks
+   * adults) and never counts it toward progress, badges or unlocks
    * (lessons.optional_enrichment, migration *_learning_autonomy_levers.sql).
    * A topic keeps at least one required lesson.
    */
@@ -186,10 +186,10 @@ export const lessonBlueprintSchema = z.object({
   difficulty: z.union([z.literal(1), z.literal(2), z.literal(3), z.literal(4), z.literal(5)]),
   suggested_families: z.array(z.string().min(1).max(40)).min(1),
   /**
-   * QA/authoring override (COURSE_ENGINE.md §4 addendum) — pins the exact
+   * QA/authoring override — pins the exact
    * segment-type skeleton for this lesson, bypassing the plan stage's LLM
    * call entirely (run.ts builds the skeleton deterministically instead).
-   * 1-14 exercise-type ids from the LESSON_ENGINE contract, in the exact
+   * 1-14 exercise-type ids from the lesson contract, in the exact
    * order they should appear. Used by smoke-test catalogs to isolate one
    * type per lesson (or a few, to test in-lesson sequencing) cheaply and
    * deterministically — write (real content authoring), gates, judge,
@@ -217,7 +217,7 @@ export const lessonBlueprintSchema = z.object({
    */
   known_exception: z.string().min(20).max(1200).optional(),
   /**
-   * B.17 (working-memory limits): the GENUINELY NEW concepts this lesson
+   * Working-memory limits: the GENUINELY NEW concepts this lesson
    * introduces, as concept ids (kebab-case). `[]` is a valid declaration (a
    * practice or consolidation lesson). Absent means the lesson's density is
    * untracked, which the concept-cap gate reports as blocking at release: a
@@ -227,11 +227,11 @@ export const lessonBlueprintSchema = z.object({
    */
   new_concepts: z.array(slugSchema).max(12).optional(),
   /**
-   * B.11 (mentors model flawed, human decisions): flags this lesson as a
+   * Mentors model flawed, human decisions: flags this lesson as a
    * mentor-misjudgment-and-recovery episode. The named mentor makes a real
    * money misjudgment and recovers, narrated with the same no-shame framing
-   * learner mistakes get. Every flagged episode goes to content-team validation
-   * (Appendix C Stage 3); each course needs at least one.
+   * learner mistakes get. Every flagged episode goes to content-team validation;
+   * each course needs at least one.
    */
   mentor_misjudgment: z
     .object({
@@ -242,7 +242,7 @@ export const lessonBlueprintSchema = z.object({
     .strict()
     .optional(),
   /**
-   * B.16 (cultural localization): the market-scenario authoring contract.
+   * Cultural localization: the market-scenario authoring contract.
    * Either one scenario per market — each tied to that market's research
    * profile (`problem_refs` into coursegen/regional/markets.yaml) and carrying
    * the context `anchors` its document must show — or a reviewed declaration
@@ -264,7 +264,7 @@ export const lessonBlueprintSchema = z.object({
 });
 
 
-// ---- spaced-review layer (COURSE_ENGINE.md §3.1) ---------------------------
+// ---- spaced-review layer ---------------------------
 //
 // Sagas default to `teaching`; a saga may instead be the adventure's single
 // `review` saga (La Gran Misión). Topics default to `teaching`; a review-kind
@@ -288,7 +288,7 @@ export const reviewOfPathSchema = z
     'review_of entries must be "<adventure-slug>/<saga-slug>" or "<adventure-slug>/<saga-slug>/<topic-slug>"',
   );
 
-// ---- concept metadata (COURSE_ENGINE.md §3.2) ------------------------------
+// ---- concept metadata ------------------------------
 //
 // `parent_check` and `prerequisites` power the future placement/onboarding
 // phase (design reserved, not built yet) — both optional, additive, so
@@ -313,7 +313,7 @@ export const prerequisiteSchema = z.object({
 export type Prerequisite = z.infer<typeof prerequisiteSchema>;
 
 // `placement_probe` — a hand-authoring override for the placement-quiz
-// question this topic contributes (COURSE_ENGINE.md §3.2). Optional: when
+// question this topic contributes. Optional: when
 // absent, Forge authors one automatically at generation time (same
 // deterministic-gate posture as every other model-authored field here).
 // es-MX only in the catalog — publish.ts localizes to en-US/pt-BR, same as
@@ -344,11 +344,11 @@ export const topicBlueprintSchema = z
     key_vocabulary: z.array(z.string().min(1).max(80)).min(1),
     prior_knowledge: z.string().min(1).max(600),
     fact_refs: z.array(z.string().min(1).max(120)).default([]),
-    /** Optional, teaching topics only (§3.2) — ONE parent-facing mastery gut-check, es-MX, with a {{name}} placeholder. */
+    /** Optional, teaching topics only — ONE parent-facing mastery gut-check, es-MX, with a {{name}} placeholder. */
     parent_check: z.string().min(1).max(400).optional(),
-    /** Optional (§3.2) — non-obvious prerequisite edges beyond the implicit "previous lesson" one. */
+    /** Optional — non-obvious prerequisite edges beyond the implicit "previous lesson" one. */
     prerequisites: z.array(prerequisiteSchema).min(1).optional(),
-    /** Optional, teaching topics only (§3.2) — hand-authored placement-quiz probe override; Forge authors one automatically when absent. */
+    /** Optional, teaching topics only — hand-authored placement-quiz probe override; Forge authors one automatically when absent. */
     placement_probe: placementProbeCatalogSchema.optional(),
     lessons: z.array(lessonBlueprintSchema).min(1),
   })
@@ -401,11 +401,11 @@ export type AdventureFile = z.infer<typeof adventureFileSchema>;
 export type LessonBlueprint = z.infer<typeof lessonBlueprintSchema>;
 export type TopicBlueprint = z.infer<typeof topicBlueprintSchema>;
 
-// ---- concepts.yaml (optional, B.17) ------------------------------------------
+// ---- concepts.yaml (optional) ------------------------------------------
 //
 // The course's concept registry: what each concept id in a lesson's
 // `new_concepts` means, per locale, and the surface terms that show a lesson
-// is using it. Optional so a catalog can adopt B.17 declarations first; once
+// is using it. Optional so a catalog can adopt declarations first; once
 // the file exists every declared id must be registered, and the terms let the
 // concept-cap gate catch a generated lesson that introduces a LATER lesson's
 // concept early (an undeclared new concept).

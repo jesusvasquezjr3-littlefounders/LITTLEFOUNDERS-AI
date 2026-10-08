@@ -1,4 +1,4 @@
-/* F2.14 decision grid: box map, 2x2 plot and score matrix. Every word is HTML; the plot's SVG keeps only its dots and their numerals. Tokens only. */
+/* Decision grid: box map, 2x2 plot and score matrix. Every word is HTML; the plot's SVG keeps only its dots and their numerals. Tokens only. */
 .lf-grid-name, .lf-grid-option, .lf-grid-legend-name, .lf-grid-weight, .lf-grid-xend, .lf-grid-xname, .lf-grid-turn { font-size: 0.875rem; font-weight: 700; line-height: 1.15; overflow-wrap: anywhere; }
 .lf-grid-weight { color: var(--content-muted); font-weight: 600; }
 
@@ -10,7 +10,7 @@
 .lf-grid-dots { display: flex; flex-wrap: wrap; gap: var(--spacing-1); margin-block-start: auto; }
 .lf-grid-dot { inline-size: var(--spacing-2); block-size: var(--spacing-2); border-radius: var(--rounded-full); background: var(--content); }
 
-/* Rotated text runs along its box, so the audit's word-against-width measure does not apply to it. */
+/* Rotated text runs along its box, so a word-against-width measure does not apply to it. */
 .lf-grid-plot { display: grid; grid-template-columns: auto auto minmax(0, 1fr); column-gap: var(--spacing-2); row-gap: var(--spacing-1); max-inline-size: 24rem; }
 .lf-grid-plot > svg { grid-column: 3; grid-row: 1; display: block; inline-size: 100%; block-size: auto; }
 .lf-grid-turn { writing-mode: vertical-rl; transform: rotate(180deg); grid-row: 1; }

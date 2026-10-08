@@ -10,14 +10,14 @@ import { MAX_NEGATIVE_PROMPT_CHARS, truncateAtCommaBoundary } from '../gen/qwenI
  * error, or unparseable JSON after 2 corrective attempts) it falls back to a
  * deterministic prompt built from the label + context + identity brief.
  *
- * Child safety (/AGENTS.md §1.9): the judge only ever sees lesson content
+ * Child safety: the judge only ever sees lesson content
  * (label + context) — never child PII — and the identity brief itself forbids
  * scary/violent imagery, faces close-up, logos and text.
  */
 
 /**
- * The LittleFounders ILLUSTRATION style guide. `/DESIGN.md` is authoritative
- * for the app UI; THIS brief is the authority for generated illustration
+ * The LittleFounders ILLUSTRATION style guide. THIS brief is the authority
+ * for generated illustration
  * style, and is injected verbatim into the judge's system prompt (and into
  * the deterministic fallback) so every asset shares one look.
  *
@@ -54,7 +54,7 @@ export type PicturePurpose = (typeof PICTURE_PURPOSES)[number];
  * picture in one of a few structural roles, and each role needs a DIFFERENT
  * composition — a tiny answer-option thumbnail and a wide establishing scene
  * are not the same picture. Getting the role right is what makes an image
- * legible in its slot (COURSE_ENGINE.md §"Content quality", QA synthesis §5).
+ * legible in its slot.
  */
 const PURPOSE_GUIDANCE: Record<PicturePurpose, string> = {
   // A single tappable answer/item tile shown ~64-96px. ONE object, centered,

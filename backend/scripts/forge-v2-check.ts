@@ -1,6 +1,6 @@
 #!/usr/bin/env -S npx tsx
 // forge-v2:check — Core's strict v2 lesson contract over Forge's emitted rows
-// (S05.4c; OD-17: generation later targets the VERIFIED contract).
+// (generation later targets the VERIFIED contract).
 //
 // Forge (coursegen/) emits v2 lesson documents with its zero-spend dry-run
 // emitter, but it deliberately does not re-implement the contract: packages
@@ -13,9 +13,8 @@
 //   npm run forge-v2:check                    the committed Forge fixture
 //   npm run forge-v2:check -- <documents.json> a dry-run's output
 //
-// Also part of `npm test` (via contract:check), so a Core contract change
-// that Forge's emitter no longer satisfies fails Core's CI, and a Forge
-// change to the committed fixture triggers Core's CI through its path filter.
+// Also part of `contract:check`, so a Core contract change that Forge's
+// emitter no longer satisfies shows up here.
 
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';

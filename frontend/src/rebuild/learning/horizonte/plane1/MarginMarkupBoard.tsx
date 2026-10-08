@@ -9,7 +9,7 @@ import { PlaneBoard, PlaneFigure, fmt, niceCeil, slots, tickEvery, usePlaneGrade
 type MarkupSegment = Extract<HorizonteSegment, { type: 'fin.margin-markup.v2' }>;
 
 /*
- * N10: the percent a price earns over a cost, as a markup (a share of the cost) or a margin (a share of the price).
+ * The percent a price earns over a cost, as a markup (a share of the cost) or a margin (a share of the price).
  * The learner moves the price (a handle locked to its column, or a slider) until the curve reaches the goal percent.
  * The answer is the whole price; Core holds it.
  */

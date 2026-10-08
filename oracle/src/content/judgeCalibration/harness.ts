@@ -3,7 +3,7 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
 /*
- * C.5 / Appendix E §2.1/§3.2 — the calibration harness for the live-content
+ * The calibration harness for the live-content
  * judge (`content/generate.ts`'s `judgeCandidate`).
  *
  * The judge's approvals are trusted at NO sampling rate until it has been
@@ -13,7 +13,7 @@ import path from 'node:path';
  * --record-calibration=<file>`), and REFUSES anything that is not:
  *   - rated by at least two raters from the human panel (`source:
  *     "human_panel"`), and
- *   - judged LIVE by the real judge (a paid call per item: owner-run, OD-23).
+ *   - judged LIVE by the real judge (a paid call per item: owner-run).
  *
  * Zero-spend modes, for building and checking the pipeline:
  *   dry_run   the judge's "verdict" is the seed author's intended label (not
@@ -50,7 +50,7 @@ export interface RatingSet {
 export interface CalibrationFile {
   seedSet: SeedSet;
   ratings: RatingSet[];
-  /** authorModel: the model that writes the items the judge approves (C.23 self-enhancement check). */
+  /** authorModel: the model that writes the items the judge approves (self-enhancement check). */
   judge: { model: string; promptHash: string; mode: 'live' | 'replay' | 'dry_run'; authorModel?: string | null; verdicts: Record<string, SeedLabel> };
 }
 

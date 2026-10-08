@@ -1,4 +1,4 @@
-// write stage — skeleton → full LessonDocument (COURSE_ENGINE.md §4).
+// write stage — skeleton → full LessonDocument.
 // DeepSeek, temp 0.4, JSON mode, es-MX first (the authoring locale).
 // Corrective retries (max 4) feed truncated Zod issues back to the model;
 // if those are exhausted, one last-resort regen at temp 0.2 gets a final
@@ -96,8 +96,8 @@ export interface WriteResult {
   /** Bounded schema/gate feedback from the final failed full-document attempt. */
   lastIssues?: string;
   /**
-   * The gates the FIRST draft failed, before any corrective retry (S05.4c,
-   * Appendix C 1.3 "Forge Gate Pass Rate (per gate)"). Absent when the write
+   * The gates the FIRST draft failed, before any corrective retry
+   * ("Forge Gate Pass Rate (per gate)"). Absent when the write
    * ran without gates.
    */
   firstSubmission?: { evaluated: boolean; failedGates: GateNumber[] };
@@ -107,7 +107,7 @@ export interface WriteDeps {
   ledger?: UsageLedger;
   complete?: typeof completeDeepSeek;
   /**
-   * Called once, as soon as the first draft has been gated (S05.4c). A
+   * Called once, as soon as the first draft has been gated. A
    * callback rather than only a return field so a write that later throws
    * (every retry exhausted) is still counted: those are exactly the drafts
    * the first-submission pass rate exists to show.
@@ -129,8 +129,7 @@ export function renderFactsBlock(facts: FactsFile, refs: readonly string[]): str
 
 /**
  * Exported so an out-of-pipeline authoring harness can render the SAME rules
- * instead of paraphrasing them into a second copy that silently drifts (the
- * contract-copy lesson in AGENTS.md, applied to prompts). Read-only: never
+ * instead of paraphrasing them into a second copy that silently drifts. Read-only: never
  * mutate this array — it is the byte-stable head of the cached prompt prefix.
  */
 export const BASE_HARD_RULES = [
@@ -198,7 +197,7 @@ export const BASE_HARD_RULES = [
   'NON-GRADED story-family segments (especially `checkpoint`) MUST end `prompt_md` as an outcome-neutral statement or imperative, NEVER a direct question: there is no input control and a question is therefore unfair. Put reflection in `payload.recap_md` as a statement (e.g. "Recuerda comparar antes de elegir.") rather than "¿Qué elegirías?".',
   '*_md fields use ONLY MarkdownLite: **bold**, *italic*, `code`, line breaks, "- " lists. Nothing else — no headings, no links, no raw HTML.',
   'Write in es-MX, warm and encouraging, at a reading level appropriate for the stated age tier. Never mock a wrong answer (P3).',
-  // LF-Brain finding (COURSE_ENGINE.md §4 "gate" stage 6 / judge concreteness):
+  // LF-Brain finding:
   // generic, restated content never teaches — ground the lesson in reality.
   'At least ONE segment MUST include a worked CONCRETE instance — a specific number, a named character, or a specific scenario. Never leave the whole lesson in purely abstract phrasing.',
   'eavesdrop (type 57): payload.context_md sets the scene; each line may mark 1-3 money terms/idioms as ==término== INSIDE text_md, and payload.lines[n].notes must carry EXACTLY one kid-words explanation per highlight, in order of appearance (the schema rejects any mismatch). Highlight only REAL expressions of the lesson locale — never invent slang. Follow an eavesdrop with a graded segment that exercises the highlighted idea.',
@@ -206,7 +205,7 @@ export const BASE_HARD_RULES = [
 ];
 
 /*
- * PREFIX-CACHE DISCIPLINE (AGENTS.md "Mass generation" #12): DeepSeek's
+ * PREFIX-CACHE DISCIPLINE: DeepSeek's
  * automatic context cache bills identical LEADING tokens ~120x cheaper, so the
  * prompt is assembled static-first — playbook, tier guidance, base hard rules,
  * icon whitelist and meta shape are byte-identical across every write call in
@@ -305,9 +304,9 @@ function buildWriteMessages(input: WriteInput, factsBlock: string, issues: strin
     '',
     `AGE-TIER REASONING CEILING for THIS lesson — ${tierReasoningGuidance(input.ctx.tier)}`,
     '',
-    // Gates 11-13 stated up front (S05.4a): same numbers the gates enforce, per tier.
+    // Gates 11-13 stated up front: same numbers the gates enforce, per tier.
     contentGateGuidance(audienceForTier(input.gateCtx?.taxonomy, input.ctx.tier, input.gateCtx?.register ?? 'kid')),
-    // Gates 14-16 for THIS lesson (S05.4b): declared concepts, misjudgment episode.
+    // Gates 14-16 for THIS lesson: declared concepts, misjudgment episode.
     ...(input.gateCtx?.lessonPolicy ? [lessonPolicyGuidance(input.gateCtx.lessonPolicy)] : []),
     '',
     'HARD RULES (mechanical constraints — the playbook above is the quality bar; these are the non-negotiable format rules):',

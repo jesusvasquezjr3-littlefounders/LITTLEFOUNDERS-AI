@@ -13,12 +13,12 @@ import { OWNER_ROLES, type MentorQualityDashboardData, type OwnerRole } from '..
 /*
  * Staff surfaces over Core's programme reads:
  *
- *   Trust (Analytics & Health, view_analytics)  the Appendix J/L social,
- *     and deletion metrics, and Appendix M's identity
+ *   Trust (Analytics & Health, view_analytics)  the social,
+ *     and deletion metrics, and the identity
  *     metrics.
  *   Support tools (Reports, manage_support)    the Mentor retention sweep's
  *     health and the operations watchdog.
- *   Named owners (Mentor quality, manage_users) the C.24 owner roster.
+ *   Named owners (Mentor quality, manage_users) the owner roster.
  *
  * Core refuses every read and write without the grant; these screens only
  * decide what to ask for.
@@ -72,7 +72,7 @@ export function MetricCard({ api, spec, days }: { api: StaffApi; spec: MetricSpe
   </Card>;
 }
 
-/** Analytics & Health → Trust: the Appendix J/L trust metrics, and Appendix M's identity metrics. */
+/** Analytics & Health → Trust: the trust metrics and the identity metrics. */
 export function TrustMetricsView({ api, days }: { api: StaffApi; days: number }) {
   return <div className="lf-staff-section">
     <IdentityMetricsCard api={api} days={days} />
@@ -92,7 +92,7 @@ function IdentityStatusChip({ metric }: { metric: IdentityMetric }) {
 }
 
 /**
- * Appendix M Part 1 (Block A): each acquisition and identity metric, marked
+ * Each acquisition and identity metric, marked
  * as a release-gate target (held to 100%) or a diagnostic (a trend), with
  * the counts behind it. The adversarial metrics are listed as the tests that
  * prove them every release, never as a rate.
@@ -160,8 +160,8 @@ export function RetentionSweepCard({ api }: { api: StaffApi }) {
 }
 
 /**
- * H.4 (Appendix O 1.3): the daily Vault and Pulse backups and the schema
- * drift probe, beside the retention sweep. GAP-FIX-R6: the account-deletion,
+ * The daily Vault and Pulse backups and the schema
+ * drift probe, beside the retention sweep. The account-deletion,
  * social and learning retention sweeps and the insights prune are
  * listed too, and erasures stalled past a day are named in words. `stale` comes from Core (one home
  * for each window); a stale job is also what fails ops-job-watch.yml and
@@ -203,7 +203,7 @@ export function OpsJobsCard({ api }: { api: StaffApi }) {
   </Card>;
 }
 
-/** H.3 (GAP-FIX-R6): the warehouse alerts that notified nobody, on the same watchdog card (and the same watchdog issue). */
+/** The warehouse alerts that notified nobody, on the same watchdog card (and the same watchdog issue). */
 function AlertsDeliveryItem({ data }: { data: unknown }) {
   const { copy, locale } = useConsoleCopy();
   const format = useFormats(locale);
@@ -219,7 +219,7 @@ function AlertsDeliveryItem({ data }: { data: unknown }) {
 }
 
 /* ------------------------------------------------------------------------- */
-/*  C.24: named owners (manage_users)                                         */
+/*  Named owners (manage_users)                                         */
 /* ------------------------------------------------------------------------- */
 
 export function MentorOwners({ api, data, roleNames, onChanged }: {

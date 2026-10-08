@@ -5,8 +5,8 @@ import { withTimeout } from '../lib/http.js';
 import { awaitFirstConnect, redisClient } from '../lib/redis.js';
 
 /*
- * Rate limiting is an AVAILABILITY control, not an authorization one
- * (/AGENTS.md §1.14). It fails OPEN on a store error, because a degraded
+ * Rate limiting is an AVAILABILITY control, not an authorization one.
+ * It fails OPEN on a store error, because a degraded
  * limiter must never be able to take the platform down.
  *
  * The command timeout exists for a failure this project has already hit: a

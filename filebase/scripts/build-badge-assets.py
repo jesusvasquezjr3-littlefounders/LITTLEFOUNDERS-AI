@@ -1,13 +1,13 @@
-"""Generates filebase/src/lib/badgeDesign.generated.ts (OD-20 achievement image).
+"""Generates filebase/src/lib/badgeDesign.generated.ts (achievement image).
 
 Depot draws the image with librsvg (sharp), which cannot load a web font and
 silently falls back to whatever system face it finds. So the image carries no
-<text>: every string is set in the design system's own faces (Frontend Bible
-02 D3: Fredoka for display, Nunito for body) as glyph outlines, taken from
+<text>: every string is set in the design system's own faces
+(Fredoka for display, Nunito for body) as glyph outlines, taken from
 the SAME self-hosted woff2 files the rebuilt frontend serves, instanced at the
 weight the image uses. The light-mode colour tokens are mirrored from the
 generated sheet (frontend/src/rebuild/design/tokens.css) so the renderer can
-only name a token colour; a filebase test pins this mirror to the sheet.
+only name a token colour.
 
 Zero spend, deterministic, run by hand after a token or font change:
     python filebase/scripts/build-badge-assets.py

@@ -1,21 +1,20 @@
 import { z } from 'zod';
 
 /*
- * Env validated once at boot (agent/core/CONVENTIONS.md). Tests set
- * process.env in test-setup before the first getConfig() call.
+ * Env validated once at boot, on the first getConfig() call.
  */
 const Env = z.object({
   NODE_ENV: z.enum(['development', 'test', 'production']).catch('development'),
   PORT: z.coerce.number().int().positive().default(4000),
   FRONTEND_URL: z.url().default('http://localhost:5173'),
 
-  // Supabase self-hosted stack (local: Kong on :8000 — database/README.md).
+  // Supabase self-hosted stack (local: Kong on :8000).
   SUPABASE_URL: z.url(),
   SUPABASE_ANON_KEY: z.string().min(20),
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(20),
   SUPABASE_JWT_SECRET: z.string().min(16),
 
-  // Service-to-service (/AGENTS.md §1.5).
+  // Service-to-service.
   INTERNAL_API_KEY: z.string().min(16),
   PARENT_ID_CHECK_URL: z.url().default('http://localhost:4004'),
   EMAIL_SERVER_URL: z.url().optional(),
@@ -31,12 +30,12 @@ const Env = z.object({
   FILEBASE_URL: z.string().url().default('http://localhost:4006'),
   FILEBASE_INTERNAL_KEY: z.string().min(16).default('replace-me-0123456789'),
 
-  // Oracle — the AI Tutor runtime (/ORACLE.md).
+  // Oracle — the AI Tutor runtime.
   //
   // Two URLs, not one, and the distinction matters. ORACLE_URL is the private
   // address Core uses for preflight and is never seen by a browser.
   // ORACLE_PUBLIC_URL is what the BROWSER opens a websocket against — the
-  // fourth documented §1.5 exception — and in production those are different
+  // fourth documented exception — and in production those are different
   // hosts (Railway private networking vs a public domain). Defaulting the
   // public one to localhost keeps local development working with one service.
   ORACLE_URL: z.string().url().default('http://localhost:4009'),
@@ -45,7 +44,7 @@ const Env = z.object({
   ORACLE_TIMEOUT_MS: z.coerce.number().int().positive().default(8_000),
 
   // Signs the single-use, session-scoped token the browser carries to Oracle
-  // (/ORACLE.md §3.2). MUST differ from INTERNAL_API_KEY: one authenticates a
+  // MUST differ from INTERNAL_API_KEY: one authenticates a
   // SERVICE, this one authenticates one browser socket, and sharing them would
   // let a leaked session token call the internal API.
   //
@@ -54,14 +53,14 @@ const Env = z.object({
   // 'replace-me-with-a-64-char-random-string-0000' — a value checked into
   // this very file's own git history — while oracle/src/env.ts requires the
   // SAME shared secret with no default at all. The two services deploy
-  // independently (§1.5), so nothing ever forced them to agree: with
+  // independently, so nothing ever forced them to agree: with
   // backend/.env missing this var (a genuine local gap, reproduced directly),
   // Core silently signed every Tutor session token with the public
   // placeholder while Oracle verified against its own real secret, and every
   // single websocket handshake failed with a signature mismatch — the ENTIRE
   // Tutor product broken, silently, with no error at boot. A shared
   // authentication secret is a security control, not an availability one
-  // (§1.14 draws exactly this line for a different case): it must fail
+  // (an availability dependency may degrade open; this is not one): it must fail
   // CLOSED — refuse to boot — the same way oracle's own copy of this field
   // already does, not silently sign with a value anyone reading this source
   // file already knows.
@@ -76,7 +75,7 @@ const Env = z.object({
     .refine((value) => !value.startsWith('replace-me-'), 'LESSON_ATTEMPT_SECRET must be generated for this environment')
     .optional(),
 
-  // C.5 / Appendix E §3.1.1: the BASELINE share of live-generated Mentor
+  // The BASELINE share of live-generated Mentor
   // activities sampled for post-hoc staff review, per content-risk category.
   // The floors (15% standard, 50% sensitive) are Tier-1-adjacent: a value
   // may RAISE the baseline, never lower it — a value below the floor is
@@ -98,37 +97,35 @@ const Env = z.object({
     .default('true')
     .transform((v) => v !== 'false' && v !== '0' && v !== 'off'),
 
-  // B.6 / OD-22 (S05.3b): which course engine the learner routes run.
+  // Which course engine the learner routes run.
   // `linear` is the legacy single flat lesson order. `pathway` is the age-
-  // pathway frontier on the Mentor's knowledge graph (docs/rebuild/sprints/
-  // S05-B6-PATHWAY-POLICY.md). The policy is an engineering proposal until the
-  // owner accepts it (OD-22), and `pathway` reads tables the B.6 migrations
+  // pathway frontier on the Mentor's knowledge graph. The policy is an engineering proposal until the
+  // owner accepts it, and `pathway` reads tables the pathway migrations
   // add, so it stays off until both are true: an operator switches it on after
   // acceptance and after the migrations are applied, never a deploy by accident.
   COURSE_PATHWAY_ENGINE: z.enum(['linear', 'pathway']).default('linear'),
 
-  // Owner review P-09 (GAP-FIX-R3): a graded course lesson may feed the
+  // A graded course lesson may feed the
   // Mentor's mastery model (source 'course_lesson', migration 0206) only after
-  // the B.6 pathway policy is accepted (COURSE_PATHWAY_ENGINE = 'pathway') AND
-  // this calibration switch is on. It stays 'off' until the calibration named in
-  // docs/rebuild/mentor/THRESHOLD-RECALIBRATION-LOG.md has passed and an
-  // operator turns it on; never a deploy by accident.
+  // the pathway policy is accepted (COURSE_PATHWAY_ENGINE = 'pathway') AND
+  // this calibration switch is on. It stays 'off' until the calibration has
+  // passed and an operator turns it on; never a deploy by accident.
   COURSE_LESSON_EVIDENCE: z.enum(['off', 'on']).default('off'),
 
-  // C.11 (Appendix D §2.4): the cross-session scheduler's SHORT HORIZON, in
+  // The cross-session scheduler's SHORT HORIZON, in
   // minutes. A graded attempt within this long of the card's last counted
   // (spaced) review is a within-session re-exposure: a success does not grow
   // the card's stability and a second lapse does not collapse it again — the
   // within-session tier owns that repetition. 0 turns the rule off (every
-  // attempt counts as a spaced review, the pre-C.11 behaviour). Proposed,
-  // pending calibration (docs/rebuild/mentor/THRESHOLD-RECALIBRATION-LOG.md).
+  // attempt counts as a spaced review, the behaviour before the short-horizon rule). Proposed,
+  // pending calibration.
   TUTOR_REVIEW_SHORT_HORIZON_MIN: z.coerce.number().int().min(0).max(24 * 60).default(180),
 
-  // C.17: the dialogue bands the age-band calibration A/B experiment may
-  // enrol, comma-separated from tween,teen,adult. OD-26 (owner review M-12,
-  // 27 September 2026) opens C.17, and only C.17, to teens 13-17 (their own
+  // The dialogue bands the age-band calibration A/B experiment may
+  // enrol, comma-separated from tween,teen,adult. Since 27 September 2026 this
+  // experiment, and only this one, is open to teens 13-17 (their own
   // analytics opt-in) and tweens 10-12 (a verified guardian's analytics
-  // consent, on an exact age); every other experiment keeps OD-23's
+  // consent, on an exact age); every other experiment keeps the
   // adults-only rule. young_child (6-9) is never accepted here, and Core's
   // resolver refuses it again. An operator can narrow the list (e.g. `adult`)
   // but never widen it past these three. Unknown names are ignored.

@@ -6,15 +6,15 @@ export interface AnalyticsChoiceCopy {
   title: string; purpose: string; events: string; lessons: string; excluded: string; history: string;
   safety: string; label: string; on: string; off: string; loading: string; saving: string;
   unavailable: string; failed: string; retry: string;
-  /** M-12 (OD-26): shown only when this choice also enrols the account in the Mentor's hint-style test. */
+  /** Shown only when this choice also enrols the account in the Mentor's hint-style test. */
   experiment: string;
-  /** H.1, Appendix O 2.2(a) (F3-identity-site): the first choice is two explicit answers, never a flip. */
+  /** The first choice is two explicit answers, never a flip. */
   choose: string; keepOff: string; turnOn: string;
   /** The first-session sheet's close: the step comes back next session until a choice is recorded. */
   later: string;
 }
 /*
- * The self-managed teen's optional-analytics disclosure (H.1). Until the teen
+ * The self-managed teen's optional-analytics disclosure. Until the teen
  * has recorded a choice (`decided` false) there is no switch: "Keep it off"
  * and "Turn it on" are two equal answers, so an informed "no" is recorded
  * without passing through "on" first (a flip from nothing could only record
@@ -22,7 +22,7 @@ export interface AnalyticsChoiceCopy {
  */
 export function AnalyticsChoice({ copy, locale, dark, enabled, experiment = false, loading, saving, error, onToggle, onRetry, decided = true, onChoose, headingless = false }: {
   copy: AnalyticsChoiceCopy; locale: string; dark: boolean; enabled: boolean;
-  /** Core says turning this on also enrols the account in the C.17 dialogue-style experiment (OD-26: the teen's own opt-in). */
+  /** Core says turning this on also enrols the account in the dialogue-style experiment (the teen's own opt-in). */
   experiment?: boolean;
   loading: boolean; saving: boolean;
   error: 'read' | 'write' | null; onToggle: () => void; onRetry: () => void;

@@ -1,7 +1,7 @@
 /*
- * C.18 — DID THE MENTOR JUST SAY THE ANSWER? Checked against the REAL key.
+ * DID THE MENTOR JUST SAY THE ANSWER? Checked against the REAL key.
  *
- * Appendix F §1.2's Answer-Reveal Rate is "% of Mentor turns, during a
+ * The Answer-Reveal Rate is "% of Mentor turns, during a
  * collaborative-repair or hint-ladder sequence, that reveal a solution rather
  * than scaffold toward it — modeled on the MathDial methodology". Oracle
  * sends every tutor turn's honesty facts with the transcript row, but Oracle
@@ -20,8 +20,8 @@
  *          label too short to match honestly). An unscorable turn is left out
  *          of the key-based numerator AND denominator, never guessed.
  *
- * The calibrated-judge transcript score (C.21/C.23) remains the metric's
- * authoritative source per Appendix F; this is the deterministic floor under
+ * The calibrated-judge transcript score remains the metric's
+ * authoritative source; this is the deterministic floor under
  * it, and the only part of it that exists without spending on a model.
  */
 

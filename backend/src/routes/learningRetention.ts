@@ -6,7 +6,7 @@ import { serviceRestRaw } from '../services/supabaseRest.js';
 
 /*
  * POST /api/v1/internal/learning-retention/run — the daily sweep of
- * learning_practice_days (GAP-FIX-R1, weekly streak strip; Bible 02 §9.6).
+ * learning_practice_days (the weekly streak strip).
  *
  * The practice-day trigger already trims each active learner's rows past 400
  * days; this sweep covers learners who stopped practising

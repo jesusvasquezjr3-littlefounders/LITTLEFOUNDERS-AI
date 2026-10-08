@@ -10,7 +10,7 @@
  * length of the system and stopped one prop short of the lights.
  *
  * The palettes below are PHYSICAL LIGHT, not surface colour, which is why they
- * are literal values rather than DESIGN.md tokens. A token like `--lf-surface`
+ * are literal values rather than design tokens. A token like `--lf-surface`
  * answers "what colour is this panel"; nothing in the design system answers
  * "what colour is the sun at dusk", and borrowing a UI token for it would tie
  * the sky to a palette that exists to keep text legible. `SceneLighting` has

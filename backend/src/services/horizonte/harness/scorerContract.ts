@@ -24,7 +24,7 @@ function verdictOf(run: () => V2Grade, label: string): V2VisualVerdict {
 }
 
 /**
- * The backend contract every Horizonte scorer meets (RECIPE.md "Definition of done"). It asserts, for every segment type
+ * The backend contract every Horizonte scorer meets. It asserts, for every segment type
  * the pack declares: a segment schema, a rubric schema, a scorer and a declared age scope; fixtures that parse and carry
  * the ladder invalid -> valid -> met; a sample response that is scorable (never invalid); purity and determinism on
  * deep-frozen inputs; a total scorer (garbage in, invalid out, never a throw); an advisory (rubric-less) verdict that is

@@ -1,7 +1,7 @@
 // Qwen (DashScope compatible-mode) — the independent judge provider
-// (review stage), COURSE_ENGINE.md §5. Deliberately a SEPARATE provider
+// (review stage). Deliberately a SEPARATE provider
 // from DeepSeek so its blind spots decorrelate from the author's (LF-Brain
-// pattern, COURSE_ENGINE.md §1).
+// pattern).
 
 import { getConfig } from '../env.js';
 import { ProviderCompletionExhaustedError, ProviderNotConfiguredError } from './errors.js';

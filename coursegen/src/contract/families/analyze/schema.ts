@@ -1,4 +1,4 @@
-// `analyze` family — payload/answer Zod schemas (LESSON_ENGINE.md §5.6, types 39–45).
+// `analyze` family — payload/answer Zod schemas (types 39–45).
 
 import { z } from 'zod'
 import { idSchema, idText, idLabel, markdownLite, segmentSchema } from '../../core/schemaBase.js'

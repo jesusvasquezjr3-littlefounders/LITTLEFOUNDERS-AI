@@ -1,4 +1,4 @@
-/* F1.13 and F1.14 stats boards: dot plot, balance point, normal curve, binomial bars and the mean of draws. Tokens only. */
+/* Stats boards: dot plot, balance point, normal curve, binomial bars and the mean of draws. Tokens only. */
 .lf-stats { display: grid; gap: var(--spacing-3); justify-items: start; }
 .lf-stats-chart { display: block; inline-size: 100%; max-inline-size: 42rem; block-size: auto; border-radius: var(--rounded-sm); background: var(--sunken); color: var(--content); }
 .lf-stats-panel { display: grid; gap: var(--spacing-1); inline-size: 100%; max-inline-size: 42rem; }

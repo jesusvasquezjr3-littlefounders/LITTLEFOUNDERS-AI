@@ -5,9 +5,9 @@ import { serviceRest } from './supabaseRest.js';
 import { readAgeScreen } from './ageScreen.js';
 
 /*
- * First-party usage telemetry + the insight reads (0023, spec: /INSIGHTS.md).
+ * First-party usage telemetry + the insight reads (0023).
  *
- * The §1.9 contract, enforced HERE and not in the client:
+ * The kid-safety contract, enforced HERE and not in the client:
  *  - A kid's events are recorded ONLY while an active analytics_consents row
  *    exists for that kid. Consent is granted/revoked exclusively by a
  *    VERIFIED guardian through the family router. Fail-closed: if Vault
@@ -20,7 +20,7 @@ import { readAgeScreen } from './ageScreen.js';
  */
 
 /**
- * Appendix C 1.3 (B.1, B.2, B.4) and Appendix P Part 8 (GAP-FIX-R2 learning):
+ * Learning QA events:
  *   placement_commit_ok      a placement persisted (segment_id = its method);
  *   placement_commit_failed  a placement write failed (segment_id = why);
  *   prerequisite_refused     a course entry refused for an unmet prerequisite;
@@ -34,7 +34,7 @@ export const LEARN_QA_EVENTS = ['placement_commit_ok', 'placement_commit_failed'
   'lesson_update_required', 'scorer_parity_miss'] as const;
 export type LearnQaEvent = (typeof LEARN_QA_EVENTS)[number];
 
-/** Mirrors the 0028/0072/S05.3d (learning_quality_events)/S05.3e (motivation_events)/GAP-FIX-R2 (parent_time_to_value) CHECK exactly. Closed by design (§1.9 rule 2). */
+/** Mirrors the 0028/0072 and the learning_quality_events, motivation_events and parent_time_to_value CHECK exactly. Closed by design. */
 export const RECORDABLE_EVENTS = [
   // session lifecycle
   'session_start', 'session_heartbeat', 'session_end', 'nav_view',
@@ -52,7 +52,7 @@ export const RECORDABLE_EVENTS = [
   // of the 0028 CHECK — a value Core accepts but Postgres rejects fails the
   // INSERT for the entire 25-event batch, not just the offending row.
   // game_open/game_start/game_complete removed as dead vocabulary: the Game
-  // Engine that emitted them was removed 2026-07-31 (WALKTHROUGH.md) and no
+  // Engine that emitted them was removed 2026-07-31 and no
   // code path emits them anymore. The 0028 CHECK still permits them at the
   // DB level (narrower app-side vocabulary than the DB allows is safe); no
   // migration is needed to remove app-side support for a value.
@@ -61,23 +61,23 @@ export const RECORDABLE_EVENTS = [
   // retention / family
   'streak_extend', 'territory_view', 'consent_grant', 'consent_revoke',
   // parent report + achievement sharing (0072). badge_link_click is retired
-  // app-side (OD-20: Appendix L counts shares initiated, never viewer reach),
+  // app-side (the share metric counts shares initiated, never viewer reach),
   // so Core refuses it; the 0072 CHECK still permits it until the dated
-  // removal narrows it (docs/rebuild/policies/ACHIEVEMENT-SHARING.md).
+  // removal narrows it.
   'parent_report_viewed', 'badge_generated', 'badge_shared',
-  // B.5 replay-notice display rate (S05.3d). replay_below_best is written by
+  // Replay-notice display rate. replay_below_best is written by
   // Core only (SERVER_ONLY_EVENTS); replay_notice_view by the result screen.
   'replay_below_best', 'replay_notice_view',
-  // B.21 / B.24 motivation metrics (S05.3e, *_motivation_events.sql). All
+  // Motivation metrics (*_motivation_events.sql). All
   // three are written by Core only (SERVER_ONLY_EVENTS).
   'streak_rest_day', 'streak_restart', 'path_choice',
-  // Appendix C 1.3 QA metrics and Appendix P Part 8 scorer parity (GAP-FIX-R2
-  // learning, *_learning_qa_events.sql). All server-only (SERVER_ONLY_EVENTS).
+  // QA metrics and scorer parity
+  // (*_learning_qa_events.sql). All server-only (SERVER_ONLY_EVENTS).
   ...LEARN_QA_EVENTS,
-  // Appendix C 1.2 Parent Time-to-Value (GAP-FIX-R2, *_parent_time_to_value.sql).
+  // Parent time-to-value (*_parent_time_to_value.sql).
   // Both written by Core only (SERVER_ONLY_EVENTS), once per account.
   'parent_signup_completed', 'parent_first_value',
-  // B.24 / Block B autonomy levers (GAP-FIX-R5, *_learning_autonomy_levers.sql).
+  // Autonomy levers (*_learning_autonomy_levers.sql).
   // All three written by Core only (SERVER_ONLY_EVENTS).
   'approach_choice', 'enrichment_offer', 'enrichment_open',
 ] as const;
@@ -106,7 +106,7 @@ export type ReferrerClass = (typeof REFERRER_CLASSES)[number];
 /**
  * The role stamped onto each event, chosen from the caller's DB roles.
  * `kid` wins unconditionally — if a user is somehow kid+anything, the
- * consent gate and the kid segmentation must both apply (§1.9 errs toward
+ * consent gate and the kid segmentation must both apply (the kid-safety rule errs toward
  * the child). After that, the more specific role beats `universal`.
  */
 const ROLE_STAMP_ORDER = ['kid', 'parent', 'bigfounder', 'superadmin', 'admin', 'universal'] as const;
@@ -186,7 +186,7 @@ export function serverEventId(): string {
 
 /**
  * A stable idempotency key for a server event that may be observed more than
- * once (S05.3e: a path choice is recorded when a lesson opens, and a reload
+ * once (a path choice is recorded when a lesson opens, and a reload
  * opens it again). Same key, same uuid; the unique index drops the repeat.
  */
 export function deterministicEventId(key: string): string {
@@ -217,7 +217,7 @@ export async function hasActiveAnalyticsConsent(kidUserId: string): Promise<bool
 }
 
 /**
- * Roles resolved with the SERVICE role — the §1.9 gates must not depend on
+ * Roles resolved with the SERVICE role — the kid-safety gates must not depend on
  * the caller's own RLS-scoped read: this repo has already lost an RLS policy
  * to a migration replay, and with a user-token read that regression would
  * return [] (not an error), silently reclassifying every kid as an adult.

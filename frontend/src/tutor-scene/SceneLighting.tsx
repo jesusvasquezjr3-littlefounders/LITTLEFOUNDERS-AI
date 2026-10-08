@@ -7,7 +7,7 @@ import type { QualitySettings } from './quality';
 
 /*
  * Lighting is code, never baked into the .glb — and that is a product
- * requirement, not a preference. DESIGN.md mandates light AND dark mode, so a
+ * requirement, not a preference. The product mandates light AND dark mode, so a
  * scene lit once at export time is wrong in one of the two themes by
  * construction. Artists bake ambient OCCLUSION into textures (that is contact
  * shadow, valid in both themes) and nothing else.
