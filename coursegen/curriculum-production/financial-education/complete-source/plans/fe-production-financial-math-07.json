@@ -1,0 +1,558 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-financial-math-part-2",
+  "lesson_id": "fe-production-financial-math-07",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.financial-math.07"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Convert a fraction of a whole into an equivalent percentage with a visual grid.",
+  "title": {
+    "en-US": "Hundred parts",
+    "es-MX": "Partes de cien",
+    "pt-BR": "Partes de cem"
+  },
+  "new_concepts": [
+    "finance.prod.financial-math.07"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Parts of a hundred\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Partes de cien\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Partes de cem\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.financial-math.07",
+      "observable_action": "Convert a fraction of a whole into an equivalent percentage with a visual grid.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.financial-math.06"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Compare shares of dollars even when totals differ.",
+    "misconception": "Treat a fraction as a fixed money amount rather than a share of a whole.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.financial-math.07",
+        "context_id": "fe-production-financial-math-07-example-01",
+        "supports_from": [],
+        "reasoning": "Percent means out of a hundred. Half a whole is fifty hundredths; a quarter is twenty-five hundredths."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.financial-math.07",
+        "context_id": "fe-production-financial-math-07-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The selected percentage represents the stated share."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.financial-math.07",
+        "context_id": "fe-production-financial-math-07-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The selected percentage represents the stated share."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.financial-math.07",
+        "context_id": "fe-production-financial-math-07-practice-01",
+        "supports_from": [],
+        "reasoning": "The selected percentage represents the stated share."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.financial-math.07",
+        "context_id": "fe-production-financial-math-07-practice-02",
+        "supports_from": [],
+        "reasoning": "The selected percentage represents the stated share."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.financial-math.07",
+        "context_id": "fe-production-financial-math-07-practice-03",
+        "supports_from": [],
+        "reasoning": "The share can match while the amounts differ."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.financial-math.07",
+        "context_id": "fe-production-financial-math-07-transfer-01",
+        "supports_from": [],
+        "reasoning": "The selected percentage represents the stated share."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.financial-math.07",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Compare shares of dollars even when totals differ."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Compara partes de pesos aunque cambien los totales."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Compare partes de reais mesmo quando os totais mudam."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "One whole grid",
+          "line": "Percent means out of a hundred. Half a whole is fifty hundredths; a quarter is twenty-five hundredths."
+        },
+        "es-MX": {
+          "prompt": "Una cuadrícula completa",
+          "line": "Porcentaje significa de cada cien. La mitad son cincuenta centésimos; un cuarto son veinticinco centésimos."
+        },
+        "pt-BR": {
+          "prompt": "Uma grade inteira",
+          "line": "Porcentagem significa de cada cem. Metade são cinquenta centésimos; um quarto são vinte e cinco centésimos."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "visual.percent-grid.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "percent-grid"
+      },
+      "payload": {
+        "baseUnits": 100,
+        "step": 5,
+        "initialPercent": 0,
+        "mode": "discount",
+        "currency": "local"
+      },
+      "rubric": {
+        "target_percent": 50
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Show half the grid: fifty of one hundred equal parts.",
+          "feedback": {
+            "met": "The selected percentage represents the stated share.",
+            "not_yet": "The whole grid represents one hundred equal parts."
+          },
+          "help": [
+            "The whole grid represents one hundred equal parts."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Muestra la mitad: cincuenta de cien partes iguales.",
+          "feedback": {
+            "met": "El porcentaje elegido representa la parte indicada.",
+            "not_yet": "La cuadrícula completa representa cien partes iguales."
+          },
+          "help": [
+            "La cuadrícula completa representa cien partes iguales."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Mostre metade: cinquenta de cem partes iguais.",
+          "feedback": {
+            "met": "A porcentagem escolhida representa a parte informada.",
+            "not_yet": "A grade inteira representa cem partes iguais."
+          },
+          "help": [
+            "A grade inteira representa cem partes iguais."
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "visual.percent-grid.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "percent-grid"
+      },
+      "payload": {
+        "baseUnits": 100,
+        "step": 5,
+        "initialPercent": 0,
+        "mode": "discount",
+        "currency": "local"
+      },
+      "rubric": {
+        "target_percent": 25
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Show one quarter: divide the whole into four equal shares.",
+          "feedback": {
+            "met": "The selected percentage represents the stated share.",
+            "not_yet": "The whole grid represents one hundred equal parts."
+          },
+          "help": [
+            "The whole grid represents one hundred equal parts."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Muestra un cuarto: divide el total en cuatro partes iguales.",
+          "feedback": {
+            "met": "El porcentaje elegido representa la parte indicada.",
+            "not_yet": "La cuadrícula completa representa cien partes iguales."
+          },
+          "help": [
+            "La cuadrícula completa representa cien partes iguales."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Mostre um quarto: divida o total em quatro partes iguais.",
+          "feedback": {
+            "met": "A porcentagem escolhida representa a parte informada.",
+            "not_yet": "A grade inteira representa cem partes iguais."
+          },
+          "help": [
+            "A grade inteira representa cem partes iguais."
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "visual.percent-grid.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "percent-grid"
+      },
+      "payload": {
+        "baseUnits": 100,
+        "step": 5,
+        "initialPercent": 0,
+        "mode": "discount",
+        "currency": "local"
+      },
+      "rubric": {
+        "target_percent": 75
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Select three quarters of the whole grid.",
+          "feedback": {
+            "met": "The selected percentage represents the stated share.",
+            "not_yet": "The whole grid represents one hundred equal parts."
+          },
+          "help": [
+            "The whole grid represents one hundred equal parts."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Selecciona tres cuartos de la cuadrícula completa.",
+          "feedback": {
+            "met": "El porcentaje elegido representa la parte indicada.",
+            "not_yet": "La cuadrícula completa representa cien partes iguales."
+          },
+          "help": [
+            "La cuadrícula completa representa cien partes iguales."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Selecione três quartos da grade inteira.",
+          "feedback": {
+            "met": "A porcentagem escolhida representa a parte informada.",
+            "not_yet": "A grade inteira representa cem partes iguais."
+          },
+          "help": [
+            "A grade inteira representa cem partes iguais."
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "visual.percent-grid.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "percent-grid"
+      },
+      "payload": {
+        "baseUnits": 100,
+        "step": 5,
+        "initialPercent": 0,
+        "mode": "discount",
+        "currency": "local"
+      },
+      "rubric": {
+        "target_percent": 20
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Select one fifth of the whole grid.",
+          "feedback": {
+            "met": "The selected percentage represents the stated share.",
+            "not_yet": "The whole grid represents one hundred equal parts."
+          },
+          "help": [
+            "The whole grid represents one hundred equal parts."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Selecciona un quinto de la cuadrícula completa.",
+          "feedback": {
+            "met": "El porcentaje elegido representa la parte indicada.",
+            "not_yet": "La cuadrícula completa representa cien partes iguales."
+          },
+          "help": [
+            "La cuadrícula completa representa cien partes iguales."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Selecione um quinto da grade inteira.",
+          "feedback": {
+            "met": "A porcentagem escolhida representa a parte informada.",
+            "not_yet": "A grade inteira representa cem partes iguais."
+          },
+          "help": [
+            "A grade inteira representa cem partes iguais."
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.07",
+      "copy": {
+        "en-US": {
+          "prompt": "What is equal?",
+          "scene": "Half of a small total and half of a large total are compared.",
+          "options": [
+            {
+              "label": "Both whole totals"
+            },
+            {
+              "label": "The money amount always"
+            },
+            {
+              "label": "The percentage share"
+            }
+          ],
+          "help": [
+            "Percentage describes a relation to the whole."
+          ],
+          "feedback": {
+            "met": "The share can match while the amounts differ.",
+            "not_yet": "Percentage describes a relation to the whole."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué es igual?",
+          "scene": "Se compara la mitad de un total pequeño con la de uno grande.",
+          "options": [
+            {
+              "label": "Ambos totales completos"
+            },
+            {
+              "label": "Siempre el monto de dinero"
+            },
+            {
+              "label": "La proporción porcentual"
+            }
+          ],
+          "help": [
+            "El porcentaje describe una relación con el total."
+          ],
+          "feedback": {
+            "met": "La proporción puede coincidir aunque cambien los montos.",
+            "not_yet": "El porcentaje describe una relación con el total."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que é igual?",
+          "scene": "Comparam-se a metade de um total pequeno e a de um grande.",
+          "options": [
+            {
+              "label": "Os dois totais completos"
+            },
+            {
+              "label": "Sempre o valor em dinheiro"
+            },
+            {
+              "label": "A proporção percentual"
+            }
+          ],
+          "help": [
+            "Porcentagem descreve uma relação com o total."
+          ],
+          "feedback": {
+            "met": "A proporção pode coincidir mesmo com valores diferentes.",
+            "not_yet": "Porcentagem descreve uma relação com o total."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "visual.percent-grid.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "percent-grid"
+      },
+      "payload": {
+        "baseUnits": 100,
+        "step": 5,
+        "initialPercent": 0,
+        "mode": "discount",
+        "currency": "local"
+      },
+      "rubric": {
+        "target_percent": 40
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.financial-math.07",
+      "copy": {
+        "en-US": {
+          "prompt": "A community fund uses two fifths of its money. Show that share.",
+          "feedback": {
+            "met": "The selected percentage represents the stated share.",
+            "not_yet": "The whole grid represents one hundred equal parts."
+          },
+          "help": [
+            "The whole grid represents one hundred equal parts."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Un fondo comunitario usa dos quintos de su dinero. Representa esa parte.",
+          "feedback": {
+            "met": "El porcentaje elegido representa la parte indicada.",
+            "not_yet": "La cuadrícula completa representa cien partes iguales."
+          },
+          "help": [
+            "La cuadrícula completa representa cien partes iguales."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Um fundo comunitário usa dois quintos do dinheiro. Represente essa parte.",
+          "feedback": {
+            "met": "A porcentagem escolhida representa a parte informada.",
+            "not_yet": "A grade inteira representa cem partes iguais."
+          },
+          "help": [
+            "A grade inteira representa cem partes iguais."
+          ]
+        }
+      }
+    }
+  ]
+}

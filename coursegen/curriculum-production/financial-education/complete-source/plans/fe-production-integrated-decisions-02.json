@@ -1,0 +1,753 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-integrated-decisions-part-1",
+  "lesson_id": "fe-production-integrated-decisions-02",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.saving-resilience.04",
+    "finance.prod.credit-mechanics.02",
+    "finance.prod.credit-mechanics.07"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Compare a reserve withdrawal with a proposed loan using near-term access needs and complete loan costs.",
+  "title": {
+    "en-US": "Reserve decisions",
+    "es-MX": "¿Reserva o préstamo?",
+    "pt-BR": "Reserva ou empréstimo?"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Reserve or loan?\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"¿Reserva o préstamo?\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Reserva ou empréstimo?\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "capstone",
+    "objective": {
+      "skill_id": "prod.saving-resilience.04",
+      "observable_action": "Compare a reserve withdrawal with a proposed loan using near-term access needs and complete loan costs.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.accounts-records.01",
+      "prod.accounts-records.03",
+      "cash.dates"
+    ],
+    "retrieval_skills": [
+      "prod.saving-resilience.04",
+      "prod.credit-mechanics.02",
+      "prod.credit-mechanics.07"
+    ],
+    "relevance": "A cheap-looking loan can conflict with the next bill.",
+    "misconception": "Comparing only the amount received while ignoring access dates, total repayment and future essential payments.",
+    "numeracy_support": "Use the explicitly stated totals, deadlines and constraints. Earlier financial arithmetic is retrieved; no current rate or legal entitlement is implied.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.saving-resilience.04",
+        "context_id": "integrated-decisions-2-practice-01",
+        "supports_from": [],
+        "reasoning": "A meets the stated deadline; B does not."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.credit-mechanics.02",
+        "context_id": "integrated-decisions-2-practice-02",
+        "supports_from": [],
+        "reasoning": "3 × 40 + 10 = 130, including the separate fee."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.credit-mechanics.07",
+        "context_id": "integrated-decisions-2-practice-03",
+        "supports_from": [],
+        "reasoning": "The payment exceeds what remains after essential spending."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.saving-resilience.04",
+        "context_id": "integrated-decisions-2-practice-04",
+        "supports_from": [],
+        "reasoning": "Withdrawal fees can change the money available for the repair."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.credit-mechanics.02",
+        "context_id": "integrated-decisions-2-practice-05",
+        "supports_from": [],
+        "reasoning": "2 × 55 = 110; the included fee is not added again."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.saving-resilience.04",
+        "context_id": "integrated-decisions-2-transfer-01",
+        "supports_from": [],
+        "reasoning": "Accessible savings meet both stated constraints without an unfunded repayment."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.saving-resilience.04",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A cheap-looking loan can conflict with the next bill."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un préstamo aparentemente barato puede chocar con el próximo pago."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Um empréstimo aparentemente barato pode conflitar com a próxima conta."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Which reserve is usable today?",
+          "scene": "An urgent repair is due today. Both reserves cover it: A allows immediate withdrawal; B unlocks next month.",
+          "options": [
+            {
+              "label": "Reserve A"
+            },
+            {
+              "label": "Reserve B"
+            }
+          ],
+          "help": [
+            "Having enough money and accessing it on time are different."
+          ],
+          "feedback": {
+            "met": "A meets the stated deadline; B does not.",
+            "not_yet": "Having enough money and accessing it on time are different."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué reserva sirve hoy?",
+          "scene": "La reparación urgente se paga hoy. Ambas reservas alcanzan: A permite retirar ahora; B se libera el próximo mes.",
+          "options": [
+            {
+              "label": "Reserva A"
+            },
+            {
+              "label": "Reserva B"
+            }
+          ],
+          "help": [
+            "Tener suficiente dinero y acceder a tiempo son cosas distintas."
+          ],
+          "feedback": {
+            "met": "A cumple el plazo indicado; B no.",
+            "not_yet": "Tener suficiente dinero y acceder a tiempo son cosas distintas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual reserva serve hoje?",
+          "scene": "O conserto urgente vence hoje. Ambas bastam: A permite saque imediato; B libera no próximo mês.",
+          "options": [
+            {
+              "label": "Reserva A"
+            },
+            {
+              "label": "Reserva B"
+            }
+          ],
+          "help": [
+            "Ter dinheiro suficiente e acessar no prazo são coisas diferentes."
+          ],
+          "feedback": {
+            "met": "A atende ao prazo informado; B não.",
+            "not_yet": "Ter dinheiro suficiente e acessar no prazo são coisas diferentes."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Total repayment?",
+          "scene": "A loan requires 3 payments of 40 and a separate final fee of 10.",
+          "options": [
+            {
+              "label": "40"
+            },
+            {
+              "label": "130"
+            },
+            {
+              "label": "120"
+            }
+          ],
+          "help": [
+            "Count every scheduled payment and the additional fee."
+          ],
+          "feedback": {
+            "met": "3 × 40 + 10 = 130, including the separate fee.",
+            "not_yet": "Count every scheduled payment and the additional fee."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Devolución total?",
+          "scene": "Un préstamo exige 3 pagos de 40 y una comisión final adicional de 10.",
+          "options": [
+            {
+              "label": "40"
+            },
+            {
+              "label": "130"
+            },
+            {
+              "label": "120"
+            }
+          ],
+          "help": [
+            "Cuenta cada pago programado y la comisión adicional."
+          ],
+          "feedback": {
+            "met": "3 × 40 + 10 = 130, incluida la comisión adicional.",
+            "not_yet": "Cuenta cada pago programado y la comisión adicional."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Total devolvido?",
+          "scene": "Um empréstimo exige 3 pagamentos de 40 e uma tarifa final adicional de 10.",
+          "options": [
+            {
+              "label": "40"
+            },
+            {
+              "label": "130"
+            },
+            {
+              "label": "120"
+            }
+          ],
+          "help": [
+            "Conte cada pagamento previsto e a tarifa adicional."
+          ],
+          "feedback": {
+            "met": "3 × 40 + 10 = 130, incluindo a tarifa adicional.",
+            "not_yet": "Conte cada pagamento previsto e a tarifa adicional."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          3,
+          40,
+          10
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Does the payment fit?",
+          "scene": "Next month: confirmed income 200; essentials 180; proposed loan payment 40. No other funds.",
+          "options": [
+            {
+              "label": "No, essentials leave only 20"
+            },
+            {
+              "label": "Yes, income exceeds payment"
+            }
+          ],
+          "help": [
+            "Compare the payment with the remainder, not with total income."
+          ],
+          "feedback": {
+            "met": "The payment exceeds what remains after essential spending.",
+            "not_yet": "Compare the payment with the remainder, not with total income."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cabe el pago?",
+          "scene": "Próximo mes: ingreso confirmado 200; necesidades 180; pago propuesto 40. No hay otros fondos.",
+          "options": [
+            {
+              "label": "No, las necesidades dejan 20"
+            },
+            {
+              "label": "Sí, el ingreso supera el pago"
+            }
+          ],
+          "help": [
+            "Compara el pago con el resto, no con el ingreso total."
+          ],
+          "feedback": {
+            "met": "El pago supera lo que queda después del gasto esencial.",
+            "not_yet": "Compara el pago con el resto, no con el ingreso total."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O pagamento cabe?",
+          "scene": "Próximo mês: renda confirmada 200; necessidades 180; parcela proposta 40. Sem outros recursos.",
+          "options": [
+            {
+              "label": "Não, necessidades deixam 20"
+            },
+            {
+              "label": "Sim, renda supera parcela"
+            }
+          ],
+          "help": [
+            "Compare a parcela com a sobra, não com a renda total."
+          ],
+          "feedback": {
+            "met": "A parcela supera o que resta após os gastos essenciais.",
+            "not_yet": "Compare a parcela com a sobra, não com a renda total."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Which fact is missing?",
+          "scene": "Both reserves cover today’s repair with equal safety and same-day access; withdrawal fees are unknown.",
+          "options": [
+            {
+              "label": "Only next year’s return"
+            },
+            {
+              "label": "Their opening balances"
+            },
+            {
+              "label": "Their withdrawal fees"
+            }
+          ],
+          "help": [
+            "Compare a condition affecting usable money, not an unrelated detail."
+          ],
+          "feedback": {
+            "met": "Withdrawal fees can change the money available for the repair.",
+            "not_yet": "Compare a condition affecting usable money, not an unrelated detail."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué dato falta?",
+          "scene": "Ambas reservas permiten retirar hoy y cubren la reparación. Igual seguridad; no indican comisiones de retiro.",
+          "options": [
+            {
+              "label": "Solo rendimiento del próximo año"
+            },
+            {
+              "label": "Sus saldos de apertura"
+            },
+            {
+              "label": "Las comisiones de retiro"
+            }
+          ],
+          "help": [
+            "Compara una condición del dinero utilizable, no un detalle ajeno."
+          ],
+          "feedback": {
+            "met": "Las comisiones pueden cambiar el dinero disponible para reparar.",
+            "not_yet": "Compara una condición del dinero utilizable, no un detalle ajeno."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual dado falta?",
+          "scene": "Ambas reservas permitem sacar hoje e cobrem o conserto. Mesma segurança; tarifas de saque não informadas.",
+          "options": [
+            {
+              "label": "Só retorno do próximo ano"
+            },
+            {
+              "label": "Seus saldos de abertura"
+            },
+            {
+              "label": "As tarifas de saque"
+            }
+          ],
+          "help": [
+            "Compare uma condição do dinheiro utilizável, não um detalhe alheio."
+          ],
+          "feedback": {
+            "met": "As tarifas podem mudar o dinheiro disponível para o conserto.",
+            "not_yet": "Compare uma condição do dinheiro utilizável, não um detalhe alheio."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Total scheduled repayment?",
+          "scene": "Another offer lists 2 payments of 55. Its fee is already included in each payment.",
+          "options": [
+            {
+              "label": "55"
+            },
+            {
+              "label": "220"
+            },
+            {
+              "label": "110"
+            }
+          ],
+          "help": [
+            "Do not count a charge twice when payments already include it."
+          ],
+          "feedback": {
+            "met": "2 × 55 = 110; the included fee is not added again.",
+            "not_yet": "Do not count a charge twice when payments already include it."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Total de pagos previstos?",
+          "scene": "Otra oferta indica 2 pagos de 55. La comisión ya está incluida en cada pago.",
+          "options": [
+            {
+              "label": "55"
+            },
+            {
+              "label": "220"
+            },
+            {
+              "label": "110"
+            }
+          ],
+          "help": [
+            "No cuentes dos veces una comisión ya incluida en los pagos."
+          ],
+          "feedback": {
+            "met": "2 × 55 = 110; la comisión incluida no se suma otra vez.",
+            "not_yet": "No cuentes dos veces una comisión ya incluida en los pagos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Total dos pagamentos previstos?",
+          "scene": "Outra oferta indica 2 pagamentos de 55. A tarifa já está incluída em cada pagamento.",
+          "options": [
+            {
+              "label": "55"
+            },
+            {
+              "label": "220"
+            },
+            {
+              "label": "110"
+            }
+          ],
+          "help": [
+            "Não conte duas vezes uma tarifa já incluída nos pagamentos."
+          ],
+          "feedback": {
+            "met": "2 × 55 = 110; a tarifa incluída não entra novamente.",
+            "not_yet": "Não conte duas vezes uma tarifa já incluída nos pagamentos."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          2,
+          55
+        ],
+        "expression": {
+          "op": "multiply",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.saving-resilience.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Which meets both constraints?",
+          "scene": "Pay today; keep next month’s essentials funded; accessible savings suffice. Loan payments exceed next month’s spare funds.",
+          "options": [
+            {
+              "label": "Use accessible savings"
+            },
+            {
+              "label": "Take the unaffordable loan"
+            }
+          ],
+          "help": [
+            "Check today’s access and next month’s payment capacity together."
+          ],
+          "feedback": {
+            "met": "Accessible savings meet both stated constraints without an unfunded repayment.",
+            "not_yet": "Check today’s access and next month’s payment capacity together."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué cumple ambas condiciones?",
+          "scene": "Paga hoy y protege necesidades del próximo mes; el ahorro accesible alcanza. El préstamo supera el sobrante mensual.",
+          "options": [
+            {
+              "label": "Usar el ahorro accesible"
+            },
+            {
+              "label": "Tomar el préstamo impagable"
+            }
+          ],
+          "help": [
+            "Revisa juntos el acceso actual y la capacidad de pago posterior."
+          ],
+          "feedback": {
+            "met": "El ahorro accesible cumple ambas condiciones sin crear pagos sin fondos.",
+            "not_yet": "Revisa juntos el acceso actual y la capacidad de pago posterior."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual atende às duas condições?",
+          "scene": "Pague hoje e preserve necessidades do próximo mês; a reserva acessível basta. As parcelas superam a sobra mensal.",
+          "options": [
+            {
+              "label": "Usar a reserva acessível"
+            },
+            {
+              "label": "Tomar o crédito impagável"
+            }
+          ],
+          "help": [
+            "Confira juntos o acesso atual e a capacidade de pagamento futura."
+          ],
+          "feedback": {
+            "met": "A reserva acessível atende às condições sem criar parcelas sem recursos.",
+            "not_yet": "Confira juntos o acesso atual e a capacidade de pagamento futura."
+          }
+        }
+      }
+    }
+  ]
+}

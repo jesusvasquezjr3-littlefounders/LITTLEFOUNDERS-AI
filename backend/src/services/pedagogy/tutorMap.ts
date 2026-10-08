@@ -11,6 +11,7 @@
 import { MASTERY_CORROBORATION_MIN, MASTERY_DISPLAY_THRESHOLD, MASTERY_PREREQ_THRESHOLD, corroborationMinFor } from './bkt.js';
 import { getMasteryRollbackKcKeys } from './mentorIntegrity.js';
 import { rankPlanKcs } from './sessionPlan.js';
+import { eligibleMentorKcs } from './kcEligibility.js';
 import {
   getActiveKcs,
   getCorrectStreaks,
@@ -107,7 +108,9 @@ export async function buildTutorMap(
   ]);
   if (kcs === null || edges === null || mastery === null || cards === null || streaks === null) return null;
 
-  const eligible = kcs.filter((k) => k.tier_min <= tier);
+  const allowed = await eligibleMentorKcs(userId, kcs);
+  if (allowed === null) return null;
+  const eligible = allowed.filter((k) => k.tier_min <= tier);
   const eligibleIds = new Set(eligible.map((k) => k.id));
   const keyById = new Map(eligible.map((k) => [k.id, k.key]));
 
@@ -167,7 +170,7 @@ export async function buildTutorMap(
    * itself failed"). Cannot fail here — the four reads it needs already
    * succeeded, or this function would have returned null above.
    */
-  const first = rankPlanKcs(kcs, edges, mastery, cards, tier, streaks, rolledBack)[0] ?? null;
+  const first = rankPlanKcs(allowed, edges, mastery, cards, tier, streaks, rolledBack)[0] ?? null;
   const firstNode = first ? nodes.find((n) => n.kcId === first.kc.id) : null;
 
   return {

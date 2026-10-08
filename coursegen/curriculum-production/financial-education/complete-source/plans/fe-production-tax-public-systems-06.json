@@ -1,0 +1,743 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-tax-public-systems-part-2",
+  "lesson_id": "fe-production-tax-public-systems-06",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.tax-public-systems.06"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Find the official local source for a deadline or filing obligation instead of importing another country’s rule.",
+  "title": {
+    "en-US": "Official Rules",
+    "es-MX": "Usa la regla oficial pertinente",
+    "pt-BR": "Use a regra oficial pertinente"
+  },
+  "new_concepts": [
+    "finance.prod.tax-public-systems.06"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Official Rules\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Usa la regla oficial pertinente\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Use a regra oficial pertinente\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.tax-public-systems.06",
+      "observable_action": "Find the official local source for a deadline or filing obligation instead of importing another country’s rule.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.tax-public-systems.01",
+      "prod.payments-digital.07"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A deadline from another country or year can lead you to the wrong action.",
+    "misconception": "A familiar foreign deadline or a popular post establishes the current local filing obligation.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.tax-public-systems.06",
+        "context_id": "tax-public-systems-06-example-01",
+        "supports_from": [],
+        "reasoning": "Tax obligations depend on jurisdiction and circumstances. Consult the relevant official authority for the current period and your case."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.tax-public-systems.06",
+        "context_id": "tax-public-systems-06-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The relevant authority and period match the question."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.tax-public-systems.06",
+        "context_id": "tax-public-systems-06-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Another country’s deadline does not establish the local one."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.tax-public-systems.06",
+        "context_id": "tax-public-systems-06-practice-01",
+        "supports_from": [],
+        "reasoning": "An official source can still refer to the wrong period."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.tax-public-systems.06",
+        "context_id": "tax-public-systems-06-practice-02",
+        "supports_from": [],
+        "reasoning": "Official rules can apply only to specified categories."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.tax-public-systems.06",
+        "context_id": "tax-public-systems-06-practice-03",
+        "supports_from": [],
+        "reasoning": "Independent access avoids relying on a possibly false message."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.tax-public-systems.06",
+        "context_id": "tax-public-systems-06-transfer-01",
+        "supports_from": [],
+        "reasoning": "A cross-border case needs relevant official or qualified local guidance."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.tax-public-systems.06",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A deadline from another country or year can lead you to the wrong action."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un plazo de otro país o año puede llevarte a una acción equivocada."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Um prazo de outro país ou ano pode levar você à ação errada."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Check place, period and case",
+          "line": "Tax obligations depend on jurisdiction and circumstances. Consult the relevant official authority for the current period and your case."
+        },
+        "es-MX": {
+          "prompt": "Revisa lugar, periodo y caso",
+          "line": "Las obligaciones fiscales dependen del lugar y las circunstancias. Consulta su autoridad oficial para el periodo actual y tu caso."
+        },
+        "pt-BR": {
+          "prompt": "Confira lugar, período e caso",
+          "line": "Os deveres fiscais dependem do lugar e do caso. Consulte sua autoridade oficial para o período atual e seu caso."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.tax-public-systems.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which source fits?",
+          "scene": "A US federal filing question needs the current official tax guidance.",
+          "options": [
+            {
+              "label": "The IRS’s official current guidance"
+            },
+            {
+              "label": "An undated private message"
+            },
+            {
+              "label": "A foreign deadline repost"
+            }
+          ],
+          "help": [
+            "Use the authority responsible for that tax."
+          ],
+          "feedback": {
+            "met": "The relevant authority and period match the question.",
+            "not_yet": "Use the authority responsible for that tax."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué fuente corresponde?",
+          "scene": "Una pregunta fiscal federal mexicana necesita orientación oficial vigente.",
+          "options": [
+            {
+              "label": "La orientación oficial actual del SAT"
+            },
+            {
+              "label": "Un mensaje privado sin fecha"
+            },
+            {
+              "label": "Un plazo extranjero reenviado"
+            }
+          ],
+          "help": [
+            "Usa la autoridad responsable de ese impuesto."
+          ],
+          "feedback": {
+            "met": "La autoridad y el periodo pertinentes coinciden con la pregunta.",
+            "not_yet": "Usa la autoridad responsable de ese impuesto."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual fonte corresponde?",
+          "scene": "Uma dúvida fiscal federal brasileira precisa de orientação oficial atual.",
+          "options": [
+            {
+              "label": "A orientação atual da Receita Federal"
+            },
+            {
+              "label": "Uma mensagem privada sem data"
+            },
+            {
+              "label": "Um prazo estrangeiro reenviado"
+            }
+          ],
+          "help": [
+            "Use a autoridade responsável por esse imposto."
+          ],
+          "feedback": {
+            "met": "A autoridade e o período pertinentes combinam com a pergunta.",
+            "not_yet": "Use a autoridade responsável por esse imposto."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.tax-public-systems.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Can this deadline be imported?",
+          "scene": "A video gives another country’s tax deadline. The learner’s obligation is local.",
+          "options": [
+            {
+              "label": "No, check the relevant local authority"
+            },
+            {
+              "label": "Yes, taxes share one global deadline"
+            }
+          ],
+          "help": [
+            "Match the jurisdiction before using a date."
+          ],
+          "feedback": {
+            "met": "Another country’s deadline does not establish the local one.",
+            "not_yet": "Match the jurisdiction before using a date."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Puedes importar este plazo?",
+          "scene": "Un video da el plazo fiscal de otro país. La obligación del usuario es local.",
+          "options": [
+            {
+              "label": "No, consulta la autoridad local pertinente"
+            },
+            {
+              "label": "Sí, hay un plazo mundial único"
+            }
+          ],
+          "help": [
+            "Relaciona la jurisdicción antes de usar la fecha."
+          ],
+          "feedback": {
+            "met": "El plazo de otro país no establece el local.",
+            "not_yet": "Relaciona la jurisdicción antes de usar la fecha."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Pode importar esse prazo?",
+          "scene": "Um vídeo dá o prazo fiscal de outro país. A obrigação da pessoa é local.",
+          "options": [
+            {
+              "label": "Não, consulte a autoridade local pertinente"
+            },
+            {
+              "label": "Sim, há um prazo mundial único"
+            }
+          ],
+          "help": [
+            "Relacione a jurisdição antes de usar a data."
+          ],
+          "feedback": {
+            "met": "O prazo de outro país não define o local.",
+            "not_yet": "Relacione a jurisdição antes de usar a data."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.tax-public-systems.06",
+      "copy": {
+        "en-US": {
+          "prompt": "What needs updating?",
+          "scene": "A saved official page concerns an earlier tax year. The current filing period is different.",
+          "options": [
+            {
+              "label": "The rules for the current period"
+            },
+            {
+              "label": "Only the saved filing date"
+            }
+          ],
+          "help": [
+            "Check both authority and publication scope."
+          ],
+          "feedback": {
+            "met": "An official source can still refer to the wrong period.",
+            "not_yet": "Check both authority and publication scope."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debes actualizar?",
+          "scene": "Una página oficial guardada trata de un año fiscal anterior. El periodo actual es distinto.",
+          "options": [
+            {
+              "label": "Las reglas del periodo actual"
+            },
+            {
+              "label": "Solo la fecha guardada"
+            }
+          ],
+          "help": [
+            "Revisa autoridad y alcance temporal."
+          ],
+          "feedback": {
+            "met": "Una fuente oficial puede referirse al periodo equivocado.",
+            "not_yet": "Revisa autoridad y alcance temporal."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que atualizar?",
+          "scene": "Uma página oficial salva trata de um ano fiscal anterior. O período atual é outro.",
+          "options": [
+            {
+              "label": "As regras do período atual"
+            },
+            {
+              "label": "Só a data salva"
+            }
+          ],
+          "help": [
+            "Confira autoridade e período abrangido."
+          ],
+          "feedback": {
+            "met": "Uma fonte oficial pode tratar do período errado.",
+            "not_yet": "Confira autoridade e período abrangido."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.tax-public-systems.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Does this page apply?",
+          "scene": "An official instruction concerns businesses. The learner is checking a different personal obligation.",
+          "options": [
+            {
+              "label": "Not necessarily, verify the applicable category"
+            },
+            {
+              "label": "Yes, every official rule applies to everyone"
+            }
+          ],
+          "help": [
+            "Match the person’s case to the rule’s scope."
+          ],
+          "feedback": {
+            "met": "Official rules can apply only to specified categories.",
+            "not_yet": "Match the person’s case to the rule’s scope."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿La página cubre este caso?",
+          "scene": "Una instrucción oficial trata de empresas. La persona revisa una obligación personal distinta.",
+          "options": [
+            {
+              "label": "No necesariamente, verifica la categoría aplicable"
+            },
+            {
+              "label": "Sí, toda regla oficial aplica a todos"
+            }
+          ],
+          "help": [
+            "Relaciona el caso con el alcance de la regla."
+          ],
+          "feedback": {
+            "met": "Las reglas oficiales pueden limitarse a categorías específicas.",
+            "not_yet": "Relaciona el caso con el alcance de la regla."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A página cobre este caso?",
+          "scene": "Uma instrução oficial trata de empresas. A pessoa confere outro dever pessoal.",
+          "options": [
+            {
+              "label": "Não necessariamente, confira a categoria aplicável"
+            },
+            {
+              "label": "Sim, toda regra oficial vale para todos"
+            }
+          ],
+          "help": [
+            "Relacione o caso com o alcance da regra."
+          ],
+          "feedback": {
+            "met": "Regras oficiais podem se limitar a categorias específicas.",
+            "not_yet": "Relacione o caso com o alcance da regra."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.tax-public-systems.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which independent path?",
+          "scene": "A message claims a tax deadline and demands login through an attached link.",
+          "options": [
+            {
+              "label": "Use only the attached link"
+            },
+            {
+              "label": "Reach the official site independently"
+            },
+            {
+              "label": "Send passwords to the sender"
+            }
+          ],
+          "help": [
+            "Verify the notice through the authority’s own known route."
+          ],
+          "feedback": {
+            "met": "Independent access avoids relying on a possibly false message.",
+            "not_yet": "Verify the notice through the authority’s own known route."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué ruta es independiente?",
+          "scene": "Un mensaje afirma un plazo fiscal y exige iniciar sesión mediante un enlace adjunto.",
+          "options": [
+            {
+              "label": "Usar solo el enlace adjunto"
+            },
+            {
+              "label": "Entrar por una ruta oficial independiente"
+            },
+            {
+              "label": "Enviar contraseñas al remitente"
+            }
+          ],
+          "help": [
+            "Verifica el aviso por la ruta conocida de la autoridad."
+          ],
+          "feedback": {
+            "met": "El acceso independiente evita depender de un mensaje posiblemente falso.",
+            "not_yet": "Verifica el aviso por la ruta conocida de la autoridad."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual caminho é independente?",
+          "scene": "Uma mensagem anuncia prazo fiscal e exige entrar por um link anexo.",
+          "options": [
+            {
+              "label": "Usar só o link anexo"
+            },
+            {
+              "label": "Entrar por caminho oficial independente"
+            },
+            {
+              "label": "Enviar senhas ao remetente"
+            }
+          ],
+          "help": [
+            "Confira o aviso pelo caminho conhecido da autoridade."
+          ],
+          "feedback": {
+            "met": "O acesso independente evita depender de mensagem possivelmente falsa.",
+            "not_yet": "Confira o aviso pelo caminho conhecido da autoridade."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.tax-public-systems.06",
+      "copy": {
+        "en-US": {
+          "prompt": "What comes first?",
+          "scene": "After moving countries, someone receives conflicting filing advice from friends.",
+          "options": [
+            {
+              "label": "Choose the later date"
+            },
+            {
+              "label": "Identify applicable jurisdictions and rules"
+            },
+            {
+              "label": "Use the easier advice"
+            }
+          ],
+          "help": [
+            "Do not settle jurisdiction by convenience or popularity."
+          ],
+          "feedback": {
+            "met": "A cross-border case needs relevant official or qualified local guidance.",
+            "not_yet": "Do not settle jurisdiction by convenience or popularity."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué resuelves primero?",
+          "scene": "Tras mudarse de país, alguien recibe consejos fiscales contradictorios de amistades de ambos lugares.",
+          "options": [
+            {
+              "label": "Elegir automáticamente la fecha posterior"
+            },
+            {
+              "label": "Qué jurisdicciones y reglas aplican al caso"
+            },
+            {
+              "label": "Usar el consejo más cómodo"
+            }
+          ],
+          "help": [
+            "No elijas jurisdicción por comodidad o popularidad."
+          ],
+          "feedback": {
+            "met": "Un caso transfronterizo requiere orientación oficial o local calificada pertinente.",
+            "not_yet": "No elijas jurisdicción por comodidad o popularidad."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que resolver primeiro?",
+          "scene": "Após mudar de país, alguém recebe conselhos fiscais opostos de amigos dos dois lugares.",
+          "options": [
+            {
+              "label": "Escolher sempre a data mais tarde"
+            },
+            {
+              "label": "Quais jurisdições e regras valem para o caso"
+            },
+            {
+              "label": "Usar o conselho mais fácil"
+            }
+          ],
+          "help": [
+            "Não escolha jurisdição por comodidade ou popularidade."
+          ],
+          "feedback": {
+            "met": "Um caso entre países pede orientação oficial ou local qualificada.",
+            "not_yet": "Não escolha jurisdição por comodidade ou popularidade."
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,779 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-financial-landscape-part-1",
+  "lesson_id": "fe-production-financial-landscape-04",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.financial-landscape.04"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Prepare a complaint with a clear requested remedy and supporting transaction evidence.",
+  "title": {
+    "en-US": "Clear Complaints",
+    "es-MX": "Presenta una queja clara",
+    "pt-BR": "Faça uma reclamação clara"
+  },
+  "new_concepts": [
+    "finance.prod.financial-landscape.04"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Clear Complaints\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Presenta una queja clara\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Faça uma reclamação clara\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.financial-landscape.04",
+      "observable_action": "Prepare a complaint with a clear requested remedy and supporting transaction evidence.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.accounts-records.07",
+      "prod.purchase-decisions.08"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A complaint is easier to assess when it connects the disputed transaction, evidence and requested correction.",
+    "misconception": "Anger alone or an unrelated document states a clear complaint, or a request guarantees the remedy.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.financial-landscape.04",
+        "context_id": "financial-landscape-04-example-01",
+        "supports_from": [],
+        "reasoning": "State what happened, identify the transaction, attach relevant evidence and request a specific correction. Keep a copy and reference number."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.financial-landscape.04",
+        "context_id": "financial-landscape-04-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The request identifies the disputed error and desired correction."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.financial-landscape.04",
+        "context_id": "financial-landscape-04-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The receipt and entries connect the claim to the transaction."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.financial-landscape.04",
+        "context_id": "financial-landscape-04-practice-01",
+        "supports_from": [],
+        "reasoning": "Specific transaction details help locate the disputed event."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.financial-landscape.04",
+        "context_id": "financial-landscape-04-practice-02",
+        "supports_from": [],
+        "reasoning": "These records support tracking and any later escalation."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.financial-landscape.04",
+        "context_id": "financial-landscape-04-practice-03",
+        "supports_from": [],
+        "reasoning": "A requested remedy is not yet a confirmed outcome."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.financial-landscape.04",
+        "context_id": "financial-landscape-04-transfer-01",
+        "supports_from": [],
+        "reasoning": "The complete complaint connects the discrepancy, evidence and requested review."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.financial-landscape.04",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A complaint is easier to assess when it connects the disputed transaction, evidence and requested correction."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Una queja se evalúa mejor al conectar operación disputada, evidencia y corrección solicitada."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Uma reclamação é mais fácil de avaliar ao ligar transação contestada, prova e correção pedida."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Facts, proof, request",
+          "line": "State what happened, identify the transaction, attach relevant evidence and request a specific correction. Keep a copy and reference number."
+        },
+        "es-MX": {
+          "prompt": "Hechos, prueba, solicitud",
+          "line": "Expón qué pasó, identifica operación, adjunta evidencia pertinente y pide corrección específica. Guarda copia y folio."
+        },
+        "pt-BR": {
+          "prompt": "Fatos, prova, pedido",
+          "line": "Diga o que houve, identifique transação, anexe prova relevante e peça correção específica. Guarde cópia e protocolo."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Which request is specific?",
+          "scene": "A statement shows the same charge twice for one purchase.",
+          "options": [
+            {
+              "label": "Give me anything"
+            },
+            {
+              "label": "Make everything better"
+            },
+            {
+              "label": "Review and reverse the duplicate"
+            }
+          ],
+          "help": [
+            "Name the concrete transaction problem and remedy sought."
+          ],
+          "feedback": {
+            "met": "The request identifies the disputed error and desired correction.",
+            "not_yet": "Name the concrete transaction problem and remedy sought."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué solicitud es específica?",
+          "scene": "Estado muestra dos veces mismo cargo por una compra.",
+          "options": [
+            {
+              "label": "Dar cualquier cosa"
+            },
+            {
+              "label": "Mejorar todo"
+            },
+            {
+              "label": "Revisar y revertir cargo duplicado"
+            }
+          ],
+          "help": [
+            "Nombra problema concreto de operación y solución solicitada."
+          ],
+          "feedback": {
+            "met": "La solicitud identifica error y corrección deseada.",
+            "not_yet": "Nombra problema concreto de operación y solución solicitada."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que pedido é específico?",
+          "scene": "Extrato mostra duas vezes mesma cobrança por uma compra.",
+          "options": [
+            {
+              "label": "Dar qualquer coisa"
+            },
+            {
+              "label": "Melhorar tudo"
+            },
+            {
+              "label": "Rever e estornar cobrança duplicada"
+            }
+          ],
+          "help": [
+            "Nomeie problema concreto da transação e solução pedida."
+          ],
+          "feedback": {
+            "met": "O pedido identifica erro e correção desejada.",
+            "not_yet": "Nomeie problema concreto da transação e solução pedida."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Which evidence supports a duplicate-charge complaint?",
+          "scene": "The issue is two charges for the same transaction.",
+          "options": [
+            {
+              "label": "Receipt and matching statement entries"
+            },
+            {
+              "label": "Only one payment receipt"
+            },
+            {
+              "label": "The current account balance"
+            }
+          ],
+          "help": [
+            "Choose evidence directly related to the disputed charge."
+          ],
+          "feedback": {
+            "met": "The receipt and entries connect the claim to the transaction.",
+            "not_yet": "Choose evidence directly related to the disputed charge."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué prueba respalda cargo duplicado?",
+          "scene": "Problema son dos cargos de la misma operación.",
+          "options": [
+            {
+              "label": "Recibo y movimientos coincidentes"
+            },
+            {
+              "label": "Solo un comprobante de pago"
+            },
+            {
+              "label": "El saldo actual de cuenta"
+            }
+          ],
+          "help": [
+            "Elige pruebas directamente ligadas al cargo disputado."
+          ],
+          "feedback": {
+            "met": "Recibo y movimientos conectan queja con operación.",
+            "not_yet": "Elige pruebas directamente ligadas al cargo disputado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que prova apoia cobrança duplicada?",
+          "scene": "Problema são duas cobranças da mesma transação.",
+          "options": [
+            {
+              "label": "Recibo e lançamentos correspondentes"
+            },
+            {
+              "label": "Só um comprovante de pagamento"
+            },
+            {
+              "label": "O saldo atual da conta"
+            }
+          ],
+          "help": [
+            "Escolha provas ligadas diretamente à cobrança contestada."
+          ],
+          "feedback": {
+            "met": "Recibo e lançamentos ligam queixa à transação.",
+            "not_yet": "Escolha provas ligadas diretamente à cobrança contestada."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.04",
+      "copy": {
+        "en-US": {
+          "prompt": "What detail helps locate the problem?",
+          "scene": "A complaint says only “a payment failed sometime.”",
+          "options": [
+            {
+              "label": "Only the current balance"
+            },
+            {
+              "label": "The account’s opening date"
+            },
+            {
+              "label": "Date, amount and transaction reference"
+            }
+          ],
+          "help": [
+            "Provide relevant identifiers through the official complaint channel."
+          ],
+          "feedback": {
+            "met": "Specific transaction details help locate the disputed event.",
+            "not_yet": "Provide relevant identifiers through the official complaint channel."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué detalle ayuda a ubicar problema?",
+          "scene": "Queja solo dice «un pago falló alguna vez».",
+          "options": [
+            {
+              "label": "Solo el saldo actual"
+            },
+            {
+              "label": "La fecha de apertura"
+            },
+            {
+              "label": "Fecha, monto y referencia de operación"
+            }
+          ],
+          "help": [
+            "Da identificadores pertinentes por canal oficial de quejas."
+          ],
+          "feedback": {
+            "met": "Detalles concretos ayudan a ubicar el evento disputado.",
+            "not_yet": "Da identificadores pertinentes por canal oficial de quejas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que detalhe ajuda a achar o problema?",
+          "scene": "Queixa só diz “um pagamento falhou alguma vez”.",
+          "options": [
+            {
+              "label": "Só o saldo atual"
+            },
+            {
+              "label": "A data de abertura"
+            },
+            {
+              "label": "Data, valor e referência da transação"
+            }
+          ],
+          "help": [
+            "Dê dados relevantes pelo canal oficial de reclamações."
+          ],
+          "feedback": {
+            "met": "Detalhes concretos ajudam a achar o evento contestado.",
+            "not_yet": "Dê dados relevantes pelo canal oficial de reclamações."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.04",
+      "copy": {
+        "en-US": {
+          "prompt": "What should be kept after submission?",
+          "scene": "The provider supplies a complaint reference and a copy of the request.",
+          "options": [
+            {
+              "label": "Only memory"
+            },
+            {
+              "label": "Delete all supporting records"
+            },
+            {
+              "label": "Reference, copy and submission date"
+            }
+          ],
+          "help": [
+            "Retain the complaint trail securely."
+          ],
+          "feedback": {
+            "met": "These records support tracking and any later escalation.",
+            "not_yet": "Retain the complaint trail securely."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué guardar tras enviar?",
+          "scene": "Proveedor da folio de queja y copia de solicitud.",
+          "options": [
+            {
+              "label": "Solo memoria"
+            },
+            {
+              "label": "Borrar todos los registros"
+            },
+            {
+              "label": "Folio, copia y fecha de envío"
+            }
+          ],
+          "help": [
+            "Conserva historial de queja de forma segura."
+          ],
+          "feedback": {
+            "met": "Estos registros apoyan seguimiento y posible escalamiento.",
+            "not_yet": "Conserva historial de queja de forma segura."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que guardar após enviar?",
+          "scene": "Provedor dá protocolo da queixa e cópia do pedido.",
+          "options": [
+            {
+              "label": "Só memória"
+            },
+            {
+              "label": "Apagar todos os registros"
+            },
+            {
+              "label": "Protocolo, cópia e data de envio"
+            }
+          ],
+          "help": [
+            "Guarde histórico da queixa de forma segura."
+          ],
+          "feedback": {
+            "met": "Esses registros apoiam acompanhamento e eventual próximo recurso.",
+            "not_yet": "Guarde histórico da queixa de forma segura."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Does asking guarantee correction?",
+          "scene": "A complaint requests a refund; the provider has not assessed the evidence.",
+          "options": [
+            {
+              "label": "Yes, anger guarantees approval"
+            },
+            {
+              "label": "Yes, any request guarantees payment"
+            },
+            {
+              "label": "No, it states the requested remedy"
+            }
+          ],
+          "help": [
+            "Track the response and compare it with the evidence."
+          ],
+          "feedback": {
+            "met": "A requested remedy is not yet a confirmed outcome.",
+            "not_yet": "Track the response and compare it with the evidence."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Pedir garantiza la corrección?",
+          "scene": "Queja solicita reembolso; proveedor no ha evaluado pruebas.",
+          "options": [
+            {
+              "label": "Sí, enojo garantiza aprobación"
+            },
+            {
+              "label": "Sí, toda solicitud garantiza pago"
+            },
+            {
+              "label": "No, expresa solución solicitada"
+            }
+          ],
+          "help": [
+            "Sigue respuesta y compárala con pruebas."
+          ],
+          "feedback": {
+            "met": "Una solución solicitada aún no es resultado confirmado.",
+            "not_yet": "Sigue respuesta y compárala con pruebas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Pedir garante a correção?",
+          "scene": "Queixa pede reembolso; provedor não avaliou provas.",
+          "options": [
+            {
+              "label": "Sim, raiva garante aprovação"
+            },
+            {
+              "label": "Sim, todo pedido garante pagamento"
+            },
+            {
+              "label": "Não, expressa solução pedida"
+            }
+          ],
+          "help": [
+            "Acompanhe resposta e compare com provas."
+          ],
+          "feedback": {
+            "met": "Uma solução pedida ainda não é resultado confirmado.",
+            "not_yet": "Acompanhe resposta e compare com provas."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.financial-landscape.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Which complaint is ready to assess?",
+          "scene": "A transfer receipt promises one amount; the recipient got less.",
+          "options": [
+            {
+              "label": "Identify transfer, attach proof, request review"
+            },
+            {
+              "label": "Only say “bad company”"
+            },
+            {
+              "label": "Send unrelated records"
+            }
+          ],
+          "help": [
+            "Make the missing amount traceable to the specific transfer."
+          ],
+          "feedback": {
+            "met": "The complete complaint connects the discrepancy, evidence and requested review.",
+            "not_yet": "Make the missing amount traceable to the specific transfer."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué queja puede evaluarse?",
+          "scene": "Recibo de envío promete monto; destinatario recibe menos.",
+          "options": [
+            {
+              "label": "Identificar envío, adjuntar prueba, pedir revisión"
+            },
+            {
+              "label": "Solo decir «mala empresa»"
+            },
+            {
+              "label": "Enviar registros ajenos"
+            }
+          ],
+          "help": [
+            "Vincula monto faltante con envío específico."
+          ],
+          "feedback": {
+            "met": "La queja completa conecta diferencia, pruebas y revisión solicitada.",
+            "not_yet": "Vincula monto faltante con envío específico."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que queixa pode ser avaliada?",
+          "scene": "Recibo de envio promete valor; destinatário recebe menos.",
+          "options": [
+            {
+              "label": "Identificar envio, anexar prova, pedir revisão"
+            },
+            {
+              "label": "Só dizer “empresa ruim”"
+            },
+            {
+              "label": "Enviar registros alheios"
+            }
+          ],
+          "help": [
+            "Ligue valor faltante ao envio específico."
+          ],
+          "feedback": {
+            "met": "A queixa completa liga diferença, provas e revisão pedida.",
+            "not_yet": "Ligue valor faltante ao envio específico."
+          }
+        }
+      }
+    }
+  ]
+}

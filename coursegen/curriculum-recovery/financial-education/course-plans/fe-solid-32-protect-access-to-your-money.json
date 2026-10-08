@@ -1,0 +1,814 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-solid-08-decide-with-evidence",
+  "lesson_id": "fe-solid-32-protect-access-to-your-money",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.safety.credentials"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Keep authentication secrets private and respond to suspected credential exposure using independently verified recovery channels.",
+  "title": {
+    "en-US": "Secure account access",
+    "es-MX": "Protege el acceso a tu dinero",
+    "pt-BR": "Proteja o acesso ao seu dinheiro"
+  },
+  "new_concepts": [
+    "finance.safety.credentials"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Secure account access\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Protege el acceso a tu dinero\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Proteja o acesso ao seu dinheiro\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "safety.credentials",
+      "observable_action": "Keep authentication secrets private and respond to suspected credential exposure using independently verified recovery channels.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "safety.fraud"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Passwords and verification codes can authorize access. A convincing caller should not receive them.",
+    "misconception": "Believing a caller identity claim or knowledge of personal details authorizes sharing an authentication code.",
+    "numeracy_support": "Use only the stated quantities, dates and conditions; distinguish a modeled result from a guarantee.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "safety.credentials",
+        "context_id": "protect-access-to-your-money-example-01",
+        "supports_from": [],
+        "reasoning": "A caller requests your login code to stop fraud. End contact and verify through the institution official channel."
+      },
+      {
+        "segment_id": "example-02",
+        "skill_id": "safety.credentials",
+        "context_id": "protect-access-to-your-money-example-02",
+        "supports_from": [],
+        "reasoning": "If a secret was shared, promptly use verified support to secure access and report it. Save relevant messages."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "safety.credentials",
+        "context_id": "protect-access-to-your-money-guided-01",
+        "supports_from": [
+          "example-02"
+        ],
+        "reasoning": "The code grants access; claimed identity does not justify sharing it."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "safety.credentials",
+        "context_id": "protect-access-to-your-money-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Prompt verified recovery can address the exposure without trusting the caller."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "safety.credentials",
+        "context_id": "protect-access-to-your-money-practice-01",
+        "supports_from": [],
+        "reasoning": "Personal details are not proof that sharing an access secret is safe."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "safety.credentials",
+        "context_id": "protect-access-to-your-money-practice-02",
+        "supports_from": [],
+        "reasoning": "Independent access avoids entering credentials into the supplied link."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "safety.credentials",
+        "context_id": "protect-access-to-your-money-practice-03",
+        "supports_from": [],
+        "reasoning": "Preserved evidence describes the incident without exposing new secrets."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "safety.credentials",
+        "context_id": "protect-access-to-your-money-transfer-01",
+        "supports_from": [],
+        "reasoning": "An incoming-payment claim does not authorize account access."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "safety.credentials",
+      "fresh_context": "Apply this skill in a later integrated decision with a different constraint."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Passwords and verification codes can authorize access. A convincing caller should not receive them."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Las contraseñas y códigos pueden autorizar acceso. No los entregues a quien llama aunque parezca convincente."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Senhas e códigos podem autorizar acesso. Não os entregue a quem liga, mesmo que pareça convincente."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A code can open access",
+          "line": "A caller requests your login code to stop fraud. End contact and verify through the institution official channel."
+        },
+        "es-MX": {
+          "prompt": "Un código puede dar acceso",
+          "line": "Alguien pide leer un código de acceso para detener un fraude. Termina ese contacto y verifica por el canal oficial de tu institución."
+        },
+        "pt-BR": {
+          "prompt": "Um código pode dar acesso",
+          "line": "Alguém pede para ler um código de acesso para impedir fraude. Encerre o contato e verifique pelo canal oficial da instituição."
+        }
+      }
+    },
+    {
+      "id": "example-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Act on suspected exposure",
+          "line": "If a secret was shared, promptly use verified support to secure access and report it. Save relevant messages."
+        },
+        "es-MX": {
+          "prompt": "Actúa ante una posible exposición",
+          "line": "Si compartiste un secreto, usa pronto un canal oficial verificado para proteger la cuenta y reportar lo ocurrido. Conserva los mensajes relevantes."
+        },
+        "pt-BR": {
+          "prompt": "Aja diante de possível exposição",
+          "line": "Se compartilhou um segredo, use logo um canal oficial verificado para proteger a conta e relatar o ocorrido. Guarde as mensagens relevantes."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.safety.credentials",
+      "copy": {
+        "en-US": {
+          "prompt": "Should you share this code?",
+          "scene": "A supposed support caller requests your account access code.",
+          "options": [
+            {
+              "label": "Yes, if they know your name"
+            },
+            {
+              "label": "Yes, they mentioned support"
+            },
+            {
+              "label": "No; contact verified support"
+            }
+          ],
+          "help": [
+            "Read what the code authorizes."
+          ],
+          "feedback": {
+            "met": "The code grants access; claimed identity does not justify sharing it.",
+            "not_yet": "Read what the code authorizes."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Debe recibir el código quien llama?",
+          "scene": "Quien llama dice ser de soporte y pide un código que indica que autoriza acceso a la cuenta.",
+          "options": [
+            {
+              "label": "Sí, si sabe tu nombre"
+            },
+            {
+              "label": "Sí, porque mencionó soporte"
+            },
+            {
+              "label": "No; detente y usa soporte verificado"
+            }
+          ],
+          "help": [
+            "Lee qué autoriza el código."
+          ],
+          "feedback": {
+            "met": "El código autoriza acceso; afirmar una identidad no justifica compartirlo.",
+            "not_yet": "Lee qué autoriza el código."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quem ligou deve receber o código?",
+          "scene": "Quem liga diz ser do suporte e pede um código que informa autorizar acesso à conta.",
+          "options": [
+            {
+              "label": "Sim, se souber seu nome"
+            },
+            {
+              "label": "Sim, porque mencionou suporte"
+            },
+            {
+              "label": "Não; pare e use suporte verificado"
+            }
+          ],
+          "help": [
+            "Leia o que o código autoriza."
+          ],
+          "feedback": {
+            "met": "O código autoriza acesso; alegar uma identidade não justifica compartilhá-lo.",
+            "not_yet": "Leia o que o código autoriza."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.safety.credentials",
+      "copy": {
+        "en-US": {
+          "prompt": "What should you do now?",
+          "scene": "You shared a login code with an unverified caller.",
+          "options": [
+            {
+              "label": "Wait until money is missing"
+            },
+            {
+              "label": "Promptly secure access through verified support"
+            },
+            {
+              "label": "Trust that caller’s reassurance"
+            }
+          ],
+          "help": [
+            "Use a channel independent of the suspected contact."
+          ],
+          "feedback": {
+            "met": "Prompt verified recovery can address the exposure without trusting the caller.",
+            "not_yet": "Use a channel independent of the suspected contact."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debes hacer ahora?",
+          "scene": "Leíste un código de acceso a alguien no verificado y ahora sospechas fraude.",
+          "options": [
+            {
+              "label": "Esperar hasta que falte dinero"
+            },
+            {
+              "label": "Proteger pronto el acceso con soporte verificado"
+            },
+            {
+              "label": "Pedir al mismo contacto que confirme seguridad"
+            }
+          ],
+          "help": [
+            "Usa un canal independiente del contacto sospechoso."
+          ],
+          "feedback": {
+            "met": "La recuperación verificada permite atender la exposición sin confiar en quien llamó.",
+            "not_yet": "Usa un canal independiente del contacto sospechoso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que fazer agora?",
+          "scene": "Você leu um código de acesso para alguém não verificado e agora suspeita de fraude.",
+          "options": [
+            {
+              "label": "Esperar até faltar dinheiro"
+            },
+            {
+              "label": "Proteger logo o acesso com suporte verificado"
+            },
+            {
+              "label": "Pedir ao mesmo contato que confirme segurança"
+            }
+          ],
+          "help": [
+            "Use um canal independente do contato suspeito."
+          ],
+          "feedback": {
+            "met": "A recuperação verificada permite tratar a exposição sem confiar em quem ligou.",
+            "not_yet": "Use um canal independente do contato suspeito."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.safety.credentials",
+      "copy": {
+        "en-US": {
+          "prompt": "Does this verify the caller?",
+          "scene": "A caller knows your name and address, requesting your password.",
+          "options": [
+            {
+              "label": "No, details prove no authority"
+            },
+            {
+              "label": "Yes, if they sound professional"
+            },
+            {
+              "label": "Yes, those details prove identity"
+            }
+          ],
+          "help": [
+            "Distinguish identity claims from authentication secrets."
+          ],
+          "feedback": {
+            "met": "Personal details are not proof that sharing an access secret is safe.",
+            "not_yet": "Distinguish identity claims from authentication secrets."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Saber tus datos verifica a esta persona?",
+          "scene": "Quien llama conoce tu nombre y dirección reciente y pide tu contraseña.",
+          "options": [
+            {
+              "label": "No, esos datos no autorizan compartir la contraseña"
+            },
+            {
+              "label": "Sí, si la llamada parece profesional"
+            },
+            {
+              "label": "Sí, esos datos no pueden copiarse"
+            }
+          ],
+          "help": [
+            "Distingue las afirmaciones de identidad de los secretos de acceso."
+          ],
+          "feedback": {
+            "met": "Los datos personales no prueban que sea seguro entregar un secreto de acceso.",
+            "not_yet": "Distingue las afirmaciones de identidad de los secretos de acceso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Saber seus dados verifica essa pessoa?",
+          "scene": "Quem liga conhece seu nome e endereço recente e pede sua senha.",
+          "options": [
+            {
+              "label": "Não, esses dados não autorizam compartilhar a senha"
+            },
+            {
+              "label": "Sim, se a ligação parecer profissional"
+            },
+            {
+              "label": "Sim, esses dados não podem ser copiados"
+            }
+          ],
+          "help": [
+            "Diferencie alegações de identidade de segredos de acesso."
+          ],
+          "feedback": {
+            "met": "Dados pessoais não provam que seja seguro entregar um segredo de acesso.",
+            "not_yet": "Diferencie alegações de identidade de segredos de acesso."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.safety.credentials",
+      "copy": {
+        "en-US": {
+          "prompt": "Which route avoids the link?",
+          "scene": "An account-blocked text supplies a login link. You have the institution’s verified app.",
+          "options": [
+            {
+              "label": "Use the message link"
+            },
+            {
+              "label": "Open that app independently"
+            },
+            {
+              "label": "Reply with your password"
+            }
+          ],
+          "help": [
+            "Use the route you already verified."
+          ],
+          "feedback": {
+            "met": "Independent access avoids entering credentials into the supplied link.",
+            "not_yet": "Use the route you already verified."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué ruta evita el enlace sospechoso?",
+          "scene": "Un mensaje anuncia un bloqueo con un enlace. Tienes la aplicación verificada de la institución.",
+          "options": [
+            {
+              "label": "Entrar por el enlace del mensaje"
+            },
+            {
+              "label": "Abrir directamente la aplicación verificada"
+            },
+            {
+              "label": "Responder con la contraseña para preguntar"
+            }
+          ],
+          "help": [
+            "Usa la ruta que ya verificaste."
+          ],
+          "feedback": {
+            "met": "El acceso independiente evita poner tus datos en el enlace recibido.",
+            "not_yet": "Usa la ruta que ya verificaste."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual caminho evita o link suspeito?",
+          "scene": "Uma mensagem anuncia um bloqueio e envia um link. Você tem o aplicativo verificado da instituição.",
+          "options": [
+            {
+              "label": "Entrar pelo link da mensagem"
+            },
+            {
+              "label": "Abrir diretamente o aplicativo verificado"
+            },
+            {
+              "label": "Responder com a senha para perguntar"
+            }
+          ],
+          "help": [
+            "Use o caminho que já verificou."
+          ],
+          "feedback": {
+            "met": "O acesso independente evita inserir seus dados no link recebido.",
+            "not_yet": "Use o caminho que já verificou."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.safety.credentials",
+      "copy": {
+        "en-US": {
+          "prompt": "What should the report preserve?",
+          "scene": "Verified support asks about a suspicious payment request with an address and time.",
+          "options": [
+            {
+              "label": "Your passwords"
+            },
+            {
+              "label": "Relevant messages and payment details"
+            },
+            {
+              "label": "Only guesses about the sender"
+            }
+          ],
+          "help": [
+            "Keep evidence while keeping access secrets private."
+          ],
+          "feedback": {
+            "met": "Preserved evidence describes the incident without exposing new secrets.",
+            "not_yet": "Keep evidence while keeping access secrets private."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe conservar el reporte?",
+          "scene": "Una solicitud sospechosa incluyó dirección, hora e instrucciones de pago. Soporte verificado pregunta qué ocurrió.",
+          "options": [
+            {
+              "label": "Contraseñas incluidas en cada reporte"
+            },
+            {
+              "label": "Mensajes relevantes y datos de la operación"
+            },
+            {
+              "label": "Solo una suposición sobre el remitente"
+            }
+          ],
+          "help": [
+            "Conserva evidencia y mantén privados los secretos de acceso."
+          ],
+          "feedback": {
+            "met": "La evidencia conservada describe el incidente sin exponer nuevos secretos.",
+            "not_yet": "Conserva evidencia y mantén privados los secretos de acceso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que o relato deve preservar?",
+          "scene": "O suporte verificado pergunta sobre um pedido suspeito com endereço, horário e instruções de pagamento.",
+          "options": [
+            {
+              "label": "Senhas incluídas em cada relato"
+            },
+            {
+              "label": "Mensagens relevantes e dados da operação"
+            },
+            {
+              "label": "Só uma suposição sobre o remetente"
+            }
+          ],
+          "help": [
+            "Guarde provas e mantenha privados os segredos de acesso."
+          ],
+          "feedback": {
+            "met": "As provas guardadas descrevem o incidente sem expor novos segredos.",
+            "not_yet": "Guarde provas e mantenha privados os segredos de acesso."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.safety.credentials",
+      "copy": {
+        "en-US": {
+          "prompt": "What is the safer response?",
+          "scene": "A buyer requests your account’s verification code to pay you.",
+          "options": [
+            {
+              "label": "Keep private; verify through the platform"
+            },
+            {
+              "label": "Share it to receive money"
+            },
+            {
+              "label": "Send half before payment"
+            }
+          ],
+          "help": [
+            "Check what the code does, not what the buyer promises."
+          ],
+          "feedback": {
+            "met": "An incoming-payment claim does not authorize account access.",
+            "not_yet": "Check what the code does, not what the buyer promises."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es la respuesta más segura?",
+          "scene": "Un comprador pide el código enviado a tu cuenta y afirma que lo necesita para pagarte.",
+          "options": [
+            {
+              "label": "Mantenerlo privado y verificar con la plataforma"
+            },
+            {
+              "label": "Compartirlo porque recibirás dinero"
+            },
+            {
+              "label": "Enviar la mitad antes del pago"
+            }
+          ],
+          "help": [
+            "Revisa qué hace el código, no qué promete el comprador."
+          ],
+          "feedback": {
+            "met": "Prometer un pago no autoriza acceso a tu cuenta.",
+            "not_yet": "Revisa qué hace el código, no qué promete el comprador."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é a resposta mais segura?",
+          "scene": "Um comprador pede o código enviado à sua conta e afirma precisar dele para pagar você.",
+          "options": [
+            {
+              "label": "Manter privado e verificar com a plataforma"
+            },
+            {
+              "label": "Compartilhar porque vai receber dinheiro"
+            },
+            {
+              "label": "Enviar metade antes do pagamento"
+            }
+          ],
+          "help": [
+            "Confira o que o código faz, não o que o comprador promete."
+          ],
+          "feedback": {
+            "met": "Prometer um pagamento não autoriza acesso à sua conta.",
+            "not_yet": "Confira o que o código faz, não o que o comprador promete."
+          }
+        }
+      }
+    }
+  ]
+}

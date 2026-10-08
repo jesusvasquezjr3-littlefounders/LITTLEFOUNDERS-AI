@@ -32,6 +32,8 @@ export interface LearnLinks {
   together?: string;
   /** Bible 08 §8 (GAP-FIX-R1): the Mentor screen the home card opens. Optional for older hosts and previews. */
   mentor?: string;
+  /** The game host (KRV1-CONTRACT §6): the Learn home's "Play with {Mentor}" card opens it. Optional for older hosts and previews. */
+  play?: string;
 }
 
 /** Client-side navigation; `courseSlug` tells the lesson player where "exit" returns. */

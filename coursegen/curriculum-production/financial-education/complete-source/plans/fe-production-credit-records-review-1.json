@@ -1,0 +1,673 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-credit-records-part-2",
+  "lesson_id": "fe-production-credit-records-review-1",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.credit-records.03",
+    "finance.prod.credit-records.01",
+    "finance.prod.credit-records.02",
+    "finance.prod.credit-mechanics.01"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Use matching account records to identify and document a factual reporting discrepancy.",
+  "title": {
+    "en-US": "Account verification",
+    "es-MX": "Revisa una cuenta reportada",
+    "pt-BR": "Confira uma conta informada"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Check a reported account\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Revisa una cuenta reportada\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Confira uma conta informada\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "consolidate",
+    "objective": {
+      "skill_id": "prod.credit-records.03",
+      "observable_action": "Use matching account records to identify and document a factual reporting discrepancy.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.credit-records.02",
+      "prod.accounts-records.07"
+    ],
+    "retrieval_skills": [
+      "prod.credit-records.01",
+      "prod.credit-records.02",
+      "prod.credit-records.03",
+      "prod.credit-mechanics.01"
+    ],
+    "relevance": "Use account details to separate a real discrepancy from an unexplained score change.",
+    "misconception": "A score change alone identifies a factual reporting error.",
+    "numeracy_support": "Every quantity and assumption needed to decide is visible in the current scenario. Examples explain the relationship before independent application.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.credit-records.01",
+        "context_id": "fe-production-credit-records-review-1-practice-01",
+        "supports_from": [],
+        "reasoning": "Account details are needed to investigate the unfamiliar lender."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.credit-records.02",
+        "context_id": "fe-production-credit-records-review-1-practice-02",
+        "supports_from": [],
+        "reasoning": "The account identifier and period both match."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.credit-records.03",
+        "context_id": "fe-production-credit-records-review-1-practice-03",
+        "supports_from": [],
+        "reasoning": "The evidence supports disputing this account’s unpaid status."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.credit-mechanics.01",
+        "context_id": "fe-production-credit-records-review-1-practice-04",
+        "supports_from": [],
+        "reasoning": "Principal is the borrowed amount, separate from borrowing charges."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.credit-records.02",
+        "context_id": "fe-production-credit-records-review-1-practice-05",
+        "supports_from": [],
+        "reasoning": "The records describe different points in time."
+      },
+      {
+        "segment_id": "transfer-06",
+        "skill_id": "prod.credit-records.03",
+        "context_id": "fe-production-credit-records-review-1-transfer-06",
+        "supports_from": [],
+        "reasoning": "The evidence directly addresses the disputed overdue status."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.credit-records.03",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Use account details to separate a real discrepancy from an unexplained score change."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Usa los datos de cuenta para distinguir un error de un cambio de puntaje."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Use os dados da conta para distinguir um erro de uma mudança de pontuação."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-records.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Which source helps?",
+          "scene": "A credit application mentions an unfamiliar lender. The summary score contains no account details.",
+          "options": [
+            {
+              "label": "The detailed credit report"
+            },
+            {
+              "label": "The score alone"
+            }
+          ],
+          "help": [
+            "A summary number cannot identify individual accounts."
+          ],
+          "feedback": {
+            "met": "Account details are needed to investigate the unfamiliar lender.",
+            "not_yet": "A summary number cannot identify individual accounts."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué fuente ayuda?",
+          "scene": "Una solicitud menciona una entidad desconocida. El puntaje no incluye datos de cuentas.",
+          "options": [
+            {
+              "label": "El reporte crediticio detallado"
+            },
+            {
+              "label": "Solo el puntaje"
+            }
+          ],
+          "help": [
+            "Un número resumido no identifica cuentas individuales."
+          ],
+          "feedback": {
+            "met": "Necesitas los datos de cuenta para investigar la entidad desconocida.",
+            "not_yet": "Un número resumido no identifica cuentas individuales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual fonte ajuda?",
+          "scene": "Uma solicitação menciona uma instituição desconhecida. A pontuação não inclui dados das contas.",
+          "options": [
+            {
+              "label": "O relatório de crédito detalhado"
+            },
+            {
+              "label": "Só a pontuação"
+            }
+          ],
+          "help": [
+            "Um número resumido não identifica contas individuais."
+          ],
+          "feedback": {
+            "met": "Você precisa dos dados da conta para investigar a instituição.",
+            "not_yet": "Um número resumido não identifica contas individuais."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-records.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Which record matches?",
+          "scene": "Entry: lender Luna, account Q, September. Receipts cover Q in September and R in September.",
+          "options": [
+            {
+              "label": "R in September"
+            },
+            {
+              "label": "Q in September"
+            }
+          ],
+          "help": [
+            "Match the account, not just the month."
+          ],
+          "feedback": {
+            "met": "The account identifier and period both match.",
+            "not_yet": "Match the account, not just the month."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué registro coincide?",
+          "scene": "Registro: entidad Luna, cuenta Q, septiembre. Hay recibos de Q y R de septiembre.",
+          "options": [
+            {
+              "label": "R de septiembre"
+            },
+            {
+              "label": "Q de septiembre"
+            }
+          ],
+          "help": [
+            "Compara la cuenta, no solo el mes."
+          ],
+          "feedback": {
+            "met": "Coinciden el identificador de cuenta y el periodo.",
+            "not_yet": "Compara la cuenta, no solo el mes."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual registro corresponde?",
+          "scene": "Registro: instituição Lua, conta Q, setembro. Há recibos de Q e R de setembro.",
+          "options": [
+            {
+              "label": "R de setembro"
+            },
+            {
+              "label": "Q de setembro"
+            }
+          ],
+          "help": [
+            "Compare a conta, não apenas o mês."
+          ],
+          "feedback": {
+            "met": "O identificador da conta e o período correspondem.",
+            "not_yet": "Compare a conta, não apenas o mês."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-records.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Which discrepancy is supported?",
+          "scene": "A same-period receipt confirms settlement. The matching loan entry still says unpaid.",
+          "options": [
+            {
+              "label": "The unpaid status conflicts with evidence"
+            },
+            {
+              "label": "Every other account is also wrong"
+            }
+          ],
+          "help": [
+            "Limit the claim to what the documents actually establish."
+          ],
+          "feedback": {
+            "met": "The evidence supports disputing this account’s unpaid status.",
+            "not_yet": "Limit the claim to what the documents actually establish."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué diferencia está respaldada?",
+          "scene": "Un recibo del mismo periodo confirma liquidación. El préstamo correspondiente sigue como pendiente.",
+          "options": [
+            {
+              "label": "El estado pendiente contradice las pruebas"
+            },
+            {
+              "label": "Todas las otras cuentas están mal"
+            }
+          ],
+          "help": [
+            "Limita la reclamación a lo que demuestran los documentos."
+          ],
+          "feedback": {
+            "met": "La evidencia respalda cuestionar el estado pendiente de esta cuenta.",
+            "not_yet": "Limita la reclamación a lo que demuestran los documentos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual divergência está comprovada?",
+          "scene": "Um recibo do mesmo período confirma quitação. O empréstimo correspondente continua como pendente.",
+          "options": [
+            {
+              "label": "A situação pendente contradiz as provas"
+            },
+            {
+              "label": "Todas as outras contas estão erradas"
+            }
+          ],
+          "help": [
+            "Limite a contestação ao que os documentos demonstram."
+          ],
+          "feedback": {
+            "met": "A evidência sustenta contestar a situação pendente desta conta.",
+            "not_yet": "Limite a contestação ao que os documentos demonstram."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Which part is the principal?",
+          "scene": "A fictional loan separately lists money borrowed, interest and a processing fee.",
+          "options": [
+            {
+              "label": "The money borrowed"
+            },
+            {
+              "label": "The processing fee"
+            }
+          ],
+          "help": [
+            "Distinguish the borrowed money from interest and fees."
+          ],
+          "feedback": {
+            "met": "Principal is the borrowed amount, separate from borrowing charges.",
+            "not_yet": "Distinguish the borrowed money from interest and fees."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué parte es el capital?",
+          "scene": "Un préstamo ficticio separa dinero prestado, intereses y comisión de trámite.",
+          "options": [
+            {
+              "label": "El dinero prestado"
+            },
+            {
+              "label": "La comisión de trámite"
+            }
+          ],
+          "help": [
+            "Distingue el dinero prestado de intereses y comisiones."
+          ],
+          "feedback": {
+            "met": "El capital es el dinero prestado, separado de los cargos.",
+            "not_yet": "Distingue el dinero prestado de intereses y comisiones."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual parte é o principal?",
+          "scene": "Um empréstimo fictício separa dinheiro emprestado, juros e tarifa de processamento.",
+          "options": [
+            {
+              "label": "O dinheiro emprestado"
+            },
+            {
+              "label": "A tarifa de processamento"
+            }
+          ],
+          "help": [
+            "Distinga o dinheiro emprestado dos juros e das tarifas."
+          ],
+          "feedback": {
+            "met": "O principal é o dinheiro emprestado, separado dos encargos.",
+            "not_yet": "Distinga o dinheiro emprestado dos juros e das tarifas."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-records.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What prevents a fair comparison?",
+          "scene": "A current statement includes yesterday’s payment. The report closed last month.",
+          "options": [
+            {
+              "label": "Different reporting dates"
+            },
+            {
+              "label": "The same account identifier"
+            }
+          ],
+          "help": [
+            "A recent payment cannot appear in an earlier closing record."
+          ],
+          "feedback": {
+            "met": "The records describe different points in time.",
+            "not_yet": "A recent payment cannot appear in an earlier closing record."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué impide comparar directamente?",
+          "scene": "El estado actual incluye el pago de ayer. El reporte cerró el mes pasado.",
+          "options": [
+            {
+              "label": "Las fechas distintas"
+            },
+            {
+              "label": "El mismo identificador de cuenta"
+            }
+          ],
+          "help": [
+            "Un pago reciente no aparece en un cierre anterior."
+          ],
+          "feedback": {
+            "met": "Los registros describen momentos diferentes.",
+            "not_yet": "Un pago reciente no aparece en un cierre anterior."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que impede comparar diretamente?",
+          "scene": "O extrato atual inclui o pagamento de ontem. O relatório fechou no mês passado.",
+          "options": [
+            {
+              "label": "As datas diferentes"
+            },
+            {
+              "label": "O mesmo identificador da conta"
+            }
+          ],
+          "help": [
+            "Um pagamento recente não aparece em um fechamento anterior."
+          ],
+          "feedback": {
+            "met": "Os registros descrevem momentos diferentes.",
+            "not_yet": "Um pagamento recente não aparece em um fechamento anterior."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.credit-records.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Prepare a specific dispute.",
+          "scene": "A furniture loan marked overdue has a matching on-time receipt for that reporting period.",
+          "options": [
+            {
+              "label": "Identify the entry and attach evidence"
+            },
+            {
+              "label": "Request a higher score without records"
+            }
+          ],
+          "help": [
+            "Connect the claimed error to the matching payment record."
+          ],
+          "feedback": {
+            "met": "The evidence directly addresses the disputed overdue status.",
+            "not_yet": "Connect the claimed error to the matching payment record."
+          }
+        },
+        "es-MX": {
+          "prompt": "Prepara una reclamación precisa.",
+          "scene": "Un préstamo para muebles figura atrasado; tienes el recibo puntual del periodo correspondiente.",
+          "options": [
+            {
+              "label": "Identificar el registro y adjuntar pruebas"
+            },
+            {
+              "label": "Pedir más puntaje sin documentos"
+            }
+          ],
+          "help": [
+            "Vincula el error señalado con el comprobante correspondiente."
+          ],
+          "feedback": {
+            "met": "La evidencia responde directamente al atraso cuestionado.",
+            "not_yet": "Vincula el error señalado con el comprobante correspondiente."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Prepare uma contestação específica.",
+          "scene": "Um empréstimo para móveis consta atrasado; você tem o recibo pontual do período correspondente.",
+          "options": [
+            {
+              "label": "Identificar o registro e anexar provas"
+            },
+            {
+              "label": "Pedir mais pontuação sem documentos"
+            }
+          ],
+          "help": [
+            "Ligue o erro apontado ao comprovante correspondente."
+          ],
+          "feedback": {
+            "met": "A evidência responde diretamente ao atraso contestado.",
+            "not_yet": "Ligue o erro apontado ao comprovante correspondente."
+          }
+        }
+      }
+    }
+  ]
+}

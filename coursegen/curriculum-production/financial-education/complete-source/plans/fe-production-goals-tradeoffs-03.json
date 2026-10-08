@@ -1,0 +1,778 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-goals-tradeoffs-part-1",
+  "lesson_id": "fe-production-goals-tradeoffs-03",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.goals-tradeoffs.03"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Identify the next-best feasible use forgone when choosing between two purchases.",
+  "title": {
+    "en-US": "Opportunity cost",
+    "es-MX": "La otra opción",
+    "pt-BR": "A outra opção"
+  },
+  "new_concepts": [
+    "finance.prod.goals-tradeoffs.03"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"The other option\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"La otra opción\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"A outra opção\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.goals-tradeoffs.03",
+      "observable_action": "Identify the next-best feasible use forgone when choosing between two purchases.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "cash.reserved"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Choosing one feasible use leaves another unavailable.",
+    "misconception": "Call every imagined purchase an opportunity cost, including infeasible choices.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.goals-tradeoffs.03",
+        "context_id": "fe-production-goals-tradeoffs-03-example-01",
+        "supports_from": [],
+        "reasoning": "Your 40 dollars buy a class or a repair. Choosing the class gives up the alternative repair."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.goals-tradeoffs.03",
+        "context_id": "fe-production-goals-tradeoffs-03-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The forgone next-best feasible option is the tradeoff."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.goals-tradeoffs.03",
+        "context_id": "fe-production-goals-tradeoffs-03-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "A tradeoff compares options actually available."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.goals-tradeoffs.03",
+        "context_id": "fe-production-goals-tradeoffs-03-practice-01",
+        "supports_from": [],
+        "reasoning": "Time also has alternative uses."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.goals-tradeoffs.03",
+        "context_id": "fe-production-goals-tradeoffs-03-practice-02",
+        "supports_from": [],
+        "reasoning": "A changed constraint can change the tradeoff."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.goals-tradeoffs.03",
+        "context_id": "fe-production-goals-tradeoffs-03-practice-03",
+        "supports_from": [],
+        "reasoning": "Use the next-best option, not the lowest-ranked one."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.goals-tradeoffs.03",
+        "context_id": "fe-production-goals-tradeoffs-03-transfer-01",
+        "supports_from": [],
+        "reasoning": "The constraint concerns this room and this time."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.goals-tradeoffs.03",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Choosing one feasible use leaves another unavailable."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Elegir un uso viable deja otro sin realizar."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Escolher um uso viável deixa outro sem realizar."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "The next-best feasible use",
+          "line": "Your 40 dollars buy a class or a repair. Choosing the class gives up the alternative repair."
+        },
+        "es-MX": {
+          "prompt": "El siguiente mejor uso viable",
+          "line": "Tus 40 pesos compran una clase o una reparación. Elegir la clase implica renunciar a la reparación que elegirías en su lugar."
+        },
+        "pt-BR": {
+          "prompt": "O próximo melhor uso viável",
+          "line": "Seus 40 reais compram uma aula ou um conserto. Escolher a aula significa abrir mão do conserto que escolheria no lugar."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Buying it forgoes what?",
+          "scene": "You can afford a book or museum visit, not both. The visit is your next choice.",
+          "options": [
+            {
+              "label": "Every possible purchase"
+            },
+            {
+              "label": "Nothing because books are useful"
+            },
+            {
+              "label": "The museum visit"
+            }
+          ],
+          "help": [
+            "Use the next choice stated in the scene."
+          ],
+          "feedback": {
+            "met": "The forgone next-best feasible option is the tradeoff.",
+            "not_yet": "Use the next choice stated in the scene."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿A qué renuncias al comprar el libro?",
+          "scene": "Te alcanza para un libro o un museo, no ambos. El museo es tu siguiente opción.",
+          "options": [
+            {
+              "label": "Todas las compras posibles"
+            },
+            {
+              "label": "Nada porque los libros son útiles"
+            },
+            {
+              "label": "La visita al museo"
+            }
+          ],
+          "help": [
+            "Usa la siguiente opción indicada."
+          ],
+          "feedback": {
+            "met": "La siguiente opción viable descartada es el sacrificio.",
+            "not_yet": "Usa la siguiente opción indicada."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Do que abre mão comprando o livro?",
+          "scene": "Pode pagar um livro ou um museu, não ambos. O museu é sua próxima opção.",
+          "options": [
+            {
+              "label": "Todas as compras possíveis"
+            },
+            {
+              "label": "Nada porque livros são úteis"
+            },
+            {
+              "label": "A visita ao museu"
+            }
+          ],
+          "help": [
+            "Use a próxima opção informada."
+          ],
+          "feedback": {
+            "met": "A próxima opção viável descartada é a troca.",
+            "not_yet": "Use a próxima opção informada."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Which is a feasible alternative to the lamp?",
+          "scene": "The budget covers either a lamp or a chair. It cannot cover a car.",
+          "options": [
+            {
+              "label": "The car"
+            },
+            {
+              "label": "The chair"
+            },
+            {
+              "label": "All three together"
+            }
+          ],
+          "help": [
+            "Exclude options outside the constraint."
+          ],
+          "feedback": {
+            "met": "A tradeoff compares options actually available.",
+            "not_yet": "Exclude options outside the constraint."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué alternativa viable hay a la lámpara?",
+          "scene": "El presupuesto cubre una lámpara o una silla. No cubre un auto.",
+          "options": [
+            {
+              "label": "El auto"
+            },
+            {
+              "label": "La silla"
+            },
+            {
+              "label": "Las tres juntas"
+            }
+          ],
+          "help": [
+            "Excluye opciones fuera de la condición."
+          ],
+          "feedback": {
+            "met": "Un sacrificio compara opciones realmente disponibles.",
+            "not_yet": "Excluye opciones fuera de la condición."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual alternativa viável existe à luminária?",
+          "scene": "O orçamento cobre uma luminária ou uma cadeira. Não cobre um carro.",
+          "options": [
+            {
+              "label": "O carro"
+            },
+            {
+              "label": "A cadeira"
+            },
+            {
+              "label": "As três juntas"
+            }
+          ],
+          "help": [
+            "Exclua opções fora da condição."
+          ],
+          "feedback": {
+            "met": "Uma troca compara opções realmente disponíveis.",
+            "not_yet": "Exclua opções fora da condição."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.03",
+      "copy": {
+        "en-US": {
+          "prompt": "What is forgone?",
+          "scene": "You use the only free evening for overtime instead of your planned rest.",
+          "options": [
+            {
+              "label": "The earned payment"
+            },
+            {
+              "label": "Nothing, only money counts"
+            },
+            {
+              "label": "The planned rest"
+            }
+          ],
+          "help": [
+            "Identify what the decision displaced."
+          ],
+          "feedback": {
+            "met": "Time also has alternative uses.",
+            "not_yet": "Identify what the decision displaced."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿A qué renuncias?",
+          "scene": "Usas tu única tarde libre para trabajo extra en vez del descanso planeado.",
+          "options": [
+            {
+              "label": "El pago ganado"
+            },
+            {
+              "label": "Nada, solo cuenta el dinero"
+            },
+            {
+              "label": "El descanso planeado"
+            }
+          ],
+          "help": [
+            "Identifica qué desplazó la decisión."
+          ],
+          "feedback": {
+            "met": "El tiempo también tiene usos alternativos.",
+            "not_yet": "Identifica qué desplazó la decisión."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Do que abre mão?",
+          "scene": "Usa sua única noite livre para trabalho extra em vez do descanso planejado.",
+          "options": [
+            {
+              "label": "O pagamento recebido"
+            },
+            {
+              "label": "Nada, só dinheiro conta"
+            },
+            {
+              "label": "O descanso planejado"
+            }
+          ],
+          "help": [
+            "Identifique o que a decisão substituiu."
+          ],
+          "feedback": {
+            "met": "O tempo também tem usos alternativos.",
+            "not_yet": "Identifique o que a decisão substituiu."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Does buying one still exclude the other?",
+          "scene": "A refund lets you buy both previously competing items.",
+          "options": [
+            {
+              "label": "Not under this changed budget"
+            },
+            {
+              "label": "Only if one is cheaper"
+            },
+            {
+              "label": "Always, regardless of money"
+            }
+          ],
+          "help": [
+            "Recheck what is feasible now."
+          ],
+          "feedback": {
+            "met": "A changed constraint can change the tradeoff.",
+            "not_yet": "Recheck what is feasible now."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Comprar uno aún excluye al otro?",
+          "scene": "Una devolución permite comprar ambos artículos antes competidores.",
+          "options": [
+            {
+              "label": "No con este presupuesto cambiado"
+            },
+            {
+              "label": "Solo si uno es más barato"
+            },
+            {
+              "label": "Siempre, sin importar el dinero"
+            }
+          ],
+          "help": [
+            "Revisa qué es viable ahora."
+          ],
+          "feedback": {
+            "met": "Una condición cambiada puede cambiar el sacrificio.",
+            "not_yet": "Revisa qué es viable ahora."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Comprar um ainda exclui o outro?",
+          "scene": "Um reembolso permite comprar os dois itens antes concorrentes.",
+          "options": [
+            {
+              "label": "Não com este orçamento alterado"
+            },
+            {
+              "label": "Só se um for mais barato"
+            },
+            {
+              "label": "Sempre, independentemente do dinheiro"
+            }
+          ],
+          "help": [
+            "Confira o que é viável agora."
+          ],
+          "feedback": {
+            "met": "Uma condição alterada pode mudar a troca.",
+            "not_yet": "Confira o que é viável agora."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.03",
+      "copy": {
+        "en-US": {
+          "prompt": "What is forgone when choosing repair?",
+          "scene": "You prefer repair first, class second, decoration third; only one fits.",
+          "options": [
+            {
+              "label": "Only the decoration"
+            },
+            {
+              "label": "The repair itself"
+            },
+            {
+              "label": "The class, your next-best choice"
+            }
+          ],
+          "help": [
+            "Follow the stated preference order."
+          ],
+          "feedback": {
+            "met": "Use the next-best option, not the lowest-ranked one.",
+            "not_yet": "Follow the stated preference order."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿A qué renuncias al elegir reparación?",
+          "scene": "Prefieres reparación, luego clase y luego decoración; solo cabe una.",
+          "options": [
+            {
+              "label": "Solo la decoración"
+            },
+            {
+              "label": "La propia reparación"
+            },
+            {
+              "label": "La clase, tu siguiente opción"
+            }
+          ],
+          "help": [
+            "Sigue el orden de preferencia indicado."
+          ],
+          "feedback": {
+            "met": "Usa la siguiente mejor opción, no la última.",
+            "not_yet": "Sigue el orden de preferencia indicado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Do que abre mão ao escolher conserto?",
+          "scene": "Prefere conserto, depois aula e depois decoração; só cabe uma.",
+          "options": [
+            {
+              "label": "Só a decoração"
+            },
+            {
+              "label": "O próprio conserto"
+            },
+            {
+              "label": "A aula, sua próxima opção"
+            }
+          ],
+          "help": [
+            "Siga a ordem de preferência informada."
+          ],
+          "feedback": {
+            "met": "Use a próxima melhor opção, não a última.",
+            "not_yet": "Siga a ordem de preferência informada."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Which opportunity disappears?",
+          "scene": "A shared room can host free childcare or a meeting tonight, not both. Childcare is selected.",
+          "options": [
+            {
+              "label": "Tonight’s meeting in that room"
+            },
+            {
+              "label": "The chosen childcare"
+            },
+            {
+              "label": "All future meetings everywhere"
+            }
+          ],
+          "help": [
+            "Keep the scope of the actual constraint."
+          ],
+          "feedback": {
+            "met": "The constraint concerns this room and this time.",
+            "not_yet": "Keep the scope of the actual constraint."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué oportunidad se descarta?",
+          "scene": "Un espacio permite cuidado infantil gratuito o una reunión esta noche, no ambos. Se elige cuidado.",
+          "options": [
+            {
+              "label": "La reunión allí esta noche"
+            },
+            {
+              "label": "El cuidado elegido"
+            },
+            {
+              "label": "Toda reunión futura en cualquier lugar"
+            }
+          ],
+          "help": [
+            "Conserva el alcance de la condición real."
+          ],
+          "feedback": {
+            "met": "La condición afecta este espacio y este horario.",
+            "not_yet": "Conserva el alcance de la condición real."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual oportunidade é descartada?",
+          "scene": "Uma sala permite cuidado infantil gratuito ou reunião hoje, não ambos. Escolhe-se o cuidado.",
+          "options": [
+            {
+              "label": "A reunião ali hoje"
+            },
+            {
+              "label": "O cuidado escolhido"
+            },
+            {
+              "label": "Toda reunião futura em qualquer lugar"
+            }
+          ],
+          "help": [
+            "Mantenha o alcance da condição real."
+          ],
+          "feedback": {
+            "met": "A condição afeta esta sala e este horário.",
+            "not_yet": "Mantenha o alcance da condição real."
+          }
+        }
+      }
+    }
+  ]
+}

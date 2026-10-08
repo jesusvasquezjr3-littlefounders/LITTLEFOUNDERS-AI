@@ -1,0 +1,707 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-credit-records-part-1",
+  "lesson_id": "fe-production-credit-records-01",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.credit-records.01"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Distinguish a credit report’s recorded information from a score derived from it.",
+  "title": {
+    "en-US": "Credit records",
+    "es-MX": "Historial y puntaje",
+    "pt-BR": "Histórico e pontuação"
+  },
+  "new_concepts": [
+    "finance.prod.credit-records.01"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Record and score\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Historial y puntaje\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Histórico e pontuação\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.credit-records.01",
+      "observable_action": "Distinguish a credit report’s recorded information from a score derived from it.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.credit-mechanics.01",
+      "prod.accounts-records.04"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A number cannot show you which account contains a mistake.",
+    "misconception": "A credit score and the underlying account records are interchangeable.",
+    "numeracy_support": "Every quantity and assumption needed to decide is visible in the current scenario. Examples explain the relationship before independent application.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.credit-records.01",
+        "context_id": "fe-production-credit-records-01-example-01",
+        "supports_from": [],
+        "reasoning": "A report lists account history. A score summarizes risk using a model; inspect the report to check specific entries."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.credit-records.01",
+        "context_id": "fe-production-credit-records-01-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The report contains the entry you need to inspect."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.credit-records.01",
+        "context_id": "fe-production-credit-records-01-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The model summarizes information rather than listing each account."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.credit-records.01",
+        "context_id": "fe-production-credit-records-01-practice-03",
+        "supports_from": [],
+        "reasoning": "The number alone does not identify a changed record."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.credit-records.01",
+        "context_id": "fe-production-credit-records-01-practice-04",
+        "supports_from": [],
+        "reasoning": "Records and a calculated summary serve different purposes."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.credit-records.01",
+        "context_id": "fe-production-credit-records-01-practice-05",
+        "supports_from": [],
+        "reasoning": "Different models can summarize the same information differently."
+      },
+      {
+        "segment_id": "transfer-06",
+        "skill_id": "prod.credit-records.01",
+        "context_id": "fe-production-credit-records-01-transfer-06",
+        "supports_from": [],
+        "reasoning": "The report lets you inspect the unfamiliar account itself."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.credit-records.01",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A number cannot show you which account contains a mistake."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un número no muestra en qué cuenta está un error."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Um número não mostra em qual conta está um erro."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Follow the evidence",
+          "line": "A report lists account history. A score summarizes risk using a model; inspect the report to check specific entries."
+        },
+        "es-MX": {
+          "prompt": "Sigue las pruebas",
+          "line": "El reporte enumera el historial de cuentas. Un modelo calcula el puntaje; revisa el reporte para comprobar registros específicos."
+        },
+        "pt-BR": {
+          "prompt": "Siga as provas",
+          "line": "O relatório lista o histórico das contas. Um modelo calcula a pontuação; confira o relatório para verificar registros específicos."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-records.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Where is the detail?",
+          "scene": "You need to check whether a loan payment was recorded late.",
+          "options": [
+            {
+              "label": "Only the score"
+            },
+            {
+              "label": "Account history in the report"
+            }
+          ],
+          "help": [
+            "A summary number cannot identify the disputed payment."
+          ],
+          "feedback": {
+            "met": "The report contains the entry you need to inspect.",
+            "not_yet": "A summary number cannot identify the disputed payment."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Dónde está el detalle?",
+          "scene": "Necesitas comprobar si un pago de préstamo aparece atrasado.",
+          "options": [
+            {
+              "label": "Solo en el puntaje"
+            },
+            {
+              "label": "En el historial del reporte"
+            }
+          ],
+          "help": [
+            "Un número resumido no identifica el pago en disputa."
+          ],
+          "feedback": {
+            "met": "El reporte contiene el registro que necesitas revisar.",
+            "not_yet": "Un número resumido no identifica el pago en disputa."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Onde está o detalhe?",
+          "scene": "Você precisa conferir se um pagamento consta como atrasado.",
+          "options": [
+            {
+              "label": "Só na pontuação"
+            },
+            {
+              "label": "No histórico do relatório"
+            }
+          ],
+          "help": [
+            "Um número resumido não identifica o pagamento contestado."
+          ],
+          "feedback": {
+            "met": "O relatório contém o registro que você precisa verificar.",
+            "not_yet": "Um número resumido não identifica o pagamento contestado."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-records.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Which is a score?",
+          "scene": "One screen lists accounts. Another displays a model’s risk summary.",
+          "options": [
+            {
+              "label": "The model’s summary"
+            },
+            {
+              "label": "The account list"
+            }
+          ],
+          "help": [
+            "Separate the source records from a model’s summary."
+          ],
+          "feedback": {
+            "met": "The model summarizes information rather than listing each account.",
+            "not_yet": "Separate the source records from a model’s summary."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es un puntaje?",
+          "scene": "Una pantalla enumera cuentas. Otra muestra un resumen de riesgo calculado.",
+          "options": [
+            {
+              "label": "El resumen calculado"
+            },
+            {
+              "label": "La lista de cuentas"
+            }
+          ],
+          "help": [
+            "Distingue los registros del resumen calculado."
+          ],
+          "feedback": {
+            "met": "El modelo resume información, no enumera cada cuenta.",
+            "not_yet": "Distingue los registros del resumen calculado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é a pontuação?",
+          "scene": "Uma tela lista contas. Outra mostra um resumo de risco calculado.",
+          "options": [
+            {
+              "label": "O resumo calculado"
+            },
+            {
+              "label": "A lista de contas"
+            }
+          ],
+          "help": [
+            "Separe os registros do resumo calculado."
+          ],
+          "feedback": {
+            "met": "O modelo resume dados, não lista cada conta.",
+            "not_yet": "Separe os registros do resumo calculado."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-records.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What is missing?",
+          "scene": "A score changed, but you have not viewed the account records.",
+          "options": [
+            {
+              "label": "Evidence of which record changed"
+            },
+            {
+              "label": "Proof that every account is wrong"
+            }
+          ],
+          "help": [
+            "Do not infer a specific error from the summary alone."
+          ],
+          "feedback": {
+            "met": "The number alone does not identify a changed record.",
+            "not_yet": "Do not infer a specific error from the summary alone."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué falta?",
+          "scene": "El puntaje cambió, pero no has visto los registros de cuentas.",
+          "options": [
+            {
+              "label": "Qué registro cambió"
+            },
+            {
+              "label": "Prueba de que todo está mal"
+            }
+          ],
+          "help": [
+            "El resumen solo no demuestra un error específico."
+          ],
+          "feedback": {
+            "met": "El número por sí solo no identifica el registro modificado.",
+            "not_yet": "El resumen solo no demuestra un error específico."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que falta?",
+          "scene": "A pontuação mudou, mas você não viu os registros das contas.",
+          "options": [
+            {
+              "label": "Qual registro mudou"
+            },
+            {
+              "label": "Prova de que tudo está errado"
+            }
+          ],
+          "help": [
+            "O resumo sozinho não demonstra um erro específico."
+          ],
+          "feedback": {
+            "met": "O número sozinho não identifica o registro alterado.",
+            "not_yet": "O resumo sozinho não demonstra um erro específico."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-records.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Which statement fits?",
+          "scene": "A report lists balances and payment history. A score is calculated from information.",
+          "options": [
+            {
+              "label": "They serve different purposes"
+            },
+            {
+              "label": "They are identical documents"
+            }
+          ],
+          "help": [
+            "Compare the detailed entries with the calculated summary."
+          ],
+          "feedback": {
+            "met": "Records and a calculated summary serve different purposes.",
+            "not_yet": "Compare the detailed entries with the calculated summary."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué afirmación corresponde?",
+          "scene": "El reporte enumera saldos y pagos. El puntaje se calcula con información.",
+          "options": [
+            {
+              "label": "Tienen funciones distintas"
+            },
+            {
+              "label": "Son documentos idénticos"
+            }
+          ],
+          "help": [
+            "Compara los registros detallados con el resumen calculado."
+          ],
+          "feedback": {
+            "met": "Los registros y su resumen calculado cumplen funciones distintas.",
+            "not_yet": "Compara los registros detallados con el resumen calculado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual afirmação corresponde?",
+          "scene": "O relatório lista saldos e pagamentos. A pontuação é calculada com dados.",
+          "options": [
+            {
+              "label": "Têm funções diferentes"
+            },
+            {
+              "label": "São documentos idênticos"
+            }
+          ],
+          "help": [
+            "Compare os registros detalhados com o resumo calculado."
+          ],
+          "feedback": {
+            "met": "Os registros e seu resumo calculado têm funções diferentes.",
+            "not_yet": "Compare os registros detalhados com o resumo calculado."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-records.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Can this prove an error?",
+          "scene": "Two scoring models produce different summaries from the same records.",
+          "options": [
+            {
+              "label": "Yes, an account must be false"
+            },
+            {
+              "label": "No, models may differ"
+            }
+          ],
+          "help": [
+            "Different summaries do not identify a false account."
+          ],
+          "feedback": {
+            "met": "Different models can summarize the same information differently.",
+            "not_yet": "Different summaries do not identify a false account."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Esto demuestra un error?",
+          "scene": "Dos modelos calculan puntajes diferentes con los mismos registros.",
+          "options": [
+            {
+              "label": "Sí, alguna cuenta es falsa"
+            },
+            {
+              "label": "No, los modelos pueden diferir"
+            }
+          ],
+          "help": [
+            "Los puntajes distintos no identifican una cuenta falsa."
+          ],
+          "feedback": {
+            "met": "Distintos modelos pueden resumir la misma información de otra manera.",
+            "not_yet": "Los puntajes distintos no identifican una cuenta falsa."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Isso comprova um erro?",
+          "scene": "Dois modelos calculam pontuações diferentes com os mesmos registros.",
+          "options": [
+            {
+              "label": "Sim, alguma conta é falsa"
+            },
+            {
+              "label": "Não, os modelos podem diferir"
+            }
+          ],
+          "help": [
+            "Pontuações diferentes não identificam uma conta falsa."
+          ],
+          "feedback": {
+            "met": "Modelos diferentes podem resumir as mesmas dados de maneiras diferentes.",
+            "not_yet": "Pontuações diferentes não identificam uma conta falsa."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.credit-records.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What should you request?",
+          "scene": "A housing application flags an unfamiliar account. You have only a score.",
+          "options": [
+            {
+              "label": "The underlying account report"
+            },
+            {
+              "label": "Another summary number"
+            }
+          ],
+          "help": [
+            "You need the account entry, not another summary."
+          ],
+          "feedback": {
+            "met": "The report lets you inspect the unfamiliar account itself.",
+            "not_yet": "You need the account entry, not another summary."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debes solicitar?",
+          "scene": "Una solicitud de vivienda señala una cuenta desconocida. Solo tienes el puntaje.",
+          "options": [
+            {
+              "label": "El reporte con las cuentas"
+            },
+            {
+              "label": "Otro número resumido"
+            }
+          ],
+          "help": [
+            "Necesitas el registro de la cuenta, no otro resumen."
+          ],
+          "feedback": {
+            "met": "El reporte permite revisar la cuenta desconocida.",
+            "not_yet": "Necesitas el registro de la cuenta, no otro resumen."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que solicitar?",
+          "scene": "Uma solicitação de moradia aponta uma conta desconhecida. Você só tem a pontuação.",
+          "options": [
+            {
+              "label": "O relatório com as contas"
+            },
+            {
+              "label": "Outro número resumido"
+            }
+          ],
+          "help": [
+            "Você precisa do registro da conta, não de outro resumo."
+          ],
+          "feedback": {
+            "met": "O relatório permite verificar a conta desconhecida.",
+            "not_yet": "Você precisa do registro da conta, não de outro resumo."
+          }
+        }
+      }
+    }
+  ]
+}

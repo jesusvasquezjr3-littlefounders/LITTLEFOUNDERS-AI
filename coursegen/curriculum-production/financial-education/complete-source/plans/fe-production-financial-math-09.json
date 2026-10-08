@@ -1,0 +1,883 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-financial-math-part-2",
+  "lesson_id": "fe-production-financial-math-09",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.financial-math.09"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Recover the whole amount from a given percentage and its monetary value.",
+  "title": {
+    "en-US": "The whole",
+    "es-MX": "Recupera el total",
+    "pt-BR": "Recupere o total"
+  },
+  "new_concepts": [
+    "finance.prod.financial-math.09"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Recover the whole\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Recupera el total\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Recupere o total\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.financial-math.09",
+      "observable_action": "Recover the whole amount from a given percentage and its monetary value.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.financial-math.06",
+      "price.percent"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Work backward when you know a share and its amount.",
+    "misconception": "Subtract the rate from the share or mistake the share for the original whole.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.financial-math.09",
+        "context_id": "fe-production-financial-math-09-example-01",
+        "supports_from": [],
+        "reasoning": "If 25% equals 20, the whole contains four such shares: 20 × 4 = 80. The given amount is only a quarter."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.financial-math.09",
+        "context_id": "fe-production-financial-math-09-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Two equal halves reconstruct the whole."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.financial-math.09",
+        "context_id": "fe-production-financial-math-09-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Ten tenths make one whole."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.financial-math.09",
+        "context_id": "fe-production-financial-math-09-practice-01",
+        "supports_from": [],
+        "reasoning": "Five equal deposits would cover the full price."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.financial-math.09",
+        "context_id": "fe-production-financial-math-09-practice-02",
+        "supports_from": [],
+        "reasoning": "Four quarters make the whole bill."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.financial-math.09",
+        "context_id": "fe-production-financial-math-09-practice-03",
+        "supports_from": [],
+        "reasoning": "A proper part is smaller than its whole."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.financial-math.09",
+        "context_id": "fe-production-financial-math-09-transfer-01",
+        "supports_from": [],
+        "reasoning": "Divide the known share by its fraction of the whole."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.financial-math.09",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Work backward when you know a share and its amount."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Trabaja hacia atrás si conoces una parte y su monto."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Trabalhe de trás para frente quando conhece uma parte e seu valor."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Reverse the share",
+          "line": "If 25% equals 20, the whole contains four such shares: 20 × 4 = 80. The given amount is only a quarter."
+        },
+        "es-MX": {
+          "prompt": "Invierte la proporción",
+          "line": "Si 25% equivale a 20, el total contiene cuatro partes así: 20 × 4 = 80. El monto dado es un cuarto."
+        },
+        "pt-BR": {
+          "prompt": "Inverta a proporção",
+          "line": "Se 25% equivale a 20, o total contém quatro partes assim: 20 × 4 = 80. O valor dado é um quarto."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Whole amount?",
+          "scene": "50% of a total is 30. Half must be doubled.",
+          "options": [
+            {
+              "label": "80"
+            },
+            {
+              "label": "15"
+            },
+            {
+              "label": "60"
+            }
+          ],
+          "help": [
+            "The given amount is half, not the whole."
+          ],
+          "feedback": {
+            "met": "Two equal halves reconstruct the whole.",
+            "not_yet": "The given amount is half, not the whole."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Monto total?",
+          "scene": "El 50% de un total es 30. La mitad debe duplicarse.",
+          "options": [
+            {
+              "label": "80"
+            },
+            {
+              "label": "15"
+            },
+            {
+              "label": "60"
+            }
+          ],
+          "help": [
+            "El monto dado es la mitad, no el total."
+          ],
+          "feedback": {
+            "met": "Dos mitades iguales reconstruyen el total.",
+            "not_yet": "El monto dado es la mitad, no el total."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Valor total?",
+          "scene": "50% de um total é 30. A metade deve ser duplicada.",
+          "options": [
+            {
+              "label": "80"
+            },
+            {
+              "label": "15"
+            },
+            {
+              "label": "60"
+            }
+          ],
+          "help": [
+            "O valor dado é metade, não o total."
+          ],
+          "feedback": {
+            "met": "Duas metades iguais reconstroem o total.",
+            "not_yet": "O valor dado é metade, não o total."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          50,
+          30
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "input": 1
+                },
+                {
+                  "constant": 100
+                }
+              ]
+            },
+            {
+              "input": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Which method finds the whole?",
+          "scene": "10% equals 7.",
+          "options": [
+            {
+              "label": "Subtract ten from seven"
+            },
+            {
+              "label": "Use ten equal shares"
+            },
+            {
+              "label": "Keep only one share"
+            }
+          ],
+          "help": [
+            "Ask how many shares fill the whole."
+          ],
+          "feedback": {
+            "met": "Ten tenths make one whole.",
+            "not_yet": "Ask how many shares fill the whole."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué método encuentra el total?",
+          "scene": "El 10% equivale a 7.",
+          "options": [
+            {
+              "label": "Resta diez a siete"
+            },
+            {
+              "label": "Usa diez partes iguales"
+            },
+            {
+              "label": "Conserva solo una parte"
+            }
+          ],
+          "help": [
+            "Pregunta cuántas partes completan el total."
+          ],
+          "feedback": {
+            "met": "Diez décimos forman un total.",
+            "not_yet": "Pregunta cuántas partes completan el total."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual método encontra o total?",
+          "scene": "10% equivale a 7.",
+          "options": [
+            {
+              "label": "Subtraia dez de sete"
+            },
+            {
+              "label": "Use dez partes iguais"
+            },
+            {
+              "label": "Mantenha só uma parte"
+            }
+          ],
+          "help": [
+            "Pergunte quantas partes completam o total."
+          ],
+          "feedback": {
+            "met": "Dez décimos formam um inteiro.",
+            "not_yet": "Pergunte quantas partes completam o total."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Full price?",
+          "scene": "A 20% deposit is 18.",
+          "options": [
+            {
+              "label": "90"
+            },
+            {
+              "label": "38"
+            },
+            {
+              "label": "3.6"
+            }
+          ],
+          "help": [
+            "Recover the base from the given share."
+          ],
+          "feedback": {
+            "met": "Five equal deposits would cover the full price.",
+            "not_yet": "Recover the base from the given share."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Precio completo?",
+          "scene": "Un depósito de 20% es 18.",
+          "options": [
+            {
+              "label": "90"
+            },
+            {
+              "label": "38"
+            },
+            {
+              "label": "3.6"
+            }
+          ],
+          "help": [
+            "Recupera la base a partir de la parte."
+          ],
+          "feedback": {
+            "met": "Cinco depósitos iguales cubrirían el precio completo.",
+            "not_yet": "Recupera la base a partir de la parte."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Preço completo?",
+          "scene": "Um sinal de 20% é 18.",
+          "options": [
+            {
+              "label": "90"
+            },
+            {
+              "label": "38"
+            },
+            {
+              "label": "3,6"
+            }
+          ],
+          "help": [
+            "Recupere a base a partir da parte."
+          ],
+          "feedback": {
+            "met": "Cinco sinais iguais cobririam o preço completo.",
+            "not_yet": "Recupere a base a partir da parte."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          20,
+          18
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "input": 1
+                },
+                {
+                  "constant": 100
+                }
+              ]
+            },
+            {
+              "input": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Whole bill?",
+          "scene": "25% of a shared bill is 15.",
+          "options": [
+            {
+              "label": "15"
+            },
+            {
+              "label": "60"
+            },
+            {
+              "label": "40"
+            }
+          ],
+          "help": [
+            "The amount is a quarter of the bill."
+          ],
+          "feedback": {
+            "met": "Four quarters make the whole bill.",
+            "not_yet": "The amount is a quarter of the bill."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuenta completa?",
+          "scene": "El 25% de una cuenta compartida es 15.",
+          "options": [
+            {
+              "label": "15"
+            },
+            {
+              "label": "60"
+            },
+            {
+              "label": "40"
+            }
+          ],
+          "help": [
+            "El monto es un cuarto de la cuenta."
+          ],
+          "feedback": {
+            "met": "Cuatro cuartos forman la cuenta completa.",
+            "not_yet": "El monto es un cuarto de la cuenta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Conta inteira?",
+          "scene": "25% de uma conta compartilhada é 15.",
+          "options": [
+            {
+              "label": "15"
+            },
+            {
+              "label": "60"
+            },
+            {
+              "label": "40"
+            }
+          ],
+          "help": [
+            "O valor é um quarto da conta."
+          ],
+          "feedback": {
+            "met": "Quatro quartos formam a conta inteira.",
+            "not_yet": "O valor é um quarto da conta."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          25,
+          15
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "input": 1
+                },
+                {
+                  "constant": 100
+                }
+              ]
+            },
+            {
+              "input": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.09",
+      "copy": {
+        "en-US": {
+          "prompt": "How must the whole compare?",
+          "scene": "A positive amount represents less than the whole.",
+          "options": [
+            {
+              "label": "Always equal to it"
+            },
+            {
+              "label": "Smaller than that amount"
+            },
+            {
+              "label": "Larger than that amount"
+            }
+          ],
+          "help": [
+            "Check whether your result could contain the given part."
+          ],
+          "feedback": {
+            "met": "A proper part is smaller than its whole.",
+            "not_yet": "Check whether your result could contain the given part."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cómo debe ser el total?",
+          "scene": "Un monto positivo representa menos del total.",
+          "options": [
+            {
+              "label": "Siempre igual a ese monto"
+            },
+            {
+              "label": "Menor que ese monto"
+            },
+            {
+              "label": "Mayor que ese monto"
+            }
+          ],
+          "help": [
+            "Revisa si tu resultado puede contener la parte dada."
+          ],
+          "feedback": {
+            "met": "Una parte propia es menor que su total.",
+            "not_yet": "Revisa si tu resultado puede contener la parte dada."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Como deve ser o total?",
+          "scene": "Um valor positivo representa menos do total.",
+          "options": [
+            {
+              "label": "Sempre igual a esse valor"
+            },
+            {
+              "label": "Menor que esse valor"
+            },
+            {
+              "label": "Maior que esse valor"
+            }
+          ],
+          "help": [
+            "Confira se seu resultado pode conter a parte dada."
+          ],
+          "feedback": {
+            "met": "Uma parte própria é menor que seu total.",
+            "not_yet": "Confira se seu resultado pode conter a parte dada."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.financial-math.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Eligible whole cost?",
+          "scene": "A grant of 45 covers 75% of an eligible project cost.",
+          "options": [
+            {
+              "label": "60"
+            },
+            {
+              "label": "33.75"
+            },
+            {
+              "label": "120"
+            }
+          ],
+          "help": [
+            "The grant is only three quarters of the cost."
+          ],
+          "feedback": {
+            "met": "Divide the known share by its fraction of the whole.",
+            "not_yet": "The grant is only three quarters of the cost."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Costo elegible completo?",
+          "scene": "Un apoyo de 45 cubre 75% del costo elegible de un proyecto.",
+          "options": [
+            {
+              "label": "60"
+            },
+            {
+              "label": "33.75"
+            },
+            {
+              "label": "120"
+            }
+          ],
+          "help": [
+            "El apoyo es solo tres cuartos del costo."
+          ],
+          "feedback": {
+            "met": "Divide la parte conocida entre su fracción del total.",
+            "not_yet": "El apoyo es solo tres cuartos del costo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Custo elegível completo?",
+          "scene": "Um auxílio de 45 cobre 75% do custo elegível de um projeto.",
+          "options": [
+            {
+              "label": "60"
+            },
+            {
+              "label": "33,75"
+            },
+            {
+              "label": "120"
+            }
+          ],
+          "help": [
+            "O auxílio é só três quartos do custo."
+          ],
+          "feedback": {
+            "met": "Divida a parte conhecida pela fração do total.",
+            "not_yet": "O auxílio é só três quartos do custo."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          45,
+          75
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "constant": 100
+                }
+              ]
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

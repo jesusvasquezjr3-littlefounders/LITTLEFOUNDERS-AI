@@ -1,0 +1,845 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-insurance-risk-part-2",
+  "lesson_id": "fe-production-insurance-risk-07",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.insurance-risk.07"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Compare policies only after aligning coverage, limits and deductibles.",
+  "title": {
+    "en-US": "Policy Comparisons",
+    "es-MX": "Alinea pólizas antes de comparar precios",
+    "pt-BR": "Alinhe apólices antes de comparar preços"
+  },
+  "new_concepts": [
+    "finance.prod.insurance-risk.07"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Policy Comparisons\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Alinea pólizas antes de comparar precios\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Alinhe apólices antes de comparar preços\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.insurance-risk.07",
+      "observable_action": "Compare policies only after aligning coverage, limits and deductibles.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.insurance-risk.04",
+      "prod.insurance-risk.05",
+      "prod.insurance-risk.06",
+      "prod.purchase-decisions.06"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A cheaper premium can buy different protection; align covered events, deductibles, limits and time before judging the price.",
+    "misconception": "The lowest premium always identifies the best equivalent protection.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.insurance-risk.07",
+        "context_id": "insurance-risk-07-example-01",
+        "supports_from": [],
+        "reasoning": "First match covered events, exclusions, deductibles, limits and period. Then compare price and the costs you could retain."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.insurance-risk.07",
+        "context_id": "insurance-risk-07-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The policies do not cover the same stated risk."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.insurance-risk.07",
+        "context_id": "insurance-risk-07-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "A costs less for the explicitly equal protection."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.insurance-risk.07",
+        "context_id": "insurance-risk-07-practice-01",
+        "supports_from": [],
+        "reasoning": "Different coverage periods make the listed prices incomparable as shown."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.insurance-risk.07",
+        "context_id": "insurance-risk-07-practice-02",
+        "supports_from": [],
+        "reasoning": "The household must fund a larger deductible under that option."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.insurance-risk.07",
+        "context_id": "insurance-risk-07-practice-03",
+        "supports_from": [],
+        "reasoning": "An unknown limit prevents confirming equivalent protection."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.insurance-risk.07",
+        "context_id": "insurance-risk-07-transfer-01",
+        "supports_from": [],
+        "reasoning": "The excluded required activity makes the protection materially different."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.insurance-risk.07",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A cheaper premium can buy different protection; align covered events, deductibles, limits and time before judging the price."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Prima menor puede comprar protección distinta; alinea eventos cubiertos, deducibles, límites y periodo antes de juzgar precio."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Prêmio menor pode comprar proteção distinta; alinhe eventos cobertos, franquias, limites e período antes de julgar preço."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Make the comparison fair",
+          "line": "First match covered events, exclusions, deductibles, limits and period. Then compare price and the costs you could retain."
+        },
+        "es-MX": {
+          "prompt": "Haz comparación justa",
+          "line": "Primero iguala eventos cubiertos, exclusiones, deducibles, límites y periodo. Luego compara precio y costos que quedarían a tu cargo."
+        },
+        "pt-BR": {
+          "prompt": "Faça comparação justa",
+          "line": "Primeiro iguale eventos cobertos, exclusões, franquias, limites e período. Depois compare preço e custos que ficariam com você."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Is price alone enough?",
+          "scene": "A costs less but excludes the flood risk being assessed; B includes that stated risk.",
+          "options": [
+            {
+              "label": "No, coverage differs"
+            },
+            {
+              "label": "Yes, ignore the event"
+            },
+            {
+              "label": "Yes, choose the lower premium"
+            }
+          ],
+          "help": [
+            "Align the relevant coverage before judging the premium."
+          ],
+          "feedback": {
+            "met": "The policies do not cover the same stated risk.",
+            "not_yet": "Align the relevant coverage before judging the premium."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Precio solo basta aquí?",
+          "scene": "A cuesta menos pero excluye inundación evaluada; B incluye ese riesgo indicado.",
+          "options": [
+            {
+              "label": "No, cobertura difiere"
+            },
+            {
+              "label": "Sí, ignorar evento"
+            },
+            {
+              "label": "Sí, elegir prima menor"
+            }
+          ],
+          "help": [
+            "Alinea cobertura relevante antes de juzgar prima."
+          ],
+          "feedback": {
+            "met": "Pólizas no cubren el mismo riesgo indicado.",
+            "not_yet": "Alinea cobertura relevante antes de juzgar prima."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Preço só basta aqui?",
+          "scene": "A custa menos mas exclui enchente avaliada; B inclui esse risco dado.",
+          "options": [
+            {
+              "label": "Não, cobertura difere"
+            },
+            {
+              "label": "Sim, ignorar evento"
+            },
+            {
+              "label": "Sim, escolher prêmio menor"
+            }
+          ],
+          "help": [
+            "Alinhe cobertura relevante antes de julgar prêmio."
+          ],
+          "feedback": {
+            "met": "Apólices não cobrem o mesmo risco dado.",
+            "not_yet": "Alinhe cobertura relevante antes de julgar prêmio."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.07",
+      "visual": {
+        "type": "bar"
+      },
+      "payload": {
+        "data": {
+          "unit": "local",
+          "categories": [
+            {
+              "id": "earlier"
+            },
+            {
+              "id": "later"
+            }
+          ],
+          "series": [
+            {
+              "id": "projected-balance",
+              "values": [
+                120,
+                150
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "earlier"
+            },
+            {
+              "id": "later"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "earlier"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Fictional dollars; identical events, exclusions, deductible, limit and annual period. Compare annual premiums.",
+          "title": "Annual premium",
+          "data": {
+            "categories": [
+              {
+                "label": "A"
+              },
+              {
+                "label": "B"
+              }
+            ],
+            "series": [
+              {
+                "label": "Annual premium"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Which costs less?",
+            "options": [
+              {
+                "label": "A"
+              },
+              {
+                "label": "B"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "A costs less for the explicitly equal protection.",
+            "not_yet": "Compare price only after confirming the stated terms match."
+          },
+          "help": [
+            "Compare price only after confirming the stated terms match."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Pesos ficticios; eventos, exclusiones, deducible, límite y periodo anual iguales. Compara primas anuales.",
+          "title": "Prima anual",
+          "data": {
+            "categories": [
+              {
+                "label": "A"
+              },
+              {
+                "label": "B"
+              }
+            ],
+            "series": [
+              {
+                "label": "Prima anual"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Cuál cuesta menos?",
+            "options": [
+              {
+                "label": "A"
+              },
+              {
+                "label": "B"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "A cuesta menos por protección expresamente igual.",
+            "not_yet": "Compara precio solo tras confirmar términos iguales."
+          },
+          "help": [
+            "Compara precio solo tras confirmar términos iguales."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Reais fictícios; eventos, exclusões, franquia, limite e período anual iguais. Compare prêmios anuais.",
+          "title": "Prêmio anual",
+          "data": {
+            "categories": [
+              {
+                "label": "A"
+              },
+              {
+                "label": "B"
+              }
+            ],
+            "series": [
+              {
+                "label": "Prêmio anual"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Qual custa menos?",
+            "options": [
+              {
+                "label": "A"
+              },
+              {
+                "label": "B"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "A custa menos por proteção expressamente igual.",
+            "not_yet": "Compare preço só após confirmar termos iguais."
+          },
+          "help": [
+            "Compare preço só após confirmar termos iguais."
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Which mismatch blocks this comparison?",
+          "scene": "One quoted premium buys a month; the other buys a year.",
+          "options": [
+            {
+              "label": "Only the payment method"
+            },
+            {
+              "label": "No mismatch"
+            },
+            {
+              "label": "Coverage period"
+            }
+          ],
+          "help": [
+            "Align the period before comparing totals."
+          ],
+          "feedback": {
+            "met": "Different coverage periods make the listed prices incomparable as shown.",
+            "not_yet": "Align the period before comparing totals."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué diferencia impide comparación?",
+          "scene": "Una prima cotizada compra un mes; otra compra un año.",
+          "options": [
+            {
+              "label": "Solo el método de pago"
+            },
+            {
+              "label": "Ninguna diferencia"
+            },
+            {
+              "label": "Periodo cubierto"
+            }
+          ],
+          "help": [
+            "Alinea periodo antes de comparar totales."
+          ],
+          "feedback": {
+            "met": "Periodos distintos impiden comparar precios tal como aparecen.",
+            "not_yet": "Alinea periodo antes de comparar totales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que diferença impede comparação?",
+          "scene": "Um prêmio cotado compra um mês; outro compra um ano.",
+          "options": [
+            {
+              "label": "Só a forma de pagamento"
+            },
+            {
+              "label": "Nenhuma diferença"
+            },
+            {
+              "label": "Período coberto"
+            }
+          ],
+          "help": [
+            "Alinhe período antes de comparar totais."
+          ],
+          "feedback": {
+            "met": "Períodos distintos impedem comparar preços como aparecem.",
+            "not_yet": "Alinhe período antes de comparar totais."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.07",
+      "copy": {
+        "en-US": {
+          "prompt": "What retained cost changed?",
+          "scene": "Lower-premium policy covers the same events but doubles the deductible.",
+          "options": [
+            {
+              "label": "Only the insured name"
+            },
+            {
+              "label": "Household share per claim"
+            },
+            {
+              "label": "Nothing relevant"
+            }
+          ],
+          "help": [
+            "Include the retained claim cost when comparing policies."
+          ],
+          "feedback": {
+            "met": "The household must fund a larger deductible under that option.",
+            "not_yet": "Include the retained claim cost when comparing policies."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué costo propio cambió?",
+          "scene": "Póliza de prima menor cubre mismos eventos pero duplica deducible.",
+          "options": [
+            {
+              "label": "Solo nombre asegurado"
+            },
+            {
+              "label": "Parte del hogar por reclamo"
+            },
+            {
+              "label": "Nada relevante"
+            }
+          ],
+          "help": [
+            "Incluye costo propio del reclamo al comparar pólizas."
+          ],
+          "feedback": {
+            "met": "Hogar debe cubrir deducible mayor en esa opción.",
+            "not_yet": "Incluye costo propio del reclamo al comparar pólizas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que custo próprio mudou?",
+          "scene": "Apólice de prêmio menor cobre mesmos eventos mas dobra franquia.",
+          "options": [
+            {
+              "label": "Só nome segurado"
+            },
+            {
+              "label": "Parte da família por pedido"
+            },
+            {
+              "label": "Nada relevante"
+            }
+          ],
+          "help": [
+            "Inclua custo próprio do pedido ao comparar apólices."
+          ],
+          "feedback": {
+            "met": "Família deve cobrir franquia maior nessa opção.",
+            "not_yet": "Inclua custo próprio do pedido ao comparar apólices."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.07",
+      "copy": {
+        "en-US": {
+          "prompt": "What must be checked before calling these equal?",
+          "scene": "Premiums and deductibles match; one summary omits the payout limit.",
+          "options": [
+            {
+              "label": "Nothing, equal premium proves equality"
+            },
+            {
+              "label": "Only payment method"
+            },
+            {
+              "label": "The missing limit"
+            }
+          ],
+          "help": [
+            "Equal prices do not supply missing contract terms."
+          ],
+          "feedback": {
+            "met": "An unknown limit prevents confirming equivalent protection.",
+            "not_yet": "Equal prices do not supply missing contract terms."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué revisar antes de llamarlas iguales?",
+          "scene": "Primas y deducibles coinciden; un resumen omite límite de pago.",
+          "options": [
+            {
+              "label": "Nada, prima igual prueba igualdad"
+            },
+            {
+              "label": "Solo forma de pago"
+            },
+            {
+              "label": "Límite faltante"
+            }
+          ],
+          "help": [
+            "Precios iguales no completan términos faltantes del contrato."
+          ],
+          "feedback": {
+            "met": "Límite desconocido impide confirmar protección equivalente.",
+            "not_yet": "Precios iguales no completan términos faltantes del contrato."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que conferir antes de chamá-las iguais?",
+          "scene": "Prêmios e franquias coincidem; um resumo omite limite de pagamento.",
+          "options": [
+            {
+              "label": "Nada, prêmio igual prova igualdade"
+            },
+            {
+              "label": "Só forma de pagamento"
+            },
+            {
+              "label": "Limite faltante"
+            }
+          ],
+          "help": [
+            "Preços iguais não completam termos faltantes do contrato."
+          ],
+          "feedback": {
+            "met": "Limite desconhecido impede confirmar proteção equivalente.",
+            "not_yet": "Preços iguais não completam termos faltantes do contrato."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.insurance-risk.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Is the cheaper quote equivalent?",
+          "scene": "Travel quotes match limits and period; cheaper quote excludes the required activity.",
+          "options": [
+            {
+              "label": "Yes, matching limits settle it"
+            },
+            {
+              "label": "No, activity coverage differs"
+            },
+            {
+              "label": "Yes, price decides all"
+            }
+          ],
+          "help": [
+            "Match the actual risk as well as limits and price."
+          ],
+          "feedback": {
+            "met": "The excluded required activity makes the protection materially different.",
+            "not_yet": "Match the actual risk as well as limits and price."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cotización menor puede juzgarse equivalente?",
+          "scene": "Cotizaciones de viaje igualan límites y periodo; más barata excluye actividad necesaria.",
+          "options": [
+            {
+              "label": "Sí, límites iguales resuelven"
+            },
+            {
+              "label": "No, cobertura de actividad difiere"
+            },
+            {
+              "label": "Sí, precio decide todo"
+            }
+          ],
+          "help": [
+            "Iguala riesgo real además de límites y precio."
+          ],
+          "feedback": {
+            "met": "Actividad necesaria excluida vuelve protección distinta.",
+            "not_yet": "Iguala riesgo real además de límites y precio."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Cotação menor pode ser julgada igual?",
+          "scene": "Cotações de viagem igualam limites e período; mais barata exclui atividade necessária.",
+          "options": [
+            {
+              "label": "Sim, limites iguais resolvem"
+            },
+            {
+              "label": "Não, cobertura da atividade difere"
+            },
+            {
+              "label": "Sim, preço decide tudo"
+            }
+          ],
+          "help": [
+            "Iguale risco real além de limites e preço."
+          ],
+          "feedback": {
+            "met": "Atividade necessária excluída torna proteção distinta.",
+            "not_yet": "Iguale risco real além de limites e preço."
+          }
+        }
+      }
+    }
+  ]
+}

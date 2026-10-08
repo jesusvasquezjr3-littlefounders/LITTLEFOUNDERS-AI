@@ -1,0 +1,780 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-goals-tradeoffs-part-2",
+  "lesson_id": "fe-production-goals-tradeoffs-08",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.goals-tradeoffs.08"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Revise a goal when its original cost or purpose changes.",
+  "title": {
+    "en-US": "Updating goals",
+    "es-MX": "Actualiza la meta",
+    "pt-BR": "Atualize a meta"
+  },
+  "new_concepts": [
+    "finance.prod.goals-tradeoffs.08"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Update the goal\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Actualiza la meta\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Atualize a meta\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.goals-tradeoffs.08",
+      "observable_action": "Revise a goal when its original cost or purpose changes.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.goals-tradeoffs.01",
+      "prod.goals-tradeoffs.04",
+      "prod.goals-tradeoffs.05"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Goals should change when their purpose or cost changes.",
+    "misconception": "Keep funding an obsolete target merely because money has already been set aside.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.goals-tradeoffs.08",
+        "context_id": "fe-production-goals-tradeoffs-08-example-01",
+        "supports_from": [],
+        "reasoning": "Repair rises from 80 dollars to 110. Recheck the gap and timing; the old plan may fail."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.goals-tradeoffs.08",
+        "context_id": "fe-production-goals-tradeoffs-08-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "A higher cost changes the unfunded amount."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.goals-tradeoffs.08",
+        "context_id": "fe-production-goals-tradeoffs-08-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The original purpose no longer requires the same reservation."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.goals-tradeoffs.08",
+        "context_id": "fe-production-goals-tradeoffs-08-practice-01",
+        "supports_from": [],
+        "reasoning": "Changed needs justify reviewing the original goal."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.goals-tradeoffs.08",
+        "context_id": "fe-production-goals-tradeoffs-08-practice-02",
+        "supports_from": [],
+        "reasoning": "A lower target may free planned contributions for another use."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.goals-tradeoffs.08",
+        "context_id": "fe-production-goals-tradeoffs-08-practice-03",
+        "supports_from": [],
+        "reasoning": "A new offer does not automatically change the original need."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.goals-tradeoffs.08",
+        "context_id": "fe-production-goals-tradeoffs-08-transfer-01",
+        "supports_from": [],
+        "reasoning": "Only the changed purpose removes the related cost."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.goals-tradeoffs.08",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Goals should change when their purpose or cost changes."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Las metas deben cambiar si cambia su propósito o costo."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Metas devem mudar quando seu propósito ou custo muda."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Recheck the reason",
+          "line": "Repair rises from 80 dollars to 110. Recheck the gap and timing; the old plan may fail."
+        },
+        "es-MX": {
+          "prompt": "Revisa el motivo",
+          "line": "La reparación era de 80 pesos; la nueva cotización es 110. Actualiza faltante y calendario antes de confiar en el plan anterior."
+        },
+        "pt-BR": {
+          "prompt": "Confira o motivo",
+          "line": "O conserto era de 80 reais; o novo orçamento é 110. Atualize falta e calendário antes de confiar no plano anterior."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.08",
+      "copy": {
+        "en-US": {
+          "prompt": "What needs recalculation?",
+          "scene": "The quoted cost rises while savings stay unchanged.",
+          "options": [
+            {
+              "label": "The remaining gap and contributions"
+            },
+            {
+              "label": "Only the saved balance"
+            },
+            {
+              "label": "Nothing, the old plan is fixed"
+            }
+          ],
+          "help": [
+            "Keep saved money but update the target."
+          ],
+          "feedback": {
+            "met": "A higher cost changes the unfunded amount.",
+            "not_yet": "Keep saved money but update the target."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué necesita recalcularse?",
+          "scene": "Sube el costo cotizado mientras el ahorro no cambia.",
+          "options": [
+            {
+              "label": "Lo faltante y las aportaciones"
+            },
+            {
+              "label": "Solo el saldo ahorrado"
+            },
+            {
+              "label": "Nada, el plan anterior es fijo"
+            }
+          ],
+          "help": [
+            "Conserva ahorro, pero actualiza objetivo."
+          ],
+          "feedback": {
+            "met": "Un costo mayor cambia el monto sin financiar.",
+            "not_yet": "Conserva ahorro, pero actualiza objetivo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que precisa ser recalculado?",
+          "scene": "O custo orçado sobe enquanto a poupança não muda.",
+          "options": [
+            {
+              "label": "O que falta e as contribuições"
+            },
+            {
+              "label": "Só o saldo poupado"
+            },
+            {
+              "label": "Nada, o plano anterior é fixo"
+            }
+          ],
+          "help": [
+            "Mantenha a poupança, mas atualize a meta."
+          ],
+          "feedback": {
+            "met": "Um custo maior muda o valor não financiado.",
+            "not_yet": "Mantenha a poupança, mas atualize a meta."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Which response helps?",
+          "scene": "A training course is canceled; money was reserved only for that course.",
+          "options": [
+            {
+              "label": "Keep paying the canceled course"
+            },
+            {
+              "label": "Reconsider the purpose and reassign deliberately"
+            },
+            {
+              "label": "Spend immediately without checking"
+            }
+          ],
+          "help": [
+            "Recheck needs before redirecting the money."
+          ],
+          "feedback": {
+            "met": "The original purpose no longer requires the same reservation.",
+            "not_yet": "Recheck needs before redirecting the money."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué respuesta es útil?",
+          "scene": "Se cancela un curso; se apartó dinero solo para ese curso.",
+          "options": [
+            {
+              "label": "Seguir pagando el curso cancelado"
+            },
+            {
+              "label": "Revisar propósito y reasignar conscientemente"
+            },
+            {
+              "label": "Gastar de inmediato sin revisar"
+            }
+          ],
+          "help": [
+            "Revisa necesidades antes de redirigir dinero."
+          ],
+          "feedback": {
+            "met": "El propósito original ya no requiere la misma reserva.",
+            "not_yet": "Revisa necesidades antes de redirigir dinero."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual resposta é útil?",
+          "scene": "Um curso é cancelado; dinheiro foi reservado só para esse curso.",
+          "options": [
+            {
+              "label": "Continuar pagando o curso cancelado"
+            },
+            {
+              "label": "Rever propósito e realocar conscientemente"
+            },
+            {
+              "label": "Gastar imediatamente sem conferir"
+            }
+          ],
+          "help": [
+            "Confira necessidades antes de redirecionar dinheiro."
+          ],
+          "feedback": {
+            "met": "O propósito original não exige mais a mesma reserva.",
+            "not_yet": "Confira necessidades antes de redirecionar dinheiro."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Must the replacement goal continue unchanged?",
+          "scene": "A replacement item becomes unnecessary because the old one was repaired safely.",
+          "options": [
+            {
+              "label": "Yes, saving forbids revisions"
+            },
+            {
+              "label": "Yes, because it was written"
+            },
+            {
+              "label": "No, reassess its purpose"
+            }
+          ],
+          "help": [
+            "A goal serves a purpose, not the reverse."
+          ],
+          "feedback": {
+            "met": "Changed needs justify reviewing the original goal.",
+            "not_yet": "A goal serves a purpose, not the reverse."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Debe seguir igual la meta de reemplazo?",
+          "scene": "Reemplazar un artículo deja de ser necesario porque se reparó de forma segura.",
+          "options": [
+            {
+              "label": "Sí, ahorrar prohíbe revisiones"
+            },
+            {
+              "label": "Sí, porque se escribió"
+            },
+            {
+              "label": "No, revisa su propósito"
+            }
+          ],
+          "help": [
+            "Una meta sirve a un propósito, no al revés."
+          ],
+          "feedback": {
+            "met": "Necesidades cambiadas justifican revisar la meta original.",
+            "not_yet": "Una meta sirve a un propósito, no al revés."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A meta de substituição deve continuar igual?",
+          "scene": "Substituir um item deixa de ser necessário porque foi consertado com segurança.",
+          "options": [
+            {
+              "label": "Sim, poupar proíbe revisões"
+            },
+            {
+              "label": "Sim, porque foi escrita"
+            },
+            {
+              "label": "Não, reavalie seu propósito"
+            }
+          ],
+          "help": [
+            "Uma meta serve a um propósito, não o contrário."
+          ],
+          "feedback": {
+            "met": "Necessidades alteradas justificam rever a meta original.",
+            "not_yet": "Uma meta serve a um propósito, não o contrário."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.08",
+      "copy": {
+        "en-US": {
+          "prompt": "What should the update consider?",
+          "scene": "The cost falls, but the goal’s purpose remains useful.",
+          "options": [
+            {
+              "label": "An automatic need to buy more"
+            },
+            {
+              "label": "Pretending the old price remains"
+            },
+            {
+              "label": "The lower gap and freed capacity"
+            }
+          ],
+          "help": [
+            "Update the amount without inventing a new need."
+          ],
+          "feedback": {
+            "met": "A lower target may free planned contributions for another use.",
+            "not_yet": "Update the amount without inventing a new need."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe considerar la actualización?",
+          "scene": "Baja el costo, pero el propósito de la meta sigue siendo útil.",
+          "options": [
+            {
+              "label": "Una necesidad automática de comprar más"
+            },
+            {
+              "label": "Suponer que sigue el precio anterior"
+            },
+            {
+              "label": "El menor faltante y capacidad liberada"
+            }
+          ],
+          "help": [
+            "Actualiza monto sin inventar otra necesidad."
+          ],
+          "feedback": {
+            "met": "Un objetivo menor puede liberar aportaciones para otro uso.",
+            "not_yet": "Actualiza monto sin inventar otra necesidad."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que a atualização deve considerar?",
+          "scene": "O custo cai, mas o propósito da meta continua útil.",
+          "options": [
+            {
+              "label": "Uma necessidade automática de comprar mais"
+            },
+            {
+              "label": "Supor que continua o preço antigo"
+            },
+            {
+              "label": "A menor falta e capacidade liberada"
+            }
+          ],
+          "help": [
+            "Atualize valor sem inventar outra necessidade."
+          ],
+          "feedback": {
+            "met": "Uma meta menor pode liberar contribuições para outro uso.",
+            "not_yet": "Atualize valor sem inventar outra necessidade."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Must you upgrade the goal?",
+          "scene": "An advertisement introduces a more expensive version unrelated to your stated purpose.",
+          "options": [
+            {
+              "label": "Advertising sets the goal"
+            },
+            {
+              "label": "Every upgrade is necessary"
+            },
+            {
+              "label": "Recheck purpose and constraints"
+            }
+          ],
+          "help": [
+            "Distinguish a changed need from new persuasion."
+          ],
+          "feedback": {
+            "met": "A new offer does not automatically change the original need.",
+            "not_yet": "Distinguish a changed need from new persuasion."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿La meta requiere mejora automáticamente?",
+          "scene": "Un anuncio presenta una versión más cara ajena a tu propósito indicado.",
+          "options": [
+            {
+              "label": "Sí, la publicidad fija la meta"
+            },
+            {
+              "label": "Sí, toda mejora es necesaria"
+            },
+            {
+              "label": "No, revisa propósito y condiciones"
+            }
+          ],
+          "help": [
+            "Distingue una necesidad cambiada de nueva persuasión."
+          ],
+          "feedback": {
+            "met": "Una oferta nueva no cambia automáticamente la necesidad original.",
+            "not_yet": "Distingue una necesidad cambiada de nueva persuasión."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A meta exige melhoria automaticamente?",
+          "scene": "Um anúncio apresenta uma versão mais cara alheia ao propósito informado.",
+          "options": [
+            {
+              "label": "Sim, a publicidade define a meta"
+            },
+            {
+              "label": "Sim, toda melhoria é necessária"
+            },
+            {
+              "label": "Não, reveja propósito e condições"
+            }
+          ],
+          "help": [
+            "Distinga necessidade alterada de nova persuasão."
+          ],
+          "feedback": {
+            "met": "Uma oferta nova não muda automaticamente a necessidade original.",
+            "not_yet": "Distinga necessidade alterada de nova persuasão."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Which update is justified?",
+          "scene": "A neighborhood event moves online, removing the planned hall rental.",
+          "options": [
+            {
+              "label": "Assume every other cost vanished"
+            },
+            {
+              "label": "Remove that cost and review remaining needs"
+            },
+            {
+              "label": "Keep collecting rent money unchanged"
+            }
+          ],
+          "help": [
+            "Revise the affected part without inventing unrelated changes."
+          ],
+          "feedback": {
+            "met": "Only the changed purpose removes the related cost.",
+            "not_yet": "Revise the affected part without inventing unrelated changes."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué actualización se justifica?",
+          "scene": "Un evento vecinal pasa a ser virtual y elimina la renta del salón.",
+          "options": [
+            {
+              "label": "Suponer que desaparecieron los otros costos"
+            },
+            {
+              "label": "Quitar ese costo y revisar necesidades restantes"
+            },
+            {
+              "label": "Seguir cobrando la renta sin cambios"
+            }
+          ],
+          "help": [
+            "Revisa la parte afectada sin inventar otros cambios."
+          ],
+          "feedback": {
+            "met": "Solo el propósito cambiado elimina el costo relacionado.",
+            "not_yet": "Revisa la parte afectada sin inventar otros cambios."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual atualização se justifica?",
+          "scene": "Um evento do bairro vira virtual e elimina o aluguel do salão.",
+          "options": [
+            {
+              "label": "Supor que os outros custos desapareceram"
+            },
+            {
+              "label": "Retirar esse custo e rever necessidades restantes"
+            },
+            {
+              "label": "Continuar cobrando o aluguel sem mudanças"
+            }
+          ],
+          "help": [
+            "Reveja a parte afetada sem inventar outras mudanças."
+          ],
+          "feedback": {
+            "met": "Só o propósito alterado elimina o custo relacionado.",
+            "not_yet": "Reveja a parte afetada sem inventar outras mudanças."
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,797 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-integrated-decisions-part-1",
+  "lesson_id": "fe-production-integrated-decisions-01",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.cashflow-budget.09",
+    "finance.prod.income-work.06",
+    "finance.prod.cashflow-budget.11"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Revise a household’s next-month plan after an income interruption and an unavoidable bill.",
+  "title": {
+    "en-US": "Income interruption",
+    "es-MX": "Ingreso interrumpido",
+    "pt-BR": "Renda interrompida"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Income interruption\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Ingreso interrumpido\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Renda interrompida\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "capstone",
+    "objective": {
+      "skill_id": "prod.cashflow-budget.09",
+      "observable_action": "Revise a household’s next-month plan after an income interruption and an unavoidable bill.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.cashflow-budget.03",
+      "prod.cashflow-budget.04"
+    ],
+    "retrieval_skills": [
+      "prod.cashflow-budget.09",
+      "prod.cashflow-budget.11",
+      "prod.income-work.06"
+    ],
+    "relevance": "An interrupted payment changes what a household can safely commit.",
+    "misconception": "Keeping the old spending plan after income stops, or treating a possible receipt as guaranteed.",
+    "numeracy_support": "Use the explicitly stated totals, deadlines and constraints. Earlier financial arithmetic is retrieved; no current rate or legal entitlement is implied.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.income-work.06",
+        "context_id": "integrated-decisions-1-practice-01",
+        "supports_from": [],
+        "reasoning": "400 is the lowest observed receipt, not a guaranteed future payment."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.cashflow-budget.09",
+        "context_id": "integrated-decisions-1-practice-02",
+        "supports_from": [],
+        "reasoning": "400 − 300 − 70 = 30 remains for other allocations."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.cashflow-budget.11",
+        "context_id": "integrated-decisions-1-practice-03",
+        "supports_from": [],
+        "reasoning": "Postponing the optional outing avoids an unfunded commitment."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.income-work.06",
+        "context_id": "integrated-decisions-1-practice-04",
+        "supports_from": [],
+        "reasoning": "Confirmed cancellation overrides the estimate based on earlier months."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.cashflow-budget.11",
+        "context_id": "integrated-decisions-1-practice-05",
+        "supports_from": [],
+        "reasoning": "Support and negotiation address a real gap without inventing income."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.cashflow-budget.09",
+        "context_id": "integrated-decisions-1-transfer-01",
+        "supports_from": [],
+        "reasoning": "Removing the outing leaves exactly 240 allocated to the stated essentials."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.cashflow-budget.09",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "An interrupted payment changes what a household can safely commit."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un pago interrumpido cambia lo que un hogar puede comprometer."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Um pagamento interrompido muda o que uma família pode comprometer."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which planning baseline?",
+          "scene": "Recent monthly receipts: 600, 400, 500. Next month is unconfirmed; use the lowest observed amount.",
+          "options": [
+            {
+              "label": "500"
+            },
+            {
+              "label": "600"
+            },
+            {
+              "label": "400"
+            }
+          ],
+          "help": [
+            "The stated rule uses the lowest receipt, not the best month."
+          ],
+          "feedback": {
+            "met": "400 is the lowest observed receipt, not a guaranteed future payment.",
+            "not_yet": "The stated rule uses the lowest receipt, not the best month."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué base usar?",
+          "scene": "Entradas mensuales recientes: 600, 400, 500. El próximo mes no está confirmado; usa el menor monto observado.",
+          "options": [
+            {
+              "label": "500"
+            },
+            {
+              "label": "600"
+            },
+            {
+              "label": "400"
+            }
+          ],
+          "help": [
+            "La regla indicada usa la menor entrada, no el mejor mes."
+          ],
+          "feedback": {
+            "met": "400 es la menor entrada observada, no un pago futuro garantizado.",
+            "not_yet": "La regla indicada usa la menor entrada, no el mejor mes."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual base usar?",
+          "scene": "Recebimentos mensais recentes: 600, 400, 500. Próximo mês não confirmado; use o menor valor observado.",
+          "options": [
+            {
+              "label": "500"
+            },
+            {
+              "label": "600"
+            },
+            {
+              "label": "400"
+            }
+          ],
+          "help": [
+            "A regra informada usa o menor recebimento, não o melhor mês."
+          ],
+          "feedback": {
+            "met": "400 é o menor recebimento observado, não um pagamento futuro garantido.",
+            "not_yet": "A regra informada usa o menor recebimento, não o melhor mês."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          600,
+          400,
+          500
+        ],
+        "expression": {
+          "op": "min",
+          "args": [
+            {
+              "op": "min",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.09",
+      "copy": {
+        "en-US": {
+          "prompt": "What remains unallocated?",
+          "scene": "Confirmed money: 400; essential bills: 300. An unavoidable repair adds 70.",
+          "options": [
+            {
+              "label": "170"
+            },
+            {
+              "label": "100"
+            },
+            {
+              "label": "30"
+            }
+          ],
+          "help": [
+            "Subtract the repair as well as the original bills."
+          ],
+          "feedback": {
+            "met": "400 − 300 − 70 = 30 remains for other allocations.",
+            "not_yet": "Subtract the repair as well as the original bills."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto queda sin asignar?",
+          "scene": "Dinero confirmado: 400; cuentas esenciales: 300. Una reparación inevitable agrega 70.",
+          "options": [
+            {
+              "label": "170"
+            },
+            {
+              "label": "100"
+            },
+            {
+              "label": "30"
+            }
+          ],
+          "help": [
+            "Resta la reparación además de las cuentas originales."
+          ],
+          "feedback": {
+            "met": "400 − 300 − 70 = 30 para otras asignaciones.",
+            "not_yet": "Resta la reparación además de las cuentas originales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto fica sem destino?",
+          "scene": "Dinheiro confirmado: 400; contas essenciais: 300. Um conserto inevitável acrescenta 70.",
+          "options": [
+            {
+              "label": "170"
+            },
+            {
+              "label": "100"
+            },
+            {
+              "label": "30"
+            }
+          ],
+          "help": [
+            "Subtraia o conserto além das contas originais."
+          ],
+          "feedback": {
+            "met": "400 − 300 − 70 = 30 para outras destinações.",
+            "not_yet": "Subtraia o conserto além das contas originais."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          400,
+          300,
+          70
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.11",
+      "copy": {
+        "en-US": {
+          "prompt": "Which response is feasible?",
+          "scene": "Only 30 remains; a 50 outing is optional. No affordable credit or confirmed receipt is available.",
+          "options": [
+            {
+              "label": "Assume another receipt"
+            },
+            {
+              "label": "Borrow without checking"
+            },
+            {
+              "label": "Postpone the outing"
+            }
+          ],
+          "help": [
+            "A possible receipt or unchecked loan does not close this gap."
+          ],
+          "feedback": {
+            "met": "Postponing the optional outing avoids an unfunded commitment.",
+            "not_yet": "A possible receipt or unchecked loan does not close this gap."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué respuesta es viable?",
+          "scene": "Solo quedan 30; una salida de 50 es opcional. No hay crédito asequible ni entrada confirmada.",
+          "options": [
+            {
+              "label": "Suponer otra entrada"
+            },
+            {
+              "label": "Pedir prestado sin revisar"
+            },
+            {
+              "label": "Posponer la salida"
+            }
+          ],
+          "help": [
+            "Una entrada posible o préstamo sin revisar no cubre este faltante."
+          ],
+          "feedback": {
+            "met": "Posponer la salida opcional evita un compromiso sin fondos.",
+            "not_yet": "Una entrada posible o préstamo sin revisar no cubre este faltante."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual resposta é viável?",
+          "scene": "Restam apenas 30; um passeio de 50 é opcional. Não há crédito acessível nem recebimento confirmado.",
+          "options": [
+            {
+              "label": "Supor outro recebimento"
+            },
+            {
+              "label": "Pegar crédito sem conferir"
+            },
+            {
+              "label": "Adiar o passeio"
+            }
+          ],
+          "help": [
+            "Um recebimento possível ou crédito não conferido não cobre esta falta."
+          ],
+          "feedback": {
+            "met": "Adiar o passeio opcional evita um compromisso sem recursos.",
+            "not_yet": "Um recebimento possível ou crédito não conferido não cobre esta falta."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.06",
+      "copy": {
+        "en-US": {
+          "prompt": "What changes the forecast?",
+          "scene": "The payer confirms next month’s work is canceled. Earlier months had receipts.",
+          "options": [
+            {
+              "label": "Use the historical average"
+            },
+            {
+              "label": "Keep the historical minimum"
+            },
+            {
+              "label": "Remove the canceled receipt"
+            }
+          ],
+          "help": [
+            "Past receipts cannot fund a payment that is now canceled."
+          ],
+          "feedback": {
+            "met": "Confirmed cancellation overrides the estimate based on earlier months.",
+            "not_yet": "Past receipts cannot fund a payment that is now canceled."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué cambia la previsión?",
+          "scene": "Quien paga confirma que canceló el trabajo del próximo mes. Hubo entradas en meses anteriores.",
+          "options": [
+            {
+              "label": "Usar el promedio histórico"
+            },
+            {
+              "label": "Mantener el mínimo histórico"
+            },
+            {
+              "label": "Quitar la entrada cancelada"
+            }
+          ],
+          "help": [
+            "Las entradas pasadas no financian un pago ahora cancelado."
+          ],
+          "feedback": {
+            "met": "La cancelación confirmada reemplaza la estimación basada en meses anteriores.",
+            "not_yet": "Las entradas pasadas no financian un pago ahora cancelado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que muda a previsão?",
+          "scene": "Quem paga confirma o cancelamento do trabalho do próximo mês. Houve recebimentos em meses anteriores.",
+          "options": [
+            {
+              "label": "Usar a média histórica"
+            },
+            {
+              "label": "Manter o mínimo histórico"
+            },
+            {
+              "label": "Retirar o recebimento cancelado"
+            }
+          ],
+          "help": [
+            "Recebimentos passados não financiam um pagamento agora cancelado."
+          ],
+          "feedback": {
+            "met": "O cancelamento confirmado substitui a estimativa baseada nos meses anteriores.",
+            "not_yet": "Recebimentos passados não financiam um pagamento agora cancelado."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.11",
+      "copy": {
+        "en-US": {
+          "prompt": "What addresses the gap?",
+          "scene": "Confirmed funds cannot cover essential bills. Optional spending is already zero.",
+          "options": [
+            {
+              "label": "Seek support and negotiate dates"
+            },
+            {
+              "label": "Call the budget balanced"
+            },
+            {
+              "label": "Invent a new receipt"
+            }
+          ],
+          "help": [
+            "Removing optional spending cannot solve every income shortfall."
+          ],
+          "feedback": {
+            "met": "Support and negotiation address a real gap without inventing income.",
+            "not_yet": "Removing optional spending cannot solve every income shortfall."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué atiende el faltante?",
+          "scene": "Los fondos confirmados no cubren cuentas esenciales. El gasto opcional ya es cero.",
+          "options": [
+            {
+              "label": "Buscar apoyo y negociar fechas"
+            },
+            {
+              "label": "Dar el presupuesto por cerrado"
+            },
+            {
+              "label": "Inventar otra entrada"
+            }
+          ],
+          "help": [
+            "Eliminar gastos opcionales no resuelve todo faltante de ingresos."
+          ],
+          "feedback": {
+            "met": "Apoyo y negociación atienden un faltante real sin inventar ingresos.",
+            "not_yet": "Eliminar gastos opcionales no resuelve todo faltante de ingresos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que enfrenta a falta?",
+          "scene": "Recursos confirmados não cobrem contas essenciais. Os gastos opcionais já estão zerados.",
+          "options": [
+            {
+              "label": "Buscar apoio e negociar datas"
+            },
+            {
+              "label": "Considerar o orçamento fechado"
+            },
+            {
+              "label": "Inventar outro recebimento"
+            }
+          ],
+          "help": [
+            "Eliminar gastos opcionais não resolve toda falta de renda."
+          ],
+          "feedback": {
+            "met": "Apoio e negociação enfrentam uma falta real sem inventar renda.",
+            "not_yet": "Eliminar gastos opcionais não resolve toda falta de renda."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.cashflow-budget.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Which revised plan fits?",
+          "scene": "Funds: 240; food: 100; rent: 100; new medicine: 40. A planned outing was 30.",
+          "options": [
+            {
+              "label": "Remove the outing allocation"
+            },
+            {
+              "label": "Keep all four allocations"
+            },
+            {
+              "label": "Count the medicine twice"
+            }
+          ],
+          "help": [
+            "The new medicine must replace an allocation, not disappear from totals."
+          ],
+          "feedback": {
+            "met": "Removing the outing leaves exactly 240 allocated to the stated essentials.",
+            "not_yet": "The new medicine must replace an allocation, not disappear from totals."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué plan ajustado cabe?",
+          "scene": "Fondos: 240; comida: 100; renta: 100; medicina nueva: 40. La salida planeada costaba 30.",
+          "options": [
+            {
+              "label": "Quitar la asignación de salida"
+            },
+            {
+              "label": "Conservar las cuatro asignaciones"
+            },
+            {
+              "label": "Contar dos veces la medicina"
+            }
+          ],
+          "help": [
+            "La medicina nueva debe reemplazar una asignación, no desaparecer del total."
+          ],
+          "feedback": {
+            "met": "Quitar la salida deja exactamente 240 para las necesidades indicadas.",
+            "not_yet": "La medicina nueva debe reemplazar una asignación, no desaparecer del total."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual plano revisto cabe?",
+          "scene": "Recursos: 240; comida: 100; aluguel: 100; remédio novo: 40. Um passeio previsto custava 30.",
+          "options": [
+            {
+              "label": "Retirar a destinação do passeio"
+            },
+            {
+              "label": "Manter as quatro destinações"
+            },
+            {
+              "label": "Contar o remédio duas vezes"
+            }
+          ],
+          "help": [
+            "O novo remédio deve substituir uma destinação, não desaparecer do total."
+          ],
+          "feedback": {
+            "met": "Retirar o passeio deixa exatamente 240 para as necessidades informadas.",
+            "not_yet": "O novo remédio deve substituir uma destinação, não desaparecer do total."
+          }
+        }
+      }
+    }
+  ]
+}

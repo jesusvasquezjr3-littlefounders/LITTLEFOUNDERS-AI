@@ -70,7 +70,7 @@ export function PercentGridBoard({ document, segment, onBack, sequence, onGrade 
     ? { style: 'currency', currency: localCurrency[document.locale], currencyDisplay: 'code', maximumFractionDigits: 0 }
     : { maximumFractionDigits: 0 }), [document.locale, currency]);
   const amount = (n: number) => currency === 'coins' ? `${formatter.format(n)} ${pluralUnit(document.locale, n, { one: t.coin, other: t.coins })}` : formatter.format(n);
-  const setRate = (value: number) => { grading.reset(); if (percentOutcome(segment.payload, value)) setPercent(value); };
+  const setRate = (value: number) => { if (grading.pending) return; grading.reset(); if (percentOutcome(segment.payload, value)) setPercent(value); };
   const changed = mode === 'discount' ? t.discount : t.tax;
 
   return <main className="lf-learning" data-surface="app" data-screen="percent">
@@ -81,7 +81,7 @@ export function PercentGridBoard({ document, segment, onBack, sequence, onGrade 
       <div className="lf-learning-content">
         <div className="lf-learning-intro"><h1 data-copy-role="heading">{document.title}</h1><SegmentPrompt segment={segment} locale={document.locale} /></div>
         <TeachingChartBoard title={t.board} showTableLabel={t.showTable} showChartLabel={t.showChart}
-          controlLeading={<Button onClick={() => setPercent(initialPercent)} disabled={percent === initialPercent}>{t.reset}</Button>}
+          controlLeading={<Button onClick={() => setRate(initialPercent)} disabled={grading.pending || percent === initialPercent}>{t.reset}</Button>}
           columns={[t.measure, t.value]} rows={[
             { id: 'original', label: t.original, value: amount(baseUnits) },
             { id: 'percent', label: t.percent, value: `${percent}%` },

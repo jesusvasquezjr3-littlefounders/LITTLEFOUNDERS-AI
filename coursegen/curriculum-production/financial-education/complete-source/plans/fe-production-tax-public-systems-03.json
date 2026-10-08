@@ -1,0 +1,933 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-tax-public-systems-part-1",
+  "lesson_id": "fe-production-tax-public-systems-03",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.tax-public-systems.03"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Calculate tax in a fictional progressive bracket system without applying the top rate to all income.",
+  "title": {
+    "en-US": "Tax Brackets",
+    "es-MX": "Calcula cada tramo",
+    "pt-BR": "Calcule cada faixa"
+  },
+  "new_concepts": [
+    "finance.prod.tax-public-systems.03"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Tax Brackets\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Calcula cada tramo\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Calcule cada faixa\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.tax-public-systems.03",
+      "observable_action": "Calculate tax in a fictional progressive bracket system without applying the top rate to all income.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.tax-public-systems.01",
+      "price.percent",
+      "prod.financial-math.03"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A higher bracket can apply only to the next slice, not every earlier unit of income.",
+    "misconception": "Crossing a progressive bracket applies the highest rate to all income.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.tax-public-systems.03",
+        "context_id": "tax-public-systems-03-example-01",
+        "supports_from": [],
+        "reasoning": "In this fictional system, each income slice has its own rate. Calculate each slice, then add the tax amounts."
+      },
+      {
+        "segment_id": "example-02",
+        "skill_id": "prod.tax-public-systems.03",
+        "context_id": "tax-public-systems-03-example-02",
+        "supports_from": [],
+        "reasoning": "Fictional example: first 100 at 10% owes 10; next 50 at 20% owes 10; Total tax is 20."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.tax-public-systems.03",
+        "context_id": "tax-public-systems-03-guided-01",
+        "supports_from": [
+          "example-02"
+        ],
+        "reasoning": "You added the taxes on separate income slices."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.tax-public-systems.03",
+        "context_id": "tax-public-systems-03-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The stated rule assigns the higher rate only to excess."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.tax-public-systems.03",
+        "context_id": "tax-public-systems-03-practice-01",
+        "supports_from": [],
+        "reasoning": "Each slice uses its own rate before adding taxes."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.tax-public-systems.03",
+        "context_id": "tax-public-systems-03-practice-02",
+        "supports_from": [],
+        "reasoning": "The calculator taxes earlier slices at the wrong rate."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.tax-public-systems.03",
+        "context_id": "tax-public-systems-03-practice-03",
+        "supports_from": [],
+        "reasoning": "The total combines different rates on different slices."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.tax-public-systems.03",
+        "context_id": "tax-public-systems-03-transfer-01",
+        "supports_from": [],
+        "reasoning": "The new thresholds still require separate slice calculations."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.tax-public-systems.03",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A higher bracket can apply only to the next slice, not every earlier unit of income."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Una tasa superior puede aplicar solo al siguiente tramo, no a todo ingreso anterior."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Uma taxa maior pode valer só para a próxima faixa, não para toda a renda anterior."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Split before calculating",
+          "line": "In this fictional system, each income slice has its own rate. Calculate each slice, then add the tax amounts."
+        },
+        "es-MX": {
+          "prompt": "Divide antes de calcular",
+          "line": "En este sistema ficticio, cada tramo tiene su tasa. Calcula cada tramo y suma los impuestos resultantes."
+        },
+        "pt-BR": {
+          "prompt": "Divida antes de calcular",
+          "line": "Neste sistema fictício, cada faixa tem sua taxa. Calcule cada faixa e some os impostos resultantes."
+        }
+      }
+    },
+    {
+      "id": "example-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "See both slices",
+          "line": "Fictional example: first 100 at 10% owes 10; next 50 at 20% owes 10; Total tax is 20."
+        },
+        "es-MX": {
+          "prompt": "Mira ambos tramos",
+          "line": "Ejemplo ficticio: primeros 100 al 10% deben 10; siguientes 50 al 20% deben 10; Impuesto total: 20."
+        },
+        "pt-BR": {
+          "prompt": "Veja ambas as faixas",
+          "line": "Exemplo fictício: primeiros 100 a 10% devem 10; próximos 50 a 20% devem 10; Imposto total: 20."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.tax-public-systems.03",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "step-1"
+          },
+          {
+            "id": "step-2"
+          },
+          {
+            "id": "step-3"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "step-2",
+          "step-3"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "step-2": "8",
+          "step-3": "18"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Fictional income: 140 dollars. First 100 taxed at 10%; remaining 40 at 20%. Finish both slices.",
+          "feedback": {
+            "met": "You added the taxes on separate income slices.",
+            "not_yet": "The higher rate applies only above the first slice."
+          },
+          "help": [
+            "The higher rate applies only above the first slice."
+          ],
+          "steps": [
+            {
+              "expression": "100 × 10 ÷ 100",
+              "result": "10",
+              "spokenText": "Tax on first slice"
+            },
+            {
+              "expression": "40 × 20 ÷ 100",
+              "result": "8",
+              "spokenText": "Tax on remaining slice"
+            },
+            {
+              "expression": "10 + 8",
+              "result": "18",
+              "spokenText": "Add both taxes"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Ingreso ficticio: 140 pesos. Primeros 100 al 10%; restantes 40 al 20%. Completa ambos tramos.",
+          "feedback": {
+            "met": "Sumaste los impuestos de tramos separados de ingreso.",
+            "not_yet": "La tasa mayor solo aplica al exceso del primer tramo."
+          },
+          "help": [
+            "La tasa mayor solo aplica al exceso del primer tramo."
+          ],
+          "steps": [
+            {
+              "expression": "100 × 10 ÷ 100",
+              "result": "10",
+              "spokenText": "Impuesto del primer tramo"
+            },
+            {
+              "expression": "40 × 20 ÷ 100",
+              "result": "8",
+              "spokenText": "Impuesto del tramo restante"
+            },
+            {
+              "expression": "10 + 8",
+              "result": "18",
+              "spokenText": "Suma ambos impuestos"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Renda fictícia: 140 reais. Primeiros 100 a 10%; outros 40 a 20%. Complete ambas as faixas.",
+          "feedback": {
+            "met": "Somou os impostos de faixas separadas de renda.",
+            "not_yet": "A taxa maior vale só acima da primeira faixa."
+          },
+          "help": [
+            "A taxa maior vale só acima da primeira faixa."
+          ],
+          "steps": [
+            {
+              "expression": "100 × 10 ÷ 100",
+              "result": "10",
+              "spokenText": "Imposto da primeira faixa"
+            },
+            {
+              "expression": "40 × 20 ÷ 100",
+              "result": "8",
+              "spokenText": "Imposto da faixa restante"
+            },
+            {
+              "expression": "10 + 8",
+              "result": "18",
+              "spokenText": "Some ambos os impostos"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.tax-public-systems.03",
+      "copy": {
+        "en-US": {
+          "prompt": "What receives higher rates?",
+          "scene": "A fictional rule taxes only income above its threshold at the higher rate.",
+          "options": [
+            {
+              "label": "No income at all"
+            },
+            {
+              "label": "Only the excess above the threshold"
+            },
+            {
+              "label": "All earlier income too"
+            }
+          ],
+          "help": [
+            "Keep earlier and later slices separate."
+          ],
+          "feedback": {
+            "met": "The stated rule assigns the higher rate only to excess.",
+            "not_yet": "Keep earlier and later slices separate."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué recibe la tasa mayor?",
+          "scene": "Una regla ficticia grava con tasa mayor solo el ingreso que supera el límite.",
+          "options": [
+            {
+              "label": "Ningún ingreso"
+            },
+            {
+              "label": "Solo el exceso sobre el límite"
+            },
+            {
+              "label": "También todo ingreso anterior"
+            }
+          ],
+          "help": [
+            "Mantén separados los tramos anteriores y posteriores."
+          ],
+          "feedback": {
+            "met": "La regla asigna tasa mayor solo al exceso.",
+            "not_yet": "Mantén separados los tramos anteriores y posteriores."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que recebe a taxa maior?",
+          "scene": "Uma regra fictícia taxa mais só a renda que supera o limite.",
+          "options": [
+            {
+              "label": "Nenhuma renda"
+            },
+            {
+              "label": "Só o excesso acima do limite"
+            },
+            {
+              "label": "Toda a renda anterior também"
+            }
+          ],
+          "help": [
+            "Mantenha separadas as faixas anteriores e posteriores."
+          ],
+          "feedback": {
+            "met": "A regra atribui a taxa maior só ao excesso.",
+            "not_yet": "Mantenha separadas as faixas anteriores e posteriores."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.tax-public-systems.03",
+      "copy": {
+        "en-US": {
+          "prompt": "What is total tax?",
+          "scene": "Fictional income: 160; First 100 at 10%; excess at 20%. No other rules.",
+          "options": [
+            {
+              "label": "16"
+            },
+            {
+              "label": "22"
+            },
+            {
+              "label": "32"
+            }
+          ],
+          "help": [
+            "Tax the first slice and excess separately."
+          ],
+          "feedback": {
+            "met": "Each slice uses its own rate before adding taxes.",
+            "not_yet": "Tax the first slice and excess separately."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es el impuesto total?",
+          "scene": "Ingreso ficticio: 160; Primeros 100 al 10%; exceso al 20%. Sin otras reglas.",
+          "options": [
+            {
+              "label": "16"
+            },
+            {
+              "label": "22"
+            },
+            {
+              "label": "32"
+            }
+          ],
+          "help": [
+            "Grava por separado el primer tramo y el exceso."
+          ],
+          "feedback": {
+            "met": "Cada tramo usa su tasa antes de sumar impuestos.",
+            "not_yet": "Grava por separado el primer tramo y el exceso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é o imposto total?",
+          "scene": "Renda fictícia: 160; Primeiros 100 a 10%; excesso a 20%. Sem outras regras.",
+          "options": [
+            {
+              "label": "16"
+            },
+            {
+              "label": "22"
+            },
+            {
+              "label": "32"
+            }
+          ],
+          "help": [
+            "Taxe à parte a primeira faixa e o excesso."
+          ],
+          "feedback": {
+            "met": "Cada faixa usa sua taxa antes de somar impostos.",
+            "not_yet": "Taxe à parte a primeira faixa e o excesso."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          160,
+          100,
+          10,
+          20
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "op": "divide",
+              "args": [
+                {
+                  "op": "multiply",
+                  "args": [
+                    {
+                      "input": 1
+                    },
+                    {
+                      "input": 2
+                    }
+                  ]
+                },
+                {
+                  "constant": 100
+                }
+              ]
+            },
+            {
+              "op": "divide",
+              "args": [
+                {
+                  "op": "multiply",
+                  "args": [
+                    {
+                      "op": "subtract",
+                      "args": [
+                        {
+                          "input": 0
+                        },
+                        {
+                          "input": 1
+                        }
+                      ]
+                    },
+                    {
+                      "input": 3
+                    }
+                  ]
+                },
+                {
+                  "constant": 100
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.tax-public-systems.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Which calculation breaks the rule?",
+          "scene": "The rule uses separate bracket slices. A calculator applies the top rate to the entire income.",
+          "options": [
+            {
+              "label": "Calculating each slice separately"
+            },
+            {
+              "label": "The entire-income top-rate calculation"
+            }
+          ],
+          "help": [
+            "A higher marginal rate is not a whole-income rate."
+          ],
+          "feedback": {
+            "met": "The calculator taxes earlier slices at the wrong rate.",
+            "not_yet": "A higher marginal rate is not a whole-income rate."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué cálculo rompe la regla?",
+          "scene": "La regla usa tramos separados. Una calculadora aplica la tasa máxima a todo el ingreso.",
+          "options": [
+            {
+              "label": "Calcular cada tramo por separado"
+            },
+            {
+              "label": "El cálculo máximo sobre todo"
+            }
+          ],
+          "help": [
+            "La tasa marginal mayor no grava todo el ingreso."
+          ],
+          "feedback": {
+            "met": "La calculadora grava tramos anteriores con tasa equivocada.",
+            "not_yet": "La tasa marginal mayor no grava todo el ingreso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual cálculo quebra a regra?",
+          "scene": "A regra usa faixas separadas. Uma calculadora aplica a maior taxa à renda inteira.",
+          "options": [
+            {
+              "label": "Calcular cada faixa à parte"
+            },
+            {
+              "label": "A maior taxa sobre tudo"
+            }
+          ],
+          "help": [
+            "A maior taxa marginal não taxa toda a renda."
+          ],
+          "feedback": {
+            "met": "A calculadora taxa faixas anteriores pela taxa errada.",
+            "not_yet": "A maior taxa marginal não taxa toda a renda."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.tax-public-systems.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Does the top rate describe everything?",
+          "scene": "Only one slice faces the top rate; earlier slices have lower rates.",
+          "options": [
+            {
+              "label": "Yes, every unit pays the top rate"
+            },
+            {
+              "label": "No, all slices matter"
+            }
+          ],
+          "help": [
+            "Distinguish the last slice’s rate from the overall burden."
+          ],
+          "feedback": {
+            "met": "The total combines different rates on different slices.",
+            "not_yet": "Distinguish the last slice’s rate from the overall burden."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿La tasa máxima describe todo?",
+          "scene": "Solo un tramo recibe tasa máxima; los anteriores reciben tasas menores.",
+          "options": [
+            {
+              "label": "Sí, toda unidad paga la máxima"
+            },
+            {
+              "label": "No, el impuesto refleja todos los tramos"
+            }
+          ],
+          "help": [
+            "Distingue la tasa del último tramo de la carga total."
+          ],
+          "feedback": {
+            "met": "El total combina distintas tasas sobre distintos tramos.",
+            "not_yet": "Distingue la tasa del último tramo de la carga total."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A taxa maior descreve tudo?",
+          "scene": "Só uma faixa recebe a maior taxa; as anteriores recebem taxas menores.",
+          "options": [
+            {
+              "label": "Sim, toda unidade paga a maior"
+            },
+            {
+              "label": "Não, o imposto reflete todas as faixas"
+            }
+          ],
+          "help": [
+            "Separe a taxa da última faixa da carga total."
+          ],
+          "feedback": {
+            "met": "O total combina taxas distintas sobre faixas distintas.",
+            "not_yet": "Separe a taxa da última faixa da carga total."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.tax-public-systems.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Compute this fictional rule",
+          "scene": "Project income: 250; First 200 at 5%; excess at 10%. No other rules.",
+          "options": [
+            {
+              "label": "25"
+            },
+            {
+              "label": "12.5"
+            },
+            {
+              "label": "15"
+            }
+          ],
+          "help": [
+            "Use this scenario’s thresholds and rates, not earlier values."
+          ],
+          "feedback": {
+            "met": "The new thresholds still require separate slice calculations.",
+            "not_yet": "Use this scenario’s thresholds and rates, not earlier values."
+          }
+        },
+        "es-MX": {
+          "prompt": "Calcula esta regla ficticia",
+          "scene": "Ingreso de proyecto: 250; Primeros 200 al 5%; exceso al 10%. Sin otras reglas.",
+          "options": [
+            {
+              "label": "25"
+            },
+            {
+              "label": "12.5"
+            },
+            {
+              "label": "15"
+            }
+          ],
+          "help": [
+            "Usa límites y tasas de esta situación, no los anteriores."
+          ],
+          "feedback": {
+            "met": "Los nuevos límites todavía requieren calcular tramos separados.",
+            "not_yet": "Usa límites y tasas de esta situación, no los anteriores."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Calcule esta regra fictícia",
+          "scene": "Renda de projeto: 250; Primeiros 200 a 5%; excesso a 10%. Sem outras regras.",
+          "options": [
+            {
+              "label": "25"
+            },
+            {
+              "label": "12,5"
+            },
+            {
+              "label": "15"
+            }
+          ],
+          "help": [
+            "Use limites e taxas desta situação, não os anteriores."
+          ],
+          "feedback": {
+            "met": "Os novos limites ainda exigem calcular faixas separadas.",
+            "not_yet": "Use limites e taxas desta situação, não os anteriores."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          250,
+          200,
+          5,
+          10
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "op": "divide",
+              "args": [
+                {
+                  "op": "multiply",
+                  "args": [
+                    {
+                      "input": 1
+                    },
+                    {
+                      "input": 2
+                    }
+                  ]
+                },
+                {
+                  "constant": 100
+                }
+              ]
+            },
+            {
+              "op": "divide",
+              "args": [
+                {
+                  "op": "multiply",
+                  "args": [
+                    {
+                      "op": "subtract",
+                      "args": [
+                        {
+                          "input": 0
+                        },
+                        {
+                          "input": 1
+                        }
+                      ]
+                    },
+                    {
+                      "input": 3
+                    }
+                  ]
+                },
+                {
+                  "constant": 100
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

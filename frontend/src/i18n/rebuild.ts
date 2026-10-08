@@ -5,6 +5,7 @@ import enMentor from './en-US/rebuild-mentor.json';
 import enFamily from './en-US/rebuild-family.json';
 import enProfile from './en-US/rebuild-profile.json';
 import enStaff from './en-US/rebuild-staff.json';
+import enGames from './en-US/rebuild-games.json';
 import esCore from './es-MX/rebuild-core.json';
 import esSite from './es-MX/rebuild-site.json';
 import esLearn from './es-MX/rebuild-learn.json';
@@ -12,6 +13,7 @@ import esMentor from './es-MX/rebuild-mentor.json';
 import esFamily from './es-MX/rebuild-family.json';
 import esProfile from './es-MX/rebuild-profile.json';
 import esStaff from './es-MX/rebuild-staff.json';
+import esGames from './es-MX/rebuild-games.json';
 import ptCore from './pt-BR/rebuild-core.json';
 import ptSite from './pt-BR/rebuild-site.json';
 import ptLearn from './pt-BR/rebuild-learn.json';
@@ -19,6 +21,7 @@ import ptMentor from './pt-BR/rebuild-mentor.json';
 import ptFamily from './pt-BR/rebuild-family.json';
 import ptProfile from './pt-BR/rebuild-profile.json';
 import ptStaff from './pt-BR/rebuild-staff.json';
+import ptGames from './pt-BR/rebuild-games.json';
 
 /*
  * The rebuilt UI's copy, one namespace per wave-2 lane (W2 "Shells and
@@ -35,29 +38,30 @@ import ptStaff from './pt-BR/rebuild-staff.json';
  *   family   Family Hub, Tutor console, tasks, banking, teen wallet (Lane 4)
  *   profile  profile, social, settings, account (Lane 5)
  *   staff    the staff console (Lane 6)
+ *   games    the game host: the KartRush Garage, pit stop and break cards (src/rebuild/games)
  *
  * A key lives in exactly one namespace (`rebuildNamespaces.test.ts`). A lane
  * adds keys only to its own file; adding a namespace means adding it here and
  * to REBUILD_NAMESPACES, which the parity gate (agent/tools/check-i18n.sh)
  * and the glossary contract then cover automatically.
  */
-export const REBUILD_NAMESPACES = ['core', 'site', 'learn', 'mentor', 'family', 'profile', 'staff'] as const;
+export const REBUILD_NAMESPACES = ['core', 'site', 'learn', 'mentor', 'family', 'profile', 'staff', 'games'] as const;
 export type RebuildNamespace = typeof REBUILD_NAMESPACES[number];
 
-const en = { ...enCore, ...enSite, ...enLearn, ...enMentor, ...enFamily, ...enProfile, ...enStaff };
+const en = { ...enCore, ...enSite, ...enLearn, ...enMentor, ...enFamily, ...enProfile, ...enStaff, ...enGames };
 
 /** Every rebuilt namespace merged, for the few consumers that span lanes (the preview entry). */
 export type RebuildCopy = typeof en;
 
 export const rebuildCopy: Record<'en-US' | 'es-MX' | 'pt-BR', RebuildCopy> = {
   'en-US': en,
-  'es-MX': { ...esCore, ...esSite, ...esLearn, ...esMentor, ...esFamily, ...esProfile, ...esStaff },
-  'pt-BR': { ...ptCore, ...ptSite, ...ptLearn, ...ptMentor, ...ptFamily, ...ptProfile, ...ptStaff },
+  'es-MX': { ...esCore, ...esSite, ...esLearn, ...esMentor, ...esFamily, ...esProfile, ...esStaff, ...esGames },
+  'pt-BR': { ...ptCore, ...ptSite, ...ptLearn, ...ptMentor, ...ptFamily, ...ptProfile, ...ptStaff, ...ptGames },
 };
 
 /** Each namespace's own strings, by locale (for per-namespace contract tests). */
 export const rebuildNamespaceCopy = {
-  'en-US': { core: enCore, site: enSite, learn: enLearn, mentor: enMentor, family: enFamily, profile: enProfile, staff: enStaff },
-  'es-MX': { core: esCore, site: esSite, learn: esLearn, mentor: esMentor, family: esFamily, profile: esProfile, staff: esStaff },
-  'pt-BR': { core: ptCore, site: ptSite, learn: ptLearn, mentor: ptMentor, family: ptFamily, profile: ptProfile, staff: ptStaff },
+  'en-US': { core: enCore, site: enSite, learn: enLearn, mentor: enMentor, family: enFamily, profile: enProfile, staff: enStaff, games: enGames },
+  'es-MX': { core: esCore, site: esSite, learn: esLearn, mentor: esMentor, family: esFamily, profile: esProfile, staff: esStaff, games: esGames },
+  'pt-BR': { core: ptCore, site: ptSite, learn: ptLearn, mentor: ptMentor, family: ptFamily, profile: ptProfile, staff: ptStaff, games: ptGames },
 } as const;

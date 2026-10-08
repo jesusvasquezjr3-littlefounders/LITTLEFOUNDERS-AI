@@ -1,0 +1,780 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-spending-patterns-part-2",
+  "lesson_id": "fe-production-spending-patterns-07",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.spending-patterns.07"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Choose an expense adjustment that respects explicitly stated household constraints.",
+  "title": {
+    "en-US": "Feasible adjustments",
+    "es-MX": "Ajusta con límites reales",
+    "pt-BR": "Ajuste com limites reais"
+  },
+  "new_concepts": [
+    "finance.prod.spending-patterns.07"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Adjust within real limits\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Ajusta con límites reales\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Ajuste com limites reais\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.spending-patterns.07",
+      "observable_action": "Choose an expense adjustment that respects explicitly stated household constraints.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.spending-patterns.02",
+      "prod.goals-tradeoffs.02",
+      "prod.goals-tradeoffs.03"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A useful adjustment preserves the needs stated in the situation.",
+    "misconception": "Choosing the biggest cut without checking access, health, work or household constraints.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.spending-patterns.07",
+        "context_id": "fe-production-spending-patterns-07-example-01",
+        "supports_from": [],
+        "reasoning": "Keep the bus pass required for work. Consider canceling an unused subscription with no cancellation fee."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.spending-patterns.07",
+        "context_id": "fe-production-spending-patterns-07-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The duplicate can change without removing the stated medical need."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.spending-patterns.07",
+        "context_id": "fe-production-spending-patterns-07-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "An unavailable service is not a workable substitute."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.spending-patterns.07",
+        "context_id": "fe-production-spending-patterns-07-practice-01",
+        "supports_from": [],
+        "reasoning": "A suitable substitute reduces cost while preserving required access."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.spending-patterns.07",
+        "context_id": "fe-production-spending-patterns-07-practice-02",
+        "supports_from": [],
+        "reasoning": "A lower unit price helps only if the purchase is usable."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.spending-patterns.07",
+        "context_id": "fe-production-spending-patterns-07-practice-03",
+        "supports_from": [],
+        "reasoning": "The evidence does not establish an available expense cut."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.spending-patterns.07",
+        "context_id": "fe-production-spending-patterns-07-transfer-01",
+        "supports_from": [],
+        "reasoning": "Required reachability remains possible with the suitable plan."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.spending-patterns.07",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A useful adjustment preserves the needs stated in the situation."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un ajuste útil conserva las necesidades indicadas en la situación."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Um ajuste útil preserva as necessidades informadas na situação."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Keep the constraint visible",
+          "line": "Keep the bus pass required for work. Consider canceling an unused subscription with no cancellation fee."
+        },
+        "es-MX": {
+          "prompt": "Conserva el límite visible",
+          "line": "Conserva el pase de autobús necesario para trabajar. Considera cancelar una suscripción sin uso ni comisión de cancelación."
+        },
+        "pt-BR": {
+          "prompt": "Mantenha o limite visível",
+          "line": "Mantenha o passe de ônibus necessário para trabalhar. Considere cancelar uma assinatura sem uso nem tarifa de cancelamento."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Which adjustment respects the constraint?",
+          "scene": "Required medicine must continue. A duplicate entertainment plan is unused and freely cancellable.",
+          "options": [
+            {
+              "label": "Stop the required medicine"
+            },
+            {
+              "label": "Cancel the unused duplicate"
+            },
+            {
+              "label": "Cut both automatically"
+            }
+          ],
+          "help": [
+            "Protect the explicitly required expense."
+          ],
+          "feedback": {
+            "met": "The duplicate can change without removing the stated medical need.",
+            "not_yet": "Protect the explicitly required expense."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué ajuste respeta el límite?",
+          "scene": "La medicina necesaria debe continuar. Un plan de entretenimiento duplicado no se usa y puede cancelarse gratis.",
+          "options": [
+            {
+              "label": "Dejar la medicina necesaria"
+            },
+            {
+              "label": "Cancelar el duplicado sin uso"
+            },
+            {
+              "label": "Recortar ambos automáticamente"
+            }
+          ],
+          "help": [
+            "Conserva el gasto expresamente necesario."
+          ],
+          "feedback": {
+            "met": "El duplicado puede cambiar sin eliminar la necesidad médica indicada.",
+            "not_yet": "Conserva el gasto expresamente necesario."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual ajuste respeita o limite?",
+          "scene": "O remédio necessário deve continuar. Um plano de lazer duplicado não é usado e pode ser cancelado grátis.",
+          "options": [
+            {
+              "label": "Parar o remédio necessário"
+            },
+            {
+              "label": "Cancelar o duplicado sem uso"
+            },
+            {
+              "label": "Cortar ambos automaticamente"
+            }
+          ],
+          "help": [
+            "Preserve o gasto explicitamente necessário."
+          ],
+          "feedback": {
+            "met": "O duplicado pode mudar sem eliminar a necessidade médica informada.",
+            "not_yet": "Preserve o gasto explicitamente necessário."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Does this bus meet the need?",
+          "scene": "Work requires a late trip. The cheaper bus is unavailable then.",
+          "options": [
+            {
+              "label": "All transport is equivalent"
+            },
+            {
+              "label": "Lower price is enough"
+            },
+            {
+              "label": "The schedule prevents it"
+            }
+          ],
+          "help": [
+            "Check access as well as price."
+          ],
+          "feedback": {
+            "met": "An unavailable service is not a workable substitute.",
+            "not_yet": "Check access as well as price."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿El autobús más barato cubre la necesidad?",
+          "scene": "Trabajar exige un traslado nocturno. El autobús más barato no circula entonces.",
+          "options": [
+            {
+              "label": "Sí, todo transporte es intercambiable"
+            },
+            {
+              "label": "Sí, basta un precio menor"
+            },
+            {
+              "label": "No, el horario lo impide"
+            }
+          ],
+          "help": [
+            "Revisa acceso además de precio."
+          ],
+          "feedback": {
+            "met": "Un servicio no disponible no es una alternativa viable.",
+            "not_yet": "Revisa acceso además de precio."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O ônibus mais barato atende essa necessidade?",
+          "scene": "O trabalho exige um trajeto tarde. O ônibus mais barato não circula nesse horário.",
+          "options": [
+            {
+              "label": "Sim, todo transporte é equivalente"
+            },
+            {
+              "label": "Sim, basta um preço menor"
+            },
+            {
+              "label": "Não, o horário impede"
+            }
+          ],
+          "help": [
+            "Confira acesso além do preço."
+          ],
+          "feedback": {
+            "met": "Um serviço indisponível não é uma alternativa viável.",
+            "not_yet": "Confira acesso além do preço."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Which option fits?",
+          "scene": "Work requires internet. A cheaper plan meets these needs without switching fees.",
+          "options": [
+            {
+              "label": "Remove internet entirely"
+            },
+            {
+              "label": "Ignore all plan differences"
+            },
+            {
+              "label": "Switch to the suitable cheaper plan"
+            }
+          ],
+          "help": [
+            "The cheaper option must still meet the need."
+          ],
+          "feedback": {
+            "met": "A suitable substitute reduces cost while preserving required access.",
+            "not_yet": "The cheaper option must still meet the need."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué opción cumple los límites?",
+          "scene": "Necesitas internet para trabajar. Un plan más barato cubre lo mismo sin comisión de cambio.",
+          "options": [
+            {
+              "label": "Eliminar internet por completo"
+            },
+            {
+              "label": "Ignorar diferencias entre planes"
+            },
+            {
+              "label": "Cambiar al plan más barato adecuado"
+            }
+          ],
+          "help": [
+            "La opción más barata debe cubrir la necesidad."
+          ],
+          "feedback": {
+            "met": "Una alternativa adecuada reduce costo conservando el acceso necesario.",
+            "not_yet": "La opción más barata debe cubrir la necesidad."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual opção atende aos limites?",
+          "scene": "Precisa de internet para trabalhar. Um plano mais barato atende às mesmas necessidades sem tarifa de troca.",
+          "options": [
+            {
+              "label": "Eliminar totalmente a internet"
+            },
+            {
+              "label": "Ignorar diferenças entre planos"
+            },
+            {
+              "label": "Trocar pelo plano mais barato adequado"
+            }
+          ],
+          "help": [
+            "A opção mais barata deve atender à necessidade."
+          ],
+          "feedback": {
+            "met": "Uma alternativa adequada reduz custo mantendo o acesso necessário.",
+            "not_yet": "A opção mais barata deve atender à necessidade."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.07",
+      "copy": {
+        "en-US": {
+          "prompt": "What prevents this proposed saving?",
+          "scene": "Bulk food costs less per portion, but your home lacks safe storage.",
+          "options": [
+            {
+              "label": "A rule that food cannot change"
+            },
+            {
+              "label": "The word “bulk” alone"
+            },
+            {
+              "label": "The storage constraint"
+            }
+          ],
+          "help": [
+            "Check whether the household can use the option safely."
+          ],
+          "feedback": {
+            "met": "A lower unit price helps only if the purchase is usable.",
+            "not_yet": "Check whether the household can use the option safely."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué impide este ahorro propuesto?",
+          "scene": "Comprar comida en volumen cuesta menos por porción, pero no tienes almacenamiento seguro.",
+          "options": [
+            {
+              "label": "Una regla de que la comida no cambia"
+            },
+            {
+              "label": "Solo la palabra «volumen»"
+            },
+            {
+              "label": "El límite de almacenamiento"
+            }
+          ],
+          "help": [
+            "Revisa si el hogar puede usar la opción de forma segura."
+          ],
+          "feedback": {
+            "met": "Un menor precio unitario ayuda solo si la compra es utilizable.",
+            "not_yet": "Revisa si el hogar puede usar la opción de forma segura."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que impede essa economia proposta?",
+          "scene": "Comprar comida em volume custa menos por porção, mas não tem armazenamento seguro.",
+          "options": [
+            {
+              "label": "Uma regra de que comida não muda"
+            },
+            {
+              "label": "Só a palavra «volume»"
+            },
+            {
+              "label": "O limite de armazenamento"
+            }
+          ],
+          "help": [
+            "Confira se a casa pode usar a opção com segurança."
+          ],
+          "feedback": {
+            "met": "Um menor preço por unidade ajuda só se a compra for utilizável.",
+            "not_yet": "Confira se a casa pode usar a opção com segurança."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.07",
+      "copy": {
+        "en-US": {
+          "prompt": "What follows logically?",
+          "scene": "All listed expenses are necessary; no feasible cheaper alternatives have been found.",
+          "options": [
+            {
+              "label": "A cheaper option is confirmed"
+            },
+            {
+              "label": "No feasible cut is established"
+            },
+            {
+              "label": "Any expense can be removed"
+            }
+          ],
+          "help": [
+            "Do not invent an option absent from the situation."
+          ],
+          "feedback": {
+            "met": "The evidence does not establish an available expense cut.",
+            "not_yet": "Do not invent an option absent from the situation."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué puedes concluir ahora?",
+          "scene": "Todos los gastos indicados son necesarios; no hay alternativas más baratas viables identificadas.",
+          "options": [
+            {
+              "label": "Una opción más barata está confirmada"
+            },
+            {
+              "label": "Aún no se demuestra un recorte viable"
+            },
+            {
+              "label": "Puedes eliminar cualquier gasto"
+            }
+          ],
+          "help": [
+            "No inventes una opción ausente en la situación."
+          ],
+          "feedback": {
+            "met": "La evidencia no demuestra un recorte disponible.",
+            "not_yet": "No inventes una opción ausente en la situación."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que pode concluir agora?",
+          "scene": "Todos os gastos informados são necessários; não há alternativas mais baratas viáveis identificadas.",
+          "options": [
+            {
+              "label": "Uma opção mais barata está confirmada"
+            },
+            {
+              "label": "Ainda não há corte viável demonstrado"
+            },
+            {
+              "label": "Pode eliminar qualquer gasto"
+            }
+          ],
+          "help": [
+            "Não invente uma opção ausente na situação."
+          ],
+          "feedback": {
+            "met": "A evidência não demonstra um corte disponível.",
+            "not_yet": "Não invente uma opção ausente na situação."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.spending-patterns.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Which adjustment preserves access?",
+          "scene": "A caregiver must stay reachable. A cheaper phone plan meets the coverage needs.",
+          "options": [
+            {
+              "label": "Disconnect the phone entirely"
+            },
+            {
+              "label": "Consider the suitable cheaper plan"
+            },
+            {
+              "label": "Choose a plan without coverage"
+            }
+          ],
+          "help": [
+            "Keep the stated care constraint in the decision."
+          ],
+          "feedback": {
+            "met": "Required reachability remains possible with the suitable plan.",
+            "not_yet": "Keep the stated care constraint in the decision."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué ajuste conserva la necesidad?",
+          "scene": "Quien cuida debe estar localizable. Un plan telefónico más barato cubre llamadas y zona necesarias.",
+          "options": [
+            {
+              "label": "Desconectar el teléfono por completo"
+            },
+            {
+              "label": "Considerar el plan más barato adecuado"
+            },
+            {
+              "label": "Elegir un plan sin cobertura"
+            }
+          ],
+          "help": [
+            "Mantén la necesidad de cuidado al decidir."
+          ],
+          "feedback": {
+            "met": "El plan adecuado conserva la comunicación necesaria.",
+            "not_yet": "Mantén la necesidad de cuidado al decidir."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual ajuste preserva a necessidade?",
+          "scene": "Quem cuida precisa estar acessível. Um plano telefônico mais barato cobre chamadas e área necessárias.",
+          "options": [
+            {
+              "label": "Desligar totalmente o telefone"
+            },
+            {
+              "label": "Considerar o plano mais barato adequado"
+            },
+            {
+              "label": "Escolher um plano sem cobertura"
+            }
+          ],
+          "help": [
+            "Mantenha a necessidade de cuidado ao decidir."
+          ],
+          "feedback": {
+            "met": "O plano adequado mantém a comunicação necessária.",
+            "not_yet": "Mantenha a necessidade de cuidado ao decidir."
+          }
+        }
+      }
+    }
+  ]
+}

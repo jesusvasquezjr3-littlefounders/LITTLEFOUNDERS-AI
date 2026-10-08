@@ -1,5 +1,6 @@
 import { useCallback, useMemo, useState } from 'react';
 import { AnswerChoice, Button, Slider, Stepper } from '../design/controls';
+import { pluralUnit } from '../design/plural';
 import { TeachingChart } from './charts/TeachingChart';
 import { conceptCopy, conceptMoney, conceptPercent, fill } from './conceptCopy';
 import { namedFeedback } from './namedFeedback';
@@ -193,6 +194,7 @@ export function InflationBoard({ document, segment, onBack, sequence, onGrade }:
   const graded = segment.grading === 'server';
   const hide = graded && !grading.met;
   const extent = scale === 'near' ? Math.min(5, p.max_years) : p.max_years;
+  const yearWord = (count: number) => pluralUnit(document.locale, count, { one: t.year, other: t.years.toLowerCase() });
   const series = useMemo(() => Array.from({ length: extent + 1 }, (_, year) => compoundValue(p.price_minor, rate, year)), [extent, p.price_minor, rate]);
   const cost = compoundValue(p.price_minor, rate, years);
   const top = compoundValue(p.price_minor, p.max_rate_bps, extent);
@@ -207,16 +209,16 @@ export function InflationBoard({ document, segment, onBack, sequence, onGrade }:
       <ReactiveText labels={{ decrease: t.less, increase: t.more }} onChange={change} result={hide ? t.hidden : money(cost)} parts={[
         t.sentence[0], { id: 'rate', value: rate, min: p.min_rate_bps, max: p.max_rate_bps, step: p.rate_step_bps, label: t.rate, text: percent(rate) },
         t.sentence[1], { id: 'years', value: years, min: p.min_years, max: p.max_years, step: p.year_step, label: t.years, text: String(years) },
-        t.sentence[2],
+        fill(t.sentence[2], { years: yearWord(years) }),
       ]} />
       <div data-operation="operation.scale-toggle.v1"><ScaleToggle legend={t.view} value={scale} onChange={setScale} options={[{ value: 'near', label: t.near }, { value: 'far', label: t.far }]} /></div>
       {/* GAP-FIX-R4 (B.7): the price line is the shared Pizarrón growth lines, with its table one press away. */}
       {hide ? null : <ChartOrTable labels={tableLabels(document.locale)}
         chart={<GrowthLinesVisual label={`${money(series[0]!)} → ${money(series[series.length - 1]!)}`} max={top}
           series={[{ id: 'price', label: t.price, values: series, endText: money(series[series.length - 1]!), series: 'sky' }]}
-          startLabel={t.today} endLabel={fill(t.laterN, { n: extent })} maxText={money(top)} />}
+          startLabel={t.today} endLabel={fill(t.laterN, { n: extent, years: yearWord(extent) })} maxText={money(top)} />}
         table={<DataTable label={t.growth} columns={[t.years, t.price]} rows={series.map((value, year) => ({ id: year, cells: [String(year), money(value)] }))} />} />}
-      <BeforeAfter label={t.later} stateLabels={{ on: fill(t.laterN, { n: years }), off: t.today }} value={later} onChange={setLater}
+      <BeforeAfter label={t.later} stateLabels={{ on: fill(t.laterN, { n: years, years: yearWord(years) }), off: t.today }} value={later} onChange={setLater}
         before={<p data-copy-role="data">{fill(t.costsThen, { x: money(p.price_minor) })}</p>}
         after={<p data-copy-role="data">{fill(t.costsThen, { x: hide ? t.hidden : money(cost) })}</p>} />
     </section>
@@ -408,4 +410,3 @@ export function LemonadeStandBoard({ document, segment, onBack, sequence, onGrad
     </section>
   </BoardShell>;
 }
-

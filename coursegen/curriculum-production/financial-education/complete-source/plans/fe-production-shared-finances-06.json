@@ -1,0 +1,797 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-shared-finances-part-2",
+  "lesson_id": "fe-production-shared-finances-06",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.shared-finances.06"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Distinguish an affordable gift from a family loan requiring clear repayment expectations.",
+  "title": {
+    "en-US": "Family Transfers",
+    "es-MX": "¿Regalo o préstamo familiar?",
+    "pt-BR": "Presente ou empréstimo familiar?"
+  },
+  "new_concepts": [
+    "finance.prod.shared-finances.06"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Family Transfers\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"¿Regalo o préstamo familiar?\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Presente ou empréstimo familiar?\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.shared-finances.06",
+      "observable_action": "Distinguish an affordable gift from a family loan requiring clear repayment expectations.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "debt.obligation",
+      "prod.saving-resilience.08"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Before giving money, check what you can afford and whether repayment is expected; neither should depend on guesswork.",
+    "misconception": "All family transfers are gifts or a promised repayment can safely fund essential bills before it arrives.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.shared-finances.06",
+        "context_id": "shared-finances-06-example-01",
+        "supports_from": [],
+        "reasoning": "A gift needs no repayment; a loan does. Agree expectations and timing, and check your own essential needs first."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.shared-finances.06",
+        "context_id": "shared-finances-06-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "A gift does not require repayment."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.shared-finances.06",
+        "context_id": "shared-finances-06-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "A loan needs clear repayment expectations."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.shared-finances.06",
+        "context_id": "shared-finances-06-practice-01",
+        "supports_from": [],
+        "reasoning": "Only the remainder is uncommitted in this stated budget."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.shared-finances.06",
+        "context_id": "shared-finances-06-practice-02",
+        "supports_from": [],
+        "reasoning": "Expected repayment is not yet available cash."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.shared-finances.06",
+        "context_id": "shared-finances-06-practice-03",
+        "supports_from": [],
+        "reasoning": "Different expectations can cause avoidable conflict."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.shared-finances.06",
+        "context_id": "shared-finances-06-transfer-01",
+        "supports_from": [],
+        "reasoning": "Family support still needs to fit protected essential costs."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.shared-finances.06",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Before giving money, check what you can afford and whether repayment is expected; neither should depend on guesswork."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Antes de dar dinero, revisa qué puedes pagar y si esperas devolución; nada debe depender de adivinar."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Antes de dar dinheiro, confira quanto pode pagar e se espera devolução; nada deve depender de adivinhar."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "State the expectation",
+          "line": "A gift needs no repayment; a loan does. Agree expectations and timing, and check your own essential needs first."
+        },
+        "es-MX": {
+          "prompt": "Expresa la expectativa",
+          "line": "Un regalo no exige devolución; un préstamo sí. Acuerden expectativas y fechas, y revisa primero tus necesidades esenciales."
+        },
+        "pt-BR": {
+          "prompt": "Diga a expectativa",
+          "line": "Um presente não exige devolução; um empréstimo sim. Combinem expectativas e datas, e confira primeiro suas necessidades essenciais."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which transfer is a gift?",
+          "scene": "The giver clearly says repayment is not expected.",
+          "options": [
+            {
+              "label": "No repayment expected"
+            },
+            {
+              "label": "Repayment in instalments"
+            },
+            {
+              "label": "Repayment next month"
+            }
+          ],
+          "help": [
+            "Use the stated expectation rather than the family relationship."
+          ],
+          "feedback": {
+            "met": "A gift does not require repayment.",
+            "not_yet": "Use the stated expectation rather than the family relationship."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué transferencia es regalo?",
+          "scene": "Quien da dice claramente que no espera devolución.",
+          "options": [
+            {
+              "label": "No se espera devolución"
+            },
+            {
+              "label": "Devolver en cuotas"
+            },
+            {
+              "label": "Devolver próximo mes"
+            }
+          ],
+          "help": [
+            "Usa la expectativa indicada, no la relación familiar."
+          ],
+          "feedback": {
+            "met": "Un regalo no exige devolución.",
+            "not_yet": "Usa la expectativa indicada, no la relación familiar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual transferência é presente?",
+          "scene": "Quem dá diz claramente que não espera devolução.",
+          "options": [
+            {
+              "label": "Não espera devolução"
+            },
+            {
+              "label": "Devolver em parcelas"
+            },
+            {
+              "label": "Devolver no próximo mês"
+            }
+          ],
+          "help": [
+            "Use a expectativa dada, não a relação familiar."
+          ],
+          "feedback": {
+            "met": "Um presente não exige devolução.",
+            "not_yet": "Use a expectativa dada, não a relação familiar."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.06",
+      "copy": {
+        "en-US": {
+          "prompt": "What must a loan discussion clarify?",
+          "scene": "A relative expects the money back, but no timing is agreed.",
+          "options": [
+            {
+              "label": "Repayment amount and schedule"
+            },
+            {
+              "label": "Only the borrower’s savings"
+            },
+            {
+              "label": "Only the recipient’s income"
+            }
+          ],
+          "help": [
+            "Agree what is owed and when repayment is expected."
+          ],
+          "feedback": {
+            "met": "A loan needs clear repayment expectations.",
+            "not_yet": "Agree what is owed and when repayment is expected."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe aclarar un préstamo?",
+          "scene": "Familiar espera dinero de vuelta, pero no acuerdan fechas.",
+          "options": [
+            {
+              "label": "Monto y calendario de devolución"
+            },
+            {
+              "label": "Solo ahorro de quien pide"
+            },
+            {
+              "label": "Solo ingreso de quien recibe"
+            }
+          ],
+          "help": [
+            "Acuerden cuánto se debe y cuándo se espera el pago."
+          ],
+          "feedback": {
+            "met": "Un préstamo necesita expectativas claras de devolución.",
+            "not_yet": "Acuerden cuánto se debe y cuándo se espera el pago."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que esclarecer num empréstimo?",
+          "scene": "Parente espera dinheiro de volta, mas não combinam datas.",
+          "options": [
+            {
+              "label": "Valor e calendário de devolução"
+            },
+            {
+              "label": "Só poupança de quem pede"
+            },
+            {
+              "label": "Só a renda de quem recebe"
+            }
+          ],
+          "help": [
+            "Combinem quanto se deve e quando esperam pagamento."
+          ],
+          "feedback": {
+            "met": "Um empréstimo precisa de expectativas claras de devolução.",
+            "not_yet": "Combinem quanto se deve e quando esperam pagamento."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.06",
+      "copy": {
+        "en-US": {
+          "prompt": "What remains after protected needs?",
+          "scene": "Available money: 500; Essentials already due: 420; Nothing else committed.",
+          "options": [
+            {
+              "label": "80"
+            },
+            {
+              "label": "500"
+            },
+            {
+              "label": "420"
+            }
+          ],
+          "help": [
+            "Protect the due essentials before evaluating a gift."
+          ],
+          "feedback": {
+            "met": "Only the remainder is uncommitted in this stated budget.",
+            "not_yet": "Protect the due essentials before evaluating a gift."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué queda tras proteger necesidades?",
+          "scene": "Dinero disponible: 500; Esenciales ya vencidos: 420; Nada más comprometido.",
+          "options": [
+            {
+              "label": "80"
+            },
+            {
+              "label": "500"
+            },
+            {
+              "label": "420"
+            }
+          ],
+          "help": [
+            "Protege esenciales pendientes antes de evaluar un regalo."
+          ],
+          "feedback": {
+            "met": "Solo el resto está libre en este presupuesto indicado.",
+            "not_yet": "Protege esenciales pendientes antes de evaluar un regalo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto sobra após proteger necessidades?",
+          "scene": "Dinheiro disponível: 500; Essenciais já devidos: 420; Nada mais comprometido.",
+          "options": [
+            {
+              "label": "80"
+            },
+            {
+              "label": "500"
+            },
+            {
+              "label": "420"
+            }
+          ],
+          "help": [
+            "Proteja essenciais devidos antes de avaliar um presente."
+          ],
+          "feedback": {
+            "met": "Só o restante está livre neste orçamento dado.",
+            "not_yet": "Proteja essenciais devidos antes de avaliar um presente."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          500,
+          420
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.06",
+      "copy": {
+        "en-US": {
+          "prompt": "What makes this plan fragile?",
+          "scene": "A lender needs the relative’s unreceived repayment to cover tomorrow’s essential bill.",
+          "options": [
+            {
+              "label": "Checking essential costs"
+            },
+            {
+              "label": "Relying on money not received"
+            },
+            {
+              "label": "Writing repayment expectations"
+            }
+          ],
+          "help": [
+            "Plan essential payments using money actually available."
+          ],
+          "feedback": {
+            "met": "Expected repayment is not yet available cash.",
+            "not_yet": "Plan essential payments using money actually available."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué vuelve frágil este plan?",
+          "scene": "Quien presta necesita devolución aún no recibida para pagar cuenta esencial mañana.",
+          "options": [
+            {
+              "label": "Revisar costos esenciales"
+            },
+            {
+              "label": "Depender de dinero no recibido"
+            },
+            {
+              "label": "Escribir expectativas de devolución"
+            }
+          ],
+          "help": [
+            "Planea pagos esenciales con dinero realmente disponible."
+          ],
+          "feedback": {
+            "met": "Devolución esperada aún no es efectivo disponible.",
+            "not_yet": "Planea pagos esenciales con dinero realmente disponible."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que torna frágil esse plano?",
+          "scene": "Quem empresta precisa da devolução ainda não recebida para conta essencial amanhã.",
+          "options": [
+            {
+              "label": "Conferir custos essenciais"
+            },
+            {
+              "label": "Depender de dinheiro não recebido"
+            },
+            {
+              "label": "Escrever expectativas de devolução"
+            }
+          ],
+          "help": [
+            "Planeje pagamentos essenciais com dinheiro de fato disponível."
+          ],
+          "feedback": {
+            "met": "Devolução esperada ainda não é dinheiro disponível.",
+            "not_yet": "Planeje pagamentos essenciais com dinheiro de fato disponível."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.06",
+      "copy": {
+        "en-US": {
+          "prompt": "What should happen before transferring?",
+          "scene": "One person thinks “gift”; the other expects repayment.",
+          "options": [
+            {
+              "label": "Clarify and agree the terms"
+            },
+            {
+              "label": "Transfer and avoid discussion"
+            },
+            {
+              "label": "Assume relatives always agree"
+            }
+          ],
+          "help": [
+            "Resolve whether it is a gift or loan first."
+          ],
+          "feedback": {
+            "met": "Different expectations can cause avoidable conflict.",
+            "not_yet": "Resolve whether it is a gift or loan first."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué hacer antes de transferir?",
+          "scene": "Una persona piensa «regalo»; la otra espera devolución.",
+          "options": [
+            {
+              "label": "Aclarar y acordar condiciones"
+            },
+            {
+              "label": "Transferir y evitar discusión"
+            },
+            {
+              "label": "Suponer familiares siempre coinciden"
+            }
+          ],
+          "help": [
+            "Aclaren primero si es regalo o préstamo."
+          ],
+          "feedback": {
+            "met": "Expectativas distintas pueden causar conflicto evitable.",
+            "not_yet": "Aclaren primero si es regalo o préstamo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que fazer antes de transferir?",
+          "scene": "Uma pessoa pensa “presente”; a outra espera devolução.",
+          "options": [
+            {
+              "label": "Esclarecer e combinar termos"
+            },
+            {
+              "label": "Transferir e evitar conversa"
+            },
+            {
+              "label": "Supor parentes sempre concordam"
+            }
+          ],
+          "help": [
+            "Esclareçam primeiro se é presente ou empréstimo."
+          ],
+          "feedback": {
+            "met": "Expectativas distintas podem causar conflito evitável.",
+            "not_yet": "Esclareçam primeiro se é presente ou empréstimo."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.shared-finances.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which response fits the budget?",
+          "scene": "A requested family gift would leave essential rent unpaid.",
+          "options": [
+            {
+              "label": "Borrow automatically without checking"
+            },
+            {
+              "label": "Give it because family asked"
+            },
+            {
+              "label": "Offer only affordable support or decline"
+            }
+          ],
+          "help": [
+            "Choose support that does not create the stated essential shortfall."
+          ],
+          "feedback": {
+            "met": "Family support still needs to fit protected essential costs.",
+            "not_yet": "Choose support that does not create the stated essential shortfall."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué respuesta cabe en presupuesto?",
+          "scene": "Regalo familiar solicitado dejaría renta esencial sin pagar.",
+          "options": [
+            {
+              "label": "Pedir prestado automáticamente"
+            },
+            {
+              "label": "Darlo porque lo pidió familia"
+            },
+            {
+              "label": "Ofrecer apoyo asequible o rechazar"
+            }
+          ],
+          "help": [
+            "Elige apoyo que no cree el faltante esencial indicado."
+          ],
+          "feedback": {
+            "met": "Apoyo familiar aún debe caber tras costos esenciales protegidos.",
+            "not_yet": "Elige apoyo que no cree el faltante esencial indicado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que resposta cabe no orçamento?",
+          "scene": "Presente familiar pedido deixaria aluguel essencial sem pagamento.",
+          "options": [
+            {
+              "label": "Pegar empréstimo automaticamente"
+            },
+            {
+              "label": "Dar pois família pediu"
+            },
+            {
+              "label": "Oferecer apoio possível ou recusar"
+            }
+          ],
+          "help": [
+            "Escolha apoio que não crie a falta essencial dada."
+          ],
+          "feedback": {
+            "met": "Apoio familiar ainda deve caber após custos essenciais protegidos.",
+            "not_yet": "Escolha apoio que não crie a falta essencial dada."
+          }
+        }
+      }
+    }
+  ]
+}

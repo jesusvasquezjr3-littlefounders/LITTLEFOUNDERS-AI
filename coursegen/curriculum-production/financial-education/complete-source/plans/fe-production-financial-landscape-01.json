@@ -1,0 +1,779 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-financial-landscape-part-1",
+  "lesson_id": "fe-production-financial-landscape-01",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.financial-landscape.01"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Verify a financial provider’s identity and permitted activity using the relevant official register.",
+  "title": {
+    "en-US": "Verify Providers",
+    "es-MX": "Verifica con quién tratas",
+    "pt-BR": "Confira com quem você negocia"
+  },
+  "new_concepts": [
+    "finance.prod.financial-landscape.01"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Verify Providers\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Verifica con quién tratas\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Confira com quem você negocia\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.financial-landscape.01",
+      "observable_action": "Verify a financial provider’s identity and permitted activity using the relevant official register.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.payments-digital.07",
+      "prod.accounts-records.09"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A familiar logo can be copied; verify the legal provider and its permitted activity through an independently reached official register.",
+    "misconception": "A copied logo, brand name or registration screenshot verifies both provider identity and authorization for every activity.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.financial-landscape.01",
+        "context_id": "financial-landscape-01-example-01",
+        "supports_from": [],
+        "reasoning": "Reach the official register independently. Match the legal name, identifier, contact details and permitted activity to the actual offer."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.financial-landscape.01",
+        "context_id": "financial-landscape-01-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "A separately reached official register does not rely on the sender."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.financial-landscape.01",
+        "context_id": "financial-landscape-01-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Different legal identities prevent confirming this offer’s provider."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.financial-landscape.01",
+        "context_id": "financial-landscape-01-practice-01",
+        "supports_from": [],
+        "reasoning": "Registration for one activity does not establish permission for another."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.financial-landscape.01",
+        "context_id": "financial-landscape-01-practice-02",
+        "supports_from": [],
+        "reasoning": "The verified contact helps detect impersonation of a real firm."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.financial-landscape.01",
+        "context_id": "financial-landscape-01-practice-03",
+        "supports_from": [],
+        "reasoning": "Brand similarity does not settle identity or permitted activity."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.financial-landscape.01",
+        "context_id": "financial-landscape-01-transfer-01",
+        "supports_from": [],
+        "reasoning": "A real firm’s name can be used by an impersonator."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.financial-landscape.01",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A familiar logo can be copied; verify the legal provider and its permitted activity through an independently reached official register."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un logo conocido puede copiarse; verifica proveedor legal y actividad permitida mediante lista oficial consultado de forma independiente."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Um logo conhecido pode ser copiado; confira provedor legal e serviço permitido num lista oficial acessado por conta própria."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Match identity and scope",
+          "line": "Reach the official register independently. Match the legal name, identifier, contact details and permitted activity to the actual offer."
+        },
+        "es-MX": {
+          "prompt": "Compara identidad y alcance",
+          "line": "Llega a la lista oficial por tu cuenta. Compara nombre legal, código, contacto y actividad permitida con la oferta real."
+        },
+        "pt-BR": {
+          "prompt": "Compare identidade e alcance",
+          "line": "Acesse a lista oficial por conta própria. Compare nome legal, código, contato e serviço permitido com a oferta real."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Which source is independent?",
+          "scene": "An unsolicited message supplies its own “official verification” screenshot.",
+          "options": [
+            {
+              "label": "The logo on the message"
+            },
+            {
+              "label": "The sender’s screenshot alone"
+            },
+            {
+              "label": "Official register reached separately"
+            }
+          ],
+          "help": [
+            "Use an independently verified official source."
+          ],
+          "feedback": {
+            "met": "A separately reached official register does not rely on the sender.",
+            "not_yet": "Use an independently verified official source."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué fuente es independiente?",
+          "scene": "Mensaje no solicitado trae su propia captura de «verificación oficial».",
+          "options": [
+            {
+              "label": "Logo del mensaje"
+            },
+            {
+              "label": "Solo captura de quien envía"
+            },
+            {
+              "label": "Registro oficial consultado aparte"
+            }
+          ],
+          "help": [
+            "Usa una fuente oficial verificada por tu cuenta."
+          ],
+          "feedback": {
+            "met": "Una lista oficial consultada aparte no depende del remitente.",
+            "not_yet": "Usa una fuente oficial verificada por tu cuenta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual fonte é independente?",
+          "scene": "Mensagem não solicitada traz sua própria imagem de “verificação oficial”.",
+          "options": [
+            {
+              "label": "Logo da mensagem"
+            },
+            {
+              "label": "Só imagem de quem envia"
+            },
+            {
+              "label": "Registro oficial consultado à parte"
+            }
+          ],
+          "help": [
+            "Use uma fonte oficial conferida por você."
+          ],
+          "feedback": {
+            "met": "Um lista oficial consultado à parte não depende do remetente.",
+            "not_yet": "Use uma fonte oficial conferida por você."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What mismatch needs resolving?",
+          "scene": "Register lists legal entity Alpha; offer requests payment to unrelated Beta.",
+          "options": [
+            {
+              "label": "Matching logo colors"
+            },
+            {
+              "label": "Different legal identities"
+            },
+            {
+              "label": "The promised return rate"
+            }
+          ],
+          "help": [
+            "Match the actual entity, not only branding."
+          ],
+          "feedback": {
+            "met": "Different legal identities prevent confirming this offer’s provider.",
+            "not_yet": "Match the actual entity, not only branding."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué diferencia debe resolverse?",
+          "scene": "Registro indica entidad Alfa; oferta pide pago a Beta sin relación.",
+          "options": [
+            {
+              "label": "Colores de logo iguales"
+            },
+            {
+              "label": "Identidades legales diferentes"
+            },
+            {
+              "label": "El rendimiento prometido"
+            }
+          ],
+          "help": [
+            "Compara la entidad real, no solo marca."
+          ],
+          "feedback": {
+            "met": "Identidades distintas impiden confirmar proveedor de esta oferta.",
+            "not_yet": "Compara la entidad real, no solo marca."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que diferença precisa ser resolvida?",
+          "scene": "Registro indica entidade Alfa; oferta pede pagamento a Beta sem relação.",
+          "options": [
+            {
+              "label": "Cores iguais do logo"
+            },
+            {
+              "label": "Nomes legais diferentes"
+            },
+            {
+              "label": "O retorno prometido"
+            }
+          ],
+          "help": [
+            "Compare a entidade real, não só a marca."
+          ],
+          "feedback": {
+            "met": "Nomes distintos não provam quem faz esta oferta.",
+            "not_yet": "Compare a entidade real, não só a marca."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What else must match?",
+          "scene": "A provider appears in a register for payments but offers an unrelated regulated activity.",
+          "options": [
+            {
+              "label": "Only appearing somewhere"
+            },
+            {
+              "label": "Only a similar company name"
+            },
+            {
+              "label": "Permission for the offered activity"
+            }
+          ],
+          "help": [
+            "Check the scope relevant to this offer."
+          ],
+          "feedback": {
+            "met": "Registration for one activity does not establish permission for another.",
+            "not_yet": "Check the scope relevant to this offer."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué más debe coincidir?",
+          "scene": "Proveedor aparece en registro de pagos pero ofrece otra actividad regulada.",
+          "options": [
+            {
+              "label": "Solo aparecer en algún registro"
+            },
+            {
+              "label": "Solo nombre de empresa similar"
+            },
+            {
+              "label": "Permiso para actividad ofrecida"
+            }
+          ],
+          "help": [
+            "Revisa alcance pertinente a esta oferta."
+          ],
+          "feedback": {
+            "met": "Registro de una actividad no establece permiso para otra.",
+            "not_yet": "Revisa alcance pertinente a esta oferta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que mais deve coincidir?",
+          "scene": "Provedor aparece em registro de pagamentos mas oferece outra atividade regulada.",
+          "options": [
+            {
+              "label": "Só aparecer em algum registro"
+            },
+            {
+              "label": "Só nome parecido da empresa"
+            },
+            {
+              "label": "Permissão para atividade oferecida"
+            }
+          ],
+          "help": [
+            "Confira o alcance relevante a esta oferta."
+          ],
+          "feedback": {
+            "met": "Registro de uma atividade não define permissão para outra.",
+            "not_yet": "Confira o alcance relevante a esta oferta."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Which contact should verify this offer?",
+          "scene": "The message phone differs from the independently verified register contact.",
+          "options": [
+            {
+              "label": "Only the message’s chat link"
+            },
+            {
+              "label": "Only the message’s phone"
+            },
+            {
+              "label": "Contact listed in the official register"
+            }
+          ],
+          "help": [
+            "Contact the genuine provider through the independently verified channel."
+          ],
+          "feedback": {
+            "met": "The verified contact helps detect impersonation of a real firm.",
+            "not_yet": "Contact the genuine provider through the independently verified channel."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué contacto debe verificar la oferta?",
+          "scene": "Teléfono del mensaje difiere del contacto verificado por lista oficial.",
+          "options": [
+            {
+              "label": "Solo enlace de chat del mensaje"
+            },
+            {
+              "label": "Solo teléfono del mensaje"
+            },
+            {
+              "label": "Contacto de la lista oficial"
+            }
+          ],
+          "help": [
+            "Contacta proveedor auténtico mediante canal verificado por tu cuenta."
+          ],
+          "feedback": {
+            "met": "Contacto verificado ayuda a detectar suplantación de empresa real.",
+            "not_yet": "Contacta proveedor auténtico mediante canal verificado por tu cuenta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que contato deve verificar a oferta?",
+          "scene": "Telefone da mensagem difere do contato conferido no lista oficial.",
+          "options": [
+            {
+              "label": "Só link de chat da mensagem"
+            },
+            {
+              "label": "Só telefone da mensagem"
+            },
+            {
+              "label": "Contato do lista oficial"
+            }
+          ],
+          "help": [
+            "Contate provedor real pelo canal verificado por conta própria."
+          ],
+          "feedback": {
+            "met": "Contato conferido ajuda a detectar cópia de empresa real.",
+            "not_yet": "Contate provedor real pelo canal verificado por conta própria."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Is this enough to proceed?",
+          "scene": "The brand matches, but legal identifier and activity permission remain unknown.",
+          "options": [
+            {
+              "label": "No, verify the missing details"
+            },
+            {
+              "label": "Yes, followers replace verification"
+            },
+            {
+              "label": "Yes, matching brand suffices"
+            }
+          ],
+          "help": [
+            "Complete identity and scope checks before relying on the offer."
+          ],
+          "feedback": {
+            "met": "Brand similarity does not settle identity or permitted activity.",
+            "not_yet": "Complete identity and scope checks before relying on the offer."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Esto basta para seguir?",
+          "scene": "Marca coincide, pero faltan código legal y permiso de actividad.",
+          "options": [
+            {
+              "label": "No, verificar datos faltantes"
+            },
+            {
+              "label": "Sí, seguidores sustituyen verificación"
+            },
+            {
+              "label": "Sí, basta misma marca"
+            }
+          ],
+          "help": [
+            "Completa revisión de identidad y alcance antes de confiar."
+          ],
+          "feedback": {
+            "met": "Marca similar no resuelve identidad ni actividad permitida.",
+            "not_yet": "Completa revisión de identidad y alcance antes de confiar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Isso basta para seguir?",
+          "scene": "Marca coincide, mas faltam código legal e permissão da atividade.",
+          "options": [
+            {
+              "label": "Não, verificar dados ausentes"
+            },
+            {
+              "label": "Sim, seguidores substituem verificação"
+            },
+            {
+              "label": "Sim, basta mesma marca"
+            }
+          ],
+          "help": [
+            "Complete conferência de identidade e alcance antes de confiar."
+          ],
+          "feedback": {
+            "met": "Marca parecida não resolve identidade nem serviço permitido.",
+            "not_yet": "Complete conferência de identidade e alcance antes de confiar."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.financial-landscape.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What needs checking here?",
+          "scene": "An app borrows a registered firm’s name; its website and contact differ.",
+          "options": [
+            {
+              "label": "Only the borrowed name"
+            },
+            {
+              "label": "Only app-store ratings"
+            },
+            {
+              "label": "Exact identity, scope and genuine contact"
+            }
+          ],
+          "help": [
+            "Verify this offer against independent official records."
+          ],
+          "feedback": {
+            "met": "A real firm’s name can be used by an impersonator.",
+            "not_yet": "Verify this offer against independent official records."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué revisar en esta app?",
+          "scene": "App usa nombre de empresa registrada; sitio y contacto difieren.",
+          "options": [
+            {
+              "label": "Solo nombre prestado"
+            },
+            {
+              "label": "Solo calificaciones de tienda"
+            },
+            {
+              "label": "Identidad exacta, alcance y contacto auténtico"
+            }
+          ],
+          "help": [
+            "Verifica esta oferta con registros oficiales independientes."
+          ],
+          "feedback": {
+            "met": "El nombre de empresa real puede usarse para suplantarla.",
+            "not_yet": "Verifica esta oferta con registros oficiales independientes."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que conferir neste app?",
+          "scene": "App usa nome de empresa registrada; site e contato diferem.",
+          "options": [
+            {
+              "label": "Só nome usado"
+            },
+            {
+              "label": "Só notas da loja"
+            },
+            {
+              "label": "Identidade exata, alcance e contato real"
+            }
+          ],
+          "help": [
+            "Verifique esta oferta com listas oficiais de fonte segura."
+          ],
+          "feedback": {
+            "met": "O nome de empresa real pode ser usado por impostor.",
+            "not_yet": "Verifique esta oferta com listas oficiais de fonte segura."
+          }
+        }
+      }
+    }
+  ]
+}

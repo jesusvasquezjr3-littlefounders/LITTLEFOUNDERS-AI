@@ -1,0 +1,719 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-investing-foundations-part-3",
+  "lesson_id": "fe-production-investing-foundations-12",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.investing-foundations.12"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Separate a regulated custody arrangement from a promise of guaranteed market returns.",
+  "title": {
+    "en-US": "Custody Protection",
+    "es-MX": "Custodia no garantiza rendimiento",
+    "pt-BR": "Custódia não garante rendimento"
+  },
+  "new_concepts": [
+    "finance.prod.investing-foundations.12"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Custody Protection\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Custodia no garantiza rendimiento\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Custódia não garante rendimento\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.investing-foundations.12",
+      "observable_action": "Separate a regulated custody arrangement from a promise of guaranteed market returns.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.accounts-records.09",
+      "prod.time-inflation.10"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Who holds an investment and whether its market value can fall are different questions.",
+    "misconception": "A regulated custodian guarantees that market investments cannot lose value.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.investing-foundations.12",
+        "context_id": "investing-foundations-12-example-01",
+        "supports_from": [],
+        "reasoning": "A verified custodian holds shares correctly. Their market price can still fall; custody and market returns are separate questions."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.investing-foundations.12",
+        "context_id": "investing-foundations-12-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Custody concerns holding assets, not guaranteeing their market performance."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.investing-foundations.12",
+        "context_id": "investing-foundations-12-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "A verified provider can hold investments with market risk."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.investing-foundations.12",
+        "context_id": "investing-foundations-12-practice-01",
+        "supports_from": [],
+        "reasoning": "Verified identity does not validate every performance claim."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.investing-foundations.12",
+        "context_id": "investing-foundations-12-practice-02",
+        "supports_from": [],
+        "reasoning": "Correct custody can coexist with a fall in market value."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.investing-foundations.12",
+        "context_id": "investing-foundations-12-practice-03",
+        "supports_from": [],
+        "reasoning": "An unspecified protection claim cannot establish coverage."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.investing-foundations.12",
+        "context_id": "investing-foundations-12-transfer-01",
+        "supports_from": [],
+        "reasoning": "Reliable custody does not remove the fund’s industry exposure."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.investing-foundations.12",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Who holds an investment and whether its market value can fall are different questions."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Quién guarda una inversión y si puede bajar de valor son preguntas distintas."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Quem guarda um investimento e se ele pode perder valor são perguntas diferentes."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Separate the protections",
+          "line": "A verified custodian holds shares correctly. Their market price can still fall; custody and market returns are separate questions."
+        },
+        "es-MX": {
+          "prompt": "Distingue las protecciones",
+          "line": "Un custodio verificado guarda correctamente acciones. Su precio puede bajar; custodia y rendimiento de mercado son preguntas distintas."
+        },
+        "pt-BR": {
+          "prompt": "Separe as proteções",
+          "line": "Um custodiante verificado guarda ações corretamente. Seu preço pode cair; custódia e rendimento de mercado são questões diferentes."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.12",
+      "copy": {
+        "en-US": {
+          "prompt": "What does custody describe?",
+          "scene": "An institution records and holds the learner’s securities. Their market prices fluctuate.",
+          "options": [
+            {
+              "label": "Who safeguards the holdings"
+            },
+            {
+              "label": "A guaranteed investment gain"
+            }
+          ],
+          "help": [
+            "Separate asset handling from price movements."
+          ],
+          "feedback": {
+            "met": "Custody concerns holding assets, not guaranteeing their market performance.",
+            "not_yet": "Separate asset handling from price movements."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué describe custodia?",
+          "scene": "Una institución registra y guarda los títulos. Sus precios de mercado fluctúan.",
+          "options": [
+            {
+              "label": "Quién resguarda las inversiones"
+            },
+            {
+              "label": "Una promesa de utilidad"
+            }
+          ],
+          "help": [
+            "Distingue el manejo de activos de sus precios."
+          ],
+          "feedback": {
+            "met": "La custodia trata del resguardo, no de garantizar rendimiento.",
+            "not_yet": "Distingue el manejo de activos de sus precios."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que descreve custódia?",
+          "scene": "Uma instituição registra e guarda os títulos. Seus preços de mercado oscilam.",
+          "options": [
+            {
+              "label": "Quem guarda os investimentos"
+            },
+            {
+              "label": "Um ganho garantido"
+            }
+          ],
+          "help": [
+            "Separe o manejo dos ativos de seus preços."
+          ],
+          "feedback": {
+            "met": "Custódia trata de guardar ativos, não garantir rendimento.",
+            "not_yet": "Separe o manejo dos ativos de seus preços."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.12",
+      "copy": {
+        "en-US": {
+          "prompt": "Does registration prove this?",
+          "scene": "A seller cites a provider’s registration as proof shares cannot fall.",
+          "options": [
+            {
+              "label": "No, registration does not fix prices"
+            },
+            {
+              "label": "Yes, registration guarantees gains"
+            }
+          ],
+          "help": [
+            "Check what the registration actually covers."
+          ],
+          "feedback": {
+            "met": "A verified provider can hold investments with market risk.",
+            "not_yet": "Check what the registration actually covers."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿El registro demuestra esto?",
+          "scene": "Un vendedor cita el registro de un proveedor como prueba de que las acciones no pueden bajar.",
+          "options": [
+            {
+              "label": "No, registrarse no fija precios"
+            },
+            {
+              "label": "Sí, el registro garantiza ganancias"
+            }
+          ],
+          "help": [
+            "Revisa qué cubre realmente el registro."
+          ],
+          "feedback": {
+            "met": "Un proveedor verificado puede guardar inversiones con riesgo de mercado.",
+            "not_yet": "Revisa qué cubre realmente el registro."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O registro comprova isso?",
+          "scene": "Um vendedor cita o registro do prestador como prova de que ações não podem cair.",
+          "options": [
+            {
+              "label": "Não, registro não fixa preços"
+            },
+            {
+              "label": "Sim, registro garante ganhos"
+            }
+          ],
+          "help": [
+            "Confira o que o registro realmente cobre."
+          ],
+          "feedback": {
+            "met": "Um prestador verificado pode guardar investimentos com risco de mercado.",
+            "not_yet": "Confira o que o registro realmente cobre."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.12",
+      "copy": {
+        "en-US": {
+          "prompt": "Which question remains?",
+          "scene": "The custodian’s identity has been independently verified. An offer promises unusually high guaranteed returns.",
+          "options": [
+            {
+              "label": "What supports the return claim"
+            },
+            {
+              "label": "Nothing, identity settles returns"
+            }
+          ],
+          "help": [
+            "Evaluate the specific promise separately."
+          ],
+          "feedback": {
+            "met": "Verified identity does not validate every performance claim.",
+            "not_yet": "Evaluate the specific promise separately."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué pregunta queda?",
+          "scene": "Verificaron independientemente al custodio. Una oferta promete rendimientos garantizados muy altos.",
+          "options": [
+            {
+              "label": "Qué respalda la promesa de rendimiento"
+            },
+            {
+              "label": "Nada, la identidad resuelve todo"
+            }
+          ],
+          "help": [
+            "Evalúa por separado la promesa específica."
+          ],
+          "feedback": {
+            "met": "Verificar identidad no valida todas las promesas de rendimiento.",
+            "not_yet": "Evalúa por separado la promesa específica."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual pergunta permanece?",
+          "scene": "Verificaram independentemente o custodiante. Uma oferta promete rendimentos garantidos muito altos.",
+          "options": [
+            {
+              "label": "O que sustenta a promessa de rendimento"
+            },
+            {
+              "label": "Nada, a identidade resolve tudo"
+            }
+          ],
+          "help": [
+            "Avalie separadamente a promessa específica."
+          ],
+          "feedback": {
+            "met": "Verificar identidade não valida todas as promessas de rendimento.",
+            "not_yet": "Avalie separadamente a promessa específica."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.12",
+      "copy": {
+        "en-US": {
+          "prompt": "Which event is market risk?",
+          "scene": "Securities remain correctly recorded, but buyers now offer less for them.",
+          "options": [
+            {
+              "label": "An automatically missing asset"
+            },
+            {
+              "label": "The lower market price"
+            }
+          ],
+          "help": [
+            "Do not infer missing assets from lower prices alone."
+          ],
+          "feedback": {
+            "met": "Correct custody can coexist with a fall in market value.",
+            "not_yet": "Do not infer missing assets from lower prices alone."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué evento es riesgo de mercado?",
+          "scene": "Los títulos siguen registrados correctamente, pero ahora ofrecen menos por ellos.",
+          "options": [
+            {
+              "label": "Un activo automáticamente desaparecido"
+            },
+            {
+              "label": "El precio de mercado menor"
+            }
+          ],
+          "help": [
+            "Un precio menor no demuestra por sí solo activos desaparecidos."
+          ],
+          "feedback": {
+            "met": "Una custodia correcta puede coexistir con menor valor de mercado.",
+            "not_yet": "Un precio menor no demuestra por sí solo activos desaparecidos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual evento é risco de mercado?",
+          "scene": "Os títulos continuam registrados corretamente, mas agora oferecem menos por eles.",
+          "options": [
+            {
+              "label": "Um ativo automaticamente desaparecido"
+            },
+            {
+              "label": "O preço de mercado menor"
+            }
+          ],
+          "help": [
+            "Preço menor sozinho não comprova ativos desaparecidos."
+          ],
+          "feedback": {
+            "met": "Custódia correta pode coexistir com menor valor de mercado.",
+            "not_yet": "Preço menor sozinho não comprova ativos desaparecidos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.12",
+      "copy": {
+        "en-US": {
+          "prompt": "Which protection needs checking?",
+          "scene": "An advertisement claims “protected.” It does not specify assets, events or limits.",
+          "options": [
+            {
+              "label": "Assume all losses are covered"
+            },
+            {
+              "label": "The exact protection’s scope"
+            }
+          ],
+          "help": [
+            "Ask what is covered, under which conditions."
+          ],
+          "feedback": {
+            "met": "An unspecified protection claim cannot establish coverage.",
+            "not_yet": "Ask what is covered, under which conditions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué protección verificas?",
+          "scene": "Un anuncio dice «protegido», sin especificar activos, eventos ni límites.",
+          "options": [
+            {
+              "label": "Suponer cubiertas todas las pérdidas"
+            },
+            {
+              "label": "El alcance exacto de la protección"
+            }
+          ],
+          "help": [
+            "Pregunta qué cubre y bajo qué condiciones."
+          ],
+          "feedback": {
+            "met": "Una protección sin especificar no establece cobertura.",
+            "not_yet": "Pregunta qué cubre y bajo qué condiciones."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual proteção conferir?",
+          "scene": "Um anúncio diz “protegido”, sem especificar ativos, eventos ou limites.",
+          "options": [
+            {
+              "label": "Supor cobertas todas as perdas"
+            },
+            {
+              "label": "O alcance exato da proteção"
+            }
+          ],
+          "help": [
+            "Pergunte o que cobre e sob quais condições."
+          ],
+          "feedback": {
+            "met": "Uma proteção não especificada não estabelece cobertura.",
+            "not_yet": "Pergunte o que cobre e sob quais condições."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.investing-foundations.12",
+      "copy": {
+        "en-US": {
+          "prompt": "Which conclusion fits?",
+          "scene": "A recognized institution safely holds a fund concentrated in a volatile industry.",
+          "options": [
+            {
+              "label": "Recognition guarantees the fund’s return"
+            },
+            {
+              "label": "The fund can still lose market value"
+            },
+            {
+              "label": "Custody removes industry risk"
+            }
+          ],
+          "help": [
+            "Evaluate both the institution and the assets held."
+          ],
+          "feedback": {
+            "met": "Reliable custody does not remove the fund’s industry exposure.",
+            "not_yet": "Evaluate both the institution and the assets held."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué conclusión es válida?",
+          "scene": "Una institución reconocida custodia un fondo concentrado en una industria volátil.",
+          "options": [
+            {
+              "label": "El reconocimiento garantiza rendimiento"
+            },
+            {
+              "label": "El fondo aún puede perder valor"
+            },
+            {
+              "label": "La custodia elimina riesgo sectorial"
+            }
+          ],
+          "help": [
+            "Evalúa la institución y los activos que guarda."
+          ],
+          "feedback": {
+            "met": "Una custodia confiable no elimina la exposición del fondo.",
+            "not_yet": "Evalúa la institución y los activos que guarda."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual conclusão é válida?",
+          "scene": "Uma instituição reconhecida guarda um fundo concentrado num setor volátil.",
+          "options": [
+            {
+              "label": "O reconhecimento garante rendimento"
+            },
+            {
+              "label": "O fundo ainda pode perder valor"
+            },
+            {
+              "label": "A custódia elimina risco setorial"
+            }
+          ],
+          "help": [
+            "Avalie a instituição e os ativos que guarda."
+          ],
+          "feedback": {
+            "met": "Custódia confiável não elimina a exposição do fundo.",
+            "not_yet": "Avalie a instituição e os ativos que guarda."
+          }
+        }
+      }
+    }
+  ]
+}

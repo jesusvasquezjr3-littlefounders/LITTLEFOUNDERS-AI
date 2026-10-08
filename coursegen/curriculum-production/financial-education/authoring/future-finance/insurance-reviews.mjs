@@ -1,0 +1,86 @@
+import {q} from './helpers.mjs';
+import {numeric,input,subtract} from '../factory.mjs';
+const id=n=>`fe-production-insurance-risk-${String(n).padStart(2,'0')}`;
+const bridge='fe-production-saving-resilience-02';
+const mul=(a,b)=>({op:'multiply',args:[a,b]});
+export const insuranceReviews=[{
+ id:'fe-production-insurance-risk-review-1',primary:id(1),
+ title:'Protection Planning|Relaciona pérdida y protección|Ligue perda e proteção',
+ relevance:'Retrieve risk severity, protection tools, policy roles and retained costs under fictional terms.|Recupera gravedad, herramientas de protección, papeles de póliza y costos propios bajo términos ficticios.|Retome gravidade, ferramentas de proteção, papéis da apólice e custos próprios sob termos fictícios.',
+ outcome:'Distinguish severity, match risk tools and roles, calculate retained claim cost and essential interruption needs.',
+ misconception:'Rare losses are harmless, premiums cover every loss, or deductibles and caps are irrelevant.',
+ skills:[id(1),id(2),id(3),id(4),id(5),id(6),bridge,id(1)],segments:[
+ q('practice-01','practice',[
+ 'Which loss threatens this household most?|Frequent minor fixes fit savings; rare destruction would exceed available resources.|The rare destruction~Always the most frequent~Both automatically equal|The destruction exceeds capacity even though it is less frequent.|Compare financial severity with available resources.',
+ '¿Qué pérdida amenaza más a este hogar?|Arreglos menores frecuentes caben en ahorro; destrucción rara superaría recursos disponibles.|Destrucción rara~Siempre la más frecuente~Ambas automáticamente iguales|Destrucción supera capacidad aunque sea menos frecuente.|Compara gravedad financiera con recursos disponibles.',
+ 'Que perda mais ameaça esta família?|Reparos menores frequentes cabem na poupança; destruição rara superaria recursos disponíveis.|Destruição rara~Sempre a mais frequente~Ambas automaticamente iguais|Destruição supera capacidade mesmo sendo menos comum.|Compare gravidade financeira com recursos disponíveis.']),
+ q('practice-02','practice',[
+ 'Which mix fits the facts?|Maintenance reduces faults; savings cover small repairs; a policy covers specified severe losses.|Use complementary tools~Insurance replaces maintenance~Savings prevent every fault|Each tool addresses a different part of the risk.|Match prevention, retained costs and covered losses separately.',
+ '¿Qué mezcla corresponde a hechos?|Mantenimiento reduce fallas; ahorro cubre arreglos pequeños; póliza cubre pérdidas graves concretas.|Usar herramientas complementarias~Seguro sustituye mantenimiento~Ahorro evita toda falla|Cada herramienta atiende parte distinta del riesgo.|Relaciona prevención, costos propios y pérdidas cubiertas por separado.',
+ 'Que mistura cabe aos fatos?|Manutenção reduz falhas; poupança cobre reparos pequenos; apólice cobre perdas graves específicas.|Usar ferramentas que se complementam~Seguro substitui manutenção~Poupança evita toda falha|Cada ferramenta atende parte distinta do risco.|Ligue prevenção, custos próprios e perdas cobertas em separado.']),
+ q('practice-03','practice',[
+ 'Who receives the stated benefit?|Fictional policy: Lee contracts; Jo is insured; Noor is named beneficiary for Jo’s covered death.|Noor~Lee automatically~Jo’s employer automatically|Noor is the named beneficiary under these terms.|Separate the contracting person from the benefit recipient.',
+ '¿Quién recibe beneficio indicado?|Póliza ficticia: Lee contrata; Jo es asegurado; Noor es beneficiaria por fallecimiento cubierto de Jo.|Noor~Lee automáticamente~Empleador de Jo automáticamente|Noor es beneficiaria nombrada bajo estos términos.|Separa contratante de quien recibe beneficio.',
+ 'Quem recebe benefício dado?|Apólice fictícia: Lee contrata; Jo é segurado; Noor é beneficiária por morte coberta de Jo.|Noor~Lee automaticamente~Empregador de Jo automaticamente|Noor é beneficiária nomeada sob esses termos.|Separe titular de quem recebe benefício.']),
+ q('practice-04','practice',[
+ 'Which cost buys coverage?|Fictional contract charges a regular premium and a separate deductible per covered claim.|The premium~The deductible~Both are refunds|The premium is the contract’s price of coverage.|Distinguish buying coverage from retaining part of a claim.',
+ '¿Qué costo compra cobertura?|Contrato ficticio cobra prima regular y deducible separado por reclamo cubierto.|Prima~Deducible~Ambos son reembolsos|Prima es precio contractual de cobertura.|Distingue comprar cobertura de asumir parte del reclamo.',
+ 'Que custo compra cobertura?|Contrato fictício cobra prêmio regular e franquia separada por pedido coberto.|Prêmio~Franquia~Ambos são devoluções|Prêmio é preço contratual da cobertura.|Separe comprar cobertura de assumir parte do pedido.']),
+ numeric(q('practice-05','practice',[
+ 'What loss remains yours?|Fictional covered loss 1200; deductible 100; insurer pays loss minus deductible, capped at 800; no other costs.|400~100~1100|The payout cap leaves four hundred of loss unpaid.|Apply the insurer cap after deducting, then find the unpaid loss.',
+ '¿Qué pérdida queda a tu cargo?|Pérdida cubierta ficticia 1200; deducible 100; seguro paga pérdida menos deducible, con tope 800; sin otros costos.|400~100~1100|Tope de pago deja cuatrocientos de pérdida sin pagar.|Aplica tope tras deducir y calcula pérdida no pagada.',
+ 'Que perda fica com você?|Perda coberta fictícia 1200; franquia 100; seguro paga perda menos franquia, com teto 800; sem outros custos.|400~100~1100|Teto de pagamento deixa quatrocentos de perda sem pagar.|Aplique teto após deduzir e calcule perda não paga.']),[1200,100,800],subtract(input(0),{op:'min',args:[subtract(input(0),input(1)),input(2)]})),
+ q('practice-06','practice',[
+ 'Does the exclusion match this loss?|Fictional policy excludes normal wear; inspection confirms normal wear caused the failure.|Yes, wear is excluded~No, any failure qualifies~No, premium removes exclusions|The established cause matches the explicit exclusion.|Use the actual cause and the applicable contract wording.',
+ '¿Exclusión coincide con pérdida?|Póliza ficticia excluye desgaste normal; inspección confirma que desgaste normal causó falla.|Sí, desgaste está excluido~No, toda falla cumple~No, prima elimina exclusiones|Causa establecida coincide con exclusión expresa.|Usa causa real y texto contractual aplicable.',
+ 'Exclusão coincide com perda?|Apólice fictícia exclui desgaste normal; inspeção confirma que desgaste normal causou falha.|Sim, desgaste está excluído~Não, toda falha atende~Não, prêmio elimina exclusões|Causa estabelecida coincide com exclusão expressa.|Use causa real e texto contratual aplicável.']),
+ numeric(q('practice-07','practice',[
+ 'What essential reserve gap remains?|Monthly essentials 500; interruption 3 months; confirmed total support 200; no other resources.|1300~1500~300|The period’s essentials exceed confirmed support by thirteen hundred.|Multiply essentials by duration, then subtract confirmed total support.',
+ '¿Qué faltante esencial queda?|Esenciales mensuales 500; pausa 3 meses; apoyo total confirmado 200; sin otros recursos.|1300~1500~300|Esenciales del periodo superan apoyo confirmado por mil trescientos.|Multiplica esenciales por duración y resta apoyo total confirmado.',
+ 'Que falta essencial resta?|Essenciais mensais 500; pausa 3 meses; apoio total confirmado 200; sem outros recursos.|1300~1500~300|Essenciais do período superam apoio confirmado em mil e trezentos.|Multiplique essenciais pela duração e subtraia apoio total confirmado.']),[500,3,200],subtract(mul(input(0),input(1)),input(2))),
+ q('transfer-01','transfer',[
+ 'Which risk deserves severe-loss attention?|Common small cancellations fit the budget; a rare long income interruption exceeds the reserve.|The long interruption~Only common cancellations~Neither because one is rare|The long interruption overwhelms the stated financial buffer.|Use both likelihood and ability to absorb the consequence.',
+ '¿Qué riesgo merece atención por pérdida grave?|Cancelaciones pequeñas comunes caben en presupuesto; pausa larga rara de ingreso supera reserva.|Pausa larga~Solo cancelaciones comunes~Ninguno porque uno es raro|Pausa larga supera colchón financiero indicado.|Usa probabilidad y capacidad de absorber consecuencia.',
+ 'Que risco merece atenção por perda grave?|Cancelamentos pequenos comuns cabem no orçamento; pausa longa rara de renda supera reserva.|Pausa longa~Só cancelamentos comuns~Nenhum pois um é raro|Pausa longa supera reserva financeira dada.|Use probabilidade e capacidade de absorver consequência.']),
+ ]
+},{
+ id:'fe-production-insurance-risk-review-2',primary:id(7),
+ title:'Protection Checks|Revisa protección antes de usarla|Confira proteção antes de contar nela',
+ relevance:'Retrieve comparable terms, waiting rules, claim evidence, overlap and changing needs.|Recupera términos comparables, espera, evidencia de reclamos, solapamiento y necesidades cambiantes.|Retome termos comparáveis, carência, provas de pedidos, sobreposição e necessidades que mudam.',
+ outcome:'Compare relevant protection, apply timing and claim rules, reassess overlap and needs, and distinguish projections from benefits.',
+ misconception:'Price settles equivalence, reporting changes the event date, overlap is always waste, and projections are contractual benefits.',
+ skills:[id(7),id(8),id(9),id(10),id(11),id(12),bridge,id(7)],segments:[
+ q('practice-01','practice',[
+ 'Are these protections equivalent as shown?|Premiums match, but A excludes the relevant event while B covers it.|No, covered events differ~Yes, equal price proves it~Yes, ignore the event|Equal prices do not make different coverage equivalent.|Compare the actual protection before comparing price.',
+ '¿Protecciones son equivalentes según datos?|Primas coinciden, pero A excluye evento relevante y B lo cubre.|No, eventos cubiertos difieren~Sí, precio igual lo prueba~Sí, ignorar evento|Precios iguales no vuelven equivalentes coberturas distintas.|Compara protección real antes de comparar precio.',
+ 'Proteções são iguais pelos dados?|Prêmios coincidem, mas A exclui evento relevante e B o cobre.|Não, eventos cobertos diferem~Sim, preço igual prova isso~Sim, ignorar evento|Preços iguais não tornam iguais coberturas distintas.|Compare proteção real antes de comparar preço.']),
+ q('practice-02','practice',[
+ 'Does this event pass the waiting rule?|Fictional terms cover events from day 15 inclusive; event occurs day 14; report day 16.|No~Yes, report is later~Yes, payment was earlier|The event happened before the first covered day.|Use the event date, not the reporting date.',
+ '¿Evento supera regla de espera?|Términos ficticios cubren eventos desde día 15 inclusive; evento ocurre día 14 y se reporta día 16.|No~Sí, reporte es posterior~Sí, pago fue anterior|Evento ocurrió antes del primer día cubierto.|Usa fecha del evento, no fecha del reporte.',
+ 'Evento passa regra de carência?|Termos fictícios cobrem eventos desde dia 15 inclusive; evento ocorre dia 14 e é informado dia 16.|Não~Sim, aviso é depois~Sim, pagamento foi antes|Evento ocorreu antes do primeiro dia coberto.|Use data do evento, não data do aviso.']),
+ q('practice-03','practice',[
+ 'Which records preserve submission?|Fictional instructions require loss photos and invoice; the portal supplies a receipt reference.|Photos, invoice, submitted copy and reference~Only memory of the call~Only an advertisement|These records preserve the loss evidence and submission trail.|Keep both supporting evidence and proof of submission.',
+ '¿Qué registros preservan entrega?|Instrucciones ficticias piden fotos de pérdida y factura; portal entrega folio de recepción.|Fotos, factura, copia entregada y folio~Solo recuerdo de llamada~Solo anuncio|Registros preservan evidencia de pérdida y entrega.|Guarda evidencia de respaldo y prueba de entrega.',
+ 'Que registros preservam envio?|Instruções fictícias pedem fotos da perda e nota; portal fornece protocolo de recebimento.|Fotos, nota, cópia enviada e protocolo~Só memória da ligação~Só anúncio|Registros preservam prova da perda e do envio.|Guarde provas de apoio e prova de envio.']),
+ q('practice-04','practice',[
+ 'Can overlap be dismissed?|A pays covered repairs; B overlaps repairs but adds transport benefits under different limits.|No, compare combined terms~Yes, all overlap is useless~Yes, every claim doubles|The added benefit and coordination terms may change the combined value.|Compare actual benefits and payment rules rather than labels.',
+ '¿Puede descartarse solapamiento automáticamente?|A paga arreglos cubiertos; B solapa arreglos pero agrega transporte bajo límites distintos.|No, comparar términos combinados~Sí, todo solapamiento es inútil~Sí, todo reclamo se duplica|Beneficio extra y coordinación pueden cambiar valor combinado.|Compara beneficios reales y reglas de pago, no etiquetas.',
+ 'Pode descartar sobreposição automaticamente?|A paga reparos cobertos; B sobrepõe reparos mas soma transporte sob limites distintos.|Não, comparar termos combinados~Sim, toda sobreposição é inútil~Sim, todo pedido dobra|Benefício extra e coordenação podem mudar valor combinado.|Compare benefícios reais e regras de pagamento, não nomes.']),
+ q('practice-05','practice',[
+ 'What should be reassessed?|A care obligation ends while employment-linked coverage also ends.|Needs, resources and remaining protection~Only the old premium~Assume no protection is needed|Both the obligation and available protection changed.|Recalculate the current gap instead of keeping old assumptions.',
+ '¿Qué debe reevaluarse?|Obligación de cuidados termina mientras también termina cobertura laboral.|Necesidades, recursos y protección restante~Solo prima anterior~Suponer que no hace falta protección|Cambiaron obligación y protección disponible.|Recalcula faltante actual sin conservar supuestos anteriores.',
+ 'O que deve ser reavaliado?|Dever de cuidado acaba enquanto cobertura do emprego também acaba.|Necessidades, recursos e proteção restante~Só prêmio antigo~Supor que não precisa de proteção|Mudaram dever e proteção disponível.|Recalcule falta atual sem manter suposições antigas.']),
+ q('practice-06','practice',[
+ 'Which number remains assumption-dependent?|Fictional offer separates defined death cover from account growth projected using future returns.|Projected account growth~The named covered event~Every stated condition|Projected growth depends on assumptions about future returns.|Separate investment estimates from the contractual protection terms.',
+ '¿Qué cifra sigue dependiendo de supuestos?|Oferta ficticia separa cobertura definida por fallecimiento de crecimiento de cuenta proyectado usando rendimientos futuros.|Crecimiento proyectado de cuenta~Evento cubierto nombrado~Toda condición indicada|Crecimiento proyectado depende de supuestos de rendimiento futuro.|Separa estimaciones de inversión de términos contractuales de protección.',
+ 'Que valor segue dependendo de hipóteses?|Oferta fictícia separa cobertura definida por morte de crescimento da conta projetado usando rendimentos futuros.|Crescimento projetado da conta~Evento coberto nomeado~Toda condição dada|Crescimento projetado depende de hipóteses de rendimento futuro.|Separe estimativas de investimento de termos contratuais da proteção.']),
+ numeric(q('practice-07','practice',[
+ 'What interruption funding is missing?|Monthly essentials 700; interruption 2 months; confirmed total resources 300; no other resources.|1100~1400~400|The essential period total exceeds confirmed resources by eleven hundred.|Multiply monthly essentials by duration, then subtract total resources.',
+ '¿Qué fondos faltan para pausa?|Esenciales mensuales 700; pausa 2 meses; recursos totales confirmados 300; sin otros recursos.|1100~1400~400|Total esencial del periodo supera recursos confirmados por mil cien.|Multiplica esenciales mensuales por duración y resta recursos totales.',
+ 'Que verba falta para pausa?|Essenciais mensais 700; pausa 2 meses; recursos totais confirmados 300; sem outros recursos.|1100~1400~400|Total essencial do período supera recursos confirmados em mil e cem.|Multiplique essenciais mensais pela duração e subtraia recursos totais.']),[700,2,300],subtract(mul(input(0),input(1)),input(2))),
+ q('transfer-01','transfer',[
+ 'What blocks a fair premium comparison?|Two quotes match events and period, but one omits its deductible and limit.|Missing retained-cost and limit terms~Only different names~Nothing because periods match|Missing deductible and limit terms prevent confirming equivalent protection.|Align all relevant terms before judging the price difference.',
+ '¿Qué impide comparar primas justamente?|Cotizaciones igualan eventos y periodo, pero una omite deducible y límite.|Faltan costo propio y límite~Solo nombres distintos~Nada porque periodos coinciden|Faltan deducible y límite para confirmar protección equivalente.|Alinea términos relevantes antes de juzgar diferencia de precio.',
+ 'O que impede comparar prêmios de modo justo?|Cotações igualam eventos e período, mas uma omite franquia e limite.|Faltam custo próprio e limite~Só nomes distintos~Nada pois períodos coincidem|Faltam franquia e limite para confirmar proteção igual.|Alinhe termos relevantes antes de julgar diferença de preço.']),
+ ]
+}];

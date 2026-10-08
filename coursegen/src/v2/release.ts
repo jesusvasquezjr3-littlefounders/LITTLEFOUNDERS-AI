@@ -58,7 +58,7 @@ export interface V2ReleaseDeps {
   /** Core's contract and interactive-behaviour check over a documents file. */
   coreCheck?: (documentsFile: string) => { ok: boolean; output: string };
   /** Forge's course verification (writes the attestation 0209 reads for a published lesson). */
-  verifyCourse?: (courseSlug: string) => { ok: boolean; output: string };
+  verifyCourse?: (courseSlug: string) => { ok: boolean; output: string } | Promise<{ ok: boolean; output: string }>;
   /** The service-role RPC to Vault. */
   rpc?: (fn: string, body: Record<string, unknown>) => Promise<{ ok: boolean; status: number; body: unknown }>;
 }
@@ -173,6 +173,8 @@ export async function releaseV2Lessons(plans: V2LessonPlan[], options: {
   requireNarrationAudio?: boolean;
   /** The owner confirms the deployed Core already serves the Horizonte segment types; a Vault write refuses them otherwise. */
   coreServesHorizonte?: boolean;
+  /** Deployed Core must accept the new strict personal-ledger and per-choice feedback fields. */
+  coreServesInstructionalFields?: boolean;
   /** Block a plan that names no teaching_role at all (gate 14, lessonDesign.ts). */
   requireLessonDesign?: boolean;
 }): Promise<V2ReleaseResult> {
@@ -210,6 +212,13 @@ export async function releaseV2Lessons(plans: V2LessonPlan[], options: {
     .filter((record) => record.items.length > 0);
   if (options.dryRun) return { ok: true, stage: 'dry-run', documents, calls, problems: [], stage3, ...flagged };
 
+  const instructionalFields = plans.some(plan => plan.segments.some(segment =>
+    (segment.type === 'money.running-ledger.v2' && ('personal' in segment.payload || 'currency' in segment.payload))
+    || Object.values(segment.copy).some(copy => copy.feedback && typeof copy.feedback === 'object' && 'choice_hints' in copy.feedback)));
+  if (instructionalFields && !options.coreServesInstructionalFields) {
+    return { ok: false, stage: 'core-check', documents, calls, problems: ['Deploy Core support for personal ledgers and choice_hints first, then pass --core-has-instructional-fields. A local parser check cannot attest the deployed strict schema.'] };
+  }
+
   const horizonte = horizonteTypesIn(documents);
   if (horizonte.length && !options.coreServesHorizonte) {
     return { ok: false, stage: 'core-check', documents, calls, problems: [`${horizonte.join(', ')}: the local Core check cannot tell whether the deployed Core serves these Horizonte types, and an older Core answers 422 UNSUPPORTED_LESSON for a version that holds one. Deploy Core first, then pass --core-has-horizonte`] };
@@ -220,7 +229,7 @@ export async function releaseV2Lessons(plans: V2LessonPlan[], options: {
   // so all current pointers must exist before verify:course can attest the
   // complete authored corpus and its final watermark.
   if (!options.initialCourse) {
-    const verified = (options.deps?.verifyCourse ?? defaultVerifyCourse)(options.courseSlug);
+    const verified = await (options.deps?.verifyCourse ?? defaultVerifyCourse)(options.courseSlug);
     if (!verified.ok) return { ok: false, stage: 'verify', documents, calls, problems: [verified.output.trim() || 'verify:course failed'] };
   }
   if (!options.deps?.rpc) return { ok: false, stage: 'publish', documents, calls, problems: ['no Vault RPC configured for the publish stage'] };
@@ -248,7 +257,7 @@ export async function releaseV2Lessons(plans: V2LessonPlan[], options: {
     }
   }
   if (options.initialCourse) {
-    const verified = (options.deps?.verifyCourse ?? defaultVerifyCourse)(options.courseSlug);
+    const verified = await (options.deps?.verifyCourse ?? defaultVerifyCourse)(options.courseSlug);
     if (!verified.ok) return { ok: false, stage: 'verify', documents, calls, problems: [verified.output.trim() || 'verify:course failed'], pendingApproval, stage3, ...flagged };
   }
   return { ok: true, stage: 'done', documents, calls, problems: [], pendingApproval, stage3, ...flagged };

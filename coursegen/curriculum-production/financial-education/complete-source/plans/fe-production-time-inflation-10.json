@@ -1,0 +1,779 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-time-inflation-part-2",
+  "lesson_id": "fe-production-time-inflation-10",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.time-inflation.10"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Identify why a constant-return projection is a model rather than a guaranteed outcome.",
+  "title": {
+    "en-US": "Projection assumptions",
+    "es-MX": "Una proyección depende de supuestos",
+    "pt-BR": "Um modelo depende do que supõe"
+  },
+  "new_concepts": [
+    "finance.prod.time-inflation.10"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"A projection depends on assumptions\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Una proyección depende de supuestos\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Um modelo depende do que supõe\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.time-inflation.10",
+      "observable_action": "Identify why a constant-return projection is a model rather than a guaranteed outcome.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "time.compound",
+      "prod.time-inflation.05"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Use modeled outcomes to explore possibilities without treating them as promises.",
+    "misconception": "Reading a constant-return illustration as evidence that future returns, contributions and prices will follow that path.",
+    "numeracy_support": "Every quantity and assumption needed to decide is visible in the current scenario. Examples explain the relationship before independent application.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.time-inflation.10",
+        "context_id": "fe-production-time-inflation-10-example-01",
+        "supports_from": [],
+        "reasoning": "A projection answers what happens if assumptions hold. Changed returns, deposits, fees or prices can change the outcome."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.time-inflation.10",
+        "context_id": "fe-production-time-inflation-10-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The curve follows an input assumption, not evidence of future performance."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.time-inflation.10",
+        "context_id": "fe-production-time-inflation-10-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Excluded costs must be included before interpreting a net result."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.time-inflation.10",
+        "context_id": "fe-production-time-inflation-10-practice-03",
+        "supports_from": [],
+        "reasoning": "A forecast must change when its funding assumptions change."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.time-inflation.10",
+        "context_id": "fe-production-time-inflation-10-practice-04",
+        "supports_from": [],
+        "reasoning": "Historical results do not prove the same sequence will recur."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.time-inflation.10",
+        "context_id": "fe-production-time-inflation-10-practice-05",
+        "supports_from": [],
+        "reasoning": "Alternative assumptions expose sensitivity without predicting the actual future."
+      },
+      {
+        "segment_id": "transfer-06",
+        "skill_id": "prod.time-inflation.10",
+        "context_id": "fe-production-time-inflation-10-transfer-06",
+        "supports_from": [],
+        "reasoning": "A precise printed number can still depend on uncertain assumptions."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.time-inflation.10",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Use modeled outcomes to explore possibilities without treating them as promises."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Usa resultados modelados para explorar posibilidades sin tratarlos como promesas."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Use um modelo para ver o que pode ocorrer, sem tomar isso como promessa."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Follow the evidence",
+          "line": "A projection answers what happens if assumptions hold. Changed returns, deposits, fees or prices can change the outcome."
+        },
+        "es-MX": {
+          "prompt": "Sigue las pruebas",
+          "line": "Una proyección muestra qué ocurre si se cumplen supuestos. Cambiar rendimientos, depósitos, cargos o precios puede cambiar el resultado."
+        },
+        "pt-BR": {
+          "prompt": "Siga as provas",
+          "line": "Um modelo mostra o que ocorre se tudo seguir seu plano. Ganhos, aportes, custos ou preços podem mudar."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.time-inflation.10",
+      "copy": {
+        "en-US": {
+          "prompt": "What does the curve establish?",
+          "scene": "A toy model assumes the same positive return every year.",
+          "options": [
+            {
+              "label": "An outcome under that assumption"
+            },
+            {
+              "label": "A promise of actual yearly returns"
+            },
+            {
+              "label": "Proof that losses cannot occur"
+            }
+          ],
+          "help": [
+            "Separate a chosen rate from an observed or guaranteed result."
+          ],
+          "feedback": {
+            "met": "The curve follows an input assumption, not evidence of future performance.",
+            "not_yet": "Separate a chosen rate from an observed or guaranteed result."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué establece la curva?",
+          "scene": "Un modelo ficticio supone el mismo rendimiento positivo cada año.",
+          "options": [
+            {
+              "label": "Un resultado bajo ese supuesto"
+            },
+            {
+              "label": "Promesa de rendimientos anuales reales"
+            },
+            {
+              "label": "Prueba de que no existen pérdidas"
+            }
+          ],
+          "help": [
+            "Separa tasa elegida de resultado observado o garantizado."
+          ],
+          "feedback": {
+            "met": "La curva sigue un supuesto, no evidencia de rendimiento futuro.",
+            "not_yet": "Separa tasa elegida de resultado observado o garantizado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que a curva mostra?",
+          "scene": "Um modelo fictício supõe o mesmo retorno positivo todo ano.",
+          "options": [
+            {
+              "label": "O que ocorre com essa regra"
+            },
+            {
+              "label": "Promessa de retornos anuais reais"
+            },
+            {
+              "label": "Prova de que não há perdas"
+            }
+          ],
+          "help": [
+            "Uma taxa posta no modelo não garante ganhos reais."
+          ],
+          "feedback": {
+            "met": "A curva segue uma regra; não prova ganhos futuros.",
+            "not_yet": "Uma taxa posta no modelo não garante ganhos reais."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.time-inflation.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Can it describe the actual net result?",
+          "scene": "A projection excludes fees; the actual arrangement charges fees.",
+          "options": [
+            {
+              "label": "Not without including those fees"
+            },
+            {
+              "label": "Fees never change outcomes"
+            },
+            {
+              "label": "A smooth curve includes everything"
+            }
+          ],
+          "help": [
+            "Identify which actual costs are missing from the model."
+          ],
+          "feedback": {
+            "met": "Excluded costs must be included before interpreting a net result.",
+            "not_yet": "Identify which actual costs are missing from the model."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Describe el resultado neto real?",
+          "scene": "Una proyección excluye cargos; el acuerdo real sí los cobra.",
+          "options": [
+            {
+              "label": "No sin incluir esos cargos"
+            },
+            {
+              "label": "Sí, cargos nunca cambian resultados"
+            },
+            {
+              "label": "Sí, una curva suave incluye todo"
+            }
+          ],
+          "help": [
+            "Identifica costos reales que faltan en el modelo."
+          ],
+          "feedback": {
+            "met": "Incluye costos omitidos antes de interpretar un resultado neto.",
+            "not_yet": "Identifica costos reales que faltan en el modelo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Mostra quanto sobra de fato?",
+          "scene": "Uma projeção exclui tarifas; o acordo real cobra tarifas.",
+          "options": [
+            {
+              "label": "Não sem incluir essas tarifas"
+            },
+            {
+              "label": "Sim, tarifas nunca mudam resultados"
+            },
+            {
+              "label": "Sim, uma curva suave inclui tudo"
+            }
+          ],
+          "help": [
+            "Veja quais custos reais não estão no modelo."
+          ],
+          "feedback": {
+            "met": "Some custos que faltam antes de ver quanto sobra.",
+            "not_yet": "Veja quais custos reais não estão no modelo."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.time-inflation.10",
+      "copy": {
+        "en-US": {
+          "prompt": "What should change in the projection?",
+          "scene": "The original forecast assumed monthly deposits; deposits stopped.",
+          "options": [
+            {
+              "label": "Replace missed deposits with imaginary returns"
+            },
+            {
+              "label": "Update the contribution assumptions"
+            },
+            {
+              "label": "Keep counting the missed deposits"
+            }
+          ],
+          "help": [
+            "Model actual planned inputs rather than wishful ones."
+          ],
+          "feedback": {
+            "met": "A forecast must change when its funding assumptions change.",
+            "not_yet": "Model actual planned inputs rather than wishful ones."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe cambiar en la proyección?",
+          "scene": "El pronóstico suponía depósitos mensuales; dejaron de hacerse.",
+          "options": [
+            {
+              "label": "Sustituir depósitos por rendimientos imaginarios"
+            },
+            {
+              "label": "Actualizar supuestos de aportaciones"
+            },
+            {
+              "label": "Seguir contando depósitos omitidos"
+            }
+          ],
+          "help": [
+            "Modela entradas planeadas reales, no deseos."
+          ],
+          "feedback": {
+            "met": "El pronóstico debe cambiar si cambian supuestos de aportaciones.",
+            "not_yet": "Modela entradas planeadas reales, no deseos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que deve mudar na projeção?",
+          "scene": "A previsão supunha depósitos mensais; eles pararam.",
+          "options": [
+            {
+              "label": "Trocar depósitos por retornos imaginários"
+            },
+            {
+              "label": "Mudar os aportes do plano"
+            },
+            {
+              "label": "Continuar contando depósitos não feitos"
+            }
+          ],
+          "help": [
+            "Use no plano o dinheiro que pode de fato entrar."
+          ],
+          "feedback": {
+            "met": "Mude o plano se os aportes mudaram.",
+            "not_yet": "Use no plano o dinheiro que pode de fato entrar."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.time-inflation.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Does that establish future certainty?",
+          "scene": "A seller copies past returns into every future year.",
+          "options": [
+            {
+              "label": "Forecasts cannot include uncertainty"
+            },
+            {
+              "label": "Repetition makes it guaranteed"
+            },
+            {
+              "label": "Past results do not establish that path"
+            }
+          ],
+          "help": [
+            "Ask which future assumptions are being made."
+          ],
+          "feedback": {
+            "met": "Historical results do not prove the same sequence will recur.",
+            "not_yet": "Ask which future assumptions are being made."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Eso establece certeza futura?",
+          "scene": "Un vendedor copia rendimientos pasados en cada año futuro.",
+          "options": [
+            {
+              "label": "Sí, pronósticos no admiten incertidumbre"
+            },
+            {
+              "label": "Sí, repetirlo lo garantiza"
+            },
+            {
+              "label": "No, el pasado no demuestra esa trayectoria"
+            }
+          ],
+          "help": [
+            "Pregunta qué supuestos futuros están usando."
+          ],
+          "feedback": {
+            "met": "Resultados históricos no prueban que se repita la misma secuencia.",
+            "not_yet": "Pregunta qué supuestos futuros están usando."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Isso torna certo o futuro?",
+          "scene": "Alguém copia ganhos passados em cada ano futuro.",
+          "options": [
+            {
+              "label": "Sim, o futuro de um plano é certo"
+            },
+            {
+              "label": "Sim, repetir torna garantido"
+            },
+            {
+              "label": "Não, o passado não prova esse rumo"
+            }
+          ],
+          "help": [
+            "Pergunte o que supõem sobre o futuro."
+          ],
+          "feedback": {
+            "met": "Ganhos passados não provam que vão se repetir.",
+            "not_yet": "Pergunte o que supõem sobre o futuro."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.time-inflation.10",
+      "copy": {
+        "en-US": {
+          "prompt": "What becomes clear?",
+          "scene": "The same goal is modeled with lower returns and unchanged contributions.",
+          "options": [
+            {
+              "label": "The exact return that will occur"
+            },
+            {
+              "label": "A way to eliminate all uncertainty"
+            },
+            {
+              "label": "The goal’s dependence on returns"
+            }
+          ],
+          "help": [
+            "Change an assumption to examine its effect, not certify it."
+          ],
+          "feedback": {
+            "met": "Alternative assumptions expose sensitivity without predicting the actual future.",
+            "not_yet": "Change an assumption to examine its effect, not certify it."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué revela un escenario de menor rendimiento?",
+          "scene": "Misma meta con rendimientos menores y aportaciones iguales.",
+          "options": [
+            {
+              "label": "El rendimiento exacto que ocurrirá"
+            },
+            {
+              "label": "Cómo eliminar toda incertidumbre"
+            },
+            {
+              "label": "Cuánto depende la meta del rendimiento"
+            }
+          ],
+          "help": [
+            "Cambia un supuesto para explorar su efecto, no certificarlo."
+          ],
+          "feedback": {
+            "met": "Supuestos alternativos muestran sensibilidad sin predecir el futuro real.",
+            "not_yet": "Cambia un supuesto para explorar su efecto, no certificarlo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que revela um cenário de menor retorno?",
+          "scene": "Mesma meta com retornos menores e aportes iguais.",
+          "options": [
+            {
+              "label": "O retorno exato que ocorrerá"
+            },
+            {
+              "label": "Como eliminar toda incerteza"
+            },
+            {
+              "label": "Quanto a meta depende do retorno"
+            }
+          ],
+          "help": [
+            "Mude uma regra para ver seu efeito, sem garantir que ocorra."
+          ],
+          "feedback": {
+            "met": "Mudar a regra mostra seu efeito, não o futuro real.",
+            "not_yet": "Mude uma regra para ver seu efeito, sem garantir que ocorra."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.time-inflation.10",
+      "copy": {
+        "en-US": {
+          "prompt": "What needs checking?",
+          "scene": "A retirement illustration gives a precise future balance but hides its assumptions.",
+          "options": [
+            {
+              "label": "Nothing, precision proves certainty"
+            },
+            {
+              "label": "Rates, contributions, costs and price assumptions"
+            },
+            {
+              "label": "Only the number of decimal places"
+            }
+          ],
+          "help": [
+            "Inspect the inputs behind the claimed result."
+          ],
+          "feedback": {
+            "met": "A precise printed number can still depend on uncertain assumptions.",
+            "not_yet": "Inspect the inputs behind the claimed result."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué revisar antes de usarlo?",
+          "scene": "Una ilustración de retiro da saldo futuro preciso, pero oculta supuestos.",
+          "options": [
+            {
+              "label": "Nada, precisión prueba certeza"
+            },
+            {
+              "label": "Tasas, aportaciones, costos y supuestos de precios"
+            },
+            {
+              "label": "Solo cantidad de decimales"
+            }
+          ],
+          "help": [
+            "Examina las entradas detrás del resultado anunciado."
+          ],
+          "feedback": {
+            "met": "Un número impreso preciso puede depender de supuestos inciertos.",
+            "not_yet": "Examina las entradas detrás del resultado anunciado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que conferir antes de usar?",
+          "scene": "Um plano de aposentadoria dá um saldo futuro exato, mas esconde suas regras.",
+          "options": [
+            {
+              "label": "Nada, precisão prova certeza"
+            },
+            {
+              "label": "Taxas, aportes, custos e preços usados"
+            },
+            {
+              "label": "Só quantidade de casas decimais"
+            }
+          ],
+          "help": [
+            "Veja os dados usados para chegar a esse valor."
+          ],
+          "feedback": {
+            "met": "Um número exato no papel pode vir de regras incertas.",
+            "not_yet": "Veja os dados usados para chegar a esse valor."
+          }
+        }
+      }
+    }
+  ]
+}

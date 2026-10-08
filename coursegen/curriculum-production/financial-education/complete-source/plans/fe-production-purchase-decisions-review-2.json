@@ -1,0 +1,1012 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-purchase-decisions-part-3",
+  "lesson_id": "fe-production-purchase-decisions-review-2",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.purchase-decisions.07",
+    "finance.prod.purchase-decisions.08",
+    "finance.prod.purchase-decisions.09",
+    "finance.prod.purchase-decisions.10",
+    "finance.prod.purchase-decisions.11",
+    "finance.prod.purchase-decisions.12",
+    "finance.prod.financial-math.06"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Distinguish protection terms and compare complete feasible purchase options while obtaining missing information.",
+  "title": {
+    "en-US": "Purchase Choices",
+    "es-MX": "Lee condiciones antes de elegir",
+    "pt-BR": "Leia termos antes de escolher"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Purchase Choices\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Lee condiciones antes de elegir\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Leia termos antes de escolher\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "consolidate",
+    "objective": {
+      "skill_id": "prod.purchase-decisions.07",
+      "observable_action": "Distinguish protection terms and compare complete feasible purchase options while obtaining missing information.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.purchase-decisions.02"
+    ],
+    "retrieval_skills": [
+      "prod.purchase-decisions.07",
+      "prod.purchase-decisions.08",
+      "prod.purchase-decisions.09",
+      "prod.purchase-decisions.10",
+      "prod.purchase-decisions.11",
+      "prod.purchase-decisions.12",
+      "prod.financial-math.06"
+    ],
+    "relevance": "Retrieve contract terms, payment totals and practical repair choices.",
+    "misconception": "Every protection promise is identical and the lowest displayed payment always identifies the best feasible choice.",
+    "numeracy_support": "Use the current visible conditions; do not reuse a previous scenario’s answer.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.purchase-decisions.07",
+        "context_id": "purchase-decisions-review-2-practice-01",
+        "supports_from": [],
+        "reasoning": "Returning a working item depends on applicable return terms."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.purchase-decisions.08",
+        "context_id": "purchase-decisions-review-2-practice-02",
+        "supports_from": [],
+        "reasoning": "The free start does not explain future payment commitments."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.purchase-decisions.09",
+        "context_id": "purchase-decisions-review-2-practice-03",
+        "supports_from": [],
+        "reasoning": "The deposit and fee add to all scheduled instalments."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.purchase-decisions.10",
+        "context_id": "purchase-decisions-review-2-practice-04",
+        "supports_from": [],
+        "reasoning": "The totals cover different spans of service."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.purchase-decisions.11",
+        "context_id": "purchase-decisions-review-2-practice-05",
+        "supports_from": [],
+        "reasoning": "The missing required cost may change the final comparison."
+      },
+      {
+        "segment_id": "practice-06",
+        "skill_id": "prod.purchase-decisions.12",
+        "context_id": "purchase-decisions-review-2-practice-06",
+        "supports_from": [],
+        "reasoning": "The stated repair meets the need at lower cost."
+      },
+      {
+        "segment_id": "practice-07",
+        "skill_id": "prod.financial-math.06",
+        "context_id": "purchase-decisions-review-2-practice-07",
+        "supports_from": [],
+        "reasoning": "The shared repair is divided equally among the stated contributors."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.purchase-decisions.07",
+        "context_id": "purchase-decisions-review-2-transfer-01",
+        "supports_from": [],
+        "reasoning": "The stated defect category matches the warranty, not accidental damage."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.purchase-decisions.07",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Retrieve contract terms, payment totals and practical repair choices."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Recupera condiciones, totales de pago y opciones prácticas de arreglo."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Retome termos, totais de pagamento e opções práticas de conserto."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Which terms address changing your mind?",
+          "scene": "An item works correctly, but the buyer no longer wants it.",
+          "options": [
+            {
+              "label": "Any paid accident plan"
+            },
+            {
+              "label": "Defect warranty automatically"
+            },
+            {
+              "label": "Applicable return policy"
+            }
+          ],
+          "help": [
+            "Do not confuse defect coverage with a change-of-mind return."
+          ],
+          "feedback": {
+            "met": "Returning a working item depends on applicable return terms.",
+            "not_yet": "Do not confuse defect coverage with a change-of-mind return."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué reglas atienden cambiar de opinión?",
+          "scene": "Artículo funciona bien, pero comprador ya no lo quiere.",
+          "options": [
+            {
+              "label": "Cualquier plan pagado de accidentes"
+            },
+            {
+              "label": "Garantía de defectos sin revisar"
+            },
+            {
+              "label": "Reglas para devolver"
+            }
+          ],
+          "help": [
+            "No confundas defectos con devolver por cambiar de opinión."
+          ],
+          "feedback": {
+            "met": "Devolver un artículo útil depende de reglas del caso.",
+            "not_yet": "No confundas defectos con devolver por cambiar de opinión."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que regras tratam mudar de ideia?",
+          "scene": "Item funciona bem, mas comprador não o quer mais.",
+          "options": [
+            {
+              "label": "Qualquer plano pago de acidentes"
+            },
+            {
+              "label": "Garantia de defeitos sem conferir"
+            },
+            {
+              "label": "Regras para devolver"
+            }
+          ],
+          "help": [
+            "Não confunda defeitos com devolver por mudar de ideia."
+          ],
+          "feedback": {
+            "met": "Devolver item útil depende das regras do caso.",
+            "not_yet": "Não confunda defeitos com devolver por mudar de ideia."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.08",
+      "copy": {
+        "en-US": {
+          "prompt": "What must be checked before the trial?",
+          "scene": "It renews into a paid subscription after the free period.",
+          "options": [
+            {
+              "label": "Renewal, cancellation and exit terms"
+            },
+            {
+              "label": "Only the word “free”"
+            },
+            {
+              "label": "Only the first payment"
+            }
+          ],
+          "help": [
+            "Read when charges begin and how the contract ends."
+          ],
+          "feedback": {
+            "met": "The free start does not explain future payment commitments.",
+            "not_yet": "Read when charges begin and how the contract ends."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué revisar antes de prueba?",
+          "scene": "Se renueva como suscripción pagada tras periodo gratis.",
+          "options": [
+            {
+              "label": "Renovación, cancelación y salida"
+            },
+            {
+              "label": "Solo palabra «gratis»"
+            },
+            {
+              "label": "Solo el primer pago"
+            }
+          ],
+          "help": [
+            "Lee cuándo comienzan cargos y cómo termina contrato."
+          ],
+          "feedback": {
+            "met": "Inicio gratis no explica compromisos de pago futuros.",
+            "not_yet": "Lee cuándo comienzan cargos y cómo termina contrato."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que conferir antes do teste?",
+          "scene": "Renova como assinatura paga após período grátis.",
+          "options": [
+            {
+              "label": "Renovação, cancelamento e saída"
+            },
+            {
+              "label": "Só palavra “grátis”"
+            },
+            {
+              "label": "Só o primeiro pagamento"
+            }
+          ],
+          "help": [
+            "Leia quando começam cobranças e como termina contrato."
+          ],
+          "feedback": {
+            "met": "Início grátis não explica compromissos de pagamento futuros.",
+            "not_yet": "Leia quando começam cobranças e como termina contrato."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.09",
+      "copy": {
+        "en-US": {
+          "prompt": "What is the complete instalment total?",
+          "scene": "Deposit: 60; Instalments: 6 of 30; Fee: 10; No other payments.",
+          "options": [
+            {
+              "label": "240"
+            },
+            {
+              "label": "250"
+            },
+            {
+              "label": "180"
+            }
+          ],
+          "help": [
+            "Multiply instalments, then add the other required payments."
+          ],
+          "feedback": {
+            "met": "The deposit and fee add to all scheduled instalments.",
+            "not_yet": "Multiply instalments, then add the other required payments."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es total completo a cuotas?",
+          "scene": "Enganche: 60; Cuotas: 6 de 30; Cargo: 10; Sin otros pagos.",
+          "options": [
+            {
+              "label": "240"
+            },
+            {
+              "label": "250"
+            },
+            {
+              "label": "180"
+            }
+          ],
+          "help": [
+            "Multiplica cuotas y suma otros pagos requeridos."
+          ],
+          "feedback": {
+            "met": "Enganche y cargo se suman a todas las cuotas.",
+            "not_yet": "Multiplica cuotas y suma otros pagos requeridos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é total completo em parcelas?",
+          "scene": "Entrada: 60; Parcelas: 6 de 30; Taxa: 10; Sem outros pagamentos.",
+          "options": [
+            {
+              "label": "240"
+            },
+            {
+              "label": "250"
+            },
+            {
+              "label": "180"
+            }
+          ],
+          "help": [
+            "Multiplique parcelas e some outros pagamentos exigidos."
+          ],
+          "feedback": {
+            "met": "Entrada e taxa somam a todas as parcelas.",
+            "not_yet": "Multiplique parcelas e some outros pagamentos exigidos."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          60,
+          6,
+          30,
+          10
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "op": "add",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "op": "multiply",
+                  "args": [
+                    {
+                      "input": 1
+                    },
+                    {
+                      "input": 2
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "input": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Which mismatch prevents direct comparison?",
+          "scene": "A weekly service price is placed beside another service’s annual price.",
+          "options": [
+            {
+              "label": "Different printed amounts"
+            },
+            {
+              "label": "Different time periods"
+            },
+            {
+              "label": "Different payment methods"
+            }
+          ],
+          "help": [
+            "Convert to the same period before comparing costs."
+          ],
+          "feedback": {
+            "met": "The totals cover different spans of service.",
+            "not_yet": "Convert to the same period before comparing costs."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué diferencia impide comparar directamente?",
+          "scene": "Precio semanal de servicio aparece junto a precio anual de otro.",
+          "options": [
+            {
+              "label": "Montos impresos distintos"
+            },
+            {
+              "label": "Periodos distintos"
+            },
+            {
+              "label": "Métodos de pago distintos"
+            }
+          ],
+          "help": [
+            "Convierte al mismo periodo antes de comparar costos."
+          ],
+          "feedback": {
+            "met": "Totales cubren duraciones distintas del servicio.",
+            "not_yet": "Convierte al mismo periodo antes de comparar costos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que diferença impede comparar direto?",
+          "scene": "Preço semanal de serviço aparece junto ao anual de outro.",
+          "options": [
+            {
+              "label": "Valores impressos diferentes"
+            },
+            {
+              "label": "Períodos distintos"
+            },
+            {
+              "label": "Formas de pagamento diferentes"
+            }
+          ],
+          "help": [
+            "Converta ao mesmo período antes de comparar custos."
+          ],
+          "feedback": {
+            "met": "Totais cobrem durações distintas do serviço.",
+            "not_yet": "Converta ao mesmo período antes de comparar custos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.11",
+      "copy": {
+        "en-US": {
+          "prompt": "Which missing fact matters for this choice?",
+          "scene": "The cheaper device requires a paid adapter with unknown price.",
+          "options": [
+            {
+              "label": "Only the base-price gap"
+            },
+            {
+              "label": "Required adapter cost"
+            },
+            {
+              "label": "Only the advertised discount"
+            }
+          ],
+          "help": [
+            "Obtain it rather than treating it as zero."
+          ],
+          "feedback": {
+            "met": "The missing required cost may change the final comparison.",
+            "not_yet": "Obtain it rather than treating it as zero."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué dato falta para elegir?",
+          "scene": "Aparato barato requiere adaptador pagado de precio desconocido.",
+          "options": [
+            {
+              "label": "Solo diferencia de precios base"
+            },
+            {
+              "label": "Costo requerido del adaptador"
+            },
+            {
+              "label": "Solo el descuento anunciado"
+            }
+          ],
+          "help": [
+            "Obtén dato en vez de tratarlo como cero."
+          ],
+          "feedback": {
+            "met": "Costo obligatorio faltante puede cambiar comparación final.",
+            "not_yet": "Obtén dato en vez de tratarlo como cero."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que dado falta para escolher?",
+          "scene": "Aparelho barato exige adaptador pago de preço desconhecido.",
+          "options": [
+            {
+              "label": "Só diferença dos preços base"
+            },
+            {
+              "label": "Custo exigido do adaptador"
+            },
+            {
+              "label": "Só o desconto anunciado"
+            }
+          ],
+          "help": [
+            "Obtenha dado em vez de tratar como zero."
+          ],
+          "feedback": {
+            "met": "Custo obrigatório ausente pode mudar comparação final.",
+            "not_yet": "Obtenha dado em vez de tratar como zero."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.12",
+      "copy": {
+        "en-US": {
+          "prompt": "Which option fits the stated need?",
+          "scene": "Repair safely restores every required function for less; replacement adds no needed benefit.",
+          "options": [
+            {
+              "label": "Repair"
+            },
+            {
+              "label": "Use an unsafe alternative"
+            },
+            {
+              "label": "Replace for novelty alone"
+            }
+          ],
+          "help": [
+            "Compare safe function, timing and total cost together."
+          ],
+          "feedback": {
+            "met": "The stated repair meets the need at lower cost.",
+            "not_yet": "Compare safe function, timing and total cost together."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué opción cumple lo necesario?",
+          "scene": "Arreglo seguro devuelve toda función necesaria por menos; cambio no añade beneficio necesario.",
+          "options": [
+            {
+              "label": "Reparar"
+            },
+            {
+              "label": "Usar alternativa insegura"
+            },
+            {
+              "label": "Cambiar solo por novedad"
+            }
+          ],
+          "help": [
+            "Compara uso seguro, tiempo y costo total juntos."
+          ],
+          "feedback": {
+            "met": "El arreglo indicado sirve y cuesta menos.",
+            "not_yet": "Compara uso seguro, tiempo y costo total juntos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que opção atende ao necessário?",
+          "scene": "Conserto seguro devolve toda função útil por menos; troca não acrescenta benefício necessário.",
+          "options": [
+            {
+              "label": "Consertar"
+            },
+            {
+              "label": "Usar alternativa insegura"
+            },
+            {
+              "label": "Trocar só por novidade"
+            }
+          ],
+          "help": [
+            "Compare uso seguro, prazo e custo total juntos."
+          ],
+          "feedback": {
+            "met": "O conserto dado serve e custa menos.",
+            "not_yet": "Compare uso seguro, prazo e custo total juntos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-07",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.06",
+      "copy": {
+        "en-US": {
+          "prompt": "What does each equal contributor pay?",
+          "scene": "Shared repair: 180; Equal contributors: 3.",
+          "options": [
+            {
+              "label": "180"
+            },
+            {
+              "label": "60"
+            },
+            {
+              "label": "90"
+            }
+          ],
+          "help": [
+            "Divide the total by the agreed contributor count."
+          ],
+          "feedback": {
+            "met": "The shared repair is divided equally among the stated contributors.",
+            "not_yet": "Divide the total by the agreed contributor count."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto paga cada aporte igual?",
+          "scene": "Arreglo compartido: 180; Aportes iguales entre: 3 personas.",
+          "options": [
+            {
+              "label": "180"
+            },
+            {
+              "label": "60"
+            },
+            {
+              "label": "90"
+            }
+          ],
+          "help": [
+            "Divide total entre cantidad acordada de personas."
+          ],
+          "feedback": {
+            "met": "Arreglo se divide igual entre personas indicadas.",
+            "not_yet": "Divide total entre cantidad acordada de personas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto paga cada pessoa igualmente?",
+          "scene": "Conserto conjunto: 180; Aportes iguais entre: 3 pessoas.",
+          "options": [
+            {
+              "label": "180"
+            },
+            {
+              "label": "60"
+            },
+            {
+              "label": "90"
+            }
+          ],
+          "help": [
+            "Divida total pela quantidade combinada de pessoas."
+          ],
+          "feedback": {
+            "met": "Conserto é dividido igual entre pessoas dadas.",
+            "not_yet": "Divida total pela quantidade combinada de pessoas."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          180,
+          3
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.purchase-decisions.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Which promise addresses this fault?",
+          "scene": "Fictional warranty covers manufacturing defects; paid plan covers accidental damage. The fault is confirmed manufacturing-related.",
+          "options": [
+            {
+              "label": "The defect warranty’s terms"
+            },
+            {
+              "label": "Any return rule"
+            },
+            {
+              "label": "Accident plan automatically"
+            }
+          ],
+          "help": [
+            "Match the actual event to the relevant terms."
+          ],
+          "feedback": {
+            "met": "The stated defect category matches the warranty, not accidental damage.",
+            "not_yet": "Match the actual event to the relevant terms."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué promesa revisar para falla?",
+          "scene": "Garantía ficticia cubre defectos de fábrica; plan pagado cubre accidentes. Se confirmó falla de fábrica.",
+          "options": [
+            {
+              "label": "Reglas de garantía por defectos"
+            },
+            {
+              "label": "Cualquier devolución sin condiciones"
+            },
+            {
+              "label": "Plan de accidentes sin revisar"
+            }
+          ],
+          "help": [
+            "Relaciona evento real con reglas pertinentes."
+          ],
+          "feedback": {
+            "met": "Tipo de falla coincide con garantía, no daño accidental.",
+            "not_yet": "Relaciona evento real con reglas pertinentes."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que promessa conferir para falha?",
+          "scene": "Garantia fictícia cobre defeitos de fábrica; plano pago cobre acidentes. Falha de fábrica confirmada.",
+          "options": [
+            {
+              "label": "Regras da garantia por defeitos"
+            },
+            {
+              "label": "Qualquer devolução sem condições"
+            },
+            {
+              "label": "Plano de acidentes sem conferir"
+            }
+          ],
+          "help": [
+            "Ligue evento real às regras relevantes."
+          ],
+          "feedback": {
+            "met": "Tipo de falha coincide com garantia, não dano acidental.",
+            "not_yet": "Ligue evento real às regras relevantes."
+          }
+        }
+      }
+    }
+  ]
+}

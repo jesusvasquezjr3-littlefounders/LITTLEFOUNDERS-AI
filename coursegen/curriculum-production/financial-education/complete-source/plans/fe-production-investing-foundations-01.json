@@ -1,0 +1,743 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-investing-foundations-part-1",
+  "lesson_id": "fe-production-investing-foundations-01",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.investing-foundations.01"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Separate investing from keeping money needed for a near-term obligation accessible.",
+  "title": {
+    "en-US": "Protect Essentials",
+    "es-MX": "Protege el próximo pago",
+    "pt-BR": "Proteja o próximo pagamento"
+  },
+  "new_concepts": [
+    "finance.prod.investing-foundations.01"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Protect Essentials\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Protege el próximo pago\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Proteja o próximo pagamento\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.investing-foundations.01",
+      "observable_action": "Separate investing from keeping money needed for a near-term obligation accessible.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.saving-resilience.04",
+      "cash.dates"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A bill needs spendable money on its due date, even when an investment looks promising.",
+    "misconception": "A possible investment gain makes money committed to a nearby obligation safe to invest.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.investing-foundations.01",
+        "context_id": "investing-foundations-01-example-01",
+        "supports_from": [],
+        "reasoning": "Rent is due tomorrow. An investment may fall today, so keep the rent accessible instead of relying on selling it."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.investing-foundations.01",
+        "context_id": "investing-foundations-01-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The medicine payment cannot depend on an uncertain sale."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.investing-foundations.01",
+        "context_id": "investing-foundations-01-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The envelope already has a near-term purpose."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.investing-foundations.01",
+        "context_id": "investing-foundations-01-practice-01",
+        "supports_from": [],
+        "reasoning": "Past growth does not secure Friday’s payment."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.investing-foundations.01",
+        "context_id": "investing-foundations-01-practice-02",
+        "supports_from": [],
+        "reasoning": "Separating commitments allows evaluation; it does not remove investment risk."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.investing-foundations.01",
+        "context_id": "investing-foundations-01-practice-03",
+        "supports_from": [],
+        "reasoning": "Fast selling does not guarantee the amount needed."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.investing-foundations.01",
+        "context_id": "investing-foundations-01-transfer-01",
+        "supports_from": [],
+        "reasoning": "Money owed back is committed, even while you hold it."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.investing-foundations.01",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A bill needs spendable money on its due date, even when an investment looks promising."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Una cuenta necesita dinero disponible al vencer, aunque una inversión parezca prometedora."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Uma conta precisa de dinheiro disponível no vencimento, mesmo quando um investimento parece promissor."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Two different purposes",
+          "line": "Rent is due tomorrow. An investment may fall today, so keep the rent accessible instead of relying on selling it."
+        },
+        "es-MX": {
+          "prompt": "Dos funciones distintas",
+          "line": "La renta vence mañana. Una inversión puede bajar hoy; conserva disponible la renta sin depender de venderla."
+        },
+        "pt-BR": {
+          "prompt": "Duas funções diferentes",
+          "line": "O aluguel vence amanhã. Um investimento pode cair hoje; mantenha o aluguel disponível sem depender de uma venda."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Protect which money?",
+          "scene": "Tomorrow’s medicine is unpaid. Investments can lose value before tomorrow.",
+          "options": [
+            {
+              "label": "Only possible investment profits"
+            },
+            {
+              "label": "The medicine money"
+            },
+            {
+              "label": "Nothing until tomorrow"
+            }
+          ],
+          "help": [
+            "Match the payment date with reliable access."
+          ],
+          "feedback": {
+            "met": "The medicine payment cannot depend on an uncertain sale.",
+            "not_yet": "Match the payment date with reliable access."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué dinero proteges?",
+          "scene": "La medicina de mañana está pendiente. La inversión puede perder valor antes.",
+          "options": [
+            {
+              "label": "Solo posibles ganancias"
+            },
+            {
+              "label": "El de la medicina"
+            },
+            {
+              "label": "Nada hasta mañana"
+            }
+          ],
+          "help": [
+            "Relaciona la fecha de pago con acceso seguro."
+          ],
+          "feedback": {
+            "met": "El pago de medicina no puede depender de una venta incierta.",
+            "not_yet": "Relaciona la fecha de pago con acceso seguro."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual dinheiro proteger?",
+          "scene": "O remédio de amanhã não foi pago. O investimento pode perder valor antes.",
+          "options": [
+            {
+              "label": "Só possíveis ganhos"
+            },
+            {
+              "label": "O dinheiro do remédio"
+            },
+            {
+              "label": "Nada até amanhã"
+            }
+          ],
+          "help": [
+            "Relacione o vencimento com acesso confiável."
+          ],
+          "feedback": {
+            "met": "O remédio não pode depender de uma venda incerta.",
+            "not_yet": "Relacione o vencimento com acesso confiável."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Which purpose comes first?",
+          "scene": "An envelope holds next week’s required fare. Its owner considers buying shares.",
+          "options": [
+            {
+              "label": "Buy shares and expect gains"
+            },
+            {
+              "label": "Keep the fare available"
+            }
+          ],
+          "help": [
+            "A higher hoped-for return does not cancel the fare."
+          ],
+          "feedback": {
+            "met": "The envelope already has a near-term purpose.",
+            "not_yet": "A higher hoped-for return does not cancel the fare."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué función va primero?",
+          "scene": "Un sobre guarda el pasaje necesario de la próxima semana. Consideran comprar acciones.",
+          "options": [
+            {
+              "label": "Comprar acciones esperando ganar"
+            },
+            {
+              "label": "Conservar disponible el pasaje"
+            }
+          ],
+          "help": [
+            "Una ganancia esperada no elimina el pasaje."
+          ],
+          "feedback": {
+            "met": "Ese sobre ya tiene un propósito cercano.",
+            "not_yet": "Una ganancia esperada no elimina el pasaje."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual função vem primeiro?",
+          "scene": "Um envelope guarda a passagem necessária da próxima semana. A pessoa pensa em comprar ações.",
+          "options": [
+            {
+              "label": "Comprar ações esperando ganhar"
+            },
+            {
+              "label": "Manter a passagem disponível"
+            }
+          ],
+          "help": [
+            "Um ganho esperado não elimina a passagem."
+          ],
+          "feedback": {
+            "met": "O envelope já tem uma finalidade próxima.",
+            "not_yet": "Um ganho esperado não elimina a passagem."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Does the past settle this?",
+          "scene": "A fund rose last month. Tuition is due Friday with no backup money.",
+          "options": [
+            {
+              "label": "No, Friday’s value is uncertain"
+            },
+            {
+              "label": "Yes, last month proves safety"
+            }
+          ],
+          "help": [
+            "Ask whether the payment survives a loss."
+          ],
+          "feedback": {
+            "met": "Past growth does not secure Friday’s payment.",
+            "not_yet": "Ask whether the payment survives a loss."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿El pasado lo resuelve?",
+          "scene": "Un fondo subió el mes pasado. La colegiatura vence el viernes, sin dinero de respaldo.",
+          "options": [
+            {
+              "label": "No, el valor del viernes es incierto"
+            },
+            {
+              "label": "Sí, subir demuestra seguridad"
+            }
+          ],
+          "help": [
+            "Revisa si puedes pagar después de una pérdida."
+          ],
+          "feedback": {
+            "met": "Una subida anterior no asegura el pago del viernes.",
+            "not_yet": "Revisa si puedes pagar después de una pérdida."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O passado resolve isso?",
+          "scene": "Um fundo subiu no mês passado. A mensalidade vence sexta, sem dinheiro de reserva.",
+          "options": [
+            {
+              "label": "Não, o valor de sexta é incerto"
+            },
+            {
+              "label": "Sim, subir comprova segurança"
+            }
+          ],
+          "help": [
+            "Veja se o pagamento resiste a uma perda."
+          ],
+          "feedback": {
+            "met": "Uma alta passada não garante o pagamento de sexta.",
+            "not_yet": "Veja se o pagamento resiste a uma perda."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What follows?",
+          "scene": "Bills and an accessible reserve are covered. Other money funds a distant goal.",
+          "options": [
+            {
+              "label": "Every investment is safe"
+            },
+            {
+              "label": "Invest the bill money too"
+            },
+            {
+              "label": "Evaluate investing that money"
+            }
+          ],
+          "help": [
+            "Available money can still be lost in an investment."
+          ],
+          "feedback": {
+            "met": "Separating commitments allows evaluation; it does not remove investment risk.",
+            "not_yet": "Available money can still be lost in an investment."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué puedes concluir?",
+          "scene": "Las cuentas y una reserva accesible están cubiertas. Otro monto tiene una meta lejana.",
+          "options": [
+            {
+              "label": "Toda inversión ya es segura"
+            },
+            {
+              "label": "También debes invertir las cuentas"
+            },
+            {
+              "label": "Puedes evaluar invertir ese monto"
+            }
+          ],
+          "help": [
+            "Poder invertir no significa hacerlo sin riesgo."
+          ],
+          "feedback": {
+            "met": "Separar compromisos permite evaluar; no elimina el riesgo de invertir.",
+            "not_yet": "Poder invertir no significa hacerlo sin riesgo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que se pode concluir?",
+          "scene": "Contas e uma reserva acessível estão cobertas. Outra quantia tem uma meta distante.",
+          "options": [
+            {
+              "label": "Todo investimento agora é seguro"
+            },
+            {
+              "label": "Deve investir também as contas"
+            },
+            {
+              "label": "Pode avaliar investir essa quantia"
+            }
+          ],
+          "help": [
+            "Poder investir não significa ausência de risco."
+          ],
+          "feedback": {
+            "met": "Separar compromissos permite avaliar; não elimina o risco do investimento.",
+            "not_yet": "Poder investir não significa ausência de risco."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What remains unresolved?",
+          "scene": "An investment can be sold instantly, but its sale value can fall. Rent uses this money tomorrow.",
+          "options": [
+            {
+              "label": "Whether enough money remains"
+            },
+            {
+              "label": "Whether it has a sale button"
+            }
+          ],
+          "help": [
+            "Check value as well as access."
+          ],
+          "feedback": {
+            "met": "Fast selling does not guarantee the amount needed.",
+            "not_yet": "Check value as well as access."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué falta resolver?",
+          "scene": "Puedes vender al instante una inversión, pero su precio puede caer. Mañana pagas renta con ese dinero.",
+          "options": [
+            {
+              "label": "Si queda dinero suficiente"
+            },
+            {
+              "label": "Si existe un botón de venta"
+            }
+          ],
+          "help": [
+            "Revisa el valor además del acceso."
+          ],
+          "feedback": {
+            "met": "Vender rápido no garantiza el monto necesario.",
+            "not_yet": "Revisa el valor además del acceso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que falta resolver?",
+          "scene": "Um investimento pode ser vendido imediatamente, mas seu preço pode cair. Amanhã esse dinheiro paga aluguel.",
+          "options": [
+            {
+              "label": "Se resta dinheiro suficiente"
+            },
+            {
+              "label": "Se existe um botão de venda"
+            }
+          ],
+          "help": [
+            "Confira o valor além do acesso."
+          ],
+          "feedback": {
+            "met": "Vender rápido não garante a quantia necessária.",
+            "not_yet": "Confira o valor além do acesso."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.investing-foundations.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Risk the deposit?",
+          "scene": "A rental deposit must be returned next week. A friend suggests investing it meanwhile.",
+          "options": [
+            {
+              "label": "Keep the return money available"
+            },
+            {
+              "label": "Count earned income"
+            },
+            {
+              "label": "Invest because it is temporary"
+            }
+          ],
+          "help": [
+            "Identify who needs the money and when."
+          ],
+          "feedback": {
+            "met": "Money owed back is committed, even while you hold it.",
+            "not_yet": "Identify who needs the money and when."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Puedes arriesgar el depósito?",
+          "scene": "Debes devolver un depósito de alquiler la próxima semana. Alguien sugiere invertirlo mientras tanto.",
+          "options": [
+            {
+              "label": "Conservar disponible la devolución"
+            },
+            {
+              "label": "Tratarlo como ingreso ganado"
+            },
+            {
+              "label": "Invertir porque es temporal"
+            }
+          ],
+          "help": [
+            "Identifica quién necesita el dinero y cuándo."
+          ],
+          "feedback": {
+            "met": "El dinero por devolver está comprometido aunque todavía lo tengas.",
+            "not_yet": "Identifica quién necesita el dinero y cuándo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Pode arriscar o depósito?",
+          "scene": "Um depósito de aluguel deve ser devolvido na próxima semana. Alguém sugere investi-lo enquanto isso.",
+          "options": [
+            {
+              "label": "Manter a devolução disponível"
+            },
+            {
+              "label": "Tratar como renda recebida"
+            },
+            {
+              "label": "Investir porque é temporário"
+            }
+          ],
+          "help": [
+            "Identifique quem precisa do dinheiro e quando."
+          ],
+          "feedback": {
+            "met": "Dinheiro a devolver está comprometido, mesmo em suas mãos.",
+            "not_yet": "Identifique quem precisa do dinheiro e quando."
+          }
+        }
+      }
+    }
+  ]
+}

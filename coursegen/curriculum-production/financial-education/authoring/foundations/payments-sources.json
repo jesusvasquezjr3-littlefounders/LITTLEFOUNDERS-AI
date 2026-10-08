@@ -1,0 +1,46 @@
+{
+  "review_date": "2026-10-06",
+  "scope": "Payment verification, private access, independent contact, compromise response, recurring-payment cancellation and factual incident reporting. This research record is not human regional approval. No universal refund, reporting deadline or protection guarantee is asserted. Fees and method terms in exercises are fictional.",
+  "sources": [
+    {
+      "publisher": "FTC",
+      "url": "https://consumer.ftc.gov/consumer-alerts/2024/03/whats-verification-code-why-would-someone-ask-me-it",
+      "use": "Access codes must not be handed to unsolicited callers; payment evidence is different from access."
+    },
+    {
+      "publisher": "FTC",
+      "url": "https://consumer.ftc.gov/consumer-alerts/2024/06/got-call-about-fraud-activity-your-bank-account-it-could-be-scammer",
+      "use": "Impersonation, urgency and requests to move funds for supposed protection."
+    },
+    {
+      "publisher": "FTC",
+      "url": "https://consumer.ftc.gov/articles/what-do-if-you-were-scammed",
+      "use": "Prompt provider contact and protective actions after credentials or funds are exposed; recovery is not guaranteed."
+    },
+    {
+      "publisher": "BCB",
+      "url": "https://www.bcb.gov.br/meubc/faqs/s/golpes",
+      "use": "Check own account records instead of accepting a sender screenshot; report through official bank channels. No claim about MED eligibility or deadlines is generalized."
+    },
+    {
+      "publisher": "BCB",
+      "url": "https://www.bcb.gov.br/estabilidadefinanceira/pix-seguranca",
+      "use": "Authentication and payment safety context; no universal reversal promise."
+    },
+    {
+      "publisher": "CFPB",
+      "url": "https://www.consumerfinance.gov/ask-cfpb/how-do-i-stop-automatic-payments-from-my-bank-account-en-2023/",
+      "use": "Stopping a debit and ending a service agreement are distinct processes; preserve evidence. US procedural deadlines are not exported to other markets."
+    },
+    {
+      "publisher": "CONDUSEF",
+      "url": "https://www.condusef.gob.mx/?idc=1731&p=contenido",
+      "use": "Report unfamiliar charges through the financial institution and protect payment access; no quoted statutory deadlines or reimbursement rules."
+    },
+    {
+      "publisher": "CONDUSEF",
+      "url": "https://www.condusef.gob.mx/?idc=2793&idcat=3&p=contenido",
+      "use": "Official guidance for unfamiliar charges and verified assistance channels."
+    }
+  ]
+}

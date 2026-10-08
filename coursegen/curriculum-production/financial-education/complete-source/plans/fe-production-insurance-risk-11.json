@@ -1,0 +1,780 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-insurance-risk-part-3",
+  "lesson_id": "fe-production-insurance-risk-11",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.insurance-risk.11"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Reassess a protection need after a dependent or financial obligation changes.",
+  "title": {
+    "en-US": "Changing Needs",
+    "es-MX": "Revisa protección cuando cambia vida",
+    "pt-BR": "Reveja proteção quando vida muda"
+  },
+  "new_concepts": [
+    "finance.prod.insurance-risk.11"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Changing Needs\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Revisa protección cuando cambia vida\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Reveja proteção quando vida muda\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.insurance-risk.11",
+      "observable_action": "Reassess a protection need after a dependent or financial obligation changes.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.insurance-risk.01",
+      "prod.insurance-risk.02",
+      "prod.goals-tradeoffs.08"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Changed dependents or obligations can alter protection needs; reassess the gap before changing coverage.",
+    "misconception": "Protection needs never change, or every life change automatically requires a larger policy.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.insurance-risk.11",
+        "context_id": "insurance-risk-11-example-01",
+        "supports_from": [],
+        "reasoning": "List who depends on the income, continuing obligations and available resources. Recheck the gap after a meaningful life change."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.insurance-risk.11",
+        "context_id": "insurance-risk-11-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "A new dependent can increase the support gap if income stops."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.insurance-risk.11",
+        "context_id": "insurance-risk-11-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Repaying the debt removes that obligation from the assessment."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.insurance-risk.11",
+        "context_id": "insurance-risk-11-practice-01",
+        "supports_from": [],
+        "reasoning": "Employment-linked benefits may depend on terms that have changed."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.insurance-risk.11",
+        "context_id": "insurance-risk-11-practice-02",
+        "supports_from": [],
+        "reasoning": "The new recurring support changes the household’s commitments."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.insurance-risk.11",
+        "context_id": "insurance-risk-11-practice-03",
+        "supports_from": [],
+        "reasoning": "The change triggers reassessment, not an automatic product decision."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.insurance-risk.11",
+        "context_id": "insurance-risk-11-transfer-01",
+        "supports_from": [],
+        "reasoning": "The two changes can affect needs in different directions."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.insurance-risk.11",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Changed dependents or obligations can alter protection needs; reassess the gap before changing coverage."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Nuevo dependiente u obligación distinta puede cambiar pérdida que hogar soporta; reevalúa necesidades y recursos antes de cambiar cobertura."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Novo dependente ou obrigação distinta pode mudar perda que família suporta; reavalie necessidades e recursos antes de mudar cobertura."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Recalculate the need",
+          "line": "List who depends on the income, continuing obligations and available resources. Recheck the gap after a meaningful life change."
+        },
+        "es-MX": {
+          "prompt": "Vuelve a calcular necesidad",
+          "line": "Lista quién depende del ingreso, obligaciones que siguen y recursos disponibles. Revisa faltante tras cambio importante de vida."
+        },
+        "pt-BR": {
+          "prompt": "Calcule de novo a necessidade",
+          "line": "Liste quem depende da renda, obrigações que seguem e recursos disponíveis. Reveja falta após mudança importante na vida."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.11",
+      "copy": {
+        "en-US": {
+          "prompt": "What changed in the protection need?",
+          "scene": "A new dependent relies on household income; current resources and benefits are unchanged.",
+          "options": [
+            {
+              "label": "All old coverage becomes invalid"
+            },
+            {
+              "label": "Nothing can change"
+            },
+            {
+              "label": "Support needs may rise"
+            }
+          ],
+          "help": [
+            "Reassess actual needs against existing resources and benefits."
+          ],
+          "feedback": {
+            "met": "A new dependent can increase the support gap if income stops.",
+            "not_yet": "Reassess actual needs against existing resources and benefits."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué cambió en necesidad de protección?",
+          "scene": "Nuevo dependiente requiere ingreso del hogar; recursos y beneficios actuales no cambiaron.",
+          "options": [
+            {
+              "label": "Toda cobertura anterior pierde validez"
+            },
+            {
+              "label": "Nada puede cambiar"
+            },
+            {
+              "label": "Necesidad de apoyo puede crecer"
+            }
+          ],
+          "help": [
+            "Reevalúa necesidades reales frente a recursos y beneficios existentes."
+          ],
+          "feedback": {
+            "met": "Nuevo dependiente puede ampliar faltante si ingreso se detiene.",
+            "not_yet": "Reevalúa necesidades reales frente a recursos y beneficios existentes."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que mudou na necessidade de proteção?",
+          "scene": "Novo dependente precisa da renda familiar; recursos e benefícios atuais não mudaram.",
+          "options": [
+            {
+              "label": "Toda cobertura anterior perde validade"
+            },
+            {
+              "label": "Nada pode mudar"
+            },
+            {
+              "label": "Necessidade de apoio pode crescer"
+            }
+          ],
+          "help": [
+            "Reavalie necessidades reais frente a recursos e benefícios existentes."
+          ],
+          "feedback": {
+            "met": "Novo dependente pode ampliar falta se renda parar.",
+            "not_yet": "Reavalie necessidades reais frente a recursos e benefícios existentes."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.11",
+      "copy": {
+        "en-US": {
+          "prompt": "Does this change only increase needs?",
+          "scene": "A major debt is fully repaid; other needs and resources remain unchanged.",
+          "options": [
+            {
+              "label": "No, that obligation falls"
+            },
+            {
+              "label": "Yes, ignore the repayment"
+            },
+            {
+              "label": "Yes, needs always rise"
+            }
+          ],
+          "help": [
+            "Update both increases and decreases in continuing commitments."
+          ],
+          "feedback": {
+            "met": "Repaying the debt removes that obligation from the assessment.",
+            "not_yet": "Update both increases and decreases in continuing commitments."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Este cambio solo aumenta necesidades?",
+          "scene": "Deuda mayor queda pagada; demás necesidades y recursos siguen iguales.",
+          "options": [
+            {
+              "label": "No, esa obligación baja"
+            },
+            {
+              "label": "Sí, ignorar pago"
+            },
+            {
+              "label": "Sí, necesidades siempre suben"
+            }
+          ],
+          "help": [
+            "Actualiza aumentos y reducciones de compromisos que siguen."
+          ],
+          "feedback": {
+            "met": "Pagar deuda quita esa obligación de evaluación.",
+            "not_yet": "Actualiza aumentos y reducciones de compromisos que siguen."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Esta mudança só aumenta necessidades?",
+          "scene": "Dívida grande fica quitada; demais necessidades e recursos seguem iguais.",
+          "options": [
+            {
+              "label": "Não, essa obrigação cai"
+            },
+            {
+              "label": "Sim, ignorar quitação"
+            },
+            {
+              "label": "Sim, necessidades sempre sobem"
+            }
+          ],
+          "help": [
+            "Atualize aumentos e reduções dos compromissos que seguem."
+          ],
+          "feedback": {
+            "met": "Quitar dívida tira essa obrigação da análise.",
+            "not_yet": "Atualize aumentos e reduções dos compromissos que seguem."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.11",
+      "copy": {
+        "en-US": {
+          "prompt": "What should be verified after changing employment?",
+          "scene": "Previous protection was tied to the former employment contract.",
+          "options": [
+            {
+              "label": "Assume every personal policy ends"
+            },
+            {
+              "label": "Whether and when it continues"
+            },
+            {
+              "label": "Assume lifelong coverage"
+            }
+          ],
+          "help": [
+            "Verify actual continuation terms and any resulting gap."
+          ],
+          "feedback": {
+            "met": "Employment-linked benefits may depend on terms that have changed.",
+            "not_yet": "Verify actual continuation terms and any resulting gap."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué verificar tras cambiar empleo?",
+          "scene": "Protección anterior dependía del contrato laboral previo.",
+          "options": [
+            {
+              "label": "Suponer que toda póliza personal termina"
+            },
+            {
+              "label": "Si continúa y hasta cuándo"
+            },
+            {
+              "label": "Suponer cobertura de por vida"
+            }
+          ],
+          "help": [
+            "Verifica condiciones reales de continuidad y posible faltante."
+          ],
+          "feedback": {
+            "met": "Beneficios laborales pueden depender de términos que cambiaron.",
+            "not_yet": "Verifica condiciones reales de continuidad y posible faltante."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que verificar após mudar emprego?",
+          "scene": "Proteção anterior dependia do antigo contrato de emprego.",
+          "options": [
+            {
+              "label": "Supor que toda apólice pessoal acaba"
+            },
+            {
+              "label": "Se continua e até quando"
+            },
+            {
+              "label": "Supor cobertura por toda vida"
+            }
+          ],
+          "help": [
+            "Verifique condições reais de continuidade e possível falta."
+          ],
+          "feedback": {
+            "met": "Benefícios do emprego podem depender de termos que mudaram.",
+            "not_yet": "Verifique condições reais de continuidade e possível falta."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.11",
+      "copy": {
+        "en-US": {
+          "prompt": "Which inputs need updating?",
+          "scene": "A household starts supporting an older relative regularly.",
+          "options": [
+            {
+              "label": "Only last year’s income"
+            },
+            {
+              "label": "New support obligation and available resources"
+            },
+            {
+              "label": "Only current income"
+            }
+          ],
+          "help": [
+            "Use current obligations and resources rather than outdated assumptions."
+          ],
+          "feedback": {
+            "met": "The new recurring support changes the household’s commitments.",
+            "not_yet": "Use current obligations and resources rather than outdated assumptions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué datos necesitan actualizarse?",
+          "scene": "Hogar comienza apoyo regular a familiar mayor.",
+          "options": [
+            {
+              "label": "Solo ingreso del año pasado"
+            },
+            {
+              "label": "Nueva obligación de apoyo y recursos disponibles"
+            },
+            {
+              "label": "Solo ingreso actual"
+            }
+          ],
+          "help": [
+            "Usa obligaciones y recursos actuales, no supuestos pasados."
+          ],
+          "feedback": {
+            "met": "Nuevo apoyo recurrente cambia compromisos del hogar.",
+            "not_yet": "Usa obligaciones y recursos actuales, no supuestos pasados."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que dados precisam mudar?",
+          "scene": "Família começa apoio regular a parente idoso.",
+          "options": [
+            {
+              "label": "Só renda do ano passado"
+            },
+            {
+              "label": "Novo dever de apoio e recursos disponíveis"
+            },
+            {
+              "label": "Só renda atual"
+            }
+          ],
+          "help": [
+            "Use deveres e recursos atuais, não suposições passadas."
+          ],
+          "feedback": {
+            "met": "Novo apoio recorrente muda compromissos da família.",
+            "not_yet": "Use deveres e recursos atuais, não suposições passadas."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.11",
+      "copy": {
+        "en-US": {
+          "prompt": "Does change dictate a product?",
+          "scene": "Needs changed, but current coverage, resources and terms have not been reviewed.",
+          "options": [
+            {
+              "label": "Yes, buy the largest policy"
+            },
+            {
+              "label": "Yes, cancel all protection"
+            },
+            {
+              "label": "No, reassess the gap first"
+            }
+          ],
+          "help": [
+            "Check the actual gap before choosing how to address it."
+          ],
+          "feedback": {
+            "met": "The change triggers reassessment, not an automatic product decision.",
+            "not_yet": "Check the actual gap before choosing how to address it."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cambio dicta producto de inmediato?",
+          "scene": "Necesidades cambiaron, pero no se revisaron cobertura, recursos ni términos actuales.",
+          "options": [
+            {
+              "label": "Sí, comprar póliza mayor"
+            },
+            {
+              "label": "Sí, cancelar toda protección"
+            },
+            {
+              "label": "No, reevaluar faltante primero"
+            }
+          ],
+          "help": [
+            "Revisa faltante real antes de elegir cómo cubrirlo."
+          ],
+          "feedback": {
+            "met": "Cambio activa reevaluación, no decisión automática de producto.",
+            "not_yet": "Revisa faltante real antes de elegir cómo cubrirlo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Mudança dita produto de imediato?",
+          "scene": "Necessidades mudaram, mas cobertura, recursos e termos atuais não foram revistos.",
+          "options": [
+            {
+              "label": "Sim, comprar maior apólice"
+            },
+            {
+              "label": "Sim, cancelar toda proteção"
+            },
+            {
+              "label": "Não, reavaliar falta primeiro"
+            }
+          ],
+          "help": [
+            "Veja falta real antes de escolher como cobri-la."
+          ],
+          "feedback": {
+            "met": "Mudança pede reavaliação, não decisão automática de produto.",
+            "not_yet": "Veja falta real antes de escolher como cobri-la."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.insurance-risk.11",
+      "copy": {
+        "en-US": {
+          "prompt": "Which reassessment fits this household?",
+          "scene": "A dependent now earns independently while a new care obligation begins.",
+          "options": [
+            {
+              "label": "Keep every old assumption"
+            },
+            {
+              "label": "Update both support changes and resources"
+            },
+            {
+              "label": "Assume needs only fell"
+            }
+          ],
+          "help": [
+            "Reassess the whole support gap using current facts."
+          ],
+          "feedback": {
+            "met": "The two changes can affect needs in different directions.",
+            "not_yet": "Reassess the whole support gap using current facts."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué reevaluación corresponde al hogar?",
+          "scene": "Dependiente ya gana por su cuenta mientras inicia nueva obligación de cuidados.",
+          "options": [
+            {
+              "label": "Conservar todo supuesto anterior"
+            },
+            {
+              "label": "Actualizar ambos cambios de apoyo y recursos"
+            },
+            {
+              "label": "Suponer que necesidades solo bajaron"
+            }
+          ],
+          "help": [
+            "Reevalúa faltante completo de apoyo con hechos actuales."
+          ],
+          "feedback": {
+            "met": "Dos cambios pueden afectar necesidades en sentidos distintos.",
+            "not_yet": "Reevalúa faltante completo de apoyo con hechos actuales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que reavaliação cabe à família?",
+          "scene": "Dependente já ganha por conta própria enquanto começa novo dever de cuidado.",
+          "options": [
+            {
+              "label": "Manter toda suposição antiga"
+            },
+            {
+              "label": "Atualizar ambas mudanças de apoio e recursos"
+            },
+            {
+              "label": "Supor que necessidades só caíram"
+            }
+          ],
+          "help": [
+            "Reavalie toda falta de apoio com fatos atuais."
+          ],
+          "feedback": {
+            "met": "Duas mudanças podem afetar necessidades em sentidos distintos.",
+            "not_yet": "Reavalie toda falta de apoio com fatos atuais."
+          }
+        }
+      }
+    }
+  ]
+}

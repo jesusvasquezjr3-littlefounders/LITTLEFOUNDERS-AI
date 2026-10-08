@@ -1,0 +1,755 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-retirement-future-part-2",
+  "lesson_id": "fe-production-retirement-future-10",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.retirement-future.10"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Identify which beneficiary and account records need review after a major life change.",
+  "title": {
+    "en-US": "Review Beneficiaries",
+    "es-MX": "Revisa personas y registros",
+    "pt-BR": "Confira pessoas e registros"
+  },
+  "new_concepts": [
+    "finance.prod.retirement-future.10"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Review Beneficiaries\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Revisa personas y registros\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Confira pessoas e registros\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.retirement-future.10",
+      "observable_action": "Identify which beneficiary and account records need review after a major life change.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.insurance-risk.03",
+      "prod.accounts-records.10"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A major life change can make account contacts and beneficiary records outdated.",
+    "misconception": "A marriage, separation or death automatically updates every financial account and beneficiary designation.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.retirement-future.10",
+        "context_id": "retirement-future-10-example-01",
+        "supports_from": [],
+        "reasoning": "After major life changes, check beneficiaries and contacts through the provider’s official process. Verify legal effects locally."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.retirement-future.10",
+        "context_id": "retirement-future-10-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Outdated contacts can impair account communication and administration."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.retirement-future.10",
+        "context_id": "retirement-future-10-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "A life event does not prove every designation was updated."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.retirement-future.10",
+        "context_id": "retirement-future-10-practice-01",
+        "supports_from": [],
+        "reasoning": "Confirmation connects the request with the account’s actual record."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.retirement-future.10",
+        "context_id": "retirement-future-10-practice-02",
+        "supports_from": [],
+        "reasoning": "Separate accounts can maintain separate designations."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.retirement-future.10",
+        "context_id": "retirement-future-10-practice-03",
+        "supports_from": [],
+        "reasoning": "Conflicting legal effects require relevant local clarification."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.retirement-future.10",
+        "context_id": "retirement-future-10-transfer-01",
+        "supports_from": [],
+        "reasoning": "The event calls for checking actual records and applicable procedures."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.retirement-future.10",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A major life change can make account contacts and beneficiary records outdated."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un cambio importante de vida puede desactualizar contactos y registros de beneficiarios."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Uma grande mudança de vida pode deixar contatos e registros de beneficiários desatualizados."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Change the record deliberately",
+          "line": "After major life changes, check beneficiaries and contacts through the provider’s official process. Verify legal effects locally."
+        },
+        "es-MX": {
+          "prompt": "Actualiza deliberadamente el registro",
+          "line": "Tras un cambio importante, revisa beneficiarios y contactos mediante el proceso oficial del proveedor. Verifica localmente sus efectos legales."
+        },
+        "pt-BR": {
+          "prompt": "Atualize o registro com cuidado",
+          "line": "Após grande mudança, confira beneficiários e contatos pelo processo oficial do prestador. Verifique localmente seus efeitos legais."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.10",
+      "copy": {
+        "en-US": {
+          "prompt": "What needs review?",
+          "scene": "A retirement account still lists an outdated contact after a household change.",
+          "options": [
+            {
+              "label": "The account’s contact record"
+            },
+            {
+              "label": "Nothing can be updated"
+            },
+            {
+              "label": "Only its displayed investment gain"
+            }
+          ],
+          "help": [
+            "Check the relevant personal records."
+          ],
+          "feedback": {
+            "met": "Outdated contacts can impair account communication and administration.",
+            "not_yet": "Check the relevant personal records."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debes revisar?",
+          "scene": "Una cuenta de retiro sigue indicando contacto antiguo tras un cambio del hogar.",
+          "options": [
+            {
+              "label": "El registro de contacto de cuenta"
+            },
+            {
+              "label": "Nada puede actualizarse"
+            },
+            {
+              "label": "Solo la ganancia de inversión mostrada"
+            }
+          ],
+          "help": [
+            "Revisa los registros personales pertinentes."
+          ],
+          "feedback": {
+            "met": "Contactos antiguos pueden dificultar comunicación y administración de cuenta.",
+            "not_yet": "Revisa los registros personales pertinentes."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que conferir?",
+          "scene": "Uma conta para o futuro ainda mostra contato antigo após mudança na família.",
+          "options": [
+            {
+              "label": "O contato da conta"
+            },
+            {
+              "label": "Nada pode ser mudado"
+            },
+            {
+              "label": "Só o ganho exibido"
+            }
+          ],
+          "help": [
+            "Confira os dados de contato."
+          ],
+          "feedback": {
+            "met": "Contatos antigos podem impedir avisos de chegar à pessoa certa.",
+            "not_yet": "Confira os dados de contato."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Does separation update every form?",
+          "scene": "A person separates from a partner but has not checked any beneficiary records.",
+          "options": [
+            {
+              "label": "Yes, all providers change automatically"
+            },
+            {
+              "label": "No, review the actual records and rules"
+            }
+          ],
+          "help": [
+            "Check the provider’s process and applicable local rules."
+          ],
+          "feedback": {
+            "met": "A life event does not prove every designation was updated.",
+            "not_yet": "Check the provider’s process and applicable local rules."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Un cambio actualiza todo formulario?",
+          "scene": "Una persona se separa, pero no revisa ningún registro de beneficiarios.",
+          "options": [
+            {
+              "label": "Sí, todo proveedor cambia automáticamente"
+            },
+            {
+              "label": "No, revisa registros y reglas reales"
+            }
+          ],
+          "help": [
+            "Consulta proceso del proveedor y reglas locales aplicables."
+          ],
+          "feedback": {
+            "met": "Un evento de vida no prueba que toda designación se actualizara.",
+            "not_yet": "Consulta proceso del proveedor y reglas locales aplicables."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Mudar de vida muda toda ficha?",
+          "scene": "Uma pessoa se separa, mas não confere quem consta para receber seus recursos.",
+          "options": [
+            {
+              "label": "Sim, tudo muda por si só"
+            },
+            {
+              "label": "Não, confira fichas e regras reais"
+            }
+          ],
+          "help": [
+            "Confira o processo da conta e a regra local."
+          ],
+          "feedback": {
+            "met": "Mudar de vida não prova que os nomes nas fichas mudaram.",
+            "not_yet": "Confira o processo da conta e a regra local."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.10",
+      "copy": {
+        "en-US": {
+          "prompt": "How to confirm an update?",
+          "scene": "Someone requests a beneficiary change through the verified provider process.",
+          "options": [
+            {
+              "label": "An unsent note suffices"
+            },
+            {
+              "label": "Send passwords to strangers"
+            },
+            {
+              "label": "Keep confirmation; check the record"
+            }
+          ],
+          "help": [
+            "Verify completion rather than merely intending the change."
+          ],
+          "feedback": {
+            "met": "Confirmation connects the request with the account’s actual record.",
+            "not_yet": "Verify completion rather than merely intending the change."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué ruta confirma actualizar?",
+          "scene": "Una persona solicita cambiar beneficiario por el proceso verificado del proveedor.",
+          "options": [
+            {
+              "label": "Suponer que basta una nota sin enviar"
+            },
+            {
+              "label": "Enviar contraseñas a un desconocido"
+            },
+            {
+              "label": "Guardar confirmación y revisar registro actualizado"
+            }
+          ],
+          "help": [
+            "Verifica que terminó, no solo la intención de cambiar."
+          ],
+          "feedback": {
+            "met": "La confirmación conecta la solicitud con el registro real.",
+            "not_yet": "Verifica que terminó, no solo la intención de cambiar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Como saber se mudou?",
+          "scene": "Uma pessoa pede mudar quem recebe os recursos pelo processo oficial da conta.",
+          "options": [
+            {
+              "label": "Basta anotar sem enviar"
+            },
+            {
+              "label": "Enviar senhas a um estranho"
+            },
+            {
+              "label": "Guardar a prova e conferir a ficha"
+            }
+          ],
+          "help": [
+            "Confira se o pedido foi de fato concluído."
+          ],
+          "feedback": {
+            "met": "A prova liga o pedido à ficha real da conta.",
+            "not_yet": "Confira se o pedido foi de fato concluído."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Does one account update all others?",
+          "scene": "A beneficiary change is confirmed for one of several separate accounts.",
+          "options": [
+            {
+              "label": "Yes, all accounts share the same record"
+            },
+            {
+              "label": "No, check each relevant account"
+            }
+          ],
+          "help": [
+            "Review the complete account list."
+          ],
+          "feedback": {
+            "met": "Separate accounts can maintain separate designations.",
+            "not_yet": "Review the complete account list."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Actualizar una cuenta cambia las otras?",
+          "scene": "Confirman cambio de beneficiario en una de varias cuentas separadas.",
+          "options": [
+            {
+              "label": "Sí, todas comparten el mismo registro"
+            },
+            {
+              "label": "No, revisa cada cuenta pertinente"
+            }
+          ],
+          "help": [
+            "Revisa la lista completa de cuentas."
+          ],
+          "feedback": {
+            "met": "Cuentas separadas pueden mantener designaciones distintas.",
+            "not_yet": "Revisa la lista completa de cuentas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Mudar uma conta muda as outras?",
+          "scene": "Muda o nome de quem recebe numa de várias contas separadas.",
+          "options": [
+            {
+              "label": "Sim, todas têm a mesma ficha"
+            },
+            {
+              "label": "Não, confira cada conta"
+            }
+          ],
+          "help": [
+            "Confira a lista toda de contas."
+          ],
+          "feedback": {
+            "met": "Contas separadas podem ter nomes distintos.",
+            "not_yet": "Confira a lista toda de contas."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Who clarifies legal effects?",
+          "scene": "A designation conflicts with an estate document; applicable law is unclear.",
+          "options": [
+            {
+              "label": "Assume equal legal effects"
+            },
+            {
+              "label": "Qualified local guidance and official process"
+            },
+            {
+              "label": "Random social-media claims"
+            }
+          ],
+          "help": [
+            "Do not infer legal priority from a label alone."
+          ],
+          "feedback": {
+            "met": "Conflicting legal effects require relevant local clarification.",
+            "not_yet": "Do not infer legal priority from a label alone."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Quién aclara efectos legales?",
+          "scene": "Una designación contradice otro documento sucesorio y no está clara la ley aplicable.",
+          "options": [
+            {
+              "label": "Suponer efecto igual de todos los documentos"
+            },
+            {
+              "label": "Orientación local calificada y proceso oficial"
+            },
+            {
+              "label": "Una afirmación al azar en redes"
+            }
+          ],
+          "help": [
+            "No infieras prioridad legal solo por una etiqueta."
+          ],
+          "feedback": {
+            "met": "Efectos legales contradictorios requieren aclaración local pertinente.",
+            "not_yet": "No infieras prioridad legal solo por una etiqueta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quem esclarece a lei?",
+          "scene": "O nome na conta não bate com outro documento de herança. A lei não está clara.",
+          "options": [
+            {
+              "label": "Supor que tudo vale igual"
+            },
+            {
+              "label": "Ajuda local qualificada e processo oficial"
+            },
+            {
+              "label": "Uma postagem qualquer"
+            }
+          ],
+          "help": [
+            "O nome da ficha não resolve sozinho a ordem legal."
+          ],
+          "feedback": {
+            "met": "Conflitos entre documentos pedem ajuda de quem conhece a lei local.",
+            "not_yet": "O nome da ficha não resolve sozinho a ordem legal."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.retirement-future.10",
+      "copy": {
+        "en-US": {
+          "prompt": "What follows this death?",
+          "scene": "A beneficiary died. Several long-term accounts still name that person.",
+          "options": [
+            {
+              "label": "Share login secrets with strangers"
+            },
+            {
+              "label": "Assume accounts update themselves"
+            },
+            {
+              "label": "Review each designation through verified procedures"
+            }
+          ],
+          "help": [
+            "Use official channels and relevant local guidance."
+          ],
+          "feedback": {
+            "met": "The event calls for checking actual records and applicable procedures.",
+            "not_yet": "Use official channels and relevant local guidance."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué sigue a una muerte familiar?",
+          "scene": "Murió una persona beneficiaria. Varias cuentas de largo plazo todavía la muestran.",
+          "options": [
+            {
+              "label": "Compartir contraseñas con cualquiera que ayude"
+            },
+            {
+              "label": "Suponer actualizadas todas las cuentas"
+            },
+            {
+              "label": "Revisar cada designación por procesos verificados"
+            }
+          ],
+          "help": [
+            "Usa canales oficiales y orientación local pertinente."
+          ],
+          "feedback": {
+            "met": "El evento exige revisar registros reales y procesos aplicables.",
+            "not_yet": "Usa canales oficiales y orientación local pertinente."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que fazer após essa morte?",
+          "scene": "A pessoa nomeada para receber morreu. Várias contas ainda mostram seu nome.",
+          "options": [
+            {
+              "label": "Dar senhas a qualquer ajudante"
+            },
+            {
+              "label": "Supor que tudo mudou sozinho"
+            },
+            {
+              "label": "Rever cada ficha pelo processo oficial"
+            }
+          ],
+          "help": [
+            "Use canais oficiais e ajuda local qualificada."
+          ],
+          "feedback": {
+            "met": "A morte pede conferir as fichas reais e as regras do caso.",
+            "not_yet": "Use canais oficiais e ajuda local qualificada."
+          }
+        }
+      }
+    }
+  ]
+}

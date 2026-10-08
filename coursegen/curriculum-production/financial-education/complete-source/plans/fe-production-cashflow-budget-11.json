@@ -1,0 +1,798 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-cashflow-budget-part-2",
+  "lesson_id": "fe-production-cashflow-budget-11",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.cashflow-budget.11"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Choose a feasible response to a deficit without inventing income or assuming borrowing is affordable.",
+  "title": {
+    "en-US": "Real deficits",
+    "es-MX": "Responde a un déficit real",
+    "pt-BR": "Responda a um déficit real"
+  },
+  "new_concepts": [
+    "finance.prod.cashflow-budget.11"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Respond to a real deficit\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Responde a un déficit real\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Responda a um déficit real\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.cashflow-budget.11",
+      "observable_action": "Choose a feasible response to a deficit without inventing income or assuming borrowing is affordable.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.cashflow-budget.04",
+      "prod.cashflow-budget.06",
+      "prod.spending-patterns.07"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Choose a response supported by the stated constraints and confirmed facts.",
+    "misconception": "Closing a budget gap with imagined income, impossible cuts or borrowing whose repayment is unexamined.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.cashflow-budget.11",
+        "context_id": "fe-production-cashflow-budget-11-example-01",
+        "supports_from": [],
+        "reasoning": "A deficit needs a feasible change. Check what can change, its cost, and when the change takes effect."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.cashflow-budget.11",
+        "context_id": "fe-production-cashflow-budget-11-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "This change removes a stated avoidable cost without an added fee."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.cashflow-budget.11",
+        "context_id": "fe-production-cashflow-budget-11-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Receiving a loan does not establish capacity to repay it."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.cashflow-budget.11",
+        "context_id": "fe-production-cashflow-budget-11-practice-01",
+        "supports_from": [],
+        "reasoning": "35 − 20 = 15 still needs attention."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.cashflow-budget.11",
+        "context_id": "fe-production-cashflow-budget-11-practice-02",
+        "supports_from": [],
+        "reasoning": "Pending support is not available money at the deadline."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.cashflow-budget.11",
+        "context_id": "fe-production-cashflow-budget-11-practice-03",
+        "supports_from": [],
+        "reasoning": "A later saving can coexist with an unaffordable upfront cost."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.cashflow-budget.11",
+        "context_id": "fe-production-cashflow-budget-11-transfer-01",
+        "supports_from": [],
+        "reasoning": "A discussion can clarify options without guaranteeing a changed obligation."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.cashflow-budget.11",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Choose a response supported by the stated constraints and confirmed facts."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Elige una respuesta apoyada en los límites y hechos confirmados."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Escolha uma resposta apoiada nos limites e fatos confirmados."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Test the proposed fix",
+          "line": "A deficit needs a feasible change. Check what can change, its cost, and when the change takes effect."
+        },
+        "es-MX": {
+          "prompt": "Prueba la solución propuesta",
+          "line": "Un déficit requiere un cambio viable. Revisa qué puede cambiar, su costo y cuándo tendrá efecto."
+        },
+        "pt-BR": {
+          "prompt": "Teste a solução proposta",
+          "line": "Um déficit exige uma mudança viável. Confira o que pode mudar, seu custo e quando terá efeito."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.11",
+      "copy": {
+        "en-US": {
+          "prompt": "Which change fits?",
+          "scene": "A deficit exists; an unused subscription can be canceled immediately without fees.",
+          "options": [
+            {
+              "label": "Delete a necessary bill from records"
+            },
+            {
+              "label": "Assume an unconfirmed wage increase"
+            },
+            {
+              "label": "Cancel that optional future cost"
+            }
+          ],
+          "help": [
+            "Use an available option rather than an invented receipt."
+          ],
+          "feedback": {
+            "met": "This change removes a stated avoidable cost without an added fee.",
+            "not_yet": "Use an available option rather than an invented receipt."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué cambio respaldan estos datos?",
+          "scene": "Hay déficit; una suscripción sin uso puede cancelarse inmediatamente sin comisión.",
+          "options": [
+            {
+              "label": "Borrar una cuenta necesaria del registro"
+            },
+            {
+              "label": "Suponer un aumento salarial sin confirmar"
+            },
+            {
+              "label": "Cancelar ese costo futuro opcional"
+            }
+          ],
+          "help": [
+            "Usa una opción disponible sin inventar entradas."
+          ],
+          "feedback": {
+            "met": "Este cambio quita un costo evitable indicado sin comisión adicional.",
+            "not_yet": "Usa una opción disponible sin inventar entradas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual mudança esses dados apoiam?",
+          "scene": "Há déficit; uma assinatura sem uso pode ser cancelada imediatamente sem tarifa.",
+          "options": [
+            {
+              "label": "Apagar uma conta necessária do registro"
+            },
+            {
+              "label": "Supor um aumento salarial não confirmado"
+            },
+            {
+              "label": "Cancelar esse custo futuro opcional"
+            }
+          ],
+          "help": [
+            "Use uma opção disponível sem inventar entradas."
+          ],
+          "feedback": {
+            "met": "Essa mudança retira um custo evitável informado sem tarifa adicional.",
+            "not_yet": "Use uma opção disponível sem inventar entradas."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.11",
+      "copy": {
+        "en-US": {
+          "prompt": "Is affordability established?",
+          "scene": "A loan covers today’s gap; repayment amounts and dates are unknown.",
+          "options": [
+            {
+              "label": "Yes, a loan removes future costs"
+            },
+            {
+              "label": "No, check repayment against the plan"
+            },
+            {
+              "label": "Yes, receiving money proves affordability"
+            }
+          ],
+          "help": [
+            "Include repayment obligations before judging the proposal."
+          ],
+          "feedback": {
+            "met": "Receiving a loan does not establish capacity to repay it.",
+            "not_yet": "Include repayment obligations before judging the proposal."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Ya puede concluirse que puedes pagarlo?",
+          "scene": "Un préstamo propuesto cubre el faltante actual; se desconocen monto y fechas de pago.",
+          "options": [
+            {
+              "label": "Sí, un préstamo elimina costos futuros"
+            },
+            {
+              "label": "No, compara pagos con el plan"
+            },
+            {
+              "label": "Sí, recibir demuestra capacidad de pago"
+            }
+          ],
+          "help": [
+            "Incluye obligaciones de pago antes de juzgar la propuesta."
+          ],
+          "feedback": {
+            "met": "Recibir un préstamo no demuestra capacidad de devolverlo.",
+            "not_yet": "Incluye obligaciones de pago antes de juzgar la propuesta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Já pode concluir que consegue pagar?",
+          "scene": "Um empréstimo proposto cobre a falta atual; valor e datas de pagamento são desconhecidos.",
+          "options": [
+            {
+              "label": "Sim, empréstimo elimina custos futuros"
+            },
+            {
+              "label": "Não, compare pagamentos com o plano"
+            },
+            {
+              "label": "Sim, receber comprova capacidade de pagamento"
+            }
+          ],
+          "help": [
+            "Inclua obrigações de pagamento antes de julgar a proposta."
+          ],
+          "feedback": {
+            "met": "Receber um empréstimo não demonstra capacidade de devolvê-lo.",
+            "not_yet": "Inclua obrigações de pagamento antes de julgar a proposta."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.11",
+      "copy": {
+        "en-US": {
+          "prompt": "Remaining gap?",
+          "scene": "The gap is 35; a verified feasible reduction saves 20 this period.",
+          "options": [
+            {
+              "label": "55"
+            },
+            {
+              "label": "15"
+            },
+            {
+              "label": "0"
+            }
+          ],
+          "help": [
+            "A partial fix does not close the whole deficit."
+          ],
+          "feedback": {
+            "met": "35 − 20 = 15 still needs attention.",
+            "not_yet": "A partial fix does not close the whole deficit."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Faltante restante?",
+          "scene": "Faltan 35; una reducción viable verificada ahorra 20 este periodo.",
+          "options": [
+            {
+              "label": "55"
+            },
+            {
+              "label": "15"
+            },
+            {
+              "label": "0"
+            }
+          ],
+          "help": [
+            "Un ajuste parcial no cierra todo el déficit."
+          ],
+          "feedback": {
+            "met": "35 − 20 = 15 aún requiere atención.",
+            "not_yet": "Un ajuste parcial no cierra todo el déficit."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Falta restante?",
+          "scene": "Faltam 35; uma redução viável verificada economiza 20 neste período.",
+          "options": [
+            {
+              "label": "55"
+            },
+            {
+              "label": "15"
+            },
+            {
+              "label": "0"
+            }
+          ],
+          "help": [
+            "Um ajuste parcial não cobre todo o déficit."
+          ],
+          "feedback": {
+            "met": "35 − 20 = 15 ainda exige atenção.",
+            "not_yet": "Um ajuste parcial não cobre todo o déficit."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          35,
+          20
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.11",
+      "copy": {
+        "en-US": {
+          "prompt": "How should the plan treat support?",
+          "scene": "Possible assistance is under review; the bill precedes any confirmed decision.",
+          "options": [
+            {
+              "label": "As cancellation of the bill"
+            },
+            {
+              "label": "As received money"
+            },
+            {
+              "label": "As unconfirmed, leaving the gap visible"
+            }
+          ],
+          "help": [
+            "Keep the unresolved amount visible while checking options."
+          ],
+          "feedback": {
+            "met": "Pending support is not available money at the deadline.",
+            "not_yet": "Keep the unresolved amount visible while checking options."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cómo tratar el apoyo en el plan actual?",
+          "scene": "Un posible apoyo está en revisión; la cuenta vence antes de una decisión confirmada.",
+          "options": [
+            {
+              "label": "Como cancelación de la cuenta"
+            },
+            {
+              "label": "Como dinero recibido"
+            },
+            {
+              "label": "Como no confirmado, mostrando el faltante"
+            }
+          ],
+          "help": [
+            "Conserva visible lo no resuelto mientras revisas opciones."
+          ],
+          "feedback": {
+            "met": "Un apoyo pendiente no es dinero disponible al vencer.",
+            "not_yet": "Conserva visible lo no resuelto mientras revisas opciones."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Como tratar o auxílio no plano atual?",
+          "scene": "Um possível auxílio está em análise; a conta vence antes de uma decisão confirmada.",
+          "options": [
+            {
+              "label": "Como cancelamento da conta"
+            },
+            {
+              "label": "Como dinheiro recebido"
+            },
+            {
+              "label": "Como não confirmado, mostrando a falta"
+            }
+          ],
+          "help": [
+            "Mantenha visível o não resolvido enquanto confere opções."
+          ],
+          "feedback": {
+            "met": "Um auxílio pendente não é dinheiro disponível no vencimento.",
+            "not_yet": "Mantenha visível o não resolvido enquanto confere opções."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.11",
+      "copy": {
+        "en-US": {
+          "prompt": "What must you include?",
+          "scene": "Switching services saves later, but a confirmed upfront fee worsens this week’s shortage.",
+          "options": [
+            {
+              "label": "Future savings alone"
+            },
+            {
+              "label": "A claim that switching is free"
+            },
+            {
+              "label": "The upfront cost and timing"
+            }
+          ],
+          "help": [
+            "Check when cash leaves as well as when savings begin."
+          ],
+          "feedback": {
+            "met": "A later saving can coexist with an unaffordable upfront cost.",
+            "not_yet": "Check when cash leaves as well as when savings begin."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe incluir la decisión?",
+          "scene": "Cambiar un servicio ahorra después, pero su comisión inicial confirmada agrava el faltante semanal.",
+          "options": [
+            {
+              "label": "Solo ahorros futuros"
+            },
+            {
+              "label": "Decir que cambiar es gratis"
+            },
+            {
+              "label": "El costo inicial y las fechas"
+            }
+          ],
+          "help": [
+            "Revisa cuándo sale dinero y cuándo empieza el ahorro."
+          ],
+          "feedback": {
+            "met": "Un ahorro posterior puede coexistir con un costo inicial inviable.",
+            "not_yet": "Revisa cuándo sale dinero y cuándo empieza el ahorro."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que a decisão deve incluir?",
+          "scene": "Trocar um serviço economiza depois, mas sua tarifa inicial confirmada agrava a falta semanal.",
+          "options": [
+            {
+              "label": "Só economias futuras"
+            },
+            {
+              "label": "Dizer que trocar é grátis"
+            },
+            {
+              "label": "O custo inicial e as datas"
+            }
+          ],
+          "help": [
+            "Confira quando sai dinheiro e quando começa a economia."
+          ],
+          "feedback": {
+            "met": "Uma economia posterior pode coexistir com um custo inicial inviável.",
+            "not_yet": "Confira quando sai dinheiro e quando começa a economia."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.cashflow-budget.11",
+      "copy": {
+        "en-US": {
+          "prompt": "Which step?",
+          "scene": "Essentials exceed income; a provider offers to discuss payment terms without guaranteeing approval.",
+          "options": [
+            {
+              "label": "Assume approval before the discussion"
+            },
+            {
+              "label": "Request and verify the terms"
+            },
+            {
+              "label": "Record the bill as forgiven"
+            }
+          ],
+          "help": [
+            "Only confirmed terms can replace the existing obligation."
+          ],
+          "feedback": {
+            "met": "A discussion can clarify options without guaranteeing a changed obligation.",
+            "not_yet": "Only confirmed terms can replace the existing obligation."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué paso usa honestamente la opción?",
+          "scene": "Un hogar no cubre lo esencial; un proveedor ofrece conversar un acuerdo, sin garantizarlo.",
+          "options": [
+            {
+              "label": "Suponer aprobación antes de conversar"
+            },
+            {
+              "label": "Solicitar y verificar condiciones del acuerdo"
+            },
+            {
+              "label": "Registrar la cuenta como perdonada"
+            }
+          ],
+          "help": [
+            "Solo condiciones confirmadas sustituyen la obligación vigente."
+          ],
+          "feedback": {
+            "met": "Conversar aclara opciones sin garantizar cambios en la obligación.",
+            "not_yet": "Solo condiciones confirmadas sustituyen la obligación vigente."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual passo usa honestamente a opção?",
+          "scene": "Uma casa não cobre o essencial; um fornecedor oferece conversar sobre um acordo, sem garanti-lo.",
+          "options": [
+            {
+              "label": "Supor aprovação antes de conversar"
+            },
+            {
+              "label": "Solicitar e verificar condições do acordo"
+            },
+            {
+              "label": "Registrar a conta como perdoada"
+            }
+          ],
+          "help": [
+            "Só condições confirmadas substituem a obrigação vigente."
+          ],
+          "feedback": {
+            "met": "Conversar esclarece opções sem garantir mudanças na obrigação.",
+            "not_yet": "Só condições confirmadas substituem a obrigação vigente."
+          }
+        }
+      }
+    }
+  ]
+}

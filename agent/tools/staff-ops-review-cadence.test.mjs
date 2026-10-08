@@ -207,7 +207,7 @@ test('the command line: the gate, --strict, drift, and the issue', () => {
   assert.match(readFileSync(join(dir, 'issue2.md'), 'utf8'), /could not be read/);
 });
 
-test('the workflow opens the issue every calendar quarter; spec:check and release readiness call the gate', () => {
+test('the workflow opens the issue every calendar quarter; release readiness and CI call the gate', () => {
   const workflow = read('.github/workflows/staff-ops-recalibration-quarterly.yml');
   assert.match(workflow, /cron: '0 9 1 1,4,7,10 \*'/);
   assert.match(workflow, /workflow_dispatch:/);
@@ -218,7 +218,7 @@ test('the workflow opens the issue every calendar quarter; spec:check and releas
   assert.match(workflow, /ops:drill/);
   assert.match(read('agent/tools/release-readiness.sh'), /^node agent\/tools\/staff-ops-review-cadence\.mjs --strict$/m);
   const pkg = JSON.parse(read('package.json'));
-  assert.match(pkg.scripts['spec:check'], /node agent\/tools\/staff-ops-review-cadence\.mjs(?! --strict)/);
+  assert.doesNotMatch(pkg.scripts['spec:check'], /staff-ops-review-cadence/);
   assert.match(read('docs/operations/GOVERNANCE.md'), /## 7\. Post-launch recalibration/);
   assert.match(read('.github/workflows/repo-gates.yml'), /run: node agent\/tools\/staff-ops-review-cadence\.mjs\n/);
 });

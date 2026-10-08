@@ -1,0 +1,816 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-usable-money-part-2",
+  "lesson_id": "fe-production-usable-money-06",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.debt.obligation"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Keep borrowed money separate from earnings when explaining what must be repaid.",
+  "title": {
+    "en-US": "Received, but owed",
+    "es-MX": "Dinero prestado",
+    "pt-BR": "Dinheiro emprestado"
+  },
+  "new_concepts": [
+    "finance.debt.obligation"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Received, but owed\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Dinero prestado\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Dinheiro emprestado\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "debt.obligation",
+      "observable_action": "Keep borrowed money separate from earnings when explaining what must be repaid.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "cash.received",
+      "cash.balance",
+      "cash.commitment"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A loan gives you money now and leaves a repayment to make later.",
+    "misconception": "All incoming money is earnings and can be treated as permanently available.",
+    "numeracy_support": "Show cash and amount owed separately. Do not require negative numbers, interest or net-worth terminology.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "debt.obligation",
+        "context_id": "production-money-6-example-01",
+        "supports_from": [],
+        "reasoning": "You have 25 and borrow 15: 25 + 15 = 40 now. You must return 15 tomorrow."
+      },
+      {
+        "segment_id": "example-02",
+        "skill_id": "debt.obligation",
+        "context_id": "production-money-6-example-02",
+        "supports_from": [],
+        "reasoning": "The loan increases cash, but repayment remains separate. Receiving money does not automatically make it earnings."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "debt.obligation",
+        "context_id": "production-money-6-guided-01",
+        "supports_from": [
+          "example-02"
+        ],
+        "reasoning": "The loan agreement creates the repayment obligation."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "debt.obligation",
+        "context_id": "production-money-6-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Receipt increases cash without settling the repayment obligation."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "debt.obligation",
+        "context_id": "production-money-6-practice-01",
+        "supports_from": [],
+        "reasoning": "Paying for transport did not pay the lender."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "debt.obligation",
+        "context_id": "production-money-6-practice-02",
+        "supports_from": [],
+        "reasoning": "Both current cash and the future repayment matter."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "debt.obligation",
+        "context_id": "production-money-6-practice-03",
+        "supports_from": [],
+        "reasoning": "The stated repayment agreement distinguishes this loan from the gift."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "debt.obligation",
+        "context_id": "production-money-6-transfer-01",
+        "supports_from": [],
+        "reasoning": "Spending the borrowed money does not cancel its repayment."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "debt.obligation",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A loan gives you money now and leaves a repayment to make later."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un préstamo te da dinero ahora y deja un pago pendiente para después."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Um empréstimo traz dinheiro agora e deixa um pagamento para depois."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Two separate facts",
+          "line": "You have 25 and borrow 15: 25 + 15 = 40 now. You must return 15 tomorrow."
+        },
+        "es-MX": {
+          "prompt": "Dos datos distintos",
+          "line": "Tienes 25 y recibes 15 prestados: 25 + 15 = 40 ahora. Debes devolver 15 mañana."
+        },
+        "pt-BR": {
+          "prompt": "Dois fatos diferentes",
+          "line": "Você tem 25 e pega 15 emprestados: 25 + 15 = 40 agora. Deve devolver 15 amanhã."
+        }
+      }
+    },
+    {
+      "id": "example-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Cash and obligation",
+          "line": "The loan increases cash, but repayment remains separate. Receiving money does not automatically make it earnings."
+        },
+        "es-MX": {
+          "prompt": "Efectivo y obligación",
+          "line": "El préstamo aumenta el efectivo, pero la devolución sigue pendiente. Recibir dinero no lo convierte automáticamente en ingreso ganado."
+        },
+        "pt-BR": {
+          "prompt": "Dinheiro e obrigação",
+          "line": "O empréstimo aumenta o dinheiro, mas a devolução continua pendente. Receber dinheiro não o transforma automaticamente em renda ganha."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.debt.obligation",
+      "copy": {
+        "en-US": {
+          "prompt": "Which receipt must be repaid?",
+          "scene": "One receipt is earnings. Another is a loan requiring repayment.",
+          "options": [
+            {
+              "label": "The loan"
+            },
+            {
+              "label": "The earnings"
+            },
+            {
+              "label": "Neither receipt"
+            }
+          ],
+          "help": [
+            "Check whether the receipt includes a repayment requirement."
+          ],
+          "feedback": {
+            "met": "The loan agreement creates the repayment obligation.",
+            "not_yet": "Check whether the receipt includes a repayment requirement."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué entrada debes devolver?",
+          "scene": "Una entrada es ingreso ganado. Otra es un préstamo que debes devolver.",
+          "options": [
+            {
+              "label": "El préstamo"
+            },
+            {
+              "label": "El ingreso ganado"
+            },
+            {
+              "label": "Ninguna entrada"
+            }
+          ],
+          "help": [
+            "Revisa si la entrada exige una devolución."
+          ],
+          "feedback": {
+            "met": "El acuerdo del préstamo crea la obligación de devolverlo.",
+            "not_yet": "Revisa si la entrada exige una devolución."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual entrada precisa devolver?",
+          "scene": "Uma entrada é renda ganha. Outra é um empréstimo que deve devolver.",
+          "options": [
+            {
+              "label": "O empréstimo"
+            },
+            {
+              "label": "A renda ganha"
+            },
+            {
+              "label": "Nenhuma entrada"
+            }
+          ],
+          "help": [
+            "Confira se a entrada exige devolução."
+          ],
+          "feedback": {
+            "met": "O acordo do empréstimo cria a obrigação de devolver.",
+            "not_yet": "Confira se a entrada exige devolução."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.debt.obligation",
+      "copy": {
+        "en-US": {
+          "prompt": "What changed when it arrived?",
+          "scene": "You received a loan. None has been repaid.",
+          "options": [
+            {
+              "label": "Only earnings increased"
+            },
+            {
+              "label": "Cash increased; debt disappeared"
+            },
+            {
+              "label": "Cash increased; debt remains"
+            }
+          ],
+          "help": [
+            "Receiving a loan is different from repaying it."
+          ],
+          "feedback": {
+            "met": "Receipt increases cash without settling the repayment obligation.",
+            "not_yet": "Receiving a loan is different from repaying it."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué cambió al recibirlo?",
+          "scene": "Recibiste un préstamo. No has devuelto nada.",
+          "options": [
+            {
+              "label": "Solo aumentó el ingreso ganado"
+            },
+            {
+              "label": "Aumentó el efectivo; desapareció la deuda"
+            },
+            {
+              "label": "Aumentó el efectivo; debes devolverlo"
+            }
+          ],
+          "help": [
+            "Recibir un préstamo es distinto de devolverlo."
+          ],
+          "feedback": {
+            "met": "Recibirlo aumenta el efectivo sin saldar la obligación.",
+            "not_yet": "Recibir un préstamo es distinto de devolverlo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que mudou ao recebê-lo?",
+          "scene": "Você recebeu um empréstimo. Não devolveu nada.",
+          "options": [
+            {
+              "label": "Só a renda ganha aumentou"
+            },
+            {
+              "label": "O dinheiro aumentou; a dívida desapareceu"
+            },
+            {
+              "label": "O dinheiro aumentou; a dívida permanece"
+            }
+          ],
+          "help": [
+            "Receber um empréstimo é diferente de devolvê-lo."
+          ],
+          "feedback": {
+            "met": "Receber aumenta o dinheiro sem quitar a obrigação.",
+            "not_yet": "Receber um empréstimo é diferente de devolvê-lo."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.debt.obligation",
+      "copy": {
+        "en-US": {
+          "prompt": "Did spending repay the loan?",
+          "scene": "You spent borrowed cash on transport. Nothing went back to the lender.",
+          "options": [
+            {
+              "label": "Yes, the cash is gone"
+            },
+            {
+              "label": "Partly, transport was necessary"
+            },
+            {
+              "label": "No, repayment remains"
+            }
+          ],
+          "help": [
+            "Follow who received the payment."
+          ],
+          "feedback": {
+            "met": "Paying for transport did not pay the lender.",
+            "not_yet": "Follow who received the payment."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Gastarlo devolvió el préstamo?",
+          "scene": "Gastaste el dinero prestado en transporte. No devolviste nada al prestamista.",
+          "options": [
+            {
+              "label": "Sí, el efectivo ya salió"
+            },
+            {
+              "label": "En parte, era necesario"
+            },
+            {
+              "label": "No, sigue la obligación"
+            }
+          ],
+          "help": [
+            "Observa quién recibió el pago."
+          ],
+          "feedback": {
+            "met": "Pagar transporte no fue pagarle al prestamista.",
+            "not_yet": "Observa quién recibió el pago."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Gastar devolveu o empréstimo?",
+          "scene": "Você gastou o dinheiro emprestado em transporte. Nada foi devolvido ao credor.",
+          "options": [
+            {
+              "label": "Sim, o dinheiro saiu"
+            },
+            {
+              "label": "Em parte, era necessário"
+            },
+            {
+              "label": "Não, a obrigação continua"
+            }
+          ],
+          "help": [
+            "Observe quem recebeu o pagamento."
+          ],
+          "feedback": {
+            "met": "Pagar transporte não foi pagar o credor.",
+            "not_yet": "Observe quem recebeu o pagamento."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.debt.obligation",
+      "copy": {
+        "en-US": {
+          "prompt": "Which record is complete?",
+          "scene": "A received loan remains entirely unpaid.",
+          "options": [
+            {
+              "label": "Record only cash held"
+            },
+            {
+              "label": "Record only new earnings"
+            },
+            {
+              "label": "Record cash and repayment owed"
+            }
+          ],
+          "help": [
+            "Do not erase the obligation when recording the receipt."
+          ],
+          "feedback": {
+            "met": "Both current cash and the future repayment matter.",
+            "not_yet": "Do not erase the obligation when recording the receipt."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué registro está completo?",
+          "scene": "Un préstamo recibido sigue sin devolverse.",
+          "options": [
+            {
+              "label": "Anotar solo efectivo disponible"
+            },
+            {
+              "label": "Anotar solo ingreso ganado"
+            },
+            {
+              "label": "Anotar efectivo y devolución pendiente"
+            }
+          ],
+          "help": [
+            "No borres la obligación al registrar la entrada."
+          ],
+          "feedback": {
+            "met": "Importan tanto el efectivo actual como la devolución pendiente.",
+            "not_yet": "No borres la obligación al registrar la entrada."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual registro está completo?",
+          "scene": "Um empréstimo recebido ainda não foi devolvido.",
+          "options": [
+            {
+              "label": "Anotar só dinheiro disponível"
+            },
+            {
+              "label": "Anotar só renda ganha"
+            },
+            {
+              "label": "Anotar dinheiro e devolução pendente"
+            }
+          ],
+          "help": [
+            "Não apague a obrigação ao registrar a entrada."
+          ],
+          "feedback": {
+            "met": "Importam tanto o dinheiro atual quanto a devolução pendente.",
+            "not_yet": "Não apague a obrigação ao registrar a entrada."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.debt.obligation",
+      "copy": {
+        "en-US": {
+          "prompt": "Which receipt creates this obligation?",
+          "scene": "A gift needs no repayment. A loan must be returned under its stated agreement.",
+          "options": [
+            {
+              "label": "Both because money arrived"
+            },
+            {
+              "label": "The loan"
+            },
+            {
+              "label": "The gift"
+            }
+          ],
+          "help": [
+            "Incoming money does not always have the same conditions."
+          ],
+          "feedback": {
+            "met": "The stated repayment agreement distinguishes this loan from the gift.",
+            "not_yet": "Incoming money does not always have the same conditions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué entrada crea esta obligación?",
+          "scene": "Un regalo no exige devolución. Un préstamo debe devolverse según su acuerdo.",
+          "options": [
+            {
+              "label": "Ambos porque llegó dinero"
+            },
+            {
+              "label": "El préstamo"
+            },
+            {
+              "label": "El regalo"
+            }
+          ],
+          "help": [
+            "El dinero recibido no siempre tiene las mismas condiciones."
+          ],
+          "feedback": {
+            "met": "El acuerdo de devolución distingue este préstamo del regalo.",
+            "not_yet": "El dinero recibido no siempre tiene las mismas condiciones."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual entrada cria esta obrigação?",
+          "scene": "Um presente não exige devolução. Um empréstimo deve ser devolvido conforme o acordo.",
+          "options": [
+            {
+              "label": "Ambos porque chegou dinheiro"
+            },
+            {
+              "label": "O empréstimo"
+            },
+            {
+              "label": "O presente"
+            }
+          ],
+          "help": [
+            "O dinheiro recebido nem sempre tem as mesmas condições."
+          ],
+          "feedback": {
+            "met": "O acordo de devolução distingue este empréstimo do presente.",
+            "not_yet": "O dinheiro recebido nem sempre tem as mesmas condições."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.debt.obligation",
+      "copy": {
+        "en-US": {
+          "prompt": "What remains after the purchase?",
+          "scene": "You received money for a purchase and agreed to return it next week. Nothing has been repaid.",
+          "options": [
+            {
+              "label": "The repayment obligation"
+            },
+            {
+              "label": "Only the purchase"
+            },
+            {
+              "label": "New earnings"
+            }
+          ],
+          "help": [
+            "A different name for borrowed money does not remove its conditions."
+          ],
+          "feedback": {
+            "met": "Spending the borrowed money does not cancel its repayment.",
+            "not_yet": "A different name for borrowed money does not remove its conditions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué queda tras la compra?",
+          "scene": "Recibiste dinero para una compra y acordaste devolverlo la próxima semana. No has devuelto nada.",
+          "options": [
+            {
+              "label": "La obligación de devolverlo"
+            },
+            {
+              "label": "Solo la compra"
+            },
+            {
+              "label": "Un ingreso ganado"
+            }
+          ],
+          "help": [
+            "Otro nombre para el dinero prestado no elimina sus condiciones."
+          ],
+          "feedback": {
+            "met": "Gastar el dinero prestado no cancela la devolución acordada.",
+            "not_yet": "Otro nombre para el dinero prestado no elimina sus condiciones."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que fica após a compra?",
+          "scene": "Você recebeu dinheiro para uma compra e combinou devolver na próxima semana. Nada foi devolvido.",
+          "options": [
+            {
+              "label": "A obrigação de devolver"
+            },
+            {
+              "label": "Só a compra"
+            },
+            {
+              "label": "Uma renda ganha"
+            }
+          ],
+          "help": [
+            "Outro nome para o dinheiro emprestado não elimina suas condições."
+          ],
+          "feedback": {
+            "met": "Gastar o dinheiro emprestado não cancela a devolução combinada.",
+            "not_yet": "Outro nome para o dinheiro emprestado não elimina suas condições."
+          }
+        }
+      }
+    }
+  ]
+}

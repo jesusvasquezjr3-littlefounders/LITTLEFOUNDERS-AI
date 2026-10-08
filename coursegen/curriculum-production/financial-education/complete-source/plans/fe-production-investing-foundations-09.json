@@ -1,0 +1,718 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-investing-foundations-part-2",
+  "lesson_id": "fe-production-investing-foundations-09",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.investing-foundations.09"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Compare diversified and concentrated fictional portfolios under a common shock.",
+  "title": {
+    "en-US": "Diversify Exposure",
+    "es-MX": "Distribuye el riesgo con perspectiva",
+    "pt-BR": "Distribua o risco com perspectiva"
+  },
+  "new_concepts": [
+    "finance.prod.investing-foundations.09"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Diversify Exposure\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Distribuye el riesgo con perspectiva\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Distribua o risco com perspectiva\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.investing-foundations.09",
+      "observable_action": "Compare diversified and concentrated fictional portfolios under a common shock.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.investing-foundations.08"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Spreading exposure can soften a specific shock without making every investment safe.",
+    "misconception": "Diversification prevents any portfolio loss or every holding must gain together.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.investing-foundations.09",
+        "context_id": "investing-foundations-09-example-01",
+        "supports_from": [],
+        "reasoning": "A crop disease hits farm shares. A portfolio containing unrelated businesses has less direct exposure than one holding only farms."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.investing-foundations.09",
+        "context_id": "investing-foundations-09-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Every holding in A directly faces the specified shock."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.investing-foundations.09",
+        "context_id": "investing-foundations-09-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Spreading exposure does not eliminate all loss possibilities."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.investing-foundations.09",
+        "context_id": "investing-foundations-09-practice-01",
+        "supports_from": [],
+        "reasoning": "A broad shock can affect different holdings simultaneously."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.investing-foundations.09",
+        "context_id": "investing-foundations-09-practice-02",
+        "supports_from": [],
+        "reasoning": "Different shocks obscure the effect of the portfolio mix."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.investing-foundations.09",
+        "context_id": "investing-foundations-09-practice-03",
+        "supports_from": [],
+        "reasoning": "Another name need not reduce the shared industry exposure."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.investing-foundations.09",
+        "context_id": "investing-foundations-09-transfer-01",
+        "supports_from": [],
+        "reasoning": "Outside businesses reduce direct dependence on the closing factory."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.investing-foundations.09",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Spreading exposure can soften a specific shock without making every investment safe."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Distribuir la exposición puede suavizar un problema específico sin volver segura toda inversión."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Distribuir a exposição pode suavizar um problema específico sem tornar seguro todo investimento."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Compare the same shock",
+          "line": "A crop disease hits farm shares. A portfolio containing unrelated businesses has less direct exposure than one holding only farms."
+        },
+        "es-MX": {
+          "prompt": "Compara el mismo problema",
+          "line": "Una enfermedad afecta cultivos. Una cartera con otros negocios tiene menos exposición directa que otra compuesta solo por granjas."
+        },
+        "pt-BR": {
+          "prompt": "Compare o mesmo problema",
+          "line": "Uma doença atinge plantações. Uma carteira com outros negócios tem menos exposição direta que outra composta só por fazendas."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Which is more exposed?",
+          "scene": "A shock hits airlines only. A holds only airlines; B holds airlines and unrelated businesses.",
+          "options": [
+            {
+              "label": "Both must be identical"
+            },
+            {
+              "label": "Portfolio A"
+            }
+          ],
+          "help": [
+            "Apply the same stated shock to each portfolio."
+          ],
+          "feedback": {
+            "met": "Every holding in A directly faces the specified shock.",
+            "not_yet": "Apply the same stated shock to each portfolio."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál está más expuesta?",
+          "scene": "Un problema afecta solo aerolíneas. A tiene solo aerolíneas; B combina aerolíneas y negocios no relacionados.",
+          "options": [
+            {
+              "label": "Ambas deben ser iguales"
+            },
+            {
+              "label": "La cartera A"
+            }
+          ],
+          "help": [
+            "Aplica el mismo problema indicado a cada cartera."
+          ],
+          "feedback": {
+            "met": "Todas las inversiones de A enfrentan directamente ese problema.",
+            "not_yet": "Aplica el mismo problema indicado a cada cartera."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual fica mais exposta?",
+          "scene": "Um problema atinge só aéreas. A tem só aéreas; B tem aéreas e outros negócios sem ligação.",
+          "options": [
+            {
+              "label": "Ambas devem ser iguais"
+            },
+            {
+              "label": "A carteira A"
+            }
+          ],
+          "help": [
+            "Use o mesmo problema nas duas carteiras."
+          ],
+          "feedback": {
+            "met": "Tudo em A sofre com esse mesmo problema.",
+            "not_yet": "Use o mesmo problema nas duas carteiras."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.09",
+      "copy": {
+        "en-US": {
+          "prompt": "What is not promised?",
+          "scene": "A portfolio spreads money across industries instead of relying on one.",
+          "options": [
+            {
+              "label": "That it can never lose"
+            },
+            {
+              "label": "Less reliance on one industry"
+            }
+          ],
+          "help": [
+            "Reduced concentration is different from a guarantee."
+          ],
+          "feedback": {
+            "met": "Spreading exposure does not eliminate all loss possibilities.",
+            "not_yet": "Reduced concentration is different from a guarantee."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué no se promete?",
+          "scene": "Una cartera distribuye dinero entre industrias en lugar de depender de una.",
+          "options": [
+            {
+              "label": "Que nunca perderá"
+            },
+            {
+              "label": "Menor dependencia de una industria"
+            }
+          ],
+          "help": [
+            "Reducir concentración es distinto de garantizar."
+          ],
+          "feedback": {
+            "met": "Distribuir exposición no elimina todas las posibles pérdidas.",
+            "not_yet": "Reducir concentración es distinto de garantizar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que não é prometido?",
+          "scene": "Uma carteira divide dinheiro entre setores em vez de apostar só em um.",
+          "options": [
+            {
+              "label": "Que nunca perderá"
+            },
+            {
+              "label": "Depender menos de um setor"
+            }
+          ],
+          "help": [
+            "Reduzir um risco não é dar uma garantia."
+          ],
+          "feedback": {
+            "met": "Dividir o risco não impede toda perda possível.",
+            "not_yet": "Reduzir um risco não é dar uma garantia."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.09",
+      "copy": {
+        "en-US": {
+          "prompt": "What about a broad shock?",
+          "scene": "A downturn affects many industries at once, including a diversified portfolio.",
+          "options": [
+            {
+              "label": "Diversification forbids any loss"
+            },
+            {
+              "label": "Several holdings may fall together"
+            }
+          ],
+          "help": [
+            "Diversification reduces some risks, not every shared risk."
+          ],
+          "feedback": {
+            "met": "A broad shock can affect different holdings simultaneously.",
+            "not_yet": "Diversification reduces some risks, not every shared risk."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Y un problema general?",
+          "scene": "Una caída económica afecta varias industrias, incluidas las de una cartera diversificada.",
+          "options": [
+            {
+              "label": "Diversificar prohíbe toda pérdida"
+            },
+            {
+              "label": "Varias inversiones pueden caer juntas"
+            }
+          ],
+          "help": [
+            "Diversificar reduce ciertos riesgos, no todo riesgo compartido."
+          ],
+          "feedback": {
+            "met": "Un problema amplio puede afectar inversiones distintas simultáneamente.",
+            "not_yet": "Diversificar reduce ciertos riesgos, no todo riesgo compartido."
+          }
+        },
+        "pt-BR": {
+          "prompt": "E uma crise geral?",
+          "scene": "Uma crise afeta vários setores. A carteira tem vários desses setores.",
+          "options": [
+            {
+              "label": "Dividir impede toda perda"
+            },
+            {
+              "label": "Vários ativos podem cair juntos"
+            }
+          ],
+          "help": [
+            "Dividir reduz certos riscos, não todos."
+          ],
+          "feedback": {
+            "met": "Uma crise ampla pode atingir muitos ativos ao mesmo tempo.",
+            "not_yet": "Dividir reduz certos riscos, não todos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Which comparison is fair?",
+          "scene": "To test diversification, two portfolios are modeled under different unrelated shocks.",
+          "options": [
+            {
+              "label": "Use the same shock for both"
+            },
+            {
+              "label": "Compare without changing anything"
+            }
+          ],
+          "help": [
+            "Hold the shock constant when comparing exposure."
+          ],
+          "feedback": {
+            "met": "Different shocks obscure the effect of the portfolio mix.",
+            "not_yet": "Hold the shock constant when comparing exposure."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué comparación es justa?",
+          "scene": "Para probar diversificación, modelan dos carteras bajo problemas distintos sin relación.",
+          "options": [
+            {
+              "label": "Usar el mismo problema para ambas"
+            },
+            {
+              "label": "Comparar sin cambiar nada"
+            }
+          ],
+          "help": [
+            "Mantén igual el problema al comparar exposición."
+          ],
+          "feedback": {
+            "met": "Problemas distintos ocultan el efecto de la combinación.",
+            "not_yet": "Mantén igual el problema al comparar exposición."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual teste é justo?",
+          "scene": "Querem comparar duas carteiras, mas usam crises bem diferentes em cada teste.",
+          "options": [
+            {
+              "label": "Usar a mesma crise nas duas"
+            },
+            {
+              "label": "Comparar sem mudar nada"
+            }
+          ],
+          "help": [
+            "Use a mesma crise ao comparar o risco."
+          ],
+          "feedback": {
+            "met": "Crises diferentes escondem o efeito da escolha de ativos.",
+            "not_yet": "Use a mesma crise ao comparar o risco."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.09",
+      "copy": {
+        "en-US": {
+          "prompt": "What actually changed?",
+          "scene": "Someone adds another tourism company to a portfolio already entirely dependent on tourism.",
+          "options": [
+            {
+              "label": "The name count, not the common dependence"
+            },
+            {
+              "label": "The tourism dependence vanished"
+            }
+          ],
+          "help": [
+            "Inspect the new holding’s actual source of risk."
+          ],
+          "feedback": {
+            "met": "Another name need not reduce the shared industry exposure.",
+            "not_yet": "Inspect the new holding’s actual source of risk."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué cambió realmente?",
+          "scene": "Agregan otra empresa turística a una cartera que ya depende por completo del turismo.",
+          "options": [
+            {
+              "label": "La cantidad de nombres, no la dependencia"
+            },
+            {
+              "label": "Desapareció la dependencia turística"
+            }
+          ],
+          "help": [
+            "Inspecciona la fuente real de riesgo de lo agregado."
+          ],
+          "feedback": {
+            "met": "Otro nombre no necesariamente reduce la exposición al mismo sector.",
+            "not_yet": "Inspecciona la fuente real de riesgo de lo agregado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que mudou?",
+          "scene": "Uma carteira só tem turismo. Acrescentam mais uma empresa de turismo.",
+          "options": [
+            {
+              "label": "Mais nomes, o mesmo setor"
+            },
+            {
+              "label": "O risco de turismo sumiu"
+            }
+          ],
+          "help": [
+            "Confira de onde vem o risco do novo ativo."
+          ],
+          "feedback": {
+            "met": "Outro nome não reduz por si só o risco comum.",
+            "not_yet": "Confira de onde vem o risco do novo ativo."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.investing-foundations.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Which limits exposure?",
+          "scene": "A factory closes. Portfolio A depends entirely on it; B includes unrelated outside businesses.",
+          "options": [
+            {
+              "label": "Both depend equally"
+            },
+            {
+              "label": "B guarantees gains"
+            },
+            {
+              "label": "B reduces direct dependence"
+            }
+          ],
+          "help": [
+            "Choose reduced exposure without inventing a guarantee."
+          ],
+          "feedback": {
+            "met": "Outside businesses reduce direct dependence on the closing factory.",
+            "not_yet": "Choose reduced exposure without inventing a guarantee."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué plan limita este problema?",
+          "scene": "Cierra una fábrica local. A depende solo de ella; B incluye negocios externos sin relación.",
+          "options": [
+            {
+              "label": "A y B dependen igual"
+            },
+            {
+              "label": "B garantiza rendimiento positivo"
+            },
+            {
+              "label": "B limita la exposición directa"
+            }
+          ],
+          "help": [
+            "Elige menor exposición sin inventar una garantía."
+          ],
+          "feedback": {
+            "met": "Otros negocios reducen la dependencia directa de la fábrica.",
+            "not_yet": "Elige menor exposición sin inventar una garantía."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual plano reduz esse risco?",
+          "scene": "Uma fábrica fecha. A depende só dela; B tem outros negócios de fora, sem ligação.",
+          "options": [
+            {
+              "label": "A e B dependem igual"
+            },
+            {
+              "label": "B garante lucro"
+            },
+            {
+              "label": "B depende menos da fábrica"
+            }
+          ],
+          "help": [
+            "Escolha menos risco sem inventar uma garantia."
+          ],
+          "feedback": {
+            "met": "Outros negócios reduzem o risco ligado à fábrica.",
+            "not_yet": "Escolha menos risco sem inventar uma garantia."
+          }
+        }
+      }
+    }
+  ]
+}

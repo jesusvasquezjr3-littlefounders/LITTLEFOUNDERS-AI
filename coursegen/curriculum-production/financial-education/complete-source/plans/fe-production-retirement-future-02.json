@@ -1,0 +1,767 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-retirement-future-part-1",
+  "lesson_id": "fe-production-retirement-future-02",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.retirement-future.02"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Identify the different roles of public benefits, employer arrangements and personal savings.",
+  "title": {
+    "en-US": "Retirement Sources",
+    "es-MX": "Fuentes distintas, condiciones distintas",
+    "pt-BR": "Fontes distintas, condições distintas"
+  },
+  "new_concepts": [
+    "finance.prod.retirement-future.02"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Retirement Sources\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Fuentes distintas, condiciones distintas\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Fontes distintas, condições distintas\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.retirement-future.02",
+      "observable_action": "Identify the different roles of public benefits, employer arrangements and personal savings.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.retirement-future.01",
+      "prod.tax-public-systems.07"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Public benefits, employer arrangements and personal savings do not follow one shared set of rules.",
+    "misconception": "Every retirement resource is the same kind of immediately owned and accessible money.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.retirement-future.02",
+        "context_id": "retirement-future-02-example-01",
+        "supports_from": [],
+        "reasoning": "Public programs, employer plans and personal savings are distinct sources. Their eligibility, ownership and access rules must be checked separately."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.retirement-future.02",
+        "context_id": "retirement-future-02-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The source is the public program with eligibility conditions."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.retirement-future.02",
+        "context_id": "retirement-future-02-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The arrangement comes through the employer’s stated plan."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.retirement-future.02",
+        "context_id": "retirement-future-02-practice-01",
+        "supports_from": [],
+        "reasoning": "The savings are an existing resource owned by the person."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.retirement-future.02",
+        "context_id": "retirement-future-02-practice-02",
+        "supports_from": [],
+        "reasoning": "The sources have distinct conditions and timelines."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.retirement-future.02",
+        "context_id": "retirement-future-02-practice-03",
+        "supports_from": [],
+        "reasoning": "A plan cannot rely on a resource that does not exist."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.retirement-future.02",
+        "context_id": "retirement-future-02-transfer-01",
+        "supports_from": [],
+        "reasoning": "Planning starts from real sources and verified conditions."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.retirement-future.02",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Public benefits, employer arrangements and personal savings do not follow one shared set of rules."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Apoyos públicos, planes del empleador y ahorro personal no siguen una sola regla común."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Benefícios públicos, planos do empregador e poupança pessoal não seguem uma única regra comum."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Name each source",
+          "line": "Public programs, employer plans and personal savings are distinct sources. Their eligibility, ownership and access rules must be checked separately."
+        },
+        "es-MX": {
+          "prompt": "Nombra cada fuente",
+          "line": "Programas públicos, planes del empleador y ahorro personal son fuentes distintas. Sus requisitos, propiedad y acceso se verifican por separado."
+        },
+        "pt-BR": {
+          "prompt": "Nomeie cada fonte",
+          "line": "Programas públicos, planos do empregador e poupança pessoal são fontes distintas. Requisitos, propriedade e acesso precisam ser conferidos à parte."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Which source is described?",
+          "scene": "A government program pays eligible people under its stated rules.",
+          "options": [
+            {
+              "label": "Employer bonus automatically"
+            },
+            {
+              "label": "Personal savings withdrawal"
+            },
+            {
+              "label": "Public benefit"
+            }
+          ],
+          "help": [
+            "Identify who provides the resource."
+          ],
+          "feedback": {
+            "met": "The source is the public program with eligibility conditions.",
+            "not_yet": "Identify who provides the resource."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué fuente se describe?",
+          "scene": "Un programa gubernamental paga a personas elegibles según sus reglas.",
+          "options": [
+            {
+              "label": "Bono patronal automático"
+            },
+            {
+              "label": "Retiro de ahorro personal"
+            },
+            {
+              "label": "Apoyo público"
+            }
+          ],
+          "help": [
+            "Identifica quién proporciona el recurso."
+          ],
+          "feedback": {
+            "met": "La fuente es el programa público con requisitos.",
+            "not_yet": "Identifica quién proporciona el recurso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual fonte é descrita?",
+          "scene": "Um programa do governo paga a pessoas que cumprem suas regras.",
+          "options": [
+            {
+              "label": "Bônus patronal automático"
+            },
+            {
+              "label": "Saque de poupança pessoal"
+            },
+            {
+              "label": "Benefício público"
+            }
+          ],
+          "help": [
+            "Identifique quem fornece o recurso."
+          ],
+          "feedback": {
+            "met": "A fonte é o programa público com requisitos.",
+            "not_yet": "Identifique quem fornece o recurso."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Which source is described?",
+          "scene": "An employer offers a retirement arrangement tied to its own documented conditions.",
+          "options": [
+            {
+              "label": "Unrestricted personal cash"
+            },
+            {
+              "label": "Universal government entitlement"
+            },
+            {
+              "label": "Employer arrangement"
+            }
+          ],
+          "help": [
+            "Read the plan instead of assuming universal rules."
+          ],
+          "feedback": {
+            "met": "The arrangement comes through the employer’s stated plan.",
+            "not_yet": "Read the plan instead of assuming universal rules."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué fuente se describe?",
+          "scene": "Un empleador ofrece un plan de retiro sujeto a sus condiciones documentadas.",
+          "options": [
+            {
+              "label": "Efectivo personal sin restricciones"
+            },
+            {
+              "label": "Derecho gubernamental universal"
+            },
+            {
+              "label": "Plan del empleador"
+            }
+          ],
+          "help": [
+            "Lee el plan sin suponer reglas universales."
+          ],
+          "feedback": {
+            "met": "El recurso viene mediante el plan indicado del empleador.",
+            "not_yet": "Lee el plan sin suponer reglas universales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual fonte é descrita?",
+          "scene": "Um empregador oferece um plano de aposentadoria sujeito às suas condições documentadas.",
+          "options": [
+            {
+              "label": "Dinheiro pessoal sem restrições"
+            },
+            {
+              "label": "Direito governamental universal"
+            },
+            {
+              "label": "Plano do empregador"
+            }
+          ],
+          "help": [
+            "Leia o plano sem supor regras universais."
+          ],
+          "feedback": {
+            "met": "O recurso vem pelo plano dado do empregador.",
+            "not_yet": "Leia o plano sem supor regras universais."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Which source is a stored resource?",
+          "scene": "A person has already set aside money they own for future use.",
+          "options": [
+            {
+              "label": "An employer promise with unmet conditions"
+            },
+            {
+              "label": "Personal savings"
+            },
+            {
+              "label": "An unapproved benefit application"
+            }
+          ],
+          "help": [
+            "Separate held money from possible future entitlements."
+          ],
+          "feedback": {
+            "met": "The savings are an existing resource owned by the person.",
+            "not_yet": "Separate held money from possible future entitlements."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué fuente es recurso acumulado?",
+          "scene": "Una persona ya apartó dinero propio para usar después.",
+          "options": [
+            {
+              "label": "Promesa patronal con requisitos incumplidos"
+            },
+            {
+              "label": "Ahorro personal"
+            },
+            {
+              "label": "Solicitud de apoyo sin aprobar"
+            }
+          ],
+          "help": [
+            "Distingue dinero guardado de posibles derechos futuros."
+          ],
+          "feedback": {
+            "met": "El ahorro es un recurso existente de la persona.",
+            "not_yet": "Distingue dinero guardado de posibles derechos futuros."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual fonte é recurso guardado?",
+          "scene": "Uma pessoa já separou dinheiro próprio para usar depois.",
+          "options": [
+            {
+              "label": "Promessa patronal com requisitos não cumpridos"
+            },
+            {
+              "label": "Poupança pessoal"
+            },
+            {
+              "label": "Pedido de benefício sem aprovação"
+            }
+          ],
+          "help": [
+            "Separe dinheiro guardado de possíveis direitos futuros."
+          ],
+          "feedback": {
+            "met": "A poupança é um recurso existente da pessoa.",
+            "not_yet": "Separe dinheiro guardado de possíveis direitos futuros."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Can one rule cover all sources?",
+          "scene": "The public benefit and employer plan have different eligibility dates.",
+          "options": [
+            {
+              "label": "Yes, one approval unlocks everything"
+            },
+            {
+              "label": "No, check each source separately"
+            }
+          ],
+          "help": [
+            "Match each resource with its own rules."
+          ],
+          "feedback": {
+            "met": "The sources have distinct conditions and timelines.",
+            "not_yet": "Match each resource with its own rules."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Una regla cubre todas las fuentes?",
+          "scene": "El apoyo público y el plan patronal tienen fechas distintas de elegibilidad.",
+          "options": [
+            {
+              "label": "Sí, una aprobación desbloquea todo"
+            },
+            {
+              "label": "No, revisa cada fuente por separado"
+            }
+          ],
+          "help": [
+            "Relaciona cada recurso con sus propias reglas."
+          ],
+          "feedback": {
+            "met": "Las fuentes tienen condiciones y tiempos distintos.",
+            "not_yet": "Relaciona cada recurso con sus propias reglas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Uma regra cobre todas as fontes?",
+          "scene": "O benefício público e o plano patronal têm datas distintas de acesso.",
+          "options": [
+            {
+              "label": "Sim, uma aprovação libera tudo"
+            },
+            {
+              "label": "Não, confira cada fonte à parte"
+            }
+          ],
+          "help": [
+            "Relacione cada recurso com suas próprias regras."
+          ],
+          "feedback": {
+            "met": "As fontes têm condições e prazos distintos.",
+            "not_yet": "Relacione cada recurso com suas próprias regras."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Which gap matters?",
+          "scene": "A plan assumes employer support, but the person has no employer arrangement.",
+          "options": [
+            {
+              "label": "That source is absent"
+            },
+            {
+              "label": "Personal savings automatically create it"
+            },
+            {
+              "label": "The label makes it available"
+            }
+          ],
+          "help": [
+            "List actual sources before estimating coverage."
+          ],
+          "feedback": {
+            "met": "A plan cannot rely on a resource that does not exist.",
+            "not_yet": "List actual sources before estimating coverage."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué falta importa?",
+          "scene": "Un plan de gastos supone un plan patronal, pero la persona no tiene ninguno.",
+          "options": [
+            {
+              "label": "La fuente supuesta no existe"
+            },
+            {
+              "label": "El ahorro personal lo crea automáticamente"
+            },
+            {
+              "label": "La etiqueta lo vuelve disponible"
+            }
+          ],
+          "help": [
+            "Lista fuentes reales antes de estimar cobertura."
+          ],
+          "feedback": {
+            "met": "No puedes depender de un recurso que no existe.",
+            "not_yet": "Lista fuentes reales antes de estimar cobertura."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual falta importa?",
+          "scene": "Um plano de gastos supõe plano patronal, mas a pessoa não tem nenhum.",
+          "options": [
+            {
+              "label": "A fonte suposta não existe"
+            },
+            {
+              "label": "A poupança pessoal o cria automaticamente"
+            },
+            {
+              "label": "O nome o torna disponível"
+            }
+          ],
+          "help": [
+            "Liste fontes reais antes de estimar cobertura."
+          ],
+          "feedback": {
+            "met": "Não pode depender de recurso que não existe.",
+            "not_yet": "Liste fontes reais antes de estimar cobertura."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.retirement-future.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What should the plan use?",
+          "scene": "A self-employed person has savings and potential public eligibility, but no employer plan.",
+          "options": [
+            {
+              "label": "Invented employer contributions"
+            },
+            {
+              "label": "Actual sources and conditions"
+            },
+            {
+              "label": "Assume everything guaranteed today"
+            }
+          ],
+          "help": [
+            "Do not assume salaried employment or an employer plan."
+          ],
+          "feedback": {
+            "met": "Planning starts from real sources and verified conditions.",
+            "not_yet": "Do not assume salaried employment or an employer plan."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe usar este plan?",
+          "scene": "Una persona independiente tiene ahorro y posible elegibilidad pública, sin plan patronal.",
+          "options": [
+            {
+              "label": "Una aportación patronal inventada"
+            },
+            {
+              "label": "Esas fuentes reales y sus condiciones"
+            },
+            {
+              "label": "Tratar todo como garantizado hoy"
+            }
+          ],
+          "help": [
+            "No supongas empleo asalariado ni plan patronal."
+          ],
+          "feedback": {
+            "met": "Planear empieza con fuentes reales y condiciones verificadas.",
+            "not_yet": "No supongas empleo asalariado ni plan patronal."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que esse plano deve usar?",
+          "scene": "Uma pessoa autônoma tem poupança e possível direito público, sem plano patronal.",
+          "options": [
+            {
+              "label": "Uma contribuição patronal inventada"
+            },
+            {
+              "label": "Essas fontes reais e suas condições"
+            },
+            {
+              "label": "Tratar tudo como garantido hoje"
+            }
+          ],
+          "help": [
+            "Não suponha emprego assalariado nem plano patronal."
+          ],
+          "feedback": {
+            "met": "Planejar começa com fontes reais e condições verificadas.",
+            "not_yet": "Não suponha emprego assalariado nem plano patronal."
+          }
+        }
+      }
+    }
+  ]
+}

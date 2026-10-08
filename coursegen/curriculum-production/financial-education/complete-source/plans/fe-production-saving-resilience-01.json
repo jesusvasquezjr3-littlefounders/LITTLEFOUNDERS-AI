@@ -1,0 +1,779 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-saving-resilience-part-1",
+  "lesson_id": "fe-production-saving-resilience-01",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.saving-resilience.01"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Separate money for a predictable bill from money for an unforeseen disruption.",
+  "title": {
+    "en-US": "Saving Purposes",
+    "es-MX": "Cuentas previstas e imprevistos",
+    "pt-BR": "Contas previstas e imprevistos"
+  },
+  "new_concepts": [
+    "finance.prod.saving-resilience.01"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Saving Purposes\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Cuentas previstas e imprevistos\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Contas previstas e imprevistos\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.saving-resilience.01",
+      "observable_action": "Separate money for a predictable bill from money for an unforeseen disruption.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.spending-patterns.05",
+      "plan.periodic"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A bill can be infrequent without being unexpected; give planned expenses and disruptions separate space in your savings plan.",
+    "misconception": "Every nonmonthly bill is an emergency, or a known annual payment needs no advance saving.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.saving-resilience.01",
+        "context_id": "saving-resilience-01-example-01",
+        "supports_from": [],
+        "reasoning": "Save ahead for known dates and amounts. An emergency reserve serves unexpected disruptions, rather than replacing every planned bill fund."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.saving-resilience.01",
+        "context_id": "saving-resilience-01-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Known annual payments can be planned before their due date."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.saving-resilience.01",
+        "context_id": "saving-resilience-01-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The unexpected essential failure differs from a scheduled expense."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.saving-resilience.01",
+        "context_id": "saving-resilience-01-practice-01",
+        "supports_from": [],
+        "reasoning": "Size alone does not turn a known payment into a surprise."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.saving-resilience.01",
+        "context_id": "saving-resilience-01-practice-02",
+        "supports_from": [],
+        "reasoning": "Separate purposes prevent counting the same money for both needs."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.saving-resilience.01",
+        "context_id": "saving-resilience-01-practice-03",
+        "supports_from": [],
+        "reasoning": "A repeating known obligation can be saved for in advance."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.saving-resilience.01",
+        "context_id": "saving-resilience-01-transfer-01",
+        "supports_from": [],
+        "reasoning": "The known premium and sudden damage have different saving purposes."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.saving-resilience.01",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A bill can be infrequent without being unexpected; give planned expenses and disruptions separate space in your savings plan."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Una cuenta puede ser poco frecuente sin ser imprevista; separa gastos previstos y contratiempos en tu ahorro."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Uma conta pode ser rara sem ser imprevista; separe gastos previstos e contratempos no plano de poupança."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Timing does not mean surprise",
+          "line": "Save ahead for known dates and amounts. An emergency reserve serves unexpected disruptions, rather than replacing every planned bill fund."
+        },
+        "es-MX": {
+          "prompt": "Frecuencia no significa sorpresa",
+          "line": "Ahorra antes para fechas y montos conocidos. Reserva de emergencia atiende imprevistos, no sustituye todo fondo para cuentas previstas."
+        },
+        "pt-BR": {
+          "prompt": "Frequência não significa surpresa",
+          "line": "Poupe antes para datas e valores conhecidos. Reserva de emergência atende imprevistos, não substitui todo fundo para contas previstas."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Which fund fits this expense?",
+          "scene": "An annual fee has a known amount and due date.",
+          "options": [
+            {
+              "label": "Planned-bill savings"
+            },
+            {
+              "label": "No planning because it is annual"
+            },
+            {
+              "label": "Only an unexpected-shock reserve"
+            }
+          ],
+          "help": [
+            "Separate infrequent expenses from unforeseen events."
+          ],
+          "feedback": {
+            "met": "Known annual payments can be planned before their due date.",
+            "not_yet": "Separate infrequent expenses from unforeseen events."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué fondo corresponde a este gasto?",
+          "scene": "Cuota anual tiene monto y fecha conocidos.",
+          "options": [
+            {
+              "label": "Ahorro para cuenta prevista"
+            },
+            {
+              "label": "Sin plan porque es anual"
+            },
+            {
+              "label": "Solo reserva de imprevistos"
+            }
+          ],
+          "help": [
+            "Separa gastos poco frecuentes de eventos imprevistos."
+          ],
+          "feedback": {
+            "met": "Pagos anuales conocidos pueden planearse antes de vencer.",
+            "not_yet": "Separa gastos poco frecuentes de eventos imprevistos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que fundo cabe neste gasto?",
+          "scene": "Taxa anual tem valor e data conhecidos.",
+          "options": [
+            {
+              "label": "Poupança para conta prevista"
+            },
+            {
+              "label": "Sem plano pois é anual"
+            },
+            {
+              "label": "Só reserva de imprevistos"
+            }
+          ],
+          "help": [
+            "Separe gastos raros de eventos imprevistos."
+          ],
+          "feedback": {
+            "met": "Pagamentos anuais conhecidos podem ser planejados antes de vencer.",
+            "not_yet": "Separe gastos raros de eventos imprevistos."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Which event is unforeseen here?",
+          "scene": "A necessary appliance unexpectedly fails; no scheduled replacement was known.",
+          "options": [
+            {
+              "label": "The dated annual bill"
+            },
+            {
+              "label": "The sudden essential failure"
+            },
+            {
+              "label": "The planned holiday purchase"
+            }
+          ],
+          "help": [
+            "Use what was known before the event."
+          ],
+          "feedback": {
+            "met": "The unexpected essential failure differs from a scheduled expense.",
+            "not_yet": "Use what was known before the event."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué evento es imprevisto aquí?",
+          "scene": "Aparato necesario falla de repente; no se conocía reemplazo programado.",
+          "options": [
+            {
+              "label": "Cuenta anual fechada"
+            },
+            {
+              "label": "Falla esencial repentina"
+            },
+            {
+              "label": "Compra vacacional prevista"
+            }
+          ],
+          "help": [
+            "Usa lo que se sabía antes del evento."
+          ],
+          "feedback": {
+            "met": "Falla esencial inesperada difiere de gasto programado.",
+            "not_yet": "Usa lo que se sabía antes del evento."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que evento é imprevisto aqui?",
+          "scene": "Aparelho necessário falha de repente; não havia troca prevista conhecida.",
+          "options": [
+            {
+              "label": "Conta anual datada"
+            },
+            {
+              "label": "Falha essencial repentina"
+            },
+            {
+              "label": "Compra de férias prevista"
+            }
+          ],
+          "help": [
+            "Use o que se sabia antes do evento."
+          ],
+          "feedback": {
+            "met": "Falha essencial inesperada difere de gasto marcado.",
+            "not_yet": "Use o que se sabia antes do evento."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Does size create an emergency?",
+          "scene": "A course payment was agreed months ago with a known deadline.",
+          "options": [
+            {
+              "label": "Yes, every large bill is unforeseen"
+            },
+            {
+              "label": "No, it was predictable"
+            },
+            {
+              "label": "Yes, deadlines erase advance knowledge"
+            }
+          ],
+          "help": [
+            "Classify by predictability and purpose, not only amount."
+          ],
+          "feedback": {
+            "met": "Size alone does not turn a known payment into a surprise.",
+            "not_yet": "Classify by predictability and purpose, not only amount."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Monto grande vuelve esto emergencia?",
+          "scene": "Pago de curso se acordó hace meses con fecha conocida.",
+          "options": [
+            {
+              "label": "Sí, toda cuenta grande es imprevista"
+            },
+            {
+              "label": "No, era previsible"
+            },
+            {
+              "label": "Sí, fecha borra conocimiento previo"
+            }
+          ],
+          "help": [
+            "Clasifica por previsibilidad y propósito, no solo monto."
+          ],
+          "feedback": {
+            "met": "Tamaño solo no vuelve sorpresa un pago conocido.",
+            "not_yet": "Clasifica por previsibilidad y propósito, no solo monto."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Valor grande torna isso emergência?",
+          "scene": "Pagamento de curso foi combinado meses atrás com data conhecida.",
+          "options": [
+            {
+              "label": "Sim, toda conta grande é imprevista"
+            },
+            {
+              "label": "Não, era previsível"
+            },
+            {
+              "label": "Sim, data apaga conhecimento prévio"
+            }
+          ],
+          "help": [
+            "Classifique por previsão e finalidade, não só valor."
+          ],
+          "feedback": {
+            "met": "Tamanho só não torna surpresa um pagamento conhecido.",
+            "not_yet": "Classifique por previsão e finalidade, não só valor."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What should be separated?",
+          "scene": "Scheduled inspection money and urgent-fault reserves share an unlabeled balance.",
+          "options": [
+            {
+              "label": "Nothing because every saving is spendable"
+            },
+            {
+              "label": "Only their combined total"
+            },
+            {
+              "label": "Planned inspection and disruption allocations"
+            }
+          ],
+          "help": [
+            "Label what is reserved for each purpose."
+          ],
+          "feedback": {
+            "met": "Separate purposes prevent counting the same money for both needs.",
+            "not_yet": "Label what is reserved for each purpose."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué separar en este plan?",
+          "scene": "Dinero para revisión programada y fallas urgentes imprevistas comparte saldo sin etiquetas.",
+          "options": [
+            {
+              "label": "Nada porque todo ahorro se gasta"
+            },
+            {
+              "label": "Solo su total combinado"
+            },
+            {
+              "label": "Apartados para revisión e imprevistos"
+            }
+          ],
+          "help": [
+            "Etiqueta qué queda reservado a cada propósito."
+          ],
+          "feedback": {
+            "met": "Separar propósitos evita contar mismo dinero para ambos usos.",
+            "not_yet": "Etiqueta qué queda reservado a cada propósito."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que separar neste plano?",
+          "scene": "Dinheiro para revisão marcada e falhas urgentes imprevistas divide saldo sem nomes.",
+          "options": [
+            {
+              "label": "Nada pois toda poupança se gasta"
+            },
+            {
+              "label": "Só seu total combinado"
+            },
+            {
+              "label": "Verbas para revisão e imprevistos"
+            }
+          ],
+          "help": [
+            "Nomeie o que fica reservado para cada fim."
+          ],
+          "feedback": {
+            "met": "Separar finalidades evita contar mesmo dinheiro para ambos os usos.",
+            "not_yet": "Nomeie o que fica reservado para cada fim."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Which expense needs advance provision?",
+          "scene": "A seasonal work permit renews on a stated date every year.",
+          "options": [
+            {
+              "label": "No annual expense"
+            },
+            {
+              "label": "Only events with no known date"
+            },
+            {
+              "label": "The known renewal"
+            }
+          ],
+          "help": [
+            "Use the known date to plan contributions."
+          ],
+          "feedback": {
+            "met": "A repeating known obligation can be saved for in advance.",
+            "not_yet": "Use the known date to plan contributions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué gasto necesita provisión previa?",
+          "scene": "Permiso estacional de trabajo se renueva cada año en fecha indicada.",
+          "options": [
+            {
+              "label": "Ningún gasto anual"
+            },
+            {
+              "label": "Solo eventos sin fecha conocida"
+            },
+            {
+              "label": "Renovación conocida"
+            }
+          ],
+          "help": [
+            "Usa fecha conocida para planear aportes."
+          ],
+          "feedback": {
+            "met": "Una obligación repetida conocida puede ahorrarse con anticipación.",
+            "not_yet": "Usa fecha conocida para planear aportes."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que gasto precisa de provisão antes?",
+          "scene": "Licença sazonal de trabalho renova todo ano na data dada.",
+          "options": [
+            {
+              "label": "Nenhum gasto anual"
+            },
+            {
+              "label": "Só eventos sem data conhecida"
+            },
+            {
+              "label": "Renovação conhecida"
+            }
+          ],
+          "help": [
+            "Use data conhecida para planejar aportes."
+          ],
+          "feedback": {
+            "met": "Um dever repetido conhecido permite poupar antes.",
+            "not_yet": "Use data conhecida para planejar aportes."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.saving-resilience.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Which classification fits both?",
+          "scene": "A known annual premium is due soon; an essential pipe bursts unexpectedly today.",
+          "options": [
+            {
+              "label": "Premium planned; burst unforeseen"
+            },
+            {
+              "label": "Both automatically unforeseen"
+            },
+            {
+              "label": "Neither needs money"
+            }
+          ],
+          "help": [
+            "Distinguish expected timing from the unexpected disruption."
+          ],
+          "feedback": {
+            "met": "The known premium and sudden damage have different saving purposes.",
+            "not_yet": "Distinguish expected timing from the unexpected disruption."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué clasificación corresponde a ambos?",
+          "scene": "Prima anual conocida vence pronto; tubería esencial revienta inesperadamente hoy.",
+          "options": [
+            {
+              "label": "Prima prevista; rotura imprevista"
+            },
+            {
+              "label": "Ambos automáticamente imprevistos"
+            },
+            {
+              "label": "Ninguno necesita dinero"
+            }
+          ],
+          "help": [
+            "Distingue fecha esperada de contratiempo inesperado."
+          ],
+          "feedback": {
+            "met": "Prima conocida y daño repentino tienen usos del ahorro distintos.",
+            "not_yet": "Distingue fecha esperada de contratiempo inesperado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que classificação cabe aos dois?",
+          "scene": "Prêmio anual conhecido vence logo; cano essencial estoura de surpresa hoje.",
+          "options": [
+            {
+              "label": "Prêmio previsto; ruptura imprevista"
+            },
+            {
+              "label": "Ambos automaticamente imprevistos"
+            },
+            {
+              "label": "Nenhum precisa de dinheiro"
+            }
+          ],
+          "help": [
+            "Separe data esperada de contratempo inesperado."
+          ],
+          "feedback": {
+            "met": "Prêmio conhecido e dano repentino têm fins de poupança distintos.",
+            "not_yet": "Separe data esperada de contratempo inesperado."
+          }
+        }
+      }
+    }
+  ]
+}

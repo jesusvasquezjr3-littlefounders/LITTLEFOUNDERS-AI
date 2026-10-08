@@ -1,0 +1,779 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-goals-tradeoffs-part-2",
+  "lesson_id": "fe-production-goals-tradeoffs-07",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.goals-tradeoffs.07"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Choose a small next action that can be checked without requiring spare income.",
+  "title": {
+    "en-US": "Feasible actions",
+    "es-MX": "Un siguiente paso posible",
+    "pt-BR": "Um próximo passo possível"
+  },
+  "new_concepts": [
+    "finance.prod.goals-tradeoffs.07"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"A next step you can do\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Un siguiente paso posible\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Um próximo passo possível\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.goals-tradeoffs.07",
+      "observable_action": "Choose a small next action that can be checked without requiring spare income.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.goals-tradeoffs.01",
+      "prod.goals-tradeoffs.06"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Progress can start with checking information, even without spare money.",
+    "misconception": "Assume every financial goal must start with depositing money.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.goals-tradeoffs.07",
+        "context_id": "fe-production-goals-tradeoffs-07-example-01",
+        "supports_from": [],
+        "reasoning": "No dollars remain today. Asking for a written repair quote still helps: you can check whether you received it tomorrow."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.goals-tradeoffs.07",
+        "context_id": "fe-production-goals-tradeoffs-07-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Checking the cost does not require an invented deposit."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.goals-tradeoffs.07",
+        "context_id": "fe-production-goals-tradeoffs-07-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "A specific action has observable completion."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.goals-tradeoffs.07",
+        "context_id": "fe-production-goals-tradeoffs-07-practice-01",
+        "supports_from": [],
+        "reasoning": "Reading the terms resolves a concrete planning uncertainty."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.goals-tradeoffs.07",
+        "context_id": "fe-production-goals-tradeoffs-07-practice-02",
+        "supports_from": [],
+        "reasoning": "Recording the date produces usable evidence."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.goals-tradeoffs.07",
+        "context_id": "fe-production-goals-tradeoffs-07-practice-03",
+        "supports_from": [],
+        "reasoning": "Resolving a prerequisite can be a real next step."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.goals-tradeoffs.07",
+        "context_id": "fe-production-goals-tradeoffs-07-transfer-01",
+        "supports_from": [],
+        "reasoning": "Current route information supports a feasible later comparison."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.goals-tradeoffs.07",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Progress can start with checking information, even without spare money."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Avanzar puede empezar revisando información, incluso sin dinero sobrante."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Avançar pode começar conferindo informações, mesmo sem dinheiro sobrando."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "An observable action",
+          "line": "No dollars remain today. Asking for a written repair quote still helps: you can check whether you received it tomorrow."
+        },
+        "es-MX": {
+          "prompt": "Una acción observable",
+          "line": "Hoy no sobran pesos. Pedir una cotización escrita de reparación ayuda: mañana puedes comprobar si la recibiste."
+        },
+        "pt-BR": {
+          "prompt": "Uma ação observável",
+          "line": "Hoje não sobram reais. Pedir um orçamento escrito do conserto ajuda: amanhã você pode conferir se recebeu."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Which step is feasible now?",
+          "scene": "You need a repair estimate but have no spare money today.",
+          "options": [
+            {
+              "label": "Request a written estimate"
+            },
+            {
+              "label": "Deposit money you do not have"
+            },
+            {
+              "label": "Declare the repair paid"
+            }
+          ],
+          "help": [
+            "Choose an action you can actually perform."
+          ],
+          "feedback": {
+            "met": "Checking the cost does not require an invented deposit.",
+            "not_yet": "Choose an action you can actually perform."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué paso es viable ahora?",
+          "scene": "Necesitas cotización de reparación, pero hoy no sobra dinero.",
+          "options": [
+            {
+              "label": "Pedir una cotización escrita"
+            },
+            {
+              "label": "Depositar dinero que no tienes"
+            },
+            {
+              "label": "Declarar pagada la reparación"
+            }
+          ],
+          "help": [
+            "Elige una acción que realmente puedas hacer."
+          ],
+          "feedback": {
+            "met": "Revisar el costo no requiere un depósito inventado.",
+            "not_yet": "Elige una acción que realmente puedas hacer."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual passo é viável agora?",
+          "scene": "Precisa de orçamento do conserto, mas hoje não sobra dinheiro.",
+          "options": [
+            {
+              "label": "Pedir um orçamento escrito"
+            },
+            {
+              "label": "Depositar dinheiro que não tem"
+            },
+            {
+              "label": "Declarar o conserto pago"
+            }
+          ],
+          "help": [
+            "Escolha uma ação que realmente possa realizar."
+          ],
+          "feedback": {
+            "met": "Conferir o custo não exige depósito inventado.",
+            "not_yet": "Escolha uma ação que realmente possa realizar."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Which revision is checkable?",
+          "scene": "Your next action says: be more responsible.",
+          "options": [
+            {
+              "label": "Record today’s expenses tonight"
+            },
+            {
+              "label": "Become perfect tomorrow"
+            },
+            {
+              "label": "Care more about money"
+            }
+          ],
+          "help": [
+            "Name something that can be marked done."
+          ],
+          "feedback": {
+            "met": "A specific action has observable completion.",
+            "not_yet": "Name something that can be marked done."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué revisión es verificable?",
+          "scene": "Tu siguiente acción dice: ser más responsable.",
+          "options": [
+            {
+              "label": "Registrar gastos de hoy esta noche"
+            },
+            {
+              "label": "Ser perfecto mañana"
+            },
+            {
+              "label": "Preocuparse más por el dinero"
+            }
+          ],
+          "help": [
+            "Nombra algo que pueda marcarse como realizado."
+          ],
+          "feedback": {
+            "met": "Una acción específica tiene finalización observable.",
+            "not_yet": "Nombra algo que pueda marcarse como realizado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual revisão é verificável?",
+          "scene": "Sua próxima ação diz: ser mais responsável.",
+          "options": [
+            {
+              "label": "Registrar os gastos de hoje à noite"
+            },
+            {
+              "label": "Ser perfeito amanhã"
+            },
+            {
+              "label": "Preocupar-se mais com dinheiro"
+            }
+          ],
+          "help": [
+            "Nomeie algo que possa ser marcado como feito."
+          ],
+          "feedback": {
+            "met": "Uma ação específica tem conclusão observável.",
+            "not_yet": "Nomeie algo que possa ser marcado como feito."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Useful next action?",
+          "scene": "You do not know the cancellation terms of an unused subscription.",
+          "options": [
+            {
+              "label": "Find the written cancellation terms"
+            },
+            {
+              "label": "Assume cancellation is instant"
+            },
+            {
+              "label": "Ignore the unknown terms"
+            }
+          ],
+          "help": [
+            "Choose information needed for the next decision."
+          ],
+          "feedback": {
+            "met": "Reading the terms resolves a concrete planning uncertainty.",
+            "not_yet": "Choose information needed for the next decision."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Siguiente acción útil?",
+          "scene": "No conoces las condiciones de cancelación de una suscripción sin uso.",
+          "options": [
+            {
+              "label": "Buscar condiciones escritas de cancelación"
+            },
+            {
+              "label": "Suponer cancelación inmediata"
+            },
+            {
+              "label": "Ignorar las condiciones desconocidas"
+            }
+          ],
+          "help": [
+            "Elige información necesaria para la siguiente decisión."
+          ],
+          "feedback": {
+            "met": "Leer condiciones resuelve una incertidumbre concreta del plan.",
+            "not_yet": "Elige información necesaria para la siguiente decisión."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Próxima ação útil?",
+          "scene": "Não conhece as condições de cancelamento de uma assinatura sem uso.",
+          "options": [
+            {
+              "label": "Buscar condições escritas de cancelamento"
+            },
+            {
+              "label": "Supor cancelamento imediato"
+            },
+            {
+              "label": "Ignorar as condições desconhecidas"
+            }
+          ],
+          "help": [
+            "Escolha informação necessária à próxima decisão."
+          ],
+          "feedback": {
+            "met": "Ler condições resolve uma incerteza concreta do plano.",
+            "not_yet": "Escolha informação necessária à próxima decisão."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Which action has clear completion?",
+          "scene": "You want to check whether an automatic charge repeats next week.",
+          "options": [
+            {
+              "label": "Hope it stops"
+            },
+            {
+              "label": "Read and note its next billing date"
+            },
+            {
+              "label": "Think about charges more"
+            }
+          ],
+          "help": [
+            "Turn concern into a specific check."
+          ],
+          "feedback": {
+            "met": "Recording the date produces usable evidence.",
+            "not_yet": "Turn concern into a specific check."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué acción tiene final claro?",
+          "scene": "Quieres comprobar si un cargo automático se repite la próxima semana.",
+          "options": [
+            {
+              "label": "Esperar que pare"
+            },
+            {
+              "label": "Leer y anotar su próxima fecha de cobro"
+            },
+            {
+              "label": "Pensar más en cargos"
+            }
+          ],
+          "help": [
+            "Convierte preocupación en una revisión específica."
+          ],
+          "feedback": {
+            "met": "Registrar la fecha produce evidencia útil.",
+            "not_yet": "Convierte preocupación en una revisión específica."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual ação tem conclusão clara?",
+          "scene": "Quer conferir se uma cobrança automática se repete na próxima semana.",
+          "options": [
+            {
+              "label": "Esperar que pare"
+            },
+            {
+              "label": "Ler e anotar sua próxima data de cobrança"
+            },
+            {
+              "label": "Pensar mais em cobranças"
+            }
+          ],
+          "help": [
+            "Transforme preocupação em conferência específica."
+          ],
+          "feedback": {
+            "met": "Registrar a data produz evidência útil.",
+            "not_yet": "Transforme preocupação em conferência específica."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.07",
+      "copy": {
+        "en-US": {
+          "prompt": "What makes a useful smaller step?",
+          "scene": "A planned action requires an unavailable document.",
+          "options": [
+            {
+              "label": "Mark the full action complete"
+            },
+            {
+              "label": "Pretend the document exists"
+            },
+            {
+              "label": "Find how to obtain that document"
+            }
+          ],
+          "help": [
+            "Choose the first action that is possible now."
+          ],
+          "feedback": {
+            "met": "Resolving a prerequisite can be a real next step.",
+            "not_yet": "Choose the first action that is possible now."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué crea un paso menor útil?",
+          "scene": "Una acción planeada requiere un documento no disponible.",
+          "options": [
+            {
+              "label": "Marcar completa toda la acción"
+            },
+            {
+              "label": "Suponer que existe el documento"
+            },
+            {
+              "label": "Averiguar cómo obtener ese documento"
+            }
+          ],
+          "help": [
+            "Elige la primera acción posible ahora."
+          ],
+          "feedback": {
+            "met": "Resolver un requisito previo puede ser un siguiente paso real.",
+            "not_yet": "Elige la primera acción posible ahora."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que cria um passo menor útil?",
+          "scene": "Uma ação planejada exige um documento indisponível.",
+          "options": [
+            {
+              "label": "Marcar toda a ação como concluída"
+            },
+            {
+              "label": "Supor que o documento existe"
+            },
+            {
+              "label": "Descobrir como obter esse documento"
+            }
+          ],
+          "help": [
+            "Escolha a primeira ação possível agora."
+          ],
+          "feedback": {
+            "met": "Resolver um requisito prévio pode ser um próximo passo real.",
+            "not_yet": "Escolha a primeira ação possível agora."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Which action fits?",
+          "scene": "A household needs lower transport costs but has no money for a new vehicle.",
+          "options": [
+            {
+              "label": "List routes and actual fares"
+            },
+            {
+              "label": "Buy a vehicle immediately"
+            },
+            {
+              "label": "Assume all trips are optional"
+            }
+          ],
+          "help": [
+            "Gather the facts before committing money."
+          ],
+          "feedback": {
+            "met": "Current route information supports a feasible later comparison.",
+            "not_yet": "Gather the facts before committing money."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué primera acción cabe?",
+          "scene": "Un hogar necesita reducir transporte, sin dinero para otro vehículo.",
+          "options": [
+            {
+              "label": "Anotar rutas actuales y tarifas reales"
+            },
+            {
+              "label": "Comprar un vehículo de inmediato"
+            },
+            {
+              "label": "Suponer que todos los viajes son opcionales"
+            }
+          ],
+          "help": [
+            "Reúne datos antes de comprometer dinero."
+          ],
+          "feedback": {
+            "met": "La información de rutas permite una comparación posterior viable.",
+            "not_yet": "Reúne datos antes de comprometer dinero."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual primeira ação cabe?",
+          "scene": "Uma família precisa reduzir transporte, sem dinheiro para outro veículo.",
+          "options": [
+            {
+              "label": "Anotar rotas atuais e tarifas reais"
+            },
+            {
+              "label": "Comprar um veículo imediatamente"
+            },
+            {
+              "label": "Supor que todas as viagens são opcionais"
+            }
+          ],
+          "help": [
+            "Reúna dados antes de comprometer dinheiro."
+          ],
+          "feedback": {
+            "met": "Informações de rotas permitem uma comparação posterior viável.",
+            "not_yet": "Reúna dados antes de comprometer dinheiro."
+          }
+        }
+      }
+    }
+  ]
+}

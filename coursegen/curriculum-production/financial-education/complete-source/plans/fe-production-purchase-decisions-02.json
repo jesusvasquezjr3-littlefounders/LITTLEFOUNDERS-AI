@@ -1,0 +1,853 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-purchase-decisions-part-1",
+  "lesson_id": "fe-production-purchase-decisions-02",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.purchase-decisions.02"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Calculate a final price that includes all explicitly stated mandatory charges.",
+  "title": {
+    "en-US": "Required Charges",
+    "es-MX": "Suma los cargos obligatorios",
+    "pt-BR": "Some os custos obrigatórios"
+  },
+  "new_concepts": [
+    "finance.prod.purchase-decisions.02"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Required Charges\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Suma los cargos obligatorios\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Some os custos obrigatórios\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.purchase-decisions.02",
+      "observable_action": "Calculate a final price that includes all explicitly stated mandatory charges.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.financial-math.03"
+    ],
+    "retrieval_skills": [],
+    "relevance": "The advertised price may omit charges you must pay; assemble a complete fictional purchase total before comparing.",
+    "misconception": "The headline price is always the final price, or optional extras must always be counted as mandatory.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.purchase-decisions.02",
+        "context_id": "purchase-decisions-02-example-01",
+        "supports_from": [],
+        "reasoning": "Add every stated mandatory charge to the base price. Optional extras enter only when selected; avoid counting included charges twice."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.purchase-decisions.02",
+        "context_id": "purchase-decisions-02-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The payable total includes both required extras."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.purchase-decisions.02",
+        "context_id": "purchase-decisions-02-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "A mandatory fee belongs in the payable price."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.purchase-decisions.02",
+        "context_id": "purchase-decisions-02-practice-01",
+        "supports_from": [],
+        "reasoning": "Both required charges increase the base price."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.purchase-decisions.02",
+        "context_id": "purchase-decisions-02-practice-02",
+        "supports_from": [],
+        "reasoning": "An included charge should not be added a second time."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.purchase-decisions.02",
+        "context_id": "purchase-decisions-02-practice-03",
+        "supports_from": [],
+        "reasoning": "A base-only quote is incomplete for a final-price comparison."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.purchase-decisions.02",
+        "context_id": "purchase-decisions-02-transfer-01",
+        "supports_from": [],
+        "reasoning": "Required booking and venue charges belong in the final price."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.purchase-decisions.02",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "The advertised price may omit charges you must pay; assemble a complete fictional purchase total before comparing."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Precio anunciado puede omitir cargos obligatorios; arma total completo ficticio antes de comparar."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Preço anunciado pode omitir custos obrigatórios; monte total completo fictício antes de comparar."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Required means included",
+          "line": "Add every stated mandatory charge to the base price. Optional extras enter only when selected; avoid counting included charges twice."
+        },
+        "es-MX": {
+          "prompt": "Obligatorio significa incluido",
+          "line": "Suma cada cargo obligatorio al precio base. Extras opcionales entran solo si se eligen; evita contar dos veces cargos incluidos."
+        },
+        "pt-BR": {
+          "prompt": "Obrigatório deve entrar",
+          "line": "Some cada custo obrigatório ao preço base. Extras opcionais entram só quando escolhidos; evite contar duas vezes custos incluídos."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.02",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "step-1"
+          },
+          {
+            "id": "step-2"
+          },
+          {
+            "id": "step-3"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "step-2",
+          "step-3"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "step-2": "220",
+          "step-3": "235"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Base price 200; required delivery 20; required setup 15; no other charges.",
+          "feedback": {
+            "met": "The payable total includes both required extras.",
+            "not_yet": "Add each mandatory charge exactly once."
+          },
+          "help": [
+            "Add each mandatory charge exactly once."
+          ],
+          "steps": [
+            {
+              "expression": "200",
+              "result": "200",
+              "spokenText": "Base price"
+            },
+            {
+              "expression": "200 + 20",
+              "result": "220",
+              "spokenText": "Add delivery"
+            },
+            {
+              "expression": "220 + 15",
+              "result": "235",
+              "spokenText": "Add setup"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Precio base 200; entrega obligatoria 20; preparación obligatoria 15; sin otros cargos.",
+          "feedback": {
+            "met": "Total pagadero incluye ambos extras requeridos.",
+            "not_yet": "Suma cada cargo obligatorio exactamente una vez."
+          },
+          "help": [
+            "Suma cada cargo obligatorio exactamente una vez."
+          ],
+          "steps": [
+            {
+              "expression": "200",
+              "result": "200",
+              "spokenText": "Precio base"
+            },
+            {
+              "expression": "200 + 20",
+              "result": "220",
+              "spokenText": "Suma entrega"
+            },
+            {
+              "expression": "220 + 15",
+              "result": "235",
+              "spokenText": "Suma preparación"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Preço base 200; entrega obrigatória 20; preparo obrigatório 15; sem outros custos.",
+          "feedback": {
+            "met": "Total devido inclui ambos os extras exigidos.",
+            "not_yet": "Some cada custo obrigatório só uma vez."
+          },
+          "help": [
+            "Some cada custo obrigatório só uma vez."
+          ],
+          "steps": [
+            {
+              "expression": "200",
+              "result": "200",
+              "spokenText": "Preço base"
+            },
+            {
+              "expression": "200 + 20",
+              "result": "220",
+              "spokenText": "Some entrega"
+            },
+            {
+              "expression": "220 + 15",
+              "result": "235",
+              "spokenText": "Some preparo"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Which charge must be included?",
+          "scene": "Purchase cannot be completed without the stated service fee.",
+          "options": [
+            {
+              "label": "An unrelated future purchase"
+            },
+            {
+              "label": "Required service fee"
+            },
+            {
+              "label": "An unselected optional case"
+            }
+          ],
+          "help": [
+            "Separate unavoidable charges from extras you can decline."
+          ],
+          "feedback": {
+            "met": "A mandatory fee belongs in the payable price.",
+            "not_yet": "Separate unavoidable charges from extras you can decline."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué cargo debe incluirse?",
+          "scene": "Compra no puede completarse sin cargo de servicio indicado.",
+          "options": [
+            {
+              "label": "Compra futura ajena"
+            },
+            {
+              "label": "Cargo obligatorio de servicio"
+            },
+            {
+              "label": "Funda opcional no elegida"
+            }
+          ],
+          "help": [
+            "Separa cargos inevitables de extras que puedes rechazar."
+          ],
+          "feedback": {
+            "met": "Un cargo obligatorio pertenece al precio pagadero.",
+            "not_yet": "Separa cargos inevitables de extras que puedes rechazar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que custo deve entrar?",
+          "scene": "Compra não pode terminar sem taxa de serviço dada.",
+          "options": [
+            {
+              "label": "Compra futura alheia"
+            },
+            {
+              "label": "Taxa obrigatória de serviço"
+            },
+            {
+              "label": "Capa opcional não escolhida"
+            }
+          ],
+          "help": [
+            "Separe custos inevitáveis de extras que pode recusar."
+          ],
+          "feedback": {
+            "met": "Uma taxa obrigatória pertence ao preço devido.",
+            "not_yet": "Separe custos inevitáveis de extras que pode recusar."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What is the final required price?",
+          "scene": "Base: 80; Required delivery: 12; Required handling: 3; No other charges.",
+          "options": [
+            {
+              "label": "95"
+            },
+            {
+              "label": "92"
+            },
+            {
+              "label": "80"
+            }
+          ],
+          "help": [
+            "Add every stated mandatory amount."
+          ],
+          "feedback": {
+            "met": "Both required charges increase the base price.",
+            "not_yet": "Add every stated mandatory amount."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es precio final obligatorio?",
+          "scene": "Base: 80; Entrega obligatoria: 12; Manejo obligatorio: 3; Sin otros cargos.",
+          "options": [
+            {
+              "label": "95"
+            },
+            {
+              "label": "92"
+            },
+            {
+              "label": "80"
+            }
+          ],
+          "help": [
+            "Suma cada monto obligatorio indicado."
+          ],
+          "feedback": {
+            "met": "Ambos cargos requeridos aumentan precio base.",
+            "not_yet": "Suma cada monto obligatorio indicado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é preço final obrigatório?",
+          "scene": "Base: 80; Entrega obrigatória: 12; Manuseio obrigatório: 3; Sem outros custos.",
+          "options": [
+            {
+              "label": "95"
+            },
+            {
+              "label": "92"
+            },
+            {
+              "label": "80"
+            }
+          ],
+          "help": [
+            "Some cada valor obrigatório dado."
+          ],
+          "feedback": {
+            "met": "Ambos os custos exigidos aumentam preço base.",
+            "not_yet": "Some cada valor obrigatório dado."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          80,
+          12,
+          3
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "op": "add",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Should this fee be added again?",
+          "scene": "The quote explicitly says its total already includes delivery.",
+          "options": [
+            {
+              "label": "Yes, every label adds cost"
+            },
+            {
+              "label": "No, it is already included"
+            },
+            {
+              "label": "Yes, count it twice"
+            }
+          ],
+          "help": [
+            "Read whether the amount is separate or already included."
+          ],
+          "feedback": {
+            "met": "An included charge should not be added a second time.",
+            "not_yet": "Read whether the amount is separate or already included."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Sumar otra vez este cargo?",
+          "scene": "Cotización dice explícitamente que total ya incluye entrega.",
+          "options": [
+            {
+              "label": "Sí, cada etiqueta suma costo"
+            },
+            {
+              "label": "No, ya está incluido"
+            },
+            {
+              "label": "Sí, contarlo dos veces"
+            }
+          ],
+          "help": [
+            "Lee si monto es separado o ya incluido."
+          ],
+          "feedback": {
+            "met": "Un cargo incluido no debe sumarse otra vez.",
+            "not_yet": "Lee si monto es separado o ya incluido."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Somar esta taxa de novo?",
+          "scene": "Cotação diz claramente que total já inclui entrega.",
+          "options": [
+            {
+              "label": "Sim, cada rótulo soma custo"
+            },
+            {
+              "label": "Não, já está incluída"
+            },
+            {
+              "label": "Sim, contar duas vezes"
+            }
+          ],
+          "help": [
+            "Leia se valor é separado ou já incluído."
+          ],
+          "feedback": {
+            "met": "Uma taxa incluída não deve ser somada de novo.",
+            "not_yet": "Leia se valor é separado ou já incluído."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What is missing before comparison?",
+          "scene": "One quote includes all required charges; the other lists only the base price.",
+          "options": [
+            {
+              "label": "Other quote’s required charges"
+            },
+            {
+              "label": "Nothing because both show prices"
+            },
+            {
+              "label": "Only the base-price gap"
+            }
+          ],
+          "help": [
+            "Obtain all mandatory charges for both options."
+          ],
+          "feedback": {
+            "met": "A base-only quote is incomplete for a final-price comparison.",
+            "not_yet": "Obtain all mandatory charges for both options."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué falta antes de comparar?",
+          "scene": "Una cotización incluye cargos requeridos; otra solo precio base.",
+          "options": [
+            {
+              "label": "Cargos requeridos de otra cotización"
+            },
+            {
+              "label": "Nada porque ambas dan precios"
+            },
+            {
+              "label": "Solo diferencia de precios base"
+            }
+          ],
+          "help": [
+            "Obtén todos los cargos obligatorios de ambas opciones."
+          ],
+          "feedback": {
+            "met": "Solo precio base no completa comparación de precio final.",
+            "not_yet": "Obtén todos los cargos obligatorios de ambas opciones."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que falta antes de comparar?",
+          "scene": "Uma cotação inclui custos exigidos; outra só preço base.",
+          "options": [
+            {
+              "label": "Custos exigidos da outra cotação"
+            },
+            {
+              "label": "Nada pois ambas dão preços"
+            },
+            {
+              "label": "Só diferença dos preços base"
+            }
+          ],
+          "help": [
+            "Obtenha todos os custos obrigatórios de ambas as opções."
+          ],
+          "feedback": {
+            "met": "Só preço base não completa comparação de preço final.",
+            "not_yet": "Obtenha todos os custos obrigatórios de ambas as opções."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.purchase-decisions.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What is the complete ticket price?",
+          "scene": "Ticket: 45; Mandatory booking fee: 5; Mandatory venue fee: 2; No other charges.",
+          "options": [
+            {
+              "label": "45"
+            },
+            {
+              "label": "52"
+            },
+            {
+              "label": "50"
+            }
+          ],
+          "help": [
+            "Add the ticket and both mandatory fees."
+          ],
+          "feedback": {
+            "met": "Required booking and venue charges belong in the final price.",
+            "not_yet": "Add the ticket and both mandatory fees."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es precio completo del boleto?",
+          "scene": "Boleto: 45; Reserva obligatoria: 5; Cargo obligatorio del recinto: 2; Sin otros cargos.",
+          "options": [
+            {
+              "label": "45"
+            },
+            {
+              "label": "52"
+            },
+            {
+              "label": "50"
+            }
+          ],
+          "help": [
+            "Suma boleto y ambos cargos obligatorios."
+          ],
+          "feedback": {
+            "met": "Cargos obligatorios de reserva y recinto pertenecen al precio final.",
+            "not_yet": "Suma boleto y ambos cargos obligatorios."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é preço completo do ingresso?",
+          "scene": "Ingresso: 45; Reserva obrigatória: 5; Taxa obrigatória do local: 2; Sem outros custos.",
+          "options": [
+            {
+              "label": "45"
+            },
+            {
+              "label": "52"
+            },
+            {
+              "label": "50"
+            }
+          ],
+          "help": [
+            "Some ingresso e ambas as taxas obrigatórias."
+          ],
+          "feedback": {
+            "met": "Taxas obrigatórias de reserva e local pertencem ao preço final.",
+            "not_yet": "Some ingresso e ambas as taxas obrigatórias."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          45,
+          5,
+          2
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "op": "add",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,880 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-credit-products-part-2",
+  "lesson_id": "fe-production-credit-products-review-1",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.credit-products.01",
+    "finance.prod.credit-products.02",
+    "finance.prod.credit-products.03",
+    "finance.prod.credit-products.04",
+    "finance.prod.credit-products.05",
+    "finance.prod.accounts-records.04"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Read card statement fields and transaction entries, apply stated grace terms and calculate a supplied balance change.",
+  "title": {
+    "en-US": "Card Decisions",
+    "es-MX": "Lee tarjeta antes de pagar",
+    "pt-BR": "Leia cartão antes de pagar"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Card Decisions\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Lee tarjeta antes de pagar\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Leia cartão antes de pagar\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "consolidate",
+    "objective": {
+      "skill_id": "prod.credit-products.01",
+      "observable_action": "Read card statement fields and transaction entries, apply stated grace terms and calculate a supplied balance change.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.accounts-records.04",
+      "prod.credit-mechanics.01"
+    ],
+    "retrieval_skills": [
+      "prod.credit-products.01",
+      "prod.credit-products.02",
+      "prod.credit-products.03",
+      "prod.credit-products.04",
+      "prod.credit-products.05",
+      "prod.accounts-records.04"
+    ],
+    "relevance": "Retrieve statement labels, dates, interest conditions and costs using the supplied fictional terms.",
+    "misconception": "The minimum is the whole balance, closing is the due date, or purchase grace covers every transaction.",
+    "numeracy_support": "Use the current visible conditions; do not reuse a previous scenario’s answer.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.credit-products.01",
+        "context_id": "credit-products-review-1-practice-01",
+        "supports_from": [],
+        "reasoning": "The minimum field states the required payment floor."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.credit-products.02",
+        "context_id": "credit-products-review-1-practice-02",
+        "supports_from": [],
+        "reasoning": "The payment deadline is distinct from the cycle’s closing date."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.credit-products.03",
+        "context_id": "credit-products-review-1-practice-03",
+        "supports_from": [],
+        "reasoning": "The full-payment condition fails despite the payment being timely."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.credit-products.04",
+        "context_id": "credit-products-review-1-practice-04",
+        "supports_from": [],
+        "reasoning": "Interest increases the balance before the minimum reduces it."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.credit-products.05",
+        "context_id": "credit-products-review-1-practice-05",
+        "supports_from": [],
+        "reasoning": "The advance clause separately states both costs."
+      },
+      {
+        "segment_id": "practice-06",
+        "skill_id": "prod.accounts-records.04",
+        "context_id": "credit-products-review-1-practice-06",
+        "supports_from": [],
+        "reasoning": "The date, description and debit identify the recorded outflow."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.credit-products.01",
+        "context_id": "credit-products-review-1-transfer-01",
+        "supports_from": [],
+        "reasoning": "The summary preserves balance, minimum and deadline without swapping them."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.credit-products.01",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Retrieve statement labels, dates, interest conditions and costs using the supplied fictional terms."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Recupera etiquetas del estado, fechas, condiciones de interés y costos con términos ficticios dados."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Retome nomes do extrato, datas, condições de juros e custos com termos fictícios dados."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Which field is the required minimum?",
+          "scene": "Fictional statement: balance 800; minimum 40; due May 16.",
+          "options": [
+            {
+              "label": "Minimum 40"
+            },
+            {
+              "label": "Balance 800"
+            },
+            {
+              "label": "May 16"
+            }
+          ],
+          "help": [
+            "Keep the minimum separate from the full cycle balance."
+          ],
+          "feedback": {
+            "met": "The minimum field states the required payment floor.",
+            "not_yet": "Keep the minimum separate from the full cycle balance."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué dato es mínimo exigido?",
+          "scene": "Estado ficticio: saldo 800; mínimo 40; vence 16 de mayo.",
+          "options": [
+            {
+              "label": "Mínimo 40"
+            },
+            {
+              "label": "Saldo 800"
+            },
+            {
+              "label": "16 de mayo"
+            }
+          ],
+          "help": [
+            "Separa mínimo del saldo completo del periodo."
+          ],
+          "feedback": {
+            "met": "Dato de mínimo indica piso exigido de pago.",
+            "not_yet": "Separa mínimo del saldo completo del periodo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que dado é mínimo exigido?",
+          "scene": "Extrato fictício: saldo 800; mínimo 40; vence 16 de maio.",
+          "options": [
+            {
+              "label": "Mínimo 40"
+            },
+            {
+              "label": "Saldo 800"
+            },
+            {
+              "label": "16 de maio"
+            }
+          ],
+          "help": [
+            "Separe mínimo do saldo completo do período."
+          ],
+          "feedback": {
+            "met": "Dado de mínimo indica piso exigido de pagamento.",
+            "not_yet": "Separe mínimo do saldo completo do período."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Which date sets payment arrival?",
+          "scene": "Fictional statement closes May 2; payment must arrive by May 21.",
+          "options": [
+            {
+              "label": "The next closing date"
+            },
+            {
+              "label": "May 2"
+            },
+            {
+              "label": "May 21"
+            }
+          ],
+          "help": [
+            "Read the field describing when payment must arrive."
+          ],
+          "feedback": {
+            "met": "The payment deadline is distinct from the cycle’s closing date.",
+            "not_yet": "Read the field describing when payment must arrive."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué fecha fija llegada del pago?",
+          "scene": "Estado ficticio corta 2 de mayo; pago debe llegar hasta 21 de mayo.",
+          "options": [
+            {
+              "label": "Siguiente corte"
+            },
+            {
+              "label": "2 de mayo"
+            },
+            {
+              "label": "21 de mayo"
+            }
+          ],
+          "help": [
+            "Lee dato que dice cuándo debe llegar pago."
+          ],
+          "feedback": {
+            "met": "Límite de pago difiere de fecha de corte del periodo.",
+            "not_yet": "Lee dato que dice cuándo debe llegar pago."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que data fixa chegada do pagamento?",
+          "scene": "Extrato fictício fecha 2 de maio; pagamento deve chegar até 21 de maio.",
+          "options": [
+            {
+              "label": "Próximo fechamento"
+            },
+            {
+              "label": "2 de maio"
+            },
+            {
+              "label": "21 de maio"
+            }
+          ],
+          "help": [
+            "Leia dado que diz quando pagamento deve chegar."
+          ],
+          "feedback": {
+            "met": "Prazo de pagamento difere da data de fechamento do período.",
+            "not_yet": "Leia dado que diz quando pagamento deve chegar."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Does this case avoid interest under the rule?",
+          "scene": "Fictional purchases require full timely payment for grace; only the minimum arrives on time.",
+          "options": [
+            {
+              "label": "No"
+            },
+            {
+              "label": "Yes, minimum means full"
+            },
+            {
+              "label": "Yes, timely always suffices"
+            }
+          ],
+          "help": [
+            "Check amount and timing together under the supplied rule."
+          ],
+          "feedback": {
+            "met": "The full-payment condition fails despite the payment being timely.",
+            "not_yet": "Check amount and timing together under the supplied rule."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Caso evita intereses bajo regla?",
+          "scene": "Compras ficticias requieren pago total puntual para evitar intereses; llega solo mínimo a tiempo.",
+          "options": [
+            {
+              "label": "No"
+            },
+            {
+              "label": "Sí, mínimo significa total"
+            },
+            {
+              "label": "Sí, puntual siempre basta"
+            }
+          ],
+          "help": [
+            "Revisa monto y fecha juntos bajo regla dada."
+          ],
+          "feedback": {
+            "met": "Condición de pago total falla aunque pago sea puntual.",
+            "not_yet": "Revisa monto y fecha juntos bajo regla dada."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Caso evita juros sob regra?",
+          "scene": "Compras fictícias exigem pagamento total pontual para evitar juros; chega só mínimo no prazo.",
+          "options": [
+            {
+              "label": "Não"
+            },
+            {
+              "label": "Sim, mínimo significa total"
+            },
+            {
+              "label": "Sim, pontual sempre basta"
+            }
+          ],
+          "help": [
+            "Veja valor e data juntos sob regra dada."
+          ],
+          "feedback": {
+            "met": "Condição de pagamento total falha mesmo com pagamento pontual.",
+            "not_yet": "Veja valor e data juntos sob regra dada."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.04",
+      "copy": {
+        "en-US": {
+          "prompt": "What debt remains after the minimum?",
+          "scene": "Fictional schedule: debt 240; add interest 8; minimum payment 20; no other changes.",
+          "options": [
+            {
+              "label": "220"
+            },
+            {
+              "label": "228"
+            },
+            {
+              "label": "0"
+            }
+          ],
+          "help": [
+            "Add the supplied charge, then subtract the payment."
+          ],
+          "feedback": {
+            "met": "Interest increases the balance before the minimum reduces it.",
+            "not_yet": "Add the supplied charge, then subtract the payment."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué deuda queda tras mínimo?",
+          "scene": "Calendario ficticio: deuda 240; sumar interés 8; pago mínimo 20; sin otros cambios.",
+          "options": [
+            {
+              "label": "220"
+            },
+            {
+              "label": "228"
+            },
+            {
+              "label": "0"
+            }
+          ],
+          "help": [
+            "Suma cargo dado y luego resta pago."
+          ],
+          "feedback": {
+            "met": "Interés aumenta saldo antes de que mínimo lo reduzca.",
+            "not_yet": "Suma cargo dado y luego resta pago."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que dívida resta após mínimo?",
+          "scene": "Calendário fictício: dívida 240; somar juros 8; pagamento mínimo 20; sem outras mudanças.",
+          "options": [
+            {
+              "label": "220"
+            },
+            {
+              "label": "228"
+            },
+            {
+              "label": "0"
+            }
+          ],
+          "help": [
+            "Some encargo dado e depois subtraia pagamento."
+          ],
+          "feedback": {
+            "met": "Juros aumentam saldo antes de mínimo reduzi-lo.",
+            "not_yet": "Some encargo dado e depois subtraia pagamento."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          240,
+          8,
+          20
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "add",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Which advance costs are stated?",
+          "scene": "Fictional agreement charges a cash fee plus interest from the advance date; purchase grace excludes advances.",
+          "options": [
+            {
+              "label": "Fee and immediate interest"
+            },
+            {
+              "label": "Purchase grace for everything"
+            },
+            {
+              "label": "Fee only"
+            }
+          ],
+          "help": [
+            "Use the advance terms rather than purchase assumptions."
+          ],
+          "feedback": {
+            "met": "The advance clause separately states both costs.",
+            "not_yet": "Use the advance terms rather than purchase assumptions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué costos de adelanto se indican?",
+          "scene": "Contrato ficticio cobra cargo de efectivo e interés desde adelanto; regla de compras excluye adelantos.",
+          "options": [
+            {
+              "label": "Cargo e interés inmediato"
+            },
+            {
+              "label": "Regla de compras para todo"
+            },
+            {
+              "label": "Solo cargo"
+            }
+          ],
+          "help": [
+            "Usa términos de adelanto, no supuestos de compras."
+          ],
+          "feedback": {
+            "met": "Cláusula de adelanto indica ambos costos por separado.",
+            "not_yet": "Usa términos de adelanto, no supuestos de compras."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que custos do saque são dados?",
+          "scene": "Contrato fictício cobra taxa e juros desde saque; regra de compras exclui saques.",
+          "options": [
+            {
+              "label": "Taxa e juros imediatos"
+            },
+            {
+              "label": "Regra de compras para tudo"
+            },
+            {
+              "label": "Só taxa"
+            }
+          ],
+          "help": [
+            "Use termos do saque, não suposições de compras."
+          ],
+          "feedback": {
+            "met": "Cláusula do saque indica ambos custos em separado.",
+            "not_yet": "Use termos do saque, não suposições de compras."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Which reading matches this entry?",
+          "scene": "Fictional deposit statement entry: June 4, transit ticket, debit 18.",
+          "options": [
+            {
+              "label": "June 4; income 18"
+            },
+            {
+              "label": "June 18; fee 4"
+            },
+            {
+              "label": "June 4; transit expense; outflow 18"
+            }
+          ],
+          "help": [
+            "Read all entry fields before classifying the transaction."
+          ],
+          "feedback": {
+            "met": "The date, description and debit identify the recorded outflow.",
+            "not_yet": "Read all entry fields before classifying the transaction."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué lectura coincide con registro?",
+          "scene": "Registro de cuenta ficticia: 4 de junio, boleto de transporte, débito 18.",
+          "options": [
+            {
+              "label": "4 junio; ingreso 18"
+            },
+            {
+              "label": "18 junio; cargo 4"
+            },
+            {
+              "label": "4 junio; transporte; salida 18"
+            }
+          ],
+          "help": [
+            "Lee todos datos antes de clasificar transacción."
+          ],
+          "feedback": {
+            "met": "Fecha, descripción y débito identifican salida registrada.",
+            "not_yet": "Lee todos datos antes de clasificar transacción."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que leitura coincide com lançamento?",
+          "scene": "Lançamento de conta fictícia: 4 de junho, passagem, débito 18.",
+          "options": [
+            {
+              "label": "4 junho; renda 18"
+            },
+            {
+              "label": "18 junho; taxa 4"
+            },
+            {
+              "label": "4 junho; transporte; saída 18"
+            }
+          ],
+          "help": [
+            "Leia todos dados antes de classificar transação."
+          ],
+          "feedback": {
+            "met": "Data, descrição e débito identificam saída lançada.",
+            "not_yet": "Leia todos dados antes de classificar transação."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.credit-products.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Which statement summary is accurate?",
+          "scene": "Fictional balance 500; minimum 25; payment due September 7.",
+          "options": [
+            {
+              "label": "Debt 500; floor 25; due September 7"
+            },
+            {
+              "label": "Debt 25; due anytime"
+            },
+            {
+              "label": "Owned cash 500; no debt"
+            }
+          ],
+          "help": [
+            "Use each labeled field for its stated purpose."
+          ],
+          "feedback": {
+            "met": "The summary preserves balance, minimum and deadline without swapping them.",
+            "not_yet": "Use each labeled field for its stated purpose."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué resumen del estado es correcto?",
+          "scene": "Saldo ficticio 500; mínimo 25; pago vence 7 de septiembre.",
+          "options": [
+            {
+              "label": "Deuda 500; piso 25; vence 7 septiembre"
+            },
+            {
+              "label": "Deuda 25; vence cuando sea"
+            },
+            {
+              "label": "Efectivo propio 500; sin deuda"
+            }
+          ],
+          "help": [
+            "Usa cada dato etiquetado según su propósito."
+          ],
+          "feedback": {
+            "met": "Resumen conserva saldo, mínimo y fecha sin intercambiarlos.",
+            "not_yet": "Usa cada dato etiquetado según su propósito."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que resumo do extrato está certo?",
+          "scene": "Saldo fictício 500; mínimo 25; pagamento vence 7 de setembro.",
+          "options": [
+            {
+              "label": "Dívida 500; piso 25; vence 7 setembro"
+            },
+            {
+              "label": "Dívida 25; vence quando quiser"
+            },
+            {
+              "label": "Dinheiro próprio 500; sem dívida"
+            }
+          ],
+          "help": [
+            "Use cada dado nomeado conforme sua finalidade."
+          ],
+          "feedback": {
+            "met": "Resumo preserva saldo, mínimo e data sem trocá-los.",
+            "not_yet": "Use cada dado nomeado conforme sua finalidade."
+          }
+        }
+      }
+    }
+  ]
+}

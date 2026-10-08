@@ -1,0 +1,762 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-solid-02-a-plan-that-fits",
+  "lesson_id": "fe-solid-11-choose-a-workable-plan",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.plan.priority",
+    "finance.plan.uncertain-income",
+    "finance.plan.periodic"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Use consequences, uncertain receipts and known future costs together to identify a plan that works under the stated constraints.",
+  "title": {
+    "en-US": "Choose a workable plan",
+    "es-MX": "Elige un plan viable",
+    "pt-BR": "Escolha um plano viável"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Choose a workable plan\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Elige un plan viable\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Escolha um plano viável\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "consolidate",
+    "objective": {
+      "skill_id": "plan.priority",
+      "observable_action": "Use consequences, uncertain receipts and known future costs together to identify a plan that works under the stated constraints.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "cash.reserved",
+      "cash.dates"
+    ],
+    "retrieval_skills": [
+      "plan.priority",
+      "plan.uncertain-income",
+      "plan.periodic"
+    ],
+    "relevance": "A useful plan respects both real limits and what matters to the person. Test several new situations.",
+    "misconception": "Selecting a plan by optimistic totals while ignoring why money is reserved.",
+    "numeracy_support": "Recall equal contributions and small sums taught earlier.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "plan.priority",
+        "context_id": "choose-a-workable-plan-practice-01",
+        "supports_from": [],
+        "reasoning": "The brake repair protects the stated necessary trip."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "plan.uncertain-income",
+        "context_id": "choose-a-workable-plan-practice-02",
+        "supports_from": [],
+        "reasoning": "A possible prize is not available money."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "plan.periodic",
+        "context_id": "choose-a-workable-plan-practice-03",
+        "supports_from": [],
+        "reasoning": "The equal contributions prepare the full known expense."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "plan.uncertain-income",
+        "context_id": "choose-a-workable-plan-practice-04",
+        "supports_from": [],
+        "reasoning": "The trip depended on resources that are no longer expected."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "plan.periodic",
+        "context_id": "choose-a-workable-plan-practice-05",
+        "supports_from": [],
+        "reasoning": "An infrequent bill can still be a predictable expense."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "plan.priority",
+        "context_id": "choose-a-workable-plan-transfer-01",
+        "supports_from": [],
+        "reasoning": "The stated essential function determines the priority."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "plan.priority",
+      "fresh_context": "Apply this skill in a later integrated decision with a different constraint."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A useful plan respects both real limits and what matters to the person. Test several new situations."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un plan útil respeta los límites reales y lo que importa a la persona. Compruébalo en situaciones nuevas."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Um plano útil respeita limites reais e o que importa para a pessoa. Confira em situações novas."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.plan.priority",
+      "copy": {
+        "en-US": {
+          "prompt": "Which use matters here?",
+          "scene": "You cycle to work. The brake is broken; a decorative bell is optional.",
+          "options": [
+            {
+              "label": "Neither affects the trip"
+            },
+            {
+              "label": "Repairing the brake"
+            },
+            {
+              "label": "A matching bell"
+            }
+          ],
+          "help": [
+            "Judge by the consequence of delaying the payment."
+          ],
+          "feedback": {
+            "met": "The brake repair protects the stated necessary trip.",
+            "not_yet": "Judge by the consequence of delaying the payment."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué uso importa aquí?",
+          "scene": "Una bicicleta es la única forma de llegar al trabajo. El freno está roto; una campana decorativa es opcional.",
+          "options": [
+            {
+              "label": "Nada afecta el viaje"
+            },
+            {
+              "label": "Reparar el freno"
+            },
+            {
+              "label": "Una campana del mismo color"
+            }
+          ],
+          "help": [
+            "Decide por la consecuencia de aplazar el pago."
+          ],
+          "feedback": {
+            "met": "Reparar el freno protege el viaje necesario indicado.",
+            "not_yet": "Decide por la consecuencia de aplazar el pago."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual uso importa aqui?",
+          "scene": "Uma bicicleta é a única forma de chegar ao trabalho. O freio está quebrado; uma campainha decorativa é opcional.",
+          "options": [
+            {
+              "label": "Nada afeta a viagem"
+            },
+            {
+              "label": "Consertar o freio"
+            },
+            {
+              "label": "Uma campainha da mesma cor"
+            }
+          ],
+          "help": [
+            "Decida pela consequência de adiar o pagamento."
+          ],
+          "feedback": {
+            "met": "Consertar o freio protege a viagem necessária informada.",
+            "not_yet": "Decida pela consequência de adiar o pagamento."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.plan.uncertain-income",
+      "copy": {
+        "en-US": {
+          "prompt": "Which amount can the plan rely on today?",
+          "scene": "You have 80 usable now. A contest might award 100 next month, but no result is known.",
+          "options": [
+            {
+              "label": "180"
+            },
+            {
+              "label": "100"
+            },
+            {
+              "label": "80"
+            }
+          ],
+          "help": [
+            "Separate confirmed resources from uncertain outcomes."
+          ],
+          "feedback": {
+            "met": "A possible prize is not available money.",
+            "not_yet": "Separate confirmed resources from uncertain outcomes."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Con qué monto cuenta el plan hoy?",
+          "scene": "Tienes 80 disponibles. Un concurso podría dar 100 el próximo mes, pero no se sabe el resultado.",
+          "options": [
+            {
+              "label": "180"
+            },
+            {
+              "label": "100"
+            },
+            {
+              "label": "80"
+            }
+          ],
+          "help": [
+            "Separa los recursos confirmados de los resultados inciertos."
+          ],
+          "feedback": {
+            "met": "Un posible premio no es dinero disponible.",
+            "not_yet": "Separa los recursos confirmados de los resultados inciertos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Com qual valor o plano conta hoje?",
+          "scene": "Você tem 80 disponíveis. Um concurso pode dar 100 no próximo mês, mas o resultado não é conhecido.",
+          "options": [
+            {
+              "label": "180"
+            },
+            {
+              "label": "100"
+            },
+            {
+              "label": "80"
+            }
+          ],
+          "help": [
+            "Separe recursos confirmados de resultados incertos."
+          ],
+          "feedback": {
+            "met": "Um possível prêmio não é dinheiro disponível.",
+            "not_yet": "Separe recursos confirmados de resultados incertos."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          80,
+          100
+        ],
+        "expression": {
+          "input": 0
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.plan.periodic",
+      "copy": {
+        "en-US": {
+          "prompt": "Which plan covers the known cost?",
+          "scene": "A replacement filter costs 90. There are three contribution dates before replacement.",
+          "options": [
+            {
+              "label": "20 + 20 + 20"
+            },
+            {
+              "label": "10 + 10 + 10"
+            },
+            {
+              "label": "30 + 30 + 30"
+            }
+          ],
+          "help": [
+            "Add the parts before comparing with the future cost."
+          ],
+          "feedback": {
+            "met": "The equal contributions prepare the full known expense.",
+            "not_yet": "Add the parts before comparing with the future cost."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué plan cubre el costo conocido?",
+          "scene": "Un filtro de reemplazo cuesta 90. Hay tres fechas de aportación antes de cambiarlo.",
+          "options": [
+            {
+              "label": "20 + 20 + 20"
+            },
+            {
+              "label": "10 + 10 + 10"
+            },
+            {
+              "label": "30 + 30 + 30"
+            }
+          ],
+          "help": [
+            "Suma las partes antes de compararlas con el costo futuro."
+          ],
+          "feedback": {
+            "met": "Las aportaciones iguales preparan el gasto conocido completo.",
+            "not_yet": "Suma las partes antes de compararlas con el costo futuro."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual plano cobre o custo conhecido?",
+          "scene": "Um filtro de reposição custa 90. Há três datas de contribuição antes da troca.",
+          "options": [
+            {
+              "label": "20 + 20 + 20"
+            },
+            {
+              "label": "10 + 10 + 10"
+            },
+            {
+              "label": "30 + 30 + 30"
+            }
+          ],
+          "help": [
+            "Some as partes antes de comparar com o custo futuro."
+          ],
+          "feedback": {
+            "met": "As contribuições iguais preparam todo o gasto conhecido.",
+            "not_yet": "Some as partes antes de comparar com o custo futuro."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          90
+        ],
+        "expression": {
+          "input": 0
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.plan.uncertain-income",
+      "copy": {
+        "en-US": {
+          "prompt": "What should change after cancellation?",
+          "scene": "An optional trip needed earnings from a canceled, unpaid shift.",
+          "options": [
+            {
+              "label": "Count the shift as received"
+            },
+            {
+              "label": "Recheck the trip budget"
+            },
+            {
+              "label": "Erase necessary expenses instead"
+            }
+          ],
+          "help": [
+            "Revisit the decision tied to the canceled receipt."
+          ],
+          "feedback": {
+            "met": "The trip depended on resources that are no longer expected.",
+            "not_yet": "Revisit the decision tied to the canceled receipt."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué cambia tras la cancelación?",
+          "scene": "Un viaje opcional dependía de un turno extra pagado. El turno se cancela antes de pagar.",
+          "options": [
+            {
+              "label": "Contar el turno como recibido"
+            },
+            {
+              "label": "Revisar si el viaje todavía cabe"
+            },
+            {
+              "label": "Borrar gastos necesarios"
+            }
+          ],
+          "help": [
+            "Revisa la decisión ligada a la entrada cancelada."
+          ],
+          "feedback": {
+            "met": "El viaje dependía de recursos que ya no se esperan.",
+            "not_yet": "Revisa la decisión ligada a la entrada cancelada."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que muda após o cancelamento?",
+          "scene": "Uma viagem opcional dependia de um turno extra pago. O turno é cancelado antes do pagamento.",
+          "options": [
+            {
+              "label": "Contar o turno como recebido"
+            },
+            {
+              "label": "Rever se a viagem ainda cabe"
+            },
+            {
+              "label": "Apagar gastos necessários"
+            }
+          ],
+          "help": [
+            "Reveja a decisão ligada à entrada cancelada."
+          ],
+          "feedback": {
+            "met": "A viagem dependia de recursos que não são mais esperados.",
+            "not_yet": "Reveja a decisão ligada à entrada cancelada."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.plan.periodic",
+      "copy": {
+        "en-US": {
+          "prompt": "What should stay in the plan?",
+          "scene": "An annual bill has a known amount and future deadline.",
+          "options": [
+            {
+              "label": "Saving for that bill"
+            },
+            {
+              "label": "Only expenses paid today"
+            },
+            {
+              "label": "Nothing until it arrives"
+            }
+          ],
+          "help": [
+            "The date is later, but the obligation is already known."
+          ],
+          "feedback": {
+            "met": "An infrequent bill can still be a predictable expense.",
+            "not_yet": "The date is later, but the obligation is already known."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe permanecer en el plan?",
+          "scene": "Un recibo anual no llegará este mes, pero ya se conocen su monto y vencimiento futuro.",
+          "options": [
+            {
+              "label": "Una forma de preparar ese recibo"
+            },
+            {
+              "label": "Solo los gastos pagados hoy"
+            },
+            {
+              "label": "Nada, porque no es mensual"
+            }
+          ],
+          "help": [
+            "La fecha es posterior, pero la obligación ya se conoce."
+          ],
+          "feedback": {
+            "met": "Un recibo poco frecuente puede ser un gasto previsible.",
+            "not_yet": "La fecha es posterior, pero la obligación ya se conoce."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que deve continuar no plano?",
+          "scene": "Uma conta anual não chega neste mês, mas seu valor e vencimento futuro são conhecidos.",
+          "options": [
+            {
+              "label": "Uma forma de preparar essa conta"
+            },
+            {
+              "label": "Só os gastos pagos hoje"
+            },
+            {
+              "label": "Nada, porque não é mensal"
+            }
+          ],
+          "help": [
+            "A data é futura, mas a obrigação já é conhecida."
+          ],
+          "feedback": {
+            "met": "Uma conta pouco frequente pode ser um gasto previsível.",
+            "not_yet": "A data é futura, mas a obrigação já é conhecida."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.plan.priority",
+      "copy": {
+        "en-US": {
+          "prompt": "Which repair takes priority?",
+          "scene": "Only one repair fits: restore cooking or remove a scratch.",
+          "options": [
+            {
+              "label": "Remove the scratch first"
+            },
+            {
+              "label": "Restore the needed cooking function"
+            },
+            {
+              "label": "Assume both can be paid today"
+            }
+          ],
+          "help": [
+            "Compare consequences within the actual resource limit."
+          ],
+          "feedback": {
+            "met": "The stated essential function determines the priority.",
+            "not_yet": "Compare consequences within the actual resource limit."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué decisión respeta el límite indicado?",
+          "scene": "Solo puedes pagar una reparación hoy. La estufa no cocina; la otra reparación solo quita un rayón.",
+          "options": [
+            {
+              "label": "Quitar primero el rayón"
+            },
+            {
+              "label": "Recuperar la función de cocinar"
+            },
+            {
+              "label": "Suponer que ambas se pagan hoy"
+            }
+          ],
+          "help": [
+            "Compara consecuencias dentro del límite real de recursos."
+          ],
+          "feedback": {
+            "met": "La función necesaria indicada determina la prioridad.",
+            "not_yet": "Compara consecuencias dentro del límite real de recursos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual decisão respeita o limite informado?",
+          "scene": "Só pode pagar um conserto hoje. O fogão não cozinha; o outro conserto só remove um risco.",
+          "options": [
+            {
+              "label": "Remover o risco primeiro"
+            },
+            {
+              "label": "Recuperar a função de cozinhar"
+            },
+            {
+              "label": "Supor que ambos cabem hoje"
+            }
+          ],
+          "help": [
+            "Compare consequências dentro do limite real de recursos."
+          ],
+          "feedback": {
+            "met": "A função necessária informada define a prioridade.",
+            "not_yet": "Compare consequências dentro do limite real de recursos."
+          }
+        }
+      }
+    }
+  ]
+}

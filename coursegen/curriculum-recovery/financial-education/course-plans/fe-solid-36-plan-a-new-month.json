@@ -1,0 +1,750 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-solid-08-decide-with-evidence",
+  "lesson_id": "fe-solid-36-plan-a-new-month",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.plan.revise",
+    "finance.cash.reserved",
+    "finance.save.goal",
+    "finance.debt.minimum",
+    "finance.rights.agreement"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Revise a feasible household plan using protected commitments, a saving goal, remaining debt and verified agreement conditions.",
+  "title": {
+    "en-US": "Plan a new month",
+    "es-MX": "Planea un nuevo mes",
+    "pt-BR": "Planeje um novo mês"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Plan a new month\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Planea un nuevo mes\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Planeje um novo mês\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "capstone",
+    "objective": {
+      "skill_id": "plan.revise",
+      "observable_action": "Revise a feasible household plan using protected commitments, a saving goal, remaining debt and verified agreement conditions.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "cash.balance",
+      "cash.reserved",
+      "plan.priority",
+      "plan.uncertain-income",
+      "plan.periodic"
+    ],
+    "retrieval_skills": [
+      "rights.agreement",
+      "save.goal",
+      "debt.minimum",
+      "plan.revise",
+      "cash.reserved"
+    ],
+    "relevance": "One household faces a changed month. Each decision provides the facts needed; update the plan without counting money twice.",
+    "misconception": "Keeping an old plan after its costs change, or funding goals by counting reserved money and unpaid debt as available.",
+    "numeracy_support": "Use only the stated quantities, dates and conditions; distinguish a modeled result from a guarantee.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "plan.revise",
+        "context_id": "plan-a-new-month-practice-01",
+        "supports_from": [],
+        "reasoning": "A changed necessary cost requires a corresponding plan adjustment."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "cash.reserved",
+        "context_id": "plan-a-new-month-practice-02",
+        "supports_from": [],
+        "reasoning": "Existing commitments already use the available amount."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "save.goal",
+        "context_id": "plan-a-new-month-practice-03",
+        "supports_from": [],
+        "reasoning": "A flexible goal date can adapt to real contribution capacity."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "debt.minimum",
+        "context_id": "plan-a-new-month-practice-04",
+        "supports_from": [],
+        "reasoning": "The minimum payment does not erase the remaining obligation."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "rights.agreement",
+        "context_id": "plan-a-new-month-practice-05",
+        "supports_from": [],
+        "reasoning": "The transition can involve both existing and new conditions."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "plan.revise",
+        "context_id": "plan-a-new-month-transfer-01",
+        "supports_from": [],
+        "reasoning": "Confirmed receipts change resources; reassess allocations against current obligations."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "plan.revise",
+      "fresh_context": "Apply this skill in a later integrated decision with a different constraint."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "One household faces a changed month. Each decision provides the facts needed; update the plan without counting money twice."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un hogar enfrenta un mes distinto. Cada decisión muestra los datos necesarios; ajusta el plan sin contar dinero dos veces."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Uma família enfrenta um mês diferente. Cada decisão mostra os dados necessários; ajuste o plano sem contar dinheiro duas vezes."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.plan.revise",
+      "copy": {
+        "en-US": {
+          "prompt": "How can this plan work?",
+          "scene": "Essential transport rises. Received money remains fully allocated.",
+          "options": [
+            {
+              "label": "Count hoped-for income as received"
+            },
+            {
+              "label": "Reduce or delay a flexible allocation"
+            },
+            {
+              "label": "Keep all allocations"
+            }
+          ],
+          "help": [
+            "Unchanged money cannot fund the old plan plus an extra cost."
+          ],
+          "feedback": {
+            "met": "A changed necessary cost requires a corresponding plan adjustment.",
+            "not_yet": "Unchanged money cannot fund the old plan plus an extra cost."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué cambio mantiene viable este plan?",
+          "scene": "Sube el transporte necesario. El dinero recibido no cambia y ya estaba todo asignado.",
+          "options": [
+            {
+              "label": "Contar ingreso esperado como ya recibido"
+            },
+            {
+              "label": "Recalcular y reducir o aplazar una asignación flexible"
+            },
+            {
+              "label": "Mantener cada asignación anterior"
+            }
+          ],
+          "help": [
+            "El mismo dinero no cubre el plan anterior más otro costo."
+          ],
+          "feedback": {
+            "met": "Un costo necesario distinto exige ajustar el plan.",
+            "not_yet": "El mismo dinero no cubre el plan anterior más otro costo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual mudança mantém este plano viável?",
+          "scene": "O transporte necessário sobe. O dinheiro recebido não muda e já estava todo destinado.",
+          "options": [
+            {
+              "label": "Contar renda esperada como já recebida"
+            },
+            {
+              "label": "Recalcular e reduzir ou adiar uma destinação flexível"
+            },
+            {
+              "label": "Manter cada valor anterior"
+            }
+          ],
+          "help": [
+            "O mesmo dinheiro não cobre o plano anterior mais outro custo."
+          ],
+          "feedback": {
+            "met": "Um custo necessário diferente exige ajustar o plano.",
+            "not_yet": "O mesmo dinheiro não cobre o plano anterior mais outro custo."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.reserved",
+      "copy": {
+        "en-US": {
+          "prompt": "What can fund an optional purchase?",
+          "scene": "All current money covers rent and essential transport before further income arrives.",
+          "options": [
+            {
+              "label": "No money is uncommitted"
+            },
+            {
+              "label": "The whole balance"
+            },
+            {
+              "label": "The reserved money again"
+            }
+          ],
+          "help": [
+            "Separate held money from uncommitted money."
+          ],
+          "feedback": {
+            "met": "Existing commitments already use the available amount.",
+            "not_yet": "Separate held money from uncommitted money."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué está disponible para la compra opcional?",
+          "scene": "Todo el dinero actual está reservado para renta y transporte esencial antes de otra entrada.",
+          "options": [
+            {
+              "label": "No hay dinero libre en esta situación"
+            },
+            {
+              "label": "Todo el saldo mostrado"
+            },
+            {
+              "label": "El mismo dinero reservado otra vez"
+            }
+          ],
+          "help": [
+            "Separa el dinero que tienes del dinero libre."
+          ],
+          "feedback": {
+            "met": "Los compromisos existentes ya usan el monto disponible.",
+            "not_yet": "Separa el dinero que tienes del dinero libre."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que está disponível para a compra opcional?",
+          "scene": "Todo o dinheiro atual está reservado para aluguel e transporte essencial antes de outra entrada.",
+          "options": [
+            {
+              "label": "Não há dinheiro livre nesta situação"
+            },
+            {
+              "label": "Todo o saldo mostrado"
+            },
+            {
+              "label": "O mesmo dinheiro reservado outra vez"
+            }
+          ],
+          "help": [
+            "Separe o dinheiro que tem do dinheiro livre."
+          ],
+          "feedback": {
+            "met": "Os compromissos existentes já usam o valor disponível.",
+            "not_yet": "Separe o dinheiro que tem do dinheiro livre."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.save.goal",
+      "copy": {
+        "en-US": {
+          "prompt": "How can you adjust it?",
+          "scene": "After essentials, affordable savings fall. Your goal’s date is flexible.",
+          "options": [
+            {
+              "label": "Use reserved rent money"
+            },
+            {
+              "label": "Save an unaffordable amount"
+            },
+            {
+              "label": "Recalculate savings; extend the deadline"
+            }
+          ],
+          "help": [
+            "Keep necessary commitments visible while revising the goal."
+          ],
+          "feedback": {
+            "met": "A flexible goal date can adapt to real contribution capacity.",
+            "not_yet": "Keep necessary commitments visible while revising the goal."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cómo ajustas la meta?",
+          "scene": "Tras gastos necesarios, puedes ahorrar menos de lo previsto. La fecha de tu meta es flexible.",
+          "options": [
+            {
+              "label": "Usar la renta sin cambiar ese compromiso"
+            },
+            {
+              "label": "Mantener una aportación que no cabe"
+            },
+            {
+              "label": "Recalcular aportaciones y ampliar el plazo flexible"
+            }
+          ],
+          "help": [
+            "Mantén visibles los compromisos necesarios al ajustar la meta."
+          ],
+          "feedback": {
+            "met": "Una fecha flexible puede adaptarse a la capacidad real de aportar.",
+            "not_yet": "Mantén visibles los compromisos necesarios al ajustar la meta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Como ajusta a meta?",
+          "scene": "Após gastos necessários, pode poupar menos que o previsto. A data da meta é flexível.",
+          "options": [
+            {
+              "label": "Usar o aluguel sem mudar esse compromisso"
+            },
+            {
+              "label": "Manter uma contribuição que não cabe"
+            },
+            {
+              "label": "Recalcular contribuições e ampliar o prazo flexível"
+            }
+          ],
+          "help": [
+            "Mantenha visíveis os compromissos necessários ao ajustar a meta."
+          ],
+          "feedback": {
+            "met": "Uma data flexível pode se adaptar à capacidade real de contribuir.",
+            "not_yet": "Mantenha visíveis os compromissos necessários ao ajustar a meta."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.debt.minimum",
+      "copy": {
+        "en-US": {
+          "prompt": "What still needs planning?",
+          "scene": "You paid the minimum. The statement still shows debt and agreed interest.",
+          "options": [
+            {
+              "label": "Only the original advertisement"
+            },
+            {
+              "label": "Nothing: the minimum cleared everything"
+            },
+            {
+              "label": "Remaining debt and future obligations"
+            }
+          ],
+          "help": [
+            "Read the updated balance rather than assuming completion."
+          ],
+          "feedback": {
+            "met": "The minimum payment does not erase the remaining obligation.",
+            "not_yet": "Read the updated balance rather than assuming completion."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué falta planear sobre la deuda?",
+          "scene": "Pagaste el mínimo. Aún queda deuda con los intereses acordados.",
+          "options": [
+            {
+              "label": "Solo el anuncio original"
+            },
+            {
+              "label": "Nada, porque el mínimo liquidó el saldo"
+            },
+            {
+              "label": "La deuda restante y sus obligaciones futuras indicadas"
+            }
+          ],
+          "help": [
+            "Lee el saldo actualizado sin suponer que terminó la deuda."
+          ],
+          "feedback": {
+            "met": "El pago mínimo no elimina la obligación restante.",
+            "not_yet": "Lee el saldo actualizado sin suponer que terminó la deuda."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que falta planejar sobre a dívida?",
+          "scene": "Pagou o mínimo. Ainda resta dívida com os juros acordados.",
+          "options": [
+            {
+              "label": "Só o anúncio original"
+            },
+            {
+              "label": "Nada, porque o mínimo quitou o saldo"
+            },
+            {
+              "label": "A dívida restante e suas obrigações futuras informadas"
+            }
+          ],
+          "help": [
+            "Leia o saldo atualizado sem supor que a dívida terminou."
+          ],
+          "feedback": {
+            "met": "O pagamento mínimo não elimina a obrigação restante.",
+            "not_yet": "Leia o saldo atualizado sem supor que a dívida terminou."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.rights.agreement",
+      "copy": {
+        "en-US": {
+          "prompt": "What needs checking?",
+          "scene": "A cheaper service’s exit fee is unclear. Your current service requires notice.",
+          "options": [
+            {
+              "label": "Switching erases obligations"
+            },
+            {
+              "label": "Only the new advertised price"
+            },
+            {
+              "label": "Both agreements and switching costs"
+            }
+          ],
+          "help": [
+            "Check what must be paid and when under both agreements."
+          ],
+          "feedback": {
+            "met": "The transition can involve both existing and new conditions.",
+            "not_yet": "Check what must be paid and when under both agreements."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debes revisar?",
+          "scene": "Otro servicio parece más barato, pero su cargo de salida es confuso. El actual exige aviso previo.",
+          "options": [
+            {
+              "label": "Suponer que cambiar elimina obligaciones anteriores"
+            },
+            {
+              "label": "Comparar solo el precio anunciado nuevo"
+            },
+            {
+              "label": "Ambos acuerdos y costos totales del cambio"
+            }
+          ],
+          "help": [
+            "Revisa qué se paga y cuándo según ambos acuerdos."
+          ],
+          "feedback": {
+            "met": "El cambio puede implicar condiciones anteriores y nuevas.",
+            "not_yet": "Revisa qué se paga y cuándo según ambos acuerdos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que deve conferir?",
+          "scene": "Outro serviço é mais barato, mas sua taxa de saída é confusa. O atual exige aviso prévio.",
+          "options": [
+            {
+              "label": "Supor que mudar elimina obrigações anteriores"
+            },
+            {
+              "label": "Comparar só o novo preço anunciado"
+            },
+            {
+              "label": "Ambos os acordos e custos totais da mudança"
+            }
+          ],
+          "help": [
+            "Confira o que se paga e quando conforme ambos os acordos."
+          ],
+          "feedback": {
+            "met": "A mudança pode envolver condições anteriores e novas.",
+            "not_yet": "Confira o que se paga e quando conforme ambos os acordos."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.plan.revise",
+      "copy": {
+        "en-US": {
+          "prompt": "What changes now?",
+          "scene": "Late pay arrives. Bills and debt remain; you extended the savings deadline.",
+          "options": [
+            {
+              "label": "Update money; reassess the plan"
+            },
+            {
+              "label": "Spend before reviewing bills"
+            },
+            {
+              "label": "Restore all old allocations"
+            }
+          ],
+          "help": [
+            "Use current receipts, costs and dates together."
+          ],
+          "feedback": {
+            "met": "Confirmed receipts change resources; reassess allocations against current obligations.",
+            "not_yet": "Use current receipts, costs and dates together."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cómo revisas el plan?",
+          "scene": "Llega el pago atrasado. Quedan gastos necesarios y deuda; habías ampliado el plazo de ahorro.",
+          "options": [
+            {
+              "label": "Actualizar el dinero recibido y revisar el plan"
+            },
+            {
+              "label": "Gastarlo antes de revisar obligaciones"
+            },
+            {
+              "label": "Restaurar automáticamente cada asignación anterior"
+            }
+          ],
+          "help": [
+            "Usa juntas las entradas, costos y fechas actuales."
+          ],
+          "feedback": {
+            "met": "Una entrada confirmada cambia los recursos; permite revisar asignaciones frente a las obligaciones actuales.",
+            "not_yet": "Usa juntas las entradas, costos y fechas actuales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Como revê o plano?",
+          "scene": "Chega o pagamento atrasado. Restam gastos necessários e dívida; havia ampliado o prazo de poupança.",
+          "options": [
+            {
+              "label": "Atualizar o dinheiro recebido e rever o plano"
+            },
+            {
+              "label": "Gastar antes de rever obrigações"
+            },
+            {
+              "label": "Restaurar automaticamente cada valor anterior"
+            }
+          ],
+          "help": [
+            "Use juntas as entradas, os custos e as datas atuais."
+          ],
+          "feedback": {
+            "met": "Uma entrada confirmada muda os recursos; permite rever destinações diante das obrigações atuais.",
+            "not_yet": "Use juntas as entradas, os custos e as datas atuais."
+          }
+        }
+      }
+    }
+  ]
+}

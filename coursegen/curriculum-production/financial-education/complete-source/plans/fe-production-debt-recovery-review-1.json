@@ -1,0 +1,785 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-debt-recovery-part-2",
+  "lesson_id": "fe-production-debt-recovery-review-1",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.debt-recovery.04",
+    "finance.prod.debt-recovery.01",
+    "finance.prod.debt-recovery.02",
+    "finance.prod.debt-recovery.03",
+    "finance.prod.credit-products.01"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Apply previously taught debt records, consequences and feasible-payment comparisons in a new household situation.",
+  "title": {
+    "en-US": "Debt decisions",
+    "es-MX": "Decide con registros completos de deuda",
+    "pt-BR": "Decida com registros completos de dívida"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Decide from complete debt records\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Decide con registros completos de deuda\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Decida com registros completos de dívida\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "consolidate",
+    "objective": {
+      "skill_id": "prod.debt-recovery.04",
+      "observable_action": "Apply previously taught debt records, consequences and feasible-payment comparisons in a new household situation.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.debt-recovery.01",
+      "prod.cashflow-budget.11"
+    ],
+    "retrieval_skills": [
+      "prod.debt-recovery.01",
+      "prod.debt-recovery.02",
+      "prod.debt-recovery.03",
+      "prod.debt-recovery.04",
+      "prod.credit-products.01"
+    ],
+    "relevance": "Connect the debt list, consequences, extra-payment choices and current statements.",
+    "misconception": "Choose an attractive payment headline without verifying the actual obligation, cost, date and feasibility.",
+    "numeracy_support": "Every quantity and assumption needed to decide is visible in the current scenario. Examples explain the relationship before independent application.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.debt-recovery.01",
+        "context_id": "fe-production-debt-recovery-review-1-practice-01",
+        "supports_from": [],
+        "reasoning": "An inventory counts obligations, not the number of notices."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.debt-recovery.02",
+        "context_id": "fe-production-debt-recovery-review-1-practice-02",
+        "supports_from": [],
+        "reasoning": "The immediate stated consequence matters alongside interest cost."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.debt-recovery.03",
+        "context_id": "fe-production-debt-recovery-review-1-practice-03",
+        "supports_from": [],
+        "reasoning": "This method selects the higher rate after checking feasibility and consequences."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.debt-recovery.04",
+        "context_id": "fe-production-debt-recovery-review-1-practice-04",
+        "supports_from": [],
+        "reasoning": "260 − 200 − 40 = 20 available under these facts."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.credit-products.01",
+        "context_id": "fe-production-debt-recovery-review-1-practice-05",
+        "supports_from": [],
+        "reasoning": "The minimum field is 25; it is not the whole balance."
+      },
+      {
+        "segment_id": "transfer-06",
+        "skill_id": "prod.debt-recovery.04",
+        "context_id": "fe-production-debt-recovery-review-1-transfer-06",
+        "supports_from": [],
+        "reasoning": "The required payment exceeds money available before its deadline."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.debt-recovery.04",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Connect the debt list, consequences, extra-payment choices and current statements."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Relaciona lista de deudas, consecuencias, pagos extra y estados actuales."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Relacione lista de dívidas, efeitos, pagamentos extras e extratos atuais."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.01",
+      "copy": {
+        "en-US": {
+          "prompt": "How to record these notices?",
+          "scene": "Two differently branded notices identify the same original loan.",
+          "options": [
+            {
+              "label": "Match references before adding another debt"
+            },
+            {
+              "label": "Count both notices as separate borrowing"
+            },
+            {
+              "label": "Ignore whichever notice arrived later"
+            }
+          ],
+          "help": [
+            "Check whether both records refer to the same debt."
+          ],
+          "feedback": {
+            "met": "An inventory counts obligations, not the number of notices.",
+            "not_yet": "Check whether both records refer to the same debt."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cómo tratar esto en el inventario?",
+          "scene": "Dos avisos con marcas distintas identifican el mismo préstamo original.",
+          "options": [
+            {
+              "label": "Comparar referencias antes de añadir otra deuda"
+            },
+            {
+              "label": "Contar ambos avisos como préstamos separados"
+            },
+            {
+              "label": "Ignorar el aviso que llegó después"
+            }
+          ],
+          "help": [
+            "Revisa si ambos registros corresponden a la misma deuda."
+          ],
+          "feedback": {
+            "met": "Un inventario cuenta obligaciones, no cantidad de avisos.",
+            "not_yet": "Revisa si ambos registros corresponden a la misma deuda."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Como tratar isso na lista?",
+          "scene": "Dois avisos com marcas diferentes indicam o mesmo empréstimo original.",
+          "options": [
+            {
+              "label": "Comparar referências antes de somar outra dívida"
+            },
+            {
+              "label": "Contar ambos os avisos como empréstimos separados"
+            },
+            {
+              "label": "Ignorar o aviso que chegou depois"
+            }
+          ],
+          "help": [
+            "Confira se ambos os registros se referem à mesma dívida."
+          ],
+          "feedback": {
+            "met": "Uma lista conta obrigações, não quantidade de avisos.",
+            "not_yet": "Confira se ambos os registros se referem à mesma dívida."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Before ranking by rate?",
+          "scene": "Verified notice: essential service ends tomorrow; another debt’s rate is higher.",
+          "options": [
+            {
+              "label": "Assess the immediate essential consequence"
+            },
+            {
+              "label": "Rank by call count"
+            },
+            {
+              "label": "Always pay the higher rate regardless"
+            }
+          ],
+          "help": [
+            "Check essential needs and deadlines before assigning extra payments."
+          ],
+          "feedback": {
+            "met": "The immediate stated consequence matters alongside interest cost.",
+            "not_yet": "Check essential needs and deadlines before assigning extra payments."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué antecede a ordenar solo por tasa?",
+          "scene": "Un aviso verificado amenaza servicio esencial mañana; otra deuda tiene mayor tasa.",
+          "options": [
+            {
+              "label": "Evaluar la consecuencia esencial inmediata"
+            },
+            {
+              "label": "Ordenar solo por llamadas del acreedor"
+            },
+            {
+              "label": "Siempre pagar mayor tasa sin considerar nada"
+            }
+          ],
+          "help": [
+            "Revisa esenciales y plazos antes de asignar pagos extra."
+          ],
+          "feedback": {
+            "met": "La consecuencia inmediata indicada importa además del costo de interés.",
+            "not_yet": "Revisa esenciales y plazos antes de asignar pagos extra."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que conferir antes das taxas?",
+          "scene": "Um aviso conferido ameaça serviço essencial amanhã; outra dívida tem maior taxa.",
+          "options": [
+            {
+              "label": "Avaliar o efeito essencial imediato"
+            },
+            {
+              "label": "Ordenar só por ligações do credor"
+            },
+            {
+              "label": "Sempre pagar maior taxa sem considerar nada"
+            }
+          ],
+          "help": [
+            "Confira essenciais e prazos antes de destinar pagamentos extras."
+          ],
+          "feedback": {
+            "met": "O efeito imediato informado importa além do custo de juros.",
+            "not_yet": "Confira essenciais e prazos antes de destinar pagamentos extras."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Which target follows highest-rate-first?",
+          "scene": "Minimums covered; same surplus; A balance 100 at 12% annually; B balance 300 at 20% annually.",
+          "options": [
+            {
+              "label": "A: smaller balance"
+            },
+            {
+              "label": "B: higher rate"
+            },
+            {
+              "label": "Split by call frequency"
+            }
+          ],
+          "help": [
+            "Compare rates on the same stated period."
+          ],
+          "feedback": {
+            "met": "This method selects the higher rate after checking feasibility and consequences.",
+            "not_yet": "Compare rates on the same stated period."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué elige mayor tasa primero?",
+          "scene": "Mínimos cubiertos; igual excedente; A saldo 100 al 12% anual; B saldo 300 al 20% anual.",
+          "options": [
+            {
+              "label": "A: menor saldo"
+            },
+            {
+              "label": "B: mayor tasa"
+            },
+            {
+              "label": "Dividir según llamadas de acreedores"
+            }
+          ],
+          "help": [
+            "Compara tasas del mismo periodo indicado."
+          ],
+          "feedback": {
+            "met": "Este método elige mayor tasa tras revisar viabilidad y consecuencias.",
+            "not_yet": "Compara tasas del mismo periodo indicado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que escolhe maior taxa primeiro?",
+          "scene": "Mínimos cobertos; mesma sobra; A saldo 100 a 12% ao ano; B saldo 300 a 20% ao ano.",
+          "options": [
+            {
+              "label": "A: menor saldo"
+            },
+            {
+              "label": "B: maior taxa"
+            },
+            {
+              "label": "Dividir conforme ligações dos credores"
+            }
+          ],
+          "help": [
+            "Compare taxas do mesmo período informado."
+          ],
+          "feedback": {
+            "met": "Esse método escolhe maior taxa após conferir viabilidade e efeitos.",
+            "not_yet": "Compare taxas do mesmo período informado."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Capacity before this proposed payment?",
+          "scene": "Reliable income 260; essentials 200; other required payments 40; no other resources.",
+          "options": [
+            {
+              "label": "260"
+            },
+            {
+              "label": "60"
+            },
+            {
+              "label": "20"
+            }
+          ],
+          "help": [
+            "Account for existing necessities and commitments."
+          ],
+          "feedback": {
+            "met": "260 − 200 − 40 = 20 available under these facts.",
+            "not_yet": "Account for existing necessities and commitments."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Capacidad antes de este pago propuesto?",
+          "scene": "Ingreso fiable 260; esenciales 200; otros pagos exigidos 40; sin otros recursos.",
+          "options": [
+            {
+              "label": "260"
+            },
+            {
+              "label": "60"
+            },
+            {
+              "label": "20"
+            }
+          ],
+          "help": [
+            "Considera necesidades y compromisos existentes."
+          ],
+          "feedback": {
+            "met": "260 − 200 − 40 = 20 disponible según estos hechos.",
+            "not_yet": "Considera necesidades y compromisos existentes."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Capacidade antes deste pagamento proposto?",
+          "scene": "Renda confiável 260; essenciais 200; outros pagamentos exigidos 40; sem outros recursos.",
+          "options": [
+            {
+              "label": "260"
+            },
+            {
+              "label": "60"
+            },
+            {
+              "label": "20"
+            }
+          ],
+          "help": [
+            "Considere necessidades e compromissos existentes."
+          ],
+          "feedback": {
+            "met": "260 − 200 − 40 = 20 disponível segundo esses fatos.",
+            "not_yet": "Considere necessidades e compromissos existentes."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          260,
+          200,
+          40
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Stated minimum payment?",
+          "scene": "Fictional card statement: balance 460; minimum payment 25; due on day 15.",
+          "options": [
+            {
+              "label": "25"
+            },
+            {
+              "label": "460"
+            },
+            {
+              "label": "15"
+            }
+          ],
+          "help": [
+            "Read the field named by the question."
+          ],
+          "feedback": {
+            "met": "The minimum field is 25; it is not the whole balance.",
+            "not_yet": "Read the field named by the question."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Pago mínimo indicado?",
+          "scene": "Estado ficticio de tarjeta: saldo 460; pago mínimo 25; vence día 15.",
+          "options": [
+            {
+              "label": "25"
+            },
+            {
+              "label": "460"
+            },
+            {
+              "label": "15"
+            }
+          ],
+          "help": [
+            "Lee el campo que pide la pregunta."
+          ],
+          "feedback": {
+            "met": "El campo mínimo dice 25; no es todo el saldo.",
+            "not_yet": "Lee el campo que pide la pregunta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Pagamento mínimo informado?",
+          "scene": "Extrato fictício do cartão: saldo 460; pagamento mínimo 25; vence dia 15.",
+          "options": [
+            {
+              "label": "25"
+            },
+            {
+              "label": "460"
+            },
+            {
+              "label": "15"
+            }
+          ],
+          "help": [
+            "Leia o campo pedido pela pergunta."
+          ],
+          "feedback": {
+            "met": "O campo mínimo diz 25; não é todo o saldo.",
+            "not_yet": "Leia o campo pedido pela pergunta."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          460,
+          25,
+          15
+        ],
+        "expression": {
+          "input": 1
+        }
+      }
+    },
+    {
+      "id": "transfer-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.debt-recovery.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Next step?",
+          "scene": "Minimum 35 tomorrow; after essentials, 20 available. Next income arrives next week.",
+          "options": [
+            {
+              "label": "Count future income today"
+            },
+            {
+              "label": "Promise 35 tomorrow"
+            },
+            {
+              "label": "Request an arrangement before the deadline"
+            }
+          ],
+          "help": [
+            "Use available funds and contact the creditor before the deadline."
+          ],
+          "feedback": {
+            "met": "The required payment exceeds money available before its deadline.",
+            "not_yet": "Use available funds and contact the creditor before the deadline."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Siguiente paso?",
+          "scene": "Mínimo 35 mañana; tras esenciales, dispones de 20. Próximo ingreso: siguiente semana.",
+          "options": [
+            {
+              "label": "Contar hoy ingreso futuro"
+            },
+            {
+              "label": "Prometer 35 mañana"
+            },
+            {
+              "label": "Pedir un acuerdo antes del vencimiento"
+            }
+          ],
+          "help": [
+            "Usa fondos disponibles y contacta al acreedor antes del vencimiento."
+          ],
+          "feedback": {
+            "met": "El pago exigido supera el dinero disponible antes del vencimiento.",
+            "not_yet": "Usa fondos disponibles y contacta al acreedor antes del vencimiento."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Próximo passo?",
+          "scene": "Mínimo 35 amanhã; após essenciais, há 20 disponíveis. Próxima renda: semana que vem.",
+          "options": [
+            {
+              "label": "Contar renda futura hoje"
+            },
+            {
+              "label": "Prometer 35 amanhã"
+            },
+            {
+              "label": "Pedir um acordo antes do vencimento"
+            }
+          ],
+          "help": [
+            "Use fundos disponíveis e contate o credor antes do vencimento."
+          ],
+          "feedback": {
+            "met": "O pagamento exigido supera o dinheiro disponível antes do vencimento.",
+            "not_yet": "Use fundos disponíveis e contate o credor antes do vencimento."
+          }
+        }
+      }
+    }
+  ]
+}

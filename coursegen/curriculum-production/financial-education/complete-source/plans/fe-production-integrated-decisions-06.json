@@ -1,0 +1,769 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-integrated-decisions-part-1",
+  "lesson_id": "fe-production-integrated-decisions-06",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.accounts-records.05",
+    "finance.prod.accounts-records.06",
+    "finance.cash.transfer"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Reconcile multiple accounts and pending transactions before committing money to a goal.",
+  "title": {
+    "en-US": "Goal funding",
+    "es-MX": "Antes de financiar una meta",
+    "pt-BR": "Antes de financiar uma meta"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Before funding a goal\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Antes de financiar una meta\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Antes de financiar uma meta\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "capstone",
+    "objective": {
+      "skill_id": "prod.accounts-records.05",
+      "observable_action": "Reconcile multiple accounts and pending transactions before committing money to a goal.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.accounts-records.04",
+      "prod.spending-patterns.01",
+      "prod.financial-math.02"
+    ],
+    "retrieval_skills": [
+      "prod.accounts-records.05",
+      "prod.accounts-records.06",
+      "cash.transfer"
+    ],
+    "relevance": "Reconcile records before treating every displayed balance as spendable.",
+    "misconception": "Counting an own-account transfer as income or ignoring a known pending payment.",
+    "numeracy_support": "Use the explicitly stated totals, deadlines and constraints. Earlier financial arithmetic is retrieved; no current rate or legal entitlement is implied.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.accounts-records.05",
+        "context_id": "integrated-decisions-6-practice-01",
+        "supports_from": [],
+        "reasoning": "The fee appears on the statement without a matching receipt entry."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.accounts-records.06",
+        "context_id": "integrated-decisions-6-practice-02",
+        "supports_from": [],
+        "reasoning": "100 − 25 = 75 remains after this known purchase."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "cash.transfer",
+        "context_id": "integrated-decisions-6-practice-03",
+        "supports_from": [],
+        "reasoning": "80 + 20 = 100; the transfer changes location only."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.accounts-records.05",
+        "context_id": "integrated-decisions-6-practice-04",
+        "supports_from": [],
+        "reasoning": "An unmatched entry identifies a question, not its cause."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.accounts-records.06",
+        "context_id": "integrated-decisions-6-practice-05",
+        "supports_from": [],
+        "reasoning": "Subtracting again would double-count the same pending purchase."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.accounts-records.05",
+        "context_id": "integrated-decisions-6-transfer-01",
+        "supports_from": [],
+        "reasoning": "Transit has no matching log entry; the pending item is separate."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.accounts-records.05",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Reconcile records before treating every displayed balance as spendable."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Concilia registros antes de considerar gastable todo saldo mostrado."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Concilie registros antes de considerar disponível todo saldo mostrado."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Which transaction is unmatched?",
+          "scene": "Receipts: groceries 30, transport 10. Statement: groceries 30, transport 10, fee 5.",
+          "options": [
+            {
+              "label": "Groceries 30"
+            },
+            {
+              "label": "Transport 10"
+            },
+            {
+              "label": "Fee 5"
+            }
+          ],
+          "help": [
+            "Match each statement entry with the log before identifying the difference."
+          ],
+          "feedback": {
+            "met": "The fee appears on the statement without a matching receipt entry.",
+            "not_yet": "Match each statement entry with the log before identifying the difference."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué movimiento no coincide?",
+          "scene": "Comprobantes: comida 30, transporte 10. Estado: comida 30, transporte 10, comisión 5.",
+          "options": [
+            {
+              "label": "Comida 30"
+            },
+            {
+              "label": "Transporte 10"
+            },
+            {
+              "label": "Comisión 5"
+            }
+          ],
+          "help": [
+            "Compara cada movimiento del estado con el registro."
+          ],
+          "feedback": {
+            "met": "La comisión aparece en el estado sin registro correspondiente.",
+            "not_yet": "Compara cada movimiento del estado con el registro."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual movimento não corresponde?",
+          "scene": "Comprovantes: comida 30, transporte 10. Extrato: comida 30, transporte 10, tarifa 5.",
+          "options": [
+            {
+              "label": "Comida 30"
+            },
+            {
+              "label": "Transporte 10"
+            },
+            {
+              "label": "Tarifa 5"
+            }
+          ],
+          "help": [
+            "Compare cada movimento do extrato com o registro."
+          ],
+          "feedback": {
+            "met": "A tarifa aparece no extrato sem registro correspondente.",
+            "not_yet": "Compare cada movimento do extrato com o registro."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Available after reserving the purchase?",
+          "scene": "Displayed balance: 100, excluding a known pending purchase of 25. No other commitments.",
+          "options": [
+            {
+              "label": "100"
+            },
+            {
+              "label": "75"
+            },
+            {
+              "label": "125"
+            }
+          ],
+          "help": [
+            "The display explicitly excludes the pending purchase; reserve it once."
+          ],
+          "feedback": {
+            "met": "100 − 25 = 75 remains after this known purchase.",
+            "not_yet": "The display explicitly excludes the pending purchase; reserve it once."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Disponible tras reservar la compra?",
+          "scene": "Saldo mostrado: 100, sin descontar una compra pendiente conocida de 25. No hay otros compromisos.",
+          "options": [
+            {
+              "label": "100"
+            },
+            {
+              "label": "75"
+            },
+            {
+              "label": "125"
+            }
+          ],
+          "help": [
+            "El saldo excluye la compra pendiente; resérvala una vez."
+          ],
+          "feedback": {
+            "met": "100 − 25 = 75 quedan tras esta compra conocida.",
+            "not_yet": "El saldo excluye la compra pendiente; resérvala una vez."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Disponível após reservar a compra?",
+          "scene": "Saldo mostrado: 100, sem descontar uma compra pendente conhecida de 25. Sem outros compromissos.",
+          "options": [
+            {
+              "label": "100"
+            },
+            {
+              "label": "75"
+            },
+            {
+              "label": "125"
+            }
+          ],
+          "help": [
+            "O saldo exclui a compra pendente; reserve uma vez."
+          ],
+          "feedback": {
+            "met": "100 − 25 = 75 restam após esta compra conhecida.",
+            "not_yet": "O saldo exclui a compra pendente; reserve uma vez."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          100,
+          25
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.transfer",
+      "copy": {
+        "en-US": {
+          "prompt": "Total after the transfer?",
+          "scene": "Your accounts hold 80 and 20. You move 30 between them with no fee.",
+          "options": [
+            {
+              "label": "100"
+            },
+            {
+              "label": "70"
+            },
+            {
+              "label": "130"
+            }
+          ],
+          "help": [
+            "Do not add the transferred money to the existing combined total."
+          ],
+          "feedback": {
+            "met": "80 + 20 = 100; the transfer changes location only.",
+            "not_yet": "Do not add the transferred money to the existing combined total."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Total tras transferir?",
+          "scene": "Tus cuentas tienen 80 y 20. Mueves 30 entre ellas sin comisión.",
+          "options": [
+            {
+              "label": "100"
+            },
+            {
+              "label": "70"
+            },
+            {
+              "label": "130"
+            }
+          ],
+          "help": [
+            "No sumes lo transferido al total combinado que ya existía."
+          ],
+          "feedback": {
+            "met": "80 + 20 = 100; la transferencia solo cambia de lugar.",
+            "not_yet": "No sumes lo transferido al total combinado que ya existía."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Total após transferir?",
+          "scene": "Suas contas têm 80 e 20. Você move 30 entre elas sem tarifa.",
+          "options": [
+            {
+              "label": "100"
+            },
+            {
+              "label": "70"
+            },
+            {
+              "label": "130"
+            }
+          ],
+          "help": [
+            "Não some o valor transferido ao total conjunto já existente."
+          ],
+          "feedback": {
+            "met": "80 + 20 = 100; a transferência só muda o local.",
+            "not_yet": "Não some o valor transferido ao total conjunto já existente."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          80,
+          20,
+          30
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.05",
+      "copy": {
+        "en-US": {
+          "prompt": "What does reconciliation establish?",
+          "scene": "An unfamiliar statement entry has no matching record.",
+          "options": [
+            {
+              "label": "The entry is certainly fraud"
+            },
+            {
+              "label": "The entry must be income"
+            },
+            {
+              "label": "The entry needs investigation"
+            }
+          ],
+          "help": [
+            "Check details before labeling the unexplained transaction."
+          ],
+          "feedback": {
+            "met": "An unmatched entry identifies a question, not its cause.",
+            "not_yet": "Check details before labeling the unexplained transaction."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué establece la conciliación?",
+          "scene": "Un movimiento del estado no tiene registro correspondiente; desconoces su descripción.",
+          "options": [
+            {
+              "label": "Es fraude con certeza"
+            },
+            {
+              "label": "Tiene que ser un ingreso"
+            },
+            {
+              "label": "Hay que investigar el movimiento"
+            }
+          ],
+          "help": [
+            "Revisa detalles antes de clasificar el movimiento desconocido."
+          ],
+          "feedback": {
+            "met": "Un movimiento sin coincidencia señala una duda, no su causa.",
+            "not_yet": "Revisa detalles antes de clasificar el movimiento desconocido."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que a conciliação estabelece?",
+          "scene": "Um movimento do extrato não tem registro correspondente; a descrição é desconhecida.",
+          "options": [
+            {
+              "label": "É certamente fraude"
+            },
+            {
+              "label": "Só pode ser renda"
+            },
+            {
+              "label": "É preciso investigar o movimento"
+            }
+          ],
+          "help": [
+            "Confira detalhes antes de classificar o movimento desconhecido."
+          ],
+          "feedback": {
+            "met": "Um movimento sem correspondência aponta uma dúvida, não sua causa.",
+            "not_yet": "Confira detalhes antes de classificar o movimento desconhecido."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Should you subtract it again?",
+          "scene": "The available-balance label explicitly says the pending purchase is already deducted.",
+          "options": [
+            {
+              "label": "Yes, every pending item twice"
+            },
+            {
+              "label": "No, it is already reserved"
+            }
+          ],
+          "help": [
+            "Check what the displayed balance already includes."
+          ],
+          "feedback": {
+            "met": "Subtracting again would double-count the same pending purchase.",
+            "not_yet": "Check what the displayed balance already includes."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Lo restas otra vez?",
+          "scene": "La etiqueta de saldo disponible dice expresamente que la compra pendiente ya está descontada.",
+          "options": [
+            {
+              "label": "Sí, todo pendiente dos veces"
+            },
+            {
+              "label": "No, ya está reservado"
+            }
+          ],
+          "help": [
+            "Revisa qué incluye ya el saldo mostrado."
+          ],
+          "feedback": {
+            "met": "Restar otra vez contaría dos veces la misma compra pendiente.",
+            "not_yet": "Revisa qué incluye ya el saldo mostrado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Deve subtrair novamente?",
+          "scene": "A indicação de saldo disponível diz expressamente que a compra pendente já foi descontada.",
+          "options": [
+            {
+              "label": "Sim, todo pendente duas vezes"
+            },
+            {
+              "label": "Não, já está reservado"
+            }
+          ],
+          "help": [
+            "Confira o que o saldo mostrado já inclui."
+          ],
+          "feedback": {
+            "met": "Subtrair novamente contaria duas vezes a mesma compra pendente.",
+            "not_yet": "Confira o que o saldo mostrado já inclui."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.accounts-records.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Which mismatch remains?",
+          "scene": "Log: rent 70, fee 5; statement: rent 70, fee 5, transit 8. A pending food purchase is listed separately.",
+          "options": [
+            {
+              "label": "Fee"
+            },
+            {
+              "label": "Rent"
+            },
+            {
+              "label": "Transit"
+            }
+          ],
+          "help": [
+            "Match the listed settled entries before considering pending transactions."
+          ],
+          "feedback": {
+            "met": "Transit has no matching log entry; the pending item is separate.",
+            "not_yet": "Match the listed settled entries before considering pending transactions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué diferencia queda?",
+          "scene": "Registro: renta 70, comisión 5; estado: renta 70, comisión 5, transporte 8. La compra pendiente de comida está aparte.",
+          "options": [
+            {
+              "label": "Comisión"
+            },
+            {
+              "label": "Renta"
+            },
+            {
+              "label": "Transporte"
+            }
+          ],
+          "help": [
+            "Compara los movimientos liquidados antes de considerar los pendientes."
+          ],
+          "feedback": {
+            "met": "Transporte no tiene registro correspondiente; la compra pendiente está aparte.",
+            "not_yet": "Compara los movimientos liquidados antes de considerar los pendientes."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual diferença resta?",
+          "scene": "Registro: aluguel 70, tarifa 5; extrato: aluguel 70, tarifa 5, transporte 8. A compra pendente de comida está separada.",
+          "options": [
+            {
+              "label": "Tarifa"
+            },
+            {
+              "label": "Aluguel"
+            },
+            {
+              "label": "Transporte"
+            }
+          ],
+          "help": [
+            "Compare os movimentos liquidados antes de considerar os pendentes."
+          ],
+          "feedback": {
+            "met": "Transporte não tem registro correspondente; a compra pendente está separada.",
+            "not_yet": "Compare os movimentos liquidados antes de considerar os pendentes."
+          }
+        }
+      }
+    }
+  ]
+}

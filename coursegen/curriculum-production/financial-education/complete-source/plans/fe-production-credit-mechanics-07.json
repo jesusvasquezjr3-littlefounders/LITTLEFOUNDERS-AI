@@ -1,0 +1,707 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-credit-mechanics-part-2",
+  "lesson_id": "fe-production-credit-mechanics-07",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.credit-mechanics.07"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Check whether a proposed payment fits the borrower’s existing cash-flow plan.",
+  "title": {
+    "en-US": "Affordable installments",
+    "es-MX": "¿Cabe este pago?",
+    "pt-BR": "Esta parcela cabe?"
+  },
+  "new_concepts": [
+    "finance.prod.credit-mechanics.07"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Can this payment fit?\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"¿Cabe este pago?\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Esta parcela cabe?\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.credit-mechanics.07",
+      "observable_action": "Check whether a proposed payment fits the borrower’s existing cash-flow plan.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.cashflow-budget.05",
+      "prod.credit-mechanics.02"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A loan payment competes with commitments that already need your money.",
+    "misconception": "Loan approval or a positive monthly total proves every proposed payment is feasible when due.",
+    "numeracy_support": "Every quantity and assumption needed to decide is visible in the current scenario. Examples explain the relationship before independent application.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.credit-mechanics.07",
+        "context_id": "fe-production-credit-mechanics-07-example-01",
+        "supports_from": [],
+        "reasoning": "Available money is 100; essential commitments need 80. A loan payment of 30 does not fit the remaining 20."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.credit-mechanics.07",
+        "context_id": "fe-production-credit-mechanics-07-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Required bills leave less than the proposed loan payment."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.credit-mechanics.07",
+        "context_id": "fe-production-credit-mechanics-07-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "A promise cannot fund a payment due before receipt."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.credit-mechanics.07",
+        "context_id": "fe-production-credit-mechanics-07-practice-03",
+        "supports_from": [],
+        "reasoning": "The stated remainder covers the proposed payment."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.credit-mechanics.07",
+        "context_id": "fe-production-credit-mechanics-07-practice-04",
+        "supports_from": [],
+        "reasoning": "Money arriving later cannot fund the earlier due date."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.credit-mechanics.07",
+        "context_id": "fe-production-credit-mechanics-07-practice-05",
+        "supports_from": [],
+        "reasoning": "Affordability requires the borrower’s actual cash-flow constraints."
+      },
+      {
+        "segment_id": "transfer-06",
+        "skill_id": "prod.credit-mechanics.07",
+        "context_id": "fe-production-credit-mechanics-07-transfer-06",
+        "supports_from": [],
+        "reasoning": "Both payments compete for the same available remainder."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.credit-mechanics.07",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A loan payment competes with commitments that already need your money."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "El pago del préstamo compite con compromisos que ya necesitan tu dinero."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "A parcela do empréstimo compete com compromissos que já precisam do seu dinheiro."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Follow the evidence",
+          "line": "Available money is 100; essential commitments need 80. A loan payment of 30 does not fit the remaining 20."
+        },
+        "es-MX": {
+          "prompt": "Sigue las pruebas",
+          "line": "Tienes 100; los compromisos esenciales requieren 80. Un pago de préstamo de 30 no cabe en los 20 restantes."
+        },
+        "pt-BR": {
+          "prompt": "Siga as provas",
+          "line": "Você tem 100; compromissos essenciais exigem 80. Uma parcela de 30 não cabe nos 20 restantes."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Does the payment fit?",
+          "scene": "Available 100; required bills 80; proposed payment 30. No other money arrives.",
+          "options": [
+            {
+              "label": "Yes, because 30 is below 100"
+            },
+            {
+              "label": "No, it creates a shortfall"
+            }
+          ],
+          "help": [
+            "Reserve existing commitments before judging the new payment."
+          ],
+          "feedback": {
+            "met": "Required bills leave less than the proposed loan payment.",
+            "not_yet": "Reserve existing commitments before judging the new payment."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Alcanza después de las cuentas?",
+          "scene": "Disponible 100; cuentas necesarias 80; pago propuesto 30. No entra más dinero.",
+          "options": [
+            {
+              "label": "Sí, porque 30 es menor que 100"
+            },
+            {
+              "label": "No, crea un faltante"
+            }
+          ],
+          "help": [
+            "Protege los compromisos existentes antes de evaluar el pago nuevo."
+          ],
+          "feedback": {
+            "met": "Las cuentas dejan menos que el pago propuesto.",
+            "not_yet": "Protege los compromisos existentes antes de evaluar el pago nuevo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Sobra após pagar as contas?",
+          "scene": "Disponível 100; contas necessárias 80; parcela proposta 30. Não entra mais dinheiro.",
+          "options": [
+            {
+              "label": "Sim, porque 30 é menor que 100"
+            },
+            {
+              "label": "Não, cria uma falta"
+            }
+          ],
+          "help": [
+            "Reserve os compromissos existentes antes de avaliar a nova parcela."
+          ],
+          "feedback": {
+            "met": "As contas deixam menos que a parcela proposta.",
+            "not_yet": "Reserve os compromissos existentes antes de avaliar a nova parcela."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Which money can count?",
+          "scene": "The payment is due today. A promised work payment has not arrived.",
+          "options": [
+            {
+              "label": "Only money available by today"
+            },
+            {
+              "label": "The promise as if already received"
+            }
+          ],
+          "help": [
+            "Match available money to the payment’s actual deadline."
+          ],
+          "feedback": {
+            "met": "A promise cannot fund a payment due before receipt.",
+            "not_yet": "Match available money to the payment’s actual deadline."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué dinero puedes contar?",
+          "scene": "El pago vence hoy. Un ingreso prometido por trabajo no ha llegado.",
+          "options": [
+            {
+              "label": "Solo dinero disponible para hoy"
+            },
+            {
+              "label": "La promesa como si ya se recibió"
+            }
+          ],
+          "help": [
+            "Compara el dinero disponible con la fecha real del pago."
+          ],
+          "feedback": {
+            "met": "Una promesa no paga una obligación anterior a su recepción.",
+            "not_yet": "Compara el dinero disponible con la fecha real del pago."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual dinheiro pode contar?",
+          "scene": "A parcela vence hoje. Um pagamento prometido por trabalho não chegou.",
+          "options": [
+            {
+              "label": "Só dinheiro disponível até hoje"
+            },
+            {
+              "label": "A promessa como se já fosse recebida"
+            }
+          ],
+          "help": [
+            "Compare o dinheiro disponível com a data real da parcela."
+          ],
+          "feedback": {
+            "met": "Uma promessa não paga uma obrigação antes do recebimento.",
+            "not_yet": "Compare o dinheiro disponível com a data real da parcela."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Does it fit the stated plan?",
+          "scene": "Available 90; commitments 60; new payment 20. No other costs here.",
+          "options": [
+            {
+              "label": "Yes, within the stated remainder"
+            },
+            {
+              "label": "No, all available money is committed"
+            }
+          ],
+          "help": [
+            "Use this scenario’s constraints, not a universal borrowing rule."
+          ],
+          "feedback": {
+            "met": "The stated remainder covers the proposed payment.",
+            "not_yet": "Use this scenario’s constraints, not a universal borrowing rule."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cabe en el plan indicado?",
+          "scene": "Disponible 90; compromisos protegidos 60; pago nuevo 20. Sin otros costos aquí.",
+          "options": [
+            {
+              "label": "Sí, dentro del resto indicado"
+            },
+            {
+              "label": "No, todo lo disponible está comprometido"
+            }
+          ],
+          "help": [
+            "Usa estas condiciones, no una regla universal sobre préstamos."
+          ],
+          "feedback": {
+            "met": "El resto indicado cubre el pago propuesto.",
+            "not_yet": "Usa estas condiciones, no una regla universal sobre préstamos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Cabe no plano indicado?",
+          "scene": "Disponível 90; compromissos protegidos 60; parcela nova 20. Sem outros custos aqui.",
+          "options": [
+            {
+              "label": "Sim, dentro da sobra indicada"
+            },
+            {
+              "label": "Não, todo o disponível está comprometido"
+            }
+          ],
+          "help": [
+            "Use estas condições, não uma regra universal sobre empréstimos."
+          ],
+          "feedback": {
+            "met": "A sobra indicada cobre a parcela proposta.",
+            "not_yet": "Use estas condições, não uma regra universal sobre empréstimos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Is the calendar feasible?",
+          "scene": "Income arrives Friday. Loan payment is due Wednesday; available cash is insufficient until Friday.",
+          "options": [
+            {
+              "label": "No, there is a timing gap"
+            },
+            {
+              "label": "Yes, weekly income is enough eventually"
+            }
+          ],
+          "help": [
+            "Check each deadline, not only the period’s total income."
+          ],
+          "feedback": {
+            "met": "Money arriving later cannot fund the earlier due date.",
+            "not_yet": "Check each deadline, not only the period’s total income."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿El calendario es viable?",
+          "scene": "El ingreso llega el viernes. El préstamo vence el miércoles; antes no alcanza el efectivo.",
+          "options": [
+            {
+              "label": "No, hay un desfase de fechas"
+            },
+            {
+              "label": "Sí, el ingreso semanal alcanza después"
+            }
+          ],
+          "help": [
+            "Revisa cada fecha, no solo el ingreso total del periodo."
+          ],
+          "feedback": {
+            "met": "El ingreso posterior no cubre la fecha de pago anterior.",
+            "not_yet": "Revisa cada fecha, no solo el ingreso total del periodo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O calendário é viável?",
+          "scene": "A renda chega sexta. A parcela vence quarta; antes falta dinheiro disponível.",
+          "options": [
+            {
+              "label": "Não, há um desencontro de datas"
+            },
+            {
+              "label": "Sim, a renda semanal basta depois"
+            }
+          ],
+          "help": [
+            "Confira cada data, não só a renda total do período."
+          ],
+          "feedback": {
+            "met": "A renda posterior não cobre a data de pagamento anterior.",
+            "not_yet": "Confira cada data, não só a renda total do período."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.07",
+      "copy": {
+        "en-US": {
+          "prompt": "What is missing?",
+          "scene": "The lender advertises an affordable payment, but your essential commitments are not listed.",
+          "options": [
+            {
+              "label": "Your actual commitment totals and dates"
+            },
+            {
+              "label": "Only the lender’s approval message"
+            }
+          ],
+          "help": [
+            "The advertisement does not contain your complete budget."
+          ],
+          "feedback": {
+            "met": "Affordability requires the borrower’s actual cash-flow constraints.",
+            "not_yet": "The advertisement does not contain your complete budget."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué falta?",
+          "scene": "La entidad anuncia un pago accesible, pero no aparecen tus compromisos esenciales.",
+          "options": [
+            {
+              "label": "Importes y fechas de tus compromisos"
+            },
+            {
+              "label": "Solo el mensaje de aprobación"
+            }
+          ],
+          "help": [
+            "El anuncio no contiene tu presupuesto completo."
+          ],
+          "feedback": {
+            "met": "La capacidad exige revisar las restricciones reales de tu dinero.",
+            "not_yet": "El anuncio no contiene tu presupuesto completo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que falta?",
+          "scene": "A entidade anuncia uma parcela acessível, mas seus compromissos essenciais não aparecem.",
+          "options": [
+            {
+              "label": "Valores e datas dos seus compromissos"
+            },
+            {
+              "label": "Só a mensagem de aprovação"
+            }
+          ],
+          "help": [
+            "O anúncio não contém seu orçamento completo."
+          ],
+          "feedback": {
+            "met": "A capacidade exige conferir as restrições reais do seu dinheiro.",
+            "not_yet": "O anúncio não contém seu orçamento completo."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.credit-mechanics.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Does the combined plan fit?",
+          "scene": "Free after essentials: 50; existing payment: 30; new payment: 25, same due date.",
+          "options": [
+            {
+              "label": "No, combined payments exceed 50"
+            },
+            {
+              "label": "Yes, each payment alone is below 50"
+            }
+          ],
+          "help": [
+            "Combine obligations sharing the same available money and deadline."
+          ],
+          "feedback": {
+            "met": "Both payments compete for the same available remainder.",
+            "not_yet": "Combine obligations sharing the same available money and deadline."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cabe el plan combinado?",
+          "scene": "Libre tras lo esencial: 50; préstamo existente: pago 30; préstamo de reparación: pago 25, misma fecha.",
+          "options": [
+            {
+              "label": "No, juntos superan 50"
+            },
+            {
+              "label": "Sí, cada pago solo es menor que 50"
+            }
+          ],
+          "help": [
+            "Combina obligaciones que usan el mismo dinero y fecha."
+          ],
+          "feedback": {
+            "met": "Ambos pagos compiten por el mismo resto disponible.",
+            "not_yet": "Combina obligaciones que usan el mismo dinero y fecha."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O plano conjunto cabe?",
+          "scene": "Livre após o essencial: 50; empréstimo existente: parcela 30; empréstimo de reparo: parcela 25, mesma data.",
+          "options": [
+            {
+              "label": "Não, juntas superam 50"
+            },
+            {
+              "label": "Sim, cada parcela sozinha é menor que 50"
+            }
+          ],
+          "help": [
+            "Some obrigações que usam o mesmo dinheiro e a mesma data."
+          ],
+          "feedback": {
+            "met": "Ambas as parcelas disputam a mesma sobra disponível.",
+            "not_yet": "Some obrigações que usam o mesmo dinheiro e a mesma data."
+          }
+        }
+      }
+    }
+  ]
+}

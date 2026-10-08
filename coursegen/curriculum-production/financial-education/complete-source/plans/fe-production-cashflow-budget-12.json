@@ -1,0 +1,807 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-cashflow-budget-part-3",
+  "lesson_id": "fe-production-cashflow-budget-12",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.cashflow-budget.12"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Separate planned saving from money that is accidentally left over.",
+  "title": {
+    "en-US": "Planned saving",
+    "es-MX": "Planea el ahorro explícitamente",
+    "pt-BR": "Planeje a poupança explicitamente"
+  },
+  "new_concepts": [
+    "finance.prod.cashflow-budget.12"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Plan saving explicitly\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Planea el ahorro explícitamente\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Planeje a poupança explicitamente\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.cashflow-budget.12",
+      "observable_action": "Separate planned saving from money that is accidentally left over.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.cashflow-budget.02",
+      "prod.cashflow-budget.03",
+      "prod.goals-tradeoffs.05"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Give feasible saving a purpose and amount instead of assuming every remainder is free.",
+    "misconception": "Calling an account balance saving without checking unpaid obligations or making a feasible allocation.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.cashflow-budget.12",
+        "context_id": "fe-production-cashflow-budget-12-example-01",
+        "supports_from": [],
+        "reasoning": "Planned saving has an amount and purpose within available money. An unexplained account remainder may still cover unpaid bills."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.cashflow-budget.12",
+        "context_id": "fe-production-cashflow-budget-12-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The purpose and feasible allocation make the saving intentional."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.cashflow-budget.12",
+        "context_id": "fe-production-cashflow-budget-12-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "A balance may include money already needed for a bill."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.cashflow-budget.12",
+        "context_id": "fe-production-cashflow-budget-12-practice-01",
+        "supports_from": [],
+        "reasoning": "140 − 110 − 15 = 15 remains unallocated."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.cashflow-budget.12",
+        "context_id": "fe-production-cashflow-budget-12-practice-02",
+        "supports_from": [],
+        "reasoning": "A plan and a completed movement are different records."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.cashflow-budget.12",
+        "context_id": "fe-production-cashflow-budget-12-practice-03",
+        "supports_from": [],
+        "reasoning": "Writing a target does not create funds for it."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.cashflow-budget.12",
+        "context_id": "fe-production-cashflow-budget-12-transfer-01",
+        "supports_from": [],
+        "reasoning": "A chosen feasible use makes this remainder part of the saving plan."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.cashflow-budget.12",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Give feasible saving a purpose and amount instead of assuming every remainder is free."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Da propósito y monto al ahorro viable sin suponer que todo resto está libre."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Dê propósito e valor à poupança viável sem supor que todo restante está livre."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "An intentional allocation",
+          "line": "Planned saving has an amount and purpose within available money. An unexplained account remainder may still cover unpaid bills."
+        },
+        "es-MX": {
+          "prompt": "Una asignación intencional",
+          "line": "El ahorro planeado tiene monto y propósito dentro del dinero disponible. Un resto en cuenta puede cubrir cuentas pendientes."
+        },
+        "pt-BR": {
+          "prompt": "Uma destinação intencional",
+          "line": "A poupança planejada tem valor e propósito dentro do dinheiro disponível. Um restante na conta pode cobrir contas pendentes."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.12",
+      "copy": {
+        "en-US": {
+          "prompt": "What makes saving planned?",
+          "scene": "After checking required costs, a plan reserves a feasible amount for a named goal.",
+          "options": [
+            {
+              "label": "A deliberate purpose and allocation"
+            },
+            {
+              "label": "Ignoring the required costs"
+            },
+            {
+              "label": "Only the account’s name"
+            }
+          ],
+          "help": [
+            "Look for a planned use and an amount that fits."
+          ],
+          "feedback": {
+            "met": "The purpose and feasible allocation make the saving intentional.",
+            "not_yet": "Look for a planned use and an amount that fits."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué lo vuelve ahorro planeado?",
+          "scene": "Un plan reserva un monto viable para una meta futura tras revisar costos necesarios.",
+          "options": [
+            {
+              "label": "Un propósito y asignación deliberados"
+            },
+            {
+              "label": "Ignorar los costos necesarios"
+            },
+            {
+              "label": "Solo el nombre de la cuenta"
+            }
+          ],
+          "help": [
+            "Busca propósito planeado y monto viable."
+          ],
+          "feedback": {
+            "met": "El propósito y asignación viable vuelven intencional el ahorro.",
+            "not_yet": "Busca propósito planeado y monto viable."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que o torna poupança planejada?",
+          "scene": "Um plano reserva um valor viável para uma meta futura após conferir custos necessários.",
+          "options": [
+            {
+              "label": "Um propósito e destinação deliberados"
+            },
+            {
+              "label": "Ignorar os custos necessários"
+            },
+            {
+              "label": "Só o nome da conta"
+            }
+          ],
+          "help": [
+            "Busque propósito planejado e valor viável."
+          ],
+          "feedback": {
+            "met": "O propósito e destinação viável tornam a poupança intencional.",
+            "not_yet": "Busque propósito planejado e valor viável."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.12",
+      "copy": {
+        "en-US": {
+          "prompt": "Is the balance automatically saving?",
+          "scene": "Money remains in an account; tomorrow’s necessary bill is unpaid.",
+          "options": [
+            {
+              "label": "Yes, bills stop at month-end"
+            },
+            {
+              "label": "Yes, every positive balance is free"
+            },
+            {
+              "label": "No, check the remaining obligation"
+            }
+          ],
+          "help": [
+            "Separate committed money before allocating any remainder."
+          ],
+          "feedback": {
+            "met": "A balance may include money already needed for a bill.",
+            "not_yet": "Separate committed money before allocating any remainder."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Todo el saldo es ahorro automáticamente?",
+          "scene": "Queda dinero en una cuenta, pero la cuenta necesaria de mañana sigue pendiente.",
+          "options": [
+            {
+              "label": "Sí, las cuentas terminan al cerrar el mes"
+            },
+            {
+              "label": "Sí, todo saldo positivo está libre"
+            },
+            {
+              "label": "No, revisa la obligación pendiente"
+            }
+          ],
+          "help": [
+            "Separa dinero comprometido antes de asignar el resto."
+          ],
+          "feedback": {
+            "met": "Un saldo puede incluir dinero necesario para una cuenta.",
+            "not_yet": "Separa dinero comprometido antes de asignar el resto."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Todo o saldo é poupança automaticamente?",
+          "scene": "Resta dinheiro numa conta, mas a conta necessária de amanhã continua pendente.",
+          "options": [
+            {
+              "label": "Sim, contas terminam no fim do mês"
+            },
+            {
+              "label": "Sim, todo saldo positivo está livre"
+            },
+            {
+              "label": "Não, confira a obrigação pendente"
+            }
+          ],
+          "help": [
+            "Separe dinheiro comprometido antes de destinar o restante."
+          ],
+          "feedback": {
+            "met": "Um saldo pode incluir dinheiro necessário para uma conta.",
+            "not_yet": "Separe dinheiro comprometido antes de destinar o restante."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.12",
+      "copy": {
+        "en-US": {
+          "prompt": "Remainder after costs and saving?",
+          "scene": "Income: 140; required costs: 110; feasible planned saving: 15.",
+          "options": [
+            {
+              "label": "30"
+            },
+            {
+              "label": "15"
+            },
+            {
+              "label": "125"
+            }
+          ],
+          "help": [
+            "Saving also occupies part of the available money."
+          ],
+          "feedback": {
+            "met": "140 − 110 − 15 = 15 remains unallocated.",
+            "not_yet": "Saving also occupies part of the available money."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Resto tras costos y ahorro?",
+          "scene": "Ingreso: 140; costos necesarios: 110; ahorro planeado viable: 15.",
+          "options": [
+            {
+              "label": "30"
+            },
+            {
+              "label": "15"
+            },
+            {
+              "label": "125"
+            }
+          ],
+          "help": [
+            "Ahorrar también ocupa parte del dinero disponible."
+          ],
+          "feedback": {
+            "met": "140 − 110 − 15 = 15 queda sin asignar.",
+            "not_yet": "Ahorrar también ocupa parte del dinero disponible."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Restante após custos e poupança?",
+          "scene": "Renda: 140; custos necessários: 110; poupança planejada viável: 15.",
+          "options": [
+            {
+              "label": "30"
+            },
+            {
+              "label": "15"
+            },
+            {
+              "label": "125"
+            }
+          ],
+          "help": [
+            "Poupar também ocupa parte do dinheiro disponível."
+          ],
+          "feedback": {
+            "met": "140 − 110 − 15 = 15 resta sem destinar.",
+            "not_yet": "Poupar também ocupa parte do dinheiro disponível."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          140,
+          110,
+          15
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.12",
+      "copy": {
+        "en-US": {
+          "prompt": "Which record is accurate?",
+          "scene": "A planned saving transfer has not happened; the money was instead spent.",
+          "options": [
+            {
+              "label": "Saving planned, not completed"
+            },
+            {
+              "label": "Saving completed because planned"
+            },
+            {
+              "label": "The spending never happened"
+            }
+          ],
+          "help": [
+            "Use actual movements when recording what happened."
+          ],
+          "feedback": {
+            "met": "A plan and a completed movement are different records.",
+            "not_yet": "Use actual movements when recording what happened."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué registro es correcto?",
+          "scene": "Una transferencia de ahorro planeada no ocurrió; el dinero se gastó.",
+          "options": [
+            {
+              "label": "Ahorro planeado, no realizado"
+            },
+            {
+              "label": "Ahorro realizado por planearlo"
+            },
+            {
+              "label": "El gasto nunca ocurrió"
+            }
+          ],
+          "help": [
+            "Usa movimientos reales al registrar lo ocurrido."
+          ],
+          "feedback": {
+            "met": "Un plan y un movimiento realizado son registros diferentes.",
+            "not_yet": "Usa movimientos reales al registrar lo ocurrido."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual registro é correto?",
+          "scene": "Uma transferência de poupança planejada não ocorreu; o dinheiro foi gasto.",
+          "options": [
+            {
+              "label": "Poupança planejada, não realizada"
+            },
+            {
+              "label": "Poupança realizada por planejá-la"
+            },
+            {
+              "label": "O gasto nunca ocorreu"
+            }
+          ],
+          "help": [
+            "Use movimentos reais ao registrar o ocorrido."
+          ],
+          "feedback": {
+            "met": "Um plano e um movimento concluído são registros diferentes.",
+            "not_yet": "Use movimentos reais ao registrar o ocorrido."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.12",
+      "copy": {
+        "en-US": {
+          "prompt": "What saving allocation is currently supported?",
+          "scene": "After verified unavoidable costs, no money remains this period.",
+          "options": [
+            {
+              "label": "None without another feasible change"
+            },
+            {
+              "label": "The entire account balance regardless"
+            },
+            {
+              "label": "Any target if written clearly"
+            }
+          ],
+          "help": [
+            "Keep the goal separate from current capacity."
+          ],
+          "feedback": {
+            "met": "Writing a target does not create funds for it.",
+            "not_yet": "Keep the goal separate from current capacity."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué asignación de ahorro respaldan estos datos?",
+          "scene": "Tras costos inevitables verificados, no queda dinero este periodo.",
+          "options": [
+            {
+              "label": "Ninguna sin otro cambio viable"
+            },
+            {
+              "label": "Todo el saldo sin considerar nada"
+            },
+            {
+              "label": "Cualquier meta si se escribe claro"
+            }
+          ],
+          "help": [
+            "Separa la meta de la capacidad actual."
+          ],
+          "feedback": {
+            "met": "Escribir una meta no crea fondos para cumplirla.",
+            "not_yet": "Separa la meta de la capacidad actual."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual destinação de poupança esses dados apoiam?",
+          "scene": "Após custos inevitáveis verificados, não resta dinheiro neste período.",
+          "options": [
+            {
+              "label": "Nenhuma sem outra mudança viável"
+            },
+            {
+              "label": "Todo o saldo sem considerar nada"
+            },
+            {
+              "label": "Qualquer meta se escrita claramente"
+            }
+          ],
+          "help": [
+            "Separe a meta da capacidade atual."
+          ],
+          "feedback": {
+            "met": "Escrever uma meta não cria recursos para cumpri-la.",
+            "not_yet": "Separe a meta da capacidade atual."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.cashflow-budget.12",
+      "copy": {
+        "en-US": {
+          "prompt": "What makes saving planned?",
+          "scene": "After checking obligations, you choose a feasible goal allocation from an unspent refund.",
+          "options": [
+            {
+              "label": "Assuming every future refund will match"
+            },
+            {
+              "label": "The deliberate feasible allocation"
+            },
+            {
+              "label": "The refund’s name alone"
+            }
+          ],
+          "help": [
+            "Check obligations, then assign the actual available remainder."
+          ],
+          "feedback": {
+            "met": "A chosen feasible use makes this remainder part of the saving plan.",
+            "not_yet": "Check obligations, then assign the actual available remainder."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué vuelve ahorro planeado ese resto?",
+          "scene": "Queda un reembolso sin gastar tras revisar obligaciones; eliges asignarlo a una meta viable.",
+          "options": [
+            {
+              "label": "Suponer iguales todos los reembolsos futuros"
+            },
+            {
+              "label": "La asignación deliberada viable"
+            },
+            {
+              "label": "Solo el nombre de reembolso"
+            }
+          ],
+          "help": [
+            "Revisa obligaciones y asigna el resto realmente disponible."
+          ],
+          "feedback": {
+            "met": "Un uso viable elegido integra ese resto al plan de ahorro.",
+            "not_yet": "Revisa obligaciones y asigna el resto realmente disponible."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que torna esse restante poupança planejada?",
+          "scene": "Resta um reembolso sem gastar após conferir obrigações; escolhe destiná-lo a uma meta viável.",
+          "options": [
+            {
+              "label": "Supor iguais todos os reembolsos futuros"
+            },
+            {
+              "label": "A destinação deliberada viável"
+            },
+            {
+              "label": "Só o nome de reembolso"
+            }
+          ],
+          "help": [
+            "Confira obrigações e destine o restante realmente disponível."
+          ],
+          "feedback": {
+            "met": "Um uso viável escolhido integra esse restante ao plano de poupança.",
+            "not_yet": "Confira obrigações e destine o restante realmente disponível."
+          }
+        }
+      }
+    }
+  ]
+}

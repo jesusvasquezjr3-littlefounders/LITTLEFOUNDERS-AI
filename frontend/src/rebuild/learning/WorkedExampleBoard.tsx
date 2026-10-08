@@ -55,10 +55,12 @@ export function WorkedExampleBoard({ document, segment, onBack, onGrade, sequenc
   const { pending, grade } = useSingleActiveGrade();
 
   const revealNext = () => {
+    if (pending) return;
     const next = steps[index + 1];
     if (!next) return;
     const value = index + 1 >= fadeAt ? values[next.id] ?? '' : prediction;
     if (!value.trim()) return;
+    setVerdict(null);
     setValues((current) => ({ ...current, [next.id]: value }));
     setIndex(index + 1);
     setPrediction('');
@@ -106,14 +108,14 @@ export function WorkedExampleBoard({ document, segment, onBack, onGrade, sequenc
         </section>
         <div className="lf-learning-control-strip">
           <div className="lf-learning-control-bar"><Button size="sm" onClick={reset} disabled={pending || pristine}>{t.reset}</Button></div>
-          <StepReplay steps={steps.length - 1} index={Math.min(index, steps.length - 1)} onChange={setIndex}
+          <StepReplay disabled={pending} steps={steps.length - 1} index={Math.min(index, steps.length - 1)} onChange={setIndex}
             labels={{ previous: t.previous, next: t.next, play: t.play, pause: t.pause, step: t.step }} />
           {index < steps.length - 1 && index + 1 < fadeAt ? <div className="lf-worked-example-prediction">
-            <TextField label={t.predict} autoComplete="off" value={prediction} onChange={(event) => setPrediction(event.target.value)}
+            <TextField disabled={pending} label={t.predict} autoComplete="off" value={prediction} onChange={(event) => setPrediction(event.target.value)}
               placeholder={t.predictHint} />
-            <Button variant="accent" disabled={!prediction.trim()} onClick={revealNext}>{t.reveal}</Button>
+            <Button variant="accent" disabled={pending || !prediction.trim()} onClick={revealNext}>{t.reveal}</Button>
           </div> : index < steps.length - 1 ? <div className="lf-worked-example-prediction">
-            <Button variant="accent" disabled={!values[steps[index + 1]?.id ?? '']?.trim()} onClick={revealNext}>{t.reveal}</Button>
+            <Button variant="accent" disabled={pending || !values[steps[index + 1]?.id ?? '']?.trim()} onClick={revealNext}>{t.reveal}</Button>
           </div> : <div className="lf-worked-example-complete"><p data-copy-role="body">{t.complete}</p>
             <LessonFeedback verdict={verdict}>{verdict === null ? null : verdictBannerText(document.locale, verdict, namedFeedback(document.locale, 'worked-example'), segment.feedback)}</LessonFeedback>
             <Button variant="accent" disabled={pending || !complete} onClick={submit}>{verdict === 'met' && sequence ? t.continue : t.check}</Button>

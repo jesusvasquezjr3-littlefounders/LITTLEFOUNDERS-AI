@@ -1,0 +1,779 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-debt-recovery-part-1",
+  "lesson_id": "fe-production-debt-recovery-02",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.debt-recovery.02"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Prioritize immediate consequences before applying a simple balance or rate ordering.",
+  "title": {
+    "en-US": "Urgent consequences",
+    "es-MX": "Revisa consecuencias antes de ordenar deudas",
+    "pt-BR": "Confira efeitos antes de ordenar dívidas"
+  },
+  "new_concepts": [
+    "finance.prod.debt-recovery.02"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Check consequences before sorting debts\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Revisa consecuencias antes de ordenar deudas\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Confira efeitos antes de ordenar dívidas\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.debt-recovery.02",
+      "observable_action": "Prioritize immediate consequences before applying a simple balance or rate ordering.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.debt-recovery.01",
+      "prod.goals-tradeoffs.02"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Immediate essential needs can change the order suggested by balance or interest rate alone.",
+    "misconception": "Always paying the smallest balance, highest rate or loudest creditor before checking immediate consequences and essential needs.",
+    "numeracy_support": "Every quantity and assumption needed to decide is visible in the current scenario. Examples explain the relationship before independent application.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.debt-recovery.02",
+        "context_id": "fe-production-debt-recovery-02-example-01",
+        "supports_from": [],
+        "reasoning": "A simple ranking ignores urgent consequences. First check essential needs, due dates and stated risks; then compare feasible repayment choices."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.debt-recovery.02",
+        "context_id": "fe-production-debt-recovery-02-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The stated immediate consequence needs attention before a simple rate ordering."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.debt-recovery.02",
+        "context_id": "fe-production-debt-recovery-02-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Contact frequency does not measure urgency or financial consequence."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.debt-recovery.02",
+        "context_id": "fe-production-debt-recovery-02-practice-03",
+        "supports_from": [],
+        "reasoning": "A repayment choice must fit essential needs and actual cash timing."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.debt-recovery.02",
+        "context_id": "fe-production-debt-recovery-02-practice-04",
+        "supports_from": [],
+        "reasoning": "A smaller balance need not have the most urgent consequence."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.debt-recovery.02",
+        "context_id": "fe-production-debt-recovery-02-practice-05",
+        "supports_from": [],
+        "reasoning": "Unverified pressure does not establish a legal consequence."
+      },
+      {
+        "segment_id": "transfer-06",
+        "skill_id": "prod.debt-recovery.02",
+        "context_id": "fe-production-debt-recovery-02-transfer-06",
+        "supports_from": [],
+        "reasoning": "The feasible plan depends on needs, timing and verified consequences."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.debt-recovery.02",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Immediate essential needs can change the order suggested by balance or interest rate alone."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Necesidades esenciales inmediatas pueden cambiar el orden sugerido por saldo o tasa solos."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Necessidades essenciais imediatas podem mudar a ordem sugerida só por saldo ou taxa."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Follow the evidence",
+          "line": "A simple ranking ignores urgent consequences. First check essential needs, due dates and stated risks; then compare feasible repayment choices."
+        },
+        "es-MX": {
+          "prompt": "Sigue las pruebas",
+          "line": "Un orden simple ignora consecuencias urgentes. Primero revisa necesidades esenciales, plazos y riesgos indicados; después compara opciones de pago viables."
+        },
+        "pt-BR": {
+          "prompt": "Siga as provas",
+          "line": "Uma ordem simples ignora efeitos urgentes. Primeiro confira necessidades essenciais, prazos e riscos informados; depois compare opções viáveis de pagamento."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What matters before rate ranking?",
+          "scene": "Fictional notice: an essential service stops tomorrow unless its overdue bill is addressed.",
+          "options": [
+            {
+              "label": "Only the highest interest rate"
+            },
+            {
+              "label": "The immediate service-loss consequence"
+            },
+            {
+              "label": "Only the smallest balance"
+            }
+          ],
+          "help": [
+            "Assess the urgent need without inventing extra money."
+          ],
+          "feedback": {
+            "met": "The stated immediate consequence needs attention before a simple rate ordering.",
+            "not_yet": "Assess the urgent need without inventing extra money."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué importa antes de ordenar por tasa?",
+          "scene": "Aviso ficticio: servicio esencial se corta mañana si no atiendes su cuenta vencida.",
+          "options": [
+            {
+              "label": "Solo la tasa más alta"
+            },
+            {
+              "label": "La pérdida inmediata del servicio"
+            },
+            {
+              "label": "Solo el saldo más pequeño"
+            }
+          ],
+          "help": [
+            "Evalúa la necesidad urgente sin inventar dinero adicional."
+          ],
+          "feedback": {
+            "met": "La consecuencia inmediata indicada requiere atención antes de ordenar por tasa.",
+            "not_yet": "Evalúa la necesidad urgente sin inventar dinero adicional."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que importa antes de ordenar por taxa?",
+          "scene": "Aviso fictício: serviço essencial para amanhã se não tratar sua conta vencida.",
+          "options": [
+            {
+              "label": "Só a taxa mais alta"
+            },
+            {
+              "label": "A perda imediata do serviço"
+            },
+            {
+              "label": "Só o menor saldo"
+            }
+          ],
+          "help": [
+            "Avalie a necessidade urgente sem inventar dinheiro extra."
+          ],
+          "feedback": {
+            "met": "O efeito imediato informado exige atenção antes de ordenar por taxa.",
+            "not_yet": "Avalie a necessidade urgente sem inventar dinheiro extra."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Do calls decide priority?",
+          "scene": "One creditor calls often; another gives a severe deadline tomorrow.",
+          "options": [
+            {
+              "label": "Pressure proves the largest debt"
+            },
+            {
+              "label": "The most calls always come first"
+            },
+            {
+              "label": "Verify deadlines and consequences"
+            }
+          ],
+          "help": [
+            "Use verified terms instead of pressure alone."
+          ],
+          "feedback": {
+            "met": "Contact frequency does not measure urgency or financial consequence.",
+            "not_yet": "Use verified terms instead of pressure alone."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Frecuencia de llamadas decide prioridad?",
+          "scene": "Un acreedor llama mucho; otro aviso indica una consecuencia grave mañana.",
+          "options": [
+            {
+              "label": "Sí, presión prueba deuda mayor"
+            },
+            {
+              "label": "Sí, más llamadas siempre van primero"
+            },
+            {
+              "label": "No, verifica plazos y consecuencias"
+            }
+          ],
+          "help": [
+            "Usa condiciones verificadas, no solo presión."
+          ],
+          "feedback": {
+            "met": "Frecuencia de contacto no mide urgencia ni consecuencia financiera.",
+            "not_yet": "Usa condiciones verificadas, no solo presión."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Frequência de ligações decide prioridade?",
+          "scene": "Um credor liga muito; outro aviso informa uma consequência grave amanhã.",
+          "options": [
+            {
+              "label": "Sim, pressão prova dívida maior"
+            },
+            {
+              "label": "Sim, mais ligações sempre vêm primeiro"
+            },
+            {
+              "label": "Não, confira prazos e efeitos"
+            }
+          ],
+          "help": [
+            "Use regras conferidas, não só pressão."
+          ],
+          "feedback": {
+            "met": "Frequência de contato não mede urgência nem efeito financeiro.",
+            "not_yet": "Use regras conferidas, não só pressão."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What must be considered first?",
+          "scene": "Extra repayment leaves no food money until next income.",
+          "options": [
+            {
+              "label": "Assume future income arrives early"
+            },
+            {
+              "label": "The essential shortfall it creates"
+            },
+            {
+              "label": "Only the satisfaction of a lower balance"
+            }
+          ],
+          "help": [
+            "Check what remains for necessary costs."
+          ],
+          "feedback": {
+            "met": "A repayment choice must fit essential needs and actual cash timing.",
+            "not_yet": "Check what remains for necessary costs."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué considerar antes del pago extra?",
+          "scene": "Un pago extra dejaría sin dinero para comida necesaria antes del siguiente ingreso.",
+          "options": [
+            {
+              "label": "Suponer que ingreso futuro llega antes"
+            },
+            {
+              "label": "El faltante esencial que genera"
+            },
+            {
+              "label": "Solo satisfacción de bajar saldo"
+            }
+          ],
+          "help": [
+            "Revisa qué queda para costos necesarios."
+          ],
+          "feedback": {
+            "met": "Una opción de pago debe caber con necesidades esenciales y fechas reales.",
+            "not_yet": "Revisa qué queda para costos necesarios."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que considerar antes do pagamento extra?",
+          "scene": "Um pagamento extra deixaria sem dinheiro para comida necessária até a próxima renda.",
+          "options": [
+            {
+              "label": "Supor que renda futura chega antes"
+            },
+            {
+              "label": "A falta essencial que ele cria"
+            },
+            {
+              "label": "Só satisfação de baixar saldo"
+            }
+          ],
+          "help": [
+            "Confira o que sobra para custos necessários."
+          ],
+          "feedback": {
+            "met": "Uma opção de pagamento deve caber com necessidades essenciais e datas reais.",
+            "not_yet": "Confira o que sobra para custos necessários."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Does balance alone establish urgency?",
+          "scene": "Smallest debt: no immediate penalty; another verified debt threatens a necessary asset.",
+          "options": [
+            {
+              "label": "Compare stated consequences"
+            },
+            {
+              "label": "Smallest always comes first"
+            },
+            {
+              "label": "Debt size measures every risk"
+            }
+          ],
+          "help": [
+            "Examine the actual deadline and what is at risk."
+          ],
+          "feedback": {
+            "met": "A smaller balance need not have the most urgent consequence.",
+            "not_yet": "Examine the actual deadline and what is at risk."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿El saldo solo establece urgencia?",
+          "scene": "Deuda menor no tiene penalidad inmediata; otro aviso verificado amenaza un bien necesario.",
+          "options": [
+            {
+              "label": "No, compara consecuencias indicadas"
+            },
+            {
+              "label": "Sí, menor siempre va primero"
+            },
+            {
+              "label": "Sí, saldo mide todo riesgo"
+            }
+          ],
+          "help": [
+            "Examina plazo real y qué está en riesgo."
+          ],
+          "feedback": {
+            "met": "Un saldo menor puede no tener la consecuencia más urgente.",
+            "not_yet": "Examina plazo real y qué está en riesgo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O saldo sozinho estabelece urgência?",
+          "scene": "Dívida menor não tem pena imediata; outro aviso conferido ameaça um bem necessário.",
+          "options": [
+            {
+              "label": "Não, compare efeitos informados"
+            },
+            {
+              "label": "Sim, menor sempre vem primeiro"
+            },
+            {
+              "label": "Sim, saldo mede todo risco"
+            }
+          ],
+          "help": [
+            "Examine prazo real e o que está em risco."
+          ],
+          "feedback": {
+            "met": "Um saldo menor pode não ter o efeito mais urgente.",
+            "not_yet": "Examine prazo real e o que está em risco."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What if consequences are unclear?",
+          "scene": "A message threatens legal action without verifiable case details.",
+          "options": [
+            {
+              "label": "Verify the claim through qualified channels"
+            },
+            {
+              "label": "Assume every warning is harmless"
+            },
+            {
+              "label": "Assume the claim is definitely true"
+            }
+          ],
+          "help": [
+            "Seek reliable clarification instead of guessing either way."
+          ],
+          "feedback": {
+            "met": "Unverified pressure does not establish a legal consequence.",
+            "not_yet": "Seek reliable clarification instead of guessing either way."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué hacer si consecuencias no están claras?",
+          "scene": "Un mensaje alega acción legal inmediata sin datos verificables del caso.",
+          "options": [
+            {
+              "label": "Verificar mediante canales calificados"
+            },
+            {
+              "label": "Suponer inofensivo todo aviso"
+            },
+            {
+              "label": "Suponer definitivamente cierta la amenaza"
+            }
+          ],
+          "help": [
+            "Busca aclaración confiable, sin adivinar en ningún sentido."
+          ],
+          "feedback": {
+            "met": "Presión sin verificar no establece una consecuencia legal.",
+            "not_yet": "Busca aclaración confiable, sin adivinar en ningún sentido."
+          }
+        },
+        "pt-BR": {
+          "prompt": "E se os efeitos não estão claros?",
+          "scene": "Uma mensagem alega ação legal imediata sem dados do caso que possa conferir.",
+          "options": [
+            {
+              "label": "Conferir por canais qualificados"
+            },
+            {
+              "label": "Supor que todo aviso é inofensivo"
+            },
+            {
+              "label": "Supor que a ameaça é de fato certa"
+            }
+          ],
+          "help": [
+            "Busque esclarecimento confiável, sem adivinhar em nenhum sentido."
+          ],
+          "feedback": {
+            "met": "Pressão sem prova não estabelece um efeito legal.",
+            "not_yet": "Busque esclarecimento confiável, sem adivinhar em nenhum sentido."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.debt-recovery.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What should a ranking include?",
+          "scene": "A household faces housing, medicine and loan payments with different verified deadlines.",
+          "options": [
+            {
+              "label": "Only loan interest rates"
+            },
+            {
+              "label": "Only the order messages arrived"
+            },
+            {
+              "label": "Essential needs and deadline consequences"
+            }
+          ],
+          "help": [
+            "Review the whole situation before choosing an order."
+          ],
+          "feedback": {
+            "met": "The feasible plan depends on needs, timing and verified consequences.",
+            "not_yet": "Review the whole situation before choosing an order."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe incluir el orden?",
+          "scene": "Un hogar afronta vivienda, medicina y préstamos con plazos verificados distintos.",
+          "options": [
+            {
+              "label": "Solo tasas de préstamos"
+            },
+            {
+              "label": "Solo orden de llegada de mensajes"
+            },
+            {
+              "label": "Necesidades esenciales y consecuencias por plazo"
+            }
+          ],
+          "help": [
+            "Revisa toda la situación antes de elegir un orden."
+          ],
+          "feedback": {
+            "met": "El plan viable depende de necesidades, fechas y consecuencias verificadas.",
+            "not_yet": "Revisa toda la situación antes de elegir un orden."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que a ordem deve incluir?",
+          "scene": "Uma casa enfrenta moradia, remédios e empréstimos com prazos conferidos diferentes.",
+          "options": [
+            {
+              "label": "Só taxas dos empréstimos"
+            },
+            {
+              "label": "Só ordem de chegada das mensagens"
+            },
+            {
+              "label": "Necessidades essenciais e efeitos dos prazos"
+            }
+          ],
+          "help": [
+            "Confira toda a situação antes de escolher uma ordem."
+          ],
+          "feedback": {
+            "met": "O plano viável depende de necessidades, datas e efeitos conferidos.",
+            "not_yet": "Confira toda a situação antes de escolher uma ordem."
+          }
+        }
+      }
+    }
+  ]
+}

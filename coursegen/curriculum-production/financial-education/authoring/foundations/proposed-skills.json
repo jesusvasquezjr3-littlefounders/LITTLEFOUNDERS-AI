@@ -1,0 +1,1042 @@
+[
+  {
+    "lesson_id": "fe-production-financial-math-01",
+    "key": "finance.production.financial.math.01",
+    "description": "Read a monetary amount with whole units and fractional units in the local notation.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-usable-money-02"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.cash.balance"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-financial-math-02",
+    "key": "finance.production.financial.math.02",
+    "description": "Calculate change by subtracting a price from the amount tendered.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-financial-math-01"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.financial.math.01"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-financial-math-03",
+    "key": "finance.production.financial.math.03",
+    "description": "Add several receipts without counting the same receipt twice.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-financial-math-01",
+      "fe-production-usable-money-07"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.financial.math.01",
+      "finance.cash.transfer"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-financial-math-04",
+    "key": "finance.production.financial.math.04",
+    "description": "Calculate the shortfall when stated obligations exceed available money.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-financial-math-02",
+      "fe-production-usable-money-04"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.financial.math.02",
+      "finance.cash.reserved"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-financial-math-05",
+    "key": "finance.production.financial.math.05",
+    "description": "Calculate the cost of several identical items by multiplication.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-financial-math-03"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.financial.math.03"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-financial-math-06",
+    "key": "finance.production.financial.math.06",
+    "description": "Divide a stated shared cost into equal contributions.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-financial-math-05"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.financial.math.05"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-financial-math-07",
+    "key": "finance.production.financial.math.07",
+    "description": "Convert a fraction of a whole into an equivalent percentage with a visual grid.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-financial-math-06"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.financial.math.06"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-financial-math-08",
+    "key": "finance.production.financial.math.08",
+    "description": "Calculate a percentage of a stated amount.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-financial-math-05",
+      "fe-production-financial-math-07"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.financial.math.05",
+      "finance.production.financial.math.07"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-financial-math-09",
+    "key": "finance.production.financial.math.09",
+    "description": "Recover the whole amount from a given percentage and its monetary value.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-financial-math-06",
+      "fe-production-financial-math-08"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.financial.math.06",
+      "finance.production.financial.math.08"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-financial-math-10",
+    "key": "finance.production.financial.math.10",
+    "description": "Distinguish a percentage-point difference from a relative percentage change.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-financial-math-07",
+      "fe-production-financial-math-08"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.financial.math.07",
+      "finance.production.financial.math.08"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-financial-math-11",
+    "key": "finance.production.financial.math.11",
+    "description": "Compare amounts expressed for different time periods on a common time basis.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-financial-math-05",
+      "fe-production-financial-math-06"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.financial.math.05",
+      "finance.production.financial.math.06"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-financial-math-12",
+    "key": "finance.production.financial.math.12",
+    "description": "Round a monetary calculation at the specified step and explain the remaining difference.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-financial-math-01",
+      "fe-production-financial-math-06"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.financial.math.01",
+      "finance.production.financial.math.06"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-financial-math-13",
+    "key": "finance.production.financial.math.13",
+    "description": "Check whether a financial result is plausible using an approximate calculation.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-financial-math-02",
+      "fe-production-financial-math-05",
+      "fe-production-financial-math-06"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.financial.math.02",
+      "finance.production.financial.math.05",
+      "finance.production.financial.math.06"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-goals-tradeoffs-01",
+    "key": "finance.production.goals.tradeoffs.01",
+    "description": "Translate a broad wish into a goal with an amount, purpose and date.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-usable-money-03"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.cash.commitment"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-goals-tradeoffs-02",
+    "key": "finance.production.goals.tradeoffs.02",
+    "description": "Separate a stated essential consequence from a preference in a spending decision.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-usable-money-03"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.cash.commitment"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-goals-tradeoffs-03",
+    "key": "finance.production.goals.tradeoffs.03",
+    "description": "Identify the next-best feasible use forgone when choosing between two purchases.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-usable-money-04"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.cash.reserved"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-goals-tradeoffs-04",
+    "key": "finance.production.goals.tradeoffs.04",
+    "description": "Rank competing goals using the learner’s stated deadlines and consequences.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-goals-tradeoffs-01",
+      "fe-production-goals-tradeoffs-02",
+      "fe-production-goals-tradeoffs-03"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.goals.tradeoffs.01",
+      "finance.production.goals.tradeoffs.02",
+      "finance.production.goals.tradeoffs.03"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-goals-tradeoffs-05",
+    "key": "finance.production.goals.tradeoffs.05",
+    "description": "Break a goal’s remaining amount into feasible contributions over the time available.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-goals-tradeoffs-01",
+      "fe-production-financial-math-06"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.goals.tradeoffs.01",
+      "finance.production.financial.math.06"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-goals-tradeoffs-06",
+    "key": "finance.production.goals.tradeoffs.06",
+    "description": "Recognize when changing a goal or its deadline is necessary because no contribution fits.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-goals-tradeoffs-05",
+      "fe-production-usable-money-04"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.goals.tradeoffs.05",
+      "finance.cash.reserved"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-goals-tradeoffs-07",
+    "key": "finance.production.goals.tradeoffs.07",
+    "description": "Choose a small next action that can be checked without requiring spare income.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-goals-tradeoffs-01",
+      "fe-production-goals-tradeoffs-06"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.goals.tradeoffs.01",
+      "finance.production.goals.tradeoffs.06"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-goals-tradeoffs-08",
+    "key": "finance.production.goals.tradeoffs.08",
+    "description": "Revise a goal when its original cost or purpose changes.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-goals-tradeoffs-01",
+      "fe-production-goals-tradeoffs-04",
+      "fe-production-goals-tradeoffs-05"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.goals.tradeoffs.01",
+      "finance.production.goals.tradeoffs.04",
+      "finance.production.goals.tradeoffs.05"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-income-work-01",
+    "key": "finance.production.income.work.01",
+    "description": "Separate recurring, irregular and one-time receipts when estimating future income.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-usable-money-01"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.cash.received"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-income-work-02",
+    "key": "finance.production.income.work.02",
+    "description": "Distinguish gross pay from money received using explicitly explained deductions.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-financial-math-02"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.financial.math.02"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-income-work-03",
+    "key": "finance.production.income.work.03",
+    "description": "Calculate earnings from a stated hourly rate and paid hours.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-financial-math-05"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.financial.math.05"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-income-work-04",
+    "key": "finance.production.income.work.04",
+    "description": "Estimate usable income after stated work-related costs.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-income-work-02",
+      "fe-production-financial-math-02"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.income.work.02",
+      "finance.production.financial.math.02"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-income-work-05",
+    "key": "finance.production.income.work.05",
+    "description": "Identify which payment date, amount or condition is still unknown in a work offer.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-usable-money-05"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.cash.timing"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-income-work-06",
+    "key": "finance.production.income.work.06",
+    "description": "Build a conservative income estimate from an irregular payment history.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-income-work-01",
+      "fe-production-financial-math-03",
+      "fe-production-financial-math-06"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.income.work.01",
+      "finance.production.financial.math.03",
+      "finance.production.financial.math.06"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-income-work-07",
+    "key": "finance.production.income.work.07",
+    "description": "Separate a household owner’s withdrawal from the receipts and costs of a small activity.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-financial-math-02",
+      "fe-production-usable-money-07"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.financial.math.02",
+      "finance.cash.transfer"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-income-work-08",
+    "key": "finance.production.income.work.08",
+    "description": "Identify a missing payment using agreed work terms and a payment record.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-income-work-03",
+      "fe-production-income-work-05"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.income.work.03",
+      "finance.production.income.work.05"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-income-work-09",
+    "key": "finance.production.income.work.09",
+    "description": "Compare two work arrangements using stated net income, time and necessary costs.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-income-work-04",
+      "fe-production-income-work-05",
+      "fe-production-financial-math-11"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.income.work.04",
+      "finance.production.income.work.05",
+      "finance.production.financial.math.11"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-income-work-10",
+    "key": "finance.production.income.work.10",
+    "description": "Find the authoritative source needed to check a claimed benefit or employment entitlement.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-income-work-02",
+      "fe-production-income-work-05"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.income.work.02",
+      "finance.production.income.work.05"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-spending-patterns-01",
+    "key": "finance.production.spending.patterns.01",
+    "description": "Record an expense with enough detail to identify its amount, date and purpose.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-usable-money-02"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.cash.balance"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-spending-patterns-02",
+    "key": "finance.production.spending.patterns.02",
+    "description": "Separate a regular commitment from a variable expense without assuming either is optional.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-spending-patterns-01",
+      "fe-production-goals-tradeoffs-02"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.spending.patterns.01",
+      "finance.production.goals.tradeoffs.02"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-spending-patterns-03",
+    "key": "finance.production.spending.patterns.03",
+    "description": "Find an omitted cash expense when reconciling a spending diary with money remaining.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-spending-patterns-01",
+      "fe-production-financial-math-02"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.spending.patterns.01",
+      "finance.production.financial.math.02"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-spending-patterns-04",
+    "key": "finance.production.spending.patterns.04",
+    "description": "Convert a recurring small purchase into its total cost over a stated period.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-spending-patterns-01",
+      "fe-production-financial-math-05"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.spending.patterns.01",
+      "finance.production.financial.math.05"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-spending-patterns-05",
+    "key": "finance.production.spending.patterns.05",
+    "description": "Distinguish a predictable irregular expense from an unforeseen event.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-spending-patterns-02"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.spending.patterns.02"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-spending-patterns-06",
+    "key": "finance.production.spending.patterns.06",
+    "description": "Identify an unused recurring charge from a fictional account history.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-spending-patterns-01",
+      "fe-production-spending-patterns-04"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.spending.patterns.01",
+      "finance.production.spending.patterns.04"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-spending-patterns-07",
+    "key": "finance.production.spending.patterns.07",
+    "description": "Choose an expense adjustment that respects explicitly stated household constraints.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-spending-patterns-02",
+      "fe-production-goals-tradeoffs-02",
+      "fe-production-goals-tradeoffs-03"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.spending.patterns.02",
+      "finance.production.goals.tradeoffs.02",
+      "finance.production.goals.tradeoffs.03"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-spending-patterns-08",
+    "key": "finance.production.spending.patterns.08",
+    "description": "Identify a purchase trigger and choose a pause that allows checking the cost.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-goals-tradeoffs-03"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.goals.tradeoffs.03"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-spending-patterns-09",
+    "key": "finance.production.spending.patterns.09",
+    "description": "Compare planned and actual spending without treating every deviation as a personal failure.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-spending-patterns-01",
+      "fe-production-financial-math-02"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.spending.patterns.01",
+      "finance.production.financial.math.02"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-spending-patterns-10",
+    "key": "finance.production.spending.patterns.10",
+    "description": "Explain why low income can leave a deficit even after discretionary purchases are removed.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-spending-patterns-02",
+      "fe-production-spending-patterns-07",
+      "fe-production-financial-math-04"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.spending.patterns.02",
+      "finance.production.spending.patterns.07",
+      "finance.production.financial.math.04"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-cashflow-budget-01",
+    "key": "finance.production.cashflow.budget.01",
+    "description": "Build a budget using money expected for the same period as its expenses.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-income-work-01",
+      "fe-production-spending-patterns-01",
+      "fe-production-financial-math-11"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.income.work.01",
+      "finance.production.spending.patterns.01",
+      "finance.production.financial.math.11"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-cashflow-budget-02",
+    "key": "finance.production.cashflow.budget.02",
+    "description": "Separate a budget category from the account or envelope holding its money.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-cashflow-budget-01",
+      "fe-production-usable-money-07"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.cashflow.budget.01",
+      "finance.cash.transfer"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-cashflow-budget-03",
+    "key": "finance.production.cashflow.budget.03",
+    "description": "Reserve money for unavoidable obligations before allocating the remainder.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-cashflow-budget-01",
+      "fe-production-usable-money-03"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.cashflow.budget.01",
+      "finance.cash.commitment"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-cashflow-budget-04",
+    "key": "finance.production.cashflow.budget.04",
+    "description": "Calculate a period’s surplus or deficit from a complete set of stated entries.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-cashflow-budget-01",
+      "fe-production-financial-math-03",
+      "fe-production-financial-math-04"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.cashflow.budget.01",
+      "finance.production.financial.math.03",
+      "finance.production.financial.math.04"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-cashflow-budget-05",
+    "key": "finance.production.cashflow.budget.05",
+    "description": "Build a payment calendar that reveals an otherwise hidden within-month shortfall.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-cashflow-budget-01",
+      "fe-production-usable-money-05"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.cashflow.budget.01",
+      "finance.cash.timing"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-cashflow-budget-06",
+    "key": "finance.production.cashflow.budget.06",
+    "description": "Distinguish a timing problem from a persistent gap between income and expenses.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-cashflow-budget-04",
+      "fe-production-cashflow-budget-05"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.cashflow.budget.04",
+      "finance.production.cashflow.budget.05"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-cashflow-budget-07",
+    "key": "finance.production.cashflow.budget.07",
+    "description": "Allocate an irregular receipt across obligations due before the next reliable receipt.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-cashflow-budget-03",
+      "fe-production-cashflow-budget-05",
+      "fe-production-income-work-06"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.cashflow.budget.03",
+      "finance.production.cashflow.budget.05",
+      "finance.production.income.work.06"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-cashflow-budget-08",
+    "key": "finance.production.cashflow.budget.08",
+    "description": "Spread a known annual bill across the months remaining until it is due.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-cashflow-budget-03",
+      "fe-production-spending-patterns-05",
+      "fe-production-financial-math-06"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.cashflow.budget.03",
+      "finance.production.spending.patterns.05",
+      "finance.production.financial.math.06"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-cashflow-budget-09",
+    "key": "finance.production.cashflow.budget.09",
+    "description": "Rebalance a plan after an expense increases while keeping its totals consistent.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-cashflow-budget-03",
+      "fe-production-cashflow-budget-04"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.cashflow.budget.03",
+      "finance.production.cashflow.budget.04"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-cashflow-budget-10",
+    "key": "finance.production.cashflow.budget.10",
+    "description": "Explain why a sample percentage budget must be adapted when essential costs exceed its allowance.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-cashflow-budget-03",
+      "fe-production-financial-math-08",
+      "fe-production-spending-patterns-10"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.cashflow.budget.03",
+      "finance.production.financial.math.08",
+      "finance.production.spending.patterns.10"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-cashflow-budget-11",
+    "key": "finance.production.cashflow.budget.11",
+    "description": "Choose a feasible response to a deficit without inventing income or assuming borrowing is affordable.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-cashflow-budget-04",
+      "fe-production-cashflow-budget-06",
+      "fe-production-spending-patterns-07"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.cashflow.budget.04",
+      "finance.production.cashflow.budget.06",
+      "finance.production.spending.patterns.07"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-cashflow-budget-12",
+    "key": "finance.production.cashflow.budget.12",
+    "description": "Separate planned saving from money that is accidentally left over.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-cashflow-budget-02",
+      "fe-production-cashflow-budget-03",
+      "fe-production-goals-tradeoffs-05"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.cashflow.budget.02",
+      "finance.production.cashflow.budget.03",
+      "finance.production.goals.tradeoffs.05"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-cashflow-budget-13",
+    "key": "finance.production.cashflow.budget.13",
+    "description": "Close a budget period by comparing the plan with actual receipts and payments.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-cashflow-budget-01",
+      "fe-production-cashflow-budget-04",
+      "fe-production-spending-patterns-09"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.cashflow.budget.01",
+      "finance.production.cashflow.budget.04",
+      "finance.production.spending.patterns.09"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-cashflow-budget-14",
+    "key": "finance.production.cashflow.budget.14",
+    "description": "Carry an unresolved obligation into the next plan without counting it twice.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-cashflow-budget-05",
+      "fe-production-cashflow-budget-13"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.cashflow.budget.05",
+      "finance.production.cashflow.budget.13"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-accounts-records-01",
+    "key": "finance.production.accounts.records.01",
+    "description": "Match a basic transaction, saving or payment need to the relevant account features.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-usable-money-03"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.cash.commitment"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-accounts-records-02",
+    "key": "finance.production.accounts.records.02",
+    "description": "Distinguish a displayed account balance from funds available to withdraw in a stated scenario.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-usable-money-01",
+      "fe-production-usable-money-02"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.cash.received",
+      "finance.cash.balance"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-accounts-records-03",
+    "key": "finance.production.accounts.records.03",
+    "description": "Calculate a fictional account’s total fees from its stated usage and fee schedule.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-financial-math-03",
+      "fe-production-financial-math-05"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.financial.math.03",
+      "finance.production.financial.math.05"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-accounts-records-04",
+    "key": "finance.production.accounts.records.04",
+    "description": "Read a statement entry’s date, description and amount before classifying it.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-usable-money-02"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.cash.balance"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-accounts-records-05",
+    "key": "finance.production.accounts.records.05",
+    "description": "Reconcile a statement with a receipt log and identify the unmatched transaction.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-accounts-records-04",
+      "fe-production-spending-patterns-01",
+      "fe-production-financial-math-02"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.accounts.records.04",
+      "finance.production.spending.patterns.01",
+      "finance.production.financial.math.02"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-accounts-records-06",
+    "key": "finance.production.accounts.records.06",
+    "description": "Recognize how a pending charge can affect spending decisions before it settles.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-accounts-records-02",
+      "fe-production-accounts-records-04"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.accounts.records.02",
+      "finance.production.accounts.records.04"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-accounts-records-07",
+    "key": "finance.production.accounts.records.07",
+    "description": "Identify the evidence to preserve when reporting an unfamiliar transaction.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-accounts-records-04",
+      "fe-production-accounts-records-05"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.accounts.records.04",
+      "finance.production.accounts.records.05"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-accounts-records-08",
+    "key": "finance.production.accounts.records.08",
+    "description": "Compare account access conditions with a person’s stated device, location and documentation constraints.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-accounts-records-01"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.accounts.records.01"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-accounts-records-09",
+    "key": "finance.production.accounts.records.09",
+    "description": "Identify which provider and account protection claims require local official verification.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-accounts-records-01"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.accounts.records.01"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-accounts-records-10",
+    "key": "finance.production.accounts.records.10",
+    "description": "Choose a secure way to retain financial records without exposing access credentials.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-accounts-records-04"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.accounts.records.04"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-payments-digital-01",
+    "key": "finance.production.payments.digital.01",
+    "description": "Distinguish payment from your own balance from a payment that creates a debt.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-usable-money-06",
+      "fe-production-accounts-records-02"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.cash.borrowing",
+      "finance.production.accounts.records.02"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-payments-digital-02",
+    "key": "finance.production.payments.digital.02",
+    "description": "Check recipient, amount and reference before confirming a transfer.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-accounts-records-04"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.accounts.records.04"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-payments-digital-03",
+    "key": "finance.production.payments.digital.03",
+    "description": "Separate a payment request or screenshot from confirmed receipt of funds.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-usable-money-01",
+      "fe-production-payments-digital-02"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.cash.received",
+      "finance.production.payments.digital.02"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-payments-digital-04",
+    "key": "finance.production.payments.digital.04",
+    "description": "Compare payment methods using stated fees, timing and reversibility.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-payments-digital-01",
+      "fe-production-usable-money-05",
+      "fe-production-accounts-records-03"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.payments.digital.01",
+      "finance.cash.timing",
+      "finance.production.accounts.records.03"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-payments-digital-05",
+    "key": "finance.production.payments.digital.05",
+    "description": "Identify the information that must never be shared to authorize a payment securely.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-payments-digital-02"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.payments.digital.02"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-payments-digital-06",
+    "key": "finance.production.payments.digital.06",
+    "description": "Recognize a false urgency or impersonation cue in a payment message.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-payments-digital-02",
+      "fe-production-payments-digital-05"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.payments.digital.02",
+      "finance.production.payments.digital.05"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-payments-digital-07",
+    "key": "finance.production.payments.digital.07",
+    "description": "Reach a provider through an independently verified channel after a suspicious message.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-payments-digital-06"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.payments.digital.06"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-payments-digital-08",
+    "key": "finance.production.payments.digital.08",
+    "description": "Choose the immediate protective response after a device or payment credential is compromised.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-payments-digital-05",
+      "fe-production-payments-digital-07"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.payments.digital.05",
+      "finance.production.payments.digital.07"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-payments-digital-09",
+    "key": "finance.production.payments.digital.09",
+    "description": "Check recurring-payment terms and retain evidence of a cancellation request.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-accounts-records-04",
+      "fe-production-spending-patterns-06"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.accounts.records.04",
+      "finance.production.spending.patterns.06"
+    ]
+  },
+  {
+    "lesson_id": "fe-production-payments-digital-10",
+    "key": "finance.production.payments.digital.10",
+    "description": "Distinguish a mistaken transfer from an unauthorized payment when preparing a report.",
+    "status": "draft",
+    "prerequisite_lesson_ids": [
+      "fe-production-payments-digital-02",
+      "fe-production-payments-digital-03",
+      "fe-production-accounts-records-07"
+    ],
+    "proposed_prerequisite_keys": [
+      "finance.production.payments.digital.02",
+      "finance.production.payments.digital.03",
+      "finance.production.accounts.records.07"
+    ]
+  }
+]

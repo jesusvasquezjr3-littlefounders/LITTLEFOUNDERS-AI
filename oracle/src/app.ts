@@ -3,6 +3,7 @@ import { globalRateLimiter } from './middleware/rateLimit.js';
 import { requireInternalKey } from './lib/http.js';
 import { runtimeRouter } from './routes/runtime.js';
 import { erasureRouter } from './routes/erasure.js';
+import { gameRouter } from './routes/game.js';
 import { modelConfigured } from './model/provider.js';
 import { getVoiceProvider } from './voice/index.js';
 import { moderationReadiness } from './safety/moderation.js';
@@ -76,10 +77,13 @@ export function createApp(liveSessions: () => number = () => 0): express.Express
    * still runs for the authenticated request that follows it.
    */
   app.use('/api/v1/tutor', requireInternalKey);
+  // The game debrief line is the same kind of surface: Core is the only caller, behind the same key.
+  app.use('/api/v1/game', requireInternalKey);
   app.use(express.json({ limit: '256kb' }));
 
   app.use('/api/v1/tutor', runtimeRouter(liveSessions));
   app.use('/api/v1/tutor', erasureRouter());
+  app.use('/api/v1/game', gameRouter());
 
   app.use((_req, res) => {
     res.status(404).json({ data: null, error: { code: 'NOT_FOUND', message: 'Route not found' } });

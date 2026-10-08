@@ -1,0 +1,843 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-financial-landscape-part-2",
+  "lesson_id": "fe-production-financial-landscape-07",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.financial-landscape.07"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Compare remittance offers using recipient amount, timing and collection conditions.",
+  "title": {
+    "en-US": "Transfer Comparisons",
+    "es-MX": "Compara qué puede llegar realmente",
+    "pt-BR": "Compare o que pode chegar de fato"
+  },
+  "new_concepts": [
+    "finance.prod.financial-landscape.07"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Transfer Comparisons\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Compara qué puede llegar realmente\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Compare o que pode chegar de fato\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.financial-landscape.07",
+      "observable_action": "Compare remittance offers using recipient amount, timing and collection conditions.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.financial-landscape.06",
+      "prod.payments-digital.04"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A low transfer fee is not the whole offer; compare recipient amount, arrival time and access to collection.",
+    "misconception": "Zero advertised fees always mean the best transfer even if exchange rates, timing or collection requirements differ.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.financial-landscape.07",
+        "context_id": "financial-landscape-07-example-01",
+        "supports_from": [],
+        "reasoning": "Use the same sending budget. Compare the final recipient amount, arrival time and whether the recipient can meet collection conditions."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.financial-landscape.07",
+        "context_id": "financial-landscape-07-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "B delivers more under these matched conditions."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.financial-landscape.07",
+        "context_id": "financial-landscape-07-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Only A meets the stated arrival deadline."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.financial-landscape.07",
+        "context_id": "financial-landscape-07-practice-01",
+        "supports_from": [],
+        "reasoning": "A recipient must meet the stated collection conditions."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.financial-landscape.07",
+        "context_id": "financial-landscape-07-practice-02",
+        "supports_from": [],
+        "reasoning": "Different sending budgets do not isolate the better offer."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.financial-landscape.07",
+        "context_id": "financial-landscape-07-practice-03",
+        "supports_from": [],
+        "reasoning": "A rate difference can affect value despite a zero fee."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.financial-landscape.07",
+        "context_id": "financial-landscape-07-transfer-01",
+        "supports_from": [],
+        "reasoning": "B alone meets both stated time and collection constraints."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.financial-landscape.07",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A low transfer fee is not the whole offer; compare recipient amount, arrival time and access to collection."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Comisión baja no es oferta completa; compara monto recibido, tiempo de llegada y acceso al cobro."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Taxa baixa não é oferta completa; compare valor recebido, prazo de chegada e acesso ao saque."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Amount, time and access",
+          "line": "Use the same sending budget. Compare the final recipient amount, arrival time and whether the recipient can meet collection conditions."
+        },
+        "es-MX": {
+          "prompt": "Monto, tiempo y acceso",
+          "line": "Usa el mismo presupuesto de envío. Compara monto final recibido, tiempo de llegada y si se cumplen condiciones para cobrar."
+        },
+        "pt-BR": {
+          "prompt": "Valor, prazo e acesso",
+          "line": "Use o mesmo orçamento de envio. Compare valor final recebido, prazo de chegada e se as condições de saque são atendidas."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.07",
+      "visual": {
+        "type": "bar"
+      },
+      "payload": {
+        "data": {
+          "unit": "local",
+          "categories": [
+            {
+              "id": "earlier"
+            },
+            {
+              "id": "later"
+            }
+          ],
+          "series": [
+            {
+              "id": "projected-balance",
+              "values": [
+                190,
+                195
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "earlier"
+            },
+            {
+              "id": "later"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "later"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Same sending budget; complete recipient amounts after fees: A 190, B 195; same timing and accessible collection.",
+          "title": "Recipient amount",
+          "data": {
+            "categories": [
+              {
+                "label": "A"
+              },
+              {
+                "label": "B"
+              }
+            ],
+            "series": [
+              {
+                "label": "Amount received"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Which delivers more?",
+            "options": [
+              {
+                "label": "A"
+              },
+              {
+                "label": "B"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "B delivers more under these matched conditions.",
+            "not_yet": "Compare the final received amounts, not the advertised fee alone."
+          },
+          "help": [
+            "Compare the final received amounts, not the advertised fee alone."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Mismo presupuesto; montos finales tras comisiones: A 190, B 195; mismo plazo y cobro accesible.",
+          "title": "Monto recibido",
+          "data": {
+            "categories": [
+              {
+                "label": "A"
+              },
+              {
+                "label": "B"
+              }
+            ],
+            "series": [
+              {
+                "label": "Monto recibido"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Cuál entrega más?",
+            "options": [
+              {
+                "label": "A"
+              },
+              {
+                "label": "B"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "B entrega más bajo estas condiciones iguales.",
+            "not_yet": "Compara montos finales recibidos, no solo comisión anunciada."
+          },
+          "help": [
+            "Compara montos finales recibidos, no solo comisión anunciada."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Mesmo orçamento; valores finais após taxas: A 190, B 195; mesmo prazo e saque acessível.",
+          "title": "Valor recebido",
+          "data": {
+            "categories": [
+              {
+                "label": "A"
+              },
+              {
+                "label": "B"
+              }
+            ],
+            "series": [
+              {
+                "label": "Valor recebido"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Qual entrega mais?",
+            "options": [
+              {
+                "label": "A"
+              },
+              {
+                "label": "B"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "B entrega mais sob essas condições iguais.",
+            "not_yet": "Compare valores finais recebidos, não só taxa anunciada."
+          },
+          "help": [
+            "Compare valores finais recebidos, não só taxa anunciada."
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Which offer meets the deadline?",
+          "scene": "Money is needed tomorrow; A arrives tomorrow, B next week.",
+          "options": [
+            {
+              "label": "Either regardless of timing"
+            },
+            {
+              "label": "B because fee is lower"
+            },
+            {
+              "label": "A"
+            }
+          ],
+          "help": [
+            "Check timing alongside the recipient amount."
+          ],
+          "feedback": {
+            "met": "Only A meets the stated arrival deadline.",
+            "not_yet": "Check timing alongside the recipient amount."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué oferta cumple fecha límite?",
+          "scene": "Dinero se necesita mañana; A llega mañana, B próxima semana.",
+          "options": [
+            {
+              "label": "Cualquiera sin importar plazo"
+            },
+            {
+              "label": "B porque comisión es menor"
+            },
+            {
+              "label": "A"
+            }
+          ],
+          "help": [
+            "Revisa tiempo junto con monto recibido."
+          ],
+          "feedback": {
+            "met": "Solo A cumple fecha de llegada indicada.",
+            "not_yet": "Revisa tiempo junto con monto recibido."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual oferta atende ao prazo?",
+          "scene": "Dinheiro é necessário amanhã; A chega amanhã, B próxima semana.",
+          "options": [
+            {
+              "label": "Qualquer uma sem ver prazo"
+            },
+            {
+              "label": "B pois taxa é menor"
+            },
+            {
+              "label": "A"
+            }
+          ],
+          "help": [
+            "Confira prazo junto com valor recebido."
+          ],
+          "feedback": {
+            "met": "Só A atende ao prazo de chegada dado.",
+            "not_yet": "Confira prazo junto com valor recebido."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Is the larger amount usable here?",
+          "scene": "An offer pays more but requires an unavailable collection document.",
+          "options": [
+            {
+              "label": "Yes, amount alone decides"
+            },
+            {
+              "label": "Yes, documents never matter"
+            },
+            {
+              "label": "No, collection conditions fail"
+            }
+          ],
+          "help": [
+            "Check access requirements before comparing attractive amounts."
+          ],
+          "feedback": {
+            "met": "A recipient must meet the stated collection conditions.",
+            "not_yet": "Check access requirements before comparing attractive amounts."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿El monto mayor es utilizable aquí?",
+          "scene": "Oferta paga más pero exige documento de cobro no disponible.",
+          "options": [
+            {
+              "label": "Sí, solo monto decide"
+            },
+            {
+              "label": "Sí, documentos nunca importan"
+            },
+            {
+              "label": "No, fallan condiciones de cobro"
+            }
+          ],
+          "help": [
+            "Revisa requisitos de acceso antes de comparar montos atractivos."
+          ],
+          "feedback": {
+            "met": "Quien recibe debe cumplir condiciones indicadas de cobro.",
+            "not_yet": "Revisa requisitos de acceso antes de comparar montos atractivos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O valor maior pode ser usado aqui?",
+          "scene": "Oferta paga mais mas exige documento de saque indisponível.",
+          "options": [
+            {
+              "label": "Sim, só valor decide"
+            },
+            {
+              "label": "Sim, documentos nunca importam"
+            },
+            {
+              "label": "Não, falham condições de saque"
+            }
+          ],
+          "help": [
+            "Confira requisitos de acesso antes de comparar valores atraentes."
+          ],
+          "feedback": {
+            "met": "Quem recebe deve atender condições dadas de saque.",
+            "not_yet": "Confira requisitos de acesso antes de comparar valores atraentes."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Can these quotes be directly ranked?",
+          "scene": "Offers use different total sending budgets.",
+          "options": [
+            {
+              "label": "Yes, compare received totals alone"
+            },
+            {
+              "label": "Yes, ignore the sender’s cost"
+            },
+            {
+              "label": "No, align the sending budget"
+            }
+          ],
+          "help": [
+            "Use the same total outlay when comparing recipient amounts."
+          ],
+          "feedback": {
+            "met": "Different sending budgets do not isolate the better offer.",
+            "not_yet": "Use the same total outlay when comparing recipient amounts."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Pueden ordenarse directamente estas cotizaciones?",
+          "scene": "Ofertas usan presupuestos totales de envío distintos.",
+          "options": [
+            {
+              "label": "Sí, comparar solo totales recibidos"
+            },
+            {
+              "label": "Sí, ignorar costo de envío"
+            },
+            {
+              "label": "No, igualar presupuesto de envío"
+            }
+          ],
+          "help": [
+            "Usa el mismo desembolso total al comparar montos recibidos."
+          ],
+          "feedback": {
+            "met": "Presupuestos distintos no aíslan la mejor oferta.",
+            "not_yet": "Usa el mismo desembolso total al comparar montos recibidos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Pode ordenar diretamente estas cotações?",
+          "scene": "Ofertas usam orçamentos totais de envio distintos.",
+          "options": [
+            {
+              "label": "Sim, comparar só totais recebidos"
+            },
+            {
+              "label": "Sim, ignorar custo de envio"
+            },
+            {
+              "label": "Não, igualar orçamento de envio"
+            }
+          ],
+          "help": [
+            "Use o mesmo gasto total ao comparar valores recebidos."
+          ],
+          "feedback": {
+            "met": "Orçamentos distintos não isolam a melhor oferta.",
+            "not_yet": "Use o mesmo gasto total ao comparar valores recebidos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.07",
+      "copy": {
+        "en-US": {
+          "prompt": "What is missing from “no fee”?",
+          "scene": "The ad gives no exchange rate or final recipient amount.",
+          "options": [
+            {
+              "label": "Only the transfer speed"
+            },
+            {
+              "label": "The complete received amount"
+            },
+            {
+              "label": "Nothing because the fee is zero"
+            }
+          ],
+          "help": [
+            "Request the full quote including the recipient total."
+          ],
+          "feedback": {
+            "met": "A rate difference can affect value despite a zero fee.",
+            "not_yet": "Request the full quote including the recipient total."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué falta en «sin comisión»?",
+          "scene": "Anuncio no da tipo de cambio ni monto final recibido.",
+          "options": [
+            {
+              "label": "Solo rapidez del envío"
+            },
+            {
+              "label": "Monto completo recibido"
+            },
+            {
+              "label": "Nada porque comisión es cero"
+            }
+          ],
+          "help": [
+            "Pide cotización completa con total recibido."
+          ],
+          "feedback": {
+            "met": "Una diferencia cambiaria afecta valor pese a comisión cero.",
+            "not_yet": "Pide cotización completa con total recibido."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que falta em “sem taxa”?",
+          "scene": "Anúncio não dá câmbio nem valor final recebido.",
+          "options": [
+            {
+              "label": "Só a rapidez do envio"
+            },
+            {
+              "label": "Valor completo recebido"
+            },
+            {
+              "label": "Nada pois taxa é zero"
+            }
+          ],
+          "help": [
+            "Peça cotação completa com total recebido."
+          ],
+          "feedback": {
+            "met": "Diferença no câmbio afeta valor apesar de taxa zero.",
+            "not_yet": "Peça cotação completa com total recebido."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.financial-landscape.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Which offer meets all requirements?",
+          "scene": "Recipient needs timely accessible cash; A arrives late, B meets both, C lacks an accessible collection point.",
+          "options": [
+            {
+              "label": "B"
+            },
+            {
+              "label": "C"
+            },
+            {
+              "label": "A"
+            }
+          ],
+          "help": [
+            "Compare usable offers after checking timing and access."
+          ],
+          "feedback": {
+            "met": "B alone meets both stated time and collection constraints.",
+            "not_yet": "Compare usable offers after checking timing and access."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué oferta cumple todo?",
+          "scene": "Se necesita efectivo puntual y accesible; A llega tarde, B cumple ambos, C sin punto de cobro accesible.",
+          "options": [
+            {
+              "label": "B"
+            },
+            {
+              "label": "C"
+            },
+            {
+              "label": "A"
+            }
+          ],
+          "help": [
+            "Compara ofertas utilizables tras revisar tiempo y acceso."
+          ],
+          "feedback": {
+            "met": "Solo B cumple tiempo y acceso indicados.",
+            "not_yet": "Compara ofertas utilizables tras revisar tiempo y acceso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual oferta atende tudo?",
+          "scene": "É preciso dinheiro pontual e acessível; A chega tarde, B atende ambos, C sem local de saque acessível.",
+          "options": [
+            {
+              "label": "B"
+            },
+            {
+              "label": "C"
+            },
+            {
+              "label": "A"
+            }
+          ],
+          "help": [
+            "Compare ofertas utilizáveis após conferir prazo e acesso."
+          ],
+          "feedback": {
+            "met": "Só B atende prazo e acesso dados.",
+            "not_yet": "Compare ofertas utilizáveis após conferir prazo e acesso."
+          }
+        }
+      }
+    }
+  ]
+}

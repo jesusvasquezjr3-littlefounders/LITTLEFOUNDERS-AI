@@ -211,6 +211,34 @@ describe('versioned pilot document renderer', () => {
     expect(await screen.findByRole('heading', { name: 'Lesson ready' })).toBeTruthy();
   });
 
+  it('rechecks a changed worked prediction and freezes replay while its grade is pending', async () => {
+    let finish: (verdict: 'met' | 'review') => void = () => {};
+    const onGradeWorkedExample = vi.fn(() => new Promise<'met' | 'review'>((resolve) => { finish = resolve; }));
+    render(<LessonDocumentView raw={workedExamplePilotDocument('en-US', 1)} locale="en-US" ageBand="10-12"
+      onBack={noop} onGradeWorkedExample={onGradeWorkedExample} onComplete={async () => true} />);
+    fireEvent.change(screen.getByRole('textbox', { name: 'Predict the next result' }), { target: { value: '40' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Show next step' }));
+    fireEvent.change(screen.getByRole('textbox', { name: 'Write the result: Sale price' }), { target: { value: '40' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Show next step' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Check' }));
+    expect(screen.getByRole('button', { name: 'Previous' })).toBeDisabled();
+    expect(screen.getByRole('slider', { name: 'Step' })).toBeDisabled();
+    expect(screen.getByRole('textbox', { name: 'Write the result: Sale price' })).toBeDisabled();
+    await waitFor(() => expect(onGradeWorkedExample).toHaveBeenCalledTimes(1));
+    await act(async () => finish('met'));
+    expect(await screen.findByRole('button', { name: 'Continue' })).toBeEnabled();
+    fireEvent.change(screen.getByRole('slider', { name: 'Step' }), { target: { value: '0' } });
+    fireEvent.change(screen.getByRole('textbox', { name: 'Predict the next result' }), { target: { value: '99' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Show next step' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Next' }));
+    expect(screen.queryByRole('button', { name: 'Continue' })).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Check' }));
+    await waitFor(() => expect(onGradeWorkedExample).toHaveBeenLastCalledWith({ values: { 'discount-subtract': '99', 'sale-price': '40' } },
+      'worked-example-01', expect.anything()));
+    await act(async () => finish('review'));
+    expect(screen.queryByRole('heading', { name: 'Lesson ready' })).toBeNull();
+  });
+
   it('requires an M13 public trial before checking a semantic function rule', async () => {
     const grade = vi.fn(() => 'met' as const);
     const { rerender } = render(<LessonDocumentView raw={functionMachinePilotDocument('en-US')} locale="en-US" ageBand="10-12"
@@ -419,6 +447,18 @@ describe('versioned pilot document renderer', () => {
     expect(screen.getByRole('table').querySelectorAll('tbody tr')).toHaveLength(4);
     rerender(<LessonDocumentView raw={document} locale="en-US" ageBand="adult" onBack={noop} />);
     expect(screen.getByText('This lesson cannot open.')).toBeTruthy();
+  });
+
+  it('labels growth time presets with the authored bounds and applies the selected year', () => {
+    const document = growthComparisonPilotDocument('es-MX') as { segments: Array<{ payload: Record<string, number> }> };
+    Object.assign(document.segments[0]!.payload, { minimumYears: 1, maximumYears: 2, yearStep: 1, initialYears: 1 });
+    render(<LessonDocumentView raw={document} locale="es-MX" ageBand="13-17" onBack={noop} />);
+    expect(screen.getByRole('radio', { name: '1 año' })).toBeChecked();
+    expect(screen.queryByRole('radio', { name: '30 años' })).toBeNull();
+    fireEvent.click(screen.getByRole('radio', { name: '2 años' }));
+    expect(screen.getByRole('slider', { name: /^Años/ })).toHaveValue('2');
+    fireEvent.click(screen.getByRole('button', { name: 'Ver tabla' }));
+    expect(screen.getByRole('table').querySelectorAll('tbody tr')).toHaveLength(3);
   });
 
   it('commits a prediction before revealing the compound curve and table values', () => {

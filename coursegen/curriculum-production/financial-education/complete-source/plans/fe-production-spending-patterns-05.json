@@ -1,0 +1,778 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-spending-patterns-part-1",
+  "lesson_id": "fe-production-spending-patterns-05",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.spending-patterns.05"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Distinguish a predictable irregular expense from an unforeseen event.",
+  "title": {
+    "en-US": "Irregular expenses",
+    "es-MX": "Irregular no es imprevisto",
+    "pt-BR": "Irregular não é imprevisto"
+  },
+  "new_concepts": [
+    "finance.prod.spending-patterns.05"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Irregular is not unforeseen\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Irregular no es imprevisto\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Irregular não é imprevisto\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.spending-patterns.05",
+      "observable_action": "Distinguish a predictable irregular expense from an unforeseen event.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.spending-patterns.02"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A bill can arrive rarely and still be predictable.",
+    "misconception": "Calling every non-monthly cost an emergency rather than noticing known future obligations.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.spending-patterns.05",
+        "context_id": "fe-production-spending-patterns-05-example-01",
+        "supports_from": [],
+        "reasoning": "A yearly renewal is predictable when its date is known; an unexpected breakdown is a different kind of expense."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.spending-patterns.05",
+        "context_id": "fe-production-spending-patterns-05-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "A known annual date makes this cost predictable, not monthly."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.spending-patterns.05",
+        "context_id": "fe-production-spending-patterns-05-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The stated failure was unexpected, unlike a known scheduled bill."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.spending-patterns.05",
+        "context_id": "fe-production-spending-patterns-05-practice-01",
+        "supports_from": [],
+        "reasoning": "Advance notice makes the future obligation visible for planning."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.spending-patterns.05",
+        "context_id": "fe-production-spending-patterns-05-practice-02",
+        "supports_from": [],
+        "reasoning": "A known event can still have an uncertain amount."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.spending-patterns.05",
+        "context_id": "fe-production-spending-patterns-05-practice-03",
+        "supports_from": [],
+        "reasoning": "The scheduled obligation existed even when it was omitted."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.spending-patterns.05",
+        "context_id": "fe-production-spending-patterns-05-transfer-01",
+        "supports_from": [],
+        "reasoning": "A long interval does not erase a known required date."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.spending-patterns.05",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A bill can arrive rarely and still be predictable."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Una cuenta puede llegar pocas veces y aun así ser previsible."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Uma conta pode chegar poucas vezes e ainda ser previsível."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Known before it arrives",
+          "line": "A yearly renewal is predictable when its date is known; an unexpected breakdown is a different kind of expense."
+        },
+        "es-MX": {
+          "prompt": "Conocido antes de llegar",
+          "line": "Una renovación anual es previsible si conoces su fecha; una avería inesperada es otro tipo de gasto."
+        },
+        "pt-BR": {
+          "prompt": "Conhecido antes de chegar",
+          "line": "Uma renovação anual é previsível se conhece a data; uma quebra inesperada é outro tipo de gasto."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Which category fits?",
+          "scene": "A membership renews each October; its renewal notice is already available.",
+          "options": [
+            {
+              "label": "Predictable irregular expense"
+            },
+            {
+              "label": "Unforeseeable event"
+            },
+            {
+              "label": "Monthly expense"
+            }
+          ],
+          "help": [
+            "Separate how often it occurs from whether it is known."
+          ],
+          "feedback": {
+            "met": "A known annual date makes this cost predictable, not monthly.",
+            "not_yet": "Separate how often it occurs from whether it is known."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué categoría corresponde?",
+          "scene": "Una membresía se renueva cada octubre; ya está disponible el aviso.",
+          "options": [
+            {
+              "label": "Gasto irregular previsible"
+            },
+            {
+              "label": "Suceso imprevisible"
+            },
+            {
+              "label": "Gasto mensual"
+            }
+          ],
+          "help": [
+            "Separa frecuencia y conocimiento previo."
+          ],
+          "feedback": {
+            "met": "Una fecha anual conocida lo vuelve previsible, no mensual.",
+            "not_yet": "Separa frecuencia y conocimiento previo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual categoria corresponde?",
+          "scene": "Uma associação renova todo outubro; o aviso já está disponível.",
+          "options": [
+            {
+              "label": "Gasto irregular previsível"
+            },
+            {
+              "label": "Evento imprevisível"
+            },
+            {
+              "label": "Gasto mensal"
+            }
+          ],
+          "help": [
+            "Separe frequência e conhecimento prévio."
+          ],
+          "feedback": {
+            "met": "Uma data anual conhecida o torna previsível, não mensal.",
+            "not_yet": "Separe frequência e conhecimento prévio."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Which description fits this event?",
+          "scene": "A normally reliable appliance fails without warning and needs urgent repair.",
+          "options": [
+            {
+              "label": "A known annual renewal"
+            },
+            {
+              "label": "An unforeseen disruption"
+            },
+            {
+              "label": "A regular monthly bill"
+            }
+          ],
+          "help": [
+            "Use the information available before the event."
+          ],
+          "feedback": {
+            "met": "The stated failure was unexpected, unlike a known scheduled bill.",
+            "not_yet": "Use the information available before the event."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué descripción corresponde al suceso?",
+          "scene": "Un aparato normalmente fiable falla sin aviso y necesita reparación urgente.",
+          "options": [
+            {
+              "label": "Una renovación anual conocida"
+            },
+            {
+              "label": "Un imprevisto"
+            },
+            {
+              "label": "Una cuenta mensual regular"
+            }
+          ],
+          "help": [
+            "Usa lo que se sabía antes del suceso."
+          ],
+          "feedback": {
+            "met": "La falla indicada fue inesperada, a diferencia de una cuenta programada.",
+            "not_yet": "Usa lo que se sabía antes del suceso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual descrição corresponde ao evento?",
+          "scene": "Um aparelho normalmente confiável falha sem aviso e exige conserto urgente.",
+          "options": [
+            {
+              "label": "Uma renovação anual conhecida"
+            },
+            {
+              "label": "Um imprevisto"
+            },
+            {
+              "label": "Uma conta mensal regular"
+            }
+          ],
+          "help": [
+            "Use o que se sabia antes do evento."
+          ],
+          "feedback": {
+            "met": "A falha informada foi inesperada, diferente de uma conta programada.",
+            "not_yet": "Use o que se sabia antes do evento."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.05",
+      "copy": {
+        "en-US": {
+          "prompt": "How to plan for it?",
+          "scene": "A school announces a required expense months before payment.",
+          "options": [
+            {
+              "label": "As unknowable until payment day"
+            },
+            {
+              "label": "As a known future expense"
+            },
+            {
+              "label": "As paid by being announced"
+            }
+          ],
+          "help": [
+            "Knowing about a cost does not mean it is funded."
+          ],
+          "feedback": {
+            "met": "Advance notice makes the future obligation visible for planning.",
+            "not_yet": "Knowing about a cost does not mean it is funded."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cómo debe tratarlo el plan?",
+          "scene": "La escuela anuncia un gasto requerido meses antes de su vencimiento.",
+          "options": [
+            {
+              "label": "Como imposible de prever hasta pagar"
+            },
+            {
+              "label": "Como gasto futuro conocido"
+            },
+            {
+              "label": "Como pagado por anunciarse"
+            }
+          ],
+          "help": [
+            "Conocer un gasto no significa tener fondos para pagarlo."
+          ],
+          "feedback": {
+            "met": "El aviso anticipado hace visible la obligación futura para planear.",
+            "not_yet": "Conocer un gasto no significa tener fondos para pagarlo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Como o plano deve tratá-lo?",
+          "scene": "A escola anuncia um gasto exigido meses antes do vencimento.",
+          "options": [
+            {
+              "label": "Como impossível de prever até pagar"
+            },
+            {
+              "label": "Como gasto futuro conhecido"
+            },
+            {
+              "label": "Como pago por ser anunciado"
+            }
+          ],
+          "help": [
+            "Conhecer um gasto não significa ter recursos para pagá-lo."
+          ],
+          "feedback": {
+            "met": "O aviso antecipado torna visível a obrigação futura para planejar.",
+            "not_yet": "Conhecer um gasto não significa ter recursos para pagá-lo."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.05",
+      "copy": {
+        "en-US": {
+          "prompt": "What remains uncertain?",
+          "scene": "A yearly bill’s date is known, but its new amount has not been announced.",
+          "options": [
+            {
+              "label": "Whether the bill is monthly"
+            },
+            {
+              "label": "Whether the date is known"
+            },
+            {
+              "label": "The new amount"
+            }
+          ],
+          "help": [
+            "Track known timing and verify the missing amount separately."
+          ],
+          "feedback": {
+            "met": "A known event can still have an uncertain amount.",
+            "not_yet": "Track known timing and verify the missing amount separately."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué sigue incierto?",
+          "scene": "Conoces la fecha de una cuenta anual, pero aún no anuncian el monto nuevo.",
+          "options": [
+            {
+              "label": "Si la cuenta es mensual"
+            },
+            {
+              "label": "Si se conoce la fecha"
+            },
+            {
+              "label": "El monto nuevo"
+            }
+          ],
+          "help": [
+            "Registra la fecha y verifica aparte el monto faltante."
+          ],
+          "feedback": {
+            "met": "Un suceso conocido puede tener un monto incierto.",
+            "not_yet": "Registra la fecha y verifica aparte el monto faltante."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que continua incerto?",
+          "scene": "Sabe a data de uma conta anual, mas o novo valor não foi anunciado.",
+          "options": [
+            {
+              "label": "Se a conta é mensal"
+            },
+            {
+              "label": "Se a data é conhecida"
+            },
+            {
+              "label": "O novo valor"
+            }
+          ],
+          "help": [
+            "Registre a data e confira à parte o valor ausente."
+          ],
+          "feedback": {
+            "met": "Um evento conhecido pode ter um valor incerto.",
+            "not_yet": "Registre a data e confira à parte o valor ausente."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Did forgetting make it unforeseeable?",
+          "scene": "You forgot a known annual renewal until its due date.",
+          "options": [
+            {
+              "label": "Yes, yearly means unexpected"
+            },
+            {
+              "label": "No, it was known in advance"
+            },
+            {
+              "label": "Yes, memory changes the contract"
+            }
+          ],
+          "help": [
+            "Improve the record rather than relabeling the event."
+          ],
+          "feedback": {
+            "met": "The scheduled obligation existed even when it was omitted.",
+            "not_yet": "Improve the record rather than relabeling the event."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Olvidarla la volvió imprevisible?",
+          "scene": "Olvidaste una renovación anual conocida hasta que venció.",
+          "options": [
+            {
+              "label": "Sí, anual significa inesperado"
+            },
+            {
+              "label": "No, se conocía de antemano"
+            },
+            {
+              "label": "Sí, la memoria cambia el acuerdo"
+            }
+          ],
+          "help": [
+            "Mejora el registro en vez de cambiar la categoría."
+          ],
+          "feedback": {
+            "met": "La obligación programada existía aunque se omitiera.",
+            "not_yet": "Mejora el registro en vez de cambiar la categoría."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Esquecer tornou a conta imprevisível?",
+          "scene": "Esqueceu uma renovação anual conhecida até o vencimento.",
+          "options": [
+            {
+              "label": "Sim, anual significa inesperado"
+            },
+            {
+              "label": "Não, era conhecida antes"
+            },
+            {
+              "label": "Sim, a memória muda o acordo"
+            }
+          ],
+          "help": [
+            "Melhore o registro em vez de mudar a categoria."
+          ],
+          "feedback": {
+            "met": "A obrigação programada existia mesmo sendo omitida.",
+            "not_yet": "Melhore o registro em vez de mudar a categoria."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.spending-patterns.05",
+      "copy": {
+        "en-US": {
+          "prompt": "How to classify it?",
+          "scene": "A required inspection occurs every two years; its date is confirmed.",
+          "options": [
+            {
+              "label": "Unforeseen because it is not monthly"
+            },
+            {
+              "label": "Predictable despite the long interval"
+            },
+            {
+              "label": "Optional because it is infrequent"
+            }
+          ],
+          "help": [
+            "Keep frequency, predictability and necessity separate."
+          ],
+          "feedback": {
+            "met": "A long interval does not erase a known required date.",
+            "not_yet": "Keep frequency, predictability and necessity separate."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cómo clasificarla?",
+          "scene": "Una inspección necesaria ocurre cada dos años; la próxima fecha ya está confirmada.",
+          "options": [
+            {
+              "label": "Imprevista porque no es mensual"
+            },
+            {
+              "label": "Previsible pese al intervalo largo"
+            },
+            {
+              "label": "Opcional porque ocurre poco"
+            }
+          ],
+          "help": [
+            "Separa frecuencia, previsibilidad y necesidad."
+          ],
+          "feedback": {
+            "met": "Un intervalo largo no borra una fecha obligatoria conocida.",
+            "not_yet": "Separa frecuencia, previsibilidad y necesidad."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Como classificá-la?",
+          "scene": "Uma vistoria necessária ocorre a cada dois anos; a próxima data já está confirmada.",
+          "options": [
+            {
+              "label": "Imprevista porque não é mensal"
+            },
+            {
+              "label": "Previsível apesar do intervalo longo"
+            },
+            {
+              "label": "Opcional porque ocorre pouco"
+            }
+          ],
+          "help": [
+            "Separe frequência, previsibilidade e necessidade."
+          ],
+          "feedback": {
+            "met": "Um intervalo longo não apaga uma data obrigatória conhecida.",
+            "not_yet": "Separe frequência, previsibilidade e necessidade."
+          }
+        }
+      }
+    }
+  ]
+}

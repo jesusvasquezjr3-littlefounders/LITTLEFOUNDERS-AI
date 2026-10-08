@@ -1,0 +1,807 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-income-work-part-1",
+  "lesson_id": "fe-production-income-work-06",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.income-work.06"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Build a conservative income estimate from an irregular payment history.",
+  "title": {
+    "en-US": "Uneven income",
+    "es-MX": "Planea con entradas variables",
+    "pt-BR": "Planeje com entradas variáveis"
+  },
+  "new_concepts": [
+    "finance.prod.income-work.06"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Plan with uneven receipts\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Planea con entradas variables\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Planeje com entradas variáveis\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.income-work.06",
+      "observable_action": "Build a conservative income estimate from an irregular payment history.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.income-work.01",
+      "prod.financial-math.03",
+      "prod.financial-math.06"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Use history cautiously when future payments are uncertain.",
+    "misconception": "Treat the best month or historical average as a guaranteed minimum.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.income-work.06",
+        "context_id": "fe-production-income-work-06-example-01",
+        "supports_from": [],
+        "reasoning": "Recent receipts were 80, 120 and 90 dollars. Using the lowest is cautious, but still not guaranteed."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.income-work.06",
+        "context_id": "fe-production-income-work-06-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "An exceptional peak is weak evidence for dependable income."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.income-work.06",
+        "context_id": "fe-production-income-work-06-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "A historical estimate is not a payment agreement."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.income-work.06",
+        "context_id": "fe-production-income-work-06-practice-01",
+        "supports_from": [],
+        "reasoning": "The requested rule chooses the lowest observed amount."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.income-work.06",
+        "context_id": "fe-production-income-work-06-practice-02",
+        "supports_from": [],
+        "reasoning": "A changed work source can invalidate an old baseline."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.income-work.06",
+        "context_id": "fe-production-income-work-06-practice-03",
+        "supports_from": [],
+        "reasoning": "One high month does not prove a permanent income change."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.income-work.06",
+        "context_id": "fe-production-income-work-06-transfer-01",
+        "supports_from": [],
+        "reasoning": "Seasonal peaks do not describe every future period."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.income-work.06",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Use history cautiously when future payments are uncertain."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Usa el historial con cuidado cuando los pagos futuros son inciertos."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Use o histórico com cuidado quando pagamentos futuros são incertos."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A cautious baseline",
+          "line": "Recent receipts were 80, 120 and 90 dollars. Using the lowest is cautious, but still not guaranteed."
+        },
+        "es-MX": {
+          "prompt": "Una base prudente",
+          "line": "Entradas recientes: 80, 120 y 90 pesos. Planear lo esencial con 80 es prudente, pero tampoco está garantizado."
+        },
+        "pt-BR": {
+          "prompt": "Uma base cautelosa",
+          "line": "Entradas recentes: 80, 120 e 90 reais. Planejar o essencial com 80 é cauteloso, mas isso também não é garantido."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which baseline is least justified?",
+          "scene": "The largest past receipt included an unusual bonus; ordinary months were lower.",
+          "options": [
+            {
+              "label": "Assume the best month always repeats"
+            },
+            {
+              "label": "Separate the unusual bonus"
+            },
+            {
+              "label": "Check lower-receipt months"
+            }
+          ],
+          "help": [
+            "Look at the pattern, not only the peak."
+          ],
+          "feedback": {
+            "met": "An exceptional peak is weak evidence for dependable income.",
+            "not_yet": "Look at the pattern, not only the peak."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué base tiene menos sustento?",
+          "scene": "Las entradas varían mucho; el mes mayor incluyó bono inusual.",
+          "options": [
+            {
+              "label": "Suponer que siempre se repite el mejor mes"
+            },
+            {
+              "label": "Separar el bono inusual"
+            },
+            {
+              "label": "Revisar meses de menos entradas"
+            }
+          ],
+          "help": [
+            "Mira el patrón, no solo el máximo."
+          ],
+          "feedback": {
+            "met": "Un máximo excepcional no demuestra ingreso confiable.",
+            "not_yet": "Mira el patrón, no solo el máximo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual base tem menos apoio?",
+          "scene": "As entradas variam muito; o maior mês incluiu bônus incomum.",
+          "options": [
+            {
+              "label": "Supor que sempre se repete o melhor mês"
+            },
+            {
+              "label": "Separar o bônus incomum"
+            },
+            {
+              "label": "Conferir meses de menos entradas"
+            }
+          ],
+          "help": [
+            "Veja o padrão, não só o pico."
+          ],
+          "feedback": {
+            "met": "Um pico excepcional não demonstra renda confiável.",
+            "not_yet": "Veja o padrão, não só o pico."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Does that make the amount guaranteed?",
+          "scene": "You use a low historical month as a cautious planning baseline.",
+          "options": [
+            {
+              "label": "Yes, history promises payment"
+            },
+            {
+              "label": "Yes, a smaller number cannot fail"
+            },
+            {
+              "label": "No, keep uncertainty visible"
+            }
+          ],
+          "help": [
+            "Label the baseline as an estimate."
+          ],
+          "feedback": {
+            "met": "A historical estimate is not a payment agreement.",
+            "not_yet": "Label the baseline as an estimate."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Eso garantiza el monto?",
+          "scene": "Usas un mes histórico bajo como base prudente del plan.",
+          "options": [
+            {
+              "label": "Sí, el historial promete pago"
+            },
+            {
+              "label": "Sí, un número menor nunca falla"
+            },
+            {
+              "label": "No, conserva visible la incertidumbre"
+            }
+          ],
+          "help": [
+            "Marca la base como estimación."
+          ],
+          "feedback": {
+            "met": "Una estimación histórica no es un acuerdo de pago.",
+            "not_yet": "Marca la base como estimación."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Isso garante o valor?",
+          "scene": "Usa um mês histórico baixo como base cautelosa do plano.",
+          "options": [
+            {
+              "label": "Sim, o histórico promete pagamento"
+            },
+            {
+              "label": "Sim, um número menor nunca falha"
+            },
+            {
+              "label": "Não, mantenha visível a incerteza"
+            }
+          ],
+          "help": [
+            "Marque a base como estimativa."
+          ],
+          "feedback": {
+            "met": "Uma estimativa histórica não é um acordo de pagamento.",
+            "not_yet": "Marque a base como estimativa."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Requested baseline?",
+          "scene": "Three comparable receipts were 70, 100 and 85. Use the lowest as the requested baseline.",
+          "options": [
+            {
+              "label": "255"
+            },
+            {
+              "label": "100"
+            },
+            {
+              "label": "70"
+            }
+          ],
+          "help": [
+            "This is a planning rule, not a guarantee."
+          ],
+          "feedback": {
+            "met": "The requested rule chooses the lowest observed amount.",
+            "not_yet": "This is a planning rule, not a guarantee."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Base solicitada?",
+          "scene": "Tres entradas comparables: 70, 100 y 85. Usa la menor como base solicitada.",
+          "options": [
+            {
+              "label": "255"
+            },
+            {
+              "label": "100"
+            },
+            {
+              "label": "70"
+            }
+          ],
+          "help": [
+            "Es una regla del plan, no una garantía."
+          ],
+          "feedback": {
+            "met": "La regla solicitada elige el menor monto observado.",
+            "not_yet": "Es una regla del plan, no una garantía."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Base pedida?",
+          "scene": "Três entradas comparáveis: 70, 100 e 85. Use a menor como base pedida.",
+          "options": [
+            {
+              "label": "255"
+            },
+            {
+              "label": "100"
+            },
+            {
+              "label": "70"
+            }
+          ],
+          "help": [
+            "É uma regra do plano, não uma garantia."
+          ],
+          "feedback": {
+            "met": "A regra pedida escolhe o menor valor observado.",
+            "not_yet": "É uma regra do plano, não uma garantia."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          70,
+          100,
+          85
+        ],
+        "expression": {
+          "op": "min",
+          "args": [
+            {
+              "op": "min",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Should the old history stay unchanged as the forecast?",
+          "scene": "A previously reliable client has stopped ordering.",
+          "options": [
+            {
+              "label": "Averages ignore changes"
+            },
+            {
+              "label": "Old income is still held"
+            },
+            {
+              "label": "Update for the changed condition"
+            }
+          ],
+          "help": [
+            "Combine history with current evidence."
+          ],
+          "feedback": {
+            "met": "A changed work source can invalidate an old baseline.",
+            "not_yet": "Combine history with current evidence."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Debe conservarse igual el historial como pronóstico?",
+          "scene": "Un cliente antes confiable dejó de pedir trabajo.",
+          "options": [
+            {
+              "label": "Sí, los promedios ignoran cambios"
+            },
+            {
+              "label": "Sí, el ingreso pasado sigue disponible"
+            },
+            {
+              "label": "No, actualiza por la condición cambiada"
+            }
+          ],
+          "help": [
+            "Combina historial con evidencia actual."
+          ],
+          "feedback": {
+            "met": "Una fuente laboral cambiada puede invalidar una base anterior.",
+            "not_yet": "Combina historial con evidencia actual."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O histórico antigo deve ficar igual como previsão?",
+          "scene": "Um cliente antes confiável deixou de pedir trabalho.",
+          "options": [
+            {
+              "label": "Sim, médias ignoram mudanças"
+            },
+            {
+              "label": "Sim, a renda passada segue disponível"
+            },
+            {
+              "label": "Não, atualize pela condição alterada"
+            }
+          ],
+          "help": [
+            "Combine histórico com evidência atual."
+          ],
+          "feedback": {
+            "met": "Uma fonte de trabalho alterada pode invalidar a base anterior.",
+            "not_yet": "Combine histórico com evidência atual."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.06",
+      "copy": {
+        "en-US": {
+          "prompt": "What should happen before repeating the larger plan?",
+          "scene": "This month exceeds the cautious estimate.",
+          "options": [
+            {
+              "label": "Assume a permanent raise"
+            },
+            {
+              "label": "Erase the low months"
+            },
+            {
+              "label": "Check whether the increase will recur"
+            }
+          ],
+          "help": [
+            "Distinguish a current receipt from a future pattern."
+          ],
+          "feedback": {
+            "met": "One high month does not prove a permanent income change.",
+            "not_yet": "Distinguish a current receipt from a future pattern."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué hacer antes de repetir un plan mayor?",
+          "scene": "Este mes supera la estimación prudente.",
+          "options": [
+            {
+              "label": "Suponer aumento permanente"
+            },
+            {
+              "label": "Borrar los meses bajos"
+            },
+            {
+              "label": "Revisar si se repetirá el aumento"
+            }
+          ],
+          "help": [
+            "Distingue entrada actual y patrón futuro."
+          ],
+          "feedback": {
+            "met": "Un mes alto no demuestra cambio permanente de ingreso.",
+            "not_yet": "Distingue entrada actual y patrón futuro."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que fazer antes de repetir um plano maior?",
+          "scene": "Este mês supera a estimativa cautelosa.",
+          "options": [
+            {
+              "label": "Supor aumento permanente"
+            },
+            {
+              "label": "Apagar os meses baixos"
+            },
+            {
+              "label": "Conferir se o aumento se repetirá"
+            }
+          ],
+          "help": [
+            "Distinga entrada atual e padrão futuro."
+          ],
+          "feedback": {
+            "met": "Um mês alto não demonstra mudança permanente da renda.",
+            "not_yet": "Distinga entrada atual e padrão futuro."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.income-work.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which forecast respects evidence?",
+          "scene": "A seasonal seller’s holiday receipts are high; ordinary months are much lower.",
+          "options": [
+            {
+              "label": "Copy holiday income all year"
+            },
+            {
+              "label": "Ignore every ordinary month"
+            },
+            {
+              "label": "Separate seasonal and ordinary periods"
+            }
+          ],
+          "help": [
+            "Match the estimate to the relevant season."
+          ],
+          "feedback": {
+            "met": "Seasonal peaks do not describe every future period.",
+            "not_yet": "Match the estimate to the relevant season."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué pronóstico respeta mejor la evidencia?",
+          "scene": "Un vendedor estacional cobra mucho en fiestas; los meses normales son menores.",
+          "options": [
+            {
+              "label": "Copiar ingreso festivo todo el año"
+            },
+            {
+              "label": "Ignorar todos los meses normales"
+            },
+            {
+              "label": "Separar temporadas y periodos normales"
+            }
+          ],
+          "help": [
+            "Iguala la estimación a la temporada pertinente."
+          ],
+          "feedback": {
+            "met": "Los máximos estacionales no describen cada periodo futuro.",
+            "not_yet": "Iguala la estimación a la temporada pertinente."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual previsão respeita melhor a evidência?",
+          "scene": "Um vendedor sazonal recebe muito nas festas; meses comuns são menores.",
+          "options": [
+            {
+              "label": "Copiar renda das festas o ano inteiro"
+            },
+            {
+              "label": "Ignorar todos os meses comuns"
+            },
+            {
+              "label": "Separar temporadas e períodos comuns"
+            }
+          ],
+          "help": [
+            "Iguale a estimativa à temporada pertinente."
+          ],
+          "feedback": {
+            "met": "Picos sazonais não descrevem todo período futuro.",
+            "not_yet": "Iguale a estimativa à temporada pertinente."
+          }
+        }
+      }
+    }
+  ]
+}

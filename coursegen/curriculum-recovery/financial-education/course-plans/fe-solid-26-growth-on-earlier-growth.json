@@ -1,0 +1,1042 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-solid-06-money-over-time",
+  "lesson_id": "fe-solid-26-growth-on-earlier-growth",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.time.compound"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Calculate two periods of growth when earlier gains remain in the base, and distinguish this toy model from a guaranteed return.",
+  "title": {
+    "en-US": "Growth on earlier growth",
+    "es-MX": "Crecimiento sobre crecimiento",
+    "pt-BR": "Crescimento sobre crescimento"
+  },
+  "new_concepts": [
+    "finance.time.compound"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Growth on earlier growth\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Crecimiento sobre crecimiento\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Crescimento sobre crescimento\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "time.compound",
+      "observable_action": "Calculate two periods of growth when earlier gains remain in the base, and distinguish this toy model from a guaranteed return.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "price.percent",
+      "debt.interest",
+      "time.purchasing-power"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Growth can apply to earlier gains when they stay in the balance. These dollar examples use a fixed invented rate.",
+    "misconception": "Applying every period percentage only to the original amount or assuming a constant-rate illustration promises an actual investment result.",
+    "numeracy_support": "Repeat the previously taught percentage calculation using the updated base; no exponent formula is assumed.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "time.compound",
+        "context_id": "growth-on-earlier-growth-example-01",
+        "supports_from": [],
+        "reasoning": "At a fictional 10% per period, 100 becomes 110. Keeping the gain makes 110 the next base."
+      },
+      {
+        "segment_id": "example-02",
+        "skill_id": "time.compound",
+        "context_id": "growth-on-earlier-growth-example-02",
+        "supports_from": [],
+        "reasoning": "Next, 10% of 110 is 11, giving 121. Growth only on the original 100 would add another 10 instead."
+      },
+      {
+        "segment_id": "example-growth",
+        "skill_id": "time.compound",
+        "context_id": "growth-on-earlier-growth-example-growth",
+        "supports_from": [],
+        "reasoning": "Toy model: 100 dollars, no fees or withdrawals. At 10% over two years, predict and compare simple versus compound growth."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "time.compound",
+        "context_id": "growth-on-earlier-growth-guided-01",
+        "supports_from": [
+          "example-growth"
+        ],
+        "reasoning": "The gain is added to the starting amount."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "time.compound",
+        "context_id": "growth-on-earlier-growth-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Retained growth becomes part of the next period base."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "time.compound",
+        "context_id": "growth-on-earlier-growth-practice-01",
+        "supports_from": [],
+        "reasoning": "The growth amount is a share of this starting balance."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "time.compound",
+        "context_id": "growth-on-earlier-growth-practice-02",
+        "supports_from": [],
+        "reasoning": "Growth is calculated on the updated base, including retained gains."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "time.compound",
+        "context_id": "growth-on-earlier-growth-practice-03",
+        "supports_from": [],
+        "reasoning": "The chart shows a model, not a guaranteed investment result."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "time.compound",
+        "context_id": "growth-on-earlier-growth-transfer-01",
+        "supports_from": [],
+        "reasoning": "The second period uses the updated amount including the first gain."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "time.compound",
+      "fresh_context": "Apply this skill in a later integrated decision with a different constraint."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Growth can apply to earlier gains when they stay in the balance. These dollar examples use a fixed invented rate."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "El crecimiento puede aplicarse a ganancias anteriores si permanecen en el saldo. Estos ejemplos en pesos usan una tasa fija inventada."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "O crescimento pode incidir sobre ganhos anteriores se ficam no saldo. Estes exemplos em reais usam uma taxa fixa inventada."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Update the base",
+          "line": "At a fictional 10% per period, 100 becomes 110. Keeping the gain makes 110 the next base."
+        },
+        "es-MX": {
+          "prompt": "Actualiza la base",
+          "line": "Con un 10% ficticio por periodo, 100 crece 10 y llega a 110. Si la ganancia permanece, el siguiente periodo empieza en 110."
+        },
+        "pt-BR": {
+          "prompt": "Atualize a base",
+          "line": "Com 10% fictícios por período, 100 cresce 10 e chega a 110. Se o ganho fica, o próximo período começa em 110."
+        }
+      }
+    },
+    {
+      "id": "example-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Calculate on the new amount",
+          "line": "Next, 10% of 110 is 11, giving 121. Growth only on the original 100 would add another 10 instead."
+        },
+        "es-MX": {
+          "prompt": "Calcula sobre el monto nuevo",
+          "line": "Después, 10% de 110 son 11 y se llega a 121. Crecer solo sobre los 100 iniciales añadiría otros 10."
+        },
+        "pt-BR": {
+          "prompt": "Calcule sobre o valor novo",
+          "line": "Depois, 10% de 110 são 11, chegando a 121. Crescer só sobre os 100 iniciais somaria outros 10."
+        }
+      }
+    },
+    {
+      "id": "example-growth",
+      "type": "visual.growth-comparison.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "multi-line"
+      },
+      "payload": {
+        "principalMinor": 10000,
+        "minimumRateBps": 500,
+        "maximumRateBps": 1000,
+        "rateStepBps": 500,
+        "initialRateBps": 1000,
+        "minimumYears": 1,
+        "maximumYears": 5,
+        "yearStep": 1,
+        "initialYears": 1,
+        "predictionStepMinor": 100,
+        "predictionMaximumMinor": 30000
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Toy model: 100 dollars, no fees or withdrawals. At 10% over two years, predict and compare simple versus compound growth."
+        },
+        "es-MX": {
+          "prompt": "Modelo ficticio: 100 pesos, sin cargos ni retiros. Con 10%, pasa a dos años; predice y compara crecimiento simple y compuesto."
+        },
+        "pt-BR": {
+          "prompt": "Modelo fictício: 100 reais, sem cobranças ou retiradas. Com 10%, passe a dois anos; preveja e compare crescimento simples e composto."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.time.compound",
+      "copy": {
+        "en-US": {
+          "prompt": "What is the first updated balance?",
+          "scene": "A toy balance of 100 grows by 10% for one period. The gain remains; nothing else changes.",
+          "options": [
+            {
+              "label": "100"
+            },
+            {
+              "label": "110"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Update the whole before moving to another period."
+          ],
+          "feedback": {
+            "met": "The gain is added to the starting amount.",
+            "not_yet": "Update the whole before moving to another period."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es el primer saldo actualizado?",
+          "scene": "Un saldo ficticio de 100 crece 10% durante un periodo. La ganancia permanece; nada más cambia.",
+          "options": [
+            {
+              "label": "100"
+            },
+            {
+              "label": "110"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Actualiza el total antes de pasar a otro periodo."
+          ],
+          "feedback": {
+            "met": "La ganancia se suma al monto inicial.",
+            "not_yet": "Actualiza el total antes de pasar a otro periodo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é o primeiro saldo atualizado?",
+          "scene": "Um saldo fictício de 100 cresce 10% durante um período. O ganho fica; nada mais muda.",
+          "options": [
+            {
+              "label": "100"
+            },
+            {
+              "label": "110"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Atualize o total antes de passar a outro período."
+          ],
+          "feedback": {
+            "met": "O ganho é somado ao valor inicial.",
+            "not_yet": "Atualize o total antes de passar a outro período."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          100,
+          10
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "op": "divide",
+              "args": [
+                {
+                  "op": "multiply",
+                  "args": [
+                    {
+                      "input": 0
+                    },
+                    {
+                      "input": 1
+                    }
+                  ]
+                },
+                {
+                  "constant": 100
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.time.compound",
+      "copy": {
+        "en-US": {
+          "prompt": "Which base starts the next period?",
+          "scene": "The original 100 grew to 110 and all gains remain in the balance.",
+          "options": [
+            {
+              "label": "110"
+            },
+            {
+              "label": "100"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Use the updated balance when earlier gains remain."
+          ],
+          "feedback": {
+            "met": "Retained growth becomes part of the next period base.",
+            "not_yet": "Use the updated balance when earlier gains remain."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué base inicia el siguiente periodo?",
+          "scene": "Los 100 iniciales crecieron a 110 y toda la ganancia sigue en el saldo.",
+          "options": [
+            {
+              "label": "110"
+            },
+            {
+              "label": "100"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Usa el saldo actualizado si las ganancias permanecen."
+          ],
+          "feedback": {
+            "met": "El crecimiento retenido integra la base del siguiente periodo.",
+            "not_yet": "Usa el saldo actualizado si las ganancias permanecen."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual base inicia o próximo período?",
+          "scene": "Os 100 iniciais cresceram para 110 e todo o ganho continua no saldo.",
+          "options": [
+            {
+              "label": "110"
+            },
+            {
+              "label": "100"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Use o saldo atualizado se os ganhos permanecem."
+          ],
+          "feedback": {
+            "met": "O crescimento mantido integra a base do próximo período.",
+            "not_yet": "Use o saldo atualizado se os ganhos permanecem."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          100,
+          110
+        ],
+        "expression": {
+          "input": 1
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.time.compound",
+      "copy": {
+        "en-US": {
+          "prompt": "What is the updated amount?",
+          "scene": "A toy balance of 200 grows by 10% for one period, with no fees or withdrawals.",
+          "options": [
+            {
+              "label": "20"
+            },
+            {
+              "label": "220"
+            },
+            {
+              "label": "210"
+            }
+          ],
+          "help": [
+            "The same percentage applies to a different whole here."
+          ],
+          "feedback": {
+            "met": "The growth amount is a share of this starting balance.",
+            "not_yet": "The same percentage applies to a different whole here."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es el monto actualizado?",
+          "scene": "Un saldo ficticio de 200 crece 10% durante un periodo, sin cargos ni retiros.",
+          "options": [
+            {
+              "label": "20"
+            },
+            {
+              "label": "220"
+            },
+            {
+              "label": "210"
+            }
+          ],
+          "help": [
+            "El mismo porcentaje se aplica aquí a otro total."
+          ],
+          "feedback": {
+            "met": "El crecimiento es una parte de este saldo inicial.",
+            "not_yet": "El mismo porcentaje se aplica aquí a otro total."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é o valor atualizado?",
+          "scene": "Um saldo fictício de 200 cresce 10% durante um período, sem cobranças ou retiradas.",
+          "options": [
+            {
+              "label": "20"
+            },
+            {
+              "label": "220"
+            },
+            {
+              "label": "210"
+            }
+          ],
+          "help": [
+            "O mesmo percentual se aplica aqui a outro total."
+          ],
+          "feedback": {
+            "met": "O crescimento é uma parte deste saldo inicial.",
+            "not_yet": "O mesmo percentual se aplica aqui a outro total."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          200,
+          10
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "op": "divide",
+              "args": [
+                {
+                  "op": "multiply",
+                  "args": [
+                    {
+                      "input": 0
+                    },
+                    {
+                      "input": 1
+                    }
+                  ]
+                },
+                {
+                  "constant": 100
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.time.compound",
+      "copy": {
+        "en-US": {
+          "prompt": "How much is added this period?",
+          "scene": "The updated balance is 110. The fictional rate is 10% for the next period.",
+          "options": [
+            {
+              "label": "110"
+            },
+            {
+              "label": "11"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Use the current base rather than an earlier starting amount."
+          ],
+          "feedback": {
+            "met": "Growth is calculated on the updated base, including retained gains.",
+            "not_yet": "Use the current base rather than an earlier starting amount."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto se añade este periodo?",
+          "scene": "El saldo actualizado es 110. La tasa ficticia es 10% para el siguiente periodo.",
+          "options": [
+            {
+              "label": "110"
+            },
+            {
+              "label": "11"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Usa la base actual, no un monto inicial anterior."
+          ],
+          "feedback": {
+            "met": "El crecimiento se calcula sobre la base actualizada con ganancias retenidas.",
+            "not_yet": "Usa la base actual, no un monto inicial anterior."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto é somado neste período?",
+          "scene": "O saldo atualizado é 110. A taxa fictícia é 10% para o próximo período.",
+          "options": [
+            {
+              "label": "110"
+            },
+            {
+              "label": "11"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Use a base atual, não um valor inicial anterior."
+          ],
+          "feedback": {
+            "met": "O crescimento é calculado sobre a base atualizada com ganhos mantidos.",
+            "not_yet": "Use a base atual, não um valor inicial anterior."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          110,
+          10
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "constant": 100
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.time.compound",
+      "copy": {
+        "en-US": {
+          "prompt": "What does the fixed-rate chart establish?",
+          "scene": "Model: fixed positive growth, no fees or withdrawals.",
+          "options": [
+            {
+              "label": "All investments follow this path"
+            },
+            {
+              "label": "The best market return"
+            },
+            {
+              "label": "Results under these assumptions"
+            }
+          ],
+          "help": [
+            "Separate the calculation assumptions from uncertain real returns."
+          ],
+          "feedback": {
+            "met": "The chart shows a model, not a guaranteed investment result.",
+            "not_yet": "Separate the calculation assumptions from uncertain real returns."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué demuestra la gráfica de tasa fija?",
+          "scene": "La gráfica supone la misma tasa positiva cada periodo y ningún cargo ni retiro.",
+          "options": [
+            {
+              "label": "Toda inversión real sigue ese camino"
+            },
+            {
+              "label": "El mayor rendimiento disponible"
+            },
+            {
+              "label": "El resultado de los supuestos ficticios"
+            }
+          ],
+          "help": [
+            "Separa los supuestos de cálculo de rendimientos reales inciertos."
+          ],
+          "feedback": {
+            "met": "La gráfica muestra un modelo, no un resultado de inversión garantizado.",
+            "not_yet": "Separa los supuestos de cálculo de rendimientos reales inciertos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que o gráfico de taxa fixa demonstra?",
+          "scene": "O gráfico supõe a mesma taxa positiva a cada período e nenhuma cobrança ou retirada.",
+          "options": [
+            {
+              "label": "Todo investimento real segue esse caminho"
+            },
+            {
+              "label": "O maior retorno disponível"
+            },
+            {
+              "label": "O resultado das hipóteses fictícias"
+            }
+          ],
+          "help": [
+            "Separe as hipóteses do cálculo dos retornos reais incertos."
+          ],
+          "feedback": {
+            "met": "O gráfico mostra um modelo, não um resultado de investimento garantido.",
+            "not_yet": "Separe as hipóteses do cálculo dos retornos reais incertos."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.time.compound",
+      "copy": {
+        "en-US": {
+          "prompt": "What is the balance after two periods?",
+          "scene": "Start at 200, growing 10% per period. Keep gains; no fees or withdrawals.",
+          "options": [
+            {
+              "label": "220"
+            },
+            {
+              "label": "240"
+            },
+            {
+              "label": "242"
+            }
+          ],
+          "help": [
+            "Update the base after each period before applying the percentage again."
+          ],
+          "feedback": {
+            "met": "The second period uses the updated amount including the first gain.",
+            "not_yet": "Update the base after each period before applying the percentage again."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿A cuánto llega el saldo ficticio tras dos periodos?",
+          "scene": "Empieza con 200, crece 10% cada periodo y conserva cada ganancia en la base. No hay cargos ni retiros.",
+          "options": [
+            {
+              "label": "220"
+            },
+            {
+              "label": "240"
+            },
+            {
+              "label": "242"
+            }
+          ],
+          "help": [
+            "Actualiza la base tras cada periodo antes de aplicar de nuevo el porcentaje."
+          ],
+          "feedback": {
+            "met": "El segundo periodo usa el monto actualizado con la primera ganancia.",
+            "not_yet": "Actualiza la base tras cada periodo antes de aplicar de nuevo el porcentaje."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A quanto chega o saldo fictício após dois períodos?",
+          "scene": "Comece com 200, cresça 10% por período e mantenha cada ganho na base. Não há cobranças ou retiradas.",
+          "options": [
+            {
+              "label": "220"
+            },
+            {
+              "label": "240"
+            },
+            {
+              "label": "242"
+            }
+          ],
+          "help": [
+            "Atualize a base após cada período antes de aplicar o percentual de novo."
+          ],
+          "feedback": {
+            "met": "O segundo período usa o valor atualizado com o primeiro ganho.",
+            "not_yet": "Atualize a base após cada período antes de aplicar o percentual de novo."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          200,
+          10
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "op": "add",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "op": "divide",
+                  "args": [
+                    {
+                      "op": "multiply",
+                      "args": [
+                        {
+                          "input": 0
+                        },
+                        {
+                          "input": 1
+                        }
+                      ]
+                    },
+                    {
+                      "constant": 100
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "op": "divide",
+              "args": [
+                {
+                  "op": "multiply",
+                  "args": [
+                    {
+                      "op": "add",
+                      "args": [
+                        {
+                          "input": 0
+                        },
+                        {
+                          "op": "divide",
+                          "args": [
+                            {
+                              "op": "multiply",
+                              "args": [
+                                {
+                                  "input": 0
+                                },
+                                {
+                                  "input": 1
+                                }
+                              ]
+                            },
+                            {
+                              "constant": 100
+                            }
+                          ]
+                        }
+                      ]
+                    },
+                    {
+                      "input": 1
+                    }
+                  ]
+                },
+                {
+                  "constant": 100
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,5357 @@
+{
+  "version": 1,
+  "publication_intent": "release-candidate",
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "age_band": "adult",
+  "metadata": {
+    "title": {
+      "en-US": "Financial Education",
+      "es-MX": "Educación Financiera",
+      "pt-BR": "Educação Financeira"
+    },
+    "description": {
+      "en-US": "Build practical foundations for everyday money decisions.",
+      "es-MX": "Construye bases prácticas para decidir sobre tu dinero cotidiano.",
+      "pt-BR": "Construa bases práticas para decidir sobre seu dinheiro cotidiano."
+    },
+    "subject": "money",
+    "position": 1,
+    "badge_asset": "course-badges/financial-education.png",
+    "requires": []
+  },
+  "scope": "A broad introductory adult personal-finance course: usable money and arithmetic, income and budgets, payments and purchases, resilience and credit, protection and investing, public systems and long-term household decisions. Specialist professional knowledge remains outside this course.",
+  "excluded_scope": [
+    "General introductory personal finance, not personalized advice",
+    "Teach product families and decision criteria, not product rankings or trading tactics",
+    "Explain taxes, protections and rights conceptually; verify every jurisdiction-specific fact with current official sources",
+    "Specialist investing, business accounting, professional tax preparation and estate drafting belong in separate courses"
+  ],
+  "units": [
+    {
+      "id": "fe-production-usable-money-part-1",
+      "title": {
+        "en-US": "Usable money 1",
+        "es-MX": "Dinero utilizable 1",
+        "pt-BR": "Dinheiro utilizável 1"
+      },
+      "objective": "Track received and paid amounts Separate promised money from available money Protect existing commitments before another purchase"
+    },
+    {
+      "id": "fe-production-usable-money-part-2",
+      "title": {
+        "en-US": "Usable money 2",
+        "es-MX": "Dinero utilizable 2",
+        "pt-BR": "Dinheiro utilizável 2"
+      },
+      "objective": "Track received and paid amounts Separate promised money from available money Protect existing commitments before another purchase"
+    },
+    {
+      "id": "fe-production-financial-math-part-1",
+      "title": {
+        "en-US": "Financial arithmetic 1",
+        "es-MX": "Cálculos financieros 1",
+        "pt-BR": "Cálculos financeiros 1"
+      },
+      "objective": "Compare equal units and totals Calculate shares, percentage changes and rates Read tables and distinguish stocks from flows"
+    },
+    {
+      "id": "fe-production-financial-math-part-2",
+      "title": {
+        "en-US": "Financial arithmetic 2",
+        "es-MX": "Cálculos financieros 2",
+        "pt-BR": "Cálculos financeiros 2"
+      },
+      "objective": "Compare equal units and totals Calculate shares, percentage changes and rates Read tables and distinguish stocks from flows"
+    },
+    {
+      "id": "fe-production-financial-math-part-3",
+      "title": {
+        "en-US": "Financial arithmetic 3",
+        "es-MX": "Cálculos financieros 3",
+        "pt-BR": "Cálculos financeiros 3"
+      },
+      "objective": "Compare equal units and totals Calculate shares, percentage changes and rates Read tables and distinguish stocks from flows"
+    },
+    {
+      "id": "fe-production-goals-tradeoffs-part-1",
+      "title": {
+        "en-US": "Goals and choices 1",
+        "es-MX": "Metas y decisiones 1",
+        "pt-BR": "Metas e escolhas 1"
+      },
+      "objective": "Turn a wish into an amount and date Identify what a choice leaves unfunded Revise a goal when constraints change"
+    },
+    {
+      "id": "fe-production-goals-tradeoffs-part-2",
+      "title": {
+        "en-US": "Goals and choices 2",
+        "es-MX": "Metas y decisiones 2",
+        "pt-BR": "Metas e escolhas 2"
+      },
+      "objective": "Turn a wish into an amount and date Identify what a choice leaves unfunded Revise a goal when constraints change"
+    },
+    {
+      "id": "fe-production-income-work-part-1",
+      "title": {
+        "en-US": "Income and work 1",
+        "es-MX": "Ingresos y trabajo 1",
+        "pt-BR": "Renda e trabalho 1"
+      },
+      "objective": "Plan with variable payment amounts and dates Distinguish gross, deductions and usable pay Compare work offers using costs, time and benefits"
+    },
+    {
+      "id": "fe-production-income-work-part-2",
+      "title": {
+        "en-US": "Income and work 2",
+        "es-MX": "Ingresos y trabajo 2",
+        "pt-BR": "Renda e trabalho 2"
+      },
+      "objective": "Plan with variable payment amounts and dates Distinguish gross, deductions and usable pay Compare work offers using costs, time and benefits"
+    },
+    {
+      "id": "fe-production-spending-patterns-part-1",
+      "title": {
+        "en-US": "Spending patterns 1",
+        "es-MX": "Patrones de gasto 1",
+        "pt-BR": "Padrões de gasto 1"
+      },
+      "objective": "Find recurring costs in a spending record Distinguish a useful purchase from a persuasive offer Design a small repeatable change without assuming spare income"
+    },
+    {
+      "id": "fe-production-spending-patterns-part-2",
+      "title": {
+        "en-US": "Spending patterns 2",
+        "es-MX": "Patrones de gasto 2",
+        "pt-BR": "Padrões de gasto 2"
+      },
+      "objective": "Find recurring costs in a spending record Distinguish a useful purchase from a persuasive offer Design a small repeatable change without assuming spare income"
+    },
+    {
+      "id": "fe-production-cashflow-budget-part-1",
+      "title": {
+        "en-US": "Budget and timing 1",
+        "es-MX": "Presupuesto y fechas 1",
+        "pt-BR": "Orçamento e datas 1"
+      },
+      "objective": "Build a feasible dated plan Prepare for periodic expenses Revise allocations after a shortfall or surprise"
+    },
+    {
+      "id": "fe-production-cashflow-budget-part-2",
+      "title": {
+        "en-US": "Budget and timing 2",
+        "es-MX": "Presupuesto y fechas 2",
+        "pt-BR": "Orçamento e datas 2"
+      },
+      "objective": "Build a feasible dated plan Prepare for periodic expenses Revise allocations after a shortfall or surprise"
+    },
+    {
+      "id": "fe-production-cashflow-budget-part-3",
+      "title": {
+        "en-US": "Budget and timing 3",
+        "es-MX": "Presupuesto y fechas 3",
+        "pt-BR": "Orçamento e datas 3"
+      },
+      "objective": "Build a feasible dated plan Prepare for periodic expenses Revise allocations after a shortfall or surprise"
+    },
+    {
+      "id": "fe-production-accounts-records-part-1",
+      "title": {
+        "en-US": "Accounts and records 1",
+        "es-MX": "Cuentas y registros 1",
+        "pt-BR": "Contas e registros 1"
+      },
+      "objective": "Compare account conditions for actual use Reconcile recorded movements and balances Distinguish available access from advertised balance"
+    },
+    {
+      "id": "fe-production-accounts-records-part-2",
+      "title": {
+        "en-US": "Accounts and records 2",
+        "es-MX": "Cuentas y registros 2",
+        "pt-BR": "Contas e registros 2"
+      },
+      "objective": "Compare account conditions for actual use Reconcile recorded movements and balances Distinguish available access from advertised balance"
+    },
+    {
+      "id": "fe-production-payments-digital-part-1",
+      "title": {
+        "en-US": "Payments and security 1",
+        "es-MX": "Pagos y seguridad 1",
+        "pt-BR": "Pagamentos e segurança 1"
+      },
+      "objective": "Choose a payment method for timing, cost and reversibility Check recipient details and payment status Protect credentials and recover access through verified channels"
+    },
+    {
+      "id": "fe-production-payments-digital-part-2",
+      "title": {
+        "en-US": "Payments and security 2",
+        "es-MX": "Pagos y seguridad 2",
+        "pt-BR": "Pagamentos e segurança 2"
+      },
+      "objective": "Choose a payment method for timing, cost and reversibility Check recipient details and payment status Protect credentials and recover access through verified channels"
+    },
+    {
+      "id": "fe-production-purchase-decisions-part-1",
+      "title": {
+        "en-US": "Purchase decisions 1",
+        "es-MX": "Decisiones de compra 1",
+        "pt-BR": "Decisões de compra 1"
+      },
+      "objective": "Compare total cost rather than headline price Evaluate discounts, subscriptions and installment offers Clarify terms before accepting a commitment"
+    },
+    {
+      "id": "fe-production-purchase-decisions-part-2",
+      "title": {
+        "en-US": "Purchase decisions 2",
+        "es-MX": "Decisiones de compra 2",
+        "pt-BR": "Decisões de compra 2"
+      },
+      "objective": "Compare total cost rather than headline price Evaluate discounts, subscriptions and installment offers Clarify terms before accepting a commitment"
+    },
+    {
+      "id": "fe-production-purchase-decisions-part-3",
+      "title": {
+        "en-US": "Purchase decisions 3",
+        "es-MX": "Decisiones de compra 3",
+        "pt-BR": "Decisões de compra 3"
+      },
+      "objective": "Compare total cost rather than headline price Evaluate discounts, subscriptions and installment offers Clarify terms before accepting a commitment"
+    },
+    {
+      "id": "fe-production-saving-resilience-part-1",
+      "title": {
+        "en-US": "Saving and resilience 1",
+        "es-MX": "Ahorro y preparación 1",
+        "pt-BR": "Poupança e preparo 1"
+      },
+      "objective": "Separate planned spending from emergency reserves Match saving access to a deadline Adapt contributions when income changes"
+    },
+    {
+      "id": "fe-production-saving-resilience-part-2",
+      "title": {
+        "en-US": "Saving and resilience 2",
+        "es-MX": "Ahorro y preparación 2",
+        "pt-BR": "Poupança e preparo 2"
+      },
+      "objective": "Separate planned spending from emergency reserves Match saving access to a deadline Adapt contributions when income changes"
+    },
+    {
+      "id": "fe-production-time-inflation-part-1",
+      "title": {
+        "en-US": "Time and inflation 1",
+        "es-MX": "Tiempo e inflación 1",
+        "pt-BR": "Tempo e inflação 1"
+      },
+      "objective": "Compare purchasing power across dates Model simple and compound growth with explicit assumptions Distinguish nominal results, real results and uncertainty"
+    },
+    {
+      "id": "fe-production-time-inflation-part-2",
+      "title": {
+        "en-US": "Time and inflation 2",
+        "es-MX": "Tiempo e inflación 2",
+        "pt-BR": "Tempo e inflação 2"
+      },
+      "objective": "Compare purchasing power across dates Model simple and compound growth with explicit assumptions Distinguish nominal results, real results and uncertainty"
+    },
+    {
+      "id": "fe-production-credit-mechanics-part-1",
+      "title": {
+        "en-US": "How credit works 1",
+        "es-MX": "Cómo funciona el crédito 1",
+        "pt-BR": "Como funciona o crédito 1"
+      },
+      "objective": "Trace principal, interest, fees and payments Compare repayment schedules on the same basis Test affordability without treating approval as advice"
+    },
+    {
+      "id": "fe-production-credit-mechanics-part-2",
+      "title": {
+        "en-US": "How credit works 2",
+        "es-MX": "Cómo funciona el crédito 2",
+        "pt-BR": "Como funciona o crédito 2"
+      },
+      "objective": "Trace principal, interest, fees and payments Compare repayment schedules on the same basis Test affordability without treating approval as advice"
+    },
+    {
+      "id": "fe-production-credit-mechanics-part-3",
+      "title": {
+        "en-US": "How credit works 3",
+        "es-MX": "Cómo funciona el crédito 3",
+        "pt-BR": "Como funciona o crédito 3"
+      },
+      "objective": "Trace principal, interest, fees and payments Compare repayment schedules on the same basis Test affordability without treating approval as advice"
+    },
+    {
+      "id": "fe-production-credit-products-part-1",
+      "title": {
+        "en-US": "Credit products 1",
+        "es-MX": "Productos de crédito 1",
+        "pt-BR": "Produtos de crédito 1"
+      },
+      "objective": "Read a revolving-credit statement Explain minimum payments and remaining debt Compare secured, unsecured and installment commitments"
+    },
+    {
+      "id": "fe-production-credit-products-part-2",
+      "title": {
+        "en-US": "Credit products 2",
+        "es-MX": "Productos de crédito 2",
+        "pt-BR": "Produtos de crédito 2"
+      },
+      "objective": "Read a revolving-credit statement Explain minimum payments and remaining debt Compare secured, unsecured and installment commitments"
+    },
+    {
+      "id": "fe-production-debt-recovery-part-1",
+      "title": {
+        "en-US": "Managing debt 1",
+        "es-MX": "Manejo de deudas 1",
+        "pt-BR": "Gestão de dívidas 1"
+      },
+      "objective": "Build a complete debt inventory Compare repayment approaches under explicit constraints Identify reliable help and avoid rescue scams"
+    },
+    {
+      "id": "fe-production-debt-recovery-part-2",
+      "title": {
+        "en-US": "Managing debt 2",
+        "es-MX": "Manejo de deudas 2",
+        "pt-BR": "Gestão de dívidas 2"
+      },
+      "objective": "Build a complete debt inventory Compare repayment approaches under explicit constraints Identify reliable help and avoid rescue scams"
+    },
+    {
+      "id": "fe-production-credit-records-part-1",
+      "title": {
+        "en-US": "Credit records 1",
+        "es-MX": "Historial crediticio 1",
+        "pt-BR": "Histórico de crédito 1"
+      },
+      "objective": "Distinguish a credit record from income or wealth Identify errors in a sample record Find official local procedures without assuming universal score rules"
+    },
+    {
+      "id": "fe-production-credit-records-part-2",
+      "title": {
+        "en-US": "Credit records 2",
+        "es-MX": "Historial crediticio 2",
+        "pt-BR": "Histórico de crédito 2"
+      },
+      "objective": "Distinguish a credit record from income or wealth Identify errors in a sample record Find official local procedures without assuming universal score rules"
+    },
+    {
+      "id": "fe-production-insurance-risk-part-1",
+      "title": {
+        "en-US": "Risk and protection 1",
+        "es-MX": "Riesgos y protección 1",
+        "pt-BR": "Riscos e proteção 1"
+      },
+      "objective": "Compare retaining and transferring a risk Read coverage, exclusions, deductibles and limits Compare premiums and possible out-of-pocket costs"
+    },
+    {
+      "id": "fe-production-insurance-risk-part-2",
+      "title": {
+        "en-US": "Risk and protection 2",
+        "es-MX": "Riesgos y protección 2",
+        "pt-BR": "Riscos e proteção 2"
+      },
+      "objective": "Compare retaining and transferring a risk Read coverage, exclusions, deductibles and limits Compare premiums and possible out-of-pocket costs"
+    },
+    {
+      "id": "fe-production-insurance-risk-part-3",
+      "title": {
+        "en-US": "Risk and protection 3",
+        "es-MX": "Riesgos y protección 3",
+        "pt-BR": "Riscos e proteção 3"
+      },
+      "objective": "Compare retaining and transferring a risk Read coverage, exclusions, deductibles and limits Compare premiums and possible out-of-pocket costs"
+    },
+    {
+      "id": "fe-production-investing-foundations-part-1",
+      "title": {
+        "en-US": "Investment foundations 1",
+        "es-MX": "Bases de inversión 1",
+        "pt-BR": "Bases de investimento 1"
+      },
+      "objective": "Match risk and access to a goal horizon Distinguish ownership, lending and pooled investments Explain diversification without promising protection from every loss"
+    },
+    {
+      "id": "fe-production-investing-foundations-part-2",
+      "title": {
+        "en-US": "Investment foundations 2",
+        "es-MX": "Bases de inversión 2",
+        "pt-BR": "Bases de investimento 2"
+      },
+      "objective": "Match risk and access to a goal horizon Distinguish ownership, lending and pooled investments Explain diversification without promising protection from every loss"
+    },
+    {
+      "id": "fe-production-investing-foundations-part-3",
+      "title": {
+        "en-US": "Investment foundations 3",
+        "es-MX": "Bases de inversión 3",
+        "pt-BR": "Bases de investimento 3"
+      },
+      "objective": "Match risk and access to a goal horizon Distinguish ownership, lending and pooled investments Explain diversification without promising protection from every loss"
+    },
+    {
+      "id": "fe-production-investment-comparison-part-1",
+      "title": {
+        "en-US": "Comparing investments 1",
+        "es-MX": "Comparar inversiones 1",
+        "pt-BR": "Comparar investimentos 1"
+      },
+      "objective": "Compare costs and uncertain outcomes using equal assumptions Read a simplified product disclosure Distinguish evidence, forecasts and guaranteed-return claims"
+    },
+    {
+      "id": "fe-production-investment-comparison-part-2",
+      "title": {
+        "en-US": "Comparing investments 2",
+        "es-MX": "Comparar inversiones 2",
+        "pt-BR": "Comparar investimentos 2"
+      },
+      "objective": "Compare costs and uncertain outcomes using equal assumptions Read a simplified product disclosure Distinguish evidence, forecasts and guaranteed-return claims"
+    },
+    {
+      "id": "fe-production-tax-public-systems-part-1",
+      "title": {
+        "en-US": "Taxes and public systems 1",
+        "es-MX": "Impuestos y sistemas públicos 1",
+        "pt-BR": "Tributos e sistemas públicos 1"
+      },
+      "objective": "Distinguish withholding, tax owed and refunds in a stated model Keep records needed for an official process Locate current local eligibility and filing information"
+    },
+    {
+      "id": "fe-production-tax-public-systems-part-2",
+      "title": {
+        "en-US": "Taxes and public systems 2",
+        "es-MX": "Impuestos y sistemas públicos 2",
+        "pt-BR": "Tributos e sistemas públicos 2"
+      },
+      "objective": "Distinguish withholding, tax owed and refunds in a stated model Keep records needed for an official process Locate current local eligibility and filing information"
+    },
+    {
+      "id": "fe-production-retirement-future-part-1",
+      "title": {
+        "en-US": "Retirement and the future 1",
+        "es-MX": "Retiro y futuro 1",
+        "pt-BR": "Aposentadoria e futuro 1"
+      },
+      "objective": "Model changing long-term needs and uncertain contributions Distinguish sources of retirement income Compare access restrictions and costs without recommending a product"
+    },
+    {
+      "id": "fe-production-retirement-future-part-2",
+      "title": {
+        "en-US": "Retirement and the future 2",
+        "es-MX": "Retiro y futuro 2",
+        "pt-BR": "Aposentadoria e futuro 2"
+      },
+      "objective": "Model changing long-term needs and uncertain contributions Distinguish sources of retirement income Compare access restrictions and costs without recommending a product"
+    },
+    {
+      "id": "fe-production-housing-transport-part-1",
+      "title": {
+        "en-US": "Housing and transport 1",
+        "es-MX": "Vivienda y transporte 1",
+        "pt-BR": "Moradia e transporte 1"
+      },
+      "objective": "Compare ongoing and upfront housing costs Assess total transport ownership costs Reassess rent, purchase or financing when circumstances change"
+    },
+    {
+      "id": "fe-production-housing-transport-part-2",
+      "title": {
+        "en-US": "Housing and transport 2",
+        "es-MX": "Vivienda y transporte 2",
+        "pt-BR": "Moradia e transporte 2"
+      },
+      "objective": "Compare ongoing and upfront housing costs Assess total transport ownership costs Reassess rent, purchase or financing when circumstances change"
+    },
+    {
+      "id": "fe-production-housing-transport-part-3",
+      "title": {
+        "en-US": "Housing and transport 3",
+        "es-MX": "Vivienda y transporte 3",
+        "pt-BR": "Moradia e transporte 3"
+      },
+      "objective": "Compare ongoing and upfront housing costs Assess total transport ownership costs Reassess rent, purchase or financing when circumstances change"
+    },
+    {
+      "id": "fe-production-shared-finances-part-1",
+      "title": {
+        "en-US": "Shared finances 1",
+        "es-MX": "Finanzas compartidas 1",
+        "pt-BR": "Finanças compartilhadas 1"
+      },
+      "objective": "Agree on shared obligations while preserving informed consent Plan around caregiving, separation or income interruption Identify documents and professional help needed after major changes"
+    },
+    {
+      "id": "fe-production-shared-finances-part-2",
+      "title": {
+        "en-US": "Shared finances 2",
+        "es-MX": "Finanzas compartidas 2",
+        "pt-BR": "Finanças compartilhadas 2"
+      },
+      "objective": "Agree on shared obligations while preserving informed consent Plan around caregiving, separation or income interruption Identify documents and professional help needed after major changes"
+    },
+    {
+      "id": "fe-production-financial-landscape-part-1",
+      "title": {
+        "en-US": "The financial landscape 1",
+        "es-MX": "El entorno financiero 1",
+        "pt-BR": "O ambiente financeiro 1"
+      },
+      "objective": "Verify a provider and the scope of its protections Compare remittance cost and exchange-rate effects Prepare a supported complaint and recognize misleading sustainability claims"
+    },
+    {
+      "id": "fe-production-financial-landscape-part-2",
+      "title": {
+        "en-US": "The financial landscape 2",
+        "es-MX": "El entorno financiero 2",
+        "pt-BR": "O ambiente financeiro 2"
+      },
+      "objective": "Verify a provider and the scope of its protections Compare remittance cost and exchange-rate effects Prepare a supported complaint and recognize misleading sustainability claims"
+    },
+    {
+      "id": "fe-production-integrated-decisions-part-1",
+      "title": {
+        "en-US": "Putting it together 1",
+        "es-MX": "Decisiones integradas 1",
+        "pt-BR": "Decisões integradas 1"
+      },
+      "objective": "Revise a whole-household plan after multiple changes Explain trade-offs across saving, debt and protection Recognize uncertainty and decide when qualified local help is necessary"
+    },
+    {
+      "id": "fe-production-integrated-decisions-part-2",
+      "title": {
+        "en-US": "Putting it together 2",
+        "es-MX": "Decisiones integradas 2",
+        "pt-BR": "Decisões integradas 2"
+      },
+      "objective": "Revise a whole-household plan after multiple changes Explain trade-offs across saving, debt and protection Recognize uncertainty and decide when qualified local help is necessary"
+    }
+  ],
+  "sources": [
+    {
+      "url": "https://www.oecd.org/content/dam/oecd/en/publications/reports/2022/01/financial-competence-framework-for-adults-in-the-european-union_614b8b97/510f133c-en.pdf",
+      "use": "Coverage cross-check across the four adult personal-finance areas; not a copied teaching sequence or imported EU law."
+    },
+    {
+      "url": "https://www.consumerfinance.gov/consumer-tools/educator-tools/your-money-your-goals/toolkit/",
+      "use": "Practical decision and record-keeping task cross-check; US legal procedures are not transferable to other markets."
+    },
+    {
+      "url": "https://www.condusef.gob.mx/?idc=228&p=contenido",
+      "use": "Mexican topic coverage and starting point for local source verification."
+    },
+    {
+      "url": "https://www.bcb.gov.br/cidadaniafinanceira/indexcidadaniafinanceira",
+      "use": "Brazilian financial citizenship and local-source starting point; current rules require specific primary documents."
+    }
+  ],
+  "skills": [
+    {
+      "id": "cash.direction",
+      "knowledge_component_id": "finance.cash.direction",
+      "domain": "usable-money",
+      "outcome": "Identify how a completed payment changes the money held by the named person.",
+      "prerequisites": []
+    },
+    {
+      "id": "cash.received",
+      "knowledge_component_id": "finance.cash.received",
+      "domain": "usable-money",
+      "outcome": "Distinguish money already received from money someone has promised.",
+      "prerequisites": [
+        "cash.direction"
+      ]
+    },
+    {
+      "id": "cash.balance",
+      "knowledge_component_id": "finance.cash.balance",
+      "domain": "usable-money",
+      "outcome": "Update available cash after one receipt and one payment using a visible count.",
+      "prerequisites": [
+        "cash.direction",
+        "cash.received"
+      ]
+    },
+    {
+      "id": "cash.commitment",
+      "knowledge_component_id": "finance.cash.commitment",
+      "domain": "usable-money",
+      "outcome": "Identify which money is already committed to a stated upcoming obligation.",
+      "prerequisites": [
+        "cash.received"
+      ]
+    },
+    {
+      "id": "cash.reserved",
+      "knowledge_component_id": "finance.cash.reserved",
+      "domain": "usable-money",
+      "outcome": "Choose whether a purchase fits after protecting a stated commitment.",
+      "prerequisites": [
+        "cash.received",
+        "cash.balance",
+        "cash.commitment"
+      ]
+    },
+    {
+      "id": "cash.dates",
+      "knowledge_component_id": "finance.cash.dates",
+      "domain": "usable-money",
+      "outcome": "Put a receipt and a payment on a timeline to detect a shortage before payday.",
+      "prerequisites": [
+        "cash.received",
+        "cash.commitment",
+        "cash.reserved"
+      ]
+    },
+    {
+      "id": "debt.obligation",
+      "knowledge_component_id": "finance.debt.obligation",
+      "domain": "usable-money",
+      "outcome": "Keep borrowed money separate from earnings when explaining what must be repaid.",
+      "prerequisites": [
+        "cash.received",
+        "cash.balance",
+        "cash.commitment"
+      ]
+    },
+    {
+      "id": "cash.transfer",
+      "knowledge_component_id": "finance.cash.transfer",
+      "domain": "usable-money",
+      "outcome": "Avoid counting a transfer between your own containers as new income.",
+      "prerequisites": [
+        "cash.balance"
+      ]
+    },
+    {
+      "id": "plan.uncertain-income",
+      "knowledge_component_id": "finance.plan.uncertain-income",
+      "domain": "usable-money",
+      "outcome": "Revise today’s purchase decision after a promised payment is delayed.",
+      "prerequisites": [
+        "cash.received",
+        "cash.reserved",
+        "cash.dates"
+      ]
+    },
+    {
+      "id": "prod.financial-math.01",
+      "knowledge_component_id": "finance.prod.financial-math.01",
+      "domain": "financial-math",
+      "outcome": "Read a monetary amount with whole units and fractional units in the local notation.",
+      "prerequisites": [
+        "cash.balance"
+      ]
+    },
+    {
+      "id": "prod.financial-math.02",
+      "knowledge_component_id": "finance.prod.financial-math.02",
+      "domain": "financial-math",
+      "outcome": "Calculate change by subtracting a price from the amount tendered.",
+      "prerequisites": [
+        "prod.financial-math.01"
+      ]
+    },
+    {
+      "id": "prod.financial-math.03",
+      "knowledge_component_id": "finance.prod.financial-math.03",
+      "domain": "financial-math",
+      "outcome": "Add several receipts without counting the same receipt twice.",
+      "prerequisites": [
+        "prod.financial-math.01",
+        "cash.transfer"
+      ]
+    },
+    {
+      "id": "prod.financial-math.04",
+      "knowledge_component_id": "finance.prod.financial-math.04",
+      "domain": "financial-math",
+      "outcome": "Calculate the shortfall when stated obligations exceed available money.",
+      "prerequisites": [
+        "prod.financial-math.02",
+        "cash.reserved"
+      ]
+    },
+    {
+      "id": "prod.financial-math.05",
+      "knowledge_component_id": "finance.prod.financial-math.05",
+      "domain": "financial-math",
+      "outcome": "Calculate the cost of several identical items by multiplication.",
+      "prerequisites": [
+        "prod.financial-math.03"
+      ]
+    },
+    {
+      "id": "prod.financial-math.06",
+      "knowledge_component_id": "finance.prod.financial-math.06",
+      "domain": "financial-math",
+      "outcome": "Divide a stated shared cost into equal contributions.",
+      "prerequisites": [
+        "prod.financial-math.05"
+      ]
+    },
+    {
+      "id": "prod.financial-math.07",
+      "knowledge_component_id": "finance.prod.financial-math.07",
+      "domain": "financial-math",
+      "outcome": "Convert a fraction of a whole into an equivalent percentage with a visual grid.",
+      "prerequisites": [
+        "prod.financial-math.06"
+      ]
+    },
+    {
+      "id": "price.percent",
+      "knowledge_component_id": "finance.price.percent",
+      "domain": "financial-math",
+      "outcome": "Calculate a percentage of a stated amount.",
+      "prerequisites": [
+        "prod.financial-math.05",
+        "prod.financial-math.07",
+        "cash.balance"
+      ]
+    },
+    {
+      "id": "prod.financial-math.09",
+      "knowledge_component_id": "finance.prod.financial-math.09",
+      "domain": "financial-math",
+      "outcome": "Recover the whole amount from a given percentage and its monetary value.",
+      "prerequisites": [
+        "prod.financial-math.06",
+        "price.percent"
+      ]
+    },
+    {
+      "id": "prod.financial-math.10",
+      "knowledge_component_id": "finance.prod.financial-math.10",
+      "domain": "financial-math",
+      "outcome": "Distinguish a percentage-point difference from a relative percentage change.",
+      "prerequisites": [
+        "prod.financial-math.07",
+        "price.percent"
+      ]
+    },
+    {
+      "id": "prod.financial-math.11",
+      "knowledge_component_id": "finance.prod.financial-math.11",
+      "domain": "financial-math",
+      "outcome": "Compare amounts expressed for different time periods on a common time basis.",
+      "prerequisites": [
+        "prod.financial-math.05",
+        "prod.financial-math.06"
+      ]
+    },
+    {
+      "id": "prod.financial-math.12",
+      "knowledge_component_id": "finance.prod.financial-math.12",
+      "domain": "financial-math",
+      "outcome": "Round a monetary calculation at the specified step and explain the remaining difference.",
+      "prerequisites": [
+        "prod.financial-math.01",
+        "prod.financial-math.06"
+      ]
+    },
+    {
+      "id": "prod.financial-math.13",
+      "knowledge_component_id": "finance.prod.financial-math.13",
+      "domain": "financial-math",
+      "outcome": "Check whether a financial result is plausible using an approximate calculation.",
+      "prerequisites": [
+        "prod.financial-math.02",
+        "prod.financial-math.05",
+        "prod.financial-math.06"
+      ]
+    },
+    {
+      "id": "prod.goals-tradeoffs.01",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.01",
+      "domain": "goals-tradeoffs",
+      "outcome": "Translate a broad wish into a goal with an amount, purpose and date.",
+      "prerequisites": [
+        "cash.commitment"
+      ]
+    },
+    {
+      "id": "prod.goals-tradeoffs.02",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.02",
+      "domain": "goals-tradeoffs",
+      "outcome": "Separate a stated essential consequence from a preference in a spending decision.",
+      "prerequisites": [
+        "cash.commitment"
+      ]
+    },
+    {
+      "id": "prod.goals-tradeoffs.03",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.03",
+      "domain": "goals-tradeoffs",
+      "outcome": "Identify the next-best feasible use forgone when choosing between two purchases.",
+      "prerequisites": [
+        "cash.reserved"
+      ]
+    },
+    {
+      "id": "prod.goals-tradeoffs.04",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.04",
+      "domain": "goals-tradeoffs",
+      "outcome": "Rank competing goals using the learner’s stated deadlines and consequences.",
+      "prerequisites": [
+        "prod.goals-tradeoffs.01",
+        "prod.goals-tradeoffs.02",
+        "prod.goals-tradeoffs.03"
+      ]
+    },
+    {
+      "id": "prod.goals-tradeoffs.05",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.05",
+      "domain": "goals-tradeoffs",
+      "outcome": "Break a goal’s remaining amount into feasible contributions over the time available.",
+      "prerequisites": [
+        "prod.goals-tradeoffs.01",
+        "prod.financial-math.06"
+      ]
+    },
+    {
+      "id": "prod.goals-tradeoffs.06",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.06",
+      "domain": "goals-tradeoffs",
+      "outcome": "Recognize when changing a goal or its deadline is necessary because no contribution fits.",
+      "prerequisites": [
+        "prod.goals-tradeoffs.05",
+        "cash.reserved"
+      ]
+    },
+    {
+      "id": "prod.goals-tradeoffs.07",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.07",
+      "domain": "goals-tradeoffs",
+      "outcome": "Choose a small next action that can be checked without requiring spare income.",
+      "prerequisites": [
+        "prod.goals-tradeoffs.01",
+        "prod.goals-tradeoffs.06"
+      ]
+    },
+    {
+      "id": "prod.goals-tradeoffs.08",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.08",
+      "domain": "goals-tradeoffs",
+      "outcome": "Revise a goal when its original cost or purpose changes.",
+      "prerequisites": [
+        "prod.goals-tradeoffs.01",
+        "prod.goals-tradeoffs.04",
+        "prod.goals-tradeoffs.05"
+      ]
+    },
+    {
+      "id": "prod.income-work.01",
+      "knowledge_component_id": "finance.prod.income-work.01",
+      "domain": "income-work",
+      "outcome": "Separate recurring, irregular and one-time receipts when estimating future income.",
+      "prerequisites": [
+        "cash.received"
+      ]
+    },
+    {
+      "id": "prod.income-work.02",
+      "knowledge_component_id": "finance.prod.income-work.02",
+      "domain": "income-work",
+      "outcome": "Distinguish gross pay from money received using explicitly explained deductions.",
+      "prerequisites": [
+        "prod.financial-math.02"
+      ]
+    },
+    {
+      "id": "prod.income-work.03",
+      "knowledge_component_id": "finance.prod.income-work.03",
+      "domain": "income-work",
+      "outcome": "Calculate earnings from a stated hourly rate and paid hours.",
+      "prerequisites": [
+        "prod.financial-math.05"
+      ]
+    },
+    {
+      "id": "prod.income-work.04",
+      "knowledge_component_id": "finance.prod.income-work.04",
+      "domain": "income-work",
+      "outcome": "Estimate usable income after stated work-related costs.",
+      "prerequisites": [
+        "prod.income-work.02",
+        "prod.financial-math.02"
+      ]
+    },
+    {
+      "id": "prod.income-work.05",
+      "knowledge_component_id": "finance.prod.income-work.05",
+      "domain": "income-work",
+      "outcome": "Identify which payment date, amount or condition is still unknown in a work offer.",
+      "prerequisites": [
+        "cash.dates"
+      ]
+    },
+    {
+      "id": "prod.income-work.06",
+      "knowledge_component_id": "finance.prod.income-work.06",
+      "domain": "income-work",
+      "outcome": "Build a conservative income estimate from an irregular payment history.",
+      "prerequisites": [
+        "prod.income-work.01",
+        "prod.financial-math.03",
+        "prod.financial-math.06"
+      ]
+    },
+    {
+      "id": "prod.income-work.07",
+      "knowledge_component_id": "finance.prod.income-work.07",
+      "domain": "income-work",
+      "outcome": "Separate a household owner’s withdrawal from the receipts and costs of a small activity.",
+      "prerequisites": [
+        "prod.financial-math.02",
+        "cash.transfer"
+      ]
+    },
+    {
+      "id": "prod.income-work.08",
+      "knowledge_component_id": "finance.prod.income-work.08",
+      "domain": "income-work",
+      "outcome": "Identify a missing payment using agreed work terms and a payment record.",
+      "prerequisites": [
+        "prod.income-work.03",
+        "prod.income-work.05"
+      ]
+    },
+    {
+      "id": "prod.income-work.09",
+      "knowledge_component_id": "finance.prod.income-work.09",
+      "domain": "income-work",
+      "outcome": "Compare two work arrangements using stated net income, time and necessary costs.",
+      "prerequisites": [
+        "prod.income-work.04",
+        "prod.income-work.05",
+        "prod.financial-math.11"
+      ]
+    },
+    {
+      "id": "prod.income-work.10",
+      "knowledge_component_id": "finance.prod.income-work.10",
+      "domain": "income-work",
+      "outcome": "Find the authoritative source needed to check a claimed benefit or employment entitlement.",
+      "prerequisites": [
+        "prod.income-work.02",
+        "prod.income-work.05"
+      ]
+    },
+    {
+      "id": "prod.spending-patterns.01",
+      "knowledge_component_id": "finance.prod.spending-patterns.01",
+      "domain": "spending-patterns",
+      "outcome": "Record an expense with enough detail to identify its amount, date and purpose.",
+      "prerequisites": [
+        "cash.balance"
+      ]
+    },
+    {
+      "id": "prod.spending-patterns.02",
+      "knowledge_component_id": "finance.prod.spending-patterns.02",
+      "domain": "spending-patterns",
+      "outcome": "Separate a regular commitment from a variable expense without assuming either is optional.",
+      "prerequisites": [
+        "prod.spending-patterns.01",
+        "prod.goals-tradeoffs.02"
+      ]
+    },
+    {
+      "id": "prod.spending-patterns.03",
+      "knowledge_component_id": "finance.prod.spending-patterns.03",
+      "domain": "spending-patterns",
+      "outcome": "Find an omitted cash expense when reconciling a spending diary with money remaining.",
+      "prerequisites": [
+        "prod.spending-patterns.01",
+        "prod.financial-math.02"
+      ]
+    },
+    {
+      "id": "prod.spending-patterns.04",
+      "knowledge_component_id": "finance.prod.spending-patterns.04",
+      "domain": "spending-patterns",
+      "outcome": "Convert a recurring small purchase into its total cost over a stated period.",
+      "prerequisites": [
+        "prod.spending-patterns.01",
+        "prod.financial-math.05"
+      ]
+    },
+    {
+      "id": "prod.spending-patterns.05",
+      "knowledge_component_id": "finance.prod.spending-patterns.05",
+      "domain": "spending-patterns",
+      "outcome": "Distinguish a predictable irregular expense from an unforeseen event.",
+      "prerequisites": [
+        "prod.spending-patterns.02"
+      ]
+    },
+    {
+      "id": "prod.spending-patterns.06",
+      "knowledge_component_id": "finance.prod.spending-patterns.06",
+      "domain": "spending-patterns",
+      "outcome": "Identify an unused recurring charge from a fictional account history.",
+      "prerequisites": [
+        "prod.spending-patterns.01",
+        "prod.spending-patterns.04"
+      ]
+    },
+    {
+      "id": "prod.spending-patterns.07",
+      "knowledge_component_id": "finance.prod.spending-patterns.07",
+      "domain": "spending-patterns",
+      "outcome": "Choose an expense adjustment that respects explicitly stated household constraints.",
+      "prerequisites": [
+        "prod.spending-patterns.02",
+        "prod.goals-tradeoffs.02",
+        "prod.goals-tradeoffs.03"
+      ]
+    },
+    {
+      "id": "prod.spending-patterns.08",
+      "knowledge_component_id": "finance.prod.spending-patterns.08",
+      "domain": "spending-patterns",
+      "outcome": "Identify a purchase trigger and choose a pause that allows checking the cost.",
+      "prerequisites": [
+        "prod.goals-tradeoffs.03"
+      ]
+    },
+    {
+      "id": "prod.spending-patterns.09",
+      "knowledge_component_id": "finance.prod.spending-patterns.09",
+      "domain": "spending-patterns",
+      "outcome": "Compare planned and actual spending without treating every deviation as a personal failure.",
+      "prerequisites": [
+        "prod.spending-patterns.01",
+        "prod.financial-math.02"
+      ]
+    },
+    {
+      "id": "prod.spending-patterns.10",
+      "knowledge_component_id": "finance.prod.spending-patterns.10",
+      "domain": "spending-patterns",
+      "outcome": "Explain why low income can leave a deficit even after discretionary purchases are removed.",
+      "prerequisites": [
+        "prod.spending-patterns.02",
+        "prod.spending-patterns.07",
+        "prod.financial-math.04"
+      ]
+    },
+    {
+      "id": "prod.cashflow-budget.01",
+      "knowledge_component_id": "finance.prod.cashflow-budget.01",
+      "domain": "cashflow-budget",
+      "outcome": "Build a budget using money expected for the same period as its expenses.",
+      "prerequisites": [
+        "prod.income-work.01",
+        "prod.spending-patterns.01",
+        "prod.financial-math.11"
+      ]
+    },
+    {
+      "id": "prod.cashflow-budget.02",
+      "knowledge_component_id": "finance.prod.cashflow-budget.02",
+      "domain": "cashflow-budget",
+      "outcome": "Separate a budget category from the account or envelope holding its money.",
+      "prerequisites": [
+        "prod.cashflow-budget.01",
+        "cash.transfer"
+      ]
+    },
+    {
+      "id": "prod.cashflow-budget.03",
+      "knowledge_component_id": "finance.prod.cashflow-budget.03",
+      "domain": "cashflow-budget",
+      "outcome": "Reserve money for unavoidable obligations before allocating the remainder.",
+      "prerequisites": [
+        "prod.cashflow-budget.01",
+        "cash.commitment"
+      ]
+    },
+    {
+      "id": "prod.cashflow-budget.04",
+      "knowledge_component_id": "finance.prod.cashflow-budget.04",
+      "domain": "cashflow-budget",
+      "outcome": "Calculate a period’s surplus or deficit from a complete set of stated entries.",
+      "prerequisites": [
+        "prod.cashflow-budget.01",
+        "prod.financial-math.03",
+        "prod.financial-math.04"
+      ]
+    },
+    {
+      "id": "prod.cashflow-budget.05",
+      "knowledge_component_id": "finance.prod.cashflow-budget.05",
+      "domain": "cashflow-budget",
+      "outcome": "Build a payment calendar that reveals an otherwise hidden within-month shortfall.",
+      "prerequisites": [
+        "prod.cashflow-budget.01",
+        "cash.dates"
+      ]
+    },
+    {
+      "id": "prod.cashflow-budget.06",
+      "knowledge_component_id": "finance.prod.cashflow-budget.06",
+      "domain": "cashflow-budget",
+      "outcome": "Distinguish a timing problem from a persistent gap between income and expenses.",
+      "prerequisites": [
+        "prod.cashflow-budget.04",
+        "prod.cashflow-budget.05"
+      ]
+    },
+    {
+      "id": "prod.cashflow-budget.07",
+      "knowledge_component_id": "finance.prod.cashflow-budget.07",
+      "domain": "cashflow-budget",
+      "outcome": "Allocate an irregular receipt across obligations due before the next reliable receipt.",
+      "prerequisites": [
+        "prod.cashflow-budget.03",
+        "prod.cashflow-budget.05",
+        "prod.income-work.06"
+      ]
+    },
+    {
+      "id": "plan.periodic",
+      "knowledge_component_id": "finance.plan.periodic",
+      "domain": "cashflow-budget",
+      "outcome": "Spread a known annual bill across the months remaining until it is due.",
+      "prerequisites": [
+        "prod.cashflow-budget.03",
+        "prod.spending-patterns.05",
+        "prod.financial-math.06",
+        "cash.dates",
+        "cash.reserved"
+      ]
+    },
+    {
+      "id": "prod.cashflow-budget.09",
+      "knowledge_component_id": "finance.prod.cashflow-budget.09",
+      "domain": "cashflow-budget",
+      "outcome": "Rebalance a plan after an expense increases while keeping its totals consistent.",
+      "prerequisites": [
+        "prod.cashflow-budget.03",
+        "prod.cashflow-budget.04"
+      ]
+    },
+    {
+      "id": "prod.cashflow-budget.10",
+      "knowledge_component_id": "finance.prod.cashflow-budget.10",
+      "domain": "cashflow-budget",
+      "outcome": "Explain why a sample percentage budget must be adapted when essential costs exceed its allowance.",
+      "prerequisites": [
+        "prod.cashflow-budget.03",
+        "price.percent",
+        "prod.spending-patterns.10"
+      ]
+    },
+    {
+      "id": "prod.cashflow-budget.11",
+      "knowledge_component_id": "finance.prod.cashflow-budget.11",
+      "domain": "cashflow-budget",
+      "outcome": "Choose a feasible response to a deficit without inventing income or assuming borrowing is affordable.",
+      "prerequisites": [
+        "prod.cashflow-budget.04",
+        "prod.cashflow-budget.06",
+        "prod.spending-patterns.07"
+      ]
+    },
+    {
+      "id": "prod.cashflow-budget.12",
+      "knowledge_component_id": "finance.prod.cashflow-budget.12",
+      "domain": "cashflow-budget",
+      "outcome": "Separate planned saving from money that is accidentally left over.",
+      "prerequisites": [
+        "prod.cashflow-budget.02",
+        "prod.cashflow-budget.03",
+        "prod.goals-tradeoffs.05"
+      ]
+    },
+    {
+      "id": "prod.cashflow-budget.13",
+      "knowledge_component_id": "finance.prod.cashflow-budget.13",
+      "domain": "cashflow-budget",
+      "outcome": "Close a budget period by comparing the plan with actual receipts and payments.",
+      "prerequisites": [
+        "prod.cashflow-budget.01",
+        "prod.cashflow-budget.04",
+        "prod.spending-patterns.09"
+      ]
+    },
+    {
+      "id": "prod.cashflow-budget.14",
+      "knowledge_component_id": "finance.prod.cashflow-budget.14",
+      "domain": "cashflow-budget",
+      "outcome": "Carry an unresolved obligation into the next plan without counting it twice.",
+      "prerequisites": [
+        "prod.cashflow-budget.05",
+        "prod.cashflow-budget.13"
+      ]
+    },
+    {
+      "id": "prod.accounts-records.01",
+      "knowledge_component_id": "finance.prod.accounts-records.01",
+      "domain": "accounts-records",
+      "outcome": "Match a basic transaction, saving or payment need to the relevant account features.",
+      "prerequisites": [
+        "cash.commitment"
+      ]
+    },
+    {
+      "id": "prod.accounts-records.02",
+      "knowledge_component_id": "finance.prod.accounts-records.02",
+      "domain": "accounts-records",
+      "outcome": "Distinguish a displayed account balance from funds available to withdraw in a stated scenario.",
+      "prerequisites": [
+        "cash.received",
+        "cash.balance"
+      ]
+    },
+    {
+      "id": "prod.accounts-records.03",
+      "knowledge_component_id": "finance.prod.accounts-records.03",
+      "domain": "accounts-records",
+      "outcome": "Calculate a fictional account’s total fees from its stated usage and fee schedule.",
+      "prerequisites": [
+        "prod.financial-math.03",
+        "prod.financial-math.05"
+      ]
+    },
+    {
+      "id": "prod.accounts-records.04",
+      "knowledge_component_id": "finance.prod.accounts-records.04",
+      "domain": "accounts-records",
+      "outcome": "Read a statement entry’s date, description and amount before classifying it.",
+      "prerequisites": [
+        "cash.balance"
+      ]
+    },
+    {
+      "id": "prod.accounts-records.05",
+      "knowledge_component_id": "finance.prod.accounts-records.05",
+      "domain": "accounts-records",
+      "outcome": "Reconcile a statement with a receipt log and identify the unmatched transaction.",
+      "prerequisites": [
+        "prod.accounts-records.04",
+        "prod.spending-patterns.01",
+        "prod.financial-math.02"
+      ]
+    },
+    {
+      "id": "prod.accounts-records.06",
+      "knowledge_component_id": "finance.prod.accounts-records.06",
+      "domain": "accounts-records",
+      "outcome": "Recognize how a pending charge can affect spending decisions before it settles.",
+      "prerequisites": [
+        "prod.accounts-records.02",
+        "prod.accounts-records.04"
+      ]
+    },
+    {
+      "id": "prod.accounts-records.07",
+      "knowledge_component_id": "finance.prod.accounts-records.07",
+      "domain": "accounts-records",
+      "outcome": "Identify the evidence to preserve when reporting an unfamiliar transaction.",
+      "prerequisites": [
+        "prod.accounts-records.04",
+        "prod.accounts-records.05"
+      ]
+    },
+    {
+      "id": "prod.accounts-records.08",
+      "knowledge_component_id": "finance.prod.accounts-records.08",
+      "domain": "accounts-records",
+      "outcome": "Compare account access conditions with a person’s stated device, location and documentation constraints.",
+      "prerequisites": [
+        "prod.accounts-records.01"
+      ]
+    },
+    {
+      "id": "prod.accounts-records.09",
+      "knowledge_component_id": "finance.prod.accounts-records.09",
+      "domain": "accounts-records",
+      "outcome": "Identify which provider and account protection claims require local official verification.",
+      "prerequisites": [
+        "prod.accounts-records.01"
+      ]
+    },
+    {
+      "id": "prod.accounts-records.10",
+      "knowledge_component_id": "finance.prod.accounts-records.10",
+      "domain": "accounts-records",
+      "outcome": "Choose a secure way to retain financial records without exposing access credentials.",
+      "prerequisites": [
+        "prod.accounts-records.04"
+      ]
+    },
+    {
+      "id": "prod.payments-digital.01",
+      "knowledge_component_id": "finance.prod.payments-digital.01",
+      "domain": "payments-digital",
+      "outcome": "Distinguish payment from your own balance from a payment that creates a debt.",
+      "prerequisites": [
+        "debt.obligation",
+        "prod.accounts-records.02"
+      ]
+    },
+    {
+      "id": "prod.payments-digital.02",
+      "knowledge_component_id": "finance.prod.payments-digital.02",
+      "domain": "payments-digital",
+      "outcome": "Check recipient, amount and reference before confirming a transfer.",
+      "prerequisites": [
+        "prod.accounts-records.04"
+      ]
+    },
+    {
+      "id": "prod.payments-digital.03",
+      "knowledge_component_id": "finance.prod.payments-digital.03",
+      "domain": "payments-digital",
+      "outcome": "Separate a payment request or screenshot from confirmed receipt of funds.",
+      "prerequisites": [
+        "cash.received",
+        "prod.payments-digital.02"
+      ]
+    },
+    {
+      "id": "prod.payments-digital.04",
+      "knowledge_component_id": "finance.prod.payments-digital.04",
+      "domain": "payments-digital",
+      "outcome": "Compare payment methods using stated fees, timing and reversibility.",
+      "prerequisites": [
+        "prod.payments-digital.01",
+        "cash.dates",
+        "prod.accounts-records.03"
+      ]
+    },
+    {
+      "id": "prod.payments-digital.05",
+      "knowledge_component_id": "finance.prod.payments-digital.05",
+      "domain": "payments-digital",
+      "outcome": "Identify the information that must never be shared to authorize a payment securely.",
+      "prerequisites": [
+        "prod.payments-digital.02"
+      ]
+    },
+    {
+      "id": "prod.payments-digital.06",
+      "knowledge_component_id": "finance.prod.payments-digital.06",
+      "domain": "payments-digital",
+      "outcome": "Recognize a false urgency or impersonation cue in a payment message.",
+      "prerequisites": [
+        "prod.payments-digital.02",
+        "prod.payments-digital.05"
+      ]
+    },
+    {
+      "id": "prod.payments-digital.07",
+      "knowledge_component_id": "finance.prod.payments-digital.07",
+      "domain": "payments-digital",
+      "outcome": "Reach a provider through an independently verified channel after a suspicious message.",
+      "prerequisites": [
+        "prod.payments-digital.06"
+      ]
+    },
+    {
+      "id": "prod.payments-digital.08",
+      "knowledge_component_id": "finance.prod.payments-digital.08",
+      "domain": "payments-digital",
+      "outcome": "Choose the immediate protective response after a device or payment credential is compromised.",
+      "prerequisites": [
+        "prod.payments-digital.05",
+        "prod.payments-digital.07"
+      ]
+    },
+    {
+      "id": "prod.payments-digital.09",
+      "knowledge_component_id": "finance.prod.payments-digital.09",
+      "domain": "payments-digital",
+      "outcome": "Check recurring-payment terms and retain evidence of a cancellation request.",
+      "prerequisites": [
+        "prod.accounts-records.04",
+        "prod.spending-patterns.06"
+      ]
+    },
+    {
+      "id": "prod.payments-digital.10",
+      "knowledge_component_id": "finance.prod.payments-digital.10",
+      "domain": "payments-digital",
+      "outcome": "Distinguish a mistaken transfer from an unauthorized payment when preparing a report.",
+      "prerequisites": [
+        "prod.payments-digital.02",
+        "prod.payments-digital.03",
+        "prod.accounts-records.07"
+      ]
+    },
+    {
+      "id": "prod.purchase-decisions.01",
+      "knowledge_component_id": "finance.prod.purchase-decisions.01",
+      "domain": "purchase-decisions",
+      "outcome": "Compare unit prices after converting quantities to the same unit.",
+      "prerequisites": [
+        "prod.financial-math.06",
+        "prod.financial-math.11"
+      ]
+    },
+    {
+      "id": "prod.purchase-decisions.02",
+      "knowledge_component_id": "finance.prod.purchase-decisions.02",
+      "domain": "purchase-decisions",
+      "outcome": "Calculate a final price that includes all explicitly stated mandatory charges.",
+      "prerequisites": [
+        "prod.financial-math.03"
+      ]
+    },
+    {
+      "id": "prod.purchase-decisions.03",
+      "knowledge_component_id": "finance.prod.purchase-decisions.03",
+      "domain": "purchase-decisions",
+      "outcome": "Calculate the price after one percentage discount.",
+      "prerequisites": [
+        "price.percent",
+        "prod.financial-math.02"
+      ]
+    },
+    {
+      "id": "prod.purchase-decisions.04",
+      "knowledge_component_id": "finance.prod.purchase-decisions.04",
+      "domain": "purchase-decisions",
+      "outcome": "Calculate successive discounts without adding their percentages.",
+      "prerequisites": [
+        "prod.purchase-decisions.03"
+      ]
+    },
+    {
+      "id": "prod.purchase-decisions.05",
+      "knowledge_component_id": "finance.prod.purchase-decisions.05",
+      "domain": "purchase-decisions",
+      "outcome": "Check whether a promotion’s minimum spend makes the planned purchase more expensive.",
+      "prerequisites": [
+        "prod.purchase-decisions.02",
+        "prod.purchase-decisions.03",
+        "cash.reserved"
+      ]
+    },
+    {
+      "id": "prod.purchase-decisions.06",
+      "knowledge_component_id": "finance.prod.purchase-decisions.06",
+      "domain": "purchase-decisions",
+      "outcome": "Compare total ownership costs over the same stated period.",
+      "prerequisites": [
+        "prod.purchase-decisions.02",
+        "prod.financial-math.11"
+      ]
+    },
+    {
+      "id": "prod.purchase-decisions.07",
+      "knowledge_component_id": "finance.prod.purchase-decisions.07",
+      "domain": "purchase-decisions",
+      "outcome": "Distinguish a warranty, a return policy and a separately purchased protection plan.",
+      "prerequisites": [
+        "prod.purchase-decisions.02"
+      ]
+    },
+    {
+      "id": "prod.purchase-decisions.08",
+      "knowledge_component_id": "finance.prod.purchase-decisions.08",
+      "domain": "purchase-decisions",
+      "outcome": "Identify a contract’s renewal, cancellation and exit-cost terms before agreeing.",
+      "prerequisites": [
+        "prod.spending-patterns.06"
+      ]
+    },
+    {
+      "id": "prod.purchase-decisions.09",
+      "knowledge_component_id": "finance.prod.purchase-decisions.09",
+      "domain": "purchase-decisions",
+      "outcome": "Compare cash and instalment prices using their complete payment schedules.",
+      "prerequisites": [
+        "prod.purchase-decisions.02",
+        "prod.financial-math.03",
+        "cash.dates"
+      ]
+    },
+    {
+      "id": "prod.purchase-decisions.10",
+      "knowledge_component_id": "finance.prod.purchase-decisions.10",
+      "domain": "purchase-decisions",
+      "outcome": "Recognize a misleading comparison that uses different quantities or periods.",
+      "prerequisites": [
+        "prod.purchase-decisions.01",
+        "prod.purchase-decisions.06"
+      ]
+    },
+    {
+      "id": "prod.purchase-decisions.11",
+      "knowledge_component_id": "finance.prod.purchase-decisions.11",
+      "domain": "purchase-decisions",
+      "outcome": "Choose what missing information must be obtained before a defensible purchase comparison.",
+      "prerequisites": [
+        "prod.purchase-decisions.02",
+        "prod.purchase-decisions.06"
+      ]
+    },
+    {
+      "id": "prod.purchase-decisions.12",
+      "knowledge_component_id": "finance.prod.purchase-decisions.12",
+      "domain": "purchase-decisions",
+      "outcome": "Decide whether to repair, replace or postpone using stated costs and functional needs.",
+      "prerequisites": [
+        "prod.purchase-decisions.06",
+        "prod.goals-tradeoffs.03"
+      ]
+    },
+    {
+      "id": "prod.saving-resilience.01",
+      "knowledge_component_id": "finance.prod.saving-resilience.01",
+      "domain": "saving-resilience",
+      "outcome": "Separate money for a predictable bill from money for an unforeseen disruption.",
+      "prerequisites": [
+        "prod.spending-patterns.05",
+        "plan.periodic"
+      ]
+    },
+    {
+      "id": "prod.saving-resilience.02",
+      "knowledge_component_id": "finance.prod.saving-resilience.02",
+      "domain": "saving-resilience",
+      "outcome": "Estimate essential expenses during a stated income interruption.",
+      "prerequisites": [
+        "prod.cashflow-budget.03",
+        "prod.financial-math.05"
+      ]
+    },
+    {
+      "id": "prod.saving-resilience.03",
+      "knowledge_component_id": "finance.prod.saving-resilience.03",
+      "domain": "saving-resilience",
+      "outcome": "Set an initial emergency reserve target using the scenario’s actual risks and feasible contributions.",
+      "prerequisites": [
+        "prod.saving-resilience.01",
+        "prod.saving-resilience.02",
+        "prod.cashflow-budget.11"
+      ]
+    },
+    {
+      "id": "prod.saving-resilience.04",
+      "knowledge_component_id": "finance.prod.saving-resilience.04",
+      "domain": "saving-resilience",
+      "outcome": "Choose where to keep a near-term reserve using stated access, safety and fee conditions.",
+      "prerequisites": [
+        "prod.accounts-records.01",
+        "prod.accounts-records.03",
+        "cash.dates"
+      ]
+    },
+    {
+      "id": "prod.saving-resilience.05",
+      "knowledge_component_id": "finance.prod.saving-resilience.05",
+      "domain": "saving-resilience",
+      "outcome": "Calculate the time needed to reach a goal with a fixed feasible contribution and no assumed return.",
+      "prerequisites": [
+        "prod.goals-tradeoffs.05"
+      ]
+    },
+    {
+      "id": "prod.saving-resilience.06",
+      "knowledge_component_id": "finance.prod.saving-resilience.06",
+      "domain": "saving-resilience",
+      "outcome": "Adjust a contribution plan after a missed contribution without concealing the gap.",
+      "prerequisites": [
+        "prod.saving-resilience.05",
+        "prod.cashflow-budget.09"
+      ]
+    },
+    {
+      "id": "prod.saving-resilience.07",
+      "knowledge_component_id": "finance.prod.saving-resilience.07",
+      "domain": "saving-resilience",
+      "outcome": "Choose when an automatic transfer would create a payment shortfall.",
+      "prerequisites": [
+        "prod.cashflow-budget.05",
+        "prod.saving-resilience.05"
+      ]
+    },
+    {
+      "id": "prod.saving-resilience.08",
+      "knowledge_component_id": "finance.prod.saving-resilience.08",
+      "domain": "saving-resilience",
+      "outcome": "Allocate a windfall among stated urgent obligations and goals without assuming one universal rule.",
+      "prerequisites": [
+        "prod.cashflow-budget.03",
+        "prod.goals-tradeoffs.04"
+      ]
+    },
+    {
+      "id": "prod.saving-resilience.09",
+      "knowledge_component_id": "finance.prod.saving-resilience.09",
+      "domain": "saving-resilience",
+      "outcome": "Decide whether a stated expense fits the purpose of an emergency reserve.",
+      "prerequisites": [
+        "prod.saving-resilience.01",
+        "prod.saving-resilience.03"
+      ]
+    },
+    {
+      "id": "prod.saving-resilience.10",
+      "knowledge_component_id": "finance.prod.saving-resilience.10",
+      "domain": "saving-resilience",
+      "outcome": "Build a replenishment plan after using part of a reserve.",
+      "prerequisites": [
+        "prod.saving-resilience.03",
+        "prod.saving-resilience.05",
+        "prod.saving-resilience.09"
+      ]
+    },
+    {
+      "id": "prod.time-inflation.01",
+      "knowledge_component_id": "finance.prod.time-inflation.01",
+      "domain": "time-inflation",
+      "outcome": "Calculate simple interest using an explicitly stated principal, rate and period.",
+      "prerequisites": [
+        "price.percent",
+        "prod.financial-math.11"
+      ]
+    },
+    {
+      "id": "prod.time-inflation.02",
+      "knowledge_component_id": "finance.prod.time-inflation.02",
+      "domain": "time-inflation",
+      "outcome": "Distinguish earned interest from a contribution to an account.",
+      "prerequisites": [
+        "prod.time-inflation.01",
+        "cash.transfer"
+      ]
+    },
+    {
+      "id": "time.compound",
+      "knowledge_component_id": "finance.time.compound",
+      "domain": "time-inflation",
+      "outcome": "Calculate a second period’s compound growth after adding the first period’s interest.",
+      "prerequisites": [
+        "prod.time-inflation.01",
+        "prod.time-inflation.02",
+        "price.percent"
+      ]
+    },
+    {
+      "id": "prod.time-inflation.04",
+      "knowledge_component_id": "finance.prod.time-inflation.04",
+      "domain": "time-inflation",
+      "outcome": "Compare simple and compound growth under the same stated assumptions.",
+      "prerequisites": [
+        "prod.time-inflation.01",
+        "time.compound"
+      ]
+    },
+    {
+      "id": "prod.time-inflation.05",
+      "knowledge_component_id": "finance.prod.time-inflation.05",
+      "domain": "time-inflation",
+      "outcome": "Separate the effect of contributions from the effect of modeled returns.",
+      "prerequisites": [
+        "prod.time-inflation.02",
+        "time.compound"
+      ]
+    },
+    {
+      "id": "prod.time-inflation.06",
+      "knowledge_component_id": "finance.prod.time-inflation.06",
+      "domain": "time-inflation",
+      "outcome": "Calculate the nominal price change for a fixed basket of goods.",
+      "prerequisites": [
+        "price.percent",
+        "prod.purchase-decisions.01"
+      ]
+    },
+    {
+      "id": "prod.time-inflation.07",
+      "knowledge_component_id": "finance.prod.time-inflation.07",
+      "domain": "time-inflation",
+      "outcome": "Determine whether a stated nominal income change keeps up with a stated basket’s price change.",
+      "prerequisites": [
+        "prod.time-inflation.06",
+        "price.percent"
+      ]
+    },
+    {
+      "id": "prod.time-inflation.08",
+      "knowledge_component_id": "finance.prod.time-inflation.08",
+      "domain": "time-inflation",
+      "outcome": "Distinguish an economy-wide inflation measure from one household’s changing expenses.",
+      "prerequisites": [
+        "prod.time-inflation.06",
+        "prod.spending-patterns.01"
+      ]
+    },
+    {
+      "id": "prod.time-inflation.09",
+      "knowledge_component_id": "finance.prod.time-inflation.09",
+      "domain": "time-inflation",
+      "outcome": "Compare nominal growth with purchasing-power growth under explicit assumptions.",
+      "prerequisites": [
+        "time.compound",
+        "prod.time-inflation.06",
+        "prod.financial-math.09"
+      ]
+    },
+    {
+      "id": "prod.time-inflation.10",
+      "knowledge_component_id": "finance.prod.time-inflation.10",
+      "domain": "time-inflation",
+      "outcome": "Identify why a constant-return projection is a model rather than a guaranteed outcome.",
+      "prerequisites": [
+        "time.compound",
+        "prod.time-inflation.05"
+      ]
+    },
+    {
+      "id": "prod.credit-mechanics.01",
+      "knowledge_component_id": "finance.prod.credit-mechanics.01",
+      "domain": "credit-mechanics",
+      "outcome": "Identify principal, interest and fees in a fictional loan agreement.",
+      "prerequisites": [
+        "debt.obligation",
+        "prod.purchase-decisions.02"
+      ]
+    },
+    {
+      "id": "prod.credit-mechanics.02",
+      "knowledge_component_id": "finance.prod.credit-mechanics.02",
+      "domain": "credit-mechanics",
+      "outcome": "Calculate the total amount repaid from a complete payment schedule.",
+      "prerequisites": [
+        "prod.credit-mechanics.01",
+        "prod.financial-math.03"
+      ]
+    },
+    {
+      "id": "prod.credit-mechanics.03",
+      "knowledge_component_id": "finance.prod.credit-mechanics.03",
+      "domain": "credit-mechanics",
+      "outcome": "Calculate a period’s interest on the explicitly stated outstanding balance.",
+      "prerequisites": [
+        "prod.credit-mechanics.01",
+        "price.percent",
+        "prod.financial-math.11"
+      ]
+    },
+    {
+      "id": "prod.credit-mechanics.04",
+      "knowledge_component_id": "finance.prod.credit-mechanics.04",
+      "domain": "credit-mechanics",
+      "outcome": "Separate a payment’s interest component from its principal reduction.",
+      "prerequisites": [
+        "prod.credit-mechanics.03",
+        "prod.financial-math.02"
+      ]
+    },
+    {
+      "id": "prod.credit-mechanics.05",
+      "knowledge_component_id": "finance.prod.credit-mechanics.05",
+      "domain": "credit-mechanics",
+      "outcome": "Update the outstanding principal after a payment.",
+      "prerequisites": [
+        "prod.credit-mechanics.04"
+      ]
+    },
+    {
+      "id": "prod.credit-mechanics.06",
+      "knowledge_component_id": "finance.prod.credit-mechanics.06",
+      "domain": "credit-mechanics",
+      "outcome": "Compare loans with different payment sizes using total cost and duration.",
+      "prerequisites": [
+        "prod.credit-mechanics.02",
+        "prod.credit-mechanics.05"
+      ]
+    },
+    {
+      "id": "prod.credit-mechanics.07",
+      "knowledge_component_id": "finance.prod.credit-mechanics.07",
+      "domain": "credit-mechanics",
+      "outcome": "Check whether a proposed payment fits the borrower’s existing cash-flow plan.",
+      "prerequisites": [
+        "prod.cashflow-budget.05",
+        "prod.credit-mechanics.02"
+      ]
+    },
+    {
+      "id": "prod.credit-mechanics.08",
+      "knowledge_component_id": "finance.prod.credit-mechanics.08",
+      "domain": "credit-mechanics",
+      "outcome": "Explain the consequence of a missed payment using the agreement’s stated terms.",
+      "prerequisites": [
+        "prod.credit-mechanics.01",
+        "cash.dates"
+      ]
+    },
+    {
+      "id": "prod.credit-mechanics.09",
+      "knowledge_component_id": "finance.prod.credit-mechanics.09",
+      "domain": "credit-mechanics",
+      "outcome": "Distinguish collateral at risk from the amount originally borrowed.",
+      "prerequisites": [
+        "prod.credit-mechanics.01"
+      ]
+    },
+    {
+      "id": "prod.credit-mechanics.10",
+      "knowledge_component_id": "finance.prod.credit-mechanics.10",
+      "domain": "credit-mechanics",
+      "outcome": "Identify how a variable-rate clause could change future payments.",
+      "prerequisites": [
+        "prod.credit-mechanics.03",
+        "prod.credit-mechanics.07"
+      ]
+    },
+    {
+      "id": "prod.credit-mechanics.11",
+      "knowledge_component_id": "finance.prod.credit-mechanics.11",
+      "domain": "credit-mechanics",
+      "outcome": "Compare periodic rates only after aligning periods and compounding assumptions.",
+      "prerequisites": [
+        "prod.credit-mechanics.03",
+        "time.compound"
+      ]
+    },
+    {
+      "id": "prod.credit-mechanics.12",
+      "knowledge_component_id": "finance.prod.credit-mechanics.12",
+      "domain": "credit-mechanics",
+      "outcome": "Identify which disclosed annual cost measure and included charges need local interpretation.",
+      "prerequisites": [
+        "prod.credit-mechanics.01",
+        "prod.credit-mechanics.02",
+        "prod.credit-mechanics.11"
+      ]
+    },
+    {
+      "id": "prod.credit-products.01",
+      "knowledge_component_id": "finance.prod.credit-products.01",
+      "domain": "credit-products",
+      "outcome": "Read a fictional card statement’s balance, minimum payment and due date.",
+      "prerequisites": [
+        "prod.accounts-records.04",
+        "prod.credit-mechanics.01"
+      ]
+    },
+    {
+      "id": "prod.credit-products.02",
+      "knowledge_component_id": "finance.prod.credit-products.02",
+      "domain": "credit-products",
+      "outcome": "Distinguish the statement closing date from the payment due date.",
+      "prerequisites": [
+        "prod.credit-products.01",
+        "cash.dates"
+      ]
+    },
+    {
+      "id": "prod.credit-products.03",
+      "knowledge_component_id": "finance.prod.credit-products.03",
+      "domain": "credit-products",
+      "outcome": "Determine whether a fictional card’s stated grace-period conditions have been met.",
+      "prerequisites": [
+        "prod.credit-products.01",
+        "prod.credit-products.02",
+        "prod.credit-mechanics.03"
+      ]
+    },
+    {
+      "id": "prod.credit-products.04",
+      "knowledge_component_id": "finance.prod.credit-products.04",
+      "domain": "credit-products",
+      "outcome": "Trace how minimum-only payments affect a balance under a supplied schedule.",
+      "prerequisites": [
+        "prod.credit-products.01",
+        "prod.credit-mechanics.04",
+        "prod.credit-mechanics.05"
+      ]
+    },
+    {
+      "id": "prod.credit-products.05",
+      "knowledge_component_id": "finance.prod.credit-products.05",
+      "domain": "credit-products",
+      "outcome": "Identify the separate costs of a cash advance in a fictional card agreement.",
+      "prerequisites": [
+        "prod.credit-products.01",
+        "prod.credit-mechanics.02"
+      ]
+    },
+    {
+      "id": "prod.credit-products.06",
+      "knowledge_component_id": "finance.prod.credit-products.06",
+      "domain": "credit-products",
+      "outcome": "Place multiple buy-now-pay-later instalments on one payment calendar.",
+      "prerequisites": [
+        "prod.credit-mechanics.02",
+        "prod.cashflow-budget.05"
+      ]
+    },
+    {
+      "id": "prod.credit-products.07",
+      "knowledge_component_id": "finance.prod.credit-products.07",
+      "domain": "credit-products",
+      "outcome": "Distinguish an overdraft facility from money owned in an account.",
+      "prerequisites": [
+        "prod.accounts-records.02",
+        "prod.credit-mechanics.01"
+      ]
+    },
+    {
+      "id": "prod.credit-products.08",
+      "knowledge_component_id": "finance.prod.credit-products.08",
+      "domain": "credit-products",
+      "outcome": "Compare a secured loan and an unsecured loan using their stated costs and consequences.",
+      "prerequisites": [
+        "prod.credit-mechanics.02",
+        "prod.credit-mechanics.09"
+      ]
+    },
+    {
+      "id": "prod.credit-products.09",
+      "knowledge_component_id": "finance.prod.credit-products.09",
+      "domain": "credit-products",
+      "outcome": "Identify a guarantor’s obligation from a plainly stated guarantee agreement.",
+      "prerequisites": [
+        "prod.credit-mechanics.01",
+        "prod.credit-mechanics.08"
+      ]
+    },
+    {
+      "id": "prod.credit-products.10",
+      "knowledge_component_id": "finance.prod.credit-products.10",
+      "domain": "credit-products",
+      "outcome": "Recognize a high-cost short-term loan whose renewal adds cost without reducing principal.",
+      "prerequisites": [
+        "prod.credit-mechanics.02",
+        "prod.credit-mechanics.05"
+      ]
+    },
+    {
+      "id": "prod.debt-recovery.01",
+      "knowledge_component_id": "finance.prod.debt-recovery.01",
+      "domain": "debt-recovery",
+      "outcome": "Build a debt inventory containing balances, costs, deadlines and stated consequences.",
+      "prerequisites": [
+        "prod.credit-products.01",
+        "prod.credit-mechanics.02",
+        "prod.credit-mechanics.08"
+      ]
+    },
+    {
+      "id": "prod.debt-recovery.02",
+      "knowledge_component_id": "finance.prod.debt-recovery.02",
+      "domain": "debt-recovery",
+      "outcome": "Prioritize immediate consequences before applying a simple balance or rate ordering.",
+      "prerequisites": [
+        "prod.debt-recovery.01",
+        "prod.goals-tradeoffs.02"
+      ]
+    },
+    {
+      "id": "prod.debt-recovery.03",
+      "knowledge_component_id": "finance.prod.debt-recovery.03",
+      "domain": "debt-recovery",
+      "outcome": "Compare highest-rate-first and smallest-balance-first repayment using the same feasible surplus.",
+      "prerequisites": [
+        "prod.debt-recovery.01",
+        "prod.debt-recovery.02",
+        "prod.credit-mechanics.03",
+        "prod.cashflow-budget.11"
+      ]
+    },
+    {
+      "id": "prod.debt-recovery.04",
+      "knowledge_component_id": "finance.prod.debt-recovery.04",
+      "domain": "debt-recovery",
+      "outcome": "Identify information to gather before asking a creditor about an unaffordable payment.",
+      "prerequisites": [
+        "prod.debt-recovery.01",
+        "prod.cashflow-budget.11"
+      ]
+    },
+    {
+      "id": "prod.debt-recovery.05",
+      "knowledge_component_id": "finance.prod.debt-recovery.05",
+      "domain": "debt-recovery",
+      "outcome": "Compare a proposed restructuring using total cost, term and payment feasibility.",
+      "prerequisites": [
+        "prod.credit-mechanics.06",
+        "prod.credit-mechanics.07"
+      ]
+    },
+    {
+      "id": "prod.debt-recovery.06",
+      "knowledge_component_id": "finance.prod.debt-recovery.06",
+      "domain": "debt-recovery",
+      "outcome": "Check whether consolidation reduces total cost or only lowers the monthly payment.",
+      "prerequisites": [
+        "prod.debt-recovery.05"
+      ]
+    },
+    {
+      "id": "prod.debt-recovery.07",
+      "knowledge_component_id": "finance.prod.debt-recovery.07",
+      "domain": "debt-recovery",
+      "outcome": "Detect an upfront-fee debt-relief claim that lacks verifiable terms or authority.",
+      "prerequisites": [
+        "prod.payments-digital.06",
+        "prod.payments-digital.07"
+      ]
+    },
+    {
+      "id": "prod.debt-recovery.08",
+      "knowledge_component_id": "finance.prod.debt-recovery.08",
+      "domain": "debt-recovery",
+      "outcome": "Find qualified local support when no feasible repayment plan covers essential needs.",
+      "prerequisites": [
+        "prod.debt-recovery.02",
+        "prod.debt-recovery.04",
+        "prod.spending-patterns.10"
+      ]
+    },
+    {
+      "id": "prod.credit-records.01",
+      "knowledge_component_id": "finance.prod.credit-records.01",
+      "domain": "credit-records",
+      "outcome": "Distinguish a credit report’s recorded information from a score derived from it.",
+      "prerequisites": [
+        "prod.credit-mechanics.01",
+        "prod.accounts-records.04"
+      ]
+    },
+    {
+      "id": "prod.credit-records.02",
+      "knowledge_component_id": "finance.prod.credit-records.02",
+      "domain": "credit-records",
+      "outcome": "Match a fictional credit-report entry to the corresponding account record.",
+      "prerequisites": [
+        "prod.credit-records.01",
+        "prod.accounts-records.05"
+      ]
+    },
+    {
+      "id": "prod.credit-records.03",
+      "knowledge_component_id": "finance.prod.credit-records.03",
+      "domain": "credit-records",
+      "outcome": "Identify a factual error and assemble supporting evidence for a dispute.",
+      "prerequisites": [
+        "prod.credit-records.02",
+        "prod.accounts-records.07"
+      ]
+    },
+    {
+      "id": "prod.credit-records.04",
+      "knowledge_component_id": "finance.prod.credit-records.04",
+      "domain": "credit-records",
+      "outcome": "Separate a verified local credit-report process from a promise to erase accurate history.",
+      "prerequisites": [
+        "prod.credit-records.03",
+        "prod.payments-digital.07"
+      ]
+    },
+    {
+      "id": "prod.credit-records.05",
+      "knowledge_component_id": "finance.prod.credit-records.05",
+      "domain": "credit-records",
+      "outcome": "Explain why an advertised score threshold cannot guarantee a lending decision.",
+      "prerequisites": [
+        "prod.credit-records.01",
+        "prod.credit-mechanics.07"
+      ]
+    },
+    {
+      "id": "prod.credit-records.06",
+      "knowledge_component_id": "finance.prod.credit-records.06",
+      "domain": "credit-records",
+      "outcome": "Choose protective steps after discovering an account the person did not open.",
+      "prerequisites": [
+        "prod.credit-records.02",
+        "prod.payments-digital.08"
+      ]
+    },
+    {
+      "id": "prod.insurance-risk.01",
+      "knowledge_component_id": "finance.prod.insurance-risk.01",
+      "domain": "insurance-risk",
+      "outcome": "Distinguish a frequent manageable loss from a less frequent financially severe loss.",
+      "prerequisites": [
+        "prod.saving-resilience.02",
+        "prod.goals-tradeoffs.02"
+      ]
+    },
+    {
+      "id": "prod.insurance-risk.02",
+      "knowledge_component_id": "finance.prod.insurance-risk.02",
+      "domain": "insurance-risk",
+      "outcome": "Match a stated risk to prevention, a reserve or risk transfer without treating one as sufficient for all risks.",
+      "prerequisites": [
+        "prod.insurance-risk.01",
+        "prod.saving-resilience.03"
+      ]
+    },
+    {
+      "id": "prod.insurance-risk.03",
+      "knowledge_component_id": "finance.prod.insurance-risk.03",
+      "domain": "insurance-risk",
+      "outcome": "Identify the policyholder, insured event and beneficiary in a fictional policy.",
+      "prerequisites": [
+        "prod.insurance-risk.02"
+      ]
+    },
+    {
+      "id": "prod.insurance-risk.04",
+      "knowledge_component_id": "finance.prod.insurance-risk.04",
+      "domain": "insurance-risk",
+      "outcome": "Separate a premium from a deductible or excess.",
+      "prerequisites": [
+        "prod.insurance-risk.03"
+      ]
+    },
+    {
+      "id": "prod.insurance-risk.05",
+      "knowledge_component_id": "finance.prod.insurance-risk.05",
+      "domain": "insurance-risk",
+      "outcome": "Calculate a claim’s out-of-pocket cost under a stated deductible and coverage limit.",
+      "prerequisites": [
+        "prod.insurance-risk.04",
+        "prod.financial-math.02"
+      ]
+    },
+    {
+      "id": "prod.insurance-risk.06",
+      "knowledge_component_id": "finance.prod.insurance-risk.06",
+      "domain": "insurance-risk",
+      "outcome": "Identify an exclusion that prevents coverage in a given scenario.",
+      "prerequisites": [
+        "prod.insurance-risk.03"
+      ]
+    },
+    {
+      "id": "prod.insurance-risk.07",
+      "knowledge_component_id": "finance.prod.insurance-risk.07",
+      "domain": "insurance-risk",
+      "outcome": "Compare policies only after aligning coverage, limits and deductibles.",
+      "prerequisites": [
+        "prod.insurance-risk.04",
+        "prod.insurance-risk.05",
+        "prod.insurance-risk.06",
+        "prod.purchase-decisions.06"
+      ]
+    },
+    {
+      "id": "prod.insurance-risk.08",
+      "knowledge_component_id": "finance.prod.insurance-risk.08",
+      "domain": "insurance-risk",
+      "outcome": "Check whether a waiting period leaves a stated near-term event uncovered.",
+      "prerequisites": [
+        "prod.insurance-risk.03",
+        "cash.dates"
+      ]
+    },
+    {
+      "id": "prod.insurance-risk.09",
+      "knowledge_component_id": "finance.prod.insurance-risk.09",
+      "domain": "insurance-risk",
+      "outcome": "Identify documents and deadlines to preserve for a fictional claim.",
+      "prerequisites": [
+        "prod.insurance-risk.03",
+        "prod.insurance-risk.06",
+        "prod.accounts-records.10"
+      ]
+    },
+    {
+      "id": "prod.insurance-risk.10",
+      "knowledge_component_id": "finance.prod.insurance-risk.10",
+      "domain": "insurance-risk",
+      "outcome": "Detect overlapping coverage without assuming all overlap is useless.",
+      "prerequisites": [
+        "prod.insurance-risk.03",
+        "prod.insurance-risk.06",
+        "prod.insurance-risk.07"
+      ]
+    },
+    {
+      "id": "prod.insurance-risk.11",
+      "knowledge_component_id": "finance.prod.insurance-risk.11",
+      "domain": "insurance-risk",
+      "outcome": "Reassess a protection need after a dependent or financial obligation changes.",
+      "prerequisites": [
+        "prod.insurance-risk.01",
+        "prod.insurance-risk.02",
+        "prod.goals-tradeoffs.08"
+      ]
+    },
+    {
+      "id": "prod.insurance-risk.12",
+      "knowledge_component_id": "finance.prod.insurance-risk.12",
+      "domain": "insurance-risk",
+      "outcome": "Distinguish an insurance protection feature from an investment projection in a combined offer.",
+      "prerequisites": [
+        "prod.insurance-risk.03",
+        "prod.time-inflation.10"
+      ]
+    },
+    {
+      "id": "prod.investing-foundations.01",
+      "knowledge_component_id": "finance.prod.investing-foundations.01",
+      "domain": "investing-foundations",
+      "outcome": "Separate investing from keeping money needed for a near-term obligation accessible.",
+      "prerequisites": [
+        "prod.saving-resilience.04",
+        "cash.dates"
+      ]
+    },
+    {
+      "id": "prod.investing-foundations.02",
+      "knowledge_component_id": "finance.prod.investing-foundations.02",
+      "domain": "investing-foundations",
+      "outcome": "Match a goal’s time horizon with the consequence of a temporary investment loss.",
+      "prerequisites": [
+        "prod.investing-foundations.01",
+        "prod.goals-tradeoffs.01"
+      ]
+    },
+    {
+      "id": "prod.investing-foundations.03",
+      "knowledge_component_id": "finance.prod.investing-foundations.03",
+      "domain": "investing-foundations",
+      "outcome": "Distinguish willingness to accept loss from financial capacity to absorb it.",
+      "prerequisites": [
+        "prod.investing-foundations.02",
+        "prod.saving-resilience.02"
+      ]
+    },
+    {
+      "id": "prod.investing-foundations.04",
+      "knowledge_component_id": "finance.prod.investing-foundations.04",
+      "domain": "investing-foundations",
+      "outcome": "Separate an investment’s income payments from changes in its sale value.",
+      "prerequisites": [
+        "prod.time-inflation.02",
+        "prod.time-inflation.06"
+      ]
+    },
+    {
+      "id": "prod.investing-foundations.05",
+      "knowledge_component_id": "finance.prod.investing-foundations.05",
+      "domain": "investing-foundations",
+      "outcome": "Distinguish owning a share from lending through a bond.",
+      "prerequisites": [
+        "prod.investing-foundations.04",
+        "debt.obligation"
+      ]
+    },
+    {
+      "id": "prod.investing-foundations.06",
+      "knowledge_component_id": "finance.prod.investing-foundations.06",
+      "domain": "investing-foundations",
+      "outcome": "Explain a bond’s credit risk using a borrower unable to make a promised payment.",
+      "prerequisites": [
+        "prod.investing-foundations.05",
+        "prod.credit-mechanics.08"
+      ]
+    },
+    {
+      "id": "prod.investing-foundations.07",
+      "knowledge_component_id": "finance.prod.investing-foundations.07",
+      "domain": "investing-foundations",
+      "outcome": "Explain why a fixed-rate bond’s resale price can change before maturity.",
+      "prerequisites": [
+        "prod.investing-foundations.05",
+        "prod.time-inflation.01"
+      ]
+    },
+    {
+      "id": "prod.investing-foundations.08",
+      "knowledge_component_id": "finance.prod.investing-foundations.08",
+      "domain": "investing-foundations",
+      "outcome": "Identify concentration risk when several holdings depend on the same source of income.",
+      "prerequisites": [
+        "prod.investing-foundations.03",
+        "prod.investing-foundations.05"
+      ]
+    },
+    {
+      "id": "prod.investing-foundations.09",
+      "knowledge_component_id": "finance.prod.investing-foundations.09",
+      "domain": "investing-foundations",
+      "outcome": "Compare diversified and concentrated fictional portfolios under a common shock.",
+      "prerequisites": [
+        "prod.investing-foundations.08"
+      ]
+    },
+    {
+      "id": "prod.investing-foundations.10",
+      "knowledge_component_id": "finance.prod.investing-foundations.10",
+      "domain": "investing-foundations",
+      "outcome": "Distinguish a pooled fund from the assets it holds.",
+      "prerequisites": [
+        "prod.investing-foundations.05",
+        "prod.investing-foundations.08"
+      ]
+    },
+    {
+      "id": "prod.investing-foundations.11",
+      "knowledge_component_id": "finance.prod.investing-foundations.11",
+      "domain": "investing-foundations",
+      "outcome": "Identify liquidity restrictions that conflict with a stated withdrawal need.",
+      "prerequisites": [
+        "prod.investing-foundations.01",
+        "prod.saving-resilience.04"
+      ]
+    },
+    {
+      "id": "prod.investing-foundations.12",
+      "knowledge_component_id": "finance.prod.investing-foundations.12",
+      "domain": "investing-foundations",
+      "outcome": "Separate a regulated custody arrangement from a promise of guaranteed market returns.",
+      "prerequisites": [
+        "prod.accounts-records.09",
+        "prod.time-inflation.10"
+      ]
+    },
+    {
+      "id": "prod.investing-foundations.13",
+      "knowledge_component_id": "finance.prod.investing-foundations.13",
+      "domain": "investing-foundations",
+      "outcome": "Identify leverage that can magnify a loss beyond an unleveraged price change.",
+      "prerequisites": [
+        "prod.credit-mechanics.01",
+        "prod.investing-foundations.03",
+        "prod.investing-foundations.04"
+      ]
+    },
+    {
+      "id": "prod.investing-foundations.14",
+      "knowledge_component_id": "finance.prod.investing-foundations.14",
+      "domain": "investing-foundations",
+      "outcome": "Recognize speculation in a volatile asset without treating past gains as evidence of safety.",
+      "prerequisites": [
+        "prod.investing-foundations.03",
+        "prod.investing-foundations.04",
+        "prod.time-inflation.10"
+      ]
+    },
+    {
+      "id": "prod.investment-comparison.01",
+      "knowledge_component_id": "finance.prod.investment-comparison.01",
+      "domain": "investment-comparison",
+      "outcome": "Calculate an investment’s stated return after explicit transaction and ongoing fees.",
+      "prerequisites": [
+        "prod.investing-foundations.04",
+        "prod.financial-math.02"
+      ]
+    },
+    {
+      "id": "prod.investment-comparison.02",
+      "knowledge_component_id": "finance.prod.investment-comparison.02",
+      "domain": "investment-comparison",
+      "outcome": "Compare reported performance over the same period and with consistent treatment of distributions.",
+      "prerequisites": [
+        "prod.time-inflation.05",
+        "prod.financial-math.11"
+      ]
+    },
+    {
+      "id": "prod.investment-comparison.03",
+      "knowledge_component_id": "finance.prod.investment-comparison.03",
+      "domain": "investment-comparison",
+      "outcome": "Identify missing risk information in an offer that displays only its best historical return.",
+      "prerequisites": [
+        "prod.investing-foundations.03",
+        "prod.time-inflation.10"
+      ]
+    },
+    {
+      "id": "prod.investment-comparison.04",
+      "knowledge_component_id": "finance.prod.investment-comparison.04",
+      "domain": "investment-comparison",
+      "outcome": "Compare a fund’s stated objective and holdings with the exposure a learner intended to obtain.",
+      "prerequisites": [
+        "prod.investing-foundations.10",
+        "prod.investing-foundations.08"
+      ]
+    },
+    {
+      "id": "prod.investment-comparison.05",
+      "knowledge_component_id": "finance.prod.investment-comparison.05",
+      "domain": "investment-comparison",
+      "outcome": "Distinguish an index-tracking strategy from a promise to beat the market.",
+      "prerequisites": [
+        "prod.investing-foundations.10"
+      ]
+    },
+    {
+      "id": "prod.investment-comparison.06",
+      "knowledge_component_id": "finance.prod.investment-comparison.06",
+      "domain": "investment-comparison",
+      "outcome": "Explain currency exposure when the spending goal and investment use different currencies.",
+      "prerequisites": [
+        "prod.investing-foundations.04",
+        "prod.financial-math.05"
+      ]
+    },
+    {
+      "id": "prod.investment-comparison.07",
+      "knowledge_component_id": "finance.prod.investment-comparison.07",
+      "domain": "investment-comparison",
+      "outcome": "Identify a conflict of interest in how an investment seller is compensated.",
+      "prerequisites": [
+        "prod.purchase-decisions.11"
+      ]
+    },
+    {
+      "id": "prod.investment-comparison.08",
+      "knowledge_component_id": "finance.prod.investment-comparison.08",
+      "domain": "investment-comparison",
+      "outcome": "Check whether a proposed portfolio adjustment restores a stated allocation or follows recent hype.",
+      "prerequisites": [
+        "prod.investing-foundations.09",
+        "price.percent"
+      ]
+    },
+    {
+      "id": "prod.investment-comparison.09",
+      "knowledge_component_id": "finance.prod.investment-comparison.09",
+      "domain": "investment-comparison",
+      "outcome": "Identify which tax, fee or withdrawal assumptions prevent a fair net-return comparison.",
+      "prerequisites": [
+        "prod.investment-comparison.01",
+        "prod.purchase-decisions.11"
+      ]
+    },
+    {
+      "id": "prod.investment-comparison.10",
+      "knowledge_component_id": "finance.prod.investment-comparison.10",
+      "domain": "investment-comparison",
+      "outcome": "Reject an unverifiable guaranteed-high-return claim using independent verification steps.",
+      "prerequisites": [
+        "prod.payments-digital.07",
+        "prod.investing-foundations.12"
+      ]
+    },
+    {
+      "id": "prod.tax-public-systems.01",
+      "knowledge_component_id": "finance.prod.tax-public-systems.01",
+      "domain": "tax-public-systems",
+      "outcome": "Distinguish a tax, a fee and a social contribution in explicitly labeled examples.",
+      "prerequisites": [
+        "prod.income-work.02",
+        "prod.purchase-decisions.02"
+      ]
+    },
+    {
+      "id": "prod.tax-public-systems.02",
+      "knowledge_component_id": "finance.prod.tax-public-systems.02",
+      "domain": "tax-public-systems",
+      "outcome": "Separate tax withheld during the year from a final tax calculation.",
+      "prerequisites": [
+        "prod.tax-public-systems.01",
+        "prod.income-work.02"
+      ]
+    },
+    {
+      "id": "prod.tax-public-systems.03",
+      "knowledge_component_id": "finance.prod.tax-public-systems.03",
+      "domain": "tax-public-systems",
+      "outcome": "Calculate tax in a fictional progressive bracket system without applying the top rate to all income.",
+      "prerequisites": [
+        "prod.tax-public-systems.01",
+        "price.percent",
+        "prod.financial-math.03"
+      ]
+    },
+    {
+      "id": "prod.tax-public-systems.04",
+      "knowledge_component_id": "finance.prod.tax-public-systems.04",
+      "domain": "tax-public-systems",
+      "outcome": "Distinguish a deduction from a credit using a fictional simplified calculation.",
+      "prerequisites": [
+        "prod.tax-public-systems.03",
+        "prod.financial-math.02"
+      ]
+    },
+    {
+      "id": "prod.tax-public-systems.05",
+      "knowledge_component_id": "finance.prod.tax-public-systems.05",
+      "domain": "tax-public-systems",
+      "outcome": "Identify records needed to substantiate a fictional income or expense declaration.",
+      "prerequisites": [
+        "prod.accounts-records.10",
+        "prod.income-work.07"
+      ]
+    },
+    {
+      "id": "prod.tax-public-systems.06",
+      "knowledge_component_id": "finance.prod.tax-public-systems.06",
+      "domain": "tax-public-systems",
+      "outcome": "Find the official local source for a deadline or filing obligation instead of importing another country’s rule.",
+      "prerequisites": [
+        "prod.tax-public-systems.01",
+        "prod.payments-digital.07"
+      ]
+    },
+    {
+      "id": "prod.tax-public-systems.07",
+      "knowledge_component_id": "finance.prod.tax-public-systems.07",
+      "domain": "tax-public-systems",
+      "outcome": "Recognize that a benefit’s eligibility and withdrawal conditions must be checked before budgeting it.",
+      "prerequisites": [
+        "prod.income-work.10",
+        "prod.cashflow-budget.01"
+      ]
+    },
+    {
+      "id": "prod.tax-public-systems.08",
+      "knowledge_component_id": "finance.prod.tax-public-systems.08",
+      "domain": "tax-public-systems",
+      "outcome": "Separate legitimate tax planning from hiding or falsifying facts in a financial record.",
+      "prerequisites": [
+        "prod.tax-public-systems.05",
+        "prod.tax-public-systems.06"
+      ]
+    },
+    {
+      "id": "prod.retirement-future.01",
+      "knowledge_component_id": "finance.prod.retirement-future.01",
+      "domain": "retirement-future",
+      "outcome": "Separate an intended retirement spending need from a projected account balance.",
+      "prerequisites": [
+        "prod.goals-tradeoffs.01",
+        "prod.saving-resilience.05"
+      ]
+    },
+    {
+      "id": "prod.retirement-future.02",
+      "knowledge_component_id": "finance.prod.retirement-future.02",
+      "domain": "retirement-future",
+      "outcome": "Identify the different roles of public benefits, employer arrangements and personal savings.",
+      "prerequisites": [
+        "prod.retirement-future.01",
+        "prod.tax-public-systems.07"
+      ]
+    },
+    {
+      "id": "prod.retirement-future.03",
+      "knowledge_component_id": "finance.prod.retirement-future.03",
+      "domain": "retirement-future",
+      "outcome": "Read contribution and ownership conditions in a fictional employer retirement arrangement.",
+      "prerequisites": [
+        "prod.retirement-future.02",
+        "prod.income-work.05"
+      ]
+    },
+    {
+      "id": "prod.retirement-future.04",
+      "knowledge_component_id": "finance.prod.retirement-future.04",
+      "domain": "retirement-future",
+      "outcome": "Compare starting contributions earlier or later under the same explicit projection assumptions.",
+      "prerequisites": [
+        "time.compound",
+        "prod.time-inflation.05"
+      ]
+    },
+    {
+      "id": "prod.retirement-future.05",
+      "knowledge_component_id": "finance.prod.retirement-future.05",
+      "domain": "retirement-future",
+      "outcome": "Identify how fees affect a long-term projection without treating the projection as guaranteed.",
+      "prerequisites": [
+        "prod.retirement-future.04",
+        "prod.investment-comparison.01"
+      ]
+    },
+    {
+      "id": "prod.retirement-future.06",
+      "knowledge_component_id": "finance.prod.retirement-future.06",
+      "domain": "retirement-future",
+      "outcome": "Recognize inflation and longevity as separate risks to a retirement spending plan.",
+      "prerequisites": [
+        "prod.time-inflation.06",
+        "prod.saving-resilience.02"
+      ]
+    },
+    {
+      "id": "prod.retirement-future.07",
+      "knowledge_component_id": "finance.prod.retirement-future.07",
+      "domain": "retirement-future",
+      "outcome": "Check access restrictions before treating retirement assets as an emergency reserve.",
+      "prerequisites": [
+        "prod.saving-resilience.04",
+        "prod.retirement-future.02"
+      ]
+    },
+    {
+      "id": "prod.retirement-future.08",
+      "knowledge_component_id": "finance.prod.retirement-future.08",
+      "domain": "retirement-future",
+      "outcome": "Identify how early poor returns can affect withdrawals from a fictional retirement portfolio.",
+      "prerequisites": [
+        "prod.investing-foundations.04",
+        "prod.time-inflation.10"
+      ]
+    },
+    {
+      "id": "prod.retirement-future.09",
+      "knowledge_component_id": "finance.prod.retirement-future.09",
+      "domain": "retirement-future",
+      "outcome": "Reassess contributions when income changes while preserving near-term essential obligations.",
+      "prerequisites": [
+        "prod.cashflow-budget.09",
+        "prod.saving-resilience.07"
+      ]
+    },
+    {
+      "id": "prod.retirement-future.10",
+      "knowledge_component_id": "finance.prod.retirement-future.10",
+      "domain": "retirement-future",
+      "outcome": "Identify which beneficiary and account records need review after a major life change.",
+      "prerequisites": [
+        "prod.insurance-risk.03",
+        "prod.accounts-records.10"
+      ]
+    },
+    {
+      "id": "prod.housing-transport.01",
+      "knowledge_component_id": "finance.prod.housing-transport.01",
+      "domain": "housing-transport",
+      "outcome": "Calculate move-in costs separately from recurring housing costs.",
+      "prerequisites": [
+        "prod.purchase-decisions.02",
+        "prod.cashflow-budget.01"
+      ]
+    },
+    {
+      "id": "prod.housing-transport.02",
+      "knowledge_component_id": "finance.prod.housing-transport.02",
+      "domain": "housing-transport",
+      "outcome": "Compare housing options using transport, utilities and other stated necessary costs.",
+      "prerequisites": [
+        "prod.housing-transport.01",
+        "prod.purchase-decisions.06"
+      ]
+    },
+    {
+      "id": "prod.housing-transport.03",
+      "knowledge_component_id": "finance.prod.housing-transport.03",
+      "domain": "housing-transport",
+      "outcome": "Read a fictional rental agreement’s deposit, notice and repair responsibilities.",
+      "prerequisites": [
+        "prod.purchase-decisions.08",
+        "prod.accounts-records.10"
+      ]
+    },
+    {
+      "id": "prod.housing-transport.04",
+      "knowledge_component_id": "finance.prod.housing-transport.04",
+      "domain": "housing-transport",
+      "outcome": "Separate a home purchase price from financing, transaction and ongoing ownership costs.",
+      "prerequisites": [
+        "prod.housing-transport.01",
+        "prod.credit-mechanics.02",
+        "prod.purchase-decisions.06"
+      ]
+    },
+    {
+      "id": "prod.housing-transport.05",
+      "knowledge_component_id": "finance.prod.housing-transport.05",
+      "domain": "housing-transport",
+      "outcome": "Explain how a down payment changes borrowing needs without making ownership automatically affordable.",
+      "prerequisites": [
+        "prod.housing-transport.04",
+        "prod.credit-mechanics.07"
+      ]
+    },
+    {
+      "id": "prod.housing-transport.06",
+      "knowledge_component_id": "finance.prod.housing-transport.06",
+      "domain": "housing-transport",
+      "outcome": "Stress-test a housing payment under a stated income drop or variable-rate increase.",
+      "prerequisites": [
+        "prod.housing-transport.04",
+        "prod.credit-mechanics.10",
+        "prod.cashflow-budget.09"
+      ]
+    },
+    {
+      "id": "prod.housing-transport.07",
+      "knowledge_component_id": "finance.prod.housing-transport.07",
+      "domain": "housing-transport",
+      "outcome": "Compare renting and buying over a stated horizon without assuming property prices always rise.",
+      "prerequisites": [
+        "prod.housing-transport.02",
+        "prod.housing-transport.04",
+        "prod.investing-foundations.03"
+      ]
+    },
+    {
+      "id": "prod.housing-transport.08",
+      "knowledge_component_id": "finance.prod.housing-transport.08",
+      "domain": "housing-transport",
+      "outcome": "Calculate a vehicle’s total ownership cost including maintenance, insurance and depreciation assumptions.",
+      "prerequisites": [
+        "prod.purchase-decisions.06",
+        "prod.insurance-risk.07"
+      ]
+    },
+    {
+      "id": "prod.housing-transport.09",
+      "knowledge_component_id": "finance.prod.housing-transport.09",
+      "domain": "housing-transport",
+      "outcome": "Compare vehicle finance offers including deposits, instalments and final balloon payments.",
+      "prerequisites": [
+        "prod.credit-mechanics.02",
+        "prod.credit-mechanics.07"
+      ]
+    },
+    {
+      "id": "prod.housing-transport.10",
+      "knowledge_component_id": "finance.prod.housing-transport.10",
+      "domain": "housing-transport",
+      "outcome": "Compare a lease with a purchase using mileage, return conditions and total stated costs.",
+      "prerequisites": [
+        "prod.housing-transport.08",
+        "prod.housing-transport.09",
+        "prod.purchase-decisions.08"
+      ]
+    },
+    {
+      "id": "prod.housing-transport.11",
+      "knowledge_component_id": "finance.prod.housing-transport.11",
+      "domain": "housing-transport",
+      "outcome": "Identify repair or maintenance costs that a purchase price does not cover.",
+      "prerequisites": [
+        "prod.housing-transport.04",
+        "prod.housing-transport.08",
+        "prod.spending-patterns.05"
+      ]
+    },
+    {
+      "id": "prod.housing-transport.12",
+      "knowledge_component_id": "finance.prod.housing-transport.12",
+      "domain": "housing-transport",
+      "outcome": "Choose a feasible housing or transport adjustment using the household’s stated accessibility and time constraints.",
+      "prerequisites": [
+        "prod.housing-transport.02",
+        "prod.housing-transport.08",
+        "prod.goals-tradeoffs.03"
+      ]
+    },
+    {
+      "id": "prod.shared-finances.01",
+      "knowledge_component_id": "finance.prod.shared-finances.01",
+      "domain": "shared-finances",
+      "outcome": "Compare equal and income-proportional shared contributions under explicitly agreed rules.",
+      "prerequisites": [
+        "prod.financial-math.06",
+        "price.percent",
+        "prod.cashflow-budget.03"
+      ]
+    },
+    {
+      "id": "prod.shared-finances.02",
+      "knowledge_component_id": "finance.prod.shared-finances.02",
+      "domain": "shared-finances",
+      "outcome": "Separate account access from legal ownership or debt liability that requires local verification.",
+      "prerequisites": [
+        "prod.accounts-records.01",
+        "prod.credit-products.09"
+      ]
+    },
+    {
+      "id": "prod.shared-finances.03",
+      "knowledge_component_id": "finance.prod.shared-finances.03",
+      "domain": "shared-finances",
+      "outcome": "Create a shared-payment agreement that identifies amount, responsibility and review date.",
+      "prerequisites": [
+        "prod.shared-finances.01",
+        "cash.dates"
+      ]
+    },
+    {
+      "id": "prod.shared-finances.04",
+      "knowledge_component_id": "finance.prod.shared-finances.04",
+      "domain": "shared-finances",
+      "outcome": "Recognize financial coercion and identify a safe support option without requiring confrontation.",
+      "prerequisites": [
+        "prod.payments-digital.05",
+        "prod.goals-tradeoffs.07"
+      ]
+    },
+    {
+      "id": "prod.shared-finances.05",
+      "knowledge_component_id": "finance.prod.shared-finances.05",
+      "domain": "shared-finances",
+      "outcome": "Revise a plan for a stated caregiving period with reduced paid work.",
+      "prerequisites": [
+        "prod.income-work.04",
+        "prod.cashflow-budget.09"
+      ]
+    },
+    {
+      "id": "prod.shared-finances.06",
+      "knowledge_component_id": "finance.prod.shared-finances.06",
+      "domain": "shared-finances",
+      "outcome": "Distinguish an affordable gift from a family loan requiring clear repayment expectations.",
+      "prerequisites": [
+        "debt.obligation",
+        "prod.saving-resilience.08"
+      ]
+    },
+    {
+      "id": "prod.shared-finances.07",
+      "knowledge_component_id": "finance.prod.shared-finances.07",
+      "domain": "shared-finances",
+      "outcome": "Identify account, contract and access records needed when a household separates.",
+      "prerequisites": [
+        "prod.shared-finances.02",
+        "prod.shared-finances.03",
+        "prod.accounts-records.10"
+      ]
+    },
+    {
+      "id": "prod.shared-finances.08",
+      "knowledge_component_id": "finance.prod.shared-finances.08",
+      "domain": "shared-finances",
+      "outcome": "Identify estate and decision-authority questions that require qualified local advice after a death or incapacity.",
+      "prerequisites": [
+        "prod.insurance-risk.03",
+        "prod.retirement-future.10",
+        "prod.accounts-records.10"
+      ]
+    },
+    {
+      "id": "prod.financial-landscape.01",
+      "knowledge_component_id": "finance.prod.financial-landscape.01",
+      "domain": "financial-landscape",
+      "outcome": "Verify a financial provider’s identity and permitted activity using the relevant official register.",
+      "prerequisites": [
+        "prod.payments-digital.07",
+        "prod.accounts-records.09"
+      ]
+    },
+    {
+      "id": "prod.financial-landscape.02",
+      "knowledge_component_id": "finance.prod.financial-landscape.02",
+      "domain": "financial-landscape",
+      "outcome": "Distinguish provider regulation from protection against every possible loss.",
+      "prerequisites": [
+        "prod.financial-landscape.01",
+        "prod.investing-foundations.12"
+      ]
+    },
+    {
+      "id": "prod.financial-landscape.03",
+      "knowledge_component_id": "finance.prod.financial-landscape.03",
+      "domain": "financial-landscape",
+      "outcome": "Check the scope and eligibility conditions of a local deposit-protection claim.",
+      "prerequisites": [
+        "prod.financial-landscape.01",
+        "prod.financial-landscape.02",
+        "prod.accounts-records.09"
+      ]
+    },
+    {
+      "id": "prod.financial-landscape.04",
+      "knowledge_component_id": "finance.prod.financial-landscape.04",
+      "domain": "financial-landscape",
+      "outcome": "Prepare a complaint with a clear requested remedy and supporting transaction evidence.",
+      "prerequisites": [
+        "prod.accounts-records.07",
+        "prod.purchase-decisions.08"
+      ]
+    },
+    {
+      "id": "prod.financial-landscape.05",
+      "knowledge_component_id": "finance.prod.financial-landscape.05",
+      "domain": "financial-landscape",
+      "outcome": "Identify the official escalation route after a provider’s complaint response is unresolved.",
+      "prerequisites": [
+        "prod.financial-landscape.04",
+        "prod.financial-landscape.01"
+      ]
+    },
+    {
+      "id": "prod.financial-landscape.06",
+      "knowledge_component_id": "finance.prod.financial-landscape.06",
+      "domain": "financial-landscape",
+      "outcome": "Calculate how much a recipient receives after a remittance fee and a stated exchange rate.",
+      "prerequisites": [
+        "prod.financial-math.05",
+        "prod.financial-math.02"
+      ]
+    },
+    {
+      "id": "prod.financial-landscape.07",
+      "knowledge_component_id": "finance.prod.financial-landscape.07",
+      "domain": "financial-landscape",
+      "outcome": "Compare remittance offers using recipient amount, timing and collection conditions.",
+      "prerequisites": [
+        "prod.financial-landscape.06",
+        "prod.payments-digital.04"
+      ]
+    },
+    {
+      "id": "prod.financial-landscape.08",
+      "knowledge_component_id": "finance.prod.financial-landscape.08",
+      "domain": "financial-landscape",
+      "outcome": "Identify a currency-conversion markup when the reference comparison rate is supplied.",
+      "prerequisites": [
+        "prod.financial-landscape.06",
+        "price.percent"
+      ]
+    },
+    {
+      "id": "prod.financial-landscape.09",
+      "knowledge_component_id": "finance.prod.financial-landscape.09",
+      "domain": "financial-landscape",
+      "outcome": "Distinguish a specific verifiable sustainability claim from an unsupported financial-product label.",
+      "prerequisites": [
+        "prod.purchase-decisions.11",
+        "prod.investment-comparison.03"
+      ]
+    },
+    {
+      "id": "prod.financial-landscape.10",
+      "knowledge_component_id": "finance.prod.financial-landscape.10",
+      "domain": "financial-landscape",
+      "outcome": "Check who receives financial data and how consent can be withdrawn before enabling a sharing service.",
+      "prerequisites": [
+        "prod.payments-digital.05",
+        "prod.accounts-records.10"
+      ]
+    }
+  ],
+  "lessons": [
+    {
+      "lesson_id": "fe-production-usable-money-00",
+      "primary_skill": "cash.direction",
+      "unit_id": "fe-production-usable-money-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-usable-money-01",
+      "primary_skill": "cash.received",
+      "unit_id": "fe-production-usable-money-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-usable-money-02",
+      "primary_skill": "cash.balance",
+      "unit_id": "fe-production-usable-money-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-usable-money-03",
+      "primary_skill": "cash.commitment",
+      "unit_id": "fe-production-usable-money-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-usable-money-04",
+      "primary_skill": "cash.reserved",
+      "unit_id": "fe-production-usable-money-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-usable-money-05",
+      "primary_skill": "cash.dates",
+      "unit_id": "fe-production-usable-money-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-usable-money-06",
+      "primary_skill": "debt.obligation",
+      "unit_id": "fe-production-usable-money-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-usable-money-07",
+      "primary_skill": "cash.transfer",
+      "unit_id": "fe-production-usable-money-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-usable-money-08",
+      "primary_skill": "plan.uncertain-income",
+      "unit_id": "fe-production-usable-money-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-usable-money-review-1",
+      "primary_skill": "cash.reserved",
+      "unit_id": "fe-production-usable-money-part-2",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "cash.direction",
+        "cash.received",
+        "cash.balance",
+        "cash.commitment",
+        "cash.reserved"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-usable-money-review-2",
+      "primary_skill": "plan.uncertain-income",
+      "unit_id": "fe-production-usable-money-part-2",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "cash.dates",
+        "debt.obligation",
+        "cash.transfer",
+        "plan.uncertain-income"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-financial-math-01",
+      "primary_skill": "prod.financial-math.01",
+      "unit_id": "fe-production-financial-math-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-financial-math-02",
+      "primary_skill": "prod.financial-math.02",
+      "unit_id": "fe-production-financial-math-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-financial-math-03",
+      "primary_skill": "prod.financial-math.03",
+      "unit_id": "fe-production-financial-math-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-financial-math-04",
+      "primary_skill": "prod.financial-math.04",
+      "unit_id": "fe-production-financial-math-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-financial-math-05",
+      "primary_skill": "prod.financial-math.05",
+      "unit_id": "fe-production-financial-math-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-financial-math-06",
+      "primary_skill": "prod.financial-math.06",
+      "unit_id": "fe-production-financial-math-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-financial-math-07",
+      "primary_skill": "prod.financial-math.07",
+      "unit_id": "fe-production-financial-math-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-financial-math-08",
+      "primary_skill": "price.percent",
+      "unit_id": "fe-production-financial-math-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-financial-math-09",
+      "primary_skill": "prod.financial-math.09",
+      "unit_id": "fe-production-financial-math-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-financial-math-10",
+      "primary_skill": "prod.financial-math.10",
+      "unit_id": "fe-production-financial-math-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-financial-math-11",
+      "primary_skill": "prod.financial-math.11",
+      "unit_id": "fe-production-financial-math-part-3",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-financial-math-12",
+      "primary_skill": "prod.financial-math.12",
+      "unit_id": "fe-production-financial-math-part-3",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-financial-math-13",
+      "primary_skill": "prod.financial-math.13",
+      "unit_id": "fe-production-financial-math-part-3",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-financial-math-review-1",
+      "primary_skill": "cash.balance",
+      "unit_id": "fe-production-financial-math-part-3",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "prod.financial-math.01",
+        "prod.financial-math.02",
+        "prod.financial-math.03",
+        "prod.financial-math.04",
+        "prod.financial-math.05",
+        "prod.financial-math.06",
+        "prod.financial-math.07",
+        "cash.balance"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-financial-math-review-2",
+      "primary_skill": "cash.balance",
+      "unit_id": "fe-production-financial-math-part-3",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "price.percent",
+        "prod.financial-math.09",
+        "prod.financial-math.10",
+        "prod.financial-math.11",
+        "prod.financial-math.12",
+        "prod.financial-math.13",
+        "cash.balance"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-goals-tradeoffs-01",
+      "primary_skill": "prod.goals-tradeoffs.01",
+      "unit_id": "fe-production-goals-tradeoffs-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-goals-tradeoffs-02",
+      "primary_skill": "prod.goals-tradeoffs.02",
+      "unit_id": "fe-production-goals-tradeoffs-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-goals-tradeoffs-03",
+      "primary_skill": "prod.goals-tradeoffs.03",
+      "unit_id": "fe-production-goals-tradeoffs-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-goals-tradeoffs-04",
+      "primary_skill": "prod.goals-tradeoffs.04",
+      "unit_id": "fe-production-goals-tradeoffs-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-goals-tradeoffs-05",
+      "primary_skill": "prod.goals-tradeoffs.05",
+      "unit_id": "fe-production-goals-tradeoffs-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-goals-tradeoffs-06",
+      "primary_skill": "prod.goals-tradeoffs.06",
+      "unit_id": "fe-production-goals-tradeoffs-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-goals-tradeoffs-07",
+      "primary_skill": "prod.goals-tradeoffs.07",
+      "unit_id": "fe-production-goals-tradeoffs-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-goals-tradeoffs-08",
+      "primary_skill": "prod.goals-tradeoffs.08",
+      "unit_id": "fe-production-goals-tradeoffs-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-goals-tradeoffs-review-1",
+      "primary_skill": "cash.commitment",
+      "unit_id": "fe-production-goals-tradeoffs-part-2",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "prod.goals-tradeoffs.01",
+        "prod.goals-tradeoffs.02",
+        "prod.goals-tradeoffs.03",
+        "prod.goals-tradeoffs.04",
+        "cash.commitment"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-goals-tradeoffs-review-2",
+      "primary_skill": "cash.commitment",
+      "unit_id": "fe-production-goals-tradeoffs-part-2",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "prod.goals-tradeoffs.05",
+        "prod.goals-tradeoffs.06",
+        "prod.goals-tradeoffs.07",
+        "prod.goals-tradeoffs.08",
+        "cash.commitment"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-income-work-01",
+      "primary_skill": "prod.income-work.01",
+      "unit_id": "fe-production-income-work-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-income-work-02",
+      "primary_skill": "prod.income-work.02",
+      "unit_id": "fe-production-income-work-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-income-work-03",
+      "primary_skill": "prod.income-work.03",
+      "unit_id": "fe-production-income-work-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-income-work-04",
+      "primary_skill": "prod.income-work.04",
+      "unit_id": "fe-production-income-work-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-income-work-05",
+      "primary_skill": "prod.income-work.05",
+      "unit_id": "fe-production-income-work-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-income-work-06",
+      "primary_skill": "prod.income-work.06",
+      "unit_id": "fe-production-income-work-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-income-work-07",
+      "primary_skill": "prod.income-work.07",
+      "unit_id": "fe-production-income-work-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-income-work-08",
+      "primary_skill": "prod.income-work.08",
+      "unit_id": "fe-production-income-work-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-income-work-09",
+      "primary_skill": "prod.income-work.09",
+      "unit_id": "fe-production-income-work-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-income-work-10",
+      "primary_skill": "prod.income-work.10",
+      "unit_id": "fe-production-income-work-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-income-work-review-1",
+      "primary_skill": "cash.received",
+      "unit_id": "fe-production-income-work-part-2",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "prod.income-work.01",
+        "prod.income-work.02",
+        "prod.income-work.03",
+        "prod.income-work.04",
+        "prod.income-work.05",
+        "cash.received"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-income-work-review-2",
+      "primary_skill": "cash.received",
+      "unit_id": "fe-production-income-work-part-2",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "prod.income-work.06",
+        "prod.income-work.07",
+        "prod.income-work.08",
+        "prod.income-work.09",
+        "prod.income-work.10",
+        "cash.received"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-spending-patterns-01",
+      "primary_skill": "prod.spending-patterns.01",
+      "unit_id": "fe-production-spending-patterns-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-spending-patterns-02",
+      "primary_skill": "prod.spending-patterns.02",
+      "unit_id": "fe-production-spending-patterns-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-spending-patterns-03",
+      "primary_skill": "prod.spending-patterns.03",
+      "unit_id": "fe-production-spending-patterns-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-spending-patterns-04",
+      "primary_skill": "prod.spending-patterns.04",
+      "unit_id": "fe-production-spending-patterns-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-spending-patterns-05",
+      "primary_skill": "prod.spending-patterns.05",
+      "unit_id": "fe-production-spending-patterns-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-spending-patterns-06",
+      "primary_skill": "prod.spending-patterns.06",
+      "unit_id": "fe-production-spending-patterns-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-spending-patterns-07",
+      "primary_skill": "prod.spending-patterns.07",
+      "unit_id": "fe-production-spending-patterns-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-spending-patterns-08",
+      "primary_skill": "prod.spending-patterns.08",
+      "unit_id": "fe-production-spending-patterns-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-spending-patterns-09",
+      "primary_skill": "prod.spending-patterns.09",
+      "unit_id": "fe-production-spending-patterns-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-spending-patterns-10",
+      "primary_skill": "prod.spending-patterns.10",
+      "unit_id": "fe-production-spending-patterns-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-spending-patterns-review-1",
+      "primary_skill": "cash.balance",
+      "unit_id": "fe-production-spending-patterns-part-2",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "prod.spending-patterns.01",
+        "prod.spending-patterns.02",
+        "prod.spending-patterns.03",
+        "prod.spending-patterns.04",
+        "prod.spending-patterns.05",
+        "cash.balance"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-spending-patterns-review-2",
+      "primary_skill": "cash.balance",
+      "unit_id": "fe-production-spending-patterns-part-2",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "prod.spending-patterns.06",
+        "prod.spending-patterns.07",
+        "prod.spending-patterns.08",
+        "prod.spending-patterns.09",
+        "prod.spending-patterns.10",
+        "cash.balance"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-cashflow-budget-01",
+      "primary_skill": "prod.cashflow-budget.01",
+      "unit_id": "fe-production-cashflow-budget-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-cashflow-budget-02",
+      "primary_skill": "prod.cashflow-budget.02",
+      "unit_id": "fe-production-cashflow-budget-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-cashflow-budget-03",
+      "primary_skill": "prod.cashflow-budget.03",
+      "unit_id": "fe-production-cashflow-budget-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-cashflow-budget-04",
+      "primary_skill": "prod.cashflow-budget.04",
+      "unit_id": "fe-production-cashflow-budget-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-cashflow-budget-05",
+      "primary_skill": "prod.cashflow-budget.05",
+      "unit_id": "fe-production-cashflow-budget-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-cashflow-budget-06",
+      "primary_skill": "prod.cashflow-budget.06",
+      "unit_id": "fe-production-cashflow-budget-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-cashflow-budget-07",
+      "primary_skill": "prod.cashflow-budget.07",
+      "unit_id": "fe-production-cashflow-budget-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-cashflow-budget-08",
+      "primary_skill": "plan.periodic",
+      "unit_id": "fe-production-cashflow-budget-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-cashflow-budget-09",
+      "primary_skill": "prod.cashflow-budget.09",
+      "unit_id": "fe-production-cashflow-budget-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-cashflow-budget-10",
+      "primary_skill": "prod.cashflow-budget.10",
+      "unit_id": "fe-production-cashflow-budget-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-cashflow-budget-11",
+      "primary_skill": "prod.cashflow-budget.11",
+      "unit_id": "fe-production-cashflow-budget-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-cashflow-budget-12",
+      "primary_skill": "prod.cashflow-budget.12",
+      "unit_id": "fe-production-cashflow-budget-part-3",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-cashflow-budget-13",
+      "primary_skill": "prod.cashflow-budget.13",
+      "unit_id": "fe-production-cashflow-budget-part-3",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-cashflow-budget-14",
+      "primary_skill": "prod.cashflow-budget.14",
+      "unit_id": "fe-production-cashflow-budget-part-3",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-cashflow-budget-review-1",
+      "primary_skill": "prod.income-work.01",
+      "unit_id": "fe-production-cashflow-budget-part-3",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "prod.cashflow-budget.01",
+        "prod.cashflow-budget.02",
+        "prod.cashflow-budget.03",
+        "prod.cashflow-budget.04",
+        "prod.cashflow-budget.05",
+        "prod.cashflow-budget.06",
+        "prod.cashflow-budget.07",
+        "prod.income-work.01"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-cashflow-budget-review-2",
+      "primary_skill": "prod.income-work.01",
+      "unit_id": "fe-production-cashflow-budget-part-3",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "plan.periodic",
+        "prod.cashflow-budget.09",
+        "prod.cashflow-budget.10",
+        "prod.cashflow-budget.11",
+        "prod.cashflow-budget.12",
+        "prod.cashflow-budget.13",
+        "prod.cashflow-budget.14",
+        "prod.income-work.01"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-accounts-records-01",
+      "primary_skill": "prod.accounts-records.01",
+      "unit_id": "fe-production-accounts-records-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-accounts-records-02",
+      "primary_skill": "prod.accounts-records.02",
+      "unit_id": "fe-production-accounts-records-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-accounts-records-03",
+      "primary_skill": "prod.accounts-records.03",
+      "unit_id": "fe-production-accounts-records-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-accounts-records-04",
+      "primary_skill": "prod.accounts-records.04",
+      "unit_id": "fe-production-accounts-records-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-accounts-records-05",
+      "primary_skill": "prod.accounts-records.05",
+      "unit_id": "fe-production-accounts-records-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-accounts-records-06",
+      "primary_skill": "prod.accounts-records.06",
+      "unit_id": "fe-production-accounts-records-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-accounts-records-07",
+      "primary_skill": "prod.accounts-records.07",
+      "unit_id": "fe-production-accounts-records-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-accounts-records-08",
+      "primary_skill": "prod.accounts-records.08",
+      "unit_id": "fe-production-accounts-records-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-accounts-records-09",
+      "primary_skill": "prod.accounts-records.09",
+      "unit_id": "fe-production-accounts-records-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-accounts-records-10",
+      "primary_skill": "prod.accounts-records.10",
+      "unit_id": "fe-production-accounts-records-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-accounts-records-review-1",
+      "primary_skill": "cash.commitment",
+      "unit_id": "fe-production-accounts-records-part-2",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "prod.accounts-records.01",
+        "prod.accounts-records.02",
+        "prod.accounts-records.03",
+        "prod.accounts-records.04",
+        "prod.accounts-records.05",
+        "cash.commitment"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-accounts-records-review-2",
+      "primary_skill": "cash.commitment",
+      "unit_id": "fe-production-accounts-records-part-2",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "prod.accounts-records.06",
+        "prod.accounts-records.07",
+        "prod.accounts-records.08",
+        "prod.accounts-records.09",
+        "prod.accounts-records.10",
+        "cash.commitment"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-payments-digital-01",
+      "primary_skill": "prod.payments-digital.01",
+      "unit_id": "fe-production-payments-digital-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-payments-digital-02",
+      "primary_skill": "prod.payments-digital.02",
+      "unit_id": "fe-production-payments-digital-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-payments-digital-03",
+      "primary_skill": "prod.payments-digital.03",
+      "unit_id": "fe-production-payments-digital-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-payments-digital-04",
+      "primary_skill": "prod.payments-digital.04",
+      "unit_id": "fe-production-payments-digital-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-payments-digital-05",
+      "primary_skill": "prod.payments-digital.05",
+      "unit_id": "fe-production-payments-digital-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-payments-digital-06",
+      "primary_skill": "prod.payments-digital.06",
+      "unit_id": "fe-production-payments-digital-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-payments-digital-07",
+      "primary_skill": "prod.payments-digital.07",
+      "unit_id": "fe-production-payments-digital-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-payments-digital-08",
+      "primary_skill": "prod.payments-digital.08",
+      "unit_id": "fe-production-payments-digital-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-payments-digital-09",
+      "primary_skill": "prod.payments-digital.09",
+      "unit_id": "fe-production-payments-digital-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-payments-digital-10",
+      "primary_skill": "prod.payments-digital.10",
+      "unit_id": "fe-production-payments-digital-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-payments-digital-review-1",
+      "primary_skill": "debt.obligation",
+      "unit_id": "fe-production-payments-digital-part-2",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "prod.payments-digital.01",
+        "prod.payments-digital.02",
+        "prod.payments-digital.03",
+        "prod.payments-digital.04",
+        "prod.payments-digital.05",
+        "debt.obligation"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-payments-digital-review-2",
+      "primary_skill": "debt.obligation",
+      "unit_id": "fe-production-payments-digital-part-2",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "prod.payments-digital.06",
+        "prod.payments-digital.07",
+        "prod.payments-digital.08",
+        "prod.payments-digital.09",
+        "prod.payments-digital.10",
+        "debt.obligation"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-purchase-decisions-01",
+      "primary_skill": "prod.purchase-decisions.01",
+      "unit_id": "fe-production-purchase-decisions-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-purchase-decisions-02",
+      "primary_skill": "prod.purchase-decisions.02",
+      "unit_id": "fe-production-purchase-decisions-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-purchase-decisions-03",
+      "primary_skill": "prod.purchase-decisions.03",
+      "unit_id": "fe-production-purchase-decisions-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-purchase-decisions-04",
+      "primary_skill": "prod.purchase-decisions.04",
+      "unit_id": "fe-production-purchase-decisions-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-purchase-decisions-05",
+      "primary_skill": "prod.purchase-decisions.05",
+      "unit_id": "fe-production-purchase-decisions-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-purchase-decisions-06",
+      "primary_skill": "prod.purchase-decisions.06",
+      "unit_id": "fe-production-purchase-decisions-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-purchase-decisions-07",
+      "primary_skill": "prod.purchase-decisions.07",
+      "unit_id": "fe-production-purchase-decisions-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-purchase-decisions-08",
+      "primary_skill": "prod.purchase-decisions.08",
+      "unit_id": "fe-production-purchase-decisions-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-purchase-decisions-09",
+      "primary_skill": "prod.purchase-decisions.09",
+      "unit_id": "fe-production-purchase-decisions-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-purchase-decisions-10",
+      "primary_skill": "prod.purchase-decisions.10",
+      "unit_id": "fe-production-purchase-decisions-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-purchase-decisions-11",
+      "primary_skill": "prod.purchase-decisions.11",
+      "unit_id": "fe-production-purchase-decisions-part-3",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-purchase-decisions-12",
+      "primary_skill": "prod.purchase-decisions.12",
+      "unit_id": "fe-production-purchase-decisions-part-3",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-purchase-decisions-review-1",
+      "primary_skill": "prod.purchase-decisions.01",
+      "unit_id": "fe-production-purchase-decisions-part-3",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "prod.purchase-decisions.01",
+        "prod.purchase-decisions.02",
+        "prod.purchase-decisions.03",
+        "prod.purchase-decisions.04",
+        "prod.purchase-decisions.05",
+        "prod.purchase-decisions.06",
+        "prod.financial-math.06"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-purchase-decisions-review-2",
+      "primary_skill": "prod.purchase-decisions.07",
+      "unit_id": "fe-production-purchase-decisions-part-3",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "prod.purchase-decisions.07",
+        "prod.purchase-decisions.08",
+        "prod.purchase-decisions.09",
+        "prod.purchase-decisions.10",
+        "prod.purchase-decisions.11",
+        "prod.purchase-decisions.12",
+        "prod.financial-math.06"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-saving-resilience-01",
+      "primary_skill": "prod.saving-resilience.01",
+      "unit_id": "fe-production-saving-resilience-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-saving-resilience-02",
+      "primary_skill": "prod.saving-resilience.02",
+      "unit_id": "fe-production-saving-resilience-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-saving-resilience-03",
+      "primary_skill": "prod.saving-resilience.03",
+      "unit_id": "fe-production-saving-resilience-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-saving-resilience-04",
+      "primary_skill": "prod.saving-resilience.04",
+      "unit_id": "fe-production-saving-resilience-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-saving-resilience-05",
+      "primary_skill": "prod.saving-resilience.05",
+      "unit_id": "fe-production-saving-resilience-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-saving-resilience-06",
+      "primary_skill": "prod.saving-resilience.06",
+      "unit_id": "fe-production-saving-resilience-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-saving-resilience-07",
+      "primary_skill": "prod.saving-resilience.07",
+      "unit_id": "fe-production-saving-resilience-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-saving-resilience-08",
+      "primary_skill": "prod.saving-resilience.08",
+      "unit_id": "fe-production-saving-resilience-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-saving-resilience-09",
+      "primary_skill": "prod.saving-resilience.09",
+      "unit_id": "fe-production-saving-resilience-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-saving-resilience-10",
+      "primary_skill": "prod.saving-resilience.10",
+      "unit_id": "fe-production-saving-resilience-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-saving-resilience-review-1",
+      "primary_skill": "prod.saving-resilience.01",
+      "unit_id": "fe-production-saving-resilience-part-2",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "prod.saving-resilience.01",
+        "prod.saving-resilience.02",
+        "prod.saving-resilience.03",
+        "prod.saving-resilience.04",
+        "prod.saving-resilience.05",
+        "prod.spending-patterns.05"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-saving-resilience-review-2",
+      "primary_skill": "prod.saving-resilience.06",
+      "unit_id": "fe-production-saving-resilience-part-2",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "prod.saving-resilience.06",
+        "prod.saving-resilience.07",
+        "prod.saving-resilience.08",
+        "prod.saving-resilience.09",
+        "prod.saving-resilience.10",
+        "prod.spending-patterns.05"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-time-inflation-01",
+      "primary_skill": "prod.time-inflation.01",
+      "unit_id": "fe-production-time-inflation-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-time-inflation-02",
+      "primary_skill": "prod.time-inflation.02",
+      "unit_id": "fe-production-time-inflation-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-time-inflation-03",
+      "primary_skill": "time.compound",
+      "unit_id": "fe-production-time-inflation-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-time-inflation-04",
+      "primary_skill": "prod.time-inflation.04",
+      "unit_id": "fe-production-time-inflation-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-time-inflation-05",
+      "primary_skill": "prod.time-inflation.05",
+      "unit_id": "fe-production-time-inflation-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-time-inflation-06",
+      "primary_skill": "prod.time-inflation.06",
+      "unit_id": "fe-production-time-inflation-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-time-inflation-07",
+      "primary_skill": "prod.time-inflation.07",
+      "unit_id": "fe-production-time-inflation-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-time-inflation-08",
+      "primary_skill": "prod.time-inflation.08",
+      "unit_id": "fe-production-time-inflation-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-time-inflation-09",
+      "primary_skill": "prod.time-inflation.09",
+      "unit_id": "fe-production-time-inflation-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-time-inflation-10",
+      "primary_skill": "prod.time-inflation.10",
+      "unit_id": "fe-production-time-inflation-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-time-inflation-review-1",
+      "primary_skill": "price.percent",
+      "unit_id": "fe-production-time-inflation-part-2",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "prod.time-inflation.01",
+        "prod.time-inflation.02",
+        "time.compound",
+        "prod.time-inflation.04",
+        "prod.time-inflation.05",
+        "price.percent"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-time-inflation-review-2",
+      "primary_skill": "price.percent",
+      "unit_id": "fe-production-time-inflation-part-2",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "prod.time-inflation.06",
+        "prod.time-inflation.07",
+        "prod.time-inflation.08",
+        "prod.time-inflation.09",
+        "prod.time-inflation.10",
+        "price.percent"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-01",
+      "primary_skill": "prod.credit-mechanics.01",
+      "unit_id": "fe-production-credit-mechanics-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-02",
+      "primary_skill": "prod.credit-mechanics.02",
+      "unit_id": "fe-production-credit-mechanics-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-03",
+      "primary_skill": "prod.credit-mechanics.03",
+      "unit_id": "fe-production-credit-mechanics-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-04",
+      "primary_skill": "prod.credit-mechanics.04",
+      "unit_id": "fe-production-credit-mechanics-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-05",
+      "primary_skill": "prod.credit-mechanics.05",
+      "unit_id": "fe-production-credit-mechanics-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-06",
+      "primary_skill": "prod.credit-mechanics.06",
+      "unit_id": "fe-production-credit-mechanics-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-07",
+      "primary_skill": "prod.credit-mechanics.07",
+      "unit_id": "fe-production-credit-mechanics-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-08",
+      "primary_skill": "prod.credit-mechanics.08",
+      "unit_id": "fe-production-credit-mechanics-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-09",
+      "primary_skill": "prod.credit-mechanics.09",
+      "unit_id": "fe-production-credit-mechanics-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-10",
+      "primary_skill": "prod.credit-mechanics.10",
+      "unit_id": "fe-production-credit-mechanics-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-11",
+      "primary_skill": "prod.credit-mechanics.11",
+      "unit_id": "fe-production-credit-mechanics-part-3",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-12",
+      "primary_skill": "prod.credit-mechanics.12",
+      "unit_id": "fe-production-credit-mechanics-part-3",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-review-1",
+      "primary_skill": "prod.credit-mechanics.05",
+      "unit_id": "fe-production-credit-mechanics-part-3",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "prod.credit-mechanics.01",
+        "prod.credit-mechanics.02",
+        "prod.credit-mechanics.03",
+        "prod.credit-mechanics.04",
+        "prod.credit-mechanics.05",
+        "prod.credit-mechanics.06",
+        "debt.obligation"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-review-2",
+      "primary_skill": "prod.credit-mechanics.07",
+      "unit_id": "fe-production-credit-mechanics-part-3",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "prod.credit-mechanics.07",
+        "prod.credit-mechanics.08",
+        "prod.credit-mechanics.09",
+        "prod.credit-mechanics.10",
+        "prod.credit-mechanics.11",
+        "prod.credit-mechanics.12",
+        "debt.obligation"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-credit-products-01",
+      "primary_skill": "prod.credit-products.01",
+      "unit_id": "fe-production-credit-products-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-credit-products-02",
+      "primary_skill": "prod.credit-products.02",
+      "unit_id": "fe-production-credit-products-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-credit-products-03",
+      "primary_skill": "prod.credit-products.03",
+      "unit_id": "fe-production-credit-products-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-credit-products-04",
+      "primary_skill": "prod.credit-products.04",
+      "unit_id": "fe-production-credit-products-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-credit-products-05",
+      "primary_skill": "prod.credit-products.05",
+      "unit_id": "fe-production-credit-products-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-credit-products-06",
+      "primary_skill": "prod.credit-products.06",
+      "unit_id": "fe-production-credit-products-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-credit-products-07",
+      "primary_skill": "prod.credit-products.07",
+      "unit_id": "fe-production-credit-products-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-credit-products-08",
+      "primary_skill": "prod.credit-products.08",
+      "unit_id": "fe-production-credit-products-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-credit-products-09",
+      "primary_skill": "prod.credit-products.09",
+      "unit_id": "fe-production-credit-products-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-credit-products-10",
+      "primary_skill": "prod.credit-products.10",
+      "unit_id": "fe-production-credit-products-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-credit-products-review-1",
+      "primary_skill": "prod.credit-products.01",
+      "unit_id": "fe-production-credit-products-part-2",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "prod.credit-products.01",
+        "prod.credit-products.02",
+        "prod.credit-products.03",
+        "prod.credit-products.04",
+        "prod.credit-products.05",
+        "prod.accounts-records.04"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-credit-products-review-2",
+      "primary_skill": "prod.credit-products.06",
+      "unit_id": "fe-production-credit-products-part-2",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "prod.credit-products.06",
+        "prod.credit-products.07",
+        "prod.credit-products.08",
+        "prod.credit-products.09",
+        "prod.credit-products.10",
+        "prod.accounts-records.04"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-debt-recovery-01",
+      "primary_skill": "prod.debt-recovery.01",
+      "unit_id": "fe-production-debt-recovery-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-debt-recovery-02",
+      "primary_skill": "prod.debt-recovery.02",
+      "unit_id": "fe-production-debt-recovery-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-debt-recovery-03",
+      "primary_skill": "prod.debt-recovery.03",
+      "unit_id": "fe-production-debt-recovery-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-debt-recovery-04",
+      "primary_skill": "prod.debt-recovery.04",
+      "unit_id": "fe-production-debt-recovery-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-debt-recovery-05",
+      "primary_skill": "prod.debt-recovery.05",
+      "unit_id": "fe-production-debt-recovery-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-debt-recovery-06",
+      "primary_skill": "prod.debt-recovery.06",
+      "unit_id": "fe-production-debt-recovery-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-debt-recovery-07",
+      "primary_skill": "prod.debt-recovery.07",
+      "unit_id": "fe-production-debt-recovery-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-debt-recovery-08",
+      "primary_skill": "prod.debt-recovery.08",
+      "unit_id": "fe-production-debt-recovery-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-debt-recovery-review-1",
+      "primary_skill": "prod.debt-recovery.04",
+      "unit_id": "fe-production-debt-recovery-part-2",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "prod.debt-recovery.01",
+        "prod.debt-recovery.02",
+        "prod.debt-recovery.03",
+        "prod.debt-recovery.04",
+        "prod.credit-products.01"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-debt-recovery-review-2",
+      "primary_skill": "prod.debt-recovery.06",
+      "unit_id": "fe-production-debt-recovery-part-2",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "prod.debt-recovery.05",
+        "prod.debt-recovery.06",
+        "prod.debt-recovery.07",
+        "prod.debt-recovery.08",
+        "prod.credit-products.01"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-credit-records-01",
+      "primary_skill": "prod.credit-records.01",
+      "unit_id": "fe-production-credit-records-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-credit-records-02",
+      "primary_skill": "prod.credit-records.02",
+      "unit_id": "fe-production-credit-records-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-credit-records-03",
+      "primary_skill": "prod.credit-records.03",
+      "unit_id": "fe-production-credit-records-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-credit-records-04",
+      "primary_skill": "prod.credit-records.04",
+      "unit_id": "fe-production-credit-records-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-credit-records-05",
+      "primary_skill": "prod.credit-records.05",
+      "unit_id": "fe-production-credit-records-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-credit-records-06",
+      "primary_skill": "prod.credit-records.06",
+      "unit_id": "fe-production-credit-records-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-credit-records-review-1",
+      "primary_skill": "prod.credit-records.03",
+      "unit_id": "fe-production-credit-records-part-2",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "prod.credit-records.01",
+        "prod.credit-records.02",
+        "prod.credit-records.03",
+        "prod.credit-mechanics.01"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-credit-records-review-2",
+      "primary_skill": "prod.credit-records.06",
+      "unit_id": "fe-production-credit-records-part-2",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "prod.credit-records.04",
+        "prod.credit-records.05",
+        "prod.credit-records.06",
+        "prod.credit-mechanics.01"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-insurance-risk-01",
+      "primary_skill": "prod.insurance-risk.01",
+      "unit_id": "fe-production-insurance-risk-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-insurance-risk-02",
+      "primary_skill": "prod.insurance-risk.02",
+      "unit_id": "fe-production-insurance-risk-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-insurance-risk-03",
+      "primary_skill": "prod.insurance-risk.03",
+      "unit_id": "fe-production-insurance-risk-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-insurance-risk-04",
+      "primary_skill": "prod.insurance-risk.04",
+      "unit_id": "fe-production-insurance-risk-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-insurance-risk-05",
+      "primary_skill": "prod.insurance-risk.05",
+      "unit_id": "fe-production-insurance-risk-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-insurance-risk-06",
+      "primary_skill": "prod.insurance-risk.06",
+      "unit_id": "fe-production-insurance-risk-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-insurance-risk-07",
+      "primary_skill": "prod.insurance-risk.07",
+      "unit_id": "fe-production-insurance-risk-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-insurance-risk-08",
+      "primary_skill": "prod.insurance-risk.08",
+      "unit_id": "fe-production-insurance-risk-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-insurance-risk-09",
+      "primary_skill": "prod.insurance-risk.09",
+      "unit_id": "fe-production-insurance-risk-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-insurance-risk-10",
+      "primary_skill": "prod.insurance-risk.10",
+      "unit_id": "fe-production-insurance-risk-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-insurance-risk-11",
+      "primary_skill": "prod.insurance-risk.11",
+      "unit_id": "fe-production-insurance-risk-part-3",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-insurance-risk-12",
+      "primary_skill": "prod.insurance-risk.12",
+      "unit_id": "fe-production-insurance-risk-part-3",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-insurance-risk-review-1",
+      "primary_skill": "prod.insurance-risk.01",
+      "unit_id": "fe-production-insurance-risk-part-3",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "prod.insurance-risk.01",
+        "prod.insurance-risk.02",
+        "prod.insurance-risk.03",
+        "prod.insurance-risk.04",
+        "prod.insurance-risk.05",
+        "prod.insurance-risk.06",
+        "prod.saving-resilience.02"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-insurance-risk-review-2",
+      "primary_skill": "prod.insurance-risk.07",
+      "unit_id": "fe-production-insurance-risk-part-3",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "prod.insurance-risk.07",
+        "prod.insurance-risk.08",
+        "prod.insurance-risk.09",
+        "prod.insurance-risk.10",
+        "prod.insurance-risk.11",
+        "prod.insurance-risk.12",
+        "prod.saving-resilience.02"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-investing-foundations-01",
+      "primary_skill": "prod.investing-foundations.01",
+      "unit_id": "fe-production-investing-foundations-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-investing-foundations-02",
+      "primary_skill": "prod.investing-foundations.02",
+      "unit_id": "fe-production-investing-foundations-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-investing-foundations-03",
+      "primary_skill": "prod.investing-foundations.03",
+      "unit_id": "fe-production-investing-foundations-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-investing-foundations-04",
+      "primary_skill": "prod.investing-foundations.04",
+      "unit_id": "fe-production-investing-foundations-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-investing-foundations-05",
+      "primary_skill": "prod.investing-foundations.05",
+      "unit_id": "fe-production-investing-foundations-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-investing-foundations-06",
+      "primary_skill": "prod.investing-foundations.06",
+      "unit_id": "fe-production-investing-foundations-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-investing-foundations-07",
+      "primary_skill": "prod.investing-foundations.07",
+      "unit_id": "fe-production-investing-foundations-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-investing-foundations-08",
+      "primary_skill": "prod.investing-foundations.08",
+      "unit_id": "fe-production-investing-foundations-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-investing-foundations-09",
+      "primary_skill": "prod.investing-foundations.09",
+      "unit_id": "fe-production-investing-foundations-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-investing-foundations-10",
+      "primary_skill": "prod.investing-foundations.10",
+      "unit_id": "fe-production-investing-foundations-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-investing-foundations-11",
+      "primary_skill": "prod.investing-foundations.11",
+      "unit_id": "fe-production-investing-foundations-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-investing-foundations-12",
+      "primary_skill": "prod.investing-foundations.12",
+      "unit_id": "fe-production-investing-foundations-part-3",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-investing-foundations-13",
+      "primary_skill": "prod.investing-foundations.13",
+      "unit_id": "fe-production-investing-foundations-part-3",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-investing-foundations-14",
+      "primary_skill": "prod.investing-foundations.14",
+      "unit_id": "fe-production-investing-foundations-part-3",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-investing-foundations-review-1",
+      "primary_skill": "prod.investing-foundations.01",
+      "unit_id": "fe-production-investing-foundations-part-3",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "prod.investing-foundations.01",
+        "prod.investing-foundations.02",
+        "prod.investing-foundations.03",
+        "prod.investing-foundations.04",
+        "prod.investing-foundations.05",
+        "prod.investing-foundations.06",
+        "prod.investing-foundations.07",
+        "prod.saving-resilience.04"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-investing-foundations-review-2",
+      "primary_skill": "prod.investing-foundations.08",
+      "unit_id": "fe-production-investing-foundations-part-3",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "prod.investing-foundations.08",
+        "prod.investing-foundations.09",
+        "prod.investing-foundations.10",
+        "prod.investing-foundations.11",
+        "prod.investing-foundations.12",
+        "prod.investing-foundations.13",
+        "prod.investing-foundations.14",
+        "prod.saving-resilience.04"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-investment-comparison-01",
+      "primary_skill": "prod.investment-comparison.01",
+      "unit_id": "fe-production-investment-comparison-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-investment-comparison-02",
+      "primary_skill": "prod.investment-comparison.02",
+      "unit_id": "fe-production-investment-comparison-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-investment-comparison-03",
+      "primary_skill": "prod.investment-comparison.03",
+      "unit_id": "fe-production-investment-comparison-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-investment-comparison-04",
+      "primary_skill": "prod.investment-comparison.04",
+      "unit_id": "fe-production-investment-comparison-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-investment-comparison-05",
+      "primary_skill": "prod.investment-comparison.05",
+      "unit_id": "fe-production-investment-comparison-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-investment-comparison-06",
+      "primary_skill": "prod.investment-comparison.06",
+      "unit_id": "fe-production-investment-comparison-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-investment-comparison-07",
+      "primary_skill": "prod.investment-comparison.07",
+      "unit_id": "fe-production-investment-comparison-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-investment-comparison-08",
+      "primary_skill": "prod.investment-comparison.08",
+      "unit_id": "fe-production-investment-comparison-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-investment-comparison-09",
+      "primary_skill": "prod.investment-comparison.09",
+      "unit_id": "fe-production-investment-comparison-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-investment-comparison-10",
+      "primary_skill": "prod.investment-comparison.10",
+      "unit_id": "fe-production-investment-comparison-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-investment-comparison-review-1",
+      "primary_skill": "prod.investment-comparison.01",
+      "unit_id": "fe-production-investment-comparison-part-2",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "prod.investment-comparison.01",
+        "prod.investment-comparison.02",
+        "prod.investment-comparison.03",
+        "prod.investment-comparison.04",
+        "prod.investment-comparison.05",
+        "prod.investing-foundations.04"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-investment-comparison-review-2",
+      "primary_skill": "prod.investment-comparison.06",
+      "unit_id": "fe-production-investment-comparison-part-2",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "prod.investment-comparison.06",
+        "prod.investment-comparison.07",
+        "prod.investment-comparison.08",
+        "prod.investment-comparison.09",
+        "prod.investment-comparison.10",
+        "prod.investing-foundations.04"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-tax-public-systems-01",
+      "primary_skill": "prod.tax-public-systems.01",
+      "unit_id": "fe-production-tax-public-systems-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-tax-public-systems-02",
+      "primary_skill": "prod.tax-public-systems.02",
+      "unit_id": "fe-production-tax-public-systems-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-tax-public-systems-03",
+      "primary_skill": "prod.tax-public-systems.03",
+      "unit_id": "fe-production-tax-public-systems-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-tax-public-systems-04",
+      "primary_skill": "prod.tax-public-systems.04",
+      "unit_id": "fe-production-tax-public-systems-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-tax-public-systems-05",
+      "primary_skill": "prod.tax-public-systems.05",
+      "unit_id": "fe-production-tax-public-systems-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-tax-public-systems-06",
+      "primary_skill": "prod.tax-public-systems.06",
+      "unit_id": "fe-production-tax-public-systems-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-tax-public-systems-07",
+      "primary_skill": "prod.tax-public-systems.07",
+      "unit_id": "fe-production-tax-public-systems-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-tax-public-systems-08",
+      "primary_skill": "prod.tax-public-systems.08",
+      "unit_id": "fe-production-tax-public-systems-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-tax-public-systems-review-1",
+      "primary_skill": "prod.tax-public-systems.01",
+      "unit_id": "fe-production-tax-public-systems-part-2",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "prod.tax-public-systems.01",
+        "prod.tax-public-systems.02",
+        "prod.tax-public-systems.03",
+        "prod.tax-public-systems.04",
+        "prod.income-work.02"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-tax-public-systems-review-2",
+      "primary_skill": "prod.tax-public-systems.05",
+      "unit_id": "fe-production-tax-public-systems-part-2",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "prod.tax-public-systems.05",
+        "prod.tax-public-systems.06",
+        "prod.tax-public-systems.07",
+        "prod.tax-public-systems.08",
+        "prod.income-work.02"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-retirement-future-01",
+      "primary_skill": "prod.retirement-future.01",
+      "unit_id": "fe-production-retirement-future-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-retirement-future-02",
+      "primary_skill": "prod.retirement-future.02",
+      "unit_id": "fe-production-retirement-future-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-retirement-future-03",
+      "primary_skill": "prod.retirement-future.03",
+      "unit_id": "fe-production-retirement-future-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-retirement-future-04",
+      "primary_skill": "prod.retirement-future.04",
+      "unit_id": "fe-production-retirement-future-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-retirement-future-05",
+      "primary_skill": "prod.retirement-future.05",
+      "unit_id": "fe-production-retirement-future-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-retirement-future-06",
+      "primary_skill": "prod.retirement-future.06",
+      "unit_id": "fe-production-retirement-future-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-retirement-future-07",
+      "primary_skill": "prod.retirement-future.07",
+      "unit_id": "fe-production-retirement-future-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-retirement-future-08",
+      "primary_skill": "prod.retirement-future.08",
+      "unit_id": "fe-production-retirement-future-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-retirement-future-09",
+      "primary_skill": "prod.retirement-future.09",
+      "unit_id": "fe-production-retirement-future-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-retirement-future-10",
+      "primary_skill": "prod.retirement-future.10",
+      "unit_id": "fe-production-retirement-future-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-retirement-future-review-1",
+      "primary_skill": "prod.retirement-future.01",
+      "unit_id": "fe-production-retirement-future-part-2",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "prod.retirement-future.01",
+        "prod.retirement-future.02",
+        "prod.retirement-future.03",
+        "prod.retirement-future.04",
+        "prod.retirement-future.05",
+        "prod.goals-tradeoffs.01"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-retirement-future-review-2",
+      "primary_skill": "prod.retirement-future.06",
+      "unit_id": "fe-production-retirement-future-part-2",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "prod.retirement-future.06",
+        "prod.retirement-future.07",
+        "prod.retirement-future.08",
+        "prod.retirement-future.09",
+        "prod.retirement-future.10",
+        "prod.goals-tradeoffs.01"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-housing-transport-01",
+      "primary_skill": "prod.housing-transport.01",
+      "unit_id": "fe-production-housing-transport-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-housing-transport-02",
+      "primary_skill": "prod.housing-transport.02",
+      "unit_id": "fe-production-housing-transport-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-housing-transport-03",
+      "primary_skill": "prod.housing-transport.03",
+      "unit_id": "fe-production-housing-transport-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-housing-transport-04",
+      "primary_skill": "prod.housing-transport.04",
+      "unit_id": "fe-production-housing-transport-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-housing-transport-05",
+      "primary_skill": "prod.housing-transport.05",
+      "unit_id": "fe-production-housing-transport-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-housing-transport-06",
+      "primary_skill": "prod.housing-transport.06",
+      "unit_id": "fe-production-housing-transport-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-housing-transport-07",
+      "primary_skill": "prod.housing-transport.07",
+      "unit_id": "fe-production-housing-transport-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-housing-transport-08",
+      "primary_skill": "prod.housing-transport.08",
+      "unit_id": "fe-production-housing-transport-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-housing-transport-09",
+      "primary_skill": "prod.housing-transport.09",
+      "unit_id": "fe-production-housing-transport-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-housing-transport-10",
+      "primary_skill": "prod.housing-transport.10",
+      "unit_id": "fe-production-housing-transport-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-housing-transport-11",
+      "primary_skill": "prod.housing-transport.11",
+      "unit_id": "fe-production-housing-transport-part-3",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-housing-transport-12",
+      "primary_skill": "prod.housing-transport.12",
+      "unit_id": "fe-production-housing-transport-part-3",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-housing-transport-review-1",
+      "primary_skill": "prod.housing-transport.01",
+      "unit_id": "fe-production-housing-transport-part-3",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "prod.housing-transport.01",
+        "prod.housing-transport.02",
+        "prod.housing-transport.03",
+        "prod.housing-transport.04",
+        "prod.housing-transport.05",
+        "prod.housing-transport.06",
+        "prod.purchase-decisions.02"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-housing-transport-review-2",
+      "primary_skill": "prod.housing-transport.07",
+      "unit_id": "fe-production-housing-transport-part-3",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "prod.housing-transport.07",
+        "prod.housing-transport.08",
+        "prod.housing-transport.09",
+        "prod.housing-transport.10",
+        "prod.housing-transport.11",
+        "prod.housing-transport.12",
+        "prod.purchase-decisions.02"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-shared-finances-01",
+      "primary_skill": "prod.shared-finances.01",
+      "unit_id": "fe-production-shared-finances-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-shared-finances-02",
+      "primary_skill": "prod.shared-finances.02",
+      "unit_id": "fe-production-shared-finances-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-shared-finances-03",
+      "primary_skill": "prod.shared-finances.03",
+      "unit_id": "fe-production-shared-finances-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-shared-finances-04",
+      "primary_skill": "prod.shared-finances.04",
+      "unit_id": "fe-production-shared-finances-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-shared-finances-05",
+      "primary_skill": "prod.shared-finances.05",
+      "unit_id": "fe-production-shared-finances-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-shared-finances-06",
+      "primary_skill": "prod.shared-finances.06",
+      "unit_id": "fe-production-shared-finances-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-shared-finances-07",
+      "primary_skill": "prod.shared-finances.07",
+      "unit_id": "fe-production-shared-finances-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-shared-finances-08",
+      "primary_skill": "prod.shared-finances.08",
+      "unit_id": "fe-production-shared-finances-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-shared-finances-review-1",
+      "primary_skill": "prod.shared-finances.01",
+      "unit_id": "fe-production-shared-finances-part-2",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "prod.shared-finances.01",
+        "prod.shared-finances.02",
+        "prod.shared-finances.03",
+        "prod.shared-finances.04",
+        "prod.financial-math.06"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-shared-finances-review-2",
+      "primary_skill": "prod.shared-finances.05",
+      "unit_id": "fe-production-shared-finances-part-2",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "prod.shared-finances.05",
+        "prod.shared-finances.06",
+        "prod.shared-finances.07",
+        "prod.shared-finances.08",
+        "prod.financial-math.06"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-financial-landscape-01",
+      "primary_skill": "prod.financial-landscape.01",
+      "unit_id": "fe-production-financial-landscape-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-financial-landscape-02",
+      "primary_skill": "prod.financial-landscape.02",
+      "unit_id": "fe-production-financial-landscape-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-financial-landscape-03",
+      "primary_skill": "prod.financial-landscape.03",
+      "unit_id": "fe-production-financial-landscape-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-financial-landscape-04",
+      "primary_skill": "prod.financial-landscape.04",
+      "unit_id": "fe-production-financial-landscape-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-financial-landscape-05",
+      "primary_skill": "prod.financial-landscape.05",
+      "unit_id": "fe-production-financial-landscape-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-financial-landscape-06",
+      "primary_skill": "prod.financial-landscape.06",
+      "unit_id": "fe-production-financial-landscape-part-1",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-financial-landscape-07",
+      "primary_skill": "prod.financial-landscape.07",
+      "unit_id": "fe-production-financial-landscape-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-financial-landscape-08",
+      "primary_skill": "prod.financial-landscape.08",
+      "unit_id": "fe-production-financial-landscape-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-financial-landscape-09",
+      "primary_skill": "prod.financial-landscape.09",
+      "unit_id": "fe-production-financial-landscape-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-financial-landscape-10",
+      "primary_skill": "prod.financial-landscape.10",
+      "unit_id": "fe-production-financial-landscape-part-2",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-production-financial-landscape-review-1",
+      "primary_skill": "prod.financial-landscape.01",
+      "unit_id": "fe-production-financial-landscape-part-2",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "prod.financial-landscape.01",
+        "prod.financial-landscape.02",
+        "prod.financial-landscape.03",
+        "prod.financial-landscape.04",
+        "prod.financial-landscape.05",
+        "prod.payments-digital.07"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-financial-landscape-review-2",
+      "primary_skill": "prod.financial-landscape.06",
+      "unit_id": "fe-production-financial-landscape-part-2",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "prod.financial-landscape.06",
+        "prod.financial-landscape.07",
+        "prod.financial-landscape.08",
+        "prod.financial-landscape.09",
+        "prod.financial-landscape.10",
+        "prod.payments-digital.07"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-integrated-decisions-01",
+      "primary_skill": "prod.cashflow-budget.09",
+      "unit_id": "fe-production-integrated-decisions-part-1",
+      "kind": "capstone",
+      "retrieve_skills": [
+        "prod.cashflow-budget.09",
+        "prod.cashflow-budget.11",
+        "prod.income-work.06"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-integrated-decisions-02",
+      "primary_skill": "prod.saving-resilience.04",
+      "unit_id": "fe-production-integrated-decisions-part-1",
+      "kind": "capstone",
+      "retrieve_skills": [
+        "prod.saving-resilience.04",
+        "prod.credit-mechanics.02",
+        "prod.credit-mechanics.07"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-integrated-decisions-03",
+      "primary_skill": "prod.cashflow-budget.03",
+      "unit_id": "fe-production-integrated-decisions-part-1",
+      "kind": "capstone",
+      "retrieve_skills": [
+        "prod.cashflow-budget.03",
+        "prod.spending-patterns.10",
+        "prod.shared-finances.05"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-integrated-decisions-04",
+      "primary_skill": "prod.income-work.09",
+      "unit_id": "fe-production-integrated-decisions-part-1",
+      "kind": "capstone",
+      "retrieve_skills": [
+        "prod.income-work.09",
+        "prod.housing-transport.01",
+        "prod.tax-public-systems.07"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-integrated-decisions-05",
+      "primary_skill": "prod.purchase-decisions.12",
+      "unit_id": "fe-production-integrated-decisions-part-1",
+      "kind": "capstone",
+      "retrieve_skills": [
+        "prod.purchase-decisions.12",
+        "prod.credit-mechanics.07",
+        "prod.purchase-decisions.11"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-integrated-decisions-06",
+      "primary_skill": "prod.accounts-records.05",
+      "unit_id": "fe-production-integrated-decisions-part-1",
+      "kind": "capstone",
+      "retrieve_skills": [
+        "prod.accounts-records.05",
+        "prod.accounts-records.06",
+        "cash.transfer"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-integrated-decisions-07",
+      "primary_skill": "prod.debt-recovery.03",
+      "unit_id": "fe-production-integrated-decisions-part-2",
+      "kind": "capstone",
+      "retrieve_skills": [
+        "prod.debt-recovery.03",
+        "prod.investing-foundations.03",
+        "prod.saving-resilience.04"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-integrated-decisions-08",
+      "primary_skill": "prod.insurance-risk.11",
+      "unit_id": "fe-production-integrated-decisions-part-2",
+      "kind": "capstone",
+      "retrieve_skills": [
+        "prod.insurance-risk.11",
+        "prod.cashflow-budget.09",
+        "prod.shared-finances.05"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-integrated-decisions-09",
+      "primary_skill": "prod.payments-digital.08",
+      "unit_id": "fe-production-integrated-decisions-part-2",
+      "kind": "capstone",
+      "retrieve_skills": [
+        "prod.payments-digital.08",
+        "prod.payments-digital.10",
+        "prod.cashflow-budget.05"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-integrated-decisions-10",
+      "primary_skill": "prod.retirement-future.06",
+      "unit_id": "fe-production-integrated-decisions-part-2",
+      "kind": "capstone",
+      "retrieve_skills": [
+        "prod.retirement-future.06",
+        "prod.retirement-future.09",
+        "prod.time-inflation.10"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-integrated-decisions-11",
+      "primary_skill": "prod.financial-landscape.07",
+      "unit_id": "fe-production-integrated-decisions-part-2",
+      "kind": "capstone",
+      "retrieve_skills": [
+        "prod.financial-landscape.07",
+        "cash.dates",
+        "prod.cashflow-budget.06"
+      ]
+    },
+    {
+      "lesson_id": "fe-production-integrated-decisions-12",
+      "primary_skill": "prod.goals-tradeoffs.07",
+      "unit_id": "fe-production-integrated-decisions-part-2",
+      "kind": "capstone",
+      "retrieve_skills": [
+        "prod.goals-tradeoffs.07",
+        "prod.debt-recovery.08",
+        "prod.tax-public-systems.06",
+        "prod.shared-finances.08"
+      ]
+    }
+  ]
+}

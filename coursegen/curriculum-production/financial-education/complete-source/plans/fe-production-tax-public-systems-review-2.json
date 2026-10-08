@@ -1,0 +1,765 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-tax-public-systems-part-2",
+  "lesson_id": "fe-production-tax-public-systems-review-2",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.tax-public-systems.05",
+    "finance.prod.tax-public-systems.06",
+    "finance.prod.tax-public-systems.07",
+    "finance.prod.tax-public-systems.08",
+    "finance.prod.income-work.02"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Choose truthful supporting records and relevant official guidance without assuming unconfirmed benefits are usable income.",
+  "title": {
+    "en-US": "Reliable Records",
+    "es-MX": "Mantén confiable el registro",
+    "pt-BR": "Mantenha o registro confiável"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Reliable Records\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Mantén confiable el registro\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Mantenha o registro confiável\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "consolidate",
+    "objective": {
+      "skill_id": "prod.tax-public-systems.05",
+      "observable_action": "Choose truthful supporting records and relevant official guidance without assuming unconfirmed benefits are usable income.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.accounts-records.10",
+      "prod.income-work.07"
+    ],
+    "retrieval_skills": [
+      "prod.tax-public-systems.05",
+      "prod.tax-public-systems.06",
+      "prod.tax-public-systems.07",
+      "prod.tax-public-systems.08",
+      "prod.income-work.02"
+    ],
+    "relevance": "Use real evidence and the applicable current rule before relying on a declaration or benefit.",
+    "misconception": "Missing evidence can be replaced with invented facts or a convenient rule from another jurisdiction.",
+    "numeracy_support": "Use the current visible conditions; do not reuse a previous scenario’s answer.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.tax-public-systems.05",
+        "context_id": "tax-public-systems-review-2-practice-01",
+        "supports_from": [],
+        "reasoning": "Matching records connect the claimed expense to what happened."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.tax-public-systems.06",
+        "context_id": "tax-public-systems-review-2-practice-02",
+        "supports_from": [],
+        "reasoning": "Jurisdiction and period must match the actual obligation."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.tax-public-systems.07",
+        "context_id": "tax-public-systems-review-2-practice-03",
+        "supports_from": [],
+        "reasoning": "Pending eligibility and timing do not establish tomorrow’s cash."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.tax-public-systems.08",
+        "context_id": "tax-public-systems-review-2-practice-04",
+        "supports_from": [],
+        "reasoning": "Fabrication changes the facts rather than applying a lawful rule."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.income-work.02",
+        "context_id": "tax-public-systems-review-2-practice-05",
+        "supports_from": [],
+        "reasoning": "Withholding reduces the amount actually received."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.tax-public-systems.05",
+        "context_id": "tax-public-systems-review-2-transfer-01",
+        "supports_from": [],
+        "reasoning": "The reversal record explains why the income total changed."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.tax-public-systems.05",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Use real evidence and the applicable current rule before relying on a declaration or benefit."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Usa pruebas reales y la regla vigente aplicable antes de confiar en una declaración o apoyo."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Use provas reais e a regra atual aplicável antes de confiar numa declaração ou benefício."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.tax-public-systems.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Which record supports the claim?",
+          "scene": "A fictional expense rule needs evidence of both the charge and completed payment.",
+          "options": [
+            {
+              "label": "A remembered estimate only"
+            },
+            {
+              "label": "An unrelated receipt"
+            },
+            {
+              "label": "Matching dated invoice and payment record"
+            }
+          ],
+          "help": [
+            "Match the amount, date and event."
+          ],
+          "feedback": {
+            "met": "Matching records connect the claimed expense to what happened.",
+            "not_yet": "Match the amount, date and event."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué registro respalda el dato?",
+          "scene": "Una regla ficticia de gastos necesita evidencia del cargo y pago realizado.",
+          "options": [
+            {
+              "label": "Solo un cálculo de memoria"
+            },
+            {
+              "label": "Un recibo sin relación"
+            },
+            {
+              "label": "Factura fechada y pago coincidentes"
+            }
+          ],
+          "help": [
+            "Relaciona monto, fecha y hecho."
+          ],
+          "feedback": {
+            "met": "Registros coincidentes conectan el gasto declarado con lo ocurrido.",
+            "not_yet": "Relaciona monto, fecha y hecho."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual registro sustenta o dado?",
+          "scene": "Uma regra fictícia de despesas pede prova da cobrança e do pagamento feito.",
+          "options": [
+            {
+              "label": "Só uma estimativa de memória"
+            },
+            {
+              "label": "Um recibo sem ligação"
+            },
+            {
+              "label": "Nota datada e pagamento correspondentes"
+            }
+          ],
+          "help": [
+            "Relacione valor, data e fato."
+          ],
+          "feedback": {
+            "met": "Registros correspondentes ligam a despesa declarada ao que ocorreu.",
+            "not_yet": "Relacione valor, data e fato."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.tax-public-systems.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which guidance applies?",
+          "scene": "A saved deadline is foreign and outdated. The current obligation is local.",
+          "options": [
+            {
+              "label": "The saved deadline automatically"
+            },
+            {
+              "label": "Current relevant official guidance"
+            },
+            {
+              "label": "Whichever date is latest"
+            }
+          ],
+          "help": [
+            "Check who issued the rule and which period it covers."
+          ],
+          "feedback": {
+            "met": "Jurisdiction and period must match the actual obligation.",
+            "not_yet": "Check who issued the rule and which period it covers."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué orientación corresponde?",
+          "scene": "Un plazo guardado es extranjero y antiguo. La obligación actual es local.",
+          "options": [
+            {
+              "label": "Automáticamente el plazo guardado"
+            },
+            {
+              "label": "Orientación oficial vigente pertinente"
+            },
+            {
+              "label": "La fecha más tardía"
+            }
+          ],
+          "help": [
+            "Revisa quién emitió la regla y qué periodo cubre."
+          ],
+          "feedback": {
+            "met": "Jurisdicción y periodo deben coincidir con la obligación real.",
+            "not_yet": "Revisa quién emitió la regla y qué periodo cubre."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual orientação cabe?",
+          "scene": "Um prazo salvo é estrangeiro e antigo. O dever atual é local.",
+          "options": [
+            {
+              "label": "O prazo salvo automaticamente"
+            },
+            {
+              "label": "Orientação oficial atual pertinente"
+            },
+            {
+              "label": "A data mais tardia"
+            }
+          ],
+          "help": [
+            "Confira quem emitiu a regra e qual período cobre."
+          ],
+          "feedback": {
+            "met": "Jurisdição e período devem combinar com o dever real.",
+            "not_yet": "Confira quem emitiu a regra e qual período cobre."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.tax-public-systems.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Can it fund tomorrow?",
+          "scene": "An application is pending without a confirmed payment date. The bill is due tomorrow.",
+          "options": [
+            {
+              "label": "Applying equals receiving"
+            },
+            {
+              "label": "Not as confirmed money"
+            },
+            {
+              "label": "The advertised maximum is available"
+            }
+          ],
+          "help": [
+            "Separate possible future support from confirmed usable money."
+          ],
+          "feedback": {
+            "met": "Pending eligibility and timing do not establish tomorrow’s cash.",
+            "not_yet": "Separate possible future support from confirmed usable money."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿El apoyo cubre esta cuenta?",
+          "scene": "Una solicitud está pendiente sin fecha confirmada de pago. La cuenta vence mañana.",
+          "options": [
+            {
+              "label": "Sí, solicitar equivale a recibir"
+            },
+            {
+              "label": "No como dinero confirmado para mañana"
+            },
+            {
+              "label": "Sí, está disponible el máximo anunciado"
+            }
+          ],
+          "help": [
+            "Distingue apoyo posible de dinero utilizable confirmado."
+          ],
+          "feedback": {
+            "met": "Elegibilidad y fecha pendientes no establecen efectivo para mañana.",
+            "not_yet": "Distingue apoyo posible de dinero utilizable confirmado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O benefício cobre esta conta?",
+          "scene": "Uma solicitação está pendente sem data confirmada de pagamento. A conta vence amanhã.",
+          "options": [
+            {
+              "label": "Sim, solicitar equivale a receber"
+            },
+            {
+              "label": "Não como dinheiro confirmado para amanhã"
+            },
+            {
+              "label": "Sim, o máximo anunciado está disponível"
+            }
+          ],
+          "help": [
+            "Separe apoio possível de dinheiro utilizável confirmado."
+          ],
+          "feedback": {
+            "met": "Direito e data pendentes não estabelecem dinheiro para amanhã.",
+            "not_yet": "Separe apoio possível de dinheiro utilizável confirmado."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.tax-public-systems.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Which preserves truth?",
+          "scene": "A preparer suggests inventing an invoice to increase a deduction.",
+          "options": [
+            {
+              "label": "Assume the preparer authorizes false facts"
+            },
+            {
+              "label": "Invent it if the amount is small"
+            },
+            {
+              "label": "Refuse and use genuine records"
+            }
+          ],
+          "help": [
+            "Use qualified guidance without falsifying evidence."
+          ],
+          "feedback": {
+            "met": "Fabrication changes the facts rather than applying a lawful rule.",
+            "not_yet": "Use qualified guidance without falsifying evidence."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué acción conserva la verdad?",
+          "scene": "Quien prepara propone inventar una factura para aumentar una deducción.",
+          "options": [
+            {
+              "label": "Suponer que preparar autoriza datos falsos"
+            },
+            {
+              "label": "Inventarla si el monto es pequeño"
+            },
+            {
+              "label": "Rechazar y usar registros auténticos"
+            }
+          ],
+          "help": [
+            "Usa orientación calificada sin falsificar evidencia."
+          ],
+          "feedback": {
+            "met": "Fabricar cambia hechos en vez de aplicar una regla permitida.",
+            "not_yet": "Usa orientación calificada sin falsificar evidencia."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual ação preserva a verdade?",
+          "scene": "Quem prepara propõe inventar uma nota para aumentar uma dedução.",
+          "options": [
+            {
+              "label": "Supor que preparar autoriza fatos falsos"
+            },
+            {
+              "label": "Inventar se o valor for pequeno"
+            },
+            {
+              "label": "Recusar e usar registros reais"
+            }
+          ],
+          "help": [
+            "Use orientação qualificada sem falsificar provas."
+          ],
+          "feedback": {
+            "met": "Fabricar muda fatos em vez de aplicar uma regra permitida.",
+            "not_yet": "Use orientação qualificada sem falsificar provas."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What amount is received?",
+          "scene": "Gross payment: 150; Explicit withholding: 25; No other deductions.",
+          "options": [
+            {
+              "label": "150"
+            },
+            {
+              "label": "125"
+            },
+            {
+              "label": "25"
+            }
+          ],
+          "help": [
+            "Subtract the stated withholding from gross payment."
+          ],
+          "feedback": {
+            "met": "Withholding reduces the amount actually received.",
+            "not_yet": "Subtract the stated withholding from gross payment."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué monto recibes?",
+          "scene": "Pago bruto: 150; Retención explícita: 25; Sin otras deducciones.",
+          "options": [
+            {
+              "label": "150"
+            },
+            {
+              "label": "125"
+            },
+            {
+              "label": "25"
+            }
+          ],
+          "help": [
+            "Resta la retención indicada del pago bruto."
+          ],
+          "feedback": {
+            "met": "La retención reduce el monto realmente recibido.",
+            "not_yet": "Resta la retención indicada del pago bruto."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual valor recebe?",
+          "scene": "Pagamento bruto: 150; Retenção explícita: 25; Sem outros descontos.",
+          "options": [
+            {
+              "label": "150"
+            },
+            {
+              "label": "125"
+            },
+            {
+              "label": "25"
+            }
+          ],
+          "help": [
+            "Subtraia a retenção dada do pagamento bruto."
+          ],
+          "feedback": {
+            "met": "A retenção reduz o valor de fato recebido.",
+            "not_yet": "Subtraia a retenção dada do pagamento bruto."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          150,
+          25
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.tax-public-systems.05",
+      "copy": {
+        "en-US": {
+          "prompt": "What supports the correction?",
+          "scene": "A platform reverses a recorded client payment. The declaration total needs correction.",
+          "options": [
+            {
+              "label": "Keep original and reversal records"
+            },
+            {
+              "label": "Invent another expense"
+            },
+            {
+              "label": "Delete every trace"
+            }
+          ],
+          "help": [
+            "Preserve evidence of both the original and its reversal."
+          ],
+          "feedback": {
+            "met": "The reversal record explains why the income total changed.",
+            "not_yet": "Preserve evidence of both the original and its reversal."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cómo respaldas la corrección?",
+          "scene": "Una plataforma revierte un pago de cliente registrado. Debes corregir el total declarado.",
+          "options": [
+            {
+              "label": "Guardar registros original y de reversión"
+            },
+            {
+              "label": "Inventar otro gasto"
+            },
+            {
+              "label": "Borrar todo rastro en silencio"
+            }
+          ],
+          "help": [
+            "Conserva pruebas del original y su reversión."
+          ],
+          "feedback": {
+            "met": "La reversión explica por qué cambió el total de ingresos.",
+            "not_yet": "Conserva pruebas del original y su reversión."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Como sustentar a correção?",
+          "scene": "Uma plataforma reverte um pagamento de cliente registrado. Precisa corrigir o total declarado.",
+          "options": [
+            {
+              "label": "Guardar registros original e da reversão"
+            },
+            {
+              "label": "Inventar outra despesa"
+            },
+            {
+              "label": "Apagar todo rastro em silêncio"
+            }
+          ],
+          "help": [
+            "Guarde provas do original e da reversão."
+          ],
+          "feedback": {
+            "met": "A reversão explica por que o total de renda mudou.",
+            "not_yet": "Guarde provas do original e da reversão."
+          }
+        }
+      }
+    }
+  ]
+}

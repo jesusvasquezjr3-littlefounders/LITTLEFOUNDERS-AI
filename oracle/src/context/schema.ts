@@ -71,12 +71,28 @@ export const SkillStateSchema = z
   })
   .strict();
 
+/**
+ * OD-43 (owner sign-off, 2026-10-06): the learner's CURRENT lesson inside the
+ * session's topic — the Mentor as a complement to the course. It carries OUR
+ * catalog title and the lesson's position, never anything the learner typed.
+ */
+const CourseLessonSchema = z
+  .object({
+    lessonId: z.uuid(),
+    lessonTitle: z.string().min(1).max(160),
+    step: z.number().int().positive(),
+    total: z.number().int().positive(),
+  })
+  .strict();
+
 export const CourseContextSchema = z
   .object({
     courseId: z.uuid().nullable(),
     courseTitle: z.string().min(1).max(160).nullable(),
     topicId: z.uuid().nullable(),
     topicTitle: z.string().min(1).max(160).nullable(),
+    /** OD-43: the current lesson in this topic, or null/absent when none is known. */
+    lesson: CourseLessonSchema.nullable().optional(),
   })
   .strict();
 

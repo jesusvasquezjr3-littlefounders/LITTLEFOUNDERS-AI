@@ -75,10 +75,10 @@ describe('learner home', () => {
     expect(within(shelf).getByRole('article', { name: 'Smart investing' }).textContent).toContain('Still being built');
   });
 
-  it('offers the placement first when a course owes one (B.15 framing)', () => {
+  it('does not force placement on the home hero (B.15: an offer, never a wall)', () => {
     home({ featured: linear(true) });
-    const hero = screen.getByRole('region', { name: 'Find your start' });
-    expect(within(hero).getByRole('link', { name: 'Start' }).getAttribute('href')).toBe('/learn/financial-education/placement');
+    const hrefs = [...document.querySelectorAll<HTMLAnchorElement>('.lf-learn-hero a')].map((a) => a.getAttribute('href'));
+    expect(hrefs).not.toContain('/learn/financial-education/placement');
   });
 
   it('opens the B.6 recommendation even when the course read failed', () => {

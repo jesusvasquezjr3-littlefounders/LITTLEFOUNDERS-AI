@@ -1,0 +1,743 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-integrated-decisions-part-2",
+  "lesson_id": "fe-production-integrated-decisions-10",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.retirement-future.06",
+    "finance.prod.retirement-future.09",
+    "finance.prod.time-inflation.10"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Revise a retirement projection after a change in costs without promising an exact future outcome.",
+  "title": {
+    "en-US": "Revised projections",
+    "es-MX": "Revisa la proyección",
+    "pt-BR": "Revise a projeção"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Revise the projection\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Revisa la proyección\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Revise a projeção\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "capstone",
+    "objective": {
+      "skill_id": "prod.retirement-future.06",
+      "observable_action": "Revise a retirement projection after a change in costs without promising an exact future outcome.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.time-inflation.06",
+      "prod.saving-resilience.02"
+    ],
+    "retrieval_skills": [
+      "prod.retirement-future.06",
+      "prod.retirement-future.09",
+      "prod.time-inflation.10"
+    ],
+    "relevance": "A future plan needs updated assumptions, not a promise about future money.",
+    "misconception": "Confusing longer life with rising prices or protecting an old contribution at the expense of current essentials.",
+    "numeracy_support": "Use the explicitly stated totals, deadlines and constraints. Earlier financial arithmetic is retrieved; no current rate or legal entitlement is implied.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.retirement-future.06",
+        "context_id": "integrated-decisions-10-practice-01",
+        "supports_from": [],
+        "reasoning": "Higher prices change purchasing power even with the same retirement duration."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.retirement-future.09",
+        "context_id": "integrated-decisions-10-practice-02",
+        "supports_from": [],
+        "reasoning": "The changed income requires a feasible contribution plan."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.time-inflation.10",
+        "context_id": "integrated-decisions-10-practice-03",
+        "supports_from": [],
+        "reasoning": "The projection is conditional on assumptions, not a guaranteed payment."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.retirement-future.06",
+        "context_id": "integrated-decisions-10-practice-04",
+        "supports_from": [],
+        "reasoning": "More years require funding a longer spending period."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.retirement-future.09",
+        "context_id": "integrated-decisions-10-practice-05",
+        "supports_from": [],
+        "reasoning": "Recovered income is not all free while essential arrears remain due."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.retirement-future.06",
+        "context_id": "integrated-decisions-10-transfer-01",
+        "supports_from": [],
+        "reasoning": "Both changes affect funding needs; neither makes uncertain returns guaranteed."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.retirement-future.06",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A future plan needs updated assumptions, not a promise about future money."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un plan futuro necesita supuestos actualizados, no promesas de dinero."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Um plano futuro precisa de premissas atualizadas, não promessas de dinheiro."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which risk changed?",
+          "scene": "The same yearly purchases cost more; the assumed number of retirement years is unchanged.",
+          "options": [
+            {
+              "label": "Inflation"
+            },
+            {
+              "label": "Longevity alone"
+            },
+            {
+              "label": "Neither risk"
+            }
+          ],
+          "help": [
+            "Separate the cost per year from the number of years."
+          ],
+          "feedback": {
+            "met": "Higher prices change purchasing power even with the same retirement duration.",
+            "not_yet": "Separate the cost per year from the number of years."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué riesgo cambió?",
+          "scene": "Las mismas compras anuales cuestan más; no cambia la cantidad prevista de años de retiro.",
+          "options": [
+            {
+              "label": "Inflación"
+            },
+            {
+              "label": "Solo longevidad"
+            },
+            {
+              "label": "Ningún riesgo"
+            }
+          ],
+          "help": [
+            "Separa el costo anual de la cantidad de años."
+          ],
+          "feedback": {
+            "met": "Precios mayores cambian poder de compra aunque dure igual el retiro.",
+            "not_yet": "Separa el costo anual de la cantidad de años."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual risco mudou?",
+          "scene": "As mesmas compras anuais custam mais; o número previsto de anos de aposentadoria não muda.",
+          "options": [
+            {
+              "label": "Inflação"
+            },
+            {
+              "label": "Só longevidade"
+            },
+            {
+              "label": "Nenhum risco"
+            }
+          ],
+          "help": [
+            "Separe o custo anual da quantidade de anos."
+          ],
+          "feedback": {
+            "met": "Preços maiores mudam poder de compra mesmo com duração igual.",
+            "not_yet": "Separe o custo anual da quantidade de anos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.09",
+      "copy": {
+        "en-US": {
+          "prompt": "What should be reassessed first?",
+          "scene": "Income falls; the old retirement contribution leaves current essentials unfunded.",
+          "options": [
+            {
+              "label": "Assuming the old income"
+            },
+            {
+              "label": "A feasible contribution after essentials"
+            },
+            {
+              "label": "Hiding unpaid essentials"
+            }
+          ],
+          "help": [
+            "An old target does not replace money for current essentials."
+          ],
+          "feedback": {
+            "met": "The changed income requires a feasible contribution plan.",
+            "not_yet": "An old target does not replace money for current essentials."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debes reconsiderar primero?",
+          "scene": "Baja el ingreso; la aportación anterior al retiro dejaría cuentas esenciales actuales sin fondos.",
+          "options": [
+            {
+              "label": "Cómo suponer el ingreso anterior"
+            },
+            {
+              "label": "Una aportación viable tras necesidades"
+            },
+            {
+              "label": "Cómo ocultar cuentas esenciales pendientes"
+            }
+          ],
+          "help": [
+            "Una meta anterior no reemplaza dinero para necesidades actuales."
+          ],
+          "feedback": {
+            "met": "El ingreso cambiado exige una aportación viable.",
+            "not_yet": "Una meta anterior no reemplaza dinero para necesidades actuales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que reavaliar primeiro?",
+          "scene": "A renda cai; a contribuição anterior deixaria contas essenciais atuais sem recursos.",
+          "options": [
+            {
+              "label": "Como supor a renda anterior"
+            },
+            {
+              "label": "Uma contribuição viável após necessidades"
+            },
+            {
+              "label": "Como esconder contas essenciais pendentes"
+            }
+          ],
+          "help": [
+            "Uma meta anterior não substitui dinheiro para necessidades atuais."
+          ],
+          "feedback": {
+            "met": "A renda alterada exige um plano de contribuição viável.",
+            "not_yet": "Uma meta anterior não substitui dinheiro para necessidades atuais."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.time-inflation.10",
+      "copy": {
+        "en-US": {
+          "prompt": "What does the projection mean?",
+          "scene": "The calculator assumes constant yearly returns; actual future returns are unknown.",
+          "options": [
+            {
+              "label": "Every year will match"
+            },
+            {
+              "label": "The future amount is guaranteed"
+            },
+            {
+              "label": "An amount based on assumptions"
+            }
+          ],
+          "help": [
+            "A calculator can compute an assumption without proving it will happen."
+          ],
+          "feedback": {
+            "met": "The projection is conditional on assumptions, not a guaranteed payment.",
+            "not_yet": "A calculator can compute an assumption without proving it will happen."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué significa la proyección?",
+          "scene": "La calculadora supone igual rendimiento cada año; los rendimientos futuros reales son desconocidos.",
+          "options": [
+            {
+              "label": "Cada año coincidirá"
+            },
+            {
+              "label": "El monto futuro está garantizado"
+            },
+            {
+              "label": "El monto depende de los supuestos"
+            }
+          ],
+          "help": [
+            "Calcular un supuesto no demuestra que vaya a cumplirse."
+          ],
+          "feedback": {
+            "met": "La proyección depende de supuestos, no de un pago garantizado.",
+            "not_yet": "Calcular un supuesto no demuestra que vaya a cumplirse."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que significa a projeção?",
+          "scene": "A calculadora supõe o mesmo retorno anual; os retornos futuros reais são desconhecidos.",
+          "options": [
+            {
+              "label": "Todo ano será igual"
+            },
+            {
+              "label": "O valor futuro é garantido"
+            },
+            {
+              "label": "O valor depende das premissas"
+            }
+          ],
+          "help": [
+            "Calcular uma premissa não comprova que ela acontecerá."
+          ],
+          "feedback": {
+            "met": "A projeção depende de premissas, não de um pagamento garantido.",
+            "not_yet": "Calcular uma premissa não comprova que ela acontecerá."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which risk changed now?",
+          "scene": "Yearly spending stays unchanged, but the plan must cover more years than previously assumed.",
+          "options": [
+            {
+              "label": "Only the contribution date"
+            },
+            {
+              "label": "Longevity"
+            },
+            {
+              "label": "Inflation alone"
+            }
+          ],
+          "help": [
+            "Longer duration is different from higher yearly prices."
+          ],
+          "feedback": {
+            "met": "More years require funding a longer spending period.",
+            "not_yet": "Longer duration is different from higher yearly prices."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué riesgo cambió ahora?",
+          "scene": "El gasto anual sigue igual, pero el plan debe cubrir más años de los previstos.",
+          "options": [
+            {
+              "label": "Solo la fecha de aportación"
+            },
+            {
+              "label": "Longevidad"
+            },
+            {
+              "label": "Solo inflación"
+            }
+          ],
+          "help": [
+            "Mayor duración es distinta de mayores precios anuales."
+          ],
+          "feedback": {
+            "met": "Más años requieren financiar un periodo de gasto más largo.",
+            "not_yet": "Mayor duración es distinta de mayores precios anuales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual risco mudou agora?",
+          "scene": "O gasto anual permanece igual, mas o plano precisa cobrir mais anos que o previsto.",
+          "options": [
+            {
+              "label": "Só a data de contribuição"
+            },
+            {
+              "label": "Longevidade"
+            },
+            {
+              "label": "Só inflação"
+            }
+          ],
+          "help": [
+            "Maior duração é diferente de preços anuais maiores."
+          ],
+          "feedback": {
+            "met": "Mais anos exigem financiar um período maior de gastos.",
+            "not_yet": "Maior duração é diferente de preços anuais maiores."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.09",
+      "copy": {
+        "en-US": {
+          "prompt": "When can contributions rise again?",
+          "scene": "Income recovers; essential arrears temporarily absorb the increase.",
+          "options": [
+            {
+              "label": "After accounting for the essential arrears"
+            },
+            {
+              "label": "Immediately by the entire increase"
+            },
+            {
+              "label": "Only with guaranteed future returns"
+            }
+          ],
+          "help": [
+            "Reassess current commitments before increasing the contribution."
+          ],
+          "feedback": {
+            "met": "Recovered income is not all free while essential arrears remain due.",
+            "not_yet": "Reassess current commitments before increasing the contribution."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuándo aumentar aportaciones otra vez?",
+          "scene": "Se recupera el ingreso, pero un atraso esencial absorbe temporalmente los fondos adicionales.",
+          "options": [
+            {
+              "label": "Tras considerar el atraso esencial"
+            },
+            {
+              "label": "Ya, por todo el aumento"
+            },
+            {
+              "label": "Solo con rendimientos futuros garantizados"
+            }
+          ],
+          "help": [
+            "Revisa compromisos actuales antes de aumentar la aportación."
+          ],
+          "feedback": {
+            "met": "El ingreso recuperado no queda libre mientras venza el atraso esencial.",
+            "not_yet": "Revisa compromisos actuales antes de aumentar la aportación."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quando aumentar contribuições novamente?",
+          "scene": "A renda se recupera, mas uma conta essencial atrasada absorve temporariamente os recursos adicionais.",
+          "options": [
+            {
+              "label": "Após considerar o atraso essencial"
+            },
+            {
+              "label": "Já, por todo o aumento"
+            },
+            {
+              "label": "Só com retornos futuros garantidos"
+            }
+          ],
+          "help": [
+            "Revise compromissos atuais antes de aumentar a contribuição."
+          ],
+          "feedback": {
+            "met": "A renda recuperada não fica livre enquanto vence o atraso essencial.",
+            "not_yet": "Revise compromissos atuais antes de aumentar a contribuição."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.retirement-future.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which assumptions need revision?",
+          "scene": "Yearly costs rise and retirement lasts longer; projected returns remain uncertain.",
+          "options": [
+            {
+              "label": "Both annual cost and duration"
+            },
+            {
+              "label": "Only the retirement start date"
+            },
+            {
+              "label": "Only the annual cost"
+            }
+          ],
+          "help": [
+            "Update each changed assumption instead of merging the two risks."
+          ],
+          "feedback": {
+            "met": "Both changes affect funding needs; neither makes uncertain returns guaranteed.",
+            "not_yet": "Update each changed assumption instead of merging the two risks."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué supuestos debes revisar?",
+          "scene": "El nuevo plan usa mayor costo de vida anual y más años de retiro; el rendimiento sigue incierto.",
+          "options": [
+            {
+              "label": "Costo anual y duración"
+            },
+            {
+              "label": "Solo la fecha de retiro"
+            },
+            {
+              "label": "Solo el costo anual"
+            }
+          ],
+          "help": [
+            "Actualiza cada supuesto cambiado sin mezclar ambos riesgos."
+          ],
+          "feedback": {
+            "met": "Ambos cambios afectan necesidades; ninguno garantiza rendimientos inciertos.",
+            "not_yet": "Actualiza cada supuesto cambiado sin mezclar ambos riesgos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quais premissas revisar?",
+          "scene": "O novo plano usa maior custo anual de vida e mais anos de aposentadoria; o retorno continua incerto.",
+          "options": [
+            {
+              "label": "Custo anual e duração"
+            },
+            {
+              "label": "Só a data de aposentadoria"
+            },
+            {
+              "label": "Só o custo anual"
+            }
+          ],
+          "help": [
+            "Atualize cada premissa alterada sem misturar os dois riscos."
+          ],
+          "feedback": {
+            "met": "As duas mudanças afetam necessidades; nenhuma garante retornos incertos.",
+            "not_yet": "Atualize cada premissa alterada sem misturar os dois riscos."
+          }
+        }
+      }
+    }
+  ]
+}

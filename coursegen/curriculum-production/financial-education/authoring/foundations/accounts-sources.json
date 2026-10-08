@@ -1,0 +1,55 @@
+{
+  "scope": "Source notes for accounts-records and later payments-digital authoring; this is not a publication or regional-review approval.",
+  "review_date": "2026-10-05",
+  "authoring_policy": "Illustrative account balances, fees and holds are explicitly fictional. No current statutory coverage amount, refund deadline, account-opening entitlement or guaranteed recovery is taught. Verify the actual institution, product, jurisdiction and terms.",
+  "sources": [
+    {
+      "url": "https://banks.data.fdic.gov/bankfind-suite/",
+      "supports": "BankFind identifies current and former FDIC-insured banking institutions. Its scope is not every possible financial provider."
+    },
+    {
+      "url": "https://www.fdic.gov/consumer-resource-center/2024-06/banking-third-party-apps",
+      "supports": "A nonbank app's relationship with a bank does not by itself establish the user's coverage; relevant pass-through conditions and the actual bank must be checked."
+    },
+    {
+      "url": "https://www.condusef.gob.mx/?idc=2732&idcat=3&p=contenido",
+      "supports": "Use CONDUSEF's official SIPRES entry point to check the named financial institution."
+    },
+    {
+      "url": "https://www.condusef.gob.mx/?idc=1882&idcat=&p=contenido",
+      "supports": "Impersonators can copy a real institution's identity; verifying that the institution exists is not enough to authenticate a message or contact."
+    },
+    {
+      "url": "https://www.gob.mx/ipab/acciones-y-programas/obligaciones-garantizadas",
+      "supports": "IPAB coverage has defined eligible obligations, limits and exclusions. The lesson directs verification rather than teaching a universal guarantee."
+    },
+    {
+      "url": "https://www.bcb.gov.br/estabilidadefinanceira/encontreinstituicao",
+      "supports": "Banco Central provides an institution lookup with authorized, regulated or supervised entities and permitted operations."
+    },
+    {
+      "url": "https://www.fgc.org.br/sobre-garantia-fgc",
+      "supports": "FGC coverage is product- and condition-specific; its own coverage rules must be checked separately from the provider's authorization."
+    },
+    {
+      "url": "https://www.consumerfinance.gov/consumer-tools/bank-accounts/watch-accounts-closely-when-card-data-is-hacked/",
+      "supports": "Promptly contact the actual bank or card provider about a suspected unauthorized charge and follow applicable statement or error-resolution instructions. No universal deadline is copied into the course."
+    },
+    {
+      "url": "https://www.condusef.gob.mx/?idc=1731&p=contenido",
+      "supports": "Retain the claim acknowledgement and case reference when reporting an unfamiliar charge. The course does not promise the page's general refund timing in every scenario."
+    },
+    {
+      "url": "https://www.condusef.gob.mx/?idc=1018&idcat=1&p=contenido",
+      "supports": "Compare the merchant's legal name on receipts before assuming that an unfamiliar statement description identifies an unauthorized charge."
+    },
+    {
+      "url": "https://www.bcb.gov.br/meubc/faqs/p/dicas-gerais-para-evitar-golpes",
+      "supports": "Do not disclose account passwords to other people or rely on strangers for sensitive account operations."
+    },
+    {
+      "url": "https://www.consumerfinance.gov/compliance/compliance-resources/deposit-accounts-resources/electronic-fund-transfers/electronic-fund-transfers-faqs/",
+      "supports": "Impersonation can seek login details or confirmation codes. Preserving evidence is useful; the lesson must not imply that assembling documentation is a prerequisite to reporting a suspected error."
+    }
+  ]
+}

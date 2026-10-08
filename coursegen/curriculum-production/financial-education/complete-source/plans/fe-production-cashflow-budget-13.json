@@ -1,0 +1,816 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-cashflow-budget-part-3",
+  "lesson_id": "fe-production-cashflow-budget-13",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.cashflow-budget.13"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Close a budget period by comparing the plan with actual receipts and payments.",
+  "title": {
+    "en-US": "Actual records",
+    "es-MX": "Cierra el periodo con registros reales",
+    "pt-BR": "Feche o período com registros reais"
+  },
+  "new_concepts": [
+    "finance.prod.cashflow-budget.13"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Close the period with actual records\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Cierra el periodo con registros reales\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Feche o período com registros reais\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.cashflow-budget.13",
+      "observable_action": "Close a budget period by comparing the plan with actual receipts and payments.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.cashflow-budget.01",
+      "prod.cashflow-budget.04",
+      "prod.spending-patterns.09"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Compare what was planned with what actually arrived and was paid.",
+    "misconception": "Reporting the forecast as actual results or overlooking missing receipts and payments when closing a period.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.cashflow-budget.13",
+        "context_id": "fe-production-cashflow-budget-13-example-01",
+        "supports_from": [],
+        "reasoning": "Expected income is not a receipt. Close the period using completed movements, then compare them with the original plan."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.cashflow-budget.13",
+        "context_id": "fe-production-cashflow-budget-13-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "100 − 80 = 20 less received than planned."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.cashflow-budget.13",
+        "context_id": "fe-production-cashflow-budget-13-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Closing a period does not pay or erase a bill."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.cashflow-budget.13",
+        "context_id": "fe-production-cashflow-budget-13-practice-01",
+        "supports_from": [],
+        "reasoning": "170 − 125 = 45 actual period surplus."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.cashflow-budget.13",
+        "context_id": "fe-production-cashflow-budget-13-practice-02",
+        "supports_from": [],
+        "reasoning": "Missing purchases make the actual spending total incomplete."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.cashflow-budget.13",
+        "context_id": "fe-production-cashflow-budget-13-practice-03",
+        "supports_from": [],
+        "reasoning": "Actual receipts follow arrival dates rather than expected dates."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.cashflow-budget.13",
+        "context_id": "fe-production-cashflow-budget-13-transfer-01",
+        "supports_from": [],
+        "reasoning": "Closing compares the forecast with evidence of actual costs."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.cashflow-budget.13",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Compare what was planned with what actually arrived and was paid."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Compara lo planeado con lo realmente recibido y pagado."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Compare o planejado com o realmente recebido e pago."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Forecast and result",
+          "line": "Expected income is not a receipt. Close the period using completed movements, then compare them with the original plan."
+        },
+        "es-MX": {
+          "prompt": "Estimación y resultado",
+          "line": "Ingreso esperado no es ingreso recibido. Cierra con movimientos realizados y compáralos con el plan original."
+        },
+        "pt-BR": {
+          "prompt": "Estimativa e resultado",
+          "line": "Renda esperada não é renda recebida. Feche com movimentos realizados e compare com o plano original."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.13",
+      "copy": {
+        "en-US": {
+          "prompt": "Receipt shortfall against plan?",
+          "scene": "Expected receipt: 100; actually received: 80 by period-end.",
+          "options": [
+            {
+              "label": "0"
+            },
+            {
+              "label": "20"
+            },
+            {
+              "label": "180"
+            }
+          ],
+          "help": [
+            "Compare the actual receipt with the forecast."
+          ],
+          "feedback": {
+            "met": "100 − 80 = 20 less received than planned.",
+            "not_yet": "Compare the actual receipt with the forecast."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Entrada faltante respecto al plan?",
+          "scene": "Entrada esperada: 100; recibido realmente: 80 al cerrar.",
+          "options": [
+            {
+              "label": "0"
+            },
+            {
+              "label": "20"
+            },
+            {
+              "label": "180"
+            }
+          ],
+          "help": [
+            "Compara recepción real y estimación."
+          ],
+          "feedback": {
+            "met": "100 − 80 = 20 menos recibido que lo planeado.",
+            "not_yet": "Compara recepción real y estimación."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Entrada faltante em relação ao plano?",
+          "scene": "Entrada esperada: 100; recebido realmente: 80 no fechamento.",
+          "options": [
+            {
+              "label": "0"
+            },
+            {
+              "label": "20"
+            },
+            {
+              "label": "180"
+            }
+          ],
+          "help": [
+            "Compare recebimento real e estimativa."
+          ],
+          "feedback": {
+            "met": "100 − 80 = 20 a menos recebido que o previsto.",
+            "not_yet": "Compare recebimento real e estimativa."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          100,
+          80
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.13",
+      "copy": {
+        "en-US": {
+          "prompt": "How to record it?",
+          "scene": "A bill was planned but remains unpaid when the period ends.",
+          "options": [
+            {
+              "label": "Removed because the period ended"
+            },
+            {
+              "label": "Unpaid obligation, not completed payment"
+            },
+            {
+              "label": "Paid because included in the plan"
+            }
+          ],
+          "help": [
+            "Distinguish intended and completed payments."
+          ],
+          "feedback": {
+            "met": "Closing a period does not pay or erase a bill.",
+            "not_yet": "Distinguish intended and completed payments."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cómo debe mostrarla el registro?",
+          "scene": "Una cuenta se planeó, pero sigue sin pagarse al cerrar el periodo.",
+          "options": [
+            {
+              "label": "Eliminada porque terminó el periodo"
+            },
+            {
+              "label": "Obligación pendiente, no pago realizado"
+            },
+            {
+              "label": "Pagada por incluirse en el plan"
+            }
+          ],
+          "help": [
+            "Distingue pagos previstos y realizados."
+          ],
+          "feedback": {
+            "met": "Cerrar un periodo no paga ni elimina una cuenta.",
+            "not_yet": "Distingue pagos previstos y realizados."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Como o registro deve mostrá-la?",
+          "scene": "Uma conta foi planejada, mas continua não paga ao fechar o período.",
+          "options": [
+            {
+              "label": "Eliminada porque o período terminou"
+            },
+            {
+              "label": "Obrigação pendente, não pagamento concluído"
+            },
+            {
+              "label": "Paga por estar no plano"
+            }
+          ],
+          "help": [
+            "Distinga pagamentos previstos e realizados."
+          ],
+          "feedback": {
+            "met": "Fechar um período não paga nem elimina uma conta.",
+            "not_yet": "Distinga pagamentos previstos e realizados."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.13",
+      "copy": {
+        "en-US": {
+          "prompt": "Actual period surplus?",
+          "scene": "Actual receipts: 170; actual payments: 125, with all movements recorded.",
+          "options": [
+            {
+              "label": "295"
+            },
+            {
+              "label": "45"
+            },
+            {
+              "label": "125"
+            }
+          ],
+          "help": [
+            "Use completed movements for the actual result."
+          ],
+          "feedback": {
+            "met": "170 − 125 = 45 actual period surplus.",
+            "not_yet": "Use completed movements for the actual result."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Excedente real del periodo?",
+          "scene": "Entradas reales: 170; pagos reales: 125, con todos los movimientos registrados.",
+          "options": [
+            {
+              "label": "295"
+            },
+            {
+              "label": "45"
+            },
+            {
+              "label": "125"
+            }
+          ],
+          "help": [
+            "Usa movimientos realizados para el resultado real."
+          ],
+          "feedback": {
+            "met": "170 − 125 = 45 de excedente real.",
+            "not_yet": "Usa movimientos realizados para el resultado real."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Excedente real do período?",
+          "scene": "Entradas reais: 170; pagamentos reais: 125, com todos os movimentos registrados.",
+          "options": [
+            {
+              "label": "295"
+            },
+            {
+              "label": "45"
+            },
+            {
+              "label": "125"
+            }
+          ],
+          "help": [
+            "Use movimentos concluídos para o resultado real."
+          ],
+          "feedback": {
+            "met": "170 − 125 = 45 de excedente real.",
+            "not_yet": "Use movimentos concluídos para o resultado real."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          170,
+          125
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.13",
+      "copy": {
+        "en-US": {
+          "prompt": "What must happen before final comparison?",
+          "scene": "The record omits cash purchases made during the period.",
+          "options": [
+            {
+              "label": "Call the incomplete total final"
+            },
+            {
+              "label": "Reconcile and include missing purchases"
+            },
+            {
+              "label": "Assume cash purchases cost nothing"
+            }
+          ],
+          "help": [
+            "Check completeness before interpreting a difference."
+          ],
+          "feedback": {
+            "met": "Missing purchases make the actual spending total incomplete.",
+            "not_yet": "Check completeness before interpreting a difference."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe ocurrir antes de comparar definitivamente?",
+          "scene": "El registro omite compras en efectivo hechas durante el periodo.",
+          "options": [
+            {
+              "label": "Llamar definitivo al total incompleto"
+            },
+            {
+              "label": "Conciliar e incluir compras faltantes"
+            },
+            {
+              "label": "Suponer gratuitas las compras en efectivo"
+            }
+          ],
+          "help": [
+            "Revisa integridad antes de interpretar diferencias."
+          ],
+          "feedback": {
+            "met": "Compras faltantes vuelven incompleto el total de gasto real.",
+            "not_yet": "Revisa integridad antes de interpretar diferencias."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que deve ocorrer antes da comparação final?",
+          "scene": "O registro omite compras em dinheiro feitas durante o período.",
+          "options": [
+            {
+              "label": "Chamar definitivo o total incompleto"
+            },
+            {
+              "label": "Conciliar e incluir compras ausentes"
+            },
+            {
+              "label": "Supor gratuitas as compras em dinheiro"
+            }
+          ],
+          "help": [
+            "Confira se está completo antes de interpretar diferenças."
+          ],
+          "feedback": {
+            "met": "Compras ausentes tornam incompleto o total de gasto real.",
+            "not_yet": "Confira se está completo antes de interpretar diferenças."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.13",
+      "copy": {
+        "en-US": {
+          "prompt": "Where does this receipt belong?",
+          "scene": "An expected refund arrived after the period ended.",
+          "options": [
+            {
+              "label": "As received before the actual date"
+            },
+            {
+              "label": "In the period when it arrived"
+            },
+            {
+              "label": "In every period it was expected"
+            }
+          ],
+          "help": [
+            "Keep the earlier forecast and later receipt distinct."
+          ],
+          "feedback": {
+            "met": "Actual receipts follow arrival dates rather than expected dates.",
+            "not_yet": "Keep the earlier forecast and later receipt distinct."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Dónde corresponde su recepción real?",
+          "scene": "Un reembolso llegó después del cierre; durante este periodo solo se esperaba.",
+          "options": [
+            {
+              "label": "Como recibido antes de su fecha real"
+            },
+            {
+              "label": "En el periodo en que llegó"
+            },
+            {
+              "label": "En cada periodo en que se esperaba"
+            }
+          ],
+          "help": [
+            "Distingue estimación anterior y recepción posterior."
+          ],
+          "feedback": {
+            "met": "Las entradas reales siguen fechas de llegada, no fechas esperadas.",
+            "not_yet": "Distingue estimación anterior y recepción posterior."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Onde cabe seu recebimento real?",
+          "scene": "Um reembolso chegou após o fechamento; durante este período era só esperado.",
+          "options": [
+            {
+              "label": "Como recebido antes da data real"
+            },
+            {
+              "label": "No período em que chegou"
+            },
+            {
+              "label": "Em cada período em que era esperado"
+            }
+          ],
+          "help": [
+            "Distinga estimativa anterior e recebimento posterior."
+          ],
+          "feedback": {
+            "met": "As entradas reais seguem datas de chegada, não datas esperadas.",
+            "not_yet": "Distinga estimativa anterior e recebimento posterior."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.cashflow-budget.13",
+      "copy": {
+        "en-US": {
+          "prompt": "What should reports use?",
+          "scene": "An event’s final supplier receipts exceed its forecast costs.",
+          "options": [
+            {
+              "label": "The forecast as if it happened"
+            },
+            {
+              "label": "Only receipts matching the original plan"
+            },
+            {
+              "label": "Actual verified costs beside the forecast"
+            }
+          ],
+          "help": [
+            "Keep the difference visible so the next plan can improve."
+          ],
+          "feedback": {
+            "met": "Closing compares the forecast with evidence of actual costs.",
+            "not_yet": "Keep the difference visible so the next plan can improve."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué usar al cerrar?",
+          "scene": "La estimación de un evento coincidía con su presupuesto, pero comprobantes finales muestran costos mayores.",
+          "options": [
+            {
+              "label": "La estimación como si hubiera ocurrido"
+            },
+            {
+              "label": "Solo comprobantes que coincidan con el plan"
+            },
+            {
+              "label": "Costos reales verificados junto a estimación"
+            }
+          ],
+          "help": [
+            "Conserva visible la diferencia para mejorar el siguiente plan."
+          ],
+          "feedback": {
+            "met": "El cierre compara estimación con evidencia de costos reales.",
+            "not_yet": "Conserva visible la diferencia para mejorar el siguiente plan."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que usar aqui?",
+          "scene": "A estimativa de um evento coincidia com seu orçamento, mas comprovantes finais mostram custos maiores.",
+          "options": [
+            {
+              "label": "A estimativa como se tivesse ocorrido"
+            },
+            {
+              "label": "Só comprovantes que coincidam com o plano"
+            },
+            {
+              "label": "Custos reais verificados junto à estimativa"
+            }
+          ],
+          "help": [
+            "Mantenha visível a diferença para melhorar o próximo plano."
+          ],
+          "feedback": {
+            "met": "O fechamento compara estimativa com evidência dos custos reais.",
+            "not_yet": "Mantenha visível a diferença para melhorar o próximo plano."
+          }
+        }
+      }
+    }
+  ]
+}

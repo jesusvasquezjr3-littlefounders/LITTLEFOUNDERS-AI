@@ -1,0 +1,798 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-saving-resilience-part-1",
+  "lesson_id": "fe-production-saving-resilience-03",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.saving-resilience.03"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Set an initial emergency reserve target using the scenario’s actual risks and feasible contributions.",
+  "title": {
+    "en-US": "Feasible Reserves",
+    "es-MX": "Empieza con reserva viable",
+    "pt-BR": "Comece com uma reserva viável"
+  },
+  "new_concepts": [
+    "finance.prod.saving-resilience.03"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Feasible Reserves\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Empieza con reserva viable\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Comece com uma reserva viável\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.saving-resilience.03",
+      "observable_action": "Set an initial emergency reserve target using the scenario’s actual risks and feasible contributions.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.saving-resilience.01",
+      "prod.saving-resilience.02",
+      "prod.cashflow-budget.11"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A starting reserve target should reflect real disruptions and feasible saving; a universal number cannot describe every household.",
+    "misconception": "Every household needs an identical target immediately, even if the contribution would leave essentials unpaid.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.saving-resilience.03",
+        "context_id": "saving-resilience-03-example-01",
+        "supports_from": [],
+        "reasoning": "Use the stated likely disruption to set an initial target. Choose contributions that fit essentials, then review as circumstances change."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.saving-resilience.03",
+        "context_id": "saving-resilience-03-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The identified risk supplies a reason for the starter target."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.saving-resilience.03",
+        "context_id": "saving-resilience-03-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "A feasible contribution preserves the stated essential payments."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.saving-resilience.03",
+        "context_id": "saving-resilience-03-practice-01",
+        "supports_from": [],
+        "reasoning": "Existing reserve reduces the remaining starter gap."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.saving-resilience.03",
+        "context_id": "saving-resilience-03-practice-02",
+        "supports_from": [],
+        "reasoning": "A starter target is progress, not complete protection."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.saving-resilience.03",
+        "context_id": "saving-resilience-03-practice-03",
+        "supports_from": [],
+        "reasoning": "Changed needs and uncertainty can change the reserve’s purpose."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.saving-resilience.03",
+        "context_id": "saving-resilience-03-transfer-01",
+        "supports_from": [],
+        "reasoning": "A workable start reflects both disruption needs and available capacity."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.saving-resilience.03",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A starting reserve target should reflect real disruptions and feasible saving; a universal number cannot describe every household."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Meta inicial de reserva debe reflejar contratiempos reales y ahorro viable; una cifra universal no describe todo hogar."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Meta inicial de reserva deve refletir contratempos reais e poupança viável; uma cifra universal não descreve toda família."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Risk and capacity together",
+          "line": "Use the stated likely disruption to set an initial target. Choose contributions that fit essentials, then review as circumstances change."
+        },
+        "es-MX": {
+          "prompt": "Riesgo y capacidad juntos",
+          "line": "Usa contratiempo probable indicado para meta inicial. Elige aportes que quepan tras esenciales y revisa cuando cambien circunstancias."
+        },
+        "pt-BR": {
+          "prompt": "Risco e capacidade juntos",
+          "line": "Use contratempo provável dado para meta inicial. Escolha aportes que caibam após essenciais e reveja quando situações mudarem."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Which target fits?",
+          "scene": "The identified disruption would require an essential repair; its estimate is available.",
+          "options": [
+            {
+              "label": "Pick an unrelated luxury price"
+            },
+            {
+              "label": "Copy a stranger’s reserve blindly"
+            },
+            {
+              "label": "Use the repair estimate first"
+            }
+          ],
+          "help": [
+            "Connect the target with the disruption it should address."
+          ],
+          "feedback": {
+            "met": "The identified risk supplies a reason for the starter target.",
+            "not_yet": "Connect the target with the disruption it should address."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué meta usa riesgo del caso?",
+          "scene": "Contratiempo identificado requiere arreglo esencial; hay estimación disponible.",
+          "options": [
+            {
+              "label": "Elegir precio de lujo ajeno"
+            },
+            {
+              "label": "Copiar reserva ajena sin revisar"
+            },
+            {
+              "label": "Usar estimación del arreglo como inicio"
+            }
+          ],
+          "help": [
+            "Conecta meta con contratiempo que debe atender."
+          ],
+          "feedback": {
+            "met": "Riesgo identificado da motivo para meta inicial.",
+            "not_yet": "Conecta meta con contratiempo que debe atender."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que meta usa risco do caso?",
+          "scene": "Contratempo identificado exige conserto essencial; há estimativa disponível.",
+          "options": [
+            {
+              "label": "Escolher preço de luxo alheio"
+            },
+            {
+              "label": "Copiar reserva alheia sem conferir"
+            },
+            {
+              "label": "Usar estimativa do conserto como início"
+            }
+          ],
+          "help": [
+            "Ligue meta ao contratempo que deve atender."
+          ],
+          "feedback": {
+            "met": "Risco identificado dá motivo para meta inicial.",
+            "not_yet": "Ligue meta ao contratempo que deve atender."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Which contribution is feasible?",
+          "scene": "After essentials, a small surplus remains; a larger transfer leaves rent unpaid.",
+          "options": [
+            {
+              "label": "An amount within that surplus"
+            },
+            {
+              "label": "Any amount copied from an influencer"
+            },
+            {
+              "label": "The larger unaffordable transfer"
+            }
+          ],
+          "help": [
+            "Use actual available capacity instead of an arbitrary target payment."
+          ],
+          "feedback": {
+            "met": "A feasible contribution preserves the stated essential payments.",
+            "not_yet": "Use actual available capacity instead of an arbitrary target payment."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué aporte es viable?",
+          "scene": "Presupuesto deja pequeño sobrante tras esenciales; transferencia mayor deja renta sin pagar.",
+          "options": [
+            {
+              "label": "Monto dentro de ese sobrante"
+            },
+            {
+              "label": "Cualquier monto copiado de influencer"
+            },
+            {
+              "label": "Transferencia mayor que no alcanza"
+            }
+          ],
+          "help": [
+            "Usa capacidad disponible real, no monto arbitrario."
+          ],
+          "feedback": {
+            "met": "Un aporte viable conserva pagos esenciales indicados.",
+            "not_yet": "Usa capacidad disponible real, no monto arbitrario."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que aporte é viável?",
+          "scene": "Orçamento deixa pequena sobra após essenciais; transferência maior deixa aluguel sem pagar.",
+          "options": [
+            {
+              "label": "Valor dentro dessa sobra"
+            },
+            {
+              "label": "Qualquer valor copiado de influenciador"
+            },
+            {
+              "label": "Transferência maior que não cabe"
+            }
+          ],
+          "help": [
+            "Use capacidade disponível real, não valor arbitrário."
+          ],
+          "feedback": {
+            "met": "Um aporte viável preserva pagamentos essenciais dados.",
+            "not_yet": "Use capacidade disponível real, não valor arbitrário."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.03",
+      "copy": {
+        "en-US": {
+          "prompt": "What initial target remains unfunded?",
+          "scene": "Stated starter target: 300; Already reserved: 80; No assumed return.",
+          "options": [
+            {
+              "label": "300"
+            },
+            {
+              "label": "220"
+            },
+            {
+              "label": "380"
+            }
+          ],
+          "help": [
+            "Subtract what is already reserved from the stated target."
+          ],
+          "feedback": {
+            "met": "Existing reserve reduces the remaining starter gap.",
+            "not_yet": "Subtract what is already reserved from the stated target."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué falta para meta inicial?",
+          "scene": "Meta inicial indicada: 300; Ya reservado: 80; Sin rendimiento supuesto.",
+          "options": [
+            {
+              "label": "300"
+            },
+            {
+              "label": "220"
+            },
+            {
+              "label": "380"
+            }
+          ],
+          "help": [
+            "Resta lo ya reservado a meta indicada."
+          ],
+          "feedback": {
+            "met": "Reserva existente reduce faltante inicial restante.",
+            "not_yet": "Resta lo ya reservado a meta indicada."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto falta para meta inicial?",
+          "scene": "Meta inicial dada: 300; Já reservado: 80; Sem rendimento suposto.",
+          "options": [
+            {
+              "label": "300"
+            },
+            {
+              "label": "220"
+            },
+            {
+              "label": "380"
+            }
+          ],
+          "help": [
+            "Subtraia o já reservado da meta dada."
+          ],
+          "feedback": {
+            "met": "Reserva existente reduz falta inicial restante.",
+            "not_yet": "Subtraia o já reservado da meta dada."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          300,
+          80
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.03",
+      "copy": {
+        "en-US": {
+          "prompt": "What does this target mean?",
+          "scene": "The first reserve covers one stated disruption, not every possible loss.",
+          "options": [
+            {
+              "label": "A reason never to save again"
+            },
+            {
+              "label": "An initial milestone to review"
+            },
+            {
+              "label": "Complete protection against everything"
+            }
+          ],
+          "help": [
+            "Review broader risks and capacity after reaching the first milestone."
+          ],
+          "feedback": {
+            "met": "A starter target is progress, not complete protection.",
+            "not_yet": "Review broader risks and capacity after reaching the first milestone."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué significa meta inicial?",
+          "scene": "Primera reserva alcanzable cubre un contratiempo indicado, no toda pérdida posible.",
+          "options": [
+            {
+              "label": "Motivo para nunca ahorrar más"
+            },
+            {
+              "label": "Primer hito para revisar"
+            },
+            {
+              "label": "Protección completa contra todo"
+            }
+          ],
+          "help": [
+            "Revisa riesgos más amplios y capacidad tras primer hito."
+          ],
+          "feedback": {
+            "met": "Meta inicial es avance, no protección completa.",
+            "not_yet": "Revisa riesgos más amplios y capacidad tras primer hito."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que significa meta inicial?",
+          "scene": "Primeira reserva alcançável cobre um contratempo dado, não toda perda possível.",
+          "options": [
+            {
+              "label": "Motivo para nunca mais poupar"
+            },
+            {
+              "label": "Primeiro marco para rever"
+            },
+            {
+              "label": "Proteção completa contra tudo"
+            }
+          ],
+          "help": [
+            "Reveja riscos mais amplos e capacidade após primeiro marco."
+          ],
+          "feedback": {
+            "met": "Meta inicial é avanço, não proteção completa.",
+            "not_yet": "Reveja riscos mais amplos e capacidade após primeiro marco."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.03",
+      "copy": {
+        "en-US": {
+          "prompt": "When should the target be reviewed?",
+          "scene": "Household essentials rise and income becomes less predictable.",
+          "options": [
+            {
+              "label": "After those circumstances change"
+            },
+            {
+              "label": "Only when an advertisement says so"
+            },
+            {
+              "label": "Never after choosing it"
+            }
+          ],
+          "help": [
+            "Reassess the actual risks and feasible contributions."
+          ],
+          "feedback": {
+            "met": "Changed needs and uncertainty can change the reserve’s purpose.",
+            "not_yet": "Reassess the actual risks and feasible contributions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuándo revisar meta?",
+          "scene": "Esenciales del hogar suben e ingreso se vuelve menos previsible.",
+          "options": [
+            {
+              "label": "Al cambiar esas circunstancias"
+            },
+            {
+              "label": "Solo cuando anuncio lo diga"
+            },
+            {
+              "label": "Nunca tras elegirla"
+            }
+          ],
+          "help": [
+            "Reevalúa riesgos reales y aportes viables."
+          ],
+          "feedback": {
+            "met": "Necesidades e incertidumbre cambiadas pueden modificar propósito de reserva.",
+            "not_yet": "Reevalúa riesgos reales y aportes viables."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quando rever meta?",
+          "scene": "Essenciais da família sobem e renda fica menos previsível.",
+          "options": [
+            {
+              "label": "Ao mudar essas situações"
+            },
+            {
+              "label": "Só quando anúncio mandar"
+            },
+            {
+              "label": "Nunca após escolher"
+            }
+          ],
+          "help": [
+            "Reavalie riscos reais e aportes viáveis."
+          ],
+          "feedback": {
+            "met": "Necessidades e incerteza mudadas podem alterar finalidade da reserva.",
+            "not_yet": "Reavalie riscos reais e aportes viáveis."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.saving-resilience.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Which plan?",
+          "scene": "Income varies; modest contributions fit essentials, but copied larger payments cause missed bills.",
+          "options": [
+            {
+              "label": "Start feasibly and review the target"
+            },
+            {
+              "label": "Copy the unaffordable payment"
+            },
+            {
+              "label": "Abandon all planning because income varies"
+            }
+          ],
+          "help": [
+            "Avoid treating another household’s number as a universal rule."
+          ],
+          "feedback": {
+            "met": "A workable start reflects both disruption needs and available capacity.",
+            "not_yet": "Avoid treating another household’s number as a universal rule."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué plan cabe en este hogar?",
+          "scene": "Ingreso varía; aporte modesto cabe tras esenciales, pago grande copiado causa cuentas impagas.",
+          "options": [
+            {
+              "label": "Empezar viable y revisar meta"
+            },
+            {
+              "label": "Copiar pago que no alcanza"
+            },
+            {
+              "label": "Abandonar plan porque ingreso varía"
+            }
+          ],
+          "help": [
+            "No trates cifra de otro hogar como regla universal."
+          ],
+          "feedback": {
+            "met": "Inicio viable refleja contratiempos y capacidad disponible.",
+            "not_yet": "No trates cifra de otro hogar como regla universal."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que plano cabe nesta família?",
+          "scene": "Renda varia; aporte modesto cabe após essenciais, pagamento grande copiado deixa contas sem pagar.",
+          "options": [
+            {
+              "label": "Começar viável e rever meta"
+            },
+            {
+              "label": "Copiar pagamento que não cabe"
+            },
+            {
+              "label": "Abandonar plano pois renda varia"
+            }
+          ],
+          "help": [
+            "Não trate cifra de outra família como regra universal."
+          ],
+          "feedback": {
+            "met": "Início viável reflete contratempos e capacidade disponível.",
+            "not_yet": "Não trate cifra de outra família como regra universal."
+          }
+        }
+      }
+    }
+  ]
+}

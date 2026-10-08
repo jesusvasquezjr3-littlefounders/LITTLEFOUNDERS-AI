@@ -1,0 +1,837 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-saving-resilience-part-2",
+  "lesson_id": "fe-production-saving-resilience-10",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.saving-resilience.10"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Build a replenishment plan after using part of a reserve.",
+  "title": {
+    "en-US": "Rebuild Reserves",
+    "es-MX": "Repón tras usar la reserva",
+    "pt-BR": "Reponha após usar a reserva"
+  },
+  "new_concepts": [
+    "finance.prod.saving-resilience.10"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Rebuild Reserves\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Repón tras usar la reserva\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Reponha após usar a reserva\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.saving-resilience.10",
+      "observable_action": "Build a replenishment plan after using part of a reserve.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.saving-resilience.03",
+      "prod.saving-resilience.05",
+      "prod.saving-resilience.09"
+    ],
+    "retrieval_skills": [],
+    "relevance": "After a reserve serves its purpose, calculate what remains and rebuild at a pace that fits the current budget.",
+    "misconception": "The old balance still counts after spending, or refilling instantly should override essential payments regardless of capacity.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.saving-resilience.10",
+        "context_id": "saving-resilience-10-example-01",
+        "supports_from": [],
+        "reasoning": "Record the withdrawal, compare remaining savings with the current target, and schedule feasible contributions. Review progress without counting spent money."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.saving-resilience.10",
+        "context_id": "saving-resilience-10-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Four feasible contributions restore the stated target."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.saving-resilience.10",
+        "context_id": "saving-resilience-10-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Spent money cannot remain in the reserve’s available balance."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.saving-resilience.10",
+        "context_id": "saving-resilience-10-practice-01",
+        "supports_from": [],
+        "reasoning": "The refill gap is target minus the actual remaining reserve."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.saving-resilience.10",
+        "context_id": "saving-resilience-10-practice-02",
+        "supports_from": [],
+        "reasoning": "The feasible monthly amount closes the gap over these contributions."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.saving-resilience.10",
+        "context_id": "saving-resilience-10-practice-03",
+        "supports_from": [],
+        "reasoning": "A replenishment plan still needs to fit current obligations."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.saving-resilience.10",
+        "context_id": "saving-resilience-10-transfer-01",
+        "supports_from": [],
+        "reasoning": "A new withdrawal changes both current savings and remaining replenishment."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.saving-resilience.10",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "After a reserve serves its purpose, calculate what remains and rebuild at a pace that fits the current budget."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Tras cumplir su propósito, calcula qué queda y repón reserva al ritmo que cabe en presupuesto actual."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Após cumprir sua finalidade, calcule o que sobra e reponha reserva no ritmo que cabe no orçamento atual."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Actual balance, feasible refill",
+          "line": "Record the withdrawal, compare remaining savings with the current target, and schedule feasible contributions. Review progress without counting spent money."
+        },
+        "es-MX": {
+          "prompt": "Saldo real, reposición viable",
+          "line": "Registra retiro, compara ahorro restante con meta actual y programa aportes viables. Revisa avance sin contar dinero gastado."
+        },
+        "pt-BR": {
+          "prompt": "Saldo real, reposição viável",
+          "line": "Registre saque, compare poupança restante com meta atual e marque aportes viáveis. Reveja avanço sem contar dinheiro gasto."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.10",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "step-1"
+          },
+          {
+            "id": "step-2"
+          },
+          {
+            "id": "step-3"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "step-2",
+          "step-3"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "step-2": "240",
+          "step-3": "4"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Reserve 600; used 240; target stays 600; feasible monthly refill 60; no return or further withdrawals. Plan replenishment.",
+          "feedback": {
+            "met": "Four feasible contributions restore the stated target.",
+            "not_yet": "Update balance first, then divide the missing amount by refill."
+          },
+          "help": [
+            "Update balance first, then divide the missing amount by refill."
+          ],
+          "steps": [
+            {
+              "expression": "600 - 240",
+              "result": "360",
+              "spokenText": "Balance after use"
+            },
+            {
+              "expression": "600 - 360",
+              "result": "240",
+              "spokenText": "Missing to target"
+            },
+            {
+              "expression": "240 / 60",
+              "result": "4",
+              "spokenText": "Monthly refills needed"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Reserva 600; usado 240; meta sigue 600; reposición mensual viable 60; sin rendimiento ni más retiros. Planea reposición.",
+          "feedback": {
+            "met": "Cuatro aportes viables restauran meta indicada.",
+            "not_yet": "Actualiza saldo y divide faltante entre reposición."
+          },
+          "help": [
+            "Actualiza saldo y divide faltante entre reposición."
+          ],
+          "steps": [
+            {
+              "expression": "600 - 240",
+              "result": "360",
+              "spokenText": "Saldo tras uso"
+            },
+            {
+              "expression": "600 - 360",
+              "result": "240",
+              "spokenText": "Faltante a meta"
+            },
+            {
+              "expression": "240 / 60",
+              "result": "4",
+              "spokenText": "Aportes mensuales necesarios"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Reserva 600; usado 240; meta segue 600; reposição mensal viável 60; sem rendimento ou mais saques. Planeje reposição.",
+          "feedback": {
+            "met": "Quatro aportes viáveis restauram meta dada.",
+            "not_yet": "Atualize saldo e divida falta pela reposição."
+          },
+          "help": [
+            "Atualize saldo e divida falta pela reposição."
+          ],
+          "steps": [
+            {
+              "expression": "600 - 240",
+              "result": "360",
+              "spokenText": "Saldo após uso"
+            },
+            {
+              "expression": "600 - 360",
+              "result": "240",
+              "spokenText": "Falta para meta"
+            },
+            {
+              "expression": "240 / 60",
+              "result": "4",
+              "spokenText": "Aportes mensais necessários"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Which balance belongs in the refill plan?",
+          "scene": "Part of the reserve has already paid the emergency expense.",
+          "options": [
+            {
+              "label": "The original target as current cash"
+            },
+            {
+              "label": "The actual remaining balance"
+            },
+            {
+              "label": "The old unspent balance"
+            }
+          ],
+          "help": [
+            "Record the withdrawal before measuring the gap."
+          ],
+          "feedback": {
+            "met": "Spent money cannot remain in the reserve’s available balance.",
+            "not_yet": "Record the withdrawal before measuring the gap."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué saldo entra en plan de reposición?",
+          "scene": "Parte de reserva ya pagó gasto de emergencia.",
+          "options": [
+            {
+              "label": "Meta original como efectivo actual"
+            },
+            {
+              "label": "Saldo restante real"
+            },
+            {
+              "label": "Saldo anterior sin gasto"
+            }
+          ],
+          "help": [
+            "Registra retiro antes de medir faltante."
+          ],
+          "feedback": {
+            "met": "Dinero gastado no sigue disponible en reserva.",
+            "not_yet": "Registra retiro antes de medir faltante."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que saldo entra no plano de reposição?",
+          "scene": "Parte da reserva já pagou gasto de emergência.",
+          "options": [
+            {
+              "label": "Meta original como dinheiro atual"
+            },
+            {
+              "label": "Saldo restante real"
+            },
+            {
+              "label": "Saldo antigo sem gasto"
+            }
+          ],
+          "help": [
+            "Registre saque antes de medir falta."
+          ],
+          "feedback": {
+            "met": "Dinheiro gasto não segue disponível na reserva.",
+            "not_yet": "Registre saque antes de medir falta."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.10",
+      "copy": {
+        "en-US": {
+          "prompt": "How much remains to restore the target?",
+          "scene": "Current target: 800; Actual reserve after use: 500; No other funds allocated.",
+          "options": [
+            {
+              "label": "500"
+            },
+            {
+              "label": "300"
+            },
+            {
+              "label": "800"
+            }
+          ],
+          "help": [
+            "Use the current balance, not the original balance."
+          ],
+          "feedback": {
+            "met": "The refill gap is target minus the actual remaining reserve.",
+            "not_yet": "Use the current balance, not the original balance."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto falta para restaurar meta?",
+          "scene": "Meta actual: 800; Reserva real tras uso: 500; Sin otros fondos asignados.",
+          "options": [
+            {
+              "label": "500"
+            },
+            {
+              "label": "300"
+            },
+            {
+              "label": "800"
+            }
+          ],
+          "help": [
+            "Usa saldo actual, no original."
+          ],
+          "feedback": {
+            "met": "Faltante de reposición es meta menos reserva real restante.",
+            "not_yet": "Usa saldo actual, no original."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto falta para restaurar meta?",
+          "scene": "Meta atual: 800; Reserva real após uso: 500; Sem outra verba separada.",
+          "options": [
+            {
+              "label": "500"
+            },
+            {
+              "label": "300"
+            },
+            {
+              "label": "800"
+            }
+          ],
+          "help": [
+            "Use saldo atual, não original."
+          ],
+          "feedback": {
+            "met": "Falta de reposição é meta menos reserva real restante.",
+            "not_yet": "Use saldo atual, não original."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          800,
+          500
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.10",
+      "copy": {
+        "en-US": {
+          "prompt": "How many contributions refill this gap?",
+          "scene": "Missing to target: 360; Feasible monthly refill: 90; No return or further withdrawals.",
+          "options": [
+            {
+              "label": "6"
+            },
+            {
+              "label": "4"
+            },
+            {
+              "label": "3"
+            }
+          ],
+          "help": [
+            "Divide the missing amount by each monthly refill."
+          ],
+          "feedback": {
+            "met": "The feasible monthly amount closes the gap over these contributions.",
+            "not_yet": "Divide the missing amount by each monthly refill."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuántos aportes reponen faltante?",
+          "scene": "Faltante a meta: 360; Reposición mensual viable: 90; Sin rendimiento ni más retiros.",
+          "options": [
+            {
+              "label": "6"
+            },
+            {
+              "label": "4"
+            },
+            {
+              "label": "3"
+            }
+          ],
+          "help": [
+            "Divide monto faltante entre cada reposición mensual."
+          ],
+          "feedback": {
+            "met": "Monto mensual viable cierra faltante con estos aportes.",
+            "not_yet": "Divide monto faltante entre cada reposición mensual."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quantos aportes repõem a falta?",
+          "scene": "Falta para meta: 360; Reposição mensal viável: 90; Sem rendimento ou mais saques.",
+          "options": [
+            {
+              "label": "6"
+            },
+            {
+              "label": "4"
+            },
+            {
+              "label": "3"
+            }
+          ],
+          "help": [
+            "Divida valor faltante por cada reposição mensal."
+          ],
+          "feedback": {
+            "met": "Valor mensal viável fecha falta com estes aportes.",
+            "not_yet": "Divida valor faltante por cada reposição mensal."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          360,
+          90
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Which refill plan works?",
+          "scene": "Immediate full refill would leave essentials unpaid; a smaller regular amount fits.",
+          "options": [
+            {
+              "label": "Refill fully despite unpaid essentials"
+            },
+            {
+              "label": "Pretend the withdrawal never happened"
+            },
+            {
+              "label": "Use the feasible regular amount"
+            }
+          ],
+          "help": [
+            "Choose a sustainable amount and review the completion time."
+          ],
+          "feedback": {
+            "met": "A replenishment plan still needs to fit current obligations.",
+            "not_yet": "Choose a sustainable amount and review the completion time."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué plan de reposición funciona aquí?",
+          "scene": "Reponer todo de inmediato deja esenciales impagos; monto regular menor cabe.",
+          "options": [
+            {
+              "label": "Reponer todo pese a esenciales impagos"
+            },
+            {
+              "label": "Fingir que retiro no pasó"
+            },
+            {
+              "label": "Usar monto regular viable"
+            }
+          ],
+          "help": [
+            "Elige monto sostenible y revisa fecha final."
+          ],
+          "feedback": {
+            "met": "Plan de reposición aún debe caber tras obligaciones actuales.",
+            "not_yet": "Elige monto sostenible y revisa fecha final."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que plano de reposição funciona aqui?",
+          "scene": "Repor tudo de imediato deixa essenciais sem pagar; valor regular menor cabe.",
+          "options": [
+            {
+              "label": "Repor tudo apesar de essenciais impagos"
+            },
+            {
+              "label": "Fingir que saque não ocorreu"
+            },
+            {
+              "label": "Usar valor regular viável"
+            }
+          ],
+          "help": [
+            "Escolha valor sustentável e reveja data final."
+          ],
+          "feedback": {
+            "met": "Plano de reposição ainda deve caber após deveres atuais.",
+            "not_yet": "Escolha valor sustentável e reveja data final."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.saving-resilience.10",
+      "copy": {
+        "en-US": {
+          "prompt": "What follows another reserve withdrawal?",
+          "scene": "Another legitimate expense reduces the balance during the refill plan.",
+          "options": [
+            {
+              "label": "Declare the target restored anyway"
+            },
+            {
+              "label": "Update balance, gap and refill schedule"
+            },
+            {
+              "label": "Keep counting the old balance"
+            }
+          ],
+          "help": [
+            "Recalculate from actual money and current feasible contributions."
+          ],
+          "feedback": {
+            "met": "A new withdrawal changes both current savings and remaining replenishment.",
+            "not_yet": "Recalculate from actual money and current feasible contributions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué hacer tras segundo uso de reserva?",
+          "scene": "Otro gasto legítimo reduce saldo durante reposición.",
+          "options": [
+            {
+              "label": "Declarar meta restaurada de todos modos"
+            },
+            {
+              "label": "Actualizar saldo, faltante y calendario"
+            },
+            {
+              "label": "Seguir contando saldo anterior"
+            }
+          ],
+          "help": [
+            "Recalcula con dinero real y aportes viables actuales."
+          ],
+          "feedback": {
+            "met": "Nuevo retiro cambia ahorro actual y reposición restante.",
+            "not_yet": "Recalcula con dinero real y aportes viables actuales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que fazer após segundo uso da reserva?",
+          "scene": "Outro gasto legítimo reduz saldo durante reposição.",
+          "options": [
+            {
+              "label": "Declarar meta restaurada de todo jeito"
+            },
+            {
+              "label": "Atualizar saldo, falta e calendário"
+            },
+            {
+              "label": "Seguir contando saldo antigo"
+            }
+          ],
+          "help": [
+            "Recalcule com dinheiro real e aportes viáveis atuais."
+          ],
+          "feedback": {
+            "met": "Novo saque muda poupança atual e reposição restante.",
+            "not_yet": "Recalcule com dinheiro real e aportes viáveis atuais."
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,842 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-income-work-part-2",
+  "lesson_id": "fe-production-income-work-08",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.income-work.08"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Identify a missing payment using agreed work terms and a payment record.",
+  "title": {
+    "en-US": "Matching payments",
+    "es-MX": "Relaciona trabajo y pago",
+    "pt-BR": "Relacione trabalho e pagamento"
+  },
+  "new_concepts": [
+    "finance.prod.income-work.08"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Match work and payment\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Relaciona trabajo y pago\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Relacione trabalho e pagamento\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.income-work.08",
+      "observable_action": "Identify a missing payment using agreed work terms and a payment record.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.income-work.03",
+      "prod.income-work.05"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Compare agreed work terms with actual payment records.",
+    "misconception": "Assume a payment is complete just because some money arrived.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.income-work.08",
+        "context_id": "fe-production-income-work-08-example-01",
+        "supports_from": [],
+        "reasoning": "Agreed pay is 90 dollars; only 60 arrived. The missing 30 needs clarification using the agreement and receipt."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.income-work.08",
+        "context_id": "fe-production-income-work-08-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Compare the agreed amount with its matching payment."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.income-work.08",
+        "context_id": "fe-production-income-work-08-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Payment evidence must match the work being checked."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.income-work.08",
+        "context_id": "fe-production-income-work-08-practice-01",
+        "supports_from": [],
+        "reasoning": "Both matched installments count toward the agreed amount."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.income-work.08",
+        "context_id": "fe-production-income-work-08-practice-02",
+        "supports_from": [],
+        "reasoning": "An unexplained difference needs evidence, not a guessed rule."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.income-work.08",
+        "context_id": "fe-production-income-work-08-practice-03",
+        "supports_from": [],
+        "reasoning": "A pending transfer is not confirmed receipt."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.income-work.08",
+        "context_id": "fe-production-income-work-08-transfer-01",
+        "supports_from": [],
+        "reasoning": "The remaining gap follows the stated agreement and completed payments."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.income-work.08",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Compare agreed work terms with actual payment records."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Compara condiciones acordadas con registros de pago reales."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Compare condições combinadas com registros de pagamento reais."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Compare the same period",
+          "line": "Agreed pay is 90 dollars; only 60 arrived. The missing 30 needs clarification using the agreement and receipt."
+        },
+        "es-MX": {
+          "prompt": "Compara el mismo periodo",
+          "line": "Una tarea acordada gana 90 pesos; el registro muestra solo 60 pagados. Faltan 30 por aclarar con acuerdo y comprobante."
+        },
+        "pt-BR": {
+          "prompt": "Compare o mesmo período",
+          "line": "Uma tarefa combinada rende 90 reais; o registro mostra só 60 pagos. Faltam 30 a esclarecer com acordo e comprovante."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Unmatched amount?",
+          "scene": "Agreed payment is 75; the matching receipt is 50.",
+          "options": [
+            {
+              "label": "25"
+            },
+            {
+              "label": "50"
+            },
+            {
+              "label": "125"
+            }
+          ],
+          "help": [
+            "Subtract what arrived from what was agreed."
+          ],
+          "feedback": {
+            "met": "Compare the agreed amount with its matching payment.",
+            "not_yet": "Subtract what arrived from what was agreed."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Monto sin cubrir?",
+          "scene": "Pago acordado 75; el comprobante correspondiente es 50.",
+          "options": [
+            {
+              "label": "25"
+            },
+            {
+              "label": "50"
+            },
+            {
+              "label": "125"
+            }
+          ],
+          "help": [
+            "Resta lo recibido de lo acordado."
+          ],
+          "feedback": {
+            "met": "Compara el monto acordado con su pago correspondiente.",
+            "not_yet": "Resta lo recibido de lo acordado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Valor sem cobertura?",
+          "scene": "Pagamento combinado 75; o comprovante correspondente é 50.",
+          "options": [
+            {
+              "label": "25"
+            },
+            {
+              "label": "50"
+            },
+            {
+              "label": "125"
+            }
+          ],
+          "help": [
+            "Subtraia o recebido do combinado."
+          ],
+          "feedback": {
+            "met": "Compare o valor combinado com seu pagamento correspondente.",
+            "not_yet": "Subtraia o recebido do combinado."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          75,
+          50
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Does it prove payment this week?",
+          "scene": "Last week’s receipt; you are checking this week’s work.",
+          "options": [
+            {
+              "label": "Match work period and reference"
+            },
+            {
+              "label": "If amounts look similar"
+            },
+            {
+              "label": "Any receipt proves every payment"
+            }
+          ],
+          "help": [
+            "Compare reference, date and amount together."
+          ],
+          "feedback": {
+            "met": "Payment evidence must match the work being checked.",
+            "not_yet": "Compare reference, date and amount together."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Ese comprobante solo cierra el pago actual?",
+          "scene": "Un comprobante es de la semana pasada; revisas trabajo de esta semana.",
+          "options": [
+            {
+              "label": "No, relaciona periodo y referencia"
+            },
+            {
+              "label": "Sí, si los montos se parecen"
+            },
+            {
+              "label": "Sí, cualquier comprobante prueba todo pago"
+            }
+          ],
+          "help": [
+            "Compara referencia, fecha y monto juntos."
+          ],
+          "feedback": {
+            "met": "La evidencia debe corresponder al trabajo revisado.",
+            "not_yet": "Compara referencia, fecha y monto juntos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Esse comprovante sozinho fecha o pagamento atual?",
+          "scene": "Um comprovante é da semana passada; confere trabalho desta semana.",
+          "options": [
+            {
+              "label": "Não, relacione período e referência"
+            },
+            {
+              "label": "Sim, se os valores parecem iguais"
+            },
+            {
+              "label": "Sim, qualquer comprovante prova todo pagamento"
+            }
+          ],
+          "help": [
+            "Compare referência, data e valor juntos."
+          ],
+          "feedback": {
+            "met": "A evidência deve corresponder ao trabalho conferido.",
+            "not_yet": "Compare referência, data e valor juntos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Amount still unmatched?",
+          "scene": "Two installments of 30 and 45 relate to agreed pay of 90.",
+          "options": [
+            {
+              "label": "15"
+            },
+            {
+              "label": "60"
+            },
+            {
+              "label": "75"
+            }
+          ],
+          "help": [
+            "Add matched receipts before finding the gap."
+          ],
+          "feedback": {
+            "met": "Both matched installments count toward the agreed amount.",
+            "not_yet": "Add matched receipts before finding the gap."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Monto aún sin cubrir?",
+          "scene": "Dos abonos de 30 y 45 corresponden a pago acordado de 90.",
+          "options": [
+            {
+              "label": "15"
+            },
+            {
+              "label": "60"
+            },
+            {
+              "label": "75"
+            }
+          ],
+          "help": [
+            "Suma abonos relacionados antes de encontrar diferencia."
+          ],
+          "feedback": {
+            "met": "Ambos abonos relacionados cuentan para el monto acordado.",
+            "not_yet": "Suma abonos relacionados antes de encontrar diferencia."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Valor ainda sem cobertura?",
+          "scene": "Duas parcelas de 30 e 45 correspondem a pagamento combinado de 90.",
+          "options": [
+            {
+              "label": "15"
+            },
+            {
+              "label": "60"
+            },
+            {
+              "label": "75"
+            }
+          ],
+          "help": [
+            "Some parcelas relacionadas antes de encontrar a diferença."
+          ],
+          "feedback": {
+            "met": "As duas parcelas relacionadas contam para o valor combinado.",
+            "not_yet": "Some parcelas relacionadas antes de encontrar a diferença."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          30,
+          45,
+          90
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 2
+            },
+            {
+              "op": "add",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Next step?",
+          "scene": "The receipt shows a deduction that the available agreement does not explain.",
+          "options": [
+            {
+              "label": "Delete the receipt"
+            },
+            {
+              "label": "Request its basis and retain records"
+            },
+            {
+              "label": "Invent a legal explanation"
+            }
+          ],
+          "help": [
+            "Do not decide legal validity from an unexplained number."
+          ],
+          "feedback": {
+            "met": "An unexplained difference needs evidence, not a guessed rule.",
+            "not_yet": "Do not decide legal validity from an unexplained number."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Siguiente paso útil?",
+          "scene": "El recibo muestra un descuento que el acuerdo disponible no explica.",
+          "options": [
+            {
+              "label": "Borrar el recibo"
+            },
+            {
+              "label": "Pedir fundamento y conservar registros"
+            },
+            {
+              "label": "Inventar una explicación legal"
+            }
+          ],
+          "help": [
+            "No decidas validez legal por un número sin explicar."
+          ],
+          "feedback": {
+            "met": "Una diferencia sin explicar necesita evidencia, no regla inventada.",
+            "not_yet": "No decidas validez legal por un número sin explicar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Próximo passo útil?",
+          "scene": "O recibo mostra desconto que o acordo disponível não explica.",
+          "options": [
+            {
+              "label": "Apagar o recibo"
+            },
+            {
+              "label": "Pedir fundamento e guardar registros"
+            },
+            {
+              "label": "Inventar uma explicação legal"
+            }
+          ],
+          "help": [
+            "Não decida validade legal por um número sem explicação."
+          ],
+          "feedback": {
+            "met": "Uma diferença sem explicação precisa de evidência, não regra inventada.",
+            "not_yet": "Não decida validade legal por um número sem explicação."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Does it prove received payment?",
+          "scene": "A transfer is marked pending rather than completed.",
+          "options": [
+            {
+              "label": "Yes, pending means received"
+            },
+            {
+              "label": "No, verify completion and receipt"
+            },
+            {
+              "label": "Yes, the promise is enough"
+            }
+          ],
+          "help": [
+            "Keep payment status separate from payment intent."
+          ],
+          "feedback": {
+            "met": "A pending transfer is not confirmed receipt.",
+            "not_yet": "Keep payment status separate from payment intent."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Demuestra pago recibido?",
+          "scene": "Una transferencia figura pendiente, no realizada.",
+          "options": [
+            {
+              "label": "Sí, pendiente significa recibido"
+            },
+            {
+              "label": "No, verifica realización y recepción"
+            },
+            {
+              "label": "Sí, basta la promesa"
+            }
+          ],
+          "help": [
+            "Separa estado de pago e intención de pago."
+          ],
+          "feedback": {
+            "met": "Una transferencia pendiente no es recepción confirmada.",
+            "not_yet": "Separa estado de pago e intención de pago."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Prova pagamento recebido?",
+          "scene": "Uma transferência consta pendente, não concluída.",
+          "options": [
+            {
+              "label": "Sim, pendente significa recebido"
+            },
+            {
+              "label": "Não, confira conclusão e recebimento"
+            },
+            {
+              "label": "Sim, basta a promessa"
+            }
+          ],
+          "help": [
+            "Separe estado e intenção de pagamento."
+          ],
+          "feedback": {
+            "met": "Uma transferência pendente não é recebimento confirmado.",
+            "not_yet": "Separe estado e intenção de pagamento."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.income-work.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Unmatched agreed payment?",
+          "scene": "An accepted order earns 160. Matched completed payments total 110; no deductions were agreed.",
+          "options": [
+            {
+              "label": "110"
+            },
+            {
+              "label": "270"
+            },
+            {
+              "label": "50"
+            }
+          ],
+          "help": [
+            "Use matching completed payments only."
+          ],
+          "feedback": {
+            "met": "The remaining gap follows the stated agreement and completed payments.",
+            "not_yet": "Use matching completed payments only."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Pago acordado sin cubrir?",
+          "scene": "Un pedido aceptado gana 160. Pagos realizados relacionados suman 110; sin descuentos acordados.",
+          "options": [
+            {
+              "label": "110"
+            },
+            {
+              "label": "270"
+            },
+            {
+              "label": "50"
+            }
+          ],
+          "help": [
+            "Usa solo pagos realizados correspondientes."
+          ],
+          "feedback": {
+            "met": "La diferencia sigue el acuerdo indicado y pagos realizados.",
+            "not_yet": "Usa solo pagos realizados correspondientes."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Pagamento combinado sem cobertura?",
+          "scene": "Um pedido aceito rende 160. Pagamentos concluídos relacionados somam 110; sem descontos combinados.",
+          "options": [
+            {
+              "label": "110"
+            },
+            {
+              "label": "270"
+            },
+            {
+              "label": "50"
+            }
+          ],
+          "help": [
+            "Use só pagamentos concluídos correspondentes."
+          ],
+          "feedback": {
+            "met": "A diferença segue o acordo informado e pagamentos concluídos.",
+            "not_yet": "Use só pagamentos concluídos correspondentes."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          160,
+          110
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

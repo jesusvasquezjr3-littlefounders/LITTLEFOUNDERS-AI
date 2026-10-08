@@ -1,0 +1,904 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-time-inflation-part-1",
+  "lesson_id": "fe-production-time-inflation-06",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.time-inflation.06"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Calculate the nominal price change for a fixed basket of goods.",
+  "title": {
+    "en-US": "Basket prices",
+    "es-MX": "Calcula otra vez la misma canasta",
+    "pt-BR": "Calcule de novo a mesma cesta"
+  },
+  "new_concepts": [
+    "finance.prod.time-inflation.06"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Price the same basket again\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Calcula otra vez la misma canasta\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Calcule de novo a mesma cesta\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.time-inflation.06",
+      "observable_action": "Calculate the nominal price change for a fixed basket of goods.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "price.percent",
+      "prod.purchase-decisions.01"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Compare prices without confusing a change in quantities with a price increase.",
+    "misconception": "Calling every increase in a shopping bill inflation despite changes in the goods or quantities purchased.",
+    "numeracy_support": "Every quantity and assumption needed to decide is visible in the current scenario. Examples explain the relationship before independent application.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.time-inflation.06",
+        "context_id": "fe-production-time-inflation-06-example-01",
+        "supports_from": [],
+        "reasoning": "Keep goods and quantities fixed. If the same basket costs more, compare the new cost with its earlier cost."
+      },
+      {
+        "segment_id": "guided-worked-01",
+        "skill_id": "prod.time-inflation.06",
+        "context_id": "fe-production-time-inflation-06-guided-worked-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The old basket cost is the percentage base."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.time-inflation.06",
+        "context_id": "fe-production-time-inflation-06-guided-01",
+        "supports_from": [
+          "guided-worked-01"
+        ],
+        "reasoning": "88 − 80 = 8 additional units."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.time-inflation.06",
+        "context_id": "fe-production-time-inflation-06-practice-02",
+        "supports_from": [],
+        "reasoning": "Compare the cost difference with the earlier cost, as a percentage."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.time-inflation.06",
+        "context_id": "fe-production-time-inflation-06-practice-03",
+        "supports_from": [],
+        "reasoning": "Different quantities prevent attributing the whole increase to prices."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.time-inflation.06",
+        "context_id": "fe-production-time-inflation-06-practice-04",
+        "supports_from": [],
+        "reasoning": "250 − 240 = 10 less for the same basket."
+      },
+      {
+        "segment_id": "transfer-05",
+        "skill_id": "prod.time-inflation.06",
+        "context_id": "fe-production-time-inflation-06-transfer-05",
+        "supports_from": [],
+        "reasoning": "The increase is measured against the old basket cost."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.time-inflation.06",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Compare prices without confusing a change in quantities with a price increase."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Compara precios sin confundir cambios de cantidades con aumentos de precio."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Compare preços sem confundir mudança de quantidades com aumento de preço."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Follow the evidence",
+          "line": "Keep goods and quantities fixed. If the same basket costs more, compare the new cost with its earlier cost."
+        },
+        "es-MX": {
+          "prompt": "Sigue las pruebas",
+          "line": "Mantén productos y cantidades iguales. Si esa misma canasta cuesta más, compara su costo nuevo con el anterior."
+        },
+        "pt-BR": {
+          "prompt": "Siga as provas",
+          "line": "Mantenha produtos e quantidades iguais. Se essa mesma cesta custa mais, compare o custo novo com o anterior."
+        }
+      }
+    },
+    {
+      "id": "guided-worked-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "step-1"
+          },
+          {
+            "id": "step-2"
+          },
+          {
+            "id": "step-3"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "step-2",
+          "step-3"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "step-2": "0.1",
+          "step-3": "10"
+        }
+      },
+      "item_role": "practice",
+      "copy": {
+        "en-US": {
+          "prompt": "Same basket: cost rises from 200 to 220.",
+          "steps": [
+            {
+              "expression": "220 - 200",
+              "result": "20",
+              "spokenText": "Find the extra cost."
+            },
+            {
+              "expression": "20 / 200",
+              "result": "0.1",
+              "spokenText": "Compare the increase with the old cost."
+            },
+            {
+              "expression": "0.1 * 100",
+              "result": "10",
+              "spokenText": "Express the change as a percentage."
+            }
+          ],
+          "feedback": {
+            "met": "The old basket cost is the percentage base.",
+            "not_yet": "Keep the same goods and quantities for both costs."
+          },
+          "help": [
+            "Keep the same goods and quantities for both costs."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Misma canasta: costo sube de 200 a 220.",
+          "steps": [
+            {
+              "expression": "220 - 200",
+              "result": "20",
+              "spokenText": "Halla el costo adicional."
+            },
+            {
+              "expression": "20 / 200",
+              "result": "0.1",
+              "spokenText": "Compara el aumento con el costo anterior."
+            },
+            {
+              "expression": "0.1 * 100",
+              "result": "10",
+              "spokenText": "Expresa el cambio como porcentaje."
+            }
+          ],
+          "feedback": {
+            "met": "El costo anterior de la canasta es la base porcentual.",
+            "not_yet": "Conserva productos y cantidades iguales en ambos costos."
+          },
+          "help": [
+            "Conserva productos y cantidades iguales en ambos costos."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Mesma cesta: custo sobe de 200 para 220.",
+          "steps": [
+            {
+              "expression": "220 - 200",
+              "result": "20",
+              "spokenText": "Ache o custo extra."
+            },
+            {
+              "expression": "20 / 200",
+              "result": "0.1",
+              "spokenText": "Compare o aumento com o custo anterior."
+            },
+            {
+              "expression": "0.1 * 100",
+              "result": "10",
+              "spokenText": "Expresse a mudança como porcentagem."
+            }
+          ],
+          "feedback": {
+            "met": "O custo anterior da cesta é a base percentual.",
+            "not_yet": "Mantenha produtos e quantidades iguais nos dois custos."
+          },
+          "help": [
+            "Mantenha produtos e quantidades iguais nos dois custos."
+          ]
+        }
+      },
+      "knowledge_component_id": "finance.prod.time-inflation.06"
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.time-inflation.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Extra cost?",
+          "scene": "Same basket: old cost 80; new cost 88.",
+          "options": [
+            {
+              "label": "168"
+            },
+            {
+              "label": "88"
+            },
+            {
+              "label": "8"
+            }
+          ],
+          "help": [
+            "Subtract the earlier cost."
+          ],
+          "feedback": {
+            "met": "88 − 80 = 8 additional units.",
+            "not_yet": "Subtract the earlier cost."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Costo adicional?",
+          "scene": "Misma canasta: costo anterior 80; nuevo 88.",
+          "options": [
+            {
+              "label": "168"
+            },
+            {
+              "label": "88"
+            },
+            {
+              "label": "8"
+            }
+          ],
+          "help": [
+            "Resta el costo anterior."
+          ],
+          "feedback": {
+            "met": "88 − 80 = 8 unidades adicionales.",
+            "not_yet": "Resta el costo anterior."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Custo extra?",
+          "scene": "Mesma cesta: custo anterior 80; novo 88.",
+          "options": [
+            {
+              "label": "168"
+            },
+            {
+              "label": "88"
+            },
+            {
+              "label": "8"
+            }
+          ],
+          "help": [
+            "Subtraia o custo anterior."
+          ],
+          "feedback": {
+            "met": "88 − 80 = 8 unidades extras.",
+            "not_yet": "Subtraia o custo anterior."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          80,
+          88
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 1
+            },
+            {
+              "input": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.time-inflation.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Price increase percentage?",
+          "scene": "Identical basket: earlier cost 300; current cost 330.",
+          "options": [
+            {
+              "label": "30"
+            },
+            {
+              "label": "110"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Use the earlier price as the base."
+          ],
+          "feedback": {
+            "met": "Compare the cost difference with the earlier cost, as a percentage.",
+            "not_yet": "Use the earlier price as the base."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Porcentaje de aumento de precio?",
+          "scene": "Canasta idéntica: costo anterior 300; actual 330.",
+          "options": [
+            {
+              "label": "30"
+            },
+            {
+              "label": "110"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Usa el precio anterior como base."
+          ],
+          "feedback": {
+            "met": "Compara diferencia de costo con costo anterior, como porcentaje.",
+            "not_yet": "Usa el precio anterior como base."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Porcentagem de aumento do preço?",
+          "scene": "Cesta idêntica: custo anterior 300; atual 330.",
+          "options": [
+            {
+              "label": "30"
+            },
+            {
+              "label": "110"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Use o preço anterior como base."
+          ],
+          "feedback": {
+            "met": "Compare diferença de custo com custo anterior, como porcentagem.",
+            "not_yet": "Use o preço anterior como base."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          300,
+          330
+        ],
+        "expression": {
+          "op": "multiply",
+          "args": [
+            {
+              "op": "divide",
+              "args": [
+                {
+                  "op": "subtract",
+                  "args": [
+                    {
+                      "input": 1
+                    },
+                    {
+                      "input": 0
+                    }
+                  ]
+                },
+                {
+                  "input": 0
+                }
+              ]
+            },
+            {
+              "constant": 100
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.time-inflation.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Does this alone show price inflation?",
+          "scene": "You bought twice as much food; the total bill doubled.",
+          "options": [
+            {
+              "label": "Quantities also changed"
+            },
+            {
+              "label": "Every doubled bill proves inflation"
+            },
+            {
+              "label": "Quantity never affects total cost"
+            }
+          ],
+          "help": [
+            "Hold quantities fixed to compare prices."
+          ],
+          "feedback": {
+            "met": "Different quantities prevent attributing the whole increase to prices.",
+            "not_yet": "Hold quantities fixed to compare prices."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿La cuenta sola demuestra inflación de precios?",
+          "scene": "Compraste el doble de comida; la cuenta total se duplicó.",
+          "options": [
+            {
+              "label": "No, también cambiaron las cantidades"
+            },
+            {
+              "label": "Sí, duplicar cuenta prueba inflación"
+            },
+            {
+              "label": "Sí, cantidad nunca afecta costo total"
+            }
+          ],
+          "help": [
+            "Mantén cantidades iguales para comparar precios."
+          ],
+          "feedback": {
+            "met": "Cantidades distintas impiden atribuir todo el aumento a precios.",
+            "not_yet": "Mantén cantidades iguales para comparar precios."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A conta sozinha prova inflação de preços?",
+          "scene": "Comprou o dobro de comida; a conta total dobrou.",
+          "options": [
+            {
+              "label": "Não, quantidades também mudaram"
+            },
+            {
+              "label": "Sim, dobrar conta prova inflação"
+            },
+            {
+              "label": "Sim, quantidade nunca afeta custo total"
+            }
+          ],
+          "help": [
+            "Mantenha quantidades iguais para comparar preços."
+          ],
+          "feedback": {
+            "met": "Quantidades diferentes impedem atribuir todo aumento a preços.",
+            "not_yet": "Mantenha quantidades iguais para comparar preços."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.time-inflation.06",
+      "copy": {
+        "en-US": {
+          "prompt": "How much cheaper?",
+          "scene": "Fixed basket: previous cost 250; current cost 240.",
+          "options": [
+            {
+              "label": "490"
+            },
+            {
+              "label": "240"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "A lower new cost means a decrease here."
+          ],
+          "feedback": {
+            "met": "250 − 240 = 10 less for the same basket.",
+            "not_yet": "A lower new cost means a decrease here."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto más barata?",
+          "scene": "Canasta fija: costo previo 250; actual 240.",
+          "options": [
+            {
+              "label": "490"
+            },
+            {
+              "label": "240"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Un nuevo costo menor implica disminución aquí."
+          ],
+          "feedback": {
+            "met": "250 − 240 = 10 menos por la misma canasta.",
+            "not_yet": "Un nuevo costo menor implica disminución aquí."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto mais barata?",
+          "scene": "Cesta fixa: custo anterior 250; atual 240.",
+          "options": [
+            {
+              "label": "490"
+            },
+            {
+              "label": "240"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Um novo custo menor implica redução aqui."
+          ],
+          "feedback": {
+            "met": "250 − 240 = 10 a menos pela mesma cesta.",
+            "not_yet": "Um novo custo menor implica redução aqui."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          250,
+          240
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.time-inflation.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Percentage cost increase?",
+          "scene": "Unchanged work-supply basket: old cost 400; new cost 460.",
+          "options": [
+            {
+              "label": "60"
+            },
+            {
+              "label": "15"
+            },
+            {
+              "label": "115"
+            }
+          ],
+          "help": [
+            "Subtract first, then divide by the earlier cost."
+          ],
+          "feedback": {
+            "met": "The increase is measured against the old basket cost.",
+            "not_yet": "Subtract first, then divide by the earlier cost."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Porcentaje de aumento del costo?",
+          "scene": "Canasta laboral sin cambios: costo anterior 400; nuevo 460.",
+          "options": [
+            {
+              "label": "60"
+            },
+            {
+              "label": "15"
+            },
+            {
+              "label": "115"
+            }
+          ],
+          "help": [
+            "Resta primero y divide entre el costo anterior."
+          ],
+          "feedback": {
+            "met": "El aumento se mide contra el costo anterior de la canasta.",
+            "not_yet": "Resta primero y divide entre el costo anterior."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Porcentagem de aumento do custo?",
+          "scene": "Cesta de materiais sem mudanças: custo anterior 400; novo 460.",
+          "options": [
+            {
+              "label": "60"
+            },
+            {
+              "label": "15"
+            },
+            {
+              "label": "115"
+            }
+          ],
+          "help": [
+            "Subtraia primeiro e divida pelo custo anterior."
+          ],
+          "feedback": {
+            "met": "O aumento é medido contra o custo anterior da cesta.",
+            "not_yet": "Subtraia primeiro e divida pelo custo anterior."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          400,
+          460
+        ],
+        "expression": {
+          "op": "multiply",
+          "args": [
+            {
+              "op": "divide",
+              "args": [
+                {
+                  "op": "subtract",
+                  "args": [
+                    {
+                      "input": 1
+                    },
+                    {
+                      "input": 0
+                    }
+                  ]
+                },
+                {
+                  "input": 0
+                }
+              ]
+            },
+            {
+              "constant": 100
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

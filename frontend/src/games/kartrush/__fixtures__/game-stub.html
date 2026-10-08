@@ -1,0 +1,108 @@
+<!doctype html>
+<!--
+  A DEVELOPMENT AND TEST FIXTURE, never shipped: a stand-in for the KartRush embed that speaks the host
+  side of kr.v1 (docs/games/KRV1-CONTRACT.md §2), so the SPA's host can be driven and photographed before
+  the real game is deployed. Served by `scripts/dev-game-stub.mjs` on http://localhost:4010 (an origin on
+  the host's allow-list) and by the audit driver, which answers that origin from this file.
+
+  It answers exactly what the real game does: it accepts ONE `lf.hello` carrying a port, replies on the
+  port with `kr.ready`, waits for `lf.init`, shows the host's start label on one big Start target (the
+  game's own gate), and then reports a race. `?script=` picks what it does after init:
+
+    gate     (default) wait at the Start target; a press starts the run
+    racing   start the run at once (no gate), then keep racing until told otherwise
+    pitstop  start, finish and end a run at once, so the host shows its pit stop
+    practice start and end a practice lap (no finish report)
+    silent   say nothing after the hello (the host's 20 second handshake error)
+    webgl    report `kr.error` webgl after init
+
+  Keys inside the frame: Escape asks the host to pause (`kr.pauseRequested`), as the real game does.
+  No network, no assets, no storage.
+-->
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KartRush (stub)</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #14123b; color: #fff; font: 600 18px/1.3 system-ui, sans-serif; }
+  body { display: grid; place-items: center; }
+  #scene { width: 100%; height: 100%; display: grid; place-items: center; background: linear-gradient(#2c2a6b, #14123b); }
+  #track { width: 70%; height: 38%; border-radius: 999px; background: #3a3880; position: relative; }
+  #kart { position: absolute; width: 56px; height: 28px; border-radius: 10px; background: #ffb703; inset-inline-start: 12%; inset-block-start: 36%; }
+  button { font: inherit; padding: 18px 28px; min-height: 64px; border: 0; border-radius: 999px; background: #ff7a1a; color: #1a1030; cursor: pointer; }
+  #start { position: absolute; inset: 0; display: grid; place-items: center; background: rgba(20, 18, 59, .55); }
+  #hud { position: absolute; inset-block-start: 8px; inset-inline-start: 12px; font-size: 14px; opacity: .8; }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<div id="scene" aria-label="KartRush stub scene">
+  <div id="track"><div id="kart"></div></div>
+  <div id="hud">stub</div>
+  <div id="start" hidden><button id="startButton" type="button">Start</button></div>
+</div>
+<script>
+(function () {
+  var params = new URLSearchParams(location.search);
+  var script = params.get('script') || 'gate';
+  var port = null;
+  var runKey = 'stub-run-' + Math.random().toString(36).slice(2, 10);
+  var racing = false;
+
+  function send(message) { if (port) port.postMessage(message); }
+
+  function report() {
+    return { t: 'kr.runFinished', v: 1, runKey: runKey, mode: 'single', trackId: 'jungleNeck', character: 'rho', kartBody: 'balanced', speedClass: '100cc', finished: true,
+      finishMs: 130000, bestLapMs: 42000, lapMs: [44000, 42000, 44000], rank: 2,
+      lens: { itemHoldMs: 4000, boxesPassedWhileHolding: 0, itemsUsed: 2, driftReleases: { t0: 0, t1: 2, t2: 1, t3: 0 }, recoveries: 0 } };
+  }
+
+  function startRun(mode) {
+    runKey = 'stub-run-' + Math.random().toString(36).slice(2, 10);
+    racing = true;
+    document.getElementById('start').hidden = true;
+    send({ t: 'kr.runStarted', v: 1, runKey: runKey, mode: mode || 'single', trackId: 'jungleNeck', character: 'rho' });
+  }
+
+  function finishRun() {
+    send(report());
+    setTimeout(function () { racing = false; send({ t: 'kr.runEnded', v: 1, runKey: runKey }); }, 300);
+  }
+
+  function onHost(message) {
+    if (!message || typeof message.t !== 'string') return;
+    if (message.t === 'lf.init') {
+      document.getElementById('startButton').textContent = message.startLabel;
+      document.getElementById('hud').textContent = 'stub ' + message.start.trackId + ' ' + message.start.character + ' ' + message.locale;
+      if (script === 'webgl') return send({ t: 'kr.error', v: 1, code: 'webgl' });
+      if (script === 'racing') return startRun('single');
+      if (script === 'pitstop') { startRun('single'); return setTimeout(finishRun, 100); }
+      if (script === 'practice') { startRun('practice'); return setTimeout(function () { racing = false; send({ t: 'kr.runEnded', v: 1, runKey: runKey }); }, 100); }
+      document.getElementById('start').hidden = false;
+    } else if (message.t === 'lf.start') {
+      startRun(message.start.mode);
+      if (script === 'pitstop') setTimeout(finishRun, 100);
+    } else if (message.t === 'lf.end') {
+      document.getElementById('scene').hidden = true;
+    }
+  }
+
+  window.addEventListener('message', function (event) {
+    if (port || !event.data || event.data.t !== 'lf.hello' || event.data.v !== 1 || !event.ports || event.ports.length !== 1) return;
+    port = event.ports[0];
+    port.onmessage = function (e) { onHost(e.data); };
+    if (script === 'silent') return;
+    send({ t: 'kr.ready', v: 1, build: 'stub-1' });
+  });
+
+  document.getElementById('startButton').addEventListener('click', function (event) { event.stopPropagation(); startRun('single'); });
+  window.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape') send({ t: 'kr.pauseRequested', v: 1 });
+    if (event.key === 'f' && racing) finishRun();
+  });
+  document.getElementById('scene').addEventListener('click', function () { if (racing) finishRun(); });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,925 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-saving-resilience-part-2",
+  "lesson_id": "fe-production-saving-resilience-review-2",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.saving-resilience.06",
+    "finance.prod.saving-resilience.07",
+    "finance.prod.saving-resilience.08",
+    "finance.prod.saving-resilience.09",
+    "finance.prod.saving-resilience.10",
+    "finance.prod.spending-patterns.05"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Update actual savings, avoid payment shortfalls and allocate or replenish reserves using stated priorities.",
+  "title": {
+    "en-US": "Reserve Decisions",
+    "es-MX": "Mantén real el plan de reserva",
+    "pt-BR": "Mantenha real o plano da reserva"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Reserve Decisions\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Mantén real el plan de reserva\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Mantenha real o plano da reserva\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "consolidate",
+    "objective": {
+      "skill_id": "prod.saving-resilience.06",
+      "observable_action": "Update actual savings, avoid payment shortfalls and allocate or replenish reserves using stated priorities.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.saving-resilience.05",
+      "prod.cashflow-budget.09"
+    ],
+    "retrieval_skills": [
+      "prod.saving-resilience.06",
+      "prod.saving-resilience.07",
+      "prod.saving-resilience.08",
+      "prod.saving-resilience.09",
+      "prod.saving-resilience.10",
+      "prod.spending-patterns.05"
+    ],
+    "relevance": "Retrieve missed-contribution adjustments, transfer timing and reserve replenishment.",
+    "misconception": "Planned deposits count as actual savings and protecting a saving schedule overrides essential payment timing.",
+    "numeracy_support": "Use the current visible conditions; do not reuse a previous scenario’s answer.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.saving-resilience.06",
+        "context_id": "saving-resilience-review-2-practice-01",
+        "supports_from": [],
+        "reasoning": "Only actual savings reduce the remaining gap."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.saving-resilience.07",
+        "context_id": "saving-resilience-review-2-practice-02",
+        "supports_from": [],
+        "reasoning": "The transfer conflicts with an earlier essential obligation."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.saving-resilience.08",
+        "context_id": "saving-resilience-review-2-practice-03",
+        "supports_from": [],
+        "reasoning": "Both prior allocations reduce the money left for the goal."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.saving-resilience.09",
+        "context_id": "saving-resilience-review-2-practice-04",
+        "supports_from": [],
+        "reasoning": "The repair matches the unexpected essential purpose."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.saving-resilience.10",
+        "context_id": "saving-resilience-review-2-practice-05",
+        "supports_from": [],
+        "reasoning": "The refills cover the current target-minus-balance gap."
+      },
+      {
+        "segment_id": "practice-06",
+        "skill_id": "prod.spending-patterns.05",
+        "context_id": "saving-resilience-review-2-practice-06",
+        "supports_from": [],
+        "reasoning": "A known annual fee has an advance planning opportunity."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.saving-resilience.06",
+        "context_id": "saving-resilience-review-2-transfer-01",
+        "supports_from": [],
+        "reasoning": "A flexible date can absorb a real gap without hiding it."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.saving-resilience.06",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Retrieve missed-contribution adjustments, transfer timing and reserve replenishment."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Recupera ajustes por aportes faltantes, fechas de transferencia y reposición de reserva."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Retome ajustes por aportes perdidos, datas de transferência e reposição da reserva."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.06",
+      "copy": {
+        "en-US": {
+          "prompt": "How much remains after the missed deposit?",
+          "scene": "Target: 900; Actual saved: 500; No return or new deposits.",
+          "options": [
+            {
+              "label": "400"
+            },
+            {
+              "label": "900"
+            },
+            {
+              "label": "500"
+            }
+          ],
+          "help": [
+            "Subtract the real balance from the target."
+          ],
+          "feedback": {
+            "met": "Only actual savings reduce the remaining gap.",
+            "not_yet": "Subtract the real balance from the target."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué falta tras depósito omitido?",
+          "scene": "Meta: 900; Ahorrado real: 500; Sin rendimiento ni depósitos nuevos.",
+          "options": [
+            {
+              "label": "400"
+            },
+            {
+              "label": "900"
+            },
+            {
+              "label": "500"
+            }
+          ],
+          "help": [
+            "Resta saldo real a meta."
+          ],
+          "feedback": {
+            "met": "Solo ahorro real reduce faltante restante.",
+            "not_yet": "Resta saldo real a meta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto falta após depósito perdido?",
+          "scene": "Meta: 900; Poupado real: 500; Sem rendimento ou depósitos novos.",
+          "options": [
+            {
+              "label": "400"
+            },
+            {
+              "label": "900"
+            },
+            {
+              "label": "500"
+            }
+          ],
+          "help": [
+            "Subtraia saldo real da meta."
+          ],
+          "feedback": {
+            "met": "Só poupança real reduz falta restante.",
+            "not_yet": "Subtraia saldo real da meta."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          900,
+          500
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Adjust what?",
+          "scene": "Automatic saving would leave less cash than rent due before the next confirmed income.",
+          "options": [
+            {
+              "label": "Only the savings label"
+            },
+            {
+              "label": "Nothing because automation is always safe"
+            },
+            {
+              "label": "That transfer’s amount or timing"
+            }
+          ],
+          "help": [
+            "Check post-transfer cash against bills before new income."
+          ],
+          "feedback": {
+            "met": "The transfer conflicts with an earlier essential obligation.",
+            "not_yet": "Check post-transfer cash against bills before new income."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué transferencia necesita ajuste?",
+          "scene": "Ahorro automático deja menos efectivo que renta previa al próximo ingreso confirmado.",
+          "options": [
+            {
+              "label": "Solo etiqueta de ahorro"
+            },
+            {
+              "label": "Nada porque automatizar siempre es seguro"
+            },
+            {
+              "label": "Monto o fecha de esa transferencia"
+            }
+          ],
+          "help": [
+            "Revisa efectivo tras transferencia contra cuentas antes de ingreso."
+          ],
+          "feedback": {
+            "met": "Transferencia entra en conflicto con obligación esencial anterior.",
+            "not_yet": "Revisa efectivo tras transferencia contra cuentas antes de ingreso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que transferência precisa de ajuste?",
+          "scene": "Poupança automática deixa menos dinheiro que aluguel antes da próxima renda confirmada.",
+          "options": [
+            {
+              "label": "Só nome da poupança"
+            },
+            {
+              "label": "Nada pois automação sempre é segura"
+            },
+            {
+              "label": "Valor ou data dessa transferência"
+            }
+          ],
+          "help": [
+            "Confira dinheiro após transferência contra contas antes de renda."
+          ],
+          "feedback": {
+            "met": "Transferência entra em conflito com dever essencial anterior.",
+            "not_yet": "Confira dinheiro após transferência contra contas antes de renda."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.08",
+      "copy": {
+        "en-US": {
+          "prompt": "What remains for the chosen goal?",
+          "scene": "Received windfall: 700; Urgent bill first: 250; Chosen reserve addition: 200; No other allocations.",
+          "options": [
+            {
+              "label": "500"
+            },
+            {
+              "label": "250"
+            },
+            {
+              "label": "450"
+            }
+          ],
+          "help": [
+            "Subtract the urgent payment and reserve addition."
+          ],
+          "feedback": {
+            "met": "Both prior allocations reduce the money left for the goal.",
+            "not_yet": "Subtract the urgent payment and reserve addition."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué queda para meta elegida?",
+          "scene": "Dinero inesperado recibido: 700; Cuenta urgente primero: 250; Aporte elegido a reserva: 200; Sin otros apartados.",
+          "options": [
+            {
+              "label": "500"
+            },
+            {
+              "label": "250"
+            },
+            {
+              "label": "450"
+            }
+          ],
+          "help": [
+            "Resta pago urgente y aporte de reserva."
+          ],
+          "feedback": {
+            "met": "Ambos apartados anteriores reducen dinero para meta.",
+            "not_yet": "Resta pago urgente y aporte de reserva."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto sobra para meta escolhida?",
+          "scene": "Dinheiro extra recebido: 700; Conta urgente primeiro: 250; Aporte escolhido à reserva: 200; Sem outros usos.",
+          "options": [
+            {
+              "label": "500"
+            },
+            {
+              "label": "250"
+            },
+            {
+              "label": "450"
+            }
+          ],
+          "help": [
+            "Subtraia pagamento urgente e aporte à reserva."
+          ],
+          "feedback": {
+            "met": "Ambas as verbas anteriores reduzem dinheiro para meta.",
+            "not_yet": "Subtraia pagamento urgente e aporte à reserva."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          700,
+          250,
+          200
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Which use fits?",
+          "scene": "Reserve covers unforeseen essential repairs; necessary refrigeration suddenly fails, while a new television is optional.",
+          "options": [
+            {
+              "label": "The optional television"
+            },
+            {
+              "label": "The essential refrigeration repair"
+            },
+            {
+              "label": "Neither; reserves must never be used"
+            }
+          ],
+          "help": [
+            "Use the defined reserve purpose, not purchase excitement."
+          ],
+          "feedback": {
+            "met": "The repair matches the unexpected essential purpose.",
+            "not_yet": "Use the defined reserve purpose, not purchase excitement."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué uso cabe en reserva indicada?",
+          "scene": "Reserva cubre arreglos esenciales imprevistos; refrigeración necesaria falla de repente, televisor nuevo es opcional.",
+          "options": [
+            {
+              "label": "Televisor opcional"
+            },
+            {
+              "label": "Arreglo esencial de refrigeración"
+            },
+            {
+              "label": "Ninguno porque reserva nunca se usa"
+            }
+          ],
+          "help": [
+            "Usa propósito definido de reserva, no emoción de compra."
+          ],
+          "feedback": {
+            "met": "El arreglo cumple propósito esencial inesperado.",
+            "not_yet": "Usa propósito definido de reserva, no emoción de compra."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que uso cabe na reserva dada?",
+          "scene": "Reserva cobre consertos essenciais imprevistos; geladeira necessária falha de repente, televisão nova é opcional.",
+          "options": [
+            {
+              "label": "Televisão opcional"
+            },
+            {
+              "label": "Conserto essencial da geladeira"
+            },
+            {
+              "label": "Nenhum pois reserva nunca se usa"
+            }
+          ],
+          "help": [
+            "Use fim definido da reserva, não emoção da compra."
+          ],
+          "feedback": {
+            "met": "O conserto cumpre uso essencial imprevisto.",
+            "not_yet": "Use fim definido da reserva, não emoção da compra."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.10",
+      "copy": {
+        "en-US": {
+          "prompt": "How many feasible refills restore the target?",
+          "scene": "Target: 1000; Remaining reserve: 400; Monthly refill: 150; No return or withdrawals.",
+          "options": [
+            {
+              "label": "6"
+            },
+            {
+              "label": "4"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Subtract remaining reserve, then divide by each feasible refill."
+          ],
+          "feedback": {
+            "met": "The refills cover the current target-minus-balance gap.",
+            "not_yet": "Subtract remaining reserve, then divide by each feasible refill."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuántos aportes viables restauran meta?",
+          "scene": "Meta: 1000; Reserva restante: 400; Reposición mensual: 150; Sin rendimiento ni retiros.",
+          "options": [
+            {
+              "label": "6"
+            },
+            {
+              "label": "4"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Resta reserva restante y divide entre cada reposición viable."
+          ],
+          "feedback": {
+            "met": "Aportes cubren faltante actual entre meta y saldo.",
+            "not_yet": "Resta reserva restante y divide entre cada reposición viable."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quantos aportes viáveis restauram meta?",
+          "scene": "Meta: 1000; Reserva restante: 400; Reposição mensal: 150; Sem rendimento ou saques.",
+          "options": [
+            {
+              "label": "6"
+            },
+            {
+              "label": "4"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Subtraia reserva restante e divida por cada reposição viável."
+          ],
+          "feedback": {
+            "met": "Aportes cobrem falta atual entre meta e saldo.",
+            "not_yet": "Subtraia reserva restante e divida por cada reposição viável."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          1000,
+          400,
+          150
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Which is predictable despite not being monthly?",
+          "scene": "A known annual permit fee sits beside a sudden essential breakdown.",
+          "options": [
+            {
+              "label": "Both are unpredictable"
+            },
+            {
+              "label": "The sudden breakdown"
+            },
+            {
+              "label": "The annual permit fee"
+            }
+          ],
+          "help": [
+            "Irregular frequency does not necessarily mean unforeseen."
+          ],
+          "feedback": {
+            "met": "A known annual fee has an advance planning opportunity.",
+            "not_yet": "Irregular frequency does not necessarily mean unforeseen."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué es previsible aunque no mensual?",
+          "scene": "Cuota anual conocida de permiso aparece junto a avería esencial repentina.",
+          "options": [
+            {
+              "label": "Ambos son imprevisibles"
+            },
+            {
+              "label": "Avería repentina"
+            },
+            {
+              "label": "Cuota anual del permiso"
+            }
+          ],
+          "help": [
+            "Frecuencia irregular no significa necesariamente imprevisto."
+          ],
+          "feedback": {
+            "met": "Cuota anual conocida ofrece ocasión de planear antes.",
+            "not_yet": "Frecuencia irregular no significa necesariamente imprevisto."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que é previsível embora não mensal?",
+          "scene": "Taxa anual conhecida de licença aparece junto a pane essencial repentina.",
+          "options": [
+            {
+              "label": "Ambos são imprevisíveis"
+            },
+            {
+              "label": "Pane repentina"
+            },
+            {
+              "label": "Taxa anual da licença"
+            }
+          ],
+          "help": [
+            "Frequência irregular não significa sempre imprevisto."
+          ],
+          "feedback": {
+            "met": "Taxa anual conhecida permite planejar antes.",
+            "not_yet": "Frequência irregular não significa sempre imprevisto."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.saving-resilience.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which revision fits another missed contribution?",
+          "scene": "The date is flexible; essentials prevent increasing contributions.",
+          "options": [
+            {
+              "label": "Invent the missed deposit"
+            },
+            {
+              "label": "Skip essentials to preserve the date"
+            },
+            {
+              "label": "Extend timing using the actual balance"
+            }
+          ],
+          "help": [
+            "Recalculate completion using actual savings and feasible future payments."
+          ],
+          "feedback": {
+            "met": "A flexible date can absorb a real gap without hiding it.",
+            "not_yet": "Recalculate completion using actual savings and feasible future payments."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué revisión cabe tras otro aporte faltante?",
+          "scene": "Fecha es flexible, pero esenciales no permiten aumentar aportes.",
+          "options": [
+            {
+              "label": "Inventar depósito faltante"
+            },
+            {
+              "label": "Omitir esenciales para conservar fecha"
+            },
+            {
+              "label": "Ampliar plazo usando saldo real"
+            }
+          ],
+          "help": [
+            "Recalcula final con ahorro real y pagos futuros viables."
+          ],
+          "feedback": {
+            "met": "Fecha flexible absorbe faltante real sin ocultarlo.",
+            "not_yet": "Recalcula final con ahorro real y pagos futuros viables."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que revisão cabe após outro aporte perdido?",
+          "scene": "Data é flexível, mas essenciais não permitem aumentar aportes.",
+          "options": [
+            {
+              "label": "Inventar depósito perdido"
+            },
+            {
+              "label": "Pular essenciais para manter data"
+            },
+            {
+              "label": "Ampliar prazo usando saldo real"
+            }
+          ],
+          "help": [
+            "Recalcule final com poupança real e pagamentos futuros viáveis."
+          ],
+          "feedback": {
+            "met": "Data flexível absorve falta real sem ocultar.",
+            "not_yet": "Recalcule final com poupança real e pagamentos futuros viáveis."
+          }
+        }
+      }
+    }
+  ]
+}

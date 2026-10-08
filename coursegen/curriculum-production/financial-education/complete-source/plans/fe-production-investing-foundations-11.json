@@ -1,0 +1,719 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-investing-foundations-part-2",
+  "lesson_id": "fe-production-investing-foundations-11",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.investing-foundations.11"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Identify liquidity restrictions that conflict with a stated withdrawal need.",
+  "title": {
+    "en-US": "Access Conditions",
+    "es-MX": "El acceso tiene condiciones",
+    "pt-BR": "O acesso tem condições"
+  },
+  "new_concepts": [
+    "finance.prod.investing-foundations.11"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Access Conditions\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"El acceso tiene condiciones\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"O acesso tem condições\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.investing-foundations.11",
+      "observable_action": "Identify liquidity restrictions that conflict with a stated withdrawal need.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.investing-foundations.01",
+      "prod.saving-resilience.04"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A balance shown on a screen is not always money you can withdraw when needed.",
+    "misconception": "A displayed investment balance guarantees immediate withdrawal without penalty or a buyer.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.investing-foundations.11",
+        "context_id": "investing-foundations-11-example-01",
+        "supports_from": [],
+        "reasoning": "An account unlocks next month, but the repair bill is due tomorrow. Its balance cannot cover tomorrow’s payment through withdrawal."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.investing-foundations.11",
+        "context_id": "investing-foundations-11-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "A sufficient balance is useless before its permitted access date."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.investing-foundations.11",
+        "context_id": "investing-foundations-11-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "An early-withdrawal fee can leave a payment shortfall."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.investing-foundations.11",
+        "context_id": "investing-foundations-11-practice-01",
+        "supports_from": [],
+        "reasoning": "A sale cannot provide cash without a buyer."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.investing-foundations.11",
+        "context_id": "investing-foundations-11-practice-02",
+        "supports_from": [],
+        "reasoning": "Completed trading need not mean immediately withdrawable cash."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.investing-foundations.11",
+        "context_id": "investing-foundations-11-practice-03",
+        "supports_from": [],
+        "reasoning": "A satisfies the stated timing and penalty conditions."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.investing-foundations.11",
+        "context_id": "investing-foundations-11-transfer-01",
+        "supports_from": [],
+        "reasoning": "The request does not deliver money by tomorrow."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.investing-foundations.11",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A balance shown on a screen is not always money you can withdraw when needed."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un saldo mostrado en pantalla no siempre es dinero que puedas retirar cuando lo necesites."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Um saldo exibido na tela nem sempre é dinheiro que você pode sacar quando precisa."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Match the access date",
+          "line": "An account unlocks next month, but the repair bill is due tomorrow. Its balance cannot cover tomorrow’s payment through withdrawal."
+        },
+        "es-MX": {
+          "prompt": "Relaciona la fecha de acceso",
+          "line": "Una cuenta se libera el próximo mes, pero la reparación vence mañana. Retirarla no puede cubrir el pago de mañana."
+        },
+        "pt-BR": {
+          "prompt": "Relacione a data de acesso",
+          "line": "Uma conta libera saques no próximo mês, mas o conserto vence amanhã. Sacá-la não pode cobrir o pagamento de amanhã."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.11",
+      "copy": {
+        "en-US": {
+          "prompt": "Does the access date fit?",
+          "scene": "Money is needed Friday. The fictional investment permits withdrawal only next month.",
+          "options": [
+            {
+              "label": "Yes, the balance is large"
+            },
+            {
+              "label": "No, withdrawal comes too late"
+            }
+          ],
+          "help": [
+            "Compare the need date with the withdrawal date."
+          ],
+          "feedback": {
+            "met": "A sufficient balance is useless before its permitted access date.",
+            "not_yet": "Compare the need date with the withdrawal date."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Coincide la fecha de acceso?",
+          "scene": "El dinero se necesita el viernes. La inversión ficticia permite retirar hasta el próximo mes.",
+          "options": [
+            {
+              "label": "Sí, el saldo es grande"
+            },
+            {
+              "label": "No, el retiro llega tarde"
+            }
+          ],
+          "help": [
+            "Compara la fecha necesaria con la de retiro."
+          ],
+          "feedback": {
+            "met": "Un saldo suficiente no sirve antes de poder acceder.",
+            "not_yet": "Compara la fecha necesaria con la de retiro."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A data de acesso serve?",
+          "scene": "O dinheiro é necessário sexta. O investimento fictício permite sacar só no próximo mês.",
+          "options": [
+            {
+              "label": "Sim, o saldo é grande"
+            },
+            {
+              "label": "Não, o saque chega tarde"
+            }
+          ],
+          "help": [
+            "Compare a data necessária com a do saque."
+          ],
+          "feedback": {
+            "met": "Um saldo suficiente não serve antes do acesso permitido.",
+            "not_yet": "Compare a data necessária com a do saque."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.11",
+      "copy": {
+        "en-US": {
+          "prompt": "What must be checked?",
+          "scene": "A product allows early withdrawal with a fee. Its full balance exactly equals the required bill.",
+          "options": [
+            {
+              "label": "The amount after the fee"
+            },
+            {
+              "label": "Only the displayed balance"
+            }
+          ],
+          "help": [
+            "Available money means what actually reaches you."
+          ],
+          "feedback": {
+            "met": "An early-withdrawal fee can leave a payment shortfall.",
+            "not_yet": "Available money means what actually reaches you."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debes revisar?",
+          "scene": "Un producto permite retirar antes con comisión. Su saldo completo coincide exactamente con la cuenta a pagar.",
+          "options": [
+            {
+              "label": "El monto después de la comisión"
+            },
+            {
+              "label": "Solo el saldo mostrado"
+            }
+          ],
+          "help": [
+            "Dinero disponible es lo que realmente recibes."
+          ],
+          "feedback": {
+            "met": "La comisión por retirar antes puede dejar un faltante.",
+            "not_yet": "Dinero disponible es lo que realmente recibes."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que conferir?",
+          "scene": "Um produto permite saque antecipado com tarifa. Seu saldo integral equivale exatamente à conta necessária.",
+          "options": [
+            {
+              "label": "O valor após a tarifa"
+            },
+            {
+              "label": "Só o saldo exibido"
+            }
+          ],
+          "help": [
+            "Dinheiro disponível é o que você realmente recebe."
+          ],
+          "feedback": {
+            "met": "A tarifa por saque antecipado pode deixar uma falta.",
+            "not_yet": "Dinheiro disponível é o que você realmente recebe."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.11",
+      "copy": {
+        "en-US": {
+          "prompt": "Which condition blocks access?",
+          "scene": "A private holding can be sold only if a buyer is found. No buyer is currently available.",
+          "options": [
+            {
+              "label": "The need for a buyer"
+            },
+            {
+              "label": "Its attractive historical return"
+            }
+          ],
+          "help": [
+            "Value estimates do not ensure a completed sale."
+          ],
+          "feedback": {
+            "met": "A sale cannot provide cash without a buyer.",
+            "not_yet": "Value estimates do not ensure a completed sale."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué condición bloquea el acceso?",
+          "scene": "Una inversión privada solo se vende si hay comprador. Actualmente no hay ninguno.",
+          "options": [
+            {
+              "label": "Necesitar un comprador"
+            },
+            {
+              "label": "Su atractivo rendimiento pasado"
+            }
+          ],
+          "help": [
+            "Estimar valor no asegura completar una venta."
+          ],
+          "feedback": {
+            "met": "Una venta no entrega efectivo sin comprador.",
+            "not_yet": "Estimar valor no asegura completar una venta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual condição bloqueia acesso?",
+          "scene": "Uma participação privada só pode ser vendida se houver comprador. Atualmente não há nenhum.",
+          "options": [
+            {
+              "label": "Precisar de um comprador"
+            },
+            {
+              "label": "Seu rendimento passado atraente"
+            }
+          ],
+          "help": [
+            "Estimar valor não garante concluir uma venda."
+          ],
+          "feedback": {
+            "met": "Uma venda não entrega dinheiro sem comprador.",
+            "not_yet": "Estimar valor não garante concluir uma venda."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.11",
+      "copy": {
+        "en-US": {
+          "prompt": "Is selling receiving?",
+          "scene": "An order sells today. The stated settlement rule delivers cash after the bill deadline.",
+          "options": [
+            {
+              "label": "Yes, selling pays the bill"
+            },
+            {
+              "label": "No, settlement timing matters"
+            }
+          ],
+          "help": [
+            "Use the stated date money becomes available."
+          ],
+          "feedback": {
+            "met": "Completed trading need not mean immediately withdrawable cash.",
+            "not_yet": "Use the stated date money becomes available."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Vender equivale a tener efectivo?",
+          "scene": "Una orden vende hoy, pero la liquidación indicada entrega dinero después del vencimiento de la cuenta.",
+          "options": [
+            {
+              "label": "Sí, el botón paga la cuenta"
+            },
+            {
+              "label": "No, importa cuándo se liquida"
+            }
+          ],
+          "help": [
+            "Usa la fecha indicada de disponibilidad del dinero."
+          ],
+          "feedback": {
+            "met": "Vender no necesariamente deja efectivo retirable de inmediato.",
+            "not_yet": "Usa la fecha indicada de disponibilidad del dinero."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Vender equivale a ter dinheiro?",
+          "scene": "Uma ordem vende hoje, mas a liquidação informada entrega dinheiro depois do vencimento da conta.",
+          "options": [
+            {
+              "label": "Sim, o botão paga a conta"
+            },
+            {
+              "label": "Não, importa quando liquida"
+            }
+          ],
+          "help": [
+            "Use a data informada de disponibilidade do dinheiro."
+          ],
+          "feedback": {
+            "met": "Vender não necessariamente libera saque imediato.",
+            "not_yet": "Use a data informada de disponibilidade do dinheiro."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.11",
+      "copy": {
+        "en-US": {
+          "prompt": "Which product fits this constraint?",
+          "scene": "Funds must be accessible tomorrow without penalty. A meets that condition; B unlocks later.",
+          "options": [
+            {
+              "label": "B because waiting always pays more"
+            },
+            {
+              "label": "A meets the access constraint"
+            }
+          ],
+          "help": [
+            "Judge the stated need, not an imagined return."
+          ],
+          "feedback": {
+            "met": "A satisfies the stated timing and penalty conditions.",
+            "not_yet": "Judge the stated need, not an imagined return."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué producto cumple?",
+          "scene": "El dinero debe estar accesible mañana sin penalización. A cumple; B se libera después.",
+          "options": [
+            {
+              "label": "B porque esperar siempre paga más"
+            },
+            {
+              "label": "A cumple la condición de acceso"
+            }
+          ],
+          "help": [
+            "Evalúa la necesidad indicada, no ganancias imaginadas."
+          ],
+          "feedback": {
+            "met": "A cumple las condiciones indicadas de tiempo y penalización.",
+            "not_yet": "Evalúa la necesidad indicada, no ganancias imaginadas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual produto atende?",
+          "scene": "O dinheiro precisa estar acessível amanhã sem multa. A atende; B libera depois.",
+          "options": [
+            {
+              "label": "B porque esperar sempre rende mais"
+            },
+            {
+              "label": "A atende à condição de acesso"
+            }
+          ],
+          "help": [
+            "Avalie a necessidade informada, não ganhos imaginados."
+          ],
+          "feedback": {
+            "met": "A atende às condições informadas de prazo e multa.",
+            "not_yet": "Avalie a necessidade informada, não ganhos imaginados."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.investing-foundations.11",
+      "copy": {
+        "en-US": {
+          "prompt": "Will money arrive?",
+          "scene": "A deposit is due tomorrow. The stated withdrawal delay is one week.",
+          "options": [
+            {
+              "label": "Yes, the balance covers it"
+            },
+            {
+              "label": "Yes, requesting means receiving"
+            },
+            {
+              "label": "No, access comes late"
+            }
+          ],
+          "help": [
+            "Check when the money arrives, not just when requested."
+          ],
+          "feedback": {
+            "met": "The request does not deliver money by tomorrow.",
+            "not_yet": "Check when the money arrives, not just when requested."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Puede cubrir el plazo?",
+          "scene": "Un depósito escolar vence mañana. Según las reglas, solicitar hoy un retiro requiere una semana completa.",
+          "options": [
+            {
+              "label": "Sí, el saldo alcanza"
+            },
+            {
+              "label": "Sí, solicitar equivale a recibir"
+            },
+            {
+              "label": "No, la demora contradice el plazo"
+            }
+          ],
+          "help": [
+            "Revisa cuándo llega el dinero, no solo cuándo lo pides."
+          ],
+          "feedback": {
+            "met": "La solicitud no entrega el dinero para mañana.",
+            "not_yet": "Revisa cuándo llega el dinero, no solo cuándo lo pides."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Pode atender ao prazo?",
+          "scene": "Um depósito escolar vence amanhã. Pelas regras, solicitar hoje um saque exige uma semana completa.",
+          "options": [
+            {
+              "label": "Sim, o saldo basta"
+            },
+            {
+              "label": "Sim, solicitar equivale a receber"
+            },
+            {
+              "label": "Não, a demora conflita com o prazo"
+            }
+          ],
+          "help": [
+            "Confira quando chega o dinheiro, não só quando solicita."
+          ],
+          "feedback": {
+            "met": "A solicitação não entrega dinheiro até amanhã.",
+            "not_yet": "Confira quando chega o dinheiro, não só quando solicita."
+          }
+        }
+      }
+    }
+  ]
+}

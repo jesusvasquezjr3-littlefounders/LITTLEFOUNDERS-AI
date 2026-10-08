@@ -1,0 +1,4161 @@
+{
+  "version": 1,
+  "course_id": "financial-education",
+  "audience": "adult-beginners",
+  "status": "proposed-lesson-sequence",
+  "playable_lessons": 0,
+  "production_release_authorized": false,
+  "calibration": {
+    "lessons": 36,
+    "owner_accepted": true,
+    "accepted_on": "2026-10-05",
+    "included_in_production_count": false
+  },
+  "limitations": [
+    "Dependencies are proposed instructional edges, not activated shared knowledge components.",
+    "Structural retrieval slots do not prove elapsed-time spacing, assessment quality or retention.",
+    "Review slots require authored integrated scenarios and independent evidence for each target.",
+    "Every lesson still requires misconception, worked example, guided practice, fresh transfer, exact engine scoring and market evidence before generation.",
+    "A passed structural check does not approve the sequence pedagogically or authorize publication."
+  ],
+  "sources": [
+    {
+      "id": "oecd",
+      "url": "https://www.oecd.org/content/dam/oecd/en/publications/reports/2022/01/financial-competence-framework-for-adults-in-the-european-union_614b8b97/510f133c-en.pdf",
+      "use": "Coverage cross-check across the four adult personal-finance areas; not a copied teaching sequence or imported EU law."
+    },
+    {
+      "id": "cfpb",
+      "url": "https://www.consumerfinance.gov/consumer-tools/educator-tools/your-money-your-goals/toolkit/",
+      "use": "Practical decision and record-keeping task cross-check; US legal procedures are not transferable to other markets."
+    },
+    {
+      "id": "condusef",
+      "url": "https://www.condusef.gob.mx/?idc=228&p=contenido",
+      "use": "Mexican topic coverage and starting point for local source verification."
+    },
+    {
+      "id": "bcb",
+      "url": "https://www.bcb.gov.br/cidadaniafinanceira/indexcidadaniafinanceira",
+      "use": "Brazilian financial citizenship and local-source starting point; current rules require specific primary documents."
+    }
+  ],
+  "lessons": [
+    {
+      "lesson_id": "fe-production-usable-money-00",
+      "domain": "usable-money",
+      "objective": "Identify how a completed payment changes the money held by the named person.",
+      "kind": "teach",
+      "prerequisites": [],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-usable-money-01",
+      "domain": "usable-money",
+      "kind": "teach",
+      "objective": "Distinguish money already received from money someone has promised.",
+      "prerequisites": [
+        "fe-production-usable-money-00"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-usable-money-02",
+      "domain": "usable-money",
+      "kind": "teach",
+      "objective": "Update available cash after one receipt and one payment using a visible count.",
+      "prerequisites": [
+        "fe-production-usable-money-00",
+        "fe-production-usable-money-01"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-usable-money-03",
+      "domain": "usable-money",
+      "kind": "teach",
+      "objective": "Identify which money is already committed to a stated upcoming obligation.",
+      "prerequisites": [
+        "fe-production-usable-money-01"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-usable-money-04",
+      "domain": "usable-money",
+      "kind": "teach",
+      "objective": "Choose whether a purchase fits after protecting a stated commitment.",
+      "prerequisites": [
+        "fe-production-usable-money-01",
+        "fe-production-usable-money-02",
+        "fe-production-usable-money-03"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-usable-money-05",
+      "domain": "usable-money",
+      "kind": "teach",
+      "objective": "Put a receipt and a payment on a timeline to detect a shortage before payday.",
+      "prerequisites": [
+        "fe-production-usable-money-01",
+        "fe-production-usable-money-03",
+        "fe-production-usable-money-04"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-usable-money-06",
+      "domain": "usable-money",
+      "kind": "teach",
+      "objective": "Keep borrowed money separate from earnings when explaining what must be repaid.",
+      "prerequisites": [
+        "fe-production-usable-money-01",
+        "fe-production-usable-money-02",
+        "fe-production-usable-money-03"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-usable-money-07",
+      "domain": "usable-money",
+      "kind": "teach",
+      "objective": "Avoid counting a transfer between your own containers as new income.",
+      "prerequisites": [
+        "fe-production-usable-money-02"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-usable-money-08",
+      "domain": "usable-money",
+      "kind": "teach",
+      "objective": "Revise today’s purchase decision after a promised payment is delayed.",
+      "prerequisites": [
+        "fe-production-usable-money-01",
+        "fe-production-usable-money-04",
+        "fe-production-usable-money-05"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-usable-money-review-1",
+      "domain": "usable-money",
+      "kind": "consolidate",
+      "objective": null,
+      "prerequisites": [
+        "fe-production-usable-money-00",
+        "fe-production-usable-money-01",
+        "fe-production-usable-money-02",
+        "fe-production-usable-money-03",
+        "fe-production-usable-money-04"
+      ],
+      "retrieve_objectives": [
+        "fe-production-usable-money-00",
+        "fe-production-usable-money-01",
+        "fe-production-usable-money-02",
+        "fe-production-usable-money-03",
+        "fe-production-usable-money-04"
+      ],
+      "authoring_status": "retrieval-reservation-not-implementation-evidence"
+    },
+    {
+      "lesson_id": "fe-production-usable-money-review-2",
+      "domain": "usable-money",
+      "kind": "consolidate",
+      "objective": null,
+      "prerequisites": [
+        "fe-production-usable-money-05",
+        "fe-production-usable-money-06",
+        "fe-production-usable-money-07",
+        "fe-production-usable-money-08"
+      ],
+      "retrieve_objectives": [
+        "fe-production-usable-money-05",
+        "fe-production-usable-money-06",
+        "fe-production-usable-money-07",
+        "fe-production-usable-money-08"
+      ],
+      "authoring_status": "retrieval-reservation-not-implementation-evidence"
+    },
+    {
+      "lesson_id": "fe-production-financial-math-01",
+      "domain": "financial-math",
+      "kind": "teach",
+      "objective": "Read a monetary amount with whole units and fractional units in the local notation.",
+      "prerequisites": [
+        "fe-production-usable-money-02"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-financial-math-02",
+      "domain": "financial-math",
+      "kind": "teach",
+      "objective": "Calculate change by subtracting a price from the amount tendered.",
+      "prerequisites": [
+        "fe-production-financial-math-01"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-financial-math-03",
+      "domain": "financial-math",
+      "kind": "teach",
+      "objective": "Add several receipts without counting the same receipt twice.",
+      "prerequisites": [
+        "fe-production-financial-math-01",
+        "fe-production-usable-money-07"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-financial-math-04",
+      "domain": "financial-math",
+      "kind": "teach",
+      "objective": "Calculate the shortfall when stated obligations exceed available money.",
+      "prerequisites": [
+        "fe-production-financial-math-02",
+        "fe-production-usable-money-04"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-financial-math-05",
+      "domain": "financial-math",
+      "kind": "teach",
+      "objective": "Calculate the cost of several identical items by multiplication.",
+      "prerequisites": [
+        "fe-production-financial-math-03"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-financial-math-06",
+      "domain": "financial-math",
+      "kind": "teach",
+      "objective": "Divide a stated shared cost into equal contributions.",
+      "prerequisites": [
+        "fe-production-financial-math-05"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-financial-math-07",
+      "domain": "financial-math",
+      "kind": "teach",
+      "objective": "Convert a fraction of a whole into an equivalent percentage with a visual grid.",
+      "prerequisites": [
+        "fe-production-financial-math-06"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-financial-math-08",
+      "domain": "financial-math",
+      "kind": "teach",
+      "objective": "Calculate a percentage of a stated amount.",
+      "prerequisites": [
+        "fe-production-financial-math-05",
+        "fe-production-financial-math-07"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-financial-math-09",
+      "domain": "financial-math",
+      "kind": "teach",
+      "objective": "Recover the whole amount from a given percentage and its monetary value.",
+      "prerequisites": [
+        "fe-production-financial-math-06",
+        "fe-production-financial-math-08"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-financial-math-10",
+      "domain": "financial-math",
+      "kind": "teach",
+      "objective": "Distinguish a percentage-point difference from a relative percentage change.",
+      "prerequisites": [
+        "fe-production-financial-math-07",
+        "fe-production-financial-math-08"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-financial-math-11",
+      "domain": "financial-math",
+      "kind": "teach",
+      "objective": "Compare amounts expressed for different time periods on a common time basis.",
+      "prerequisites": [
+        "fe-production-financial-math-05",
+        "fe-production-financial-math-06"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-financial-math-12",
+      "domain": "financial-math",
+      "kind": "teach",
+      "objective": "Round a monetary calculation at the specified step and explain the remaining difference.",
+      "prerequisites": [
+        "fe-production-financial-math-01",
+        "fe-production-financial-math-06"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-financial-math-13",
+      "domain": "financial-math",
+      "kind": "teach",
+      "objective": "Check whether a financial result is plausible using an approximate calculation.",
+      "prerequisites": [
+        "fe-production-financial-math-02",
+        "fe-production-financial-math-05",
+        "fe-production-financial-math-06"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-financial-math-review-1",
+      "domain": "financial-math",
+      "kind": "consolidate",
+      "objective": null,
+      "prerequisites": [
+        "fe-production-financial-math-01",
+        "fe-production-financial-math-02",
+        "fe-production-financial-math-03",
+        "fe-production-financial-math-04",
+        "fe-production-financial-math-05",
+        "fe-production-financial-math-06",
+        "fe-production-financial-math-07",
+        "fe-production-usable-money-02"
+      ],
+      "retrieve_objectives": [
+        "fe-production-financial-math-01",
+        "fe-production-financial-math-02",
+        "fe-production-financial-math-03",
+        "fe-production-financial-math-04",
+        "fe-production-financial-math-05",
+        "fe-production-financial-math-06",
+        "fe-production-financial-math-07",
+        "fe-production-usable-money-02"
+      ],
+      "authoring_status": "retrieval-reservation-not-implementation-evidence"
+    },
+    {
+      "lesson_id": "fe-production-financial-math-review-2",
+      "domain": "financial-math",
+      "kind": "consolidate",
+      "objective": null,
+      "prerequisites": [
+        "fe-production-financial-math-08",
+        "fe-production-financial-math-09",
+        "fe-production-financial-math-10",
+        "fe-production-financial-math-11",
+        "fe-production-financial-math-12",
+        "fe-production-financial-math-13",
+        "fe-production-usable-money-02"
+      ],
+      "retrieve_objectives": [
+        "fe-production-financial-math-08",
+        "fe-production-financial-math-09",
+        "fe-production-financial-math-10",
+        "fe-production-financial-math-11",
+        "fe-production-financial-math-12",
+        "fe-production-financial-math-13",
+        "fe-production-usable-money-02"
+      ],
+      "authoring_status": "retrieval-reservation-not-implementation-evidence"
+    },
+    {
+      "lesson_id": "fe-production-goals-tradeoffs-01",
+      "domain": "goals-tradeoffs",
+      "kind": "teach",
+      "objective": "Translate a broad wish into a goal with an amount, purpose and date.",
+      "prerequisites": [
+        "fe-production-usable-money-03"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-goals-tradeoffs-02",
+      "domain": "goals-tradeoffs",
+      "kind": "teach",
+      "objective": "Separate a stated essential consequence from a preference in a spending decision.",
+      "prerequisites": [
+        "fe-production-usable-money-03"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-goals-tradeoffs-03",
+      "domain": "goals-tradeoffs",
+      "kind": "teach",
+      "objective": "Identify the next-best feasible use forgone when choosing between two purchases.",
+      "prerequisites": [
+        "fe-production-usable-money-04"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-goals-tradeoffs-04",
+      "domain": "goals-tradeoffs",
+      "kind": "teach",
+      "objective": "Rank competing goals using the learner’s stated deadlines and consequences.",
+      "prerequisites": [
+        "fe-production-goals-tradeoffs-01",
+        "fe-production-goals-tradeoffs-02",
+        "fe-production-goals-tradeoffs-03"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-goals-tradeoffs-05",
+      "domain": "goals-tradeoffs",
+      "kind": "teach",
+      "objective": "Break a goal’s remaining amount into feasible contributions over the time available.",
+      "prerequisites": [
+        "fe-production-goals-tradeoffs-01",
+        "fe-production-financial-math-06"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-goals-tradeoffs-06",
+      "domain": "goals-tradeoffs",
+      "kind": "teach",
+      "objective": "Recognize when changing a goal or its deadline is necessary because no contribution fits.",
+      "prerequisites": [
+        "fe-production-goals-tradeoffs-05",
+        "fe-production-usable-money-04"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-goals-tradeoffs-07",
+      "domain": "goals-tradeoffs",
+      "kind": "teach",
+      "objective": "Choose a small next action that can be checked without requiring spare income.",
+      "prerequisites": [
+        "fe-production-goals-tradeoffs-01",
+        "fe-production-goals-tradeoffs-06"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-goals-tradeoffs-08",
+      "domain": "goals-tradeoffs",
+      "kind": "teach",
+      "objective": "Revise a goal when its original cost or purpose changes.",
+      "prerequisites": [
+        "fe-production-goals-tradeoffs-01",
+        "fe-production-goals-tradeoffs-04",
+        "fe-production-goals-tradeoffs-05"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-goals-tradeoffs-review-1",
+      "domain": "goals-tradeoffs",
+      "kind": "consolidate",
+      "objective": null,
+      "prerequisites": [
+        "fe-production-goals-tradeoffs-01",
+        "fe-production-goals-tradeoffs-02",
+        "fe-production-goals-tradeoffs-03",
+        "fe-production-goals-tradeoffs-04",
+        "fe-production-usable-money-03"
+      ],
+      "retrieve_objectives": [
+        "fe-production-goals-tradeoffs-01",
+        "fe-production-goals-tradeoffs-02",
+        "fe-production-goals-tradeoffs-03",
+        "fe-production-goals-tradeoffs-04",
+        "fe-production-usable-money-03"
+      ],
+      "authoring_status": "retrieval-reservation-not-implementation-evidence"
+    },
+    {
+      "lesson_id": "fe-production-goals-tradeoffs-review-2",
+      "domain": "goals-tradeoffs",
+      "kind": "consolidate",
+      "objective": null,
+      "prerequisites": [
+        "fe-production-goals-tradeoffs-05",
+        "fe-production-goals-tradeoffs-06",
+        "fe-production-goals-tradeoffs-07",
+        "fe-production-goals-tradeoffs-08",
+        "fe-production-usable-money-03"
+      ],
+      "retrieve_objectives": [
+        "fe-production-goals-tradeoffs-05",
+        "fe-production-goals-tradeoffs-06",
+        "fe-production-goals-tradeoffs-07",
+        "fe-production-goals-tradeoffs-08",
+        "fe-production-usable-money-03"
+      ],
+      "authoring_status": "retrieval-reservation-not-implementation-evidence"
+    },
+    {
+      "lesson_id": "fe-production-income-work-01",
+      "domain": "income-work",
+      "kind": "teach",
+      "objective": "Separate recurring, irregular and one-time receipts when estimating future income.",
+      "prerequisites": [
+        "fe-production-usable-money-01"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-income-work-02",
+      "domain": "income-work",
+      "kind": "teach",
+      "objective": "Distinguish gross pay from money received using explicitly explained deductions.",
+      "prerequisites": [
+        "fe-production-financial-math-02"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-income-work-03",
+      "domain": "income-work",
+      "kind": "teach",
+      "objective": "Calculate earnings from a stated hourly rate and paid hours.",
+      "prerequisites": [
+        "fe-production-financial-math-05"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-income-work-04",
+      "domain": "income-work",
+      "kind": "teach",
+      "objective": "Estimate usable income after stated work-related costs.",
+      "prerequisites": [
+        "fe-production-income-work-02",
+        "fe-production-financial-math-02"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-income-work-05",
+      "domain": "income-work",
+      "kind": "teach",
+      "objective": "Identify which payment date, amount or condition is still unknown in a work offer.",
+      "prerequisites": [
+        "fe-production-usable-money-05"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-income-work-06",
+      "domain": "income-work",
+      "kind": "teach",
+      "objective": "Build a conservative income estimate from an irregular payment history.",
+      "prerequisites": [
+        "fe-production-income-work-01",
+        "fe-production-financial-math-03",
+        "fe-production-financial-math-06"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-income-work-07",
+      "domain": "income-work",
+      "kind": "teach",
+      "objective": "Separate a household owner’s withdrawal from the receipts and costs of a small activity.",
+      "prerequisites": [
+        "fe-production-financial-math-02",
+        "fe-production-usable-money-07"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-income-work-08",
+      "domain": "income-work",
+      "kind": "teach",
+      "objective": "Identify a missing payment using agreed work terms and a payment record.",
+      "prerequisites": [
+        "fe-production-income-work-03",
+        "fe-production-income-work-05"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-income-work-09",
+      "domain": "income-work",
+      "kind": "teach",
+      "objective": "Compare two work arrangements using stated net income, time and necessary costs.",
+      "prerequisites": [
+        "fe-production-income-work-04",
+        "fe-production-income-work-05",
+        "fe-production-financial-math-11"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-income-work-10",
+      "domain": "income-work",
+      "kind": "teach",
+      "objective": "Find the authoritative source needed to check a claimed benefit or employment entitlement.",
+      "prerequisites": [
+        "fe-production-income-work-02",
+        "fe-production-income-work-05"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-income-work-review-1",
+      "domain": "income-work",
+      "kind": "consolidate",
+      "objective": null,
+      "prerequisites": [
+        "fe-production-income-work-01",
+        "fe-production-income-work-02",
+        "fe-production-income-work-03",
+        "fe-production-income-work-04",
+        "fe-production-income-work-05",
+        "fe-production-usable-money-01"
+      ],
+      "retrieve_objectives": [
+        "fe-production-income-work-01",
+        "fe-production-income-work-02",
+        "fe-production-income-work-03",
+        "fe-production-income-work-04",
+        "fe-production-income-work-05",
+        "fe-production-usable-money-01"
+      ],
+      "authoring_status": "retrieval-reservation-not-implementation-evidence"
+    },
+    {
+      "lesson_id": "fe-production-income-work-review-2",
+      "domain": "income-work",
+      "kind": "consolidate",
+      "objective": null,
+      "prerequisites": [
+        "fe-production-income-work-06",
+        "fe-production-income-work-07",
+        "fe-production-income-work-08",
+        "fe-production-income-work-09",
+        "fe-production-income-work-10",
+        "fe-production-usable-money-01"
+      ],
+      "retrieve_objectives": [
+        "fe-production-income-work-06",
+        "fe-production-income-work-07",
+        "fe-production-income-work-08",
+        "fe-production-income-work-09",
+        "fe-production-income-work-10",
+        "fe-production-usable-money-01"
+      ],
+      "authoring_status": "retrieval-reservation-not-implementation-evidence"
+    },
+    {
+      "lesson_id": "fe-production-spending-patterns-01",
+      "domain": "spending-patterns",
+      "kind": "teach",
+      "objective": "Record an expense with enough detail to identify its amount, date and purpose.",
+      "prerequisites": [
+        "fe-production-usable-money-02"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-spending-patterns-02",
+      "domain": "spending-patterns",
+      "kind": "teach",
+      "objective": "Separate a regular commitment from a variable expense without assuming either is optional.",
+      "prerequisites": [
+        "fe-production-spending-patterns-01",
+        "fe-production-goals-tradeoffs-02"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-spending-patterns-03",
+      "domain": "spending-patterns",
+      "kind": "teach",
+      "objective": "Find an omitted cash expense when reconciling a spending diary with money remaining.",
+      "prerequisites": [
+        "fe-production-spending-patterns-01",
+        "fe-production-financial-math-02"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-spending-patterns-04",
+      "domain": "spending-patterns",
+      "kind": "teach",
+      "objective": "Convert a recurring small purchase into its total cost over a stated period.",
+      "prerequisites": [
+        "fe-production-spending-patterns-01",
+        "fe-production-financial-math-05"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-spending-patterns-05",
+      "domain": "spending-patterns",
+      "kind": "teach",
+      "objective": "Distinguish a predictable irregular expense from an unforeseen event.",
+      "prerequisites": [
+        "fe-production-spending-patterns-02"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-spending-patterns-06",
+      "domain": "spending-patterns",
+      "kind": "teach",
+      "objective": "Identify an unused recurring charge from a fictional account history.",
+      "prerequisites": [
+        "fe-production-spending-patterns-01",
+        "fe-production-spending-patterns-04"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-spending-patterns-07",
+      "domain": "spending-patterns",
+      "kind": "teach",
+      "objective": "Choose an expense adjustment that respects explicitly stated household constraints.",
+      "prerequisites": [
+        "fe-production-spending-patterns-02",
+        "fe-production-goals-tradeoffs-02",
+        "fe-production-goals-tradeoffs-03"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-spending-patterns-08",
+      "domain": "spending-patterns",
+      "kind": "teach",
+      "objective": "Identify a purchase trigger and choose a pause that allows checking the cost.",
+      "prerequisites": [
+        "fe-production-goals-tradeoffs-03"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-spending-patterns-09",
+      "domain": "spending-patterns",
+      "kind": "teach",
+      "objective": "Compare planned and actual spending without treating every deviation as a personal failure.",
+      "prerequisites": [
+        "fe-production-spending-patterns-01",
+        "fe-production-financial-math-02"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-spending-patterns-10",
+      "domain": "spending-patterns",
+      "kind": "teach",
+      "objective": "Explain why low income can leave a deficit even after discretionary purchases are removed.",
+      "prerequisites": [
+        "fe-production-spending-patterns-02",
+        "fe-production-spending-patterns-07",
+        "fe-production-financial-math-04"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-spending-patterns-review-1",
+      "domain": "spending-patterns",
+      "kind": "consolidate",
+      "objective": null,
+      "prerequisites": [
+        "fe-production-spending-patterns-01",
+        "fe-production-spending-patterns-02",
+        "fe-production-spending-patterns-03",
+        "fe-production-spending-patterns-04",
+        "fe-production-spending-patterns-05",
+        "fe-production-usable-money-02"
+      ],
+      "retrieve_objectives": [
+        "fe-production-spending-patterns-01",
+        "fe-production-spending-patterns-02",
+        "fe-production-spending-patterns-03",
+        "fe-production-spending-patterns-04",
+        "fe-production-spending-patterns-05",
+        "fe-production-usable-money-02"
+      ],
+      "authoring_status": "retrieval-reservation-not-implementation-evidence"
+    },
+    {
+      "lesson_id": "fe-production-spending-patterns-review-2",
+      "domain": "spending-patterns",
+      "kind": "consolidate",
+      "objective": null,
+      "prerequisites": [
+        "fe-production-spending-patterns-06",
+        "fe-production-spending-patterns-07",
+        "fe-production-spending-patterns-08",
+        "fe-production-spending-patterns-09",
+        "fe-production-spending-patterns-10",
+        "fe-production-usable-money-02"
+      ],
+      "retrieve_objectives": [
+        "fe-production-spending-patterns-06",
+        "fe-production-spending-patterns-07",
+        "fe-production-spending-patterns-08",
+        "fe-production-spending-patterns-09",
+        "fe-production-spending-patterns-10",
+        "fe-production-usable-money-02"
+      ],
+      "authoring_status": "retrieval-reservation-not-implementation-evidence"
+    },
+    {
+      "lesson_id": "fe-production-cashflow-budget-01",
+      "domain": "cashflow-budget",
+      "kind": "teach",
+      "objective": "Build a budget using money expected for the same period as its expenses.",
+      "prerequisites": [
+        "fe-production-income-work-01",
+        "fe-production-spending-patterns-01",
+        "fe-production-financial-math-11"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-cashflow-budget-02",
+      "domain": "cashflow-budget",
+      "kind": "teach",
+      "objective": "Separate a budget category from the account or envelope holding its money.",
+      "prerequisites": [
+        "fe-production-cashflow-budget-01",
+        "fe-production-usable-money-07"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-cashflow-budget-03",
+      "domain": "cashflow-budget",
+      "kind": "teach",
+      "objective": "Reserve money for unavoidable obligations before allocating the remainder.",
+      "prerequisites": [
+        "fe-production-cashflow-budget-01",
+        "fe-production-usable-money-03"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-cashflow-budget-04",
+      "domain": "cashflow-budget",
+      "kind": "teach",
+      "objective": "Calculate a period’s surplus or deficit from a complete set of stated entries.",
+      "prerequisites": [
+        "fe-production-cashflow-budget-01",
+        "fe-production-financial-math-03",
+        "fe-production-financial-math-04"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-cashflow-budget-05",
+      "domain": "cashflow-budget",
+      "kind": "teach",
+      "objective": "Build a payment calendar that reveals an otherwise hidden within-month shortfall.",
+      "prerequisites": [
+        "fe-production-cashflow-budget-01",
+        "fe-production-usable-money-05"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-cashflow-budget-06",
+      "domain": "cashflow-budget",
+      "kind": "teach",
+      "objective": "Distinguish a timing problem from a persistent gap between income and expenses.",
+      "prerequisites": [
+        "fe-production-cashflow-budget-04",
+        "fe-production-cashflow-budget-05"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-cashflow-budget-07",
+      "domain": "cashflow-budget",
+      "kind": "teach",
+      "objective": "Allocate an irregular receipt across obligations due before the next reliable receipt.",
+      "prerequisites": [
+        "fe-production-cashflow-budget-03",
+        "fe-production-cashflow-budget-05",
+        "fe-production-income-work-06"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-cashflow-budget-08",
+      "domain": "cashflow-budget",
+      "kind": "teach",
+      "objective": "Spread a known annual bill across the months remaining until it is due.",
+      "prerequisites": [
+        "fe-production-cashflow-budget-03",
+        "fe-production-spending-patterns-05",
+        "fe-production-financial-math-06"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-cashflow-budget-09",
+      "domain": "cashflow-budget",
+      "kind": "teach",
+      "objective": "Rebalance a plan after an expense increases while keeping its totals consistent.",
+      "prerequisites": [
+        "fe-production-cashflow-budget-03",
+        "fe-production-cashflow-budget-04"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-cashflow-budget-10",
+      "domain": "cashflow-budget",
+      "kind": "teach",
+      "objective": "Explain why a sample percentage budget must be adapted when essential costs exceed its allowance.",
+      "prerequisites": [
+        "fe-production-cashflow-budget-03",
+        "fe-production-financial-math-08",
+        "fe-production-spending-patterns-10"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-cashflow-budget-11",
+      "domain": "cashflow-budget",
+      "kind": "teach",
+      "objective": "Choose a feasible response to a deficit without inventing income or assuming borrowing is affordable.",
+      "prerequisites": [
+        "fe-production-cashflow-budget-04",
+        "fe-production-cashflow-budget-06",
+        "fe-production-spending-patterns-07"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-cashflow-budget-12",
+      "domain": "cashflow-budget",
+      "kind": "teach",
+      "objective": "Separate planned saving from money that is accidentally left over.",
+      "prerequisites": [
+        "fe-production-cashflow-budget-02",
+        "fe-production-cashflow-budget-03",
+        "fe-production-goals-tradeoffs-05"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-cashflow-budget-13",
+      "domain": "cashflow-budget",
+      "kind": "teach",
+      "objective": "Close a budget period by comparing the plan with actual receipts and payments.",
+      "prerequisites": [
+        "fe-production-cashflow-budget-01",
+        "fe-production-cashflow-budget-04",
+        "fe-production-spending-patterns-09"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-cashflow-budget-14",
+      "domain": "cashflow-budget",
+      "kind": "teach",
+      "objective": "Carry an unresolved obligation into the next plan without counting it twice.",
+      "prerequisites": [
+        "fe-production-cashflow-budget-05",
+        "fe-production-cashflow-budget-13"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-cashflow-budget-review-1",
+      "domain": "cashflow-budget",
+      "kind": "consolidate",
+      "objective": null,
+      "prerequisites": [
+        "fe-production-cashflow-budget-01",
+        "fe-production-cashflow-budget-02",
+        "fe-production-cashflow-budget-03",
+        "fe-production-cashflow-budget-04",
+        "fe-production-cashflow-budget-05",
+        "fe-production-cashflow-budget-06",
+        "fe-production-cashflow-budget-07",
+        "fe-production-income-work-01"
+      ],
+      "retrieve_objectives": [
+        "fe-production-cashflow-budget-01",
+        "fe-production-cashflow-budget-02",
+        "fe-production-cashflow-budget-03",
+        "fe-production-cashflow-budget-04",
+        "fe-production-cashflow-budget-05",
+        "fe-production-cashflow-budget-06",
+        "fe-production-cashflow-budget-07",
+        "fe-production-income-work-01"
+      ],
+      "authoring_status": "retrieval-reservation-not-implementation-evidence"
+    },
+    {
+      "lesson_id": "fe-production-cashflow-budget-review-2",
+      "domain": "cashflow-budget",
+      "kind": "consolidate",
+      "objective": null,
+      "prerequisites": [
+        "fe-production-cashflow-budget-08",
+        "fe-production-cashflow-budget-09",
+        "fe-production-cashflow-budget-10",
+        "fe-production-cashflow-budget-11",
+        "fe-production-cashflow-budget-12",
+        "fe-production-cashflow-budget-13",
+        "fe-production-cashflow-budget-14",
+        "fe-production-income-work-01"
+      ],
+      "retrieve_objectives": [
+        "fe-production-cashflow-budget-08",
+        "fe-production-cashflow-budget-09",
+        "fe-production-cashflow-budget-10",
+        "fe-production-cashflow-budget-11",
+        "fe-production-cashflow-budget-12",
+        "fe-production-cashflow-budget-13",
+        "fe-production-cashflow-budget-14",
+        "fe-production-income-work-01"
+      ],
+      "authoring_status": "retrieval-reservation-not-implementation-evidence"
+    },
+    {
+      "lesson_id": "fe-production-accounts-records-01",
+      "domain": "accounts-records",
+      "kind": "teach",
+      "objective": "Match a basic transaction, saving or payment need to the relevant account features.",
+      "prerequisites": [
+        "fe-production-usable-money-03"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-accounts-records-02",
+      "domain": "accounts-records",
+      "kind": "teach",
+      "objective": "Distinguish a displayed account balance from funds available to withdraw in a stated scenario.",
+      "prerequisites": [
+        "fe-production-usable-money-01",
+        "fe-production-usable-money-02"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-accounts-records-03",
+      "domain": "accounts-records",
+      "kind": "teach",
+      "objective": "Calculate a fictional account’s total fees from its stated usage and fee schedule.",
+      "prerequisites": [
+        "fe-production-financial-math-03",
+        "fe-production-financial-math-05"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-accounts-records-04",
+      "domain": "accounts-records",
+      "kind": "teach",
+      "objective": "Read a statement entry’s date, description and amount before classifying it.",
+      "prerequisites": [
+        "fe-production-usable-money-02"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-accounts-records-05",
+      "domain": "accounts-records",
+      "kind": "teach",
+      "objective": "Reconcile a statement with a receipt log and identify the unmatched transaction.",
+      "prerequisites": [
+        "fe-production-accounts-records-04",
+        "fe-production-spending-patterns-01",
+        "fe-production-financial-math-02"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-accounts-records-06",
+      "domain": "accounts-records",
+      "kind": "teach",
+      "objective": "Recognize how a pending charge can affect spending decisions before it settles.",
+      "prerequisites": [
+        "fe-production-accounts-records-02",
+        "fe-production-accounts-records-04"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-accounts-records-07",
+      "domain": "accounts-records",
+      "kind": "teach",
+      "objective": "Identify the evidence to preserve when reporting an unfamiliar transaction.",
+      "prerequisites": [
+        "fe-production-accounts-records-04",
+        "fe-production-accounts-records-05"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-accounts-records-08",
+      "domain": "accounts-records",
+      "kind": "teach",
+      "objective": "Compare account access conditions with a person’s stated device, location and documentation constraints.",
+      "prerequisites": [
+        "fe-production-accounts-records-01"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-accounts-records-09",
+      "domain": "accounts-records",
+      "kind": "teach",
+      "objective": "Identify which provider and account protection claims require local official verification.",
+      "prerequisites": [
+        "fe-production-accounts-records-01"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-accounts-records-10",
+      "domain": "accounts-records",
+      "kind": "teach",
+      "objective": "Choose a secure way to retain financial records without exposing access credentials.",
+      "prerequisites": [
+        "fe-production-accounts-records-04"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-accounts-records-review-1",
+      "domain": "accounts-records",
+      "kind": "consolidate",
+      "objective": null,
+      "prerequisites": [
+        "fe-production-accounts-records-01",
+        "fe-production-accounts-records-02",
+        "fe-production-accounts-records-03",
+        "fe-production-accounts-records-04",
+        "fe-production-accounts-records-05",
+        "fe-production-usable-money-03"
+      ],
+      "retrieve_objectives": [
+        "fe-production-accounts-records-01",
+        "fe-production-accounts-records-02",
+        "fe-production-accounts-records-03",
+        "fe-production-accounts-records-04",
+        "fe-production-accounts-records-05",
+        "fe-production-usable-money-03"
+      ],
+      "authoring_status": "retrieval-reservation-not-implementation-evidence"
+    },
+    {
+      "lesson_id": "fe-production-accounts-records-review-2",
+      "domain": "accounts-records",
+      "kind": "consolidate",
+      "objective": null,
+      "prerequisites": [
+        "fe-production-accounts-records-06",
+        "fe-production-accounts-records-07",
+        "fe-production-accounts-records-08",
+        "fe-production-accounts-records-09",
+        "fe-production-accounts-records-10",
+        "fe-production-usable-money-03"
+      ],
+      "retrieve_objectives": [
+        "fe-production-accounts-records-06",
+        "fe-production-accounts-records-07",
+        "fe-production-accounts-records-08",
+        "fe-production-accounts-records-09",
+        "fe-production-accounts-records-10",
+        "fe-production-usable-money-03"
+      ],
+      "authoring_status": "retrieval-reservation-not-implementation-evidence"
+    },
+    {
+      "lesson_id": "fe-production-payments-digital-01",
+      "domain": "payments-digital",
+      "kind": "teach",
+      "objective": "Distinguish payment from your own balance from a payment that creates a debt.",
+      "prerequisites": [
+        "fe-production-usable-money-06",
+        "fe-production-accounts-records-02"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-payments-digital-02",
+      "domain": "payments-digital",
+      "kind": "teach",
+      "objective": "Check recipient, amount and reference before confirming a transfer.",
+      "prerequisites": [
+        "fe-production-accounts-records-04"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-payments-digital-03",
+      "domain": "payments-digital",
+      "kind": "teach",
+      "objective": "Separate a payment request or screenshot from confirmed receipt of funds.",
+      "prerequisites": [
+        "fe-production-usable-money-01",
+        "fe-production-payments-digital-02"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-payments-digital-04",
+      "domain": "payments-digital",
+      "kind": "teach",
+      "objective": "Compare payment methods using stated fees, timing and reversibility.",
+      "prerequisites": [
+        "fe-production-payments-digital-01",
+        "fe-production-usable-money-05",
+        "fe-production-accounts-records-03"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-payments-digital-05",
+      "domain": "payments-digital",
+      "kind": "teach",
+      "objective": "Identify the information that must never be shared to authorize a payment securely.",
+      "prerequisites": [
+        "fe-production-payments-digital-02"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-payments-digital-06",
+      "domain": "payments-digital",
+      "kind": "teach",
+      "objective": "Recognize a false urgency or impersonation cue in a payment message.",
+      "prerequisites": [
+        "fe-production-payments-digital-02",
+        "fe-production-payments-digital-05"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-payments-digital-07",
+      "domain": "payments-digital",
+      "kind": "teach",
+      "objective": "Reach a provider through an independently verified channel after a suspicious message.",
+      "prerequisites": [
+        "fe-production-payments-digital-06"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-payments-digital-08",
+      "domain": "payments-digital",
+      "kind": "teach",
+      "objective": "Choose the immediate protective response after a device or payment credential is compromised.",
+      "prerequisites": [
+        "fe-production-payments-digital-05",
+        "fe-production-payments-digital-07"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-payments-digital-09",
+      "domain": "payments-digital",
+      "kind": "teach",
+      "objective": "Check recurring-payment terms and retain evidence of a cancellation request.",
+      "prerequisites": [
+        "fe-production-accounts-records-04",
+        "fe-production-spending-patterns-06"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-payments-digital-10",
+      "domain": "payments-digital",
+      "kind": "teach",
+      "objective": "Distinguish a mistaken transfer from an unauthorized payment when preparing a report.",
+      "prerequisites": [
+        "fe-production-payments-digital-02",
+        "fe-production-payments-digital-03",
+        "fe-production-accounts-records-07"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-payments-digital-review-1",
+      "domain": "payments-digital",
+      "kind": "consolidate",
+      "objective": null,
+      "prerequisites": [
+        "fe-production-payments-digital-01",
+        "fe-production-payments-digital-02",
+        "fe-production-payments-digital-03",
+        "fe-production-payments-digital-04",
+        "fe-production-payments-digital-05",
+        "fe-production-usable-money-06"
+      ],
+      "retrieve_objectives": [
+        "fe-production-payments-digital-01",
+        "fe-production-payments-digital-02",
+        "fe-production-payments-digital-03",
+        "fe-production-payments-digital-04",
+        "fe-production-payments-digital-05",
+        "fe-production-usable-money-06"
+      ],
+      "authoring_status": "retrieval-reservation-not-implementation-evidence"
+    },
+    {
+      "lesson_id": "fe-production-payments-digital-review-2",
+      "domain": "payments-digital",
+      "kind": "consolidate",
+      "objective": null,
+      "prerequisites": [
+        "fe-production-payments-digital-06",
+        "fe-production-payments-digital-07",
+        "fe-production-payments-digital-08",
+        "fe-production-payments-digital-09",
+        "fe-production-payments-digital-10",
+        "fe-production-usable-money-06"
+      ],
+      "retrieve_objectives": [
+        "fe-production-payments-digital-06",
+        "fe-production-payments-digital-07",
+        "fe-production-payments-digital-08",
+        "fe-production-payments-digital-09",
+        "fe-production-payments-digital-10",
+        "fe-production-usable-money-06"
+      ],
+      "authoring_status": "retrieval-reservation-not-implementation-evidence"
+    },
+    {
+      "lesson_id": "fe-production-purchase-decisions-01",
+      "domain": "purchase-decisions",
+      "kind": "teach",
+      "objective": "Compare unit prices after converting quantities to the same unit.",
+      "prerequisites": [
+        "fe-production-financial-math-06",
+        "fe-production-financial-math-11"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-purchase-decisions-02",
+      "domain": "purchase-decisions",
+      "kind": "teach",
+      "objective": "Calculate a final price that includes all explicitly stated mandatory charges.",
+      "prerequisites": [
+        "fe-production-financial-math-03"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-purchase-decisions-03",
+      "domain": "purchase-decisions",
+      "kind": "teach",
+      "objective": "Calculate the price after one percentage discount.",
+      "prerequisites": [
+        "fe-production-financial-math-08",
+        "fe-production-financial-math-02"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-purchase-decisions-04",
+      "domain": "purchase-decisions",
+      "kind": "teach",
+      "objective": "Calculate successive discounts without adding their percentages.",
+      "prerequisites": [
+        "fe-production-purchase-decisions-03"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-purchase-decisions-05",
+      "domain": "purchase-decisions",
+      "kind": "teach",
+      "objective": "Check whether a promotion’s minimum spend makes the planned purchase more expensive.",
+      "prerequisites": [
+        "fe-production-purchase-decisions-02",
+        "fe-production-purchase-decisions-03",
+        "fe-production-usable-money-04"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-purchase-decisions-06",
+      "domain": "purchase-decisions",
+      "kind": "teach",
+      "objective": "Compare total ownership costs over the same stated period.",
+      "prerequisites": [
+        "fe-production-purchase-decisions-02",
+        "fe-production-financial-math-11"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-purchase-decisions-07",
+      "domain": "purchase-decisions",
+      "kind": "teach",
+      "objective": "Distinguish a warranty, a return policy and a separately purchased protection plan.",
+      "prerequisites": [
+        "fe-production-purchase-decisions-02"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-purchase-decisions-08",
+      "domain": "purchase-decisions",
+      "kind": "teach",
+      "objective": "Identify a contract’s renewal, cancellation and exit-cost terms before agreeing.",
+      "prerequisites": [
+        "fe-production-spending-patterns-06"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-purchase-decisions-09",
+      "domain": "purchase-decisions",
+      "kind": "teach",
+      "objective": "Compare cash and instalment prices using their complete payment schedules.",
+      "prerequisites": [
+        "fe-production-purchase-decisions-02",
+        "fe-production-financial-math-03",
+        "fe-production-usable-money-05"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-purchase-decisions-10",
+      "domain": "purchase-decisions",
+      "kind": "teach",
+      "objective": "Recognize a misleading comparison that uses different quantities or periods.",
+      "prerequisites": [
+        "fe-production-purchase-decisions-01",
+        "fe-production-purchase-decisions-06"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-purchase-decisions-11",
+      "domain": "purchase-decisions",
+      "kind": "teach",
+      "objective": "Choose what missing information must be obtained before a defensible purchase comparison.",
+      "prerequisites": [
+        "fe-production-purchase-decisions-02",
+        "fe-production-purchase-decisions-06"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-purchase-decisions-12",
+      "domain": "purchase-decisions",
+      "kind": "teach",
+      "objective": "Decide whether to repair, replace or postpone using stated costs and functional needs.",
+      "prerequisites": [
+        "fe-production-purchase-decisions-06",
+        "fe-production-goals-tradeoffs-03"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-purchase-decisions-review-1",
+      "domain": "purchase-decisions",
+      "kind": "consolidate",
+      "objective": null,
+      "prerequisites": [
+        "fe-production-purchase-decisions-01",
+        "fe-production-purchase-decisions-02",
+        "fe-production-purchase-decisions-03",
+        "fe-production-purchase-decisions-04",
+        "fe-production-purchase-decisions-05",
+        "fe-production-purchase-decisions-06",
+        "fe-production-financial-math-06"
+      ],
+      "retrieve_objectives": [
+        "fe-production-purchase-decisions-01",
+        "fe-production-purchase-decisions-02",
+        "fe-production-purchase-decisions-03",
+        "fe-production-purchase-decisions-04",
+        "fe-production-purchase-decisions-05",
+        "fe-production-purchase-decisions-06",
+        "fe-production-financial-math-06"
+      ],
+      "authoring_status": "retrieval-reservation-not-implementation-evidence"
+    },
+    {
+      "lesson_id": "fe-production-purchase-decisions-review-2",
+      "domain": "purchase-decisions",
+      "kind": "consolidate",
+      "objective": null,
+      "prerequisites": [
+        "fe-production-purchase-decisions-07",
+        "fe-production-purchase-decisions-08",
+        "fe-production-purchase-decisions-09",
+        "fe-production-purchase-decisions-10",
+        "fe-production-purchase-decisions-11",
+        "fe-production-purchase-decisions-12",
+        "fe-production-financial-math-06"
+      ],
+      "retrieve_objectives": [
+        "fe-production-purchase-decisions-07",
+        "fe-production-purchase-decisions-08",
+        "fe-production-purchase-decisions-09",
+        "fe-production-purchase-decisions-10",
+        "fe-production-purchase-decisions-11",
+        "fe-production-purchase-decisions-12",
+        "fe-production-financial-math-06"
+      ],
+      "authoring_status": "retrieval-reservation-not-implementation-evidence"
+    },
+    {
+      "lesson_id": "fe-production-saving-resilience-01",
+      "domain": "saving-resilience",
+      "kind": "teach",
+      "objective": "Separate money for a predictable bill from money for an unforeseen disruption.",
+      "prerequisites": [
+        "fe-production-spending-patterns-05",
+        "fe-production-cashflow-budget-08"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-saving-resilience-02",
+      "domain": "saving-resilience",
+      "kind": "teach",
+      "objective": "Estimate essential expenses during a stated income interruption.",
+      "prerequisites": [
+        "fe-production-cashflow-budget-03",
+        "fe-production-financial-math-05"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-saving-resilience-03",
+      "domain": "saving-resilience",
+      "kind": "teach",
+      "objective": "Set an initial emergency reserve target using the scenario’s actual risks and feasible contributions.",
+      "prerequisites": [
+        "fe-production-saving-resilience-01",
+        "fe-production-saving-resilience-02",
+        "fe-production-cashflow-budget-11"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-saving-resilience-04",
+      "domain": "saving-resilience",
+      "kind": "teach",
+      "objective": "Choose where to keep a near-term reserve using stated access, safety and fee conditions.",
+      "prerequisites": [
+        "fe-production-accounts-records-01",
+        "fe-production-accounts-records-03",
+        "fe-production-usable-money-05"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-saving-resilience-05",
+      "domain": "saving-resilience",
+      "kind": "teach",
+      "objective": "Calculate the time needed to reach a goal with a fixed feasible contribution and no assumed return.",
+      "prerequisites": [
+        "fe-production-goals-tradeoffs-05"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-saving-resilience-06",
+      "domain": "saving-resilience",
+      "kind": "teach",
+      "objective": "Adjust a contribution plan after a missed contribution without concealing the gap.",
+      "prerequisites": [
+        "fe-production-saving-resilience-05",
+        "fe-production-cashflow-budget-09"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-saving-resilience-07",
+      "domain": "saving-resilience",
+      "kind": "teach",
+      "objective": "Choose when an automatic transfer would create a payment shortfall.",
+      "prerequisites": [
+        "fe-production-cashflow-budget-05",
+        "fe-production-saving-resilience-05"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-saving-resilience-08",
+      "domain": "saving-resilience",
+      "kind": "teach",
+      "objective": "Allocate a windfall among stated urgent obligations and goals without assuming one universal rule.",
+      "prerequisites": [
+        "fe-production-cashflow-budget-03",
+        "fe-production-goals-tradeoffs-04"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-saving-resilience-09",
+      "domain": "saving-resilience",
+      "kind": "teach",
+      "objective": "Decide whether a stated expense fits the purpose of an emergency reserve.",
+      "prerequisites": [
+        "fe-production-saving-resilience-01",
+        "fe-production-saving-resilience-03"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-saving-resilience-10",
+      "domain": "saving-resilience",
+      "kind": "teach",
+      "objective": "Build a replenishment plan after using part of a reserve.",
+      "prerequisites": [
+        "fe-production-saving-resilience-03",
+        "fe-production-saving-resilience-05",
+        "fe-production-saving-resilience-09"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-saving-resilience-review-1",
+      "domain": "saving-resilience",
+      "kind": "consolidate",
+      "objective": null,
+      "prerequisites": [
+        "fe-production-saving-resilience-01",
+        "fe-production-saving-resilience-02",
+        "fe-production-saving-resilience-03",
+        "fe-production-saving-resilience-04",
+        "fe-production-saving-resilience-05",
+        "fe-production-spending-patterns-05"
+      ],
+      "retrieve_objectives": [
+        "fe-production-saving-resilience-01",
+        "fe-production-saving-resilience-02",
+        "fe-production-saving-resilience-03",
+        "fe-production-saving-resilience-04",
+        "fe-production-saving-resilience-05",
+        "fe-production-spending-patterns-05"
+      ],
+      "authoring_status": "retrieval-reservation-not-implementation-evidence"
+    },
+    {
+      "lesson_id": "fe-production-saving-resilience-review-2",
+      "domain": "saving-resilience",
+      "kind": "consolidate",
+      "objective": null,
+      "prerequisites": [
+        "fe-production-saving-resilience-06",
+        "fe-production-saving-resilience-07",
+        "fe-production-saving-resilience-08",
+        "fe-production-saving-resilience-09",
+        "fe-production-saving-resilience-10",
+        "fe-production-spending-patterns-05"
+      ],
+      "retrieve_objectives": [
+        "fe-production-saving-resilience-06",
+        "fe-production-saving-resilience-07",
+        "fe-production-saving-resilience-08",
+        "fe-production-saving-resilience-09",
+        "fe-production-saving-resilience-10",
+        "fe-production-spending-patterns-05"
+      ],
+      "authoring_status": "retrieval-reservation-not-implementation-evidence"
+    },
+    {
+      "lesson_id": "fe-production-time-inflation-01",
+      "domain": "time-inflation",
+      "kind": "teach",
+      "objective": "Calculate simple interest using an explicitly stated principal, rate and period.",
+      "prerequisites": [
+        "fe-production-financial-math-08",
+        "fe-production-financial-math-11"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-time-inflation-02",
+      "domain": "time-inflation",
+      "kind": "teach",
+      "objective": "Distinguish earned interest from a contribution to an account.",
+      "prerequisites": [
+        "fe-production-time-inflation-01",
+        "fe-production-usable-money-07"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-time-inflation-03",
+      "domain": "time-inflation",
+      "kind": "teach",
+      "objective": "Calculate a second period’s compound growth after adding the first period’s interest.",
+      "prerequisites": [
+        "fe-production-time-inflation-01",
+        "fe-production-time-inflation-02",
+        "fe-production-financial-math-08"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-time-inflation-04",
+      "domain": "time-inflation",
+      "kind": "teach",
+      "objective": "Compare simple and compound growth under the same stated assumptions.",
+      "prerequisites": [
+        "fe-production-time-inflation-01",
+        "fe-production-time-inflation-03"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-time-inflation-05",
+      "domain": "time-inflation",
+      "kind": "teach",
+      "objective": "Separate the effect of contributions from the effect of modeled returns.",
+      "prerequisites": [
+        "fe-production-time-inflation-02",
+        "fe-production-time-inflation-03"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-time-inflation-06",
+      "domain": "time-inflation",
+      "kind": "teach",
+      "objective": "Calculate the nominal price change for a fixed basket of goods.",
+      "prerequisites": [
+        "fe-production-financial-math-08",
+        "fe-production-purchase-decisions-01"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-time-inflation-07",
+      "domain": "time-inflation",
+      "kind": "teach",
+      "objective": "Determine whether a stated nominal income change keeps up with a stated basket’s price change.",
+      "prerequisites": [
+        "fe-production-time-inflation-06",
+        "fe-production-financial-math-08"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-time-inflation-08",
+      "domain": "time-inflation",
+      "kind": "teach",
+      "objective": "Distinguish an economy-wide inflation measure from one household’s changing expenses.",
+      "prerequisites": [
+        "fe-production-time-inflation-06",
+        "fe-production-spending-patterns-01"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-time-inflation-09",
+      "domain": "time-inflation",
+      "kind": "teach",
+      "objective": "Compare nominal growth with purchasing-power growth under explicit assumptions.",
+      "prerequisites": [
+        "fe-production-time-inflation-03",
+        "fe-production-time-inflation-06",
+        "fe-production-financial-math-09"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-time-inflation-10",
+      "domain": "time-inflation",
+      "kind": "teach",
+      "objective": "Identify why a constant-return projection is a model rather than a guaranteed outcome.",
+      "prerequisites": [
+        "fe-production-time-inflation-03",
+        "fe-production-time-inflation-05"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-time-inflation-review-1",
+      "domain": "time-inflation",
+      "kind": "consolidate",
+      "objective": null,
+      "prerequisites": [
+        "fe-production-time-inflation-01",
+        "fe-production-time-inflation-02",
+        "fe-production-time-inflation-03",
+        "fe-production-time-inflation-04",
+        "fe-production-time-inflation-05",
+        "fe-production-financial-math-08"
+      ],
+      "retrieve_objectives": [
+        "fe-production-time-inflation-01",
+        "fe-production-time-inflation-02",
+        "fe-production-time-inflation-03",
+        "fe-production-time-inflation-04",
+        "fe-production-time-inflation-05",
+        "fe-production-financial-math-08"
+      ],
+      "authoring_status": "retrieval-reservation-not-implementation-evidence"
+    },
+    {
+      "lesson_id": "fe-production-time-inflation-review-2",
+      "domain": "time-inflation",
+      "kind": "consolidate",
+      "objective": null,
+      "prerequisites": [
+        "fe-production-time-inflation-06",
+        "fe-production-time-inflation-07",
+        "fe-production-time-inflation-08",
+        "fe-production-time-inflation-09",
+        "fe-production-time-inflation-10",
+        "fe-production-financial-math-08"
+      ],
+      "retrieve_objectives": [
+        "fe-production-time-inflation-06",
+        "fe-production-time-inflation-07",
+        "fe-production-time-inflation-08",
+        "fe-production-time-inflation-09",
+        "fe-production-time-inflation-10",
+        "fe-production-financial-math-08"
+      ],
+      "authoring_status": "retrieval-reservation-not-implementation-evidence"
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-01",
+      "domain": "credit-mechanics",
+      "kind": "teach",
+      "objective": "Identify principal, interest and fees in a fictional loan agreement.",
+      "prerequisites": [
+        "fe-production-usable-money-06",
+        "fe-production-purchase-decisions-02"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-02",
+      "domain": "credit-mechanics",
+      "kind": "teach",
+      "objective": "Calculate the total amount repaid from a complete payment schedule.",
+      "prerequisites": [
+        "fe-production-credit-mechanics-01",
+        "fe-production-financial-math-03"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-03",
+      "domain": "credit-mechanics",
+      "kind": "teach",
+      "objective": "Calculate a period’s interest on the explicitly stated outstanding balance.",
+      "prerequisites": [
+        "fe-production-credit-mechanics-01",
+        "fe-production-financial-math-08",
+        "fe-production-financial-math-11"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-04",
+      "domain": "credit-mechanics",
+      "kind": "teach",
+      "objective": "Separate a payment’s interest component from its principal reduction.",
+      "prerequisites": [
+        "fe-production-credit-mechanics-03",
+        "fe-production-financial-math-02"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-05",
+      "domain": "credit-mechanics",
+      "kind": "teach",
+      "objective": "Update the outstanding principal after a payment.",
+      "prerequisites": [
+        "fe-production-credit-mechanics-04"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-06",
+      "domain": "credit-mechanics",
+      "kind": "teach",
+      "objective": "Compare loans with different payment sizes using total cost and duration.",
+      "prerequisites": [
+        "fe-production-credit-mechanics-02",
+        "fe-production-credit-mechanics-05"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-07",
+      "domain": "credit-mechanics",
+      "kind": "teach",
+      "objective": "Check whether a proposed payment fits the borrower’s existing cash-flow plan.",
+      "prerequisites": [
+        "fe-production-cashflow-budget-05",
+        "fe-production-credit-mechanics-02"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-08",
+      "domain": "credit-mechanics",
+      "kind": "teach",
+      "objective": "Explain the consequence of a missed payment using the agreement’s stated terms.",
+      "prerequisites": [
+        "fe-production-credit-mechanics-01",
+        "fe-production-usable-money-05"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-09",
+      "domain": "credit-mechanics",
+      "kind": "teach",
+      "objective": "Distinguish collateral at risk from the amount originally borrowed.",
+      "prerequisites": [
+        "fe-production-credit-mechanics-01"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-10",
+      "domain": "credit-mechanics",
+      "kind": "teach",
+      "objective": "Identify how a variable-rate clause could change future payments.",
+      "prerequisites": [
+        "fe-production-credit-mechanics-03",
+        "fe-production-credit-mechanics-07"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-11",
+      "domain": "credit-mechanics",
+      "kind": "teach",
+      "objective": "Compare periodic rates only after aligning periods and compounding assumptions.",
+      "prerequisites": [
+        "fe-production-credit-mechanics-03",
+        "fe-production-time-inflation-03"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-12",
+      "domain": "credit-mechanics",
+      "kind": "teach",
+      "objective": "Identify which disclosed annual cost measure and included charges need local interpretation.",
+      "prerequisites": [
+        "fe-production-credit-mechanics-01",
+        "fe-production-credit-mechanics-02",
+        "fe-production-credit-mechanics-11"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-review-1",
+      "domain": "credit-mechanics",
+      "kind": "consolidate",
+      "objective": null,
+      "prerequisites": [
+        "fe-production-credit-mechanics-01",
+        "fe-production-credit-mechanics-02",
+        "fe-production-credit-mechanics-03",
+        "fe-production-credit-mechanics-04",
+        "fe-production-credit-mechanics-05",
+        "fe-production-credit-mechanics-06",
+        "fe-production-usable-money-06"
+      ],
+      "retrieve_objectives": [
+        "fe-production-credit-mechanics-01",
+        "fe-production-credit-mechanics-02",
+        "fe-production-credit-mechanics-03",
+        "fe-production-credit-mechanics-04",
+        "fe-production-credit-mechanics-05",
+        "fe-production-credit-mechanics-06",
+        "fe-production-usable-money-06"
+      ],
+      "authoring_status": "retrieval-reservation-not-implementation-evidence"
+    },
+    {
+      "lesson_id": "fe-production-credit-mechanics-review-2",
+      "domain": "credit-mechanics",
+      "kind": "consolidate",
+      "objective": null,
+      "prerequisites": [
+        "fe-production-credit-mechanics-07",
+        "fe-production-credit-mechanics-08",
+        "fe-production-credit-mechanics-09",
+        "fe-production-credit-mechanics-10",
+        "fe-production-credit-mechanics-11",
+        "fe-production-credit-mechanics-12",
+        "fe-production-usable-money-06"
+      ],
+      "retrieve_objectives": [
+        "fe-production-credit-mechanics-07",
+        "fe-production-credit-mechanics-08",
+        "fe-production-credit-mechanics-09",
+        "fe-production-credit-mechanics-10",
+        "fe-production-credit-mechanics-11",
+        "fe-production-credit-mechanics-12",
+        "fe-production-usable-money-06"
+      ],
+      "authoring_status": "retrieval-reservation-not-implementation-evidence"
+    },
+    {
+      "lesson_id": "fe-production-credit-products-01",
+      "domain": "credit-products",
+      "kind": "teach",
+      "objective": "Read a fictional card statement’s balance, minimum payment and due date.",
+      "prerequisites": [
+        "fe-production-accounts-records-04",
+        "fe-production-credit-mechanics-01"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-credit-products-02",
+      "domain": "credit-products",
+      "kind": "teach",
+      "objective": "Distinguish the statement closing date from the payment due date.",
+      "prerequisites": [
+        "fe-production-credit-products-01",
+        "fe-production-usable-money-05"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-credit-products-03",
+      "domain": "credit-products",
+      "kind": "teach",
+      "objective": "Determine whether a fictional card’s stated grace-period conditions have been met.",
+      "prerequisites": [
+        "fe-production-credit-products-01",
+        "fe-production-credit-products-02",
+        "fe-production-credit-mechanics-03"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-credit-products-04",
+      "domain": "credit-products",
+      "kind": "teach",
+      "objective": "Trace how minimum-only payments affect a balance under a supplied schedule.",
+      "prerequisites": [
+        "fe-production-credit-products-01",
+        "fe-production-credit-mechanics-04",
+        "fe-production-credit-mechanics-05"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-credit-products-05",
+      "domain": "credit-products",
+      "kind": "teach",
+      "objective": "Identify the separate costs of a cash advance in a fictional card agreement.",
+      "prerequisites": [
+        "fe-production-credit-products-01",
+        "fe-production-credit-mechanics-02"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-credit-products-06",
+      "domain": "credit-products",
+      "kind": "teach",
+      "objective": "Place multiple buy-now-pay-later instalments on one payment calendar.",
+      "prerequisites": [
+        "fe-production-credit-mechanics-02",
+        "fe-production-cashflow-budget-05"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-credit-products-07",
+      "domain": "credit-products",
+      "kind": "teach",
+      "objective": "Distinguish an overdraft facility from money owned in an account.",
+      "prerequisites": [
+        "fe-production-accounts-records-02",
+        "fe-production-credit-mechanics-01"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-credit-products-08",
+      "domain": "credit-products",
+      "kind": "teach",
+      "objective": "Compare a secured loan and an unsecured loan using their stated costs and consequences.",
+      "prerequisites": [
+        "fe-production-credit-mechanics-02",
+        "fe-production-credit-mechanics-09"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-credit-products-09",
+      "domain": "credit-products",
+      "kind": "teach",
+      "objective": "Identify a guarantor’s obligation from a plainly stated guarantee agreement.",
+      "prerequisites": [
+        "fe-production-credit-mechanics-01",
+        "fe-production-credit-mechanics-08"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-credit-products-10",
+      "domain": "credit-products",
+      "kind": "teach",
+      "objective": "Recognize a high-cost short-term loan whose renewal adds cost without reducing principal.",
+      "prerequisites": [
+        "fe-production-credit-mechanics-02",
+        "fe-production-credit-mechanics-05"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-credit-products-review-1",
+      "domain": "credit-products",
+      "kind": "consolidate",
+      "objective": null,
+      "prerequisites": [
+        "fe-production-credit-products-01",
+        "fe-production-credit-products-02",
+        "fe-production-credit-products-03",
+        "fe-production-credit-products-04",
+        "fe-production-credit-products-05",
+        "fe-production-accounts-records-04"
+      ],
+      "retrieve_objectives": [
+        "fe-production-credit-products-01",
+        "fe-production-credit-products-02",
+        "fe-production-credit-products-03",
+        "fe-production-credit-products-04",
+        "fe-production-credit-products-05",
+        "fe-production-accounts-records-04"
+      ],
+      "authoring_status": "retrieval-reservation-not-implementation-evidence"
+    },
+    {
+      "lesson_id": "fe-production-credit-products-review-2",
+      "domain": "credit-products",
+      "kind": "consolidate",
+      "objective": null,
+      "prerequisites": [
+        "fe-production-credit-products-06",
+        "fe-production-credit-products-07",
+        "fe-production-credit-products-08",
+        "fe-production-credit-products-09",
+        "fe-production-credit-products-10",
+        "fe-production-accounts-records-04"
+      ],
+      "retrieve_objectives": [
+        "fe-production-credit-products-06",
+        "fe-production-credit-products-07",
+        "fe-production-credit-products-08",
+        "fe-production-credit-products-09",
+        "fe-production-credit-products-10",
+        "fe-production-accounts-records-04"
+      ],
+      "authoring_status": "retrieval-reservation-not-implementation-evidence"
+    },
+    {
+      "lesson_id": "fe-production-debt-recovery-01",
+      "domain": "debt-recovery",
+      "kind": "teach",
+      "objective": "Build a debt inventory containing balances, costs, deadlines and stated consequences.",
+      "prerequisites": [
+        "fe-production-credit-products-01",
+        "fe-production-credit-mechanics-02",
+        "fe-production-credit-mechanics-08"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-debt-recovery-02",
+      "domain": "debt-recovery",
+      "kind": "teach",
+      "objective": "Prioritize immediate consequences before applying a simple balance or rate ordering.",
+      "prerequisites": [
+        "fe-production-debt-recovery-01",
+        "fe-production-goals-tradeoffs-02"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-debt-recovery-03",
+      "domain": "debt-recovery",
+      "kind": "teach",
+      "objective": "Compare highest-rate-first and smallest-balance-first repayment using the same feasible surplus.",
+      "prerequisites": [
+        "fe-production-debt-recovery-01",
+        "fe-production-debt-recovery-02",
+        "fe-production-credit-mechanics-03",
+        "fe-production-cashflow-budget-11"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-debt-recovery-04",
+      "domain": "debt-recovery",
+      "kind": "teach",
+      "objective": "Identify information to gather before asking a creditor about an unaffordable payment.",
+      "prerequisites": [
+        "fe-production-debt-recovery-01",
+        "fe-production-cashflow-budget-11"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-debt-recovery-05",
+      "domain": "debt-recovery",
+      "kind": "teach",
+      "objective": "Compare a proposed restructuring using total cost, term and payment feasibility.",
+      "prerequisites": [
+        "fe-production-credit-mechanics-06",
+        "fe-production-credit-mechanics-07"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-debt-recovery-06",
+      "domain": "debt-recovery",
+      "kind": "teach",
+      "objective": "Check whether consolidation reduces total cost or only lowers the monthly payment.",
+      "prerequisites": [
+        "fe-production-debt-recovery-05"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-debt-recovery-07",
+      "domain": "debt-recovery",
+      "kind": "teach",
+      "objective": "Detect an upfront-fee debt-relief claim that lacks verifiable terms or authority.",
+      "prerequisites": [
+        "fe-production-payments-digital-06",
+        "fe-production-payments-digital-07"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-debt-recovery-08",
+      "domain": "debt-recovery",
+      "kind": "teach",
+      "objective": "Find qualified local support when no feasible repayment plan covers essential needs.",
+      "prerequisites": [
+        "fe-production-debt-recovery-02",
+        "fe-production-debt-recovery-04",
+        "fe-production-spending-patterns-10"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-debt-recovery-review-1",
+      "domain": "debt-recovery",
+      "kind": "consolidate",
+      "objective": null,
+      "prerequisites": [
+        "fe-production-debt-recovery-01",
+        "fe-production-debt-recovery-02",
+        "fe-production-debt-recovery-03",
+        "fe-production-debt-recovery-04",
+        "fe-production-credit-products-01"
+      ],
+      "retrieve_objectives": [
+        "fe-production-debt-recovery-01",
+        "fe-production-debt-recovery-02",
+        "fe-production-debt-recovery-03",
+        "fe-production-debt-recovery-04",
+        "fe-production-credit-products-01"
+      ],
+      "authoring_status": "retrieval-reservation-not-implementation-evidence"
+    },
+    {
+      "lesson_id": "fe-production-debt-recovery-review-2",
+      "domain": "debt-recovery",
+      "kind": "consolidate",
+      "objective": null,
+      "prerequisites": [
+        "fe-production-debt-recovery-05",
+        "fe-production-debt-recovery-06",
+        "fe-production-debt-recovery-07",
+        "fe-production-debt-recovery-08",
+        "fe-production-credit-products-01"
+      ],
+      "retrieve_objectives": [
+        "fe-production-debt-recovery-05",
+        "fe-production-debt-recovery-06",
+        "fe-production-debt-recovery-07",
+        "fe-production-debt-recovery-08",
+        "fe-production-credit-products-01"
+      ],
+      "authoring_status": "retrieval-reservation-not-implementation-evidence"
+    },
+    {
+      "lesson_id": "fe-production-credit-records-01",
+      "domain": "credit-records",
+      "kind": "teach",
+      "objective": "Distinguish a credit report’s recorded information from a score derived from it.",
+      "prerequisites": [
+        "fe-production-credit-mechanics-01",
+        "fe-production-accounts-records-04"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-credit-records-02",
+      "domain": "credit-records",
+      "kind": "teach",
+      "objective": "Match a fictional credit-report entry to the corresponding account record.",
+      "prerequisites": [
+        "fe-production-credit-records-01",
+        "fe-production-accounts-records-05"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-credit-records-03",
+      "domain": "credit-records",
+      "kind": "teach",
+      "objective": "Identify a factual error and assemble supporting evidence for a dispute.",
+      "prerequisites": [
+        "fe-production-credit-records-02",
+        "fe-production-accounts-records-07"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-credit-records-04",
+      "domain": "credit-records",
+      "kind": "teach",
+      "objective": "Separate a verified local credit-report process from a promise to erase accurate history.",
+      "prerequisites": [
+        "fe-production-credit-records-03",
+        "fe-production-payments-digital-07"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-credit-records-05",
+      "domain": "credit-records",
+      "kind": "teach",
+      "objective": "Explain why an advertised score threshold cannot guarantee a lending decision.",
+      "prerequisites": [
+        "fe-production-credit-records-01",
+        "fe-production-credit-mechanics-07"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-credit-records-06",
+      "domain": "credit-records",
+      "kind": "teach",
+      "objective": "Choose protective steps after discovering an account the person did not open.",
+      "prerequisites": [
+        "fe-production-credit-records-02",
+        "fe-production-payments-digital-08"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-credit-records-review-1",
+      "domain": "credit-records",
+      "kind": "consolidate",
+      "objective": null,
+      "prerequisites": [
+        "fe-production-credit-records-01",
+        "fe-production-credit-records-02",
+        "fe-production-credit-records-03",
+        "fe-production-credit-mechanics-01"
+      ],
+      "retrieve_objectives": [
+        "fe-production-credit-records-01",
+        "fe-production-credit-records-02",
+        "fe-production-credit-records-03",
+        "fe-production-credit-mechanics-01"
+      ],
+      "authoring_status": "retrieval-reservation-not-implementation-evidence"
+    },
+    {
+      "lesson_id": "fe-production-credit-records-review-2",
+      "domain": "credit-records",
+      "kind": "consolidate",
+      "objective": null,
+      "prerequisites": [
+        "fe-production-credit-records-04",
+        "fe-production-credit-records-05",
+        "fe-production-credit-records-06",
+        "fe-production-credit-mechanics-01"
+      ],
+      "retrieve_objectives": [
+        "fe-production-credit-records-04",
+        "fe-production-credit-records-05",
+        "fe-production-credit-records-06",
+        "fe-production-credit-mechanics-01"
+      ],
+      "authoring_status": "retrieval-reservation-not-implementation-evidence"
+    },
+    {
+      "lesson_id": "fe-production-insurance-risk-01",
+      "domain": "insurance-risk",
+      "kind": "teach",
+      "objective": "Distinguish a frequent manageable loss from a less frequent financially severe loss.",
+      "prerequisites": [
+        "fe-production-saving-resilience-02",
+        "fe-production-goals-tradeoffs-02"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-insurance-risk-02",
+      "domain": "insurance-risk",
+      "kind": "teach",
+      "objective": "Match a stated risk to prevention, a reserve or risk transfer without treating one as sufficient for all risks.",
+      "prerequisites": [
+        "fe-production-insurance-risk-01",
+        "fe-production-saving-resilience-03"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-insurance-risk-03",
+      "domain": "insurance-risk",
+      "kind": "teach",
+      "objective": "Identify the policyholder, insured event and beneficiary in a fictional policy.",
+      "prerequisites": [
+        "fe-production-insurance-risk-02"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-insurance-risk-04",
+      "domain": "insurance-risk",
+      "kind": "teach",
+      "objective": "Separate a premium from a deductible or excess.",
+      "prerequisites": [
+        "fe-production-insurance-risk-03"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-insurance-risk-05",
+      "domain": "insurance-risk",
+      "kind": "teach",
+      "objective": "Calculate a claim’s out-of-pocket cost under a stated deductible and coverage limit.",
+      "prerequisites": [
+        "fe-production-insurance-risk-04",
+        "fe-production-financial-math-02"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-insurance-risk-06",
+      "domain": "insurance-risk",
+      "kind": "teach",
+      "objective": "Identify an exclusion that prevents coverage in a given scenario.",
+      "prerequisites": [
+        "fe-production-insurance-risk-03"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-insurance-risk-07",
+      "domain": "insurance-risk",
+      "kind": "teach",
+      "objective": "Compare policies only after aligning coverage, limits and deductibles.",
+      "prerequisites": [
+        "fe-production-insurance-risk-04",
+        "fe-production-insurance-risk-05",
+        "fe-production-insurance-risk-06",
+        "fe-production-purchase-decisions-06"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-insurance-risk-08",
+      "domain": "insurance-risk",
+      "kind": "teach",
+      "objective": "Check whether a waiting period leaves a stated near-term event uncovered.",
+      "prerequisites": [
+        "fe-production-insurance-risk-03",
+        "fe-production-usable-money-05"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-insurance-risk-09",
+      "domain": "insurance-risk",
+      "kind": "teach",
+      "objective": "Identify documents and deadlines to preserve for a fictional claim.",
+      "prerequisites": [
+        "fe-production-insurance-risk-03",
+        "fe-production-insurance-risk-06",
+        "fe-production-accounts-records-10"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-insurance-risk-10",
+      "domain": "insurance-risk",
+      "kind": "teach",
+      "objective": "Detect overlapping coverage without assuming all overlap is useless.",
+      "prerequisites": [
+        "fe-production-insurance-risk-03",
+        "fe-production-insurance-risk-06",
+        "fe-production-insurance-risk-07"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-insurance-risk-11",
+      "domain": "insurance-risk",
+      "kind": "teach",
+      "objective": "Reassess a protection need after a dependent or financial obligation changes.",
+      "prerequisites": [
+        "fe-production-insurance-risk-01",
+        "fe-production-insurance-risk-02",
+        "fe-production-goals-tradeoffs-08"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-insurance-risk-12",
+      "domain": "insurance-risk",
+      "kind": "teach",
+      "objective": "Distinguish an insurance protection feature from an investment projection in a combined offer.",
+      "prerequisites": [
+        "fe-production-insurance-risk-03",
+        "fe-production-time-inflation-10"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-insurance-risk-review-1",
+      "domain": "insurance-risk",
+      "kind": "consolidate",
+      "objective": null,
+      "prerequisites": [
+        "fe-production-insurance-risk-01",
+        "fe-production-insurance-risk-02",
+        "fe-production-insurance-risk-03",
+        "fe-production-insurance-risk-04",
+        "fe-production-insurance-risk-05",
+        "fe-production-insurance-risk-06",
+        "fe-production-saving-resilience-02"
+      ],
+      "retrieve_objectives": [
+        "fe-production-insurance-risk-01",
+        "fe-production-insurance-risk-02",
+        "fe-production-insurance-risk-03",
+        "fe-production-insurance-risk-04",
+        "fe-production-insurance-risk-05",
+        "fe-production-insurance-risk-06",
+        "fe-production-saving-resilience-02"
+      ],
+      "authoring_status": "retrieval-reservation-not-implementation-evidence"
+    },
+    {
+      "lesson_id": "fe-production-insurance-risk-review-2",
+      "domain": "insurance-risk",
+      "kind": "consolidate",
+      "objective": null,
+      "prerequisites": [
+        "fe-production-insurance-risk-07",
+        "fe-production-insurance-risk-08",
+        "fe-production-insurance-risk-09",
+        "fe-production-insurance-risk-10",
+        "fe-production-insurance-risk-11",
+        "fe-production-insurance-risk-12",
+        "fe-production-saving-resilience-02"
+      ],
+      "retrieve_objectives": [
+        "fe-production-insurance-risk-07",
+        "fe-production-insurance-risk-08",
+        "fe-production-insurance-risk-09",
+        "fe-production-insurance-risk-10",
+        "fe-production-insurance-risk-11",
+        "fe-production-insurance-risk-12",
+        "fe-production-saving-resilience-02"
+      ],
+      "authoring_status": "retrieval-reservation-not-implementation-evidence"
+    },
+    {
+      "lesson_id": "fe-production-investing-foundations-01",
+      "domain": "investing-foundations",
+      "kind": "teach",
+      "objective": "Separate investing from keeping money needed for a near-term obligation accessible.",
+      "prerequisites": [
+        "fe-production-saving-resilience-04",
+        "fe-production-usable-money-05"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-investing-foundations-02",
+      "domain": "investing-foundations",
+      "kind": "teach",
+      "objective": "Match a goal’s time horizon with the consequence of a temporary investment loss.",
+      "prerequisites": [
+        "fe-production-investing-foundations-01",
+        "fe-production-goals-tradeoffs-01"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-investing-foundations-03",
+      "domain": "investing-foundations",
+      "kind": "teach",
+      "objective": "Distinguish willingness to accept loss from financial capacity to absorb it.",
+      "prerequisites": [
+        "fe-production-investing-foundations-02",
+        "fe-production-saving-resilience-02"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-investing-foundations-04",
+      "domain": "investing-foundations",
+      "kind": "teach",
+      "objective": "Separate an investment’s income payments from changes in its sale value.",
+      "prerequisites": [
+        "fe-production-time-inflation-02",
+        "fe-production-time-inflation-06"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-investing-foundations-05",
+      "domain": "investing-foundations",
+      "kind": "teach",
+      "objective": "Distinguish owning a share from lending through a bond.",
+      "prerequisites": [
+        "fe-production-investing-foundations-04",
+        "fe-production-usable-money-06"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-investing-foundations-06",
+      "domain": "investing-foundations",
+      "kind": "teach",
+      "objective": "Explain a bond’s credit risk using a borrower unable to make a promised payment.",
+      "prerequisites": [
+        "fe-production-investing-foundations-05",
+        "fe-production-credit-mechanics-08"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-investing-foundations-07",
+      "domain": "investing-foundations",
+      "kind": "teach",
+      "objective": "Explain why a fixed-rate bond’s resale price can change before maturity.",
+      "prerequisites": [
+        "fe-production-investing-foundations-05",
+        "fe-production-time-inflation-01"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-investing-foundations-08",
+      "domain": "investing-foundations",
+      "kind": "teach",
+      "objective": "Identify concentration risk when several holdings depend on the same source of income.",
+      "prerequisites": [
+        "fe-production-investing-foundations-03",
+        "fe-production-investing-foundations-05"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-investing-foundations-09",
+      "domain": "investing-foundations",
+      "kind": "teach",
+      "objective": "Compare diversified and concentrated fictional portfolios under a common shock.",
+      "prerequisites": [
+        "fe-production-investing-foundations-08"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-investing-foundations-10",
+      "domain": "investing-foundations",
+      "kind": "teach",
+      "objective": "Distinguish a pooled fund from the assets it holds.",
+      "prerequisites": [
+        "fe-production-investing-foundations-05",
+        "fe-production-investing-foundations-08"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-investing-foundations-11",
+      "domain": "investing-foundations",
+      "kind": "teach",
+      "objective": "Identify liquidity restrictions that conflict with a stated withdrawal need.",
+      "prerequisites": [
+        "fe-production-investing-foundations-01",
+        "fe-production-saving-resilience-04"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-investing-foundations-12",
+      "domain": "investing-foundations",
+      "kind": "teach",
+      "objective": "Separate a regulated custody arrangement from a promise of guaranteed market returns.",
+      "prerequisites": [
+        "fe-production-accounts-records-09",
+        "fe-production-time-inflation-10"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-investing-foundations-13",
+      "domain": "investing-foundations",
+      "kind": "teach",
+      "objective": "Identify leverage that can magnify a loss beyond an unleveraged price change.",
+      "prerequisites": [
+        "fe-production-credit-mechanics-01",
+        "fe-production-investing-foundations-03",
+        "fe-production-investing-foundations-04"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-investing-foundations-14",
+      "domain": "investing-foundations",
+      "kind": "teach",
+      "objective": "Recognize speculation in a volatile asset without treating past gains as evidence of safety.",
+      "prerequisites": [
+        "fe-production-investing-foundations-03",
+        "fe-production-investing-foundations-04",
+        "fe-production-time-inflation-10"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-investing-foundations-review-1",
+      "domain": "investing-foundations",
+      "kind": "consolidate",
+      "objective": null,
+      "prerequisites": [
+        "fe-production-investing-foundations-01",
+        "fe-production-investing-foundations-02",
+        "fe-production-investing-foundations-03",
+        "fe-production-investing-foundations-04",
+        "fe-production-investing-foundations-05",
+        "fe-production-investing-foundations-06",
+        "fe-production-investing-foundations-07",
+        "fe-production-saving-resilience-04"
+      ],
+      "retrieve_objectives": [
+        "fe-production-investing-foundations-01",
+        "fe-production-investing-foundations-02",
+        "fe-production-investing-foundations-03",
+        "fe-production-investing-foundations-04",
+        "fe-production-investing-foundations-05",
+        "fe-production-investing-foundations-06",
+        "fe-production-investing-foundations-07",
+        "fe-production-saving-resilience-04"
+      ],
+      "authoring_status": "retrieval-reservation-not-implementation-evidence"
+    },
+    {
+      "lesson_id": "fe-production-investing-foundations-review-2",
+      "domain": "investing-foundations",
+      "kind": "consolidate",
+      "objective": null,
+      "prerequisites": [
+        "fe-production-investing-foundations-08",
+        "fe-production-investing-foundations-09",
+        "fe-production-investing-foundations-10",
+        "fe-production-investing-foundations-11",
+        "fe-production-investing-foundations-12",
+        "fe-production-investing-foundations-13",
+        "fe-production-investing-foundations-14",
+        "fe-production-saving-resilience-04"
+      ],
+      "retrieve_objectives": [
+        "fe-production-investing-foundations-08",
+        "fe-production-investing-foundations-09",
+        "fe-production-investing-foundations-10",
+        "fe-production-investing-foundations-11",
+        "fe-production-investing-foundations-12",
+        "fe-production-investing-foundations-13",
+        "fe-production-investing-foundations-14",
+        "fe-production-saving-resilience-04"
+      ],
+      "authoring_status": "retrieval-reservation-not-implementation-evidence"
+    },
+    {
+      "lesson_id": "fe-production-investment-comparison-01",
+      "domain": "investment-comparison",
+      "kind": "teach",
+      "objective": "Calculate an investment’s stated return after explicit transaction and ongoing fees.",
+      "prerequisites": [
+        "fe-production-investing-foundations-04",
+        "fe-production-financial-math-02"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-investment-comparison-02",
+      "domain": "investment-comparison",
+      "kind": "teach",
+      "objective": "Compare reported performance over the same period and with consistent treatment of distributions.",
+      "prerequisites": [
+        "fe-production-time-inflation-05",
+        "fe-production-financial-math-11"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-investment-comparison-03",
+      "domain": "investment-comparison",
+      "kind": "teach",
+      "objective": "Identify missing risk information in an offer that displays only its best historical return.",
+      "prerequisites": [
+        "fe-production-investing-foundations-03",
+        "fe-production-time-inflation-10"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-investment-comparison-04",
+      "domain": "investment-comparison",
+      "kind": "teach",
+      "objective": "Compare a fund’s stated objective and holdings with the exposure a learner intended to obtain.",
+      "prerequisites": [
+        "fe-production-investing-foundations-10",
+        "fe-production-investing-foundations-08"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-investment-comparison-05",
+      "domain": "investment-comparison",
+      "kind": "teach",
+      "objective": "Distinguish an index-tracking strategy from a promise to beat the market.",
+      "prerequisites": [
+        "fe-production-investing-foundations-10"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-investment-comparison-06",
+      "domain": "investment-comparison",
+      "kind": "teach",
+      "objective": "Explain currency exposure when the spending goal and investment use different currencies.",
+      "prerequisites": [
+        "fe-production-investing-foundations-04",
+        "fe-production-financial-math-05"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-investment-comparison-07",
+      "domain": "investment-comparison",
+      "kind": "teach",
+      "objective": "Identify a conflict of interest in how an investment seller is compensated.",
+      "prerequisites": [
+        "fe-production-purchase-decisions-11"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-investment-comparison-08",
+      "domain": "investment-comparison",
+      "kind": "teach",
+      "objective": "Check whether a proposed portfolio adjustment restores a stated allocation or follows recent hype.",
+      "prerequisites": [
+        "fe-production-investing-foundations-09",
+        "fe-production-financial-math-08"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-investment-comparison-09",
+      "domain": "investment-comparison",
+      "kind": "teach",
+      "objective": "Identify which tax, fee or withdrawal assumptions prevent a fair net-return comparison.",
+      "prerequisites": [
+        "fe-production-investment-comparison-01",
+        "fe-production-purchase-decisions-11"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-investment-comparison-10",
+      "domain": "investment-comparison",
+      "kind": "teach",
+      "objective": "Reject an unverifiable guaranteed-high-return claim using independent verification steps.",
+      "prerequisites": [
+        "fe-production-payments-digital-07",
+        "fe-production-investing-foundations-12"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-investment-comparison-review-1",
+      "domain": "investment-comparison",
+      "kind": "consolidate",
+      "objective": null,
+      "prerequisites": [
+        "fe-production-investment-comparison-01",
+        "fe-production-investment-comparison-02",
+        "fe-production-investment-comparison-03",
+        "fe-production-investment-comparison-04",
+        "fe-production-investment-comparison-05",
+        "fe-production-investing-foundations-04"
+      ],
+      "retrieve_objectives": [
+        "fe-production-investment-comparison-01",
+        "fe-production-investment-comparison-02",
+        "fe-production-investment-comparison-03",
+        "fe-production-investment-comparison-04",
+        "fe-production-investment-comparison-05",
+        "fe-production-investing-foundations-04"
+      ],
+      "authoring_status": "retrieval-reservation-not-implementation-evidence"
+    },
+    {
+      "lesson_id": "fe-production-investment-comparison-review-2",
+      "domain": "investment-comparison",
+      "kind": "consolidate",
+      "objective": null,
+      "prerequisites": [
+        "fe-production-investment-comparison-06",
+        "fe-production-investment-comparison-07",
+        "fe-production-investment-comparison-08",
+        "fe-production-investment-comparison-09",
+        "fe-production-investment-comparison-10",
+        "fe-production-investing-foundations-04"
+      ],
+      "retrieve_objectives": [
+        "fe-production-investment-comparison-06",
+        "fe-production-investment-comparison-07",
+        "fe-production-investment-comparison-08",
+        "fe-production-investment-comparison-09",
+        "fe-production-investment-comparison-10",
+        "fe-production-investing-foundations-04"
+      ],
+      "authoring_status": "retrieval-reservation-not-implementation-evidence"
+    },
+    {
+      "lesson_id": "fe-production-tax-public-systems-01",
+      "domain": "tax-public-systems",
+      "kind": "teach",
+      "objective": "Distinguish a tax, a fee and a social contribution in explicitly labeled examples.",
+      "prerequisites": [
+        "fe-production-income-work-02",
+        "fe-production-purchase-decisions-02"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-tax-public-systems-02",
+      "domain": "tax-public-systems",
+      "kind": "teach",
+      "objective": "Separate tax withheld during the year from a final tax calculation.",
+      "prerequisites": [
+        "fe-production-tax-public-systems-01",
+        "fe-production-income-work-02"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-tax-public-systems-03",
+      "domain": "tax-public-systems",
+      "kind": "teach",
+      "objective": "Calculate tax in a fictional progressive bracket system without applying the top rate to all income.",
+      "prerequisites": [
+        "fe-production-tax-public-systems-01",
+        "fe-production-financial-math-08",
+        "fe-production-financial-math-03"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-tax-public-systems-04",
+      "domain": "tax-public-systems",
+      "kind": "teach",
+      "objective": "Distinguish a deduction from a credit using a fictional simplified calculation.",
+      "prerequisites": [
+        "fe-production-tax-public-systems-03",
+        "fe-production-financial-math-02"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-tax-public-systems-05",
+      "domain": "tax-public-systems",
+      "kind": "teach",
+      "objective": "Identify records needed to substantiate a fictional income or expense declaration.",
+      "prerequisites": [
+        "fe-production-accounts-records-10",
+        "fe-production-income-work-07"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-tax-public-systems-06",
+      "domain": "tax-public-systems",
+      "kind": "teach",
+      "objective": "Find the official local source for a deadline or filing obligation instead of importing another country’s rule.",
+      "prerequisites": [
+        "fe-production-tax-public-systems-01",
+        "fe-production-payments-digital-07"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-tax-public-systems-07",
+      "domain": "tax-public-systems",
+      "kind": "teach",
+      "objective": "Recognize that a benefit’s eligibility and withdrawal conditions must be checked before budgeting it.",
+      "prerequisites": [
+        "fe-production-income-work-10",
+        "fe-production-cashflow-budget-01"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-tax-public-systems-08",
+      "domain": "tax-public-systems",
+      "kind": "teach",
+      "objective": "Separate legitimate tax planning from hiding or falsifying facts in a financial record.",
+      "prerequisites": [
+        "fe-production-tax-public-systems-05",
+        "fe-production-tax-public-systems-06"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-tax-public-systems-review-1",
+      "domain": "tax-public-systems",
+      "kind": "consolidate",
+      "objective": null,
+      "prerequisites": [
+        "fe-production-tax-public-systems-01",
+        "fe-production-tax-public-systems-02",
+        "fe-production-tax-public-systems-03",
+        "fe-production-tax-public-systems-04",
+        "fe-production-income-work-02"
+      ],
+      "retrieve_objectives": [
+        "fe-production-tax-public-systems-01",
+        "fe-production-tax-public-systems-02",
+        "fe-production-tax-public-systems-03",
+        "fe-production-tax-public-systems-04",
+        "fe-production-income-work-02"
+      ],
+      "authoring_status": "retrieval-reservation-not-implementation-evidence"
+    },
+    {
+      "lesson_id": "fe-production-tax-public-systems-review-2",
+      "domain": "tax-public-systems",
+      "kind": "consolidate",
+      "objective": null,
+      "prerequisites": [
+        "fe-production-tax-public-systems-05",
+        "fe-production-tax-public-systems-06",
+        "fe-production-tax-public-systems-07",
+        "fe-production-tax-public-systems-08",
+        "fe-production-income-work-02"
+      ],
+      "retrieve_objectives": [
+        "fe-production-tax-public-systems-05",
+        "fe-production-tax-public-systems-06",
+        "fe-production-tax-public-systems-07",
+        "fe-production-tax-public-systems-08",
+        "fe-production-income-work-02"
+      ],
+      "authoring_status": "retrieval-reservation-not-implementation-evidence"
+    },
+    {
+      "lesson_id": "fe-production-retirement-future-01",
+      "domain": "retirement-future",
+      "kind": "teach",
+      "objective": "Separate an intended retirement spending need from a projected account balance.",
+      "prerequisites": [
+        "fe-production-goals-tradeoffs-01",
+        "fe-production-saving-resilience-05"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-retirement-future-02",
+      "domain": "retirement-future",
+      "kind": "teach",
+      "objective": "Identify the different roles of public benefits, employer arrangements and personal savings.",
+      "prerequisites": [
+        "fe-production-retirement-future-01",
+        "fe-production-tax-public-systems-07"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-retirement-future-03",
+      "domain": "retirement-future",
+      "kind": "teach",
+      "objective": "Read contribution and ownership conditions in a fictional employer retirement arrangement.",
+      "prerequisites": [
+        "fe-production-retirement-future-02",
+        "fe-production-income-work-05"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-retirement-future-04",
+      "domain": "retirement-future",
+      "kind": "teach",
+      "objective": "Compare starting contributions earlier or later under the same explicit projection assumptions.",
+      "prerequisites": [
+        "fe-production-time-inflation-03",
+        "fe-production-time-inflation-05"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-retirement-future-05",
+      "domain": "retirement-future",
+      "kind": "teach",
+      "objective": "Identify how fees affect a long-term projection without treating the projection as guaranteed.",
+      "prerequisites": [
+        "fe-production-retirement-future-04",
+        "fe-production-investment-comparison-01"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-retirement-future-06",
+      "domain": "retirement-future",
+      "kind": "teach",
+      "objective": "Recognize inflation and longevity as separate risks to a retirement spending plan.",
+      "prerequisites": [
+        "fe-production-time-inflation-06",
+        "fe-production-saving-resilience-02"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-retirement-future-07",
+      "domain": "retirement-future",
+      "kind": "teach",
+      "objective": "Check access restrictions before treating retirement assets as an emergency reserve.",
+      "prerequisites": [
+        "fe-production-saving-resilience-04",
+        "fe-production-retirement-future-02"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-retirement-future-08",
+      "domain": "retirement-future",
+      "kind": "teach",
+      "objective": "Identify how early poor returns can affect withdrawals from a fictional retirement portfolio.",
+      "prerequisites": [
+        "fe-production-investing-foundations-04",
+        "fe-production-time-inflation-10"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-retirement-future-09",
+      "domain": "retirement-future",
+      "kind": "teach",
+      "objective": "Reassess contributions when income changes while preserving near-term essential obligations.",
+      "prerequisites": [
+        "fe-production-cashflow-budget-09",
+        "fe-production-saving-resilience-07"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-retirement-future-10",
+      "domain": "retirement-future",
+      "kind": "teach",
+      "objective": "Identify which beneficiary and account records need review after a major life change.",
+      "prerequisites": [
+        "fe-production-insurance-risk-03",
+        "fe-production-accounts-records-10"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-retirement-future-review-1",
+      "domain": "retirement-future",
+      "kind": "consolidate",
+      "objective": null,
+      "prerequisites": [
+        "fe-production-retirement-future-01",
+        "fe-production-retirement-future-02",
+        "fe-production-retirement-future-03",
+        "fe-production-retirement-future-04",
+        "fe-production-retirement-future-05",
+        "fe-production-goals-tradeoffs-01"
+      ],
+      "retrieve_objectives": [
+        "fe-production-retirement-future-01",
+        "fe-production-retirement-future-02",
+        "fe-production-retirement-future-03",
+        "fe-production-retirement-future-04",
+        "fe-production-retirement-future-05",
+        "fe-production-goals-tradeoffs-01"
+      ],
+      "authoring_status": "retrieval-reservation-not-implementation-evidence"
+    },
+    {
+      "lesson_id": "fe-production-retirement-future-review-2",
+      "domain": "retirement-future",
+      "kind": "consolidate",
+      "objective": null,
+      "prerequisites": [
+        "fe-production-retirement-future-06",
+        "fe-production-retirement-future-07",
+        "fe-production-retirement-future-08",
+        "fe-production-retirement-future-09",
+        "fe-production-retirement-future-10",
+        "fe-production-goals-tradeoffs-01"
+      ],
+      "retrieve_objectives": [
+        "fe-production-retirement-future-06",
+        "fe-production-retirement-future-07",
+        "fe-production-retirement-future-08",
+        "fe-production-retirement-future-09",
+        "fe-production-retirement-future-10",
+        "fe-production-goals-tradeoffs-01"
+      ],
+      "authoring_status": "retrieval-reservation-not-implementation-evidence"
+    },
+    {
+      "lesson_id": "fe-production-housing-transport-01",
+      "domain": "housing-transport",
+      "kind": "teach",
+      "objective": "Calculate move-in costs separately from recurring housing costs.",
+      "prerequisites": [
+        "fe-production-purchase-decisions-02",
+        "fe-production-cashflow-budget-01"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-housing-transport-02",
+      "domain": "housing-transport",
+      "kind": "teach",
+      "objective": "Compare housing options using transport, utilities and other stated necessary costs.",
+      "prerequisites": [
+        "fe-production-housing-transport-01",
+        "fe-production-purchase-decisions-06"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-housing-transport-03",
+      "domain": "housing-transport",
+      "kind": "teach",
+      "objective": "Read a fictional rental agreement’s deposit, notice and repair responsibilities.",
+      "prerequisites": [
+        "fe-production-purchase-decisions-08",
+        "fe-production-accounts-records-10"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-housing-transport-04",
+      "domain": "housing-transport",
+      "kind": "teach",
+      "objective": "Separate a home purchase price from financing, transaction and ongoing ownership costs.",
+      "prerequisites": [
+        "fe-production-housing-transport-01",
+        "fe-production-credit-mechanics-02",
+        "fe-production-purchase-decisions-06"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-housing-transport-05",
+      "domain": "housing-transport",
+      "kind": "teach",
+      "objective": "Explain how a down payment changes borrowing needs without making ownership automatically affordable.",
+      "prerequisites": [
+        "fe-production-housing-transport-04",
+        "fe-production-credit-mechanics-07"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-housing-transport-06",
+      "domain": "housing-transport",
+      "kind": "teach",
+      "objective": "Stress-test a housing payment under a stated income drop or variable-rate increase.",
+      "prerequisites": [
+        "fe-production-housing-transport-04",
+        "fe-production-credit-mechanics-10",
+        "fe-production-cashflow-budget-09"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-housing-transport-07",
+      "domain": "housing-transport",
+      "kind": "teach",
+      "objective": "Compare renting and buying over a stated horizon without assuming property prices always rise.",
+      "prerequisites": [
+        "fe-production-housing-transport-02",
+        "fe-production-housing-transport-04",
+        "fe-production-investing-foundations-03"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-housing-transport-08",
+      "domain": "housing-transport",
+      "kind": "teach",
+      "objective": "Calculate a vehicle’s total ownership cost including maintenance, insurance and depreciation assumptions.",
+      "prerequisites": [
+        "fe-production-purchase-decisions-06",
+        "fe-production-insurance-risk-07"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-housing-transport-09",
+      "domain": "housing-transport",
+      "kind": "teach",
+      "objective": "Compare vehicle finance offers including deposits, instalments and final balloon payments.",
+      "prerequisites": [
+        "fe-production-credit-mechanics-02",
+        "fe-production-credit-mechanics-07"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-housing-transport-10",
+      "domain": "housing-transport",
+      "kind": "teach",
+      "objective": "Compare a lease with a purchase using mileage, return conditions and total stated costs.",
+      "prerequisites": [
+        "fe-production-housing-transport-08",
+        "fe-production-housing-transport-09",
+        "fe-production-purchase-decisions-08"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-housing-transport-11",
+      "domain": "housing-transport",
+      "kind": "teach",
+      "objective": "Identify repair or maintenance costs that a purchase price does not cover.",
+      "prerequisites": [
+        "fe-production-housing-transport-04",
+        "fe-production-housing-transport-08",
+        "fe-production-spending-patterns-05"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-housing-transport-12",
+      "domain": "housing-transport",
+      "kind": "teach",
+      "objective": "Choose a feasible housing or transport adjustment using the household’s stated accessibility and time constraints.",
+      "prerequisites": [
+        "fe-production-housing-transport-02",
+        "fe-production-housing-transport-08",
+        "fe-production-goals-tradeoffs-03"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-housing-transport-review-1",
+      "domain": "housing-transport",
+      "kind": "consolidate",
+      "objective": null,
+      "prerequisites": [
+        "fe-production-housing-transport-01",
+        "fe-production-housing-transport-02",
+        "fe-production-housing-transport-03",
+        "fe-production-housing-transport-04",
+        "fe-production-housing-transport-05",
+        "fe-production-housing-transport-06",
+        "fe-production-purchase-decisions-02"
+      ],
+      "retrieve_objectives": [
+        "fe-production-housing-transport-01",
+        "fe-production-housing-transport-02",
+        "fe-production-housing-transport-03",
+        "fe-production-housing-transport-04",
+        "fe-production-housing-transport-05",
+        "fe-production-housing-transport-06",
+        "fe-production-purchase-decisions-02"
+      ],
+      "authoring_status": "retrieval-reservation-not-implementation-evidence"
+    },
+    {
+      "lesson_id": "fe-production-housing-transport-review-2",
+      "domain": "housing-transport",
+      "kind": "consolidate",
+      "objective": null,
+      "prerequisites": [
+        "fe-production-housing-transport-07",
+        "fe-production-housing-transport-08",
+        "fe-production-housing-transport-09",
+        "fe-production-housing-transport-10",
+        "fe-production-housing-transport-11",
+        "fe-production-housing-transport-12",
+        "fe-production-purchase-decisions-02"
+      ],
+      "retrieve_objectives": [
+        "fe-production-housing-transport-07",
+        "fe-production-housing-transport-08",
+        "fe-production-housing-transport-09",
+        "fe-production-housing-transport-10",
+        "fe-production-housing-transport-11",
+        "fe-production-housing-transport-12",
+        "fe-production-purchase-decisions-02"
+      ],
+      "authoring_status": "retrieval-reservation-not-implementation-evidence"
+    },
+    {
+      "lesson_id": "fe-production-shared-finances-01",
+      "domain": "shared-finances",
+      "kind": "teach",
+      "objective": "Compare equal and income-proportional shared contributions under explicitly agreed rules.",
+      "prerequisites": [
+        "fe-production-financial-math-06",
+        "fe-production-financial-math-08",
+        "fe-production-cashflow-budget-03"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-shared-finances-02",
+      "domain": "shared-finances",
+      "kind": "teach",
+      "objective": "Separate account access from legal ownership or debt liability that requires local verification.",
+      "prerequisites": [
+        "fe-production-accounts-records-01",
+        "fe-production-credit-products-09"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-shared-finances-03",
+      "domain": "shared-finances",
+      "kind": "teach",
+      "objective": "Create a shared-payment agreement that identifies amount, responsibility and review date.",
+      "prerequisites": [
+        "fe-production-shared-finances-01",
+        "fe-production-usable-money-05"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-shared-finances-04",
+      "domain": "shared-finances",
+      "kind": "teach",
+      "objective": "Recognize financial coercion and identify a safe support option without requiring confrontation.",
+      "prerequisites": [
+        "fe-production-payments-digital-05",
+        "fe-production-goals-tradeoffs-07"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-shared-finances-05",
+      "domain": "shared-finances",
+      "kind": "teach",
+      "objective": "Revise a plan for a stated caregiving period with reduced paid work.",
+      "prerequisites": [
+        "fe-production-income-work-04",
+        "fe-production-cashflow-budget-09"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-shared-finances-06",
+      "domain": "shared-finances",
+      "kind": "teach",
+      "objective": "Distinguish an affordable gift from a family loan requiring clear repayment expectations.",
+      "prerequisites": [
+        "fe-production-usable-money-06",
+        "fe-production-saving-resilience-08"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-shared-finances-07",
+      "domain": "shared-finances",
+      "kind": "teach",
+      "objective": "Identify account, contract and access records needed when a household separates.",
+      "prerequisites": [
+        "fe-production-shared-finances-02",
+        "fe-production-shared-finances-03",
+        "fe-production-accounts-records-10"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-shared-finances-08",
+      "domain": "shared-finances",
+      "kind": "teach",
+      "objective": "Identify estate and decision-authority questions that require qualified local advice after a death or incapacity.",
+      "prerequisites": [
+        "fe-production-insurance-risk-03",
+        "fe-production-retirement-future-10",
+        "fe-production-accounts-records-10"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-shared-finances-review-1",
+      "domain": "shared-finances",
+      "kind": "consolidate",
+      "objective": null,
+      "prerequisites": [
+        "fe-production-shared-finances-01",
+        "fe-production-shared-finances-02",
+        "fe-production-shared-finances-03",
+        "fe-production-shared-finances-04",
+        "fe-production-financial-math-06"
+      ],
+      "retrieve_objectives": [
+        "fe-production-shared-finances-01",
+        "fe-production-shared-finances-02",
+        "fe-production-shared-finances-03",
+        "fe-production-shared-finances-04",
+        "fe-production-financial-math-06"
+      ],
+      "authoring_status": "retrieval-reservation-not-implementation-evidence"
+    },
+    {
+      "lesson_id": "fe-production-shared-finances-review-2",
+      "domain": "shared-finances",
+      "kind": "consolidate",
+      "objective": null,
+      "prerequisites": [
+        "fe-production-shared-finances-05",
+        "fe-production-shared-finances-06",
+        "fe-production-shared-finances-07",
+        "fe-production-shared-finances-08",
+        "fe-production-financial-math-06"
+      ],
+      "retrieve_objectives": [
+        "fe-production-shared-finances-05",
+        "fe-production-shared-finances-06",
+        "fe-production-shared-finances-07",
+        "fe-production-shared-finances-08",
+        "fe-production-financial-math-06"
+      ],
+      "authoring_status": "retrieval-reservation-not-implementation-evidence"
+    },
+    {
+      "lesson_id": "fe-production-financial-landscape-01",
+      "domain": "financial-landscape",
+      "kind": "teach",
+      "objective": "Verify a financial provider’s identity and permitted activity using the relevant official register.",
+      "prerequisites": [
+        "fe-production-payments-digital-07",
+        "fe-production-accounts-records-09"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-financial-landscape-02",
+      "domain": "financial-landscape",
+      "kind": "teach",
+      "objective": "Distinguish provider regulation from protection against every possible loss.",
+      "prerequisites": [
+        "fe-production-financial-landscape-01",
+        "fe-production-investing-foundations-12"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-financial-landscape-03",
+      "domain": "financial-landscape",
+      "kind": "teach",
+      "objective": "Check the scope and eligibility conditions of a local deposit-protection claim.",
+      "prerequisites": [
+        "fe-production-financial-landscape-01",
+        "fe-production-financial-landscape-02",
+        "fe-production-accounts-records-09"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-financial-landscape-04",
+      "domain": "financial-landscape",
+      "kind": "teach",
+      "objective": "Prepare a complaint with a clear requested remedy and supporting transaction evidence.",
+      "prerequisites": [
+        "fe-production-accounts-records-07",
+        "fe-production-purchase-decisions-08"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-financial-landscape-05",
+      "domain": "financial-landscape",
+      "kind": "teach",
+      "objective": "Identify the official escalation route after a provider’s complaint response is unresolved.",
+      "prerequisites": [
+        "fe-production-financial-landscape-04",
+        "fe-production-financial-landscape-01"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-financial-landscape-06",
+      "domain": "financial-landscape",
+      "kind": "teach",
+      "objective": "Calculate how much a recipient receives after a remittance fee and a stated exchange rate.",
+      "prerequisites": [
+        "fe-production-financial-math-05",
+        "fe-production-financial-math-02"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-financial-landscape-07",
+      "domain": "financial-landscape",
+      "kind": "teach",
+      "objective": "Compare remittance offers using recipient amount, timing and collection conditions.",
+      "prerequisites": [
+        "fe-production-financial-landscape-06",
+        "fe-production-payments-digital-04"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-financial-landscape-08",
+      "domain": "financial-landscape",
+      "kind": "teach",
+      "objective": "Identify a currency-conversion markup when the reference comparison rate is supplied.",
+      "prerequisites": [
+        "fe-production-financial-landscape-06",
+        "fe-production-financial-math-08"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-financial-landscape-09",
+      "domain": "financial-landscape",
+      "kind": "teach",
+      "objective": "Distinguish a specific verifiable sustainability claim from an unsupported financial-product label.",
+      "prerequisites": [
+        "fe-production-purchase-decisions-11",
+        "fe-production-investment-comparison-03"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-financial-landscape-10",
+      "domain": "financial-landscape",
+      "kind": "teach",
+      "objective": "Check who receives financial data and how consent can be withdrawn before enabling a sharing service.",
+      "prerequisites": [
+        "fe-production-payments-digital-05",
+        "fe-production-accounts-records-10"
+      ],
+      "retrieve_objectives": [],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-financial-landscape-review-1",
+      "domain": "financial-landscape",
+      "kind": "consolidate",
+      "objective": null,
+      "prerequisites": [
+        "fe-production-financial-landscape-01",
+        "fe-production-financial-landscape-02",
+        "fe-production-financial-landscape-03",
+        "fe-production-financial-landscape-04",
+        "fe-production-financial-landscape-05",
+        "fe-production-payments-digital-07"
+      ],
+      "retrieve_objectives": [
+        "fe-production-financial-landscape-01",
+        "fe-production-financial-landscape-02",
+        "fe-production-financial-landscape-03",
+        "fe-production-financial-landscape-04",
+        "fe-production-financial-landscape-05",
+        "fe-production-payments-digital-07"
+      ],
+      "authoring_status": "retrieval-reservation-not-implementation-evidence"
+    },
+    {
+      "lesson_id": "fe-production-financial-landscape-review-2",
+      "domain": "financial-landscape",
+      "kind": "consolidate",
+      "objective": null,
+      "prerequisites": [
+        "fe-production-financial-landscape-06",
+        "fe-production-financial-landscape-07",
+        "fe-production-financial-landscape-08",
+        "fe-production-financial-landscape-09",
+        "fe-production-financial-landscape-10",
+        "fe-production-payments-digital-07"
+      ],
+      "retrieve_objectives": [
+        "fe-production-financial-landscape-06",
+        "fe-production-financial-landscape-07",
+        "fe-production-financial-landscape-08",
+        "fe-production-financial-landscape-09",
+        "fe-production-financial-landscape-10",
+        "fe-production-payments-digital-07"
+      ],
+      "authoring_status": "retrieval-reservation-not-implementation-evidence"
+    },
+    {
+      "lesson_id": "fe-production-integrated-decisions-01",
+      "domain": "integrated-decisions",
+      "kind": "capstone",
+      "objective": "Revise a household’s next-month plan after an income interruption and an unavoidable bill.",
+      "prerequisites": [
+        "fe-production-cashflow-budget-09",
+        "fe-production-cashflow-budget-11",
+        "fe-production-income-work-06"
+      ],
+      "retrieve_objectives": [
+        "fe-production-cashflow-budget-09",
+        "fe-production-cashflow-budget-11",
+        "fe-production-income-work-06"
+      ],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-integrated-decisions-02",
+      "domain": "integrated-decisions",
+      "kind": "capstone",
+      "objective": "Compare a reserve withdrawal with a proposed loan using near-term access needs and complete loan costs.",
+      "prerequisites": [
+        "fe-production-saving-resilience-04",
+        "fe-production-credit-mechanics-02",
+        "fe-production-credit-mechanics-07"
+      ],
+      "retrieve_objectives": [
+        "fe-production-saving-resilience-04",
+        "fe-production-credit-mechanics-02",
+        "fe-production-credit-mechanics-07"
+      ],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-integrated-decisions-03",
+      "domain": "integrated-decisions",
+      "kind": "capstone",
+      "objective": "Resolve a budget shortfall without silently dropping a dependent’s essential expense.",
+      "prerequisites": [
+        "fe-production-cashflow-budget-03",
+        "fe-production-spending-patterns-10",
+        "fe-production-shared-finances-05"
+      ],
+      "retrieve_objectives": [
+        "fe-production-cashflow-budget-03",
+        "fe-production-spending-patterns-10",
+        "fe-production-shared-finances-05"
+      ],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-integrated-decisions-04",
+      "domain": "integrated-decisions",
+      "kind": "capstone",
+      "objective": "Evaluate a job move using net pay, relocation costs, timing and lost benefits.",
+      "prerequisites": [
+        "fe-production-income-work-09",
+        "fe-production-housing-transport-01",
+        "fe-production-tax-public-systems-07"
+      ],
+      "retrieve_objectives": [
+        "fe-production-income-work-09",
+        "fe-production-housing-transport-01",
+        "fe-production-tax-public-systems-07"
+      ],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-integrated-decisions-05",
+      "domain": "integrated-decisions",
+      "kind": "capstone",
+      "objective": "Choose which facts must be verified before financing an urgent replacement purchase.",
+      "prerequisites": [
+        "fe-production-purchase-decisions-12",
+        "fe-production-credit-mechanics-07",
+        "fe-production-purchase-decisions-11"
+      ],
+      "retrieve_objectives": [
+        "fe-production-purchase-decisions-12",
+        "fe-production-credit-mechanics-07",
+        "fe-production-purchase-decisions-11"
+      ],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-integrated-decisions-06",
+      "domain": "integrated-decisions",
+      "kind": "capstone",
+      "objective": "Reconcile multiple accounts and pending transactions before committing money to a goal.",
+      "prerequisites": [
+        "fe-production-accounts-records-05",
+        "fe-production-accounts-records-06",
+        "fe-production-usable-money-07"
+      ],
+      "retrieve_objectives": [
+        "fe-production-accounts-records-05",
+        "fe-production-accounts-records-06",
+        "fe-production-usable-money-07"
+      ],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-integrated-decisions-07",
+      "domain": "integrated-decisions",
+      "kind": "capstone",
+      "objective": "Compare a debt repayment and a long-term investment contribution under stated risks and constraints.",
+      "prerequisites": [
+        "fe-production-debt-recovery-03",
+        "fe-production-investing-foundations-03",
+        "fe-production-saving-resilience-04"
+      ],
+      "retrieve_objectives": [
+        "fe-production-debt-recovery-03",
+        "fe-production-investing-foundations-03",
+        "fe-production-saving-resilience-04"
+      ],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-integrated-decisions-08",
+      "domain": "integrated-decisions",
+      "kind": "capstone",
+      "objective": "Revise protection and cash-flow plans when a household takes on a new dependent.",
+      "prerequisites": [
+        "fe-production-insurance-risk-11",
+        "fe-production-cashflow-budget-09",
+        "fe-production-shared-finances-05"
+      ],
+      "retrieve_objectives": [
+        "fe-production-insurance-risk-11",
+        "fe-production-cashflow-budget-09",
+        "fe-production-shared-finances-05"
+      ],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-integrated-decisions-09",
+      "domain": "integrated-decisions",
+      "kind": "capstone",
+      "objective": "Respond to a suspected scam while preserving essential payments and evidence.",
+      "prerequisites": [
+        "fe-production-payments-digital-08",
+        "fe-production-payments-digital-10",
+        "fe-production-cashflow-budget-05"
+      ],
+      "retrieve_objectives": [
+        "fe-production-payments-digital-08",
+        "fe-production-payments-digital-10",
+        "fe-production-cashflow-budget-05"
+      ],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-integrated-decisions-10",
+      "domain": "integrated-decisions",
+      "kind": "capstone",
+      "objective": "Revise a retirement projection after a change in costs without promising an exact future outcome.",
+      "prerequisites": [
+        "fe-production-retirement-future-06",
+        "fe-production-retirement-future-09",
+        "fe-production-time-inflation-10"
+      ],
+      "retrieve_objectives": [
+        "fe-production-retirement-future-06",
+        "fe-production-retirement-future-09",
+        "fe-production-time-inflation-10"
+      ],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-integrated-decisions-11",
+      "domain": "integrated-decisions",
+      "kind": "capstone",
+      "objective": "Compare two cross-border payment plans while accounting for uncertainty in the receipt date.",
+      "prerequisites": [
+        "fe-production-financial-landscape-07",
+        "fe-production-usable-money-05",
+        "fe-production-cashflow-budget-06"
+      ],
+      "retrieve_objectives": [
+        "fe-production-financial-landscape-07",
+        "fe-production-usable-money-05",
+        "fe-production-cashflow-budget-06"
+      ],
+      "authoring_status": "objective-and-dependencies-only"
+    },
+    {
+      "lesson_id": "fe-production-integrated-decisions-12",
+      "domain": "integrated-decisions",
+      "kind": "capstone",
+      "objective": "Build an evidence-backed action plan that separates decisions possible now from questions needing qualified help.",
+      "prerequisites": [
+        "fe-production-goals-tradeoffs-07",
+        "fe-production-debt-recovery-08",
+        "fe-production-tax-public-systems-06",
+        "fe-production-shared-finances-08"
+      ],
+      "retrieve_objectives": [
+        "fe-production-goals-tradeoffs-07",
+        "fe-production-debt-recovery-08",
+        "fe-production-tax-public-systems-06",
+        "fe-production-shared-finances-08"
+      ],
+      "authoring_status": "objective-and-dependencies-only"
+    }
+  ]
+}

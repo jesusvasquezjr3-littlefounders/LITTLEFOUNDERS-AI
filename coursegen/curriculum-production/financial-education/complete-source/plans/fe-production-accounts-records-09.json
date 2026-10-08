@@ -1,0 +1,814 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-accounts-records-part-2",
+  "lesson_id": "fe-production-accounts-records-09",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.accounts-records.09"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Identify which provider and account protection claims require local official verification.",
+  "title": {
+    "en-US": "Protection claims",
+    "es-MX": "Verifica la protección anunciada",
+    "pt-BR": "Confira a proteção anunciada"
+  },
+  "new_concepts": [
+    "finance.prod.accounts-records.09"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Verify the protection claim\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Verifica la protección anunciada\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Confira a proteção anunciada\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.accounts-records.09",
+      "observable_action": "Identify which provider and account protection claims require local official verification.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.accounts-records.01"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Check the provider and the specific product instead of trusting a protection badge.",
+    "misconception": "Assuming a provider’s registration or insurance logo guarantees every product, every loss and uninterrupted access.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.accounts-records.09",
+        "context_id": "fe-production-accounts-records-09-example-01",
+        "supports_from": [],
+        "reasoning": "Verify the named provider through the relevant official registry. Separately check whether the specific product meets the protection scheme’s rules."
+      },
+      {
+        "segment_id": "example-02",
+        "skill_id": "prod.accounts-records.09",
+        "context_id": "fe-production-accounts-records-09-example-02",
+        "supports_from": [],
+        "reasoning": "For an FDIC claim, use BankFind and the FDIC’s coverage information. A logo alone is insufficient."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.accounts-records.09",
+        "context_id": "fe-production-accounts-records-09-guided-01",
+        "supports_from": [
+          "example-02"
+        ],
+        "reasoning": "Use the relevant official record for the exact named institution."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.accounts-records.09",
+        "context_id": "fe-production-accounts-records-09-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Provider identity and product coverage are separate checks."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.accounts-records.09",
+        "context_id": "fe-production-accounts-records-09-practice-01",
+        "supports_from": [],
+        "reasoning": "An institutional relationship alone does not establish every balance’s coverage."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.accounts-records.09",
+        "context_id": "fe-production-accounts-records-09-practice-02",
+        "supports_from": [],
+        "reasoning": "Limits and eligibility must match the current applicable scheme."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.accounts-records.09",
+        "context_id": "fe-production-accounts-records-09-practice-03",
+        "supports_from": [],
+        "reasoning": "A named protection event does not imply coverage of every loss."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.accounts-records.09",
+        "context_id": "fe-production-accounts-records-09-transfer-01",
+        "supports_from": [],
+        "reasoning": "A real name can be copied by someone unrelated to the institution."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.accounts-records.09",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Check the provider and the specific product instead of trusting a protection badge."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Revisa proveedor y producto concreto sin confiar solo en un sello."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Confira fornecedor e produto concreto sem confiar só num selo."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Two checks, different questions",
+          "line": "Verify the named provider through the relevant official registry. Separately check whether the specific product meets the protection scheme’s rules."
+        },
+        "es-MX": {
+          "prompt": "Dos revisiones, distintas preguntas",
+          "line": "Verifica al proveedor en el registro oficial pertinente. Aparte, revisa si el producto concreto cumple las reglas de protección."
+        },
+        "pt-BR": {
+          "prompt": "Duas conferências, perguntas diferentes",
+          "line": "Confira o fornecedor no registro oficial pertinente. À parte, veja se o produto concreto cumpre as regras de proteção."
+        }
+      }
+    },
+    {
+      "id": "example-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Use the relevant source",
+          "line": "For an FDIC claim, use BankFind and the FDIC’s coverage information. A logo alone is insufficient."
+        },
+        "es-MX": {
+          "prompt": "Usa la fuente pertinente",
+          "line": "Para registro, consulta SIPRES de CONDUSEF; para una garantía bancaria del IPAB, revisa sus reglas de cobertura."
+        },
+        "pt-BR": {
+          "prompt": "Use a fonte pertinente",
+          "line": "Para autorização, consulte o Banco Central; para uma garantia do FGC, confira suas regras de cobertura."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Which source checks that claim?",
+          "scene": "An unfamiliar provider claims to be an FDIC-insured bank.",
+          "options": [
+            {
+              "label": "FDIC BankFind for the named bank"
+            },
+            {
+              "label": "A screenshot sent by its salesperson"
+            },
+            {
+              "label": "Only the provider’s social profile"
+            }
+          ],
+          "help": [
+            "Match the entity, not just a similar trade name."
+          ],
+          "feedback": {
+            "met": "Use the relevant official record for the exact named institution.",
+            "not_yet": "Match the entity, not just a similar trade name."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué fuente comprueba esa afirmación?",
+          "scene": "Un proveedor desconocido afirma estar registrado como institución financiera.",
+          "options": [
+            {
+              "label": "SIPRES de CONDUSEF para esa institución"
+            },
+            {
+              "label": "Una captura enviada por quien vende"
+            },
+            {
+              "label": "Solo su perfil en redes"
+            }
+          ],
+          "help": [
+            "Compara la entidad, no solo un nombre similar."
+          ],
+          "feedback": {
+            "met": "Usa el registro oficial pertinente de la institución exacta.",
+            "not_yet": "Compara la entidad, no solo un nombre similar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual fonte confere essa afirmação?",
+          "scene": "Um fornecedor desconhecido diz ter autorização do Banco Central.",
+          "options": [
+            {
+              "label": "Consulta de instituições do Banco Central"
+            },
+            {
+              "label": "Uma captura enviada por quem vende"
+            },
+            {
+              "label": "Só seu perfil nas redes"
+            }
+          ],
+          "help": [
+            "Compare a entidade, não só um nome parecido."
+          ],
+          "feedback": {
+            "met": "Use o registro oficial pertinente da instituição exata.",
+            "not_yet": "Compare a entidade, não só um nome parecido."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Does this prove every product’s protection?",
+          "scene": "A legitimate provider offers several different product types.",
+          "options": [
+            {
+              "label": "The provider’s name is enough"
+            },
+            {
+              "label": "All products share identical protection"
+            },
+            {
+              "label": "Check the particular product’s rules"
+            }
+          ],
+          "help": [
+            "Find the specific covered product, conditions and exclusions."
+          ],
+          "feedback": {
+            "met": "Provider identity and product coverage are separate checks.",
+            "not_yet": "Find the specific covered product, conditions and exclusions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Su estado demuestra protección de todo producto?",
+          "scene": "Un proveedor legítimo ofrece varios tipos de producto.",
+          "options": [
+            {
+              "label": "Sí, basta el nombre del proveedor"
+            },
+            {
+              "label": "Sí, todo producto comparte igual protección"
+            },
+            {
+              "label": "No, revisa reglas del producto concreto"
+            }
+          ],
+          "help": [
+            "Busca producto cubierto, condiciones y exclusiones concretas."
+          ],
+          "feedback": {
+            "met": "Identidad del proveedor y cobertura del producto se revisan aparte.",
+            "not_yet": "Busca producto cubierto, condiciones y exclusiones concretas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Sua situação comprova proteção de todo produto?",
+          "scene": "Um fornecedor legítimo oferece vários tipos de produto.",
+          "options": [
+            {
+              "label": "Sim, basta o nome do fornecedor"
+            },
+            {
+              "label": "Sim, todo produto tem proteção igual"
+            },
+            {
+              "label": "Não, confira regras do produto concreto"
+            }
+          ],
+          "help": [
+            "Busque produto coberto, condições e exclusões concretas."
+          ],
+          "feedback": {
+            "met": "Identidade do fornecedor e cobertura do produto se conferem à parte.",
+            "not_yet": "Busque produto coberto, condições e exclusões concretas."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.09",
+      "copy": {
+        "en-US": {
+          "prompt": "What needs verification?",
+          "scene": "A payment app advertises a relationship with a protected institution.",
+          "options": [
+            {
+              "label": "How these funds qualify for coverage"
+            },
+            {
+              "label": "Assume every app balance is insured"
+            },
+            {
+              "label": "Only whether the logos look similar"
+            }
+          ],
+          "help": [
+            "Trace the actual institution, product and applicable conditions."
+          ],
+          "feedback": {
+            "met": "An institutional relationship alone does not establish every balance’s coverage.",
+            "not_yet": "Trace the actual institution, product and applicable conditions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué sigue por verificar?",
+          "scene": "Una aplicación de pagos anuncia relación con una institución protegida.",
+          "options": [
+            {
+              "label": "Cómo esos fondos cumplen la cobertura"
+            },
+            {
+              "label": "Suponer asegurado cualquier saldo de aplicación"
+            },
+            {
+              "label": "Solo si los logotipos se parecen"
+            }
+          ],
+          "help": [
+            "Identifica institución real, producto y condiciones aplicables."
+          ],
+          "feedback": {
+            "met": "Una relación institucional no demuestra cobertura de todo saldo.",
+            "not_yet": "Identifica institución real, producto y condiciones aplicables."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que ainda precisa conferir?",
+          "scene": "Um aplicativo de pagamentos anuncia relação com uma instituição protegida.",
+          "options": [
+            {
+              "label": "Como esses recursos cumprem a cobertura"
+            },
+            {
+              "label": "Supor segurado qualquer saldo de aplicativo"
+            },
+            {
+              "label": "Só se os logotipos se parecem"
+            }
+          ],
+          "help": [
+            "Identifique instituição real, produto e condições aplicáveis."
+          ],
+          "feedback": {
+            "met": "Uma relação institucional não demonstra cobertura de todo saldo.",
+            "not_yet": "Identifique instituição real, produto e condições aplicáveis."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Which check matters?",
+          "scene": "A protection claim cites old limits without specifying the country or product.",
+          "options": [
+            {
+              "label": "The most widely shared old image"
+            },
+            {
+              "label": "Current applicable coverage rules"
+            },
+            {
+              "label": "A limit copied from another country"
+            }
+          ],
+          "help": [
+            "Check place, product and effective rules together."
+          ],
+          "feedback": {
+            "met": "Limits and eligibility must match the current applicable scheme.",
+            "not_yet": "Check place, product and effective rules together."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué revisión se necesita?",
+          "scene": "Una protección anunciada cita límites antiguos sin país ni producto.",
+          "options": [
+            {
+              "label": "La imagen antigua más compartida"
+            },
+            {
+              "label": "Reglas de cobertura vigentes aplicables"
+            },
+            {
+              "label": "Un límite copiado de otro país"
+            }
+          ],
+          "help": [
+            "Revisa lugar, producto y reglas vigentes juntos."
+          ],
+          "feedback": {
+            "met": "Límites y requisitos deben coincidir con el esquema vigente aplicable.",
+            "not_yet": "Revisa lugar, producto y reglas vigentes juntos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual conferência é necessária?",
+          "scene": "Uma proteção anunciada cita limites antigos sem país nem produto.",
+          "options": [
+            {
+              "label": "A imagem antiga mais compartilhada"
+            },
+            {
+              "label": "Regras de cobertura atuais aplicáveis"
+            },
+            {
+              "label": "Um limite copiado de outro país"
+            }
+          ],
+          "help": [
+            "Confira local, produto e regras atuais juntos."
+          ],
+          "feedback": {
+            "met": "Limites e requisitos devem combinar com o sistema atual aplicável.",
+            "not_yet": "Confira local, produto e regras atuais juntos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.09",
+      "copy": {
+        "en-US": {
+          "prompt": "What distinction needs checking?",
+          "scene": "A bank-failure protection scheme is claimed to cover every investment price decline.",
+          "options": [
+            {
+              "label": "Monthly versus annual fees"
+            },
+            {
+              "label": "Covered failure versus market-price loss"
+            },
+            {
+              "label": "Income versus available cash"
+            }
+          ],
+          "help": [
+            "Read what event the scheme actually covers."
+          ],
+          "feedback": {
+            "met": "A named protection event does not imply coverage of every loss.",
+            "not_yet": "Read what event the scheme actually covers."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué distinción debe revisarse?",
+          "scene": "Dicen que una protección por quiebra bancaria cubre toda caída de precio de inversión.",
+          "options": [
+            {
+              "label": "Comisiones mensuales frente a anuales"
+            },
+            {
+              "label": "Quiebra cubierta frente a pérdida de mercado"
+            },
+            {
+              "label": "Ingreso frente a efectivo disponible"
+            }
+          ],
+          "help": [
+            "Lee qué suceso cubre realmente el esquema."
+          ],
+          "feedback": {
+            "met": "Un suceso protegido no implica cubrir toda pérdida.",
+            "not_yet": "Lee qué suceso cubre realmente el esquema."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual distinção deve ser conferida?",
+          "scene": "Dizem que uma proteção por quebra bancária cobre toda queda de preço de investimento.",
+          "options": [
+            {
+              "label": "Tarifas mensais versus anuais"
+            },
+            {
+              "label": "Quebra coberta versus perda de mercado"
+            },
+            {
+              "label": "Renda versus dinheiro disponível"
+            }
+          ],
+          "help": [
+            "Leia qual evento o sistema realmente cobre."
+          ],
+          "feedback": {
+            "met": "Um evento protegido não implica cobrir toda perda.",
+            "not_yet": "Leia qual evento o sistema realmente cobre."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.accounts-records.09",
+      "copy": {
+        "en-US": {
+          "prompt": "What needs verification?",
+          "scene": "A message copies a real institution’s name but gives a different contact.",
+          "options": [
+            {
+              "label": "Only that the institution exists"
+            },
+            {
+              "label": "That contact matches the official institution"
+            },
+            {
+              "label": "Only its name’s spelling"
+            }
+          ],
+          "help": [
+            "Verify the actual contact independently."
+          ],
+          "feedback": {
+            "met": "A real name can be copied by someone unrelated to the institution.",
+            "not_yet": "Verify the actual contact independently."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué verificar antes de confiar?",
+          "scene": "Un mensaje copia el nombre de una institución real, pero envía a otro contacto.",
+          "options": [
+            {
+              "label": "Solo que la institución existe"
+            },
+            {
+              "label": "Que el contacto coincide con la institución oficial"
+            },
+            {
+              "label": "Solo cómo se escribe su nombre"
+            }
+          ],
+          "help": [
+            "Verifica el contacto real de forma independiente."
+          ],
+          "feedback": {
+            "met": "Alguien ajeno puede copiar el nombre de una institución real.",
+            "not_yet": "Verifica el contacto real de forma independiente."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que conferir antes de confiar?",
+          "scene": "Uma mensagem copia o nome de uma instituição real, mas envia a outro contato.",
+          "options": [
+            {
+              "label": "Só que a instituição existe"
+            },
+            {
+              "label": "Que o contato corresponde à instituição oficial"
+            },
+            {
+              "label": "Só como se escreve seu nome"
+            }
+          ],
+          "help": [
+            "Confira o contato real de forma independente."
+          ],
+          "feedback": {
+            "met": "Alguém sem vínculo pode copiar o nome de uma instituição real.",
+            "not_yet": "Confira o contato real de forma independente."
+          }
+        }
+      }
+    }
+  ]
+}

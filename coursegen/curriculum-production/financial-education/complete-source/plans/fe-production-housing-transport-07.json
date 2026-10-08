@@ -1,0 +1,844 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-housing-transport-part-2",
+  "lesson_id": "fe-production-housing-transport-07",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.housing-transport.07"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Compare renting and buying over a stated horizon without assuming property prices always rise.",
+  "title": {
+    "en-US": "Housing Horizon",
+    "es-MX": "Rentar o comprar con horizonte",
+    "pt-BR": "Alugar ou comprar com prazo"
+  },
+  "new_concepts": [
+    "finance.prod.housing-transport.07"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Housing Horizon\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Rentar o comprar con horizonte\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Alugar ou comprar com prazo\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.housing-transport.07",
+      "observable_action": "Compare renting and buying over a stated horizon without assuming property prices always rise.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.housing-transport.02",
+      "prod.housing-transport.04",
+      "prod.investing-foundations.03"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Compare housing over the same stay, including purchase and sale costs; fictional dollars make the assumptions visible.",
+    "misconception": "Buying always wins because rent is wasted and a home price always rises.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.housing-transport.07",
+        "context_id": "housing-transport-07-example-01",
+        "supports_from": [],
+        "reasoning": "Compare total costs over the same stay. Buying includes entry, upkeep and exit costs; future resale value is uncertain."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.housing-transport.07",
+        "context_id": "housing-transport-07-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Different periods make the totals incomparable."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.housing-transport.07",
+        "context_id": "housing-transport-07-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Future resale prices are not assured."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.housing-transport.07",
+        "context_id": "housing-transport-07-practice-01",
+        "supports_from": [],
+        "reasoning": "Rent costs less under these stated assumptions."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.housing-transport.07",
+        "context_id": "housing-transport-07-practice-02",
+        "supports_from": [],
+        "reasoning": "Shorter stays leave fewer months to spread transaction costs."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.housing-transport.07",
+        "context_id": "housing-transport-07-practice-03",
+        "supports_from": [],
+        "reasoning": "Timing and the ability to move affect the decision."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.housing-transport.07",
+        "context_id": "housing-transport-07-transfer-01",
+        "supports_from": [],
+        "reasoning": "The result relies on a resale value that may differ."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.housing-transport.07",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Compare housing over the same stay, including purchase and sale costs; fictional dollars make the assumptions visible."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Compara vivienda durante la misma estancia, incluyendo compra y venta; pesos ficticios hacen visibles los supuestos."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Compare moradia pela mesma estadia, incluindo compra e venda; reais fictícios tornam visíveis as hipóteses."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Match the horizon",
+          "line": "Compare total costs over the same stay. Buying includes entry, upkeep and exit costs; future resale value is uncertain."
+        },
+        "es-MX": {
+          "prompt": "Iguala el horizonte",
+          "line": "Compara costos totales durante la misma estancia. Comprar incluye entrada, cuidado y salida; el valor futuro de reventa es incierto."
+        },
+        "pt-BR": {
+          "prompt": "Iguale o prazo",
+          "line": "Compare custos totais na mesma estadia. Comprar inclui entrada, cuidado e saída; o valor futuro de revenda é incerto."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Which comparison uses a fair horizon?",
+          "scene": "One option lists annual rent; another lists ownership costs for a decade.",
+          "options": [
+            {
+              "label": "Compare totals directly"
+            },
+            {
+              "label": "Ignore purchase costs"
+            },
+            {
+              "label": "Use the same stay length"
+            }
+          ],
+          "help": [
+            "Align how long the household uses each option."
+          ],
+          "feedback": {
+            "met": "Different periods make the totals incomparable.",
+            "not_yet": "Align how long the household uses each option."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué comparación usa horizonte justo?",
+          "scene": "Una opción da renta anual; otra costos de propiedad de una década.",
+          "options": [
+            {
+              "label": "Comparar totales directamente"
+            },
+            {
+              "label": "Ignorar costos de compra"
+            },
+            {
+              "label": "Usar misma duración de estancia"
+            }
+          ],
+          "help": [
+            "Iguala cuánto tiempo se usa cada opción."
+          ],
+          "feedback": {
+            "met": "Periodos distintos impiden comparar los totales.",
+            "not_yet": "Iguala cuánto tiempo se usa cada opción."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual comparação usa prazo justo?",
+          "scene": "Uma opção traz aluguel anual; outra custos de propriedade por uma década.",
+          "options": [
+            {
+              "label": "Comparar totais diretamente"
+            },
+            {
+              "label": "Ignorar custos de compra"
+            },
+            {
+              "label": "Usar mesma duração de estadia"
+            }
+          ],
+          "help": [
+            "Iguale por quanto tempo se usa cada opção."
+          ],
+          "feedback": {
+            "met": "Períodos distintos impedem comparar os totais.",
+            "not_yet": "Iguale por quanto tempo se usa cada opção."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Which assumption is unsafe?",
+          "scene": "A comparison assumes a future buyer must pay more than today’s price.",
+          "options": [
+            {
+              "label": "Known transaction charge"
+            },
+            {
+              "label": "Certain price growth"
+            },
+            {
+              "label": "Stated moving date"
+            }
+          ],
+          "help": [
+            "Test resale assumptions instead of treating appreciation as certain."
+          ],
+          "feedback": {
+            "met": "Future resale prices are not assured.",
+            "not_yet": "Test resale assumptions instead of treating appreciation as certain."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué supuesto es inseguro?",
+          "scene": "Una comparación supone que comprador futuro debe pagar más que hoy.",
+          "options": [
+            {
+              "label": "Cargo de operación conocido"
+            },
+            {
+              "label": "Aumento seguro del precio"
+            },
+            {
+              "label": "Fecha de mudanza indicada"
+            }
+          ],
+          "help": [
+            "Prueba supuestos de reventa sin tratar aumentos como seguros."
+          ],
+          "feedback": {
+            "met": "Los precios futuros de reventa no están asegurados.",
+            "not_yet": "Prueba supuestos de reventa sin tratar aumentos como seguros."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que hipótese é insegura?",
+          "scene": "Uma comparação supõe que comprador futuro deve pagar mais que hoje.",
+          "options": [
+            {
+              "label": "Custo de transação conhecido"
+            },
+            {
+              "label": "Aumento certo do preço"
+            },
+            {
+              "label": "Data de mudança dada"
+            }
+          ],
+          "help": [
+            "Teste hipóteses de revenda sem tratar aumentos como certos."
+          ],
+          "feedback": {
+            "met": "Preços futuros de revenda não são certos.",
+            "not_yet": "Teste hipóteses de revenda sem tratar aumentos como certos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.07",
+      "visual": {
+        "type": "bar"
+      },
+      "payload": {
+        "data": {
+          "unit": "local",
+          "categories": [
+            {
+              "id": "earlier"
+            },
+            {
+              "id": "later"
+            }
+          ],
+          "series": [
+            {
+              "id": "projected-balance",
+              "values": [
+                12000,
+                15000
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "later"
+            },
+            {
+              "id": "earlier"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "earlier"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Same stay; complete modeled costs: rent 12000, buy 15000; sale proceeds already deducted.",
+          "title": "Modeled cost",
+          "data": {
+            "categories": [
+              {
+                "label": "Rent"
+              },
+              {
+                "label": "Buy"
+              }
+            ],
+            "series": [
+              {
+                "label": "Total cost"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Which costs less here?",
+            "options": [
+              {
+                "label": "Buy"
+              },
+              {
+                "label": "Rent"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "Rent costs less under these stated assumptions.",
+            "not_yet": "Compare the modeled net costs over this same stay."
+          },
+          "help": [
+            "Compare the modeled net costs over this same stay."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Misma estancia; costos completos modelados: rentar 12000, comprar 15000; ingreso por venta ya descontado.",
+          "title": "Costo modelado",
+          "data": {
+            "categories": [
+              {
+                "label": "Rentar"
+              },
+              {
+                "label": "Comprar"
+              }
+            ],
+            "series": [
+              {
+                "label": "Costo total"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Qué cuesta menos aquí?",
+            "options": [
+              {
+                "label": "Comprar"
+              },
+              {
+                "label": "Rentar"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "Rentar cuesta menos bajo estos supuestos indicados.",
+            "not_yet": "Compara costos netos modelados durante esta misma estancia."
+          },
+          "help": [
+            "Compara costos netos modelados durante esta misma estancia."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Mesma estadia; custos completos modelados: alugar 12000, comprar 15000; receita da venda já descontada.",
+          "title": "Custo modelado",
+          "data": {
+            "categories": [
+              {
+                "label": "Alugar"
+              },
+              {
+                "label": "Comprar"
+              }
+            ],
+            "series": [
+              {
+                "label": "Custo total"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Qual custa menos aqui?",
+            "options": [
+              {
+                "label": "Comprar"
+              },
+              {
+                "label": "Alugar"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "Alugar custa menos sob essas hipóteses dadas.",
+            "not_yet": "Compare custos líquidos modelados nesta mesma estadia."
+          },
+          "help": [
+            "Compare custos líquidos modelados nesta mesma estadia."
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.07",
+      "copy": {
+        "en-US": {
+          "prompt": "What may change for a shorter stay?",
+          "scene": "Buying involves one-time purchase and sale charges.",
+          "options": [
+            {
+              "label": "Home value certainly rises"
+            },
+            {
+              "label": "Charges spread over fewer months"
+            },
+            {
+              "label": "Charges automatically vanish"
+            }
+          ],
+          "help": [
+            "Consider entry and exit costs alongside the stay length."
+          ],
+          "feedback": {
+            "met": "Shorter stays leave fewer months to spread transaction costs.",
+            "not_yet": "Consider entry and exit costs alongside the stay length."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué cambia con estancia menor?",
+          "scene": "Comprar implica cargos únicos de compra y venta.",
+          "options": [
+            {
+              "label": "Vivienda sube de valor siempre"
+            },
+            {
+              "label": "Cargos repartidos entre menos meses"
+            },
+            {
+              "label": "Cargos desaparecen automáticamente"
+            }
+          ],
+          "help": [
+            "Considera entrada y salida junto con duración de estancia."
+          ],
+          "feedback": {
+            "met": "Estancias cortas dejan menos meses para repartir cargos de operación.",
+            "not_yet": "Considera entrada y salida junto con duración de estancia."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que muda numa estadia curta?",
+          "scene": "Comprar envolve custos únicos de compra e venda.",
+          "options": [
+            {
+              "label": "Casa sempre valoriza"
+            },
+            {
+              "label": "Custos divididos por menos meses"
+            },
+            {
+              "label": "Custos somem automaticamente"
+            }
+          ],
+          "help": [
+            "Considere entrada e saída junto com duração da estadia."
+          ],
+          "feedback": {
+            "met": "Estadias curtas deixam menos meses para dividir custos da transação.",
+            "not_yet": "Considere entrada e saída junto com duração da estadia."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.07",
+      "copy": {
+        "en-US": {
+          "prompt": "What else matters besides cost?",
+          "scene": "A household may move soon and cannot absorb a slow sale.",
+          "options": [
+            {
+              "label": "Only last year’s price rise"
+            },
+            {
+              "label": "Flexibility and sale uncertainty"
+            },
+            {
+              "label": "Only the monthly payment"
+            }
+          ],
+          "help": [
+            "Check whether the option fits the household’s actual constraints."
+          ],
+          "feedback": {
+            "met": "Timing and the ability to move affect the decision.",
+            "not_yet": "Check whether the option fits the household’s actual constraints."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué importa además del costo?",
+          "scene": "Un hogar podría mudarse pronto y no soporta una venta lenta.",
+          "options": [
+            {
+              "label": "Solo aumento del año anterior"
+            },
+            {
+              "label": "Flexibilidad e incertidumbre de venta"
+            },
+            {
+              "label": "Solo el pago mensual"
+            }
+          ],
+          "help": [
+            "Revisa si la opción cumple las restricciones del hogar."
+          ],
+          "feedback": {
+            "met": "El tiempo y poder mudarse influyen en la decisión.",
+            "not_yet": "Revisa si la opción cumple las restricciones del hogar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que importa além do custo?",
+          "scene": "Uma família pode mudar logo e não suporta uma venda lenta.",
+          "options": [
+            {
+              "label": "Só alta do ano passado"
+            },
+            {
+              "label": "Flexibilidade e incerteza da venda"
+            },
+            {
+              "label": "Só o pagamento mensal"
+            }
+          ],
+          "help": [
+            "Confira se a opção atende aos limites da família."
+          ],
+          "feedback": {
+            "met": "O prazo e poder mudar influem na decisão.",
+            "not_yet": "Confira se a opção atende aos limites da família."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.housing-transport.07",
+      "copy": {
+        "en-US": {
+          "prompt": "What makes this conclusion conditional?",
+          "scene": "Buying looks cheaper only if the home sells at an assumed higher price.",
+          "options": [
+            {
+              "label": "The fixed purchase price"
+            },
+            {
+              "label": "Uncertain resale assumption"
+            },
+            {
+              "label": "The current rent payment"
+            }
+          ],
+          "help": [
+            "Recalculate with other plausible sale values before concluding."
+          ],
+          "feedback": {
+            "met": "The result relies on a resale value that may differ.",
+            "not_yet": "Recalculate with other plausible sale values before concluding."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué vuelve condicional la conclusión?",
+          "scene": "Comprar parece barato solo si se vende al precio mayor supuesto.",
+          "options": [
+            {
+              "label": "El precio de compra fijo"
+            },
+            {
+              "label": "Supuesto incierto de reventa"
+            },
+            {
+              "label": "El pago de renta actual"
+            }
+          ],
+          "help": [
+            "Recalcula con otros valores plausibles antes de concluir."
+          ],
+          "feedback": {
+            "met": "El resultado depende de un valor de reventa que puede cambiar.",
+            "not_yet": "Recalcula con otros valores plausibles antes de concluir."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que torna condicional a conclusão?",
+          "scene": "Comprar parece barato só se vender pelo preço maior suposto.",
+          "options": [
+            {
+              "label": "O preço de compra fixo"
+            },
+            {
+              "label": "Hipótese incerta de revenda"
+            },
+            {
+              "label": "O aluguel atual"
+            }
+          ],
+          "help": [
+            "Recalcule com outros valores plausíveis antes de concluir."
+          ],
+          "feedback": {
+            "met": "O resultado depende de um valor de revenda que pode mudar.",
+            "not_yet": "Recalcule com outros valores plausíveis antes de concluir."
+          }
+        }
+      }
+    }
+  ]
+}

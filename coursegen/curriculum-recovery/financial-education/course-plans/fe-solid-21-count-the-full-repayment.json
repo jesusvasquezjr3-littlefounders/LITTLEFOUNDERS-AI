@@ -1,0 +1,897 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-solid-05-understand-borrowing",
+  "lesson_id": "fe-solid-21-count-the-full-repayment",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.debt.total-cost"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Add all required installments and fees, distinguish total repayment from borrowing cost, and compare the same received amount and term.",
+  "title": {
+    "en-US": "Count the full repayment",
+    "es-MX": "Cuenta el pago completo",
+    "pt-BR": "Conte o pagamento completo"
+  },
+  "new_concepts": [
+    "finance.debt.total-cost"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Count the full repayment\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Cuenta el pago completo\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Conte o pagamento completo\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "debt.total-cost",
+      "observable_action": "Add all required installments and fees, distinguish total repayment from borrowing cost, and compare the same received amount and term.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "debt.obligation",
+      "price.final",
+      "cash.dates"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A small installment can hide many payments. Count the complete obligation before comparing financing offers.",
+    "misconception": "Using the smallest installment as proof of the cheapest loan while ignoring the number of payments or mandatory fees.",
+    "numeracy_support": "Repeated addition computes total installments; subtract received principal to obtain borrowing cost in fully specified examples.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "debt.total-cost",
+        "context_id": "count-the-full-repayment-example-01",
+        "supports_from": [],
+        "reasoning": "A fictional loan gives 100 now and requires four payments of 30. Repayment totals 30 + 30 + 30 + 30 = 120."
+      },
+      {
+        "segment_id": "example-02",
+        "skill_id": "debt.total-cost",
+        "context_id": "count-the-full-repayment-example-02",
+        "supports_from": [],
+        "reasoning": "With no fees, repaying 120 after receiving 100 means a cost of 20. Full repayment includes the borrowed amount."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "debt.total-cost",
+        "context_id": "count-the-full-repayment-guided-01",
+        "supports_from": [
+          "example-02"
+        ],
+        "reasoning": "The total includes every required installment."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "debt.total-cost",
+        "context_id": "count-the-full-repayment-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Borrowing cost is the extra amount above what was received."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "debt.total-cost",
+        "context_id": "count-the-full-repayment-practice-01",
+        "supports_from": [],
+        "reasoning": "The number of installments changes the total comparison."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "debt.total-cost",
+        "context_id": "count-the-full-repayment-practice-02",
+        "supports_from": [],
+        "reasoning": "A separately required fee is part of the complete payment obligation."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "debt.total-cost",
+        "context_id": "count-the-full-repayment-practice-03",
+        "supports_from": [],
+        "reasoning": "Cost and ability to pay on the required dates are different checks."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "debt.total-cost",
+        "context_id": "count-the-full-repayment-transfer-01",
+        "supports_from": [],
+        "reasoning": "Extra cost is the financed total minus the cash price."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "debt.total-cost",
+      "fresh_context": "Apply this skill in a later integrated decision with a different constraint."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A small installment can hide many payments. Count the complete obligation before comparing financing offers."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Una cuota pequeña puede esconder muchos pagos. Cuenta la obligación completa antes de comparar ofertas de financiamiento."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Uma parcela pequena pode esconder muitos pagamentos. Conte a obrigação completa antes de comparar ofertas de financiamento."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Add every required payment",
+          "line": "A fictional loan gives 100 now and requires four payments of 30. Repayment totals 30 + 30 + 30 + 30 = 120."
+        },
+        "es-MX": {
+          "prompt": "Suma cada pago obligatorio",
+          "line": "Un préstamo ficticio entrega 100 hoy y exige cuatro pagos de 30. Se devuelve 30 + 30 + 30 + 30 = 120."
+        },
+        "pt-BR": {
+          "prompt": "Some cada pagamento obrigatório",
+          "line": "Um empréstimo fictício entrega 100 agora e exige quatro pagamentos de 30. Devolve-se 30 + 30 + 30 + 30 = 120."
+        }
+      }
+    },
+    {
+      "id": "example-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Separate repayment and cost",
+          "line": "With no fees, repaying 120 after receiving 100 means a cost of 20. Full repayment includes the borrowed amount."
+        },
+        "es-MX": {
+          "prompt": "Separa devolución y costo",
+          "line": "Sin otros cargos, devolver 120 tras recibir 100 implica un costo de 20. La devolución completa no es solo el costo."
+        },
+        "pt-BR": {
+          "prompt": "Separe devolução e custo",
+          "line": "Sem outras cobranças, devolver 120 após receber 100 implica um custo de 20. A devolução completa não é só o custo."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.debt.total-cost",
+      "copy": {
+        "en-US": {
+          "prompt": "What is the total repayment?",
+          "scene": "The agreement requires 4 payments of 30 and no other fees.",
+          "options": [
+            {
+              "label": "120"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "100"
+            }
+          ],
+          "help": [
+            "Add the whole schedule, not only one installment."
+          ],
+          "feedback": {
+            "met": "The total includes every required installment.",
+            "not_yet": "Add the whole schedule, not only one installment."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es la devolución total?",
+          "scene": "El acuerdo exige 4 pagos de 30 y ningún otro cargo.",
+          "options": [
+            {
+              "label": "120"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "100"
+            }
+          ],
+          "help": [
+            "Suma todo el calendario, no solo una cuota."
+          ],
+          "feedback": {
+            "met": "El total incluye cada cuota obligatoria.",
+            "not_yet": "Suma todo el calendario, no solo una cuota."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é a devolução total?",
+          "scene": "O acordo exige 4 pagamentos de 30 e nenhuma outra cobrança.",
+          "options": [
+            {
+              "label": "120"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "100"
+            }
+          ],
+          "help": [
+            "Some todo o calendário, não só uma parcela."
+          ],
+          "feedback": {
+            "met": "O total inclui cada parcela obrigatória.",
+            "not_yet": "Some todo o calendário, não só uma parcela."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          4,
+          30
+        ],
+        "expression": {
+          "op": "multiply",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.debt.total-cost",
+      "copy": {
+        "en-US": {
+          "prompt": "What is the borrowing cost here?",
+          "scene": "You received 100 and must repay 120 in total. There are no other charges.",
+          "options": [
+            {
+              "label": "100"
+            },
+            {
+              "label": "20"
+            },
+            {
+              "label": "120"
+            }
+          ],
+          "help": [
+            "Separate returning the received money from paying for its use."
+          ],
+          "feedback": {
+            "met": "Borrowing cost is the extra amount above what was received.",
+            "not_yet": "Separate returning the received money from paying for its use."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es el costo de pedir prestado aquí?",
+          "scene": "Recibiste 100 y debes devolver 120 en total. No hay otros cargos.",
+          "options": [
+            {
+              "label": "100"
+            },
+            {
+              "label": "20"
+            },
+            {
+              "label": "120"
+            }
+          ],
+          "help": [
+            "Separa devolver lo recibido de pagar por su uso."
+          ],
+          "feedback": {
+            "met": "El costo es el monto adicional a lo recibido.",
+            "not_yet": "Separa devolver lo recibido de pagar por su uso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é o custo de pegar emprestado aqui?",
+          "scene": "Você recebeu 100 e deve devolver 120 no total. Não há outras cobranças.",
+          "options": [
+            {
+              "label": "100"
+            },
+            {
+              "label": "20"
+            },
+            {
+              "label": "120"
+            }
+          ],
+          "help": [
+            "Separe devolver o recebido de pagar pelo seu uso."
+          ],
+          "feedback": {
+            "met": "O custo é o valor adicional ao que foi recebido.",
+            "not_yet": "Separe devolver o recebido de pagar pelo seu uso."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          100,
+          120
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 1
+            },
+            {
+              "input": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.debt.total-cost",
+      "copy": {
+        "en-US": {
+          "prompt": "Which repayment totals less?",
+          "scene": "Same loan, no fees: A repays 3 × 40; B repays 4 × 35.",
+          "options": [
+            {
+              "label": "Equal totals"
+            },
+            {
+              "label": "A totals less"
+            },
+            {
+              "label": "B has smaller payments"
+            }
+          ],
+          "help": [
+            "Compare all payments rather than the smallest individual payment."
+          ],
+          "feedback": {
+            "met": "The number of installments changes the total comparison.",
+            "not_yet": "Compare all payments rather than the smallest individual payment."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál suma menos por el mismo monto recibido?",
+          "scene": "A exige tres pagos de 40; B exige cuatro pagos de 35. No hay otros cargos.",
+          "options": [
+            {
+              "label": "Ambos suman lo mismo"
+            },
+            {
+              "label": "A, al contar todos los pagos"
+            },
+            {
+              "label": "B, porque cada cuota es menor"
+            }
+          ],
+          "help": [
+            "Compara todos los pagos, no la cuota individual más pequeña."
+          ],
+          "feedback": {
+            "met": "El número de cuotas cambia la comparación de totales.",
+            "not_yet": "Compara todos los pagos, no la cuota individual más pequeña."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual soma menos pelo mesmo valor recebido?",
+          "scene": "A exige três pagamentos de 40; B exige quatro pagamentos de 35. Não há outras cobranças.",
+          "options": [
+            {
+              "label": "Ambos somam o mesmo"
+            },
+            {
+              "label": "A, ao contar todos os pagamentos"
+            },
+            {
+              "label": "B, porque cada parcela é menor"
+            }
+          ],
+          "help": [
+            "Compare todos os pagamentos, não a menor parcela individual."
+          ],
+          "feedback": {
+            "met": "O número de parcelas muda a comparação dos totais.",
+            "not_yet": "Compare todos os pagamentos, não a menor parcela individual."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.debt.total-cost",
+      "copy": {
+        "en-US": {
+          "prompt": "What is the full required total?",
+          "scene": "Installments sum to 120, and a separate mandatory fee of 10 must also be paid.",
+          "options": [
+            {
+              "label": "130"
+            },
+            {
+              "label": "120"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Check whether a stated fee is additional or already included."
+          ],
+          "feedback": {
+            "met": "A separately required fee is part of the complete payment obligation.",
+            "not_yet": "Check whether a stated fee is additional or already included."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es el total obligatorio completo?",
+          "scene": "Las cuotas suman 120 y además debe pagarse un cargo obligatorio de 10.",
+          "options": [
+            {
+              "label": "130"
+            },
+            {
+              "label": "120"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Comprueba si el cargo es adicional o ya está incluido."
+          ],
+          "feedback": {
+            "met": "Un cargo obligatorio adicional forma parte del pago completo.",
+            "not_yet": "Comprueba si el cargo es adicional o ya está incluido."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é o total obrigatório completo?",
+          "scene": "As parcelas somam 120 e também deve ser paga uma cobrança obrigatória de 10.",
+          "options": [
+            {
+              "label": "130"
+            },
+            {
+              "label": "120"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Confira se a cobrança é adicional ou já está incluída."
+          ],
+          "feedback": {
+            "met": "Uma cobrança obrigatória adicional faz parte do pagamento completo.",
+            "not_yet": "Confira se a cobrança é adicional ou já está incluída."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          120,
+          10
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.debt.total-cost",
+      "copy": {
+        "en-US": {
+          "prompt": "Is the cheaper plan affordable?",
+          "scene": "The payment falls due before enough money arrives.",
+          "options": [
+            {
+              "label": "Yes, cost alone matters"
+            },
+            {
+              "label": "Yes, later income changes the deadline"
+            },
+            {
+              "label": "No, check payment timing"
+            }
+          ],
+          "help": [
+            "Compare the schedule with money available by each deadline."
+          ],
+          "feedback": {
+            "met": "Cost and ability to pay on the required dates are different checks.",
+            "not_yet": "Compare the schedule with money available by each deadline."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿El menor total demuestra que puedes pagarlo?",
+          "scene": "El menor total exige un pago antes de que llegue suficiente dinero utilizable.",
+          "options": [
+            {
+              "label": "Sí, el costo es el único límite"
+            },
+            {
+              "label": "Sí, el ingreso posterior cambia el plazo"
+            },
+            {
+              "label": "No, también deben caber las fechas"
+            }
+          ],
+          "help": [
+            "Compara el calendario con el dinero disponible para cada vencimiento."
+          ],
+          "feedback": {
+            "met": "El costo y poder pagar en las fechas exigidas son comprobaciones distintas.",
+            "not_yet": "Compara el calendario con el dinero disponible para cada vencimiento."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O menor total prova que pode pagar?",
+          "scene": "O menor total exige um pagamento antes de chegar dinheiro utilizável suficiente.",
+          "options": [
+            {
+              "label": "Sim, o custo é o único limite"
+            },
+            {
+              "label": "Sim, a renda posterior muda o prazo"
+            },
+            {
+              "label": "Não, as datas também devem caber"
+            }
+          ],
+          "help": [
+            "Compare o calendário com o dinheiro disponível em cada vencimento."
+          ],
+          "feedback": {
+            "met": "O custo e poder pagar nas datas exigidas são verificações diferentes.",
+            "not_yet": "Compare o calendário com o dinheiro disponível em cada vencimento."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.debt.total-cost",
+      "copy": {
+        "en-US": {
+          "prompt": "What is the extra financing cost?",
+          "scene": "An identical item costs 200 paid now. Financing requires 4 payments of 60, with no other fees.",
+          "options": [
+            {
+              "label": "60"
+            },
+            {
+              "label": "40"
+            },
+            {
+              "label": "240"
+            }
+          ],
+          "help": [
+            "Add every installment, then compare with the stated cash price."
+          ],
+          "feedback": {
+            "met": "Extra cost is the financed total minus the cash price.",
+            "not_yet": "Add every installment, then compare with the stated cash price."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es el costo extra del financiamiento?",
+          "scene": "Un artículo idéntico cuesta 200 al contado. Financiarlo exige 4 pagos de 60, sin otros cargos.",
+          "options": [
+            {
+              "label": "60"
+            },
+            {
+              "label": "40"
+            },
+            {
+              "label": "240"
+            }
+          ],
+          "help": [
+            "Suma cada cuota y compara con el precio al contado indicado."
+          ],
+          "feedback": {
+            "met": "El costo extra es el total financiado menos el precio al contado.",
+            "not_yet": "Suma cada cuota y compara con el precio al contado indicado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é o custo extra do financiamento?",
+          "scene": "Um item idêntico custa 200 à vista. Financiá-lo exige 4 pagamentos de 60, sem outras cobranças.",
+          "options": [
+            {
+              "label": "60"
+            },
+            {
+              "label": "40"
+            },
+            {
+              "label": "240"
+            }
+          ],
+          "help": [
+            "Some cada parcela e compare com o preço à vista informado."
+          ],
+          "feedback": {
+            "met": "O custo extra é o total financiado menos o preço à vista.",
+            "not_yet": "Some cada parcela e compare com o preço à vista informado."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          200,
+          4,
+          60
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "input": 1
+                },
+                {
+                  "input": 2
+                }
+              ]
+            },
+            {
+              "input": 0
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

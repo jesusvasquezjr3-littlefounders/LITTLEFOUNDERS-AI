@@ -1,0 +1,745 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-integrated-decisions-part-2",
+  "lesson_id": "fe-production-integrated-decisions-12",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.goals-tradeoffs.07",
+    "finance.prod.debt-recovery.08",
+    "finance.prod.tax-public-systems.06",
+    "finance.prod.shared-finances.08"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Build an evidence-backed action plan that separates decisions possible now from questions needing qualified help.",
+  "title": {
+    "en-US": "Action plans",
+    "es-MX": "Un plan realizable",
+    "pt-BR": "Um plano realizável"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"An actionable plan\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Un plan realizable\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Um plano realizável\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "capstone",
+    "objective": {
+      "skill_id": "prod.goals-tradeoffs.07",
+      "observable_action": "Build an evidence-backed action plan that separates decisions possible now from questions needing qualified help.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.goals-tradeoffs.01",
+      "prod.goals-tradeoffs.06"
+    ],
+    "retrieval_skills": [
+      "prod.goals-tradeoffs.07",
+      "prod.debt-recovery.08",
+      "prod.tax-public-systems.06",
+      "prod.shared-finances.08"
+    ],
+    "relevance": "Separate a useful action today from questions needing qualified local help.",
+    "misconception": "Treating every unresolved question as a reason to stop, or inventing legal answers to make a plan look complete.",
+    "numeracy_support": "Use the explicitly stated totals, deadlines and constraints. Earlier financial arithmetic is retrieved; no current rate or legal entitlement is implied.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.goals-tradeoffs.07",
+        "context_id": "integrated-decisions-12-practice-01",
+        "supports_from": [],
+        "reasoning": "A dated bill list is concrete and needs no spare money."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.debt-recovery.08",
+        "context_id": "integrated-decisions-12-practice-02",
+        "supports_from": [],
+        "reasoning": "Verify qualified local support before trusting a sweeping promise."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.tax-public-systems.06",
+        "context_id": "integrated-decisions-12-practice-03",
+        "supports_from": [],
+        "reasoning": "The applicable local source establishes the relevant filing rule."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.shared-finances.08",
+        "context_id": "integrated-decisions-12-practice-04",
+        "supports_from": [],
+        "reasoning": "Knowing a password does not establish legal authority over an estate."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.debt-recovery.08",
+        "context_id": "integrated-decisions-12-practice-05",
+        "supports_from": [],
+        "reasoning": "Accurate records let support assess the real constraints."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.goals-tradeoffs.07",
+        "context_id": "integrated-decisions-12-transfer-01",
+        "supports_from": [],
+        "reasoning": "A recorded official answer resolves a specific uncertainty without spare money."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.goals-tradeoffs.07",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Separate a useful action today from questions needing qualified local help."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Separa una acción útil hoy de preguntas que requieren ayuda local calificada."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Veja o que fazer hoje e quando buscar ajuda de quem sabe."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Which action can be checked today?",
+          "scene": "No spare money; goal: identify next week’s unpaid obligations.",
+          "options": [
+            {
+              "label": "List each bill and its due date"
+            },
+            {
+              "label": "Promise financial security"
+            },
+            {
+              "label": "Commit an unaffordable deposit"
+            }
+          ],
+          "help": [
+            "Choose an observable next action within current resources."
+          ],
+          "feedback": {
+            "met": "A dated bill list is concrete and needs no spare money.",
+            "not_yet": "Choose an observable next action within current resources."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué acción puedes comprobar hoy?",
+          "scene": "No sobra dinero; la meta es entender las obligaciones pendientes de la próxima semana.",
+          "options": [
+            {
+              "label": "Anotar cada cuenta y vencimiento"
+            },
+            {
+              "label": "Prometer seguridad financiera"
+            },
+            {
+              "label": "Comprometer un depósito impagable"
+            }
+          ],
+          "help": [
+            "Elige una acción observable con los recursos actuales."
+          ],
+          "feedback": {
+            "met": "Una lista con fechas es concreta y no exige dinero sobrante.",
+            "not_yet": "Elige una acción observable con los recursos actuales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que pode conferir hoje?",
+          "scene": "Não sobra dinheiro; você quer saber quais contas vencem na próxima semana.",
+          "options": [
+            {
+              "label": "Listar cada conta e vencimento"
+            },
+            {
+              "label": "Prometer segurança financeira"
+            },
+            {
+              "label": "Assumir um depósito impagável"
+            }
+          ],
+          "help": [
+            "Escolha algo que pode fazer e conferir hoje."
+          ],
+          "feedback": {
+            "met": "Você pode fazer a lista com datas sem gastar dinheiro.",
+            "not_yet": "Escolha algo que pode fazer e conferir hoje."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Which help should be checked?",
+          "scene": "No feasible plan covers essentials; an ad promises debt erasure for upfront payment.",
+          "options": [
+            {
+              "label": "An invented repayment schedule"
+            },
+            {
+              "label": "The unchecked guarantee"
+            },
+            {
+              "label": "Qualified local debt-support services"
+            }
+          ],
+          "help": [
+            "A guarantee in an advertisement does not establish legitimate help."
+          ],
+          "feedback": {
+            "met": "Verify qualified local support before trusting a sweeping promise.",
+            "not_yet": "A guarantee in an advertisement does not establish legitimate help."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué ayuda debes verificar?",
+          "scene": "Ningún plan viable cubre necesidades; un anuncio garantiza borrar deudas cobrando por adelantado.",
+          "options": [
+            {
+              "label": "Un calendario de pagos inventado"
+            },
+            {
+              "label": "La garantía sin comprobar"
+            },
+            {
+              "label": "Servicios locales calificados de apoyo"
+            }
+          ],
+          "help": [
+            "Una garantía publicitaria no demuestra ayuda legítima."
+          ],
+          "feedback": {
+            "met": "Verifica apoyo local calificado antes de confiar en una promesa absoluta.",
+            "not_yet": "Una garantía publicitaria no demuestra ayuda legítima."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual ajuda deve verificar?",
+          "scene": "Não há como pagar dívidas e contas básicas; um anúncio promete apagar dívidas se pagar antes.",
+          "options": [
+            {
+              "label": "Um calendário de pagamentos inventado"
+            },
+            {
+              "label": "A garantia sem conferir"
+            },
+            {
+              "label": "Ajuda local com qualificação"
+            }
+          ],
+          "help": [
+            "Prometer num anúncio não prova que a ajuda é real."
+          ],
+          "feedback": {
+            "met": "Confira quem pode ajudar; não confie só numa promessa.",
+            "not_yet": "Prometer num anúncio não prova que a ajuda é real."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.tax-public-systems.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Where should the deadline be verified?",
+          "scene": "A foreign video gives a filing date; your local rule is unknown.",
+          "options": [
+            {
+              "label": "The relevant local authority"
+            },
+            {
+              "label": "Use the most repeated comment"
+            },
+            {
+              "label": "Use the video’s date"
+            }
+          ],
+          "help": [
+            "A foreign deadline cannot establish your local obligation."
+          ],
+          "feedback": {
+            "met": "The applicable local source establishes the relevant filing rule.",
+            "not_yet": "A foreign deadline cannot establish your local obligation."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Dónde verificar el plazo?",
+          "scene": "Un video extranjero indica una fecha para declarar; desconoces la regla de tu localidad.",
+          "options": [
+            {
+              "label": "La fuente oficial local pertinente"
+            },
+            {
+              "label": "Usar el comentario más repetido"
+            },
+            {
+              "label": "Usar la fecha del video"
+            }
+          ],
+          "help": [
+            "Un plazo extranjero no establece tu obligación local."
+          ],
+          "feedback": {
+            "met": "La fuente local aplicable establece la regla pertinente.",
+            "not_yet": "Un plazo extranjero no establece tu obligación local."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Onde verificar o prazo?",
+          "scene": "Um vídeo de outro país dá um prazo; você não sabe a regra onde mora.",
+          "options": [
+            {
+              "label": "A fonte oficial de onde mora"
+            },
+            {
+              "label": "Usar o comentário mais repetido"
+            },
+            {
+              "label": "Usar a data do vídeo"
+            }
+          ],
+          "help": [
+            "O prazo de outro país não define o seu."
+          ],
+          "feedback": {
+            "met": "A fonte oficial local informa a regra que vale ali.",
+            "not_yet": "O prazo de outro país não define o seu."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Which question needs qualified advice?",
+          "scene": "A relative dies; you have their password but lack verified estate authority.",
+          "options": [
+            {
+              "label": "Which documents you have"
+            },
+            {
+              "label": "Your legal authority over funds"
+            },
+            {
+              "label": "Where your questions are written"
+            }
+          ],
+          "help": [
+            "Verify authority through qualified local advice before acting on funds."
+          ],
+          "feedback": {
+            "met": "Knowing a password does not establish legal authority over an estate.",
+            "not_yet": "Verify authority through qualified local advice before acting on funds."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué pregunta requiere asesoría calificada?",
+          "scene": "Fallece un familiar; tienes su contraseña bancaria, pero ninguna autoridad verificada sobre la herencia.",
+          "options": [
+            {
+              "label": "Qué documentos ya tienes"
+            },
+            {
+              "label": "Si puedes usar legalmente esos fondos"
+            },
+            {
+              "label": "Dónde anotaste tus preguntas"
+            }
+          ],
+          "help": [
+            "Verifica autoridad con asesoría local calificada antes de usar fondos."
+          ],
+          "feedback": {
+            "met": "Conocer una contraseña no establece autoridad legal sobre una herencia.",
+            "not_yet": "Verifica autoridad con asesoría local calificada antes de usar fondos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que exige ajuda de quem sabe?",
+          "scene": "Um parente morre; você tem sua senha, mas não sabe se pode gerir a herança.",
+          "options": [
+            {
+              "label": "Quais documentos já possui"
+            },
+            {
+              "label": "Se pode usar legalmente esses recursos"
+            },
+            {
+              "label": "Onde anotou suas perguntas"
+            }
+          ],
+          "help": [
+            "Confira seu poder legal com ajuda local antes de usar fundos."
+          ],
+          "feedback": {
+            "met": "Ter a senha não dá poder legal sobre a herança.",
+            "not_yet": "Confira seu poder legal com ajuda local antes de usar fundos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.08",
+      "copy": {
+        "en-US": {
+          "prompt": "What strengthens a support request?",
+          "scene": "Funds cannot cover essentials and debt payments; you will contact verified local help.",
+          "options": [
+            {
+              "label": "Accurate income, cost and debt records"
+            },
+            {
+              "label": "The smallest debt balance"
+            },
+            {
+              "label": "An invented surplus"
+            }
+          ],
+          "help": [
+            "Do not invent repayment capacity to make the plan look complete."
+          ],
+          "feedback": {
+            "met": "Accurate records let support assess the real constraints.",
+            "not_yet": "Do not invent repayment capacity to make the plan look complete."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué mejora la solicitud de ayuda?",
+          "scene": "Necesidades y deudas superan fondos disponibles; vas a contactar apoyo local verificado.",
+          "options": [
+            {
+              "label": "Registros reales de ingresos, costos y deudas"
+            },
+            {
+              "label": "El saldo de deuda menor"
+            },
+            {
+              "label": "Un sobrante prometido que no existe"
+            }
+          ],
+          "help": [
+            "No inventes capacidad de pago para aparentar un plan completo."
+          ],
+          "feedback": {
+            "met": "Registros precisos permiten evaluar las restricciones reales.",
+            "not_yet": "No inventes capacidad de pago para aparentar un plan completo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que melhora o pedido de ajuda?",
+          "scene": "Falta dinheiro para dívidas e contas básicas; você vai pedir ajuda local já verificada.",
+          "options": [
+            {
+              "label": "Dados reais de renda, gastos e dívidas"
+            },
+            {
+              "label": "O saldo da menor dívida"
+            },
+            {
+              "label": "Uma sobra inventada"
+            }
+          ],
+          "help": [
+            "Não invente uma sobra para fingir que o plano fecha."
+          ],
+          "feedback": {
+            "met": "Dados certos mostram o que cabe no seu caso.",
+            "not_yet": "Não invente uma sobra para fingir que o plano fecha."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Which step is actionable?",
+          "scene": "Deadline uncertain, no spare funds; the relevant official contact is accessible today.",
+          "options": [
+            {
+              "label": "Promise to solve everything"
+            },
+            {
+              "label": "Pay an unknown fee immediately"
+            },
+            {
+              "label": "Ask the deadline and record it"
+            }
+          ],
+          "help": [
+            "Choose a verifiable action rather than an unsupported commitment."
+          ],
+          "feedback": {
+            "met": "A recorded official answer resolves a specific uncertainty without spare money.",
+            "not_yet": "Choose a verifiable action rather than an unsupported commitment."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué siguiente paso es realizable?",
+          "scene": "El plazo es incierto y no sobra dinero. Hoy puedes acceder al contacto oficial pertinente.",
+          "options": [
+            {
+              "label": "Prometer resolver todo"
+            },
+            {
+              "label": "Pagar ya una comisión desconocida"
+            },
+            {
+              "label": "Consultar el plazo y registrar la respuesta"
+            }
+          ],
+          "help": [
+            "Elige una acción verificable, no un compromiso sin respaldo."
+          ],
+          "feedback": {
+            "met": "Una respuesta oficial registrada aclara una duda concreta sin dinero sobrante.",
+            "not_yet": "Elige una acción verificable, no un compromiso sin respaldo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que pode fazer agora?",
+          "scene": "Você não sabe o prazo e não sobra dinheiro; hoje pode falar com o canal oficial.",
+          "options": [
+            {
+              "label": "Prometer resolver tudo"
+            },
+            {
+              "label": "Pagar já uma tarifa desconhecida"
+            },
+            {
+              "label": "Consultar o prazo e registrar a resposta"
+            }
+          ],
+          "help": [
+            "Escolha algo que pode conferir, não uma promessa sem base."
+          ],
+          "feedback": {
+            "met": "Anotar a resposta oficial resolve uma dúvida sem exigir sobra.",
+            "not_yet": "Escolha algo que pode conferir, não uma promessa sem base."
+          }
+        }
+      }
+    }
+  ]
+}

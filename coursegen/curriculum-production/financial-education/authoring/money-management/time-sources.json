@@ -1,0 +1,31 @@
+{
+  "review_date": "2026-10-06",
+  "scope": "Fictional simple and compound arithmetic, separate contribution and gain components, fixed-basket price comparison, index scope and conditional projections. No current rate, inflation reading, guaranteed investment return or household recommendation. This source record does not replace human market review.",
+  "sources": [
+    {
+      "publisher": "BLS",
+      "url": "https://www.bls.gov/cpi/questions-and-answers.htm",
+      "use": "A broad CPI basket differs from an individual household; match measures and periods."
+    },
+    {
+      "publisher": "INEGI",
+      "url": "https://www.inegi.org.mx/programas/inpc/",
+      "use": "Mexican INPC definition and its basket/weight methodology; no numerical current reading copied."
+    },
+    {
+      "publisher": "IBGE",
+      "url": "https://www.ibge.gov.br/indicadores/indices-precos/ipca.html",
+      "use": "Brazilian IPCA scope and official source for interpreting the measure; no numerical current reading copied."
+    },
+    {
+      "publisher": "SEC Investor.gov",
+      "url": "https://www.investor.gov/introduction-investing/investing-basics/save-and-invest/small-savings-add-big-money",
+      "use": "Retained interest can itself earn interest; authored numerical examples are independently calculated."
+    },
+    {
+      "publisher": "SEC Investor.gov",
+      "url": "https://www.investor.gov/introduction-investing/general-resources/news-alerts/alerts-bulletins/investor-bulletins-47",
+      "use": "Past performance and projected numbers do not establish future returns; assumptions and costs matter."
+    }
+  ]
+}

@@ -1,0 +1,767 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-investing-foundations-part-1",
+  "lesson_id": "fe-production-investing-foundations-03",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.investing-foundations.03"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Distinguish willingness to accept loss from financial capacity to absorb it.",
+  "title": {
+    "en-US": "Risk Capacity",
+    "es-MX": "Tranquilidad no es capacidad",
+    "pt-BR": "Tranquilidade não é capacidade"
+  },
+  "new_concepts": [
+    "finance.prod.investing-foundations.03"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Risk Capacity\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Tranquilidad no es capacidad\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Tranquilidade não é capacidade\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.investing-foundations.03",
+      "observable_action": "Distinguish willingness to accept loss from financial capacity to absorb it.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.investing-foundations.02",
+      "prod.saving-resilience.02"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Feeling comfortable with a loss does not pay the bills that loss could leave uncovered.",
+    "misconception": "Emotional willingness to take risk proves financial ability to absorb a loss.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.investing-foundations.03",
+        "context_id": "investing-foundations-03-example-01",
+        "supports_from": [],
+        "reasoning": "Jo accepts uncertainty emotionally, but losing the rent causes a shortfall. Willingness is high; financial capacity is low."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.investing-foundations.03",
+        "context_id": "investing-foundations-03-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Enjoying risk does not cover the essential payment."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.investing-foundations.03",
+        "context_id": "investing-foundations-03-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The stated difficulty is emotional tolerance."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.investing-foundations.03",
+        "context_id": "investing-foundations-03-practice-01",
+        "supports_from": [],
+        "reasoning": "The dependent’s needs remain a financial constraint."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.investing-foundations.03",
+        "context_id": "investing-foundations-03-practice-02",
+        "supports_from": [],
+        "reasoning": "Capacity concerns the financial consequences of the loss."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.investing-foundations.03",
+        "context_id": "investing-foundations-03-practice-03",
+        "supports_from": [],
+        "reasoning": "Less income can reduce the room to absorb losses."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.investing-foundations.03",
+        "context_id": "investing-foundations-03-transfer-01",
+        "supports_from": [],
+        "reasoning": "The new duty changes what losses are affordable."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.investing-foundations.03",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Feeling comfortable with a loss does not pay the bills that loss could leave uncovered."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Sentirte tranquilo ante una pérdida no paga las cuentas que podrían quedar descubiertas."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Sentir tranquilidade diante de uma perda não paga as contas que ela pode deixar descobertas."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Check two things",
+          "line": "Jo accepts uncertainty emotionally, but losing the rent causes a shortfall. Willingness is high; financial capacity is low."
+        },
+        "es-MX": {
+          "prompt": "Revisa dos cosas",
+          "line": "Jo acepta emocionalmente la incertidumbre, pero perder la renta provoca un faltante. Tiene disposición, pero poca capacidad financiera."
+        },
+        "pt-BR": {
+          "prompt": "Confira duas coisas",
+          "line": "Jo aceita a incerteza emocionalmente, mas perder o aluguel causa uma falta. Há disposição, mas pouca capacidade financeira."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Which limit remains?",
+          "scene": "Lea enjoys risk. A loss would leave her essential payment unpaid.",
+          "options": [
+            {
+              "label": "No limit remains"
+            },
+            {
+              "label": "Financial capacity"
+            },
+            {
+              "label": "Only emotional comfort"
+            }
+          ],
+          "help": [
+            "Check the consequence of losing, not just feelings."
+          ],
+          "feedback": {
+            "met": "Enjoying risk does not cover the essential payment.",
+            "not_yet": "Check the consequence of losing, not just feelings."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué límite queda?",
+          "scene": "A Lea le gusta el riesgo. Una pérdida dejaría pendiente su pago indispensable.",
+          "options": [
+            {
+              "label": "No queda ningún límite"
+            },
+            {
+              "label": "La capacidad financiera"
+            },
+            {
+              "label": "Solo su tranquilidad"
+            }
+          ],
+          "help": [
+            "Revisa las consecuencias, además de los sentimientos."
+          ],
+          "feedback": {
+            "met": "Disfrutar el riesgo no cubre el pago indispensable.",
+            "not_yet": "Revisa las consecuencias, además de los sentimientos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual limite permanece?",
+          "scene": "Lea gosta de risco. Uma perda deixaria sua conta essencial sem pagamento.",
+          "options": [
+            {
+              "label": "Não resta limite"
+            },
+            {
+              "label": "A capacidade financeira"
+            },
+            {
+              "label": "Só sua tranquilidade"
+            }
+          ],
+          "help": [
+            "Confira as consequências, além dos sentimentos."
+          ],
+          "feedback": {
+            "met": "Gostar de risco não cobre a conta essencial.",
+            "not_yet": "Confira as consequências, além dos sentimentos."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.03",
+      "copy": {
+        "en-US": {
+          "prompt": "What is being described?",
+          "scene": "Milo can cover essentials after a loss but feels unable to tolerate uncertainty.",
+          "options": [
+            {
+              "label": "A guaranteed investment"
+            },
+            {
+              "label": "Low willingness"
+            },
+            {
+              "label": "No financial capacity"
+            }
+          ],
+          "help": [
+            "Separate ability to pay from comfort with uncertainty."
+          ],
+          "feedback": {
+            "met": "The stated difficulty is emotional tolerance.",
+            "not_yet": "Separate ability to pay from comfort with uncertainty."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué se describe?",
+          "scene": "Milo puede cubrir lo indispensable tras perder, pero no tolera la incertidumbre.",
+          "options": [
+            {
+              "label": "Una inversión garantizada"
+            },
+            {
+              "label": "Poca disposición"
+            },
+            {
+              "label": "Nula capacidad financiera"
+            }
+          ],
+          "help": [
+            "Distingue poder pagar de sentirse tranquilo."
+          ],
+          "feedback": {
+            "met": "La dificultad indicada es tolerar emocionalmente la incertidumbre.",
+            "not_yet": "Distingue poder pagar de sentirse tranquilo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que está descrito?",
+          "scene": "Milo cobre o essencial após uma perda, mas não tolera a incerteza.",
+          "options": [
+            {
+              "label": "Um investimento garantido"
+            },
+            {
+              "label": "Pouca disposição"
+            },
+            {
+              "label": "Nenhuma capacidade financeira"
+            }
+          ],
+          "help": [
+            "Separe poder pagar de sentir tranquilidade."
+          ],
+          "feedback": {
+            "met": "A dificuldade indicada é tolerar emocionalmente a incerteza.",
+            "not_yet": "Separe poder pagar de sentir tranquilidade."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Does confidence resolve it?",
+          "scene": "A confident investor has no backup for money supporting a dependent.",
+          "options": [
+            {
+              "label": "No, the obligation still limits capacity"
+            },
+            {
+              "label": "Yes, confidence replaces a reserve"
+            }
+          ],
+          "help": [
+            "Confidence cannot replace money needed by someone else."
+          ],
+          "feedback": {
+            "met": "The dependent’s needs remain a financial constraint.",
+            "not_yet": "Confidence cannot replace money needed by someone else."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿La confianza lo resuelve?",
+          "scene": "Una persona confiada no tiene respaldo para el dinero que sostiene a un dependiente.",
+          "options": [
+            {
+              "label": "No, la obligación limita su capacidad"
+            },
+            {
+              "label": "Sí, la confianza sustituye una reserva"
+            }
+          ],
+          "help": [
+            "La confianza no sustituye dinero necesario para otra persona."
+          ],
+          "feedback": {
+            "met": "Las necesidades del dependiente siguen siendo una restricción financiera.",
+            "not_yet": "La confianza no sustituye dinero necesario para otra persona."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A confiança resolve?",
+          "scene": "Uma pessoa confiante não tem reserva para o dinheiro que sustenta um dependente.",
+          "options": [
+            {
+              "label": "Não, a obrigação limita a capacidade"
+            },
+            {
+              "label": "Sim, confiança substitui reserva"
+            }
+          ],
+          "help": [
+            "Confiança não substitui dinheiro necessário para outra pessoa."
+          ],
+          "feedback": {
+            "met": "As necessidades do dependente continuam sendo uma restrição financeira.",
+            "not_yet": "Confiança não substitui dinheiro necessário para outra pessoa."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Which fact tests capacity?",
+          "scene": "Before investing, someone wants to know whether a loss would be absorbable.",
+          "options": [
+            {
+              "label": "Essential costs still covered afterward"
+            },
+            {
+              "label": "How exciting the offer looks"
+            },
+            {
+              "label": "Whether friends enjoy risk"
+            }
+          ],
+          "help": [
+            "Focus on obligations after a possible loss."
+          ],
+          "feedback": {
+            "met": "Capacity concerns the financial consequences of the loss.",
+            "not_yet": "Focus on obligations after a possible loss."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué prueba la capacidad?",
+          "scene": "Antes de invertir, alguien quiere saber si podría absorber una pérdida.",
+          "options": [
+            {
+              "label": "Cubrir lo esencial después"
+            },
+            {
+              "label": "Lo emocionante de la oferta"
+            },
+            {
+              "label": "Si sus amistades disfrutan riesgos"
+            }
+          ],
+          "help": [
+            "Revisa las obligaciones después de una posible pérdida."
+          ],
+          "feedback": {
+            "met": "La capacidad trata de consecuencias financieras de perder.",
+            "not_yet": "Revisa las obligaciones después de una posible pérdida."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que testa a capacidade?",
+          "scene": "Antes de investir, alguém quer saber se poderia absorver uma perda.",
+          "options": [
+            {
+              "label": "Cobrir o essencial depois"
+            },
+            {
+              "label": "Quanto a oferta empolga"
+            },
+            {
+              "label": "Se amigos gostam de risco"
+            }
+          ],
+          "help": [
+            "Confira as obrigações após uma possível perda."
+          ],
+          "feedback": {
+            "met": "A capacidade trata das consequências financeiras da perda.",
+            "not_yet": "Confira as obrigações após uma possível perda."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.03",
+      "copy": {
+        "en-US": {
+          "prompt": "What changed?",
+          "scene": "Income falls while required bills stay unchanged. Risk preference stays the same.",
+          "options": [
+            {
+              "label": "Risk has disappeared"
+            },
+            {
+              "label": "Willingness must have risen"
+            },
+            {
+              "label": "Capacity may have fallen"
+            }
+          ],
+          "help": [
+            "Review resources and obligations separately from preferences."
+          ],
+          "feedback": {
+            "met": "Less income can reduce the room to absorb losses.",
+            "not_yet": "Review resources and obligations separately from preferences."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué cambió?",
+          "scene": "Baja el ingreso y las cuentas obligatorias siguen iguales. La preferencia por riesgo no cambia.",
+          "options": [
+            {
+              "label": "Desapareció el riesgo"
+            },
+            {
+              "label": "Debe subir la disposición"
+            },
+            {
+              "label": "Puede bajar la capacidad"
+            }
+          ],
+          "help": [
+            "Revisa recursos y obligaciones aparte de preferencias."
+          ],
+          "feedback": {
+            "met": "Menos ingreso puede reducir el margen para absorber pérdidas.",
+            "not_yet": "Revisa recursos y obligaciones aparte de preferencias."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que mudou?",
+          "scene": "A renda cai e as contas obrigatórias continuam iguais. A preferência por risco não muda.",
+          "options": [
+            {
+              "label": "O risco desapareceu"
+            },
+            {
+              "label": "A disposição deve subir"
+            },
+            {
+              "label": "A capacidade pode cair"
+            }
+          ],
+          "help": [
+            "Confira recursos e obrigações separados das preferências."
+          ],
+          "feedback": {
+            "met": "Menos renda pode reduzir o espaço para absorver perdas.",
+            "not_yet": "Confira recursos e obrigações separados das preferências."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.investing-foundations.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Reassess which limit?",
+          "scene": "A new caregiving duty uses money previously available for losses. The investor still feels adventurous.",
+          "options": [
+            {
+              "label": "Only personality"
+            },
+            {
+              "label": "Neither, preferences are unchanged"
+            },
+            {
+              "label": "Financial capacity"
+            }
+          ],
+          "help": [
+            "A new responsibility can change capacity without changing preferences."
+          ],
+          "feedback": {
+            "met": "The new duty changes what losses are affordable.",
+            "not_yet": "A new responsibility can change capacity without changing preferences."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué límite reevalúas?",
+          "scene": "Cuidar a un familiar usa dinero antes disponible para pérdidas. La persona sigue sintiéndose aventurera.",
+          "options": [
+            {
+              "label": "Solo la personalidad"
+            },
+            {
+              "label": "Ninguno, sus gustos siguen iguales"
+            },
+            {
+              "label": "La capacidad financiera"
+            }
+          ],
+          "help": [
+            "Una obligación cambia capacidad sin cambiar preferencias."
+          ],
+          "feedback": {
+            "met": "La nueva responsabilidad cambia qué pérdidas puede absorber.",
+            "not_yet": "Una obligación cambia capacidad sin cambiar preferencias."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual limite reavaliar?",
+          "scene": "Cuidar de um familiar usa dinheiro antes disponível para perdas. A pessoa continua aventureira.",
+          "options": [
+            {
+              "label": "Só a personalidade"
+            },
+            {
+              "label": "Nenhum, os gostos não mudaram"
+            },
+            {
+              "label": "A capacidade financeira"
+            }
+          ],
+          "help": [
+            "Uma obrigação muda a capacidade sem mudar preferências."
+          ],
+          "feedback": {
+            "met": "A nova responsabilidade muda quais perdas são suportáveis.",
+            "not_yet": "Uma obrigação muda a capacidade sem mudar preferências."
+          }
+        }
+      }
+    }
+  ]
+}

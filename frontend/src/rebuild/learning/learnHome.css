@@ -58,6 +58,8 @@
 .lf-rebuild[data-theme='dark'] .lf-learn-story { background: var(--raised); }
 .lf-learn-streak h2, .lf-learn-story h2 { font: var(--type-title); }
 .lf-learn-streak p, .lf-learn-story p { font: var(--type-label); }
+/* The play card is a story card (same surface and type); the class is the hook the audit lane and tests select it by. */
+.lf-learn-play { align-content: start; }
 .lf-learn-streak-count { display: flex; flex-wrap: wrap; align-items: center; gap: var(--spacing-2); }
 .lf-learn-streak-count strong { font: var(--type-numeral); font-variant-numeric: tabular-nums; color: var(--reward-strong); }
 .lf-learn-flame .lf-art { inline-size: var(--spacing-8); block-size: var(--spacing-8); }

@@ -1,0 +1,767 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-tax-public-systems-part-2",
+  "lesson_id": "fe-production-tax-public-systems-08",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.tax-public-systems.08"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Separate legitimate tax planning from hiding or falsifying facts in a financial record.",
+  "title": {
+    "en-US": "Truthful Reporting",
+    "es-MX": "Usa reglas sin alterar hechos",
+    "pt-BR": "Use regras sem mudar fatos"
+  },
+  "new_concepts": [
+    "finance.prod.tax-public-systems.08"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Truthful Reporting\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Usa reglas sin alterar hechos\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Use regras sem mudar fatos\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.tax-public-systems.08",
+      "observable_action": "Separate legitimate tax planning from hiding or falsifying facts in a financial record.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.tax-public-systems.05",
+      "prod.tax-public-systems.06"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Choosing a permitted treatment is different from inventing the facts needed to qualify.",
+    "misconception": "Reducing tax justifies hiding income or fabricating an expense when a lawful benefit is unavailable.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.tax-public-systems.08",
+        "context_id": "tax-public-systems-08-example-01",
+        "supports_from": [],
+        "reasoning": "A permitted deduction uses true qualifying expenses. Inventing a receipt changes the facts rather than choosing a lawful treatment."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.tax-public-systems.08",
+        "context_id": "tax-public-systems-08-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The claim follows the rule using genuine evidence."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.tax-public-systems.08",
+        "context_id": "tax-public-systems-08-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The changed amount no longer represents the real transaction."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.tax-public-systems.08",
+        "context_id": "tax-public-systems-08-practice-01",
+        "supports_from": [],
+        "reasoning": "Correcting the duplicate restores the true expense total."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.tax-public-systems.08",
+        "context_id": "tax-public-systems-08-practice-02",
+        "supports_from": [],
+        "reasoning": "Comparing lawful treatments does not require falsifying facts."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.tax-public-systems.08",
+        "context_id": "tax-public-systems-08-practice-03",
+        "supports_from": [],
+        "reasoning": "Cash receipt remains a fact to assess under applicable rules."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.tax-public-systems.08",
+        "context_id": "tax-public-systems-08-transfer-01",
+        "supports_from": [],
+        "reasoning": "A proposed false date changes evidence rather than applying rules."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.tax-public-systems.08",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Choosing a permitted treatment is different from inventing the facts needed to qualify."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Elegir un tratamiento permitido es distinto de inventar los hechos para cumplir requisitos."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Escolher um tratamento permitido é diferente de inventar os fatos para cumprir requisitos."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Keep the facts true",
+          "line": "A permitted deduction uses true qualifying expenses. Inventing a receipt changes the facts rather than choosing a lawful treatment."
+        },
+        "es-MX": {
+          "prompt": "Mantén verdaderos los hechos",
+          "line": "Una deducción permitida usa gastos reales que cumplen requisitos. Inventar un recibo altera hechos, no elige un tratamiento permitido."
+        },
+        "pt-BR": {
+          "prompt": "Mantenha os fatos verdadeiros",
+          "line": "Uma dedução permitida usa gastos reais que cumprem requisitos. Inventar recibo muda fatos, não escolhe um tratamento permitido."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.tax-public-systems.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Which follows the rule?",
+          "scene": "A fictional rule allows a documented qualifying expense to reduce taxable income.",
+          "options": [
+            {
+              "label": "Invent extra expenses"
+            },
+            {
+              "label": "Hide income evidence"
+            },
+            {
+              "label": "Claim the real expense"
+            }
+          ],
+          "help": [
+            "Keep the facts and the permitted treatment aligned."
+          ],
+          "feedback": {
+            "met": "The claim follows the rule using genuine evidence.",
+            "not_yet": "Keep the facts and the permitted treatment aligned."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué acción usa honestamente la regla?",
+          "scene": "Una regla ficticia permite reducir ingreso gravable por un gasto documentado que cumple requisitos.",
+          "options": [
+            {
+              "label": "Inventar gasto para aumentar total"
+            },
+            {
+              "label": "Ocultar un recibo de ingreso"
+            },
+            {
+              "label": "Usar el gasto real que cumple"
+            }
+          ],
+          "help": [
+            "Mantén alineados hechos y tratamiento permitido."
+          ],
+          "feedback": {
+            "met": "La solicitud sigue la regla con evidencia auténtica.",
+            "not_yet": "Mantén alineados hechos y tratamiento permitido."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual ação usa a regra honestamente?",
+          "scene": "Uma regra fictícia permite reduzir renda tributável por gasto comprovado que cumpre requisitos.",
+          "options": [
+            {
+              "label": "Inventar gasto para aumentar total"
+            },
+            {
+              "label": "Esconder recibo de renda"
+            },
+            {
+              "label": "Usar o gasto real que cumpre"
+            }
+          ],
+          "help": [
+            "Mantenha fatos e tratamento permitido alinhados."
+          ],
+          "feedback": {
+            "met": "O pedido segue a regra com prova real.",
+            "not_yet": "Mantenha fatos e tratamento permitido alinhados."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.tax-public-systems.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Which action falsifies evidence?",
+          "scene": "Someone changes a receipt’s amount to claim more than was actually paid.",
+          "options": [
+            {
+              "label": "Asking for official clarification"
+            },
+            {
+              "label": "Changing the receipt’s amount"
+            },
+            {
+              "label": "Keeping the original receipt"
+            }
+          ],
+          "help": [
+            "Do not alter evidence to create eligibility or expense."
+          ],
+          "feedback": {
+            "met": "The changed amount no longer represents the real transaction.",
+            "not_yet": "Do not alter evidence to create eligibility or expense."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué acción falsifica evidencia?",
+          "scene": "Alguien cambia el monto de un recibo para declarar más de lo realmente pagado.",
+          "options": [
+            {
+              "label": "Pedir aclaración oficial"
+            },
+            {
+              "label": "Cambiar el monto del recibo"
+            },
+            {
+              "label": "Guardar el recibo original"
+            }
+          ],
+          "help": [
+            "No alteres evidencia para crear elegibilidad o gasto."
+          ],
+          "feedback": {
+            "met": "El monto cambiado ya no representa la operación real.",
+            "not_yet": "No alteres evidencia para crear elegibilidad o gasto."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual ação falsifica prova?",
+          "scene": "Alguém muda o valor de um recibo para declarar mais do que pagou.",
+          "options": [
+            {
+              "label": "Pedir esclarecimento oficial"
+            },
+            {
+              "label": "Mudar o valor do recibo"
+            },
+            {
+              "label": "Guardar o recibo original"
+            }
+          ],
+          "help": [
+            "Não altere prova para criar direito ou gasto."
+          ],
+          "feedback": {
+            "met": "O valor mudado já não representa a operação real.",
+            "not_yet": "Não altere prova para criar direito ou gasto."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.tax-public-systems.08",
+      "copy": {
+        "en-US": {
+          "prompt": "What should happen to an error?",
+          "scene": "A declaration draft accidentally counts the same expense twice.",
+          "options": [
+            {
+              "label": "Keep it because it lowers tax"
+            },
+            {
+              "label": "Invent a second payment"
+            },
+            {
+              "label": "Correct it using the records"
+            }
+          ],
+          "help": [
+            "Use evidence to repair mistakes rather than preserve advantages."
+          ],
+          "feedback": {
+            "met": "Correcting the duplicate restores the true expense total.",
+            "not_yet": "Use evidence to repair mistakes rather than preserve advantages."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué haces con el error?",
+          "scene": "Un borrador cuenta por accidente el mismo gasto dos veces.",
+          "options": [
+            {
+              "label": "Dejarlo porque baja impuesto"
+            },
+            {
+              "label": "Inventar un segundo pago"
+            },
+            {
+              "label": "Corregirlo con los registros"
+            }
+          ],
+          "help": [
+            "Usa pruebas para reparar errores, no conservar ventajas."
+          ],
+          "feedback": {
+            "met": "Corregir el duplicado recupera el total real de gastos.",
+            "not_yet": "Usa pruebas para reparar errores, no conservar ventajas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que fazer com o erro?",
+          "scene": "Um rascunho conta por engano a mesma despesa duas vezes.",
+          "options": [
+            {
+              "label": "Deixar porque reduz imposto"
+            },
+            {
+              "label": "Inventar um segundo pagamento"
+            },
+            {
+              "label": "Corrigir com os registros"
+            }
+          ],
+          "help": [
+            "Use provas para reparar erros, não manter vantagens."
+          ],
+          "feedback": {
+            "met": "Corrigir a duplicação retoma o total real das despesas.",
+            "not_yet": "Use provas para reparar erros, não manter vantagens."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.tax-public-systems.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Which question fits?",
+          "scene": "A person has two lawfully available treatments and truthful records.",
+          "options": [
+            {
+              "label": "Which receipt can I fabricate?"
+            },
+            {
+              "label": "Which permitted treatment applies best to these facts?"
+            },
+            {
+              "label": "Which facts should I hide?"
+            }
+          ],
+          "help": [
+            "Ask about the rules while preserving the real records."
+          ],
+          "feedback": {
+            "met": "Comparing lawful treatments does not require falsifying facts.",
+            "not_yet": "Ask about the rules while preserving the real records."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué pregunta es legítima?",
+          "scene": "Una persona tiene dos tratamientos permitidos y registros verdaderos.",
+          "options": [
+            {
+              "label": "¿Qué recibo puedo fabricar?"
+            },
+            {
+              "label": "¿Qué tratamiento permitido corresponde mejor a estos hechos?"
+            },
+            {
+              "label": "¿Qué hechos debo ocultar?"
+            }
+          ],
+          "help": [
+            "Pregunta por reglas conservando los registros reales."
+          ],
+          "feedback": {
+            "met": "Comparar tratamientos permitidos no exige falsificar hechos.",
+            "not_yet": "Pregunta por reglas conservando los registros reales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual pergunta é legítima?",
+          "scene": "Uma pessoa tem dois tratamentos permitidos e registros verdadeiros.",
+          "options": [
+            {
+              "label": "Qual recibo posso fabricar?"
+            },
+            {
+              "label": "Qual tratamento permitido cabe melhor nesses fatos?"
+            },
+            {
+              "label": "Quais fatos devo esconder?"
+            }
+          ],
+          "help": [
+            "Pergunte sobre regras preservando os registros reais."
+          ],
+          "feedback": {
+            "met": "Comparar tratamentos permitidos não exige falsificar fatos.",
+            "not_yet": "Pergunte sobre regras preservando os registros reais."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.tax-public-systems.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Does cash erase receipt?",
+          "scene": "Income was received in cash. Someone suggests omitting it solely because no bank recorded it.",
+          "options": [
+            {
+              "label": "Yes, unbanked income never happened"
+            },
+            {
+              "label": "No, payment method does not erase receipt"
+            }
+          ],
+          "help": [
+            "Check the rule without hiding the transaction."
+          ],
+          "feedback": {
+            "met": "Cash receipt remains a fact to assess under applicable rules.",
+            "not_yet": "Check the rule without hiding the transaction."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿El efectivo cambia el registro?",
+          "scene": "Se recibió ingreso en efectivo. Sugieren omitirlo solo porque ningún banco lo registró.",
+          "options": [
+            {
+              "label": "Sí, fuera del banco nunca ocurrió"
+            },
+            {
+              "label": "No, cobrar así no borra el hecho"
+            }
+          ],
+          "help": [
+            "Revisa la regla sin ocultar la operación."
+          ],
+          "feedback": {
+            "met": "Recibir efectivo sigue siendo un hecho sujeto a reglas aplicables.",
+            "not_yet": "Revisa la regla sin ocultar la operación."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Dinheiro em espécie muda o registro?",
+          "scene": "Receberam renda em espécie. Sugerem omitir só porque nenhum banco registrou.",
+          "options": [
+            {
+              "label": "Sim, fora do banco nunca ocorreu"
+            },
+            {
+              "label": "Não, receber assim não apaga o fato"
+            }
+          ],
+          "help": [
+            "Confira a regra sem esconder a operação."
+          ],
+          "feedback": {
+            "met": "Receber em espécie é um fato sujeito às regras aplicáveis.",
+            "not_yet": "Confira a regra sem esconder a operação."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.tax-public-systems.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Which preserves true facts?",
+          "scene": "An adviser proposes a false document date to make an ineligible expense appear eligible.",
+          "options": [
+            {
+              "label": "Advice permits false records"
+            },
+            {
+              "label": "Follow the suggestion"
+            },
+            {
+              "label": "Reject falsification; seek lawful guidance"
+            }
+          ],
+          "help": [
+            "Qualified guidance should work with the actual facts."
+          ],
+          "feedback": {
+            "met": "A proposed false date changes evidence rather than applying rules.",
+            "not_yet": "Qualified guidance should work with the actual facts."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué respuesta conserva hechos verdaderos?",
+          "scene": "Un asesor propone cambiar la fecha de un documento para aparentar que un gasto cumple requisitos.",
+          "options": [
+            {
+              "label": "Suponer que asesorar permite falsificar"
+            },
+            {
+              "label": "Cambiarla porque lo sugirieron"
+            },
+            {
+              "label": "Rechazar la fecha falsa y buscar orientación legal"
+            }
+          ],
+          "help": [
+            "La orientación calificada debe trabajar con hechos reales."
+          ],
+          "feedback": {
+            "met": "Una fecha falsa altera evidencia en vez de aplicar reglas.",
+            "not_yet": "La orientación calificada debe trabajar con hechos reales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual resposta preserva fatos verdadeiros?",
+          "scene": "Um assessor propõe mudar a data de um documento para fazer parecer que um gasto cumpre requisitos.",
+          "options": [
+            {
+              "label": "Supor que assessorar permite falsificar"
+            },
+            {
+              "label": "Mudar porque sugeriram"
+            },
+            {
+              "label": "Rejeitar a data falsa e buscar orientação legal"
+            }
+          ],
+          "help": [
+            "A orientação qualificada deve trabalhar com fatos reais."
+          ],
+          "feedback": {
+            "met": "Uma data falsa altera a prova em vez de aplicar regras.",
+            "not_yet": "A orientação qualificada deve trabalhar com fatos reais."
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,743 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-solid-08-decide-with-evidence",
+  "lesson_id": "fe-solid-35-choose-under-pressure",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.safety.fraud",
+    "finance.safety.credentials",
+    "finance.product.conditions"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Evaluate a pressured account offer by independently checking identity, protecting access secrets and matching complete conditions to actual use.",
+  "title": {
+    "en-US": "Choose under pressure",
+    "es-MX": "Decide bajo presión",
+    "pt-BR": "Decida sob pressão"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Choose under pressure\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Decide bajo presión\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Decida sob pressão\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "capstone",
+    "objective": {
+      "skill_id": "safety.fraud",
+      "observable_action": "Evaluate a pressured account offer by independently checking identity, protecting access secrets and matching complete conditions to actual use.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "debt.total-cost",
+      "invest.horizon"
+    ],
+    "retrieval_skills": [
+      "safety.fraud",
+      "safety.credentials",
+      "product.conditions"
+    ],
+    "relevance": "An account offer arrives unexpectedly. Follow the evidence through the offer, the access request and the conditions.",
+    "misconception": "Letting an urgent headline replace independent identity, access and cost checks.",
+    "numeracy_support": "Use only the stated quantities, dates and conditions; distinguish a modeled result from a guarantee.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "safety.fraud",
+        "context_id": "choose-under-pressure-practice-01",
+        "supports_from": [],
+        "reasoning": "The offer must be checked without relying on its own link."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "safety.credentials",
+        "context_id": "choose-under-pressure-practice-02",
+        "supports_from": [],
+        "reasoning": "A promised deposit does not justify granting account access."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "product.conditions",
+        "context_id": "choose-under-pressure-practice-03",
+        "supports_from": [],
+        "reasoning": "Real products can still have conditions unsuitable for your use."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "safety.credentials",
+        "context_id": "choose-under-pressure-practice-04",
+        "supports_from": [],
+        "reasoning": "The access exposure matters even before a visible loss."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "product.conditions",
+        "context_id": "choose-under-pressure-practice-05",
+        "supports_from": [],
+        "reasoning": "The required operation and deadline determine the relevant comparison."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "safety.fraud",
+        "context_id": "choose-under-pressure-transfer-01",
+        "supports_from": [],
+        "reasoning": "Knowledge of an earlier event does not authenticate a new payment request."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "safety.fraud",
+      "fresh_context": "Apply this skill in a later integrated decision with a different constraint."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "An account offer arrives unexpectedly. Follow the evidence through the offer, the access request and the conditions."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Llega una oferta inesperada de cuenta. Sigue la evidencia entre la oferta, la solicitud de acceso y las condiciones."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Chega uma oferta inesperada de conta. Siga as provas entre a oferta, o pedido de acesso e as condições."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.safety.fraud",
+      "copy": {
+        "en-US": {
+          "prompt": "How should you verify it?",
+          "scene": "A message offers an urgent account bonus through its verification link.",
+          "options": [
+            {
+              "label": "Pay a small activation fee"
+            },
+            {
+              "label": "Use an independently verified channel"
+            },
+            {
+              "label": "Open the supplied link"
+            }
+          ],
+          "help": [
+            "Separate the claim from its verification."
+          ],
+          "feedback": {
+            "met": "The offer must be checked without relying on its own link.",
+            "not_yet": "Separate the claim from its verification."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cómo verificas la oferta?",
+          "scene": "Un mensaje ofrece un bono urgente e incluye su propio enlace de verificación.",
+          "options": [
+            {
+              "label": "Pagar primero una pequeña activación"
+            },
+            {
+              "label": "Comprobar la oferta por un canal verificado aparte"
+            },
+            {
+              "label": "Abrir el enlace para autenticar el mensaje"
+            }
+          ],
+          "help": [
+            "Separa la promesa de su verificación."
+          ],
+          "feedback": {
+            "met": "La oferta debe comprobarse sin depender de su propio enlace.",
+            "not_yet": "Separa la promesa de su verificación."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Como verifica a oferta?",
+          "scene": "Uma mensagem oferece um bônus urgente e inclui seu próprio link de verificação.",
+          "options": [
+            {
+              "label": "Pagar primeiro uma pequena ativação"
+            },
+            {
+              "label": "Conferir a oferta por um canal verificado separadamente"
+            },
+            {
+              "label": "Abrir o link para autenticar a mensagem"
+            }
+          ],
+          "help": [
+            "Separe a promessa da verificação."
+          ],
+          "feedback": {
+            "met": "A oferta deve ser conferida sem depender do próprio link.",
+            "not_yet": "Separe a promessa da verificação."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.safety.credentials",
+      "copy": {
+        "en-US": {
+          "prompt": "Should you share this code?",
+          "scene": "The sender requests your account-access code to credit the bonus.",
+          "options": [
+            {
+              "label": "No; contact verified support"
+            },
+            {
+              "label": "Yes, to receive the deposit"
+            },
+            {
+              "label": "Yes, if they know your name"
+            }
+          ],
+          "help": [
+            "Use the code actual purpose to judge the request."
+          ],
+          "feedback": {
+            "met": "A promised deposit does not justify granting account access.",
+            "not_yet": "Use the code actual purpose to judge the request."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Compartirías este código?",
+          "scene": "El remitente pide tu código de acceso a la cuenta para abonar el bono.",
+          "options": [
+            {
+              "label": "Mantenerlo privado y contactar soporte verificado"
+            },
+            {
+              "label": "Compartirlo porque es un depósito"
+            },
+            {
+              "label": "Compartirlo si el remitente repite tu nombre"
+            }
+          ],
+          "help": [
+            "Usa la función real del código para evaluar la solicitud."
+          ],
+          "feedback": {
+            "met": "Un depósito prometido no justifica dar acceso a la cuenta.",
+            "not_yet": "Usa la función real del código para evaluar la solicitud."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Compartilharia este código?",
+          "scene": "O remetente pede seu código de acesso à conta para creditar o bônus.",
+          "options": [
+            {
+              "label": "Manter privado e contatar suporte verificado"
+            },
+            {
+              "label": "Compartilhar porque é um depósito"
+            },
+            {
+              "label": "Compartilhar se o remetente repetir seu nome"
+            }
+          ],
+          "help": [
+            "Use a função real do código para avaliar o pedido."
+          ],
+          "feedback": {
+            "met": "Um depósito prometido não justifica dar acesso à conta.",
+            "not_yet": "Use a função real do código para avaliar o pedido."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.product.conditions",
+      "copy": {
+        "en-US": {
+          "prompt": "Which costs matter?",
+          "scene": "Verified support confirms the account. Avoiding fees requires operations you rarely use.",
+          "options": [
+            {
+              "label": "None: the benefit always applies"
+            },
+            {
+              "label": "Only the suspicious message’s prices"
+            },
+            {
+              "label": "Fees when conditions are unmet"
+            }
+          ],
+          "help": [
+            "Legitimacy and suitable conditions are separate checks."
+          ],
+          "feedback": {
+            "met": "Real products can still have conditions unsuitable for your use.",
+            "not_yet": "Legitimacy and suitable conditions are separate checks."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué costo debes revisar?",
+          "scene": "Soporte verificado confirma la cuenta. Evitar cargos exige operaciones que rara vez haces.",
+          "options": [
+            {
+              "label": "Suponer que el beneficio siempre aplica"
+            },
+            {
+              "label": "Usar el mensaje sospechoso como lista de precios"
+            },
+            {
+              "label": "Revisar el costo si no cumples esas condiciones"
+            }
+          ],
+          "help": [
+            "La autenticidad y las condiciones adecuadas se revisan por separado."
+          ],
+          "feedback": {
+            "met": "Un producto real aún puede tener condiciones que no se ajustan a tu uso.",
+            "not_yet": "La autenticidad y las condiciones adecuadas se revisan por separado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual custo deve conferir?",
+          "scene": "O suporte verificado confirma a conta. Evitar tarifas exige operações que raramente faz.",
+          "options": [
+            {
+              "label": "Supor que o benefício sempre vale"
+            },
+            {
+              "label": "Usar a mensagem suspeita como tabela de preços"
+            },
+            {
+              "label": "Conferir o custo se não cumprir essas condições"
+            }
+          ],
+          "help": [
+            "Autenticidade e condições adequadas são verificações separadas."
+          ],
+          "feedback": {
+            "met": "Um produto real ainda pode ter condições inadequadas ao seu uso.",
+            "not_yet": "Autenticidade e condições adequadas são verificações separadas."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.safety.credentials",
+      "copy": {
+        "en-US": {
+          "prompt": "What should you do now?",
+          "scene": "You entered your password on an unverified page. No losses yet.",
+          "options": [
+            {
+              "label": "Wait for visible losses"
+            },
+            {
+              "label": "Report; use verified recovery"
+            },
+            {
+              "label": "Ask the sender to erase"
+            }
+          ],
+          "help": [
+            "Do not make recovery depend on the suspected sender."
+          ],
+          "feedback": {
+            "met": "The access exposure matters even before a visible loss.",
+            "not_yet": "Do not make recovery depend on the suspected sender."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debes hacer ahora?",
+          "scene": "Ingresaste tu contraseña en la página no verificada. Aún no ves pérdidas.",
+          "options": [
+            {
+              "label": "Esperar porque no ves pérdidas"
+            },
+            {
+              "label": "Usar pronto recuperación verificada y reportar la exposición"
+            },
+            {
+              "label": "Pedir al remitente que borre la contraseña"
+            }
+          ],
+          "help": [
+            "No hagas depender la recuperación del remitente sospechoso."
+          ],
+          "feedback": {
+            "met": "La exposición del acceso importa aunque aún no veas pérdidas.",
+            "not_yet": "No hagas depender la recuperación del remitente sospechoso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que fazer agora?",
+          "scene": "Inseriu sua senha na página não verificada. Ainda não vê perdas.",
+          "options": [
+            {
+              "label": "Esperar porque não vê perdas"
+            },
+            {
+              "label": "Usar logo recuperação verificada e relatar a exposição"
+            },
+            {
+              "label": "Pedir ao remetente que apague a senha"
+            }
+          ],
+          "help": [
+            "Não faça a recuperação depender do remetente suspeito."
+          ],
+          "feedback": {
+            "met": "A exposição do acesso importa mesmo antes de uma perda visível.",
+            "not_yet": "Não faça a recuperação depender do remetente suspeito."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.product.conditions",
+      "copy": {
+        "en-US": {
+          "prompt": "What matters here?",
+          "scene": "The account offers cheap transfers but slow withdrawals. You need cash tomorrow.",
+          "options": [
+            {
+              "label": "Timely cash access and total cost"
+            },
+            {
+              "label": "Verification guarantees instant cash"
+            },
+            {
+              "label": "Compare only transfer fees"
+            }
+          ],
+          "help": [
+            "Use the actual payment method and date."
+          ],
+          "feedback": {
+            "met": "The required operation and deadline determine the relevant comparison.",
+            "not_yet": "Use the actual payment method and date."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué importa para este pago?",
+          "scene": "La cuenta verificada tiene transferencias baratas y retiros lentos. Tu pago esencial exige efectivo mañana.",
+          "options": [
+            {
+              "label": "Acceso al efectivo mañana y costo total"
+            },
+            {
+              "label": "Suponer que verificar garantiza efectivo inmediato"
+            },
+            {
+              "label": "Comparar solo cargos de transferencia"
+            }
+          ],
+          "help": [
+            "Usa el medio y la fecha reales de pago."
+          ],
+          "feedback": {
+            "met": "La operación y el plazo necesarios determinan qué comparar.",
+            "not_yet": "Usa el medio y la fecha reales de pago."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual comparação corresponde à necessidade real?",
+          "scene": "A conta verificada tem transferências baratas e saques lentos. Seu pagamento essencial exige dinheiro amanhã.",
+          "options": [
+            {
+              "label": "Conferir acesso ao dinheiro até amanhã e seu custo total"
+            },
+            {
+              "label": "Supor que verificar garante dinheiro imediato"
+            },
+            {
+              "label": "Comparar só tarifas de transferência"
+            }
+          ],
+          "help": [
+            "Use o meio e a data reais do pagamento."
+          ],
+          "feedback": {
+            "met": "A operação e o prazo necessários determinam o que comparar.",
+            "not_yet": "Use o meio e a data reais do pagamento."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.safety.fraud",
+      "copy": {
+        "en-US": {
+          "prompt": "How should you respond?",
+          "scene": "Another caller offers bonus recovery for an advance fee, demanding secrecy from the institution.",
+          "options": [
+            {
+              "label": "Pay: they know about the bonus"
+            },
+            {
+              "label": "Keep it secret"
+            },
+            {
+              "label": "Pause; verify independently"
+            }
+          ],
+          "help": [
+            "Apply independent verification again to the new claim."
+          ],
+          "feedback": {
+            "met": "Knowledge of an earlier event does not authenticate a new payment request.",
+            "not_yet": "Apply independent verification again to the new claim."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué sigue con esta nueva solicitud?",
+          "scene": "Otra llamada promete recuperar el bono perdido por un anticipo y pide no contactar a la institución.",
+          "options": [
+            {
+              "label": "Pagar porque menciona lo ocurrido"
+            },
+            {
+              "label": "Guardar el secreto solicitado"
+            },
+            {
+              "label": "Pausar y verificar aparte antes de pagar"
+            }
+          ],
+          "help": [
+            "Aplica de nuevo la verificación independiente a esta promesa."
+          ],
+          "feedback": {
+            "met": "Conocer lo ocurrido no autentica una nueva solicitud de pago.",
+            "not_yet": "Aplica de nuevo la verificación independiente a esta promesa."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que fazer com este novo pedido?",
+          "scene": "Outra ligação promete recuperar o bônus perdido mediante adiantamento e pede não contatar a instituição.",
+          "options": [
+            {
+              "label": "Pagar porque menciona o ocorrido"
+            },
+            {
+              "label": "Guardar o segredo pedido"
+            },
+            {
+              "label": "Parar e verificar separadamente antes de pagar"
+            }
+          ],
+          "help": [
+            "Aplique novamente a verificação independente a esta promessa."
+          ],
+          "feedback": {
+            "met": "Conhecer o ocorrido não autentica um novo pedido de pagamento.",
+            "not_yet": "Aplique novamente a verificação independente a esta promessa."
+          }
+        }
+      }
+    }
+  ]
+}

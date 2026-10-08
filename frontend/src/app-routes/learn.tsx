@@ -16,6 +16,7 @@ import {
   LEARNING_RHYTHM_ROUTE_PATH,
   LESSON_ROUTE_PATH,
   PLACEMENT_ROUTE_PATH,
+  PLAY_ROUTE_PATH,
   TERRITORY_ROUTE_PATH,
   TOGETHER_ROUTE_PATH,
 } from '@/routes/app/learn/paths';
@@ -23,7 +24,8 @@ import { LazyRoute } from './LazyRoute';
 
 /*
  * Lane 2 (learn): learner home, courses, territory, the course path, the
- * decision journal, the learning rhythm, placement and the lesson player.
+ * decision journal, the learning rhythm, placement, the lesson player and the
+ * game host (a game inside /learn).
  */
 
 /*
@@ -33,6 +35,11 @@ import { LazyRoute } from './LazyRoute';
  * (inside LazyRoute) catches a chunk that fails to arrive after a deploy.
  */
 const LessonRoute = lazy(() => import('@/routes/app/learn/LessonRoute'));
+/*
+ * The game host is lazy for the same reason, and for one more: its bridge, client and
+ * controller (games/kartrush) are needed only by a learner who opens a game.
+ */
+const PlayRoute = lazy(() => import('@/app-routes/PlayRoute'));
 
 /** Pages inside the signed-in app shell (App.tsx wraps them in RequireAuth + RequireOnboarded). */
 export const learnShellRoutes = (
@@ -63,5 +70,7 @@ export const learnStandaloneRoutes = (
         a learner stranded here should land on the shelf, not on the
         marketing site. */}
     <Route path={LESSON_ROUTE_PATH} element={<RequireAuth><LazyRoute home="/learn"><LessonRoute /></LazyRoute></RequireAuth>} />
+    {/* A game inside /learn (KartRush): the same full-screen layer and guard as the lesson, with its own visible Exit. */}
+    <Route path={PLAY_ROUTE_PATH} element={<RequireAuth><LazyRoute home="/learn"><PlayRoute /></LazyRoute></RequireAuth>} />
   </>
 );

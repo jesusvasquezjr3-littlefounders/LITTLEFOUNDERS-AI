@@ -1,0 +1,807 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-debt-recovery-part-2",
+  "lesson_id": "fe-production-debt-recovery-08",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.debt-recovery.08"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Find qualified local support when no feasible repayment plan covers essential needs.",
+  "title": {
+    "en-US": "Seeking support",
+    "es-MX": "Reconoce cuándo el plan necesita ayuda",
+    "pt-BR": "Reconheça quando o plano precisa de ajuda"
+  },
+  "new_concepts": [
+    "finance.prod.debt-recovery.08"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Recognize when the plan needs help\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Reconoce cuándo el plan necesita ayuda\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Reconheça quando o plano precisa de ajuda\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.debt-recovery.08",
+      "observable_action": "Find qualified local support when no feasible repayment plan covers essential needs.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.debt-recovery.02",
+      "prod.debt-recovery.04",
+      "prod.spending-patterns.10"
+    ],
+    "retrieval_skills": [],
+    "relevance": "If necessary costs and debts exceed available income, a budgeting trick cannot create the missing money.",
+    "misconception": "Treating an impossible repayment budget as a failure of effort, or assuming another expensive loan always resolves it.",
+    "numeracy_support": "Every quantity and assumption needed to decide is visible in the current scenario. Examples explain the relationship before independent application.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.debt-recovery.08",
+        "context_id": "fe-production-debt-recovery-08-example-01",
+        "supports_from": [],
+        "reasoning": "When essentials and required payments exceed reliable income, record the gap. Seek qualified help to assess realistic options and consequences."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.debt-recovery.08",
+        "context_id": "fe-production-debt-recovery-08-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "250 + 90 − 300 = 40 unfunded."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.debt-recovery.08",
+        "context_id": "fe-production-debt-recovery-08-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The stated figures show a capacity gap, not a character judgment."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.debt-recovery.08",
+        "context_id": "fe-production-debt-recovery-08-practice-03",
+        "supports_from": [],
+        "reasoning": "Useful help requires a verifiable role and clear terms."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.debt-recovery.08",
+        "context_id": "fe-production-debt-recovery-08-practice-04",
+        "supports_from": [],
+        "reasoning": "Decision-relevant records support advice; private access codes do not."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.debt-recovery.08",
+        "context_id": "fe-production-debt-recovery-08-practice-05",
+        "supports_from": [],
+        "reasoning": "Moving debt does not resolve a repayment gap by itself."
+      },
+      {
+        "segment_id": "transfer-06",
+        "skill_id": "prod.debt-recovery.08",
+        "context_id": "fe-production-debt-recovery-08-transfer-06",
+        "supports_from": [],
+        "reasoning": "Use official guidance to locate and check appropriate help."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.debt-recovery.08",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "If necessary costs and debts exceed available income, a budgeting trick cannot create the missing money."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Si costos necesarios y deudas superan ingresos, un truco presupuestal no crea el dinero faltante."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Se custos necessários e dívidas superam a renda, um truque de orçamento não cria o dinheiro que falta."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Follow the evidence",
+          "line": "When essentials and required payments exceed reliable income, record the gap. Seek qualified help to assess realistic options and consequences."
+        },
+        "es-MX": {
+          "prompt": "Sigue las pruebas",
+          "line": "Si esenciales y pagos exigidos superan ingreso fiable, registra el faltante. Busca ayuda local calificada para evaluar opciones y consecuencias."
+        },
+        "pt-BR": {
+          "prompt": "Siga as provas",
+          "line": "Se essenciais e pagamentos exigidos superam renda confiável, registre a falta. Busque ajuda local qualificada para avaliar opções e efeitos."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Unfunded amount?",
+          "scene": "Reliable income 300; necessary costs 250; required debt payments 90; no other resources.",
+          "options": [
+            {
+              "label": "50"
+            },
+            {
+              "label": "90"
+            },
+            {
+              "label": "40"
+            }
+          ],
+          "help": [
+            "Compare all necessary outflows with available income."
+          ],
+          "feedback": {
+            "met": "250 + 90 − 300 = 40 unfunded.",
+            "not_yet": "Compare all necessary outflows with available income."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Monto sin cubrir?",
+          "scene": "Ingreso fiable 300; costos necesarios 250; pagos de deuda exigidos 90; sin otros recursos.",
+          "options": [
+            {
+              "label": "50"
+            },
+            {
+              "label": "90"
+            },
+            {
+              "label": "40"
+            }
+          ],
+          "help": [
+            "Compara todas las salidas necesarias con ingreso disponible."
+          ],
+          "feedback": {
+            "met": "250 + 90 − 300 = 40 sin cubrir.",
+            "not_yet": "Compara todas las salidas necesarias con ingreso disponible."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Valor sem cobertura?",
+          "scene": "Renda confiável 300; custos necessários 250; pagamentos de dívida exigidos 90; sem outros recursos.",
+          "options": [
+            {
+              "label": "50"
+            },
+            {
+              "label": "90"
+            },
+            {
+              "label": "40"
+            }
+          ],
+          "help": [
+            "Compare todas as saídas necessárias com renda disponível."
+          ],
+          "feedback": {
+            "met": "250 + 90 − 300 = 40 sem cobertura.",
+            "not_yet": "Compare todas as saídas necessárias com renda disponível."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          300,
+          250,
+          90
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "add",
+              "args": [
+                {
+                  "input": 1
+                },
+                {
+                  "input": 2
+                }
+              ]
+            },
+            {
+              "input": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.08",
+      "copy": {
+        "en-US": {
+          "prompt": "What follows from this?",
+          "scene": "Optional spending is zero; required outflows still exceed income.",
+          "options": [
+            {
+              "label": "The plan is infeasible; seek other options"
+            },
+            {
+              "label": "Extending dates removes the deficit"
+            },
+            {
+              "label": "Every shortfall proves careless spending"
+            }
+          ],
+          "help": [
+            "Do not invent optional cuts that the scenario excludes."
+          ],
+          "feedback": {
+            "met": "The stated figures show a capacity gap, not a character judgment.",
+            "not_yet": "Do not invent optional cuts that the scenario excludes."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué implica el faltante?",
+          "scene": "Gasto opcional ya es cero; salidas exigidas aún superan ingreso fiable.",
+          "options": [
+            {
+              "label": "El plan es inviable y necesita otras opciones"
+            },
+            {
+              "label": "Cambiar fechas elimina el déficit"
+            },
+            {
+              "label": "Todo faltante demuestra descuido"
+            }
+          ],
+          "help": [
+            "No inventes recortes opcionales que el caso excluye."
+          ],
+          "feedback": {
+            "met": "Las cifras muestran falta de capacidad, no juicio personal.",
+            "not_yet": "No inventes recortes opcionales que el caso excluye."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que implica a falta?",
+          "scene": "Gasto opcional já é zero; saídas exigidas ainda superam renda confiável.",
+          "options": [
+            {
+              "label": "O plano é inviável e precisa de outras opções"
+            },
+            {
+              "label": "Mudar datas elimina o déficit"
+            },
+            {
+              "label": "Toda falta prova descuido"
+            }
+          ],
+          "help": [
+            "Não invente cortes opcionais que o caso exclui."
+          ],
+          "feedback": {
+            "met": "Os números mostram falta de capacidade, não juízo pessoal.",
+            "not_yet": "Não invente cortes opcionais que o caso exclui."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.08",
+      "copy": {
+        "en-US": {
+          "prompt": "What should you verify?",
+          "scene": "An unfamiliar service offers to assess your debts.",
+          "options": [
+            {
+              "label": "Only its promise of a quick result"
+            },
+            {
+              "label": "Only the number of followers"
+            },
+            {
+              "label": "Qualifications, scope, fees and conflicts of interest"
+            }
+          ],
+          "help": [
+            "Check who provides the service and how it is paid."
+          ],
+          "feedback": {
+            "met": "Useful help requires a verifiable role and clear terms.",
+            "not_yet": "Check who provides the service and how it is paid."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué verificar al buscar ayuda?",
+          "scene": "Un servicio desconocido ofrece evaluar tus deudas.",
+          "options": [
+            {
+              "label": "Solo promesa de resultado rápido"
+            },
+            {
+              "label": "Solo cantidad de seguidores"
+            },
+            {
+              "label": "Calificación, alcance, costos y conflictos de interés"
+            }
+          ],
+          "help": [
+            "Revisa quién da el servicio y cómo cobra."
+          ],
+          "feedback": {
+            "met": "Ayuda útil requiere función verificable y condiciones claras.",
+            "not_yet": "Revisa quién da el servicio y cómo cobra."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que conferir ao buscar ajuda?",
+          "scene": "Um serviço desconhecido oferece avaliar suas dívidas.",
+          "options": [
+            {
+              "label": "Só promessa de resultado rápido"
+            },
+            {
+              "label": "Só quantidade de seguidores"
+            },
+            {
+              "label": "Qualificação, alcance, custos e conflitos de interesse"
+            }
+          ],
+          "help": [
+            "Confira quem dá o serviço e como cobra."
+          ],
+          "feedback": {
+            "met": "Ajuda útil exige função que possa conferir e regras claras.",
+            "not_yet": "Confira quem dá o serviço e como cobra."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.08",
+      "copy": {
+        "en-US": {
+          "prompt": "What to bring an adviser?",
+          "scene": "You have verified debt records, income dates and essential costs.",
+          "options": [
+            {
+              "label": "Passwords and private approval codes"
+            },
+            {
+              "label": "Only a guessed total"
+            },
+            {
+              "label": "Those records and relevant notices"
+            }
+          ],
+          "help": [
+            "Share relevant facts through a verified, appropriate channel."
+          ],
+          "feedback": {
+            "met": "Decision-relevant records support advice; private access codes do not.",
+            "not_yet": "Share relevant facts through a verified, appropriate channel."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué llevar a quien orienta con calificación?",
+          "scene": "Tienes registros de deuda, fechas de ingreso y costos esenciales verificados.",
+          "options": [
+            {
+              "label": "Contraseñas y códigos privados de autorización"
+            },
+            {
+              "label": "Solo un total supuesto"
+            },
+            {
+              "label": "Esos registros y avisos pertinentes"
+            }
+          ],
+          "help": [
+            "Comparte hechos relevantes mediante un canal verificado adecuado."
+          ],
+          "feedback": {
+            "met": "Registros pertinentes apoyan orientación; códigos privados de acceso no.",
+            "not_yet": "Comparte hechos relevantes mediante un canal verificado adecuado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que levar a quem orienta com qualificação?",
+          "scene": "Tem registros de dívida, datas de renda e custos essenciais conferidos.",
+          "options": [
+            {
+              "label": "Senhas e códigos privados de aprovação"
+            },
+            {
+              "label": "Só um total suposto"
+            },
+            {
+              "label": "Esses registros e avisos relevantes"
+            }
+          ],
+          "help": [
+            "Compartilhe fatos relevantes por um canal conferido adequado."
+          ],
+          "feedback": {
+            "met": "Registros relevantes apoiam orientação; códigos privados de acesso não.",
+            "not_yet": "Compartilhe fatos relevantes por um canal conferido adequado."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.08",
+      "copy": {
+        "en-US": {
+          "prompt": "What to avoid?",
+          "scene": "A costly new loan repays a creditor but leaves a larger unaffordable payment.",
+          "options": [
+            {
+              "label": "Asking qualified local support"
+            },
+            {
+              "label": "Calling debt replacement a solved budget"
+            },
+            {
+              "label": "Assessing complete costs and consequences"
+            }
+          ],
+          "help": [
+            "Check the resulting plan, not just today’s paid bill."
+          ],
+          "feedback": {
+            "met": "Moving debt does not resolve a repayment gap by itself.",
+            "not_yet": "Check the resulting plan, not just today’s paid bill."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe evitarse?",
+          "scene": "Un préstamo caro pagaría a un acreedor, pero dejaría un pago inviable mayor.",
+          "options": [
+            {
+              "label": "Pedir apoyo local calificado"
+            },
+            {
+              "label": "Llamar presupuesto resuelto al reemplazo de deuda"
+            },
+            {
+              "label": "Evaluar costos y consecuencias completos"
+            }
+          ],
+          "help": [
+            "Revisa el plan resultante, no solo la cuenta pagada hoy."
+          ],
+          "feedback": {
+            "met": "Mover deuda no resuelve por sí solo falta de capacidad.",
+            "not_yet": "Revisa el plan resultante, no solo la cuenta pagada hoy."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que deve evitar?",
+          "scene": "Um empréstimo caro pagaria um credor, mas deixaria pagamento inviável maior.",
+          "options": [
+            {
+              "label": "Pedir apoio local qualificado"
+            },
+            {
+              "label": "Chamar orçamento resolvido à troca da dívida"
+            },
+            {
+              "label": "Avaliar custos e efeitos completos"
+            }
+          ],
+          "help": [
+            "Confira o plano resultante, não só a conta paga hoje."
+          ],
+          "feedback": {
+            "met": "Mover dívida não resolve sozinho falta de capacidade.",
+            "not_yet": "Confira o plano resultante, não só a conta paga hoje."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.debt-recovery.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Where can a verified search begin?",
+          "scene": "A household needs debt help but cannot judge an unsolicited seller.",
+          "options": [
+            {
+              "label": "The seller’s guarantee alone"
+            },
+            {
+              "label": "CFPB guidance and local consumer-protection resources"
+            },
+            {
+              "label": "Another anonymous payment request"
+            }
+          ],
+          "help": [
+            "Verify the service; no source guarantees a specific outcome."
+          ],
+          "feedback": {
+            "met": "Use official guidance to locate and check appropriate help.",
+            "not_yet": "Verify the service; no source guarantees a specific outcome."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Dónde iniciar una búsqueda verificada?",
+          "scene": "Un hogar necesita ayuda con deudas, pero no puede evaluar a un vendedor inesperado.",
+          "options": [
+            {
+              "label": "Solo garantía del vendedor"
+            },
+            {
+              "label": "Orientación de CONDUSEF y recursos locales pertinentes"
+            },
+            {
+              "label": "Otra solicitud de pago anónima"
+            }
+          ],
+          "help": [
+            "Verifica el servicio; ninguna fuente garantiza un resultado concreto."
+          ],
+          "feedback": {
+            "met": "Usa orientación oficial para localizar y verificar ayuda adecuada.",
+            "not_yet": "Verifica el servicio; ninguna fuente garantiza un resultado concreto."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Onde começar uma busca conferida?",
+          "scene": "Uma casa precisa de ajuda com dívidas, mas não pode avaliar um vendedor inesperado.",
+          "options": [
+            {
+              "label": "Só garantia do vendedor"
+            },
+            {
+              "label": "Canais oficiais do Procon e recursos locais cabíveis"
+            },
+            {
+              "label": "Outro pedido anônimo de pagamento"
+            }
+          ],
+          "help": [
+            "Confira o serviço; nenhuma fonte garante um resultado concreto."
+          ],
+          "feedback": {
+            "met": "Use orientação oficial para localizar e conferir ajuda adequada.",
+            "not_yet": "Confira o serviço; nenhuma fonte garante um resultado concreto."
+          }
+        }
+      }
+    }
+  ]
+}

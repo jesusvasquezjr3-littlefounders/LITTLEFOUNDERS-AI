@@ -1,0 +1,788 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-insurance-risk-part-1",
+  "lesson_id": "fe-production-insurance-risk-04",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.insurance-risk.04"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Separate a premium from a deductible or excess.",
+  "title": {
+    "en-US": "Insurance Payments",
+    "es-MX": "Prima y deducible son distintos",
+    "pt-BR": "Prêmio e franquia são distintos"
+  },
+  "new_concepts": [
+    "finance.prod.insurance-risk.04"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Insurance Payments\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Prima y deducible son distintos\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Prêmio e franquia são distintos\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.insurance-risk.04",
+      "observable_action": "Separate a premium from a deductible or excess.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.insurance-risk.03"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Paying for coverage and paying your share of a covered loss are separate costs; use the contract to distinguish them.",
+    "misconception": "The premium is refunded if no claim occurs, or paying it removes the deductible.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.insurance-risk.04",
+        "context_id": "insurance-risk-04-example-01",
+        "supports_from": [],
+        "reasoning": "A premium buys coverage under the contract. A deductible is a stated share you retain when the covered loss occurs."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.insurance-risk.04",
+        "context_id": "insurance-risk-04-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The premium is the stated price of coverage."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.insurance-risk.04",
+        "context_id": "insurance-risk-04-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The deductible remains separate from the premium under these terms."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.insurance-risk.04",
+        "context_id": "insurance-risk-04-practice-01",
+        "supports_from": [],
+        "reasoning": "These terms explicitly make the premium nonrefundable."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.insurance-risk.04",
+        "context_id": "insurance-risk-04-practice-02",
+        "supports_from": [],
+        "reasoning": "Both costs remain distinct obligations under the stated policy."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.insurance-risk.04",
+        "context_id": "insurance-risk-04-practice-03",
+        "supports_from": [],
+        "reasoning": "A lower premium can leave a larger claim cost to fund."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.insurance-risk.04",
+        "context_id": "insurance-risk-04-transfer-01",
+        "supports_from": [],
+        "reasoning": "The coverage price differs from the share retained per claim."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.insurance-risk.04",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Paying for coverage and paying your share of a covered loss are separate costs; use the contract to distinguish them."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Pagar cobertura y pagar tu parte de pérdida cubierta son costos distintos; usa contrato para distinguirlos."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Pagar cobertura e pagar sua parte de perda coberta são custos distintos; use contrato para separá-los."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Two different payments",
+          "line": "A premium buys coverage under the contract. A deductible is a stated share you retain when the covered loss occurs."
+        },
+        "es-MX": {
+          "prompt": "Dos pagos distintos",
+          "line": "Prima paga cobertura bajo contrato. Deducible es parte indicada a tu cargo cuando ocurre pérdida cubierta."
+        },
+        "pt-BR": {
+          "prompt": "Dois pagamentos distintos",
+          "line": "Prêmio paga cobertura sob contrato. Franquia é parte dada a seu cargo quando ocorre perda coberta."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Which amount buys this coverage?",
+          "scene": "Fictional terms: annual premium 120; deductible 300 per covered loss.",
+          "options": [
+            {
+              "label": "120"
+            },
+            {
+              "label": "300"
+            },
+            {
+              "label": "420"
+            }
+          ],
+          "help": [
+            "Separate the coverage price from the retained claim cost."
+          ],
+          "feedback": {
+            "met": "The premium is the stated price of coverage.",
+            "not_yet": "Separate the coverage price from the retained claim cost."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué monto paga esta cobertura?",
+          "scene": "Términos ficticios: prima anual 120; deducible 300 por pérdida cubierta.",
+          "options": [
+            {
+              "label": "120"
+            },
+            {
+              "label": "300"
+            },
+            {
+              "label": "420"
+            }
+          ],
+          "help": [
+            "Separa precio de cobertura de costo propio del reclamo."
+          ],
+          "feedback": {
+            "met": "Prima es precio indicado de cobertura.",
+            "not_yet": "Separa precio de cobertura de costo propio del reclamo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que valor paga esta cobertura?",
+          "scene": "Termos fictícios: prêmio anual 120; franquia 300 por perda coberta.",
+          "options": [
+            {
+              "label": "120"
+            },
+            {
+              "label": "300"
+            },
+            {
+              "label": "420"
+            }
+          ],
+          "help": [
+            "Separe preço da cobertura de custo próprio do pedido."
+          ],
+          "feedback": {
+            "met": "Prêmio é preço dado da cobertura.",
+            "not_yet": "Separe preço da cobertura de custo próprio do pedido."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          120,
+          300
+        ],
+        "expression": {
+          "input": 0
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Which cost stays with the household?",
+          "scene": "Fictional terms: premium pays coverage; deductible remains payable for each covered repair.",
+          "options": [
+            {
+              "label": "No cost after premium"
+            },
+            {
+              "label": "Only the advertisement price"
+            },
+            {
+              "label": "The deductible"
+            }
+          ],
+          "help": [
+            "Read what remains payable when a covered loss happens."
+          ],
+          "feedback": {
+            "met": "The deductible remains separate from the premium under these terms.",
+            "not_yet": "Read what remains payable when a covered loss happens."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué costo queda al hogar?",
+          "scene": "Términos ficticios: prima paga cobertura; deducible sigue pagadero por cada reparación cubierta.",
+          "options": [
+            {
+              "label": "Ningún costo tras prima"
+            },
+            {
+              "label": "Solo precio del anuncio"
+            },
+            {
+              "label": "Deducible"
+            }
+          ],
+          "help": [
+            "Lee qué sigue pagadero al ocurrir pérdida cubierta."
+          ],
+          "feedback": {
+            "met": "Deducible sigue separado de prima bajo estos términos.",
+            "not_yet": "Lee qué sigue pagadero al ocurrir pérdida cubierta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que custo fica com a família?",
+          "scene": "Termos fictícios: prêmio paga cobertura; franquia segue devida por cada reparo coberto.",
+          "options": [
+            {
+              "label": "Nenhum custo após prêmio"
+            },
+            {
+              "label": "Só preço do anúncio"
+            },
+            {
+              "label": "Franquia"
+            }
+          ],
+          "help": [
+            "Leia o que segue devido ao ocorrer perda coberta."
+          ],
+          "feedback": {
+            "met": "Franquia segue separada do prêmio sob esses termos.",
+            "not_yet": "Leia o que segue devido ao ocorrer perda coberta."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Is a refund promised here?",
+          "scene": "Fictional terms charge a nonrefundable premium; no loss occurs.",
+          "options": [
+            {
+              "label": "No"
+            },
+            {
+              "label": "Yes, all unused premiums return"
+            },
+            {
+              "label": "Yes, deductibles become refunds"
+            }
+          ],
+          "help": [
+            "Use the stated contract, not an assumed refund rule."
+          ],
+          "feedback": {
+            "met": "These terms explicitly make the premium nonrefundable.",
+            "not_yet": "Use the stated contract, not an assumed refund rule."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Se promete reembolso aquí?",
+          "scene": "Términos ficticios cobran prima no reembolsable; no ocurre pérdida.",
+          "options": [
+            {
+              "label": "No"
+            },
+            {
+              "label": "Sí, toda prima sin uso vuelve"
+            },
+            {
+              "label": "Sí, deducibles se vuelven reembolsos"
+            }
+          ],
+          "help": [
+            "Usa contrato indicado, no regla supuesta de reembolso."
+          ],
+          "feedback": {
+            "met": "Estos términos indican prima no reembolsable.",
+            "not_yet": "Usa contrato indicado, no regla supuesta de reembolso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Há promessa de devolução aqui?",
+          "scene": "Termos fictícios cobram prêmio sem devolução; não ocorre perda.",
+          "options": [
+            {
+              "label": "Não"
+            },
+            {
+              "label": "Sim, todo prêmio sem uso volta"
+            },
+            {
+              "label": "Sim, franquias viram devoluções"
+            }
+          ],
+          "help": [
+            "Use contrato dado, não regra suposta de devolução."
+          ],
+          "feedback": {
+            "met": "Esses termos indicam prêmio sem devolução.",
+            "not_yet": "Use contrato dado, não regra suposta de devolução."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Does paying the premium erase this deductible?",
+          "scene": "Fictional policy separately requires a premium and a deductible for covered repairs.",
+          "options": [
+            {
+              "label": "Yes"
+            },
+            {
+              "label": "Only if paid early"
+            },
+            {
+              "label": "No"
+            }
+          ],
+          "help": [
+            "Early payment does not remove an unchanged contract condition."
+          ],
+          "feedback": {
+            "met": "Both costs remain distinct obligations under the stated policy.",
+            "not_yet": "Early payment does not remove an unchanged contract condition."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Pagar prima borra este deducible?",
+          "scene": "Póliza ficticia exige por separado prima y deducible para reparaciones cubiertas.",
+          "options": [
+            {
+              "label": "Sí"
+            },
+            {
+              "label": "Solo pagando antes"
+            },
+            {
+              "label": "No"
+            }
+          ],
+          "help": [
+            "Pagar antes no quita condición contractual sin cambio."
+          ],
+          "feedback": {
+            "met": "Ambos costos siguen siendo deberes distintos bajo póliza indicada.",
+            "not_yet": "Pagar antes no quita condición contractual sin cambio."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Pagar prêmio apaga esta franquia?",
+          "scene": "Apólice fictícia exige em separado prêmio e franquia para reparos cobertos.",
+          "options": [
+            {
+              "label": "Sim"
+            },
+            {
+              "label": "Só pagando antes"
+            },
+            {
+              "label": "Não"
+            }
+          ],
+          "help": [
+            "Pagar antes não tira condição contratual sem mudança."
+          ],
+          "feedback": {
+            "met": "Ambos os custos seguem deveres distintos sob apólice dada.",
+            "not_yet": "Pagar antes não tira condição contratual sem mudança."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Which change needs a cash check?",
+          "scene": "A quoted policy lowers premiums but raises the deductible above available savings.",
+          "options": [
+            {
+              "label": "Nothing because premiums fell"
+            },
+            {
+              "label": "Ability to fund the deductible"
+            },
+            {
+              "label": "Only the annual premium"
+            }
+          ],
+          "help": [
+            "Compare both regular cost and retained loss capacity."
+          ],
+          "feedback": {
+            "met": "A lower premium can leave a larger claim cost to fund.",
+            "not_yet": "Compare both regular cost and retained loss capacity."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué cambio requiere revisar efectivo?",
+          "scene": "Póliza cotizada baja primas pero sube deducible por encima del ahorro disponible.",
+          "options": [
+            {
+              "label": "Nada porque primas bajaron"
+            },
+            {
+              "label": "Capacidad de cubrir deducible"
+            },
+            {
+              "label": "Solo la prima anual"
+            }
+          ],
+          "help": [
+            "Compara costo regular y capacidad de absorber pérdida."
+          ],
+          "feedback": {
+            "met": "Prima menor puede dejar costo propio mayor por cubrir.",
+            "not_yet": "Compara costo regular y capacidad de absorber pérdida."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que mudança exige conferir dinheiro?",
+          "scene": "Apólice cotada baixa prêmios mas sobe franquia acima da poupança disponível.",
+          "options": [
+            {
+              "label": "Nada pois prêmios caíram"
+            },
+            {
+              "label": "Capacidade de cobrir franquia"
+            },
+            {
+              "label": "Só o prêmio anual"
+            }
+          ],
+          "help": [
+            "Compare custo regular e capacidade de absorver perda."
+          ],
+          "feedback": {
+            "met": "Prêmio menor pode deixar custo próprio maior por cobrir.",
+            "not_yet": "Compare custo regular e capacidade de absorver perda."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.insurance-risk.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Which distinction fits?",
+          "scene": "Fictional travel policy charges before the trip and retains a stated share per covered claim.",
+          "options": [
+            {
+              "label": "Premium before; deductible at claim"
+            },
+            {
+              "label": "Premium removes every retained cost"
+            },
+            {
+              "label": "Both are refunds"
+            }
+          ],
+          "help": [
+            "Identify why each payment is charged."
+          ],
+          "feedback": {
+            "met": "The coverage price differs from the share retained per claim.",
+            "not_yet": "Identify why each payment is charged."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué distinción es correcta?",
+          "scene": "Póliza ficticia de viaje cobra antes de viajar y deja parte propia por reclamo cubierto.",
+          "options": [
+            {
+              "label": "Prima antes; deducible al reclamar"
+            },
+            {
+              "label": "Prima elimina todo costo propio"
+            },
+            {
+              "label": "Ambos son reembolsos"
+            }
+          ],
+          "help": [
+            "Identifica por qué se cobra cada pago."
+          ],
+          "feedback": {
+            "met": "Precio de cobertura difiere de parte propia por reclamo.",
+            "not_yet": "Identifica por qué se cobra cada pago."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que distinção está certa?",
+          "scene": "Apólice fictícia de viagem cobra antes de viajar e deixa parte própria por pedido coberto.",
+          "options": [
+            {
+              "label": "Prêmio antes; franquia no pedido"
+            },
+            {
+              "label": "Prêmio elimina todo custo próprio"
+            },
+            {
+              "label": "Ambos são devoluções"
+            }
+          ],
+          "help": [
+            "Identifique por que se cobra cada pagamento."
+          ],
+          "feedback": {
+            "met": "Preço de cobertura difere de parte própria por pedido.",
+            "not_yet": "Identifique por que se cobra cada pagamento."
+          }
+        }
+      }
+    }
+  ]
+}

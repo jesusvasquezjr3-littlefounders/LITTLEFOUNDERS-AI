@@ -1,0 +1,732 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-usable-money",
+  "lesson_id": "fe-production-usable-money-05",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.cash.dates"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Put a receipt and a payment on a timeline to detect a shortage before payday.",
+  "title": {
+    "en-US": "In time to pay",
+    "es-MX": "A tiempo para pagar",
+    "pt-BR": "A tempo de pagar"
+  },
+  "new_concepts": [
+    "finance.cash.dates"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"In time to pay\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"A tiempo para pagar\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"A tempo de pagar\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "cash.dates",
+      "observable_action": "Put a receipt and a payment on a timeline to detect a shortage before payday.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "cash.received",
+      "cash.commitment",
+      "cash.reserved"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Money arriving later cannot meet an earlier deadline. Check when it becomes usable.",
+    "misconception": "The total expected income covers the bill, so the order of their dates is irrelevant.",
+    "numeracy_support": "Use ordered weekday labels or a small numbered timeline. Avoid calendar arithmetic, weekends or unstated banking settlement rules.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "cash.dates",
+        "context_id": "production-money-5-example-01",
+        "supports_from": [],
+        "reasoning": "Thursday’s bill comes before Friday’s receipt. With no money available now, that receipt arrives too late."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "cash.dates",
+        "context_id": "production-money-5-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Tuesday’s receipt occurs before Wednesday’s deadline."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "cash.dates",
+        "context_id": "production-money-5-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The payment is due before the money arrives."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "cash.dates",
+        "context_id": "production-money-5-practice-01",
+        "supports_from": [],
+        "reasoning": "The amount is sufficient; the timing is the problem."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "cash.dates",
+        "context_id": "production-money-5-practice-02",
+        "supports_from": [],
+        "reasoning": "Money already received can be protected for tomorrow’s payment."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "cash.dates",
+        "context_id": "production-money-5-practice-03",
+        "supports_from": [],
+        "reasoning": "You need the arrival date to compare it with the deadline."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "cash.dates",
+        "context_id": "production-money-5-transfer-01",
+        "supports_from": [],
+        "reasoning": "The money exists but is not accessible by the deadline."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "cash.dates",
+      "fresh_context": "Use the skill in the scheduled usable-money review and later financial decisions; this draft does not yet contain those review exercises."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Money arriving later cannot meet an earlier deadline. Check when it becomes usable."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "El dinero que llega después no cubre un plazo anterior. Revisa cuándo puedes usarlo."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Dinheiro que chega depois não atende a um prazo anterior. Confira quando poderá usá-lo."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Check the order",
+          "line": "Thursday’s bill comes before Friday’s receipt. With no money available now, that receipt arrives too late."
+        },
+        "es-MX": {
+          "prompt": "Revisa el orden",
+          "line": "La cuenta del jueves vence antes del ingreso del viernes. Sin dinero disponible ahora, esa entrada llega tarde."
+        },
+        "pt-BR": {
+          "prompt": "Confira a ordem",
+          "line": "A conta de quinta vence antes do recebimento de sexta. Sem dinheiro disponível agora, essa entrada chega tarde."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.dates",
+      "copy": {
+        "en-US": {
+          "prompt": "Is the money available first?",
+          "scene": "Receive the full bill amount Tuesday. The bill is due Wednesday.",
+          "options": [
+            {
+              "label": "No, Wednesday is earlier"
+            },
+            {
+              "label": "Only the amount matters"
+            },
+            {
+              "label": "Yes, Tuesday is earlier"
+            }
+          ],
+          "help": [
+            "Compare the order of the two dates."
+          ],
+          "feedback": {
+            "met": "Tuesday’s receipt occurs before Wednesday’s deadline.",
+            "not_yet": "Compare the order of the two dates."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿El dinero llega primero?",
+          "scene": "Recibes el monto completo el martes. La cuenta vence el miércoles.",
+          "options": [
+            {
+              "label": "No, el miércoles va antes"
+            },
+            {
+              "label": "Solo importa el monto"
+            },
+            {
+              "label": "Sí, el martes va antes"
+            }
+          ],
+          "help": [
+            "Compara el orden de las dos fechas."
+          ],
+          "feedback": {
+            "met": "El ingreso del martes llega antes del vencimiento del miércoles.",
+            "not_yet": "Compara el orden de las dos fechas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O dinheiro chega primeiro?",
+          "scene": "Você recebe o valor inteiro terça. A conta vence quarta.",
+          "options": [
+            {
+              "label": "Não, quarta vem antes"
+            },
+            {
+              "label": "Só o valor importa"
+            },
+            {
+              "label": "Sim, terça vem antes"
+            }
+          ],
+          "help": [
+            "Compare a ordem das duas datas."
+          ],
+          "feedback": {
+            "met": "O recebimento de terça ocorre antes do vencimento de quarta.",
+            "not_yet": "Compare a ordem das duas datas."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.dates",
+      "copy": {
+        "en-US": {
+          "prompt": "Is it on time?",
+          "scene": "No money now; the bill is due day 3, enough money arrives day 5.",
+          "options": [
+            {
+              "label": "Yes, same week"
+            },
+            {
+              "label": "Yes, enough eventually"
+            },
+            {
+              "label": "No, it arrives late"
+            }
+          ],
+          "help": [
+            "Having enough later does not solve the earlier shortage."
+          ],
+          "feedback": {
+            "met": "The payment is due before the money arrives.",
+            "not_yet": "Having enough later does not solve the earlier shortage."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿El ingreso posterior paga a tiempo?",
+          "scene": "Sin dinero inicial. La cuenta vence el día 3; el dinero llega el día 5.",
+          "options": [
+            {
+              "label": "Sí, es la misma semana"
+            },
+            {
+              "label": "Sí, después llega suficiente"
+            },
+            {
+              "label": "No, el plazo llega antes"
+            }
+          ],
+          "help": [
+            "Tener suficiente después no resuelve la falta anterior."
+          ],
+          "feedback": {
+            "met": "El pago vence antes de que llegue el dinero.",
+            "not_yet": "Tener suficiente después no resuelve la falta anterior."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O recebimento posterior paga no prazo?",
+          "scene": "Sem dinheiro inicial. A conta vence no dia 3; o dinheiro chega no dia 5.",
+          "options": [
+            {
+              "label": "Sim, é na mesma semana"
+            },
+            {
+              "label": "Sim, depois chega o suficiente"
+            },
+            {
+              "label": "Não, o prazo vem antes"
+            }
+          ],
+          "help": [
+            "Ter o suficiente depois não resolve a falta anterior."
+          ],
+          "feedback": {
+            "met": "O pagamento vence antes da chegada do dinheiro.",
+            "not_yet": "Ter o suficiente depois não resolve a falta anterior."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.dates",
+      "copy": {
+        "en-US": {
+          "prompt": "What blocks payment on time?",
+          "scene": "No money now. A receipt covers the bill but arrives after its deadline.",
+          "options": [
+            {
+              "label": "The arrival date"
+            },
+            {
+              "label": "The amount"
+            }
+          ],
+          "help": [
+            "Separate the size of the receipt from its arrival date."
+          ],
+          "feedback": {
+            "met": "The amount is sufficient; the timing is the problem.",
+            "not_yet": "Separate the size of the receipt from its arrival date."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué impide pagar a tiempo?",
+          "scene": "Sin dinero ahora. El ingreso cubre la cuenta, pero llega después del vencimiento.",
+          "options": [
+            {
+              "label": "La fecha de llegada"
+            },
+            {
+              "label": "El monto"
+            }
+          ],
+          "help": [
+            "Distingue el tamaño del ingreso de cuándo llega."
+          ],
+          "feedback": {
+            "met": "El monto alcanza; el problema es la fecha.",
+            "not_yet": "Distingue el tamaño del ingreso de cuándo llega."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que impede pagar no prazo?",
+          "scene": "Sem dinheiro agora. O recebimento cobre a conta, mas chega após o vencimento.",
+          "options": [
+            {
+              "label": "A data de chegada"
+            },
+            {
+              "label": "O valor"
+            }
+          ],
+          "help": [
+            "Separe o valor recebido da data em que ele chega."
+          ],
+          "feedback": {
+            "met": "O valor basta; o problema é a data.",
+            "not_yet": "Separe o valor recebido da data em que ele chega."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.dates",
+      "copy": {
+        "en-US": {
+          "prompt": "Can today’s money cover it?",
+          "scene": "You already hold the full payment amount. The bill is due tomorrow.",
+          "options": [
+            {
+              "label": "No, wait for new income"
+            },
+            {
+              "label": "Yes, protect this money"
+            }
+          ],
+          "help": [
+            "Check what is already usable, not only future receipts."
+          ],
+          "feedback": {
+            "met": "Money already received can be protected for tomorrow’s payment.",
+            "not_yet": "Check what is already usable, not only future receipts."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Lo cubre el dinero de hoy?",
+          "scene": "Ya tienes el monto completo. La cuenta vence mañana.",
+          "options": [
+            {
+              "label": "No, espera otro ingreso"
+            },
+            {
+              "label": "Sí, protege este dinero"
+            }
+          ],
+          "help": [
+            "Revisa lo que ya puedes usar, no solo los ingresos futuros."
+          ],
+          "feedback": {
+            "met": "El dinero recibido puede protegerse para el pago de mañana.",
+            "not_yet": "Revisa lo que ya puedes usar, no solo los ingresos futuros."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O dinheiro de hoje cobre?",
+          "scene": "Você já tem o valor inteiro. A conta vence amanhã.",
+          "options": [
+            {
+              "label": "Não, espere nova renda"
+            },
+            {
+              "label": "Sim, proteja este dinheiro"
+            }
+          ],
+          "help": [
+            "Confira o que já pode usar, não só os recebimentos futuros."
+          ],
+          "feedback": {
+            "met": "O dinheiro recebido pode ficar protegido para o pagamento de amanhã.",
+            "not_yet": "Confira o que já pode usar, não só os recebimentos futuros."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.dates",
+      "copy": {
+        "en-US": {
+          "prompt": "Which detail must you check?",
+          "scene": "The receipt amount is enough. Its arrival date is unknown; the bill has a deadline.",
+          "options": [
+            {
+              "label": "Only the amount"
+            },
+            {
+              "label": "The date money becomes usable"
+            }
+          ],
+          "help": [
+            "An amount without a date cannot establish timely availability."
+          ],
+          "feedback": {
+            "met": "You need the arrival date to compare it with the deadline.",
+            "not_yet": "An amount without a date cannot establish timely availability."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué dato debes revisar?",
+          "scene": "El ingreso alcanza. No sabes cuándo llega; la cuenta sí tiene vencimiento.",
+          "options": [
+            {
+              "label": "Solo el monto"
+            },
+            {
+              "label": "Cuándo podrás usar el dinero"
+            }
+          ],
+          "help": [
+            "Un monto sin fecha no demuestra disponibilidad a tiempo."
+          ],
+          "feedback": {
+            "met": "Necesitas la fecha del ingreso para compararla con el vencimiento.",
+            "not_yet": "Un monto sin fecha no demuestra disponibilidad a tiempo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual informação precisa conferir?",
+          "scene": "O valor basta. A data de chegada é desconhecida; a conta tem vencimento.",
+          "options": [
+            {
+              "label": "Só o valor"
+            },
+            {
+              "label": "Quando poderá usar o dinheiro"
+            }
+          ],
+          "help": [
+            "Um valor sem data não demonstra disponibilidade no prazo."
+          ],
+          "feedback": {
+            "met": "Você precisa da data de chegada para comparar com o vencimento.",
+            "not_yet": "Um valor sem data não demonstra disponibilidade no prazo."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.cash.dates",
+      "copy": {
+        "en-US": {
+          "prompt": "Can these funds pay on time?",
+          "scene": "No other money. Withdrawal opens day 5; the payment is due day 3.",
+          "options": [
+            {
+              "label": "Yes, the funds exist"
+            },
+            {
+              "label": "No, access opens too late"
+            }
+          ],
+          "help": [
+            "Compare access to the funds with the date payment is required."
+          ],
+          "feedback": {
+            "met": "The money exists but is not accessible by the deadline.",
+            "not_yet": "Compare access to the funds with the date payment is required."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Estos fondos pagan a tiempo?",
+          "scene": "No hay otro dinero. Puedes retirar el día 5; debes pagar el día 3.",
+          "options": [
+            {
+              "label": "Sí, los fondos existen"
+            },
+            {
+              "label": "No, el acceso llega tarde"
+            }
+          ],
+          "help": [
+            "Compara el acceso al dinero con la fecha del pago."
+          ],
+          "feedback": {
+            "met": "El dinero existe, pero no puedes usarlo antes del vencimiento.",
+            "not_yet": "Compara el acceso al dinero con la fecha del pago."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Estes recursos pagam no prazo?",
+          "scene": "Não há outro dinheiro. O saque abre no dia 5; o pagamento vence no dia 3.",
+          "options": [
+            {
+              "label": "Sim, os recursos existem"
+            },
+            {
+              "label": "Não, o acesso abre tarde"
+            }
+          ],
+          "help": [
+            "Compare o acesso ao dinheiro com a data do pagamento."
+          ],
+          "feedback": {
+            "met": "O dinheiro existe, mas não está acessível até o vencimento.",
+            "not_yet": "Compare o acesso ao dinheiro com a data do pagamento."
+          }
+        }
+      }
+    }
+  ]
+}

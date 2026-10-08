@@ -1,0 +1,779 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-spending-patterns-part-1",
+  "lesson_id": "fe-production-spending-patterns-06",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.spending-patterns.06"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Identify an unused recurring charge from a fictional account history.",
+  "title": {
+    "en-US": "Unused subscriptions",
+    "es-MX": "Cobros sin uso",
+    "pt-BR": "Cobranças sem uso"
+  },
+  "new_concepts": [
+    "finance.prod.spending-patterns.06"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Charges without use\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Cobros sin uso\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Cobranças sem uso\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.spending-patterns.06",
+      "observable_action": "Identify an unused recurring charge from a fictional account history.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.spending-patterns.01",
+      "prod.spending-patterns.04"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A recurring charge can continue after you stop using the service.",
+    "misconception": "Assuming that not using a service automatically stops its recurring charge.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.spending-patterns.06",
+        "context_id": "fe-production-spending-patterns-06-example-01",
+        "supports_from": [],
+        "reasoning": "An unused music service still charges monthly. Check its renewal and cancellation terms."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.spending-patterns.06",
+        "context_id": "fe-production-spending-patterns-06-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Repeated charges and absent use identify a service to review."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.spending-patterns.06",
+        "context_id": "fe-production-spending-patterns-06-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Removing an app and ending its subscription are separate actions."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.spending-patterns.06",
+        "context_id": "fe-production-spending-patterns-06-practice-01",
+        "supports_from": [],
+        "reasoning": "A recurring charge can support a real ongoing need."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.spending-patterns.06",
+        "context_id": "fe-production-spending-patterns-06-practice-02",
+        "supports_from": [],
+        "reasoning": "An unknown name does not establish use or authorization."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.spending-patterns.06",
+        "context_id": "fe-production-spending-patterns-06-practice-03",
+        "supports_from": [],
+        "reasoning": "Check the stated process; unused does not mean automatically canceled."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.spending-patterns.06",
+        "context_id": "fe-production-spending-patterns-06-transfer-01",
+        "supports_from": [],
+        "reasoning": "A shared service requires checking shared use before a decision."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.spending-patterns.06",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A recurring charge can continue after you stop using the service."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un cobro recurrente puede continuar aunque dejes de usar el servicio."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Uma cobrança recorrente pode continuar mesmo sem usar o serviço."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Check charges and use",
+          "line": "An unused music service still charges monthly. Check its renewal and cancellation terms."
+        },
+        "es-MX": {
+          "prompt": "Revisa cobros y uso",
+          "line": "Un servicio de música sin uso sigue cobrando mensualmente. Revisa renovación y cancelación."
+        },
+        "pt-BR": {
+          "prompt": "Confira cobranças e uso",
+          "line": "Um serviço de música sem uso ainda cobra mensalmente. Confira renovação e cancelamento."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.06",
+      "copy": {
+        "en-US": {
+          "prompt": "What deserves a renewal review?",
+          "scene": "Your statement repeats a video-service charge. Your usage record shows no viewing.",
+          "options": [
+            {
+              "label": "Every purchase ever made"
+            },
+            {
+              "label": "Only next month’s income"
+            },
+            {
+              "label": "The unused video service"
+            }
+          ],
+          "help": [
+            "Compare the recurring charge with actual use."
+          ],
+          "feedback": {
+            "met": "Repeated charges and absent use identify a service to review.",
+            "not_yet": "Compare the recurring charge with actual use."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué merece revisar su renovación?",
+          "scene": "Tu estado repite un cobro de video. Tu registro no muestra reproducciones.",
+          "options": [
+            {
+              "label": "Todas las compras anteriores"
+            },
+            {
+              "label": "Solo el ingreso del próximo mes"
+            },
+            {
+              "label": "El servicio de video sin uso"
+            }
+          ],
+          "help": [
+            "Compara el cobro recurrente con el uso real."
+          ],
+          "feedback": {
+            "met": "Cobros repetidos sin uso señalan un servicio que revisar.",
+            "not_yet": "Compara el cobro recurrente con el uso real."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual renovação merece revisão?",
+          "scene": "Seu extrato repete uma cobrança de vídeo. Seu registro não mostra visualizações.",
+          "options": [
+            {
+              "label": "Todas as compras anteriores"
+            },
+            {
+              "label": "Só a renda do próximo mês"
+            },
+            {
+              "label": "O serviço de vídeo sem uso"
+            }
+          ],
+          "help": [
+            "Compare a cobrança recorrente com o uso real."
+          ],
+          "feedback": {
+            "met": "Cobranças repetidas sem uso indicam um serviço para revisar.",
+            "not_yet": "Compare a cobrança recorrente com o uso real."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.06",
+      "copy": {
+        "en-US": {
+          "prompt": "What does the statement establish?",
+          "scene": "You deleted an unused app. Its subscription still renews on the statement.",
+          "options": [
+            {
+              "label": "The charge has not stopped"
+            },
+            {
+              "label": "A refund is guaranteed"
+            },
+            {
+              "label": "Deletion ended the subscription"
+            }
+          ],
+          "help": [
+            "Use the billing record as evidence."
+          ],
+          "feedback": {
+            "met": "Removing an app and ending its subscription are separate actions.",
+            "not_yet": "Use the billing record as evidence."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué demuestra el estado?",
+          "scene": "Borraste una aplicación sin uso. Su suscripción sigue renovándose en el estado.",
+          "options": [
+            {
+              "label": "El cobro no se detuvo"
+            },
+            {
+              "label": "El reembolso está garantizado"
+            },
+            {
+              "label": "Borrarla terminó la suscripción"
+            }
+          ],
+          "help": [
+            "Usa el registro de cobros como evidencia."
+          ],
+          "feedback": {
+            "met": "Borrar una aplicación y terminar su suscripción son acciones distintas.",
+            "not_yet": "Usa el registro de cobros como evidencia."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que o extrato demonstra?",
+          "scene": "Apagou um aplicativo sem uso. A assinatura continua renovando no extrato.",
+          "options": [
+            {
+              "label": "A cobrança não parou"
+            },
+            {
+              "label": "O reembolso está garantido"
+            },
+            {
+              "label": "Apagar encerrou a assinatura"
+            }
+          ],
+          "help": [
+            "Use o registro de cobranças como evidência."
+          ],
+          "feedback": {
+            "met": "Apagar um aplicativo e encerrar sua assinatura são ações distintas.",
+            "not_yet": "Use o registro de cobranças como evidência."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Is recurrence enough to call it unused?",
+          "scene": "A monthly storage plan supports your household’s required backups.",
+          "options": [
+            {
+              "label": "Yes, backups do not count"
+            },
+            {
+              "label": "No, its stated use matters"
+            },
+            {
+              "label": "Yes, all renewals are unused"
+            }
+          ],
+          "help": [
+            "Check use before deciding whether a charge is avoidable."
+          ],
+          "feedback": {
+            "met": "A recurring charge can support a real ongoing need.",
+            "not_yet": "Check use before deciding whether a charge is avoidable."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Ser recurrente basta para llamarlo sin uso?",
+          "scene": "Un plan de almacenamiento se renueva mensualmente. Lo necesitas para respaldos familiares.",
+          "options": [
+            {
+              "label": "Sí, los respaldos no cuentan"
+            },
+            {
+              "label": "No, importa el uso indicado"
+            },
+            {
+              "label": "Sí, toda renovación es sin uso"
+            }
+          ],
+          "help": [
+            "Revisa el uso antes de decidir si puedes evitar el cobro."
+          ],
+          "feedback": {
+            "met": "Un cobro recurrente puede cubrir una necesidad continua real.",
+            "not_yet": "Revisa el uso antes de decidir si puedes evitar el cobro."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Ser recorrente basta para chamá-lo sem uso?",
+          "scene": "Um plano de armazenamento renova mensalmente. Precisa dele para cópias de segurança familiares.",
+          "options": [
+            {
+              "label": "Sim, cópias não contam"
+            },
+            {
+              "label": "Não, o uso informado importa"
+            },
+            {
+              "label": "Sim, toda renovação é sem uso"
+            }
+          ],
+          "help": [
+            "Confira o uso antes de decidir se pode evitar a cobrança."
+          ],
+          "feedback": {
+            "met": "Uma cobrança recorrente pode atender uma necessidade contínua real.",
+            "not_yet": "Confira o uso antes de decidir se pode evitar a cobrança."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Best next check?",
+          "scene": "A repeated charge has an unfamiliar merchant name; you cannot identify the service.",
+          "options": [
+            {
+              "label": "Assume nobody uses it"
+            },
+            {
+              "label": "Identify it through verified records"
+            },
+            {
+              "label": "Share account access with the caller"
+            }
+          ],
+          "help": [
+            "Verify the charge before classifying it."
+          ],
+          "feedback": {
+            "met": "An unknown name does not establish use or authorization.",
+            "not_yet": "Verify the charge before classifying it."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué revisar después?",
+          "scene": "Un cobro repetido tiene un comercio desconocido; no identificas el servicio.",
+          "options": [
+            {
+              "label": "Suponer que nadie lo usa"
+            },
+            {
+              "label": "Identificarlo con registros verificados"
+            },
+            {
+              "label": "Compartir acceso con quien llame"
+            }
+          ],
+          "help": [
+            "Verifica el cobro antes de clasificarlo."
+          ],
+          "feedback": {
+            "met": "Un nombre desconocido no demuestra uso ni autorización.",
+            "not_yet": "Verifica el cobro antes de clasificarlo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que conferir depois?",
+          "scene": "Uma cobrança repetida tem um nome desconhecido; não identifica o serviço.",
+          "options": [
+            {
+              "label": "Supor que ninguém usa"
+            },
+            {
+              "label": "Identificá-la com registros verificados"
+            },
+            {
+              "label": "Compartilhar acesso com quem ligar"
+            }
+          ],
+          "help": [
+            "Confira a cobrança antes de classificá-la."
+          ],
+          "feedback": {
+            "met": "Um nome desconhecido não comprova uso nem autorização.",
+            "not_yet": "Confira a cobrança antes de classificá-la."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.06",
+      "copy": {
+        "en-US": {
+          "prompt": "What matters before stopping future charges?",
+          "scene": "You no longer use a membership. Its terms mention a cancellation deadline.",
+          "options": [
+            {
+              "label": "The cancellation process and deadline"
+            },
+            {
+              "label": "Only your last visit"
+            },
+            {
+              "label": "Only deleting reminder messages"
+            }
+          ],
+          "help": [
+            "Find what makes cancellation effective."
+          ],
+          "feedback": {
+            "met": "Check the stated process; unused does not mean automatically canceled.",
+            "not_yet": "Find what makes cancellation effective."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué importa para detener cobros futuros?",
+          "scene": "Ya no usas una membresía. Sus condiciones mencionan un plazo de cancelación.",
+          "options": [
+            {
+              "label": "El proceso y plazo de cancelación"
+            },
+            {
+              "label": "Solo tu última visita"
+            },
+            {
+              "label": "Solo borrar recordatorios"
+            }
+          ],
+          "help": [
+            "Busca qué vuelve efectiva la cancelación."
+          ],
+          "feedback": {
+            "met": "Revisa el proceso indicado; sin uso no significa cancelado automáticamente.",
+            "not_yet": "Busca qué vuelve efectiva la cancelación."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que importa para parar cobranças futuras?",
+          "scene": "Não usa mais uma associação. As condições mencionam um prazo de cancelamento.",
+          "options": [
+            {
+              "label": "O processo e prazo de cancelamento"
+            },
+            {
+              "label": "Só sua última visita"
+            },
+            {
+              "label": "Só apagar lembretes"
+            }
+          ],
+          "help": [
+            "Busque o que torna o cancelamento efetivo."
+          ],
+          "feedback": {
+            "met": "Confira o processo informado; sem uso não significa cancelado automaticamente.",
+            "not_yet": "Busque o que torna o cancelamento efetivo."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.spending-patterns.06",
+      "copy": {
+        "en-US": {
+          "prompt": "What should the review include?",
+          "scene": "A shared household plan renews. You do not use it; another household member does.",
+          "options": [
+            {
+              "label": "Your use alone"
+            },
+            {
+              "label": "Household use, cost and terms"
+            },
+            {
+              "label": "Automatic cancellation without checking"
+            }
+          ],
+          "help": [
+            "Match the review to everyone covered by the plan."
+          ],
+          "feedback": {
+            "met": "A shared service requires checking shared use before a decision.",
+            "not_yet": "Match the review to everyone covered by the plan."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe incluir la revisión?",
+          "scene": "Un plan familiar se renueva. Tú no lo usas; otra persona del hogar sí.",
+          "options": [
+            {
+              "label": "Solo tu uso"
+            },
+            {
+              "label": "Uso familiar, costo y condiciones"
+            },
+            {
+              "label": "Cancelar automáticamente sin revisar"
+            }
+          ],
+          "help": [
+            "Incluye a quienes cubre el plan."
+          ],
+          "feedback": {
+            "met": "Un servicio compartido exige revisar el uso compartido antes de decidir.",
+            "not_yet": "Incluye a quienes cubre el plan."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que a revisão deve incluir?",
+          "scene": "Um plano familiar renova. Você não usa; outra pessoa da casa usa.",
+          "options": [
+            {
+              "label": "Só seu uso"
+            },
+            {
+              "label": "Uso familiar, custo e condições"
+            },
+            {
+              "label": "Cancelar automaticamente sem conferir"
+            }
+          ],
+          "help": [
+            "Inclua quem o plano atende."
+          ],
+          "feedback": {
+            "met": "Um serviço compartilhado exige conferir o uso compartilhado antes de decidir.",
+            "not_yet": "Inclua quem o plano atende."
+          }
+        }
+      }
+    }
+  ]
+}

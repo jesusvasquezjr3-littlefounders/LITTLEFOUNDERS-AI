@@ -2,6 +2,7 @@ import { requireAgeScreen } from '../middleware/ageScreen.js';
 import { readAgeScreen, type AgeScreenState } from '../services/ageScreen.js';
 import { knownMentorAgeTier, MentorAgeTier, readMentorAgeCalibration, recordMentorAgeCalibration, resolveInternalMentorAge } from '../services/mentorAgeCalibration.js';
 import { Router } from 'express';
+import { startOfLocalDayIso } from '../lib/localDay.js';
 import { z } from 'zod';
 import { getConfig } from '../config.js';
 import { authedUser, requireAuth, requireInternalKey } from '../middleware/auth.js';
@@ -13,6 +14,7 @@ import {
   getFullOwnProfile,
   getVerifiedKidLinks,
   getVerifiedGuardiansOfKid,
+  getLessonById,
   insertAuditLog,
   serviceRest,
   type FullProfileRow,
@@ -157,6 +159,7 @@ import {
 } from '../services/pedagogy/kcData.js';
 import { purgeExpiredTutorSessions } from '../services/tutorRetention.js';
 import { buildSessionPlan } from '../services/pedagogy/sessionPlan.js';
+import { eligibleMentorKcs, eligibleMentorSkills } from '../services/pedagogy/kcEligibility.js';
 import { buildMasteryEvidence } from '../services/pedagogy/masteryEvidence.js';
 import { revealsAnswerKey } from '../services/pedagogy/answerReveal.js';
 import { buildTutorMap } from '../services/pedagogy/tutorMap.js';
@@ -260,88 +263,8 @@ export function isStaffRoles(roles: readonly string[]): boolean {
 /** Without a cap the tutor is the cheapest XP per minute and courses become optional (§8). */
 const MAX_TUTOR_XP_PER_DAY = 120;
 const PASS_THRESHOLD = 70;
-
-/**
- * Start of "today" in the calendar day the LEARNER experiences, not the
- * server's UTC day.
- *
- * Found by adversarial review, round 34 (2026-08-30, MEDIUM-HIGH,
- * systematic — not a rare boundary case). This used to be a plain
- * `Date.UTC(...)` midnight, and UTC midnight falls in the afternoon or
- * evening local time for all three of this platform's locales (roughly
- * 13:00-21:00 depending on locale and DST). So an entirely ordinary
- * morning session and evening session, both on the SAME local calendar
- * day, were treated as two different cap windows — letting a third or
- * fourth session through on what is, for that learner, still today. This
- * was reachable through completely ordinary use, every day, for the large
- * majority of the real user base, not an edge case near a boundary.
- *
- * There is no stored per-user timezone (a bigger feature than this fix
- * adds), so the locale maps to one representative IANA zone — an
- * approximation for `en-US`, which spans several US timezones, but still
- * strictly more correct than a UTC boundary for the other two locales, and
- * no worse than UTC was for the one it cannot represent precisely.
- */
-const LOCALE_TIMEZONE: Record<'en-US' | 'es-MX' | 'pt-BR', string> = {
-  'es-MX': 'America/Mexico_City',
-  'pt-BR': 'America/Sao_Paulo',
-  'en-US': 'America/New_York',
-};
-
-/**
- * `daysAhead` (default 0, "today") lets the SAME offset-derivation serve the
- * daily cap's own reset instant: `daysAhead: 1` is "tomorrow's local
- * midnight" — the exact moment `MAX_SESSIONS_PER_DAY` allows another session,
- * because `sinceIso` above is this same function's `daysAhead: 0`. `Date.UTC`
- * accepts an out-of-range day and rolls the month/year forward correctly, so
- * a request on the last day of the month needs no special case.
- *
- * Reuses `now`'s own UTC offset for the target day rather than recomputing
- * it for that day specifically — the same approximation this function's own
- * header comment already accepts for `daysAhead: 0` (no DST-transition-day
- * correction). A SESSION_LIMIT reset estimate off by an hour on the handful
- * of nights a locale's clocks change is a UI approximation, not a cap
- * enforcement bug — the cap itself is still enforced against the real
- * boundary computed fresh on the request that matters.
- */
-export function startOfLocalDayIso(
-  locale: 'en-US' | 'es-MX' | 'pt-BR',
-  now: Date = new Date(),
-  daysAhead = 0,
-): string {
-  const timeZone = LOCALE_TIMEZONE[locale];
-  const parts = Object.fromEntries(
-    new Intl.DateTimeFormat('en-US', {
-      timeZone,
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit',
-      hour12: false,
-    })
-      .formatToParts(now)
-      .map((p) => [p.type, p.value]),
-  ) as Record<string, string>;
-  // The clock reading `now` HAS in `timeZone`, reinterpreted as if it were
-  // UTC, reveals that zone's current UTC offset — derived from `now` itself
-  // rather than a fixed table, so it is correct across a DST transition.
-  // `% 24` guards against `Intl`'s documented midnight-as-"24" quirk under
-  // `hour12: false`.
-  const asIfUtcMs = Date.UTC(
-    Number(parts.year),
-    Number(parts.month) - 1,
-    Number(parts.day),
-    Number(parts.hour) % 24,
-    Number(parts.minute),
-    Number(parts.second),
-  );
-  const offsetMs = asIfUtcMs - now.getTime();
-  const localMidnightUtcMs =
-    Date.UTC(Number(parts.year), Number(parts.month) - 1, Number(parts.day) + daysAhead, 0, 0, 0) - offsetMs;
-  return new Date(localMidnightUtcMs).toISOString();
-}
+// The learner-local day boundary lives in lib/localDay.ts (shared with the games' daily cap); re-exported so existing callers are unchanged.
+export { startOfLocalDayIso } from '../lib/localDay.js';
 
 /**
  * The wire shape of the SESSION_LIMIT refusal's one extra field (§1.9
@@ -548,6 +471,10 @@ function internalRouter(): Router {
     if (!calibration) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve mentor age calibration');
     if (calibration.tier === null) return fail(res, 403, 'MENTOR_AGE_CALIBRATION_REQUIRED', 'Complete mentor age calibration first');
     if (calibration.tier !== session.tier) return fail(res, 409, 'SESSION_AGE_CHANGED', 'Start a session with the confirmed teaching register');
+    const sessionSkills = [session.skill_key, session.topic_id ? `topic:${session.topic_id}` : null].filter((key): key is string => Boolean(key));
+    const sessionEligible = await eligibleMentorSkills(session.user_id, sessionSkills);
+    if (sessionEligible === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve content eligibility');
+    if (sessionSkills.some(key => !sessionEligible.has(key))) return fail(res, 403, 'CONTENT_AGE_RESTRICTED', 'This content is not available for this learner');
 
     const prefs = await getTutorPreferences(session.user_id);
     if (prefs === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read tutor preferences');
@@ -564,7 +491,7 @@ function internalRouter(): Router {
     const states = await getOwnLearnerIntelligence(session.user_id);
     const intelDegraded = states === null;
 
-    let courseContext =
+    let courseContext: CourseContextWire | null =
       session.course_id || session.topic_id
         ? await resolveCourseContext(session.course_id, session.topic_id, session.locale)
         : null;
@@ -605,6 +532,12 @@ function internalRouter(): Router {
       // `buildPlan` rather than refusing an already-running session — a
       // failed or missing lookup here costs a less-readable objective, never
       // the session itself.
+    }
+
+    // OD-43: the current lesson in the topic, so the Mentor can complement the course.
+    if (courseContext?.topicId) {
+      const lesson = await resolveCurrentLesson(session.user_id, courseContext.topicId, session.locale);
+      if (lesson) courseContext = { ...courseContext, lesson };
     }
 
     /*
@@ -2233,9 +2166,18 @@ function internalRouter(): Router {
       let kcCatalog: KcRow[] | null = null;
       if (parsed.data.kcId) {
         kcCatalog = await getActiveKcs();
+        if (kcCatalog === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve content eligibility');
+        const allowedKcs = await eligibleMentorKcs(session.user_id, kcCatalog);
+        if (allowedKcs === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve content eligibility');
+        if (kcCatalog.some(k => k.id === parsed.data.kcId) && !allowedKcs.some(k => k.id === parsed.data.kcId)) return fail(res, 403, 'CONTENT_AGE_RESTRICTED', 'This content is not available for this learner');
+        kcCatalog = allowedKcs;
         const kc = kcCatalog?.find((k) => k.id === parsed.data.kcId);
         if (kc?.skill_key) namedSkill = kc.skill_key;
       }
+      const requestedSkills = [namedSkill, session.skill_key, session.topic_id ? `topic:${session.topic_id}` : null].filter((key): key is string => Boolean(key));
+      const allowedSkills = await eligibleMentorSkills(session.user_id, requestedSkills);
+      if (allowedSkills === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve content eligibility');
+      if (requestedSkills.some(key => !allowedSkills.has(key))) return fail(res, 403, 'CONTENT_AGE_RESTRICTED', 'This content is not available for this learner');
       const skill = namedSkill === null ? null : await resolveSkill(namedSkill);
       if (!skill && namedSkill !== null) {
         /*
@@ -2561,6 +2503,19 @@ function internalRouter(): Router {
 
     const session = await getTutorSession(parsed.data.sessionId);
     if (!session) return fail(res, 404, NOT_FOUND, 'No such session');
+    const requestedSkills = [session.skill_key, session.topic_id ? `topic:${session.topic_id}` : null,
+      typeof parsed.data.provenance.skill_key === 'string' ? parsed.data.provenance.skill_key : null,
+      typeof parsed.data.provenance.skillKey === 'string' ? parsed.data.provenance.skillKey : null,
+    ].filter((key): key is string => Boolean(key));
+    if (parsed.data.kcId) {
+      const kcs = await getActiveKcs();
+      if (kcs === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve content eligibility');
+      const key = kcs.find(k => k.id === parsed.data.kcId)?.skill_key;
+      if (key) requestedSkills.push(key);
+    }
+    const allowedSkills = await eligibleMentorSkills(session.user_id, requestedSkills);
+    if (allowedSkills === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve content eligibility');
+    if (requestedSkills.some(key => !allowedSkills.has(key))) return fail(res, 403, 'CONTENT_AGE_RESTRICTED', 'This content is not available for this learner');
 
     const segment = parsed.data.segment as unknown as SegmentBase;
     const ladderEvent = (
@@ -3212,6 +3167,67 @@ async function resolveCourseContext(
   };
 }
 
+/** OD-43: the learner's place in the course topic, as the Mentor may see it. */
+interface CourseLessonRef {
+  lessonId: string;
+  lessonTitle: string;
+  step: number;
+  total: number;
+}
+
+type CourseContextWire = {
+  courseId: string | null;
+  courseTitle: string | null;
+  topicId: string | null;
+  topicTitle: string | null;
+  lesson?: CourseLessonRef | null;
+};
+
+/**
+ * OD-43 (owner sign-off, 2026-10-06): the Mentor as a complement to the
+ * course. The learner's CURRENT lesson in a topic — the first published,
+ * non-enrichment lesson they have not passed, in position order — with its
+ * place, so the Mentor can ground its talk in the real lesson and where it
+ * sits. Server-role reads on the session's OWN learner, the same class of
+ * course structure `resolveCourseContext` already reads; it carries OUR
+ * catalog title and a position, never anything the learner typed. Null when
+ * the lesson cannot be resolved, which simply leaves the Mentor topic-level.
+ */
+async function resolveCurrentLesson(userId: string, topicId: string, locale: string): Promise<CourseLessonRef | null> {
+  const lessons = await serviceRest<Array<{ id: string; position: number; title: Record<string, string>; optional_enrichment: boolean | null }>>(
+    `/lessons?topic_id=eq.${encodeURIComponent(topicId)}&status=eq.published&select=id,position,title,optional_enrichment&order=position.asc,id.asc`,
+  );
+  if (!lessons) return null;
+  const ordered = lessons.filter((lesson) => !lesson.optional_enrichment);
+  if (ordered.length === 0) return null;
+  const ids = ordered.map((lesson) => lesson.id);
+  const progress = await serviceRest<Array<{ lesson_id: string; passed: boolean }>>(
+    `/lesson_progress?user_id=eq.${encodeURIComponent(userId)}&lesson_id=in.(${ids.join(',')})&select=lesson_id,passed`,
+  );
+  const passed = new Set((progress ?? []).filter((row) => row.passed).map((row) => row.lesson_id));
+  const index = ordered.findIndex((lesson) => !passed.has(lesson.id));
+  const at = index === -1 ? ordered.length - 1 : index;
+  const lessonTitle = pickTitle(ordered[at]!.title, normalizeLocale(locale));
+  if (!lessonTitle) return null;
+  return { lessonId: ordered[at]!.id, lessonTitle, step: at + 1, total: ordered.length };
+}
+
+/**
+ * OD-43: the course a topic belongs to (topics → sagas → adventures →
+ * course_id). Used only to anchor a lesson-opened review to its course so the
+ * Mentor can name it; a failed read degrades to a topic-only anchor.
+ */
+async function courseIdForTopic(topicId: string): Promise<string | null> {
+  const rows = await serviceRest<Array<{ sagas: unknown }>>(
+    `/topics?id=eq.${encodeURIComponent(topicId)}&select=sagas!inner(adventures!inner(course_id))&limit=1`,
+  );
+  const saga = Array.isArray(rows?.[0]?.sagas) ? (rows![0]!.sagas as unknown[])[0] : rows?.[0]?.sagas;
+  const adventure = saga && typeof saga === 'object' ? (saga as { adventures?: unknown }).adventures : null;
+  const adv = Array.isArray(adventure) ? adventure[0] : adventure;
+  const courseId = adv && typeof adv === 'object' ? (adv as { course_id?: string }).course_id : null;
+  return courseId ?? null;
+}
+
 /** A friendly word, not a name, for a learner who has not chosen a nickname. */
 function neutralNickname(locale: string): string {
   if (locale === 'en-US') return 'Explorer';
@@ -3554,6 +3570,8 @@ export function tutorRouter(): Router {
       intent: z.enum(['course_topic', 'weak_skill', 'faq', 'open', 'diagnostic']),
       courseId: z.string().uuid().nullish(),
       topicId: z.string().uuid().nullish(),
+      /** OD-43: a guided review opened FROM a lesson carries its id; Core resolves the topic/course from it. */
+      lessonId: z.string().uuid().nullish(),
       skillKey: z.string().min(1).max(128).nullish(),
       wantsVoice: z.boolean().default(false),
     })
@@ -3631,6 +3649,22 @@ export function tutorRouter(): Router {
         return fail(res, 400, VALIDATION, 'skillKey does not name a real skill');
       }
     }
+    // OD-43: a guided review opened FROM a lesson carries the lesson id; resolve
+    // its topic and course so the Mentor can complement the course. No migration:
+    // the topic and course travel in the columns the session already stores.
+    let courseId = parsed.data.courseId ?? null;
+    let topicId = parsed.data.topicId ?? null;
+    if (parsed.data.intent === 'weak_skill' && !topicId && parsed.data.lessonId) {
+      const lesson = await getLessonById(user.accessToken, parsed.data.lessonId);
+      if (lesson) {
+        topicId = lesson.topic_id;
+        if (!courseId) courseId = await courseIdForTopic(lesson.topic_id);
+      }
+    }
+    const requestedSkills = [parsed.data.skillKey, topicId ? `topic:${topicId}` : null].filter((key): key is string => Boolean(key));
+    const allowedSkills = await eligibleMentorSkills(user.id, requestedSkills);
+    if (allowedSkills === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve content eligibility');
+    if (requestedSkills.some(key => !allowedSkills.has(key))) return fail(res, 403, 'CONTENT_AGE_RESTRICTED', 'This content is not available for this learner');
 
     const roles = await getRolesForGate(user.id);
     if (roles === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve roles');
@@ -3683,8 +3717,8 @@ export function tutorRouter(): Router {
       companion: prefs.companion,
       diorama: prefs.diorama,
       intent: parsed.data.intent,
-      courseId: parsed.data.courseId ?? null,
-      topicId: parsed.data.topicId ?? null,
+      courseId,
+      topicId,
       skillKey: parsed.data.skillKey ?? null,
       voiceUsed: wantsVoice && runtime.microphoneAvailable,
       consentId: consent?.id ?? null,
@@ -3874,8 +3908,39 @@ export function tutorRouter(): Router {
       return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not read the transcript');
     }
 
+    /*
+     * The learner's own closing summary. Reuses the SAME deterministic
+     * builder the guardian view uses (`buildSessionNarrative`): `kc_attempt`
+     * names the topics practised and whether each was missed, and
+     * `tutor_sessions.summary` carries the graded fraction — no model call, no
+     * new table, no new field reaching a model, no new consent. Titles resolve
+     * in the CALLER's own locale: here the learner reads their own session.
+     */
+    const narrativeLocale = normalizeLocale((await profileOf(user.accessToken, user.id))?.locale);
+    const attemptRows = (await getKcAttemptsForSessions([session.id])) ?? [];
+    const kcIds = [...new Set(attemptRows.map((a) => a.kc_id))];
+    const kcTitleRows = kcIds.length > 0 ? ((await getKcTitlesByIds(kcIds)) ?? []) : [];
+    const titleById = new Map<string, string>();
+    for (const row of kcTitleRows) {
+      const title = pickTitle(row.title, narrativeLocale);
+      if (title) titleById.set(row.id, title);
+    }
+    const attempts = attemptRows.flatMap((row) => {
+      const kcTitle = titleById.get(row.kc_id);
+      return kcTitle ? [{ kcId: row.kc_id, kcTitle, correct: row.correct, createdAt: row.created_at }] : [];
+    });
+    const topicId = session.summary?.topicId ?? null;
+    const topicTitle = topicId ? pickTitle((await getTopicTitlesByIds([topicId])).get(topicId) ?? {}, narrativeLocale) : null;
+    const narrative = buildSessionNarrative({
+      attempts,
+      fallbackTopic: topicTitle ?? session.summary?.topic ?? null,
+      gradedCorrect: session.summary?.gradedCorrect ?? null,
+      gradedTotal: session.summary?.gradedTotal ?? null,
+    });
+
     return ok(res, {
       session: summarizeSession(session),
+      narrative,
       turns,
       // stripCandidate, not the raw row: `tutor_segments.answer` is
       // service-role-only and must not reach a client even on a replay.

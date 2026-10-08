@@ -1,0 +1,779 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-shared-finances-part-1",
+  "lesson_id": "fe-production-shared-finances-03",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.shared-finances.03"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Create a shared-payment agreement that identifies amount, responsibility and review date.",
+  "title": {
+    "en-US": "Payment Agreements",
+    "es-MX": "Aclara el acuerdo de pagos",
+    "pt-BR": "Deixe o acordo de pagamentos claro"
+  },
+  "new_concepts": [
+    "finance.prod.shared-finances.03"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Payment Agreements\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Aclara el acuerdo de pagos\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Deixe o acordo de pagamentos claro\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.shared-finances.03",
+      "observable_action": "Create a shared-payment agreement that identifies amount, responsibility and review date.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.shared-finances.01",
+      "cash.dates"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A shared bill needs an owner for each action, a clear amount and a date to revisit the plan.",
+    "misconception": "A vague promise to help is a complete payment agreement, or review means a silent unilateral change.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.shared-finances.03",
+        "context_id": "shared-finances-03-example-01",
+        "supports_from": [],
+        "reasoning": "Write who contributes what and when, who makes the payment, and when both will review changes."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.shared-finances.03",
+        "context_id": "shared-finances-03-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "A usable agreement states how much each person contributes."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.shared-finances.03",
+        "context_id": "shared-finances-03-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Saving contributions and sending payment are different actions."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.shared-finances.03",
+        "context_id": "shared-finances-03-practice-01",
+        "supports_from": [],
+        "reasoning": "The first agreement identifies responsibility and a review time."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.shared-finances.03",
+        "context_id": "shared-finances-03-practice-02",
+        "supports_from": [],
+        "reasoning": "Early communication allows a shared response to the gap."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.shared-finances.03",
+        "context_id": "shared-finances-03-practice-03",
+        "supports_from": [],
+        "reasoning": "A review date creates a chance to update the agreement."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.shared-finances.03",
+        "context_id": "shared-finances-03-transfer-01",
+        "supports_from": [],
+        "reasoning": "A review date helps the arrangement respond to changed costs."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.shared-finances.03",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A shared bill needs an owner for each action, a clear amount and a date to revisit the plan."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Una cuenta compartida necesita responsable por acción, monto claro y fecha para revisar el plan."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Uma conta conjunta precisa de responsável por ação, valor claro e data para rever o plano."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Amount, owner, review",
+          "line": "Write who contributes what and when, who makes the payment, and when both will review changes."
+        },
+        "es-MX": {
+          "prompt": "Monto, responsable, revisión",
+          "line": "Escriban quién aporta cuánto y cuándo, quién realiza el pago y cuándo revisarán cambios entre ambos."
+        },
+        "pt-BR": {
+          "prompt": "Valor, responsável, revisão",
+          "line": "Escrevam quem contribui quanto e quando, quem faz o pagamento e quando ambos reverão mudanças."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.03",
+      "copy": {
+        "en-US": {
+          "prompt": "What is missing?",
+          "scene": "“We will help with rent” names no contribution amount.",
+          "options": [
+            {
+              "label": "The expense being shared"
+            },
+            {
+              "label": "The household’s total income"
+            },
+            {
+              "label": "Each agreed amount"
+            }
+          ],
+          "help": [
+            "Replace vague help with a clear agreed contribution."
+          ],
+          "feedback": {
+            "met": "A usable agreement states how much each person contributes.",
+            "not_yet": "Replace vague help with a clear agreed contribution."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué falta?",
+          "scene": "«Ayudaremos con la renta» no indica monto de aporte.",
+          "options": [
+            {
+              "label": "El gasto que comparten"
+            },
+            {
+              "label": "El ingreso total del hogar"
+            },
+            {
+              "label": "Cada monto acordado"
+            }
+          ],
+          "help": [
+            "Reemplaza ayuda vaga con un aporte claro acordado."
+          ],
+          "feedback": {
+            "met": "Un acuerdo útil indica cuánto aporta cada persona.",
+            "not_yet": "Reemplaza ayuda vaga con un aporte claro acordado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que falta?",
+          "scene": "“Ajudaremos com aluguel” não indica valor de aporte.",
+          "options": [
+            {
+              "label": "A despesa compartilhada"
+            },
+            {
+              "label": "A renda total da família"
+            },
+            {
+              "label": "Cada valor combinado"
+            }
+          ],
+          "help": [
+            "Troque ajuda vaga por um aporte claro combinado."
+          ],
+          "feedback": {
+            "met": "Um acordo útil indica quanto cada pessoa paga.",
+            "not_yet": "Troque ajuda vaga por um aporte claro combinado."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Who needs to be assigned?",
+          "scene": "Both set aside their shares, but nobody is named to send the bill payment.",
+          "options": [
+            {
+              "label": "Only a witness"
+            },
+            {
+              "label": "Whoever contributes the most"
+            },
+            {
+              "label": "The payment sender"
+            }
+          ],
+          "help": [
+            "Assign responsibility for making the actual payment."
+          ],
+          "feedback": {
+            "met": "Saving contributions and sending payment are different actions.",
+            "not_yet": "Assign responsibility for making the actual payment."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Quién debe asignarse?",
+          "scene": "Ambos separan sus partes, pero nadie está designado para enviar el pago.",
+          "options": [
+            {
+              "label": "Solo un testigo"
+            },
+            {
+              "label": "Quien aporte más dinero"
+            },
+            {
+              "label": "Quien envía el pago"
+            }
+          ],
+          "help": [
+            "Asigna responsable de realizar el pago efectivo."
+          ],
+          "feedback": {
+            "met": "Separar aportes y enviar pago son acciones distintas.",
+            "not_yet": "Asigna responsable de realizar el pago efectivo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quem deve ser indicado?",
+          "scene": "Ambos separam suas partes, mas ninguém foi indicado para enviar o pagamento.",
+          "options": [
+            {
+              "label": "Só uma testemunha"
+            },
+            {
+              "label": "Quem contribuir mais dinheiro"
+            },
+            {
+              "label": "Quem envia o pagamento"
+            }
+          ],
+          "help": [
+            "Indique responsável por fazer o pagamento de fato."
+          ],
+          "feedback": {
+            "met": "Separar aportes e enviar pagamento são ações distintas.",
+            "not_yet": "Indique responsável por fazer o pagamento de fato."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Which agreement is actionable?",
+          "scene": "A household wants clear amount, payer and review timing.",
+          "options": [
+            {
+              "label": "Jo pays 200; review monthly"
+            },
+            {
+              "label": "We will probably manage"
+            },
+            {
+              "label": "Someone helps sometime"
+            }
+          ],
+          "help": [
+            "Choose clear commitments instead of vague intentions."
+          ],
+          "feedback": {
+            "met": "The first agreement identifies responsibility and a review time.",
+            "not_yet": "Choose clear commitments instead of vague intentions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué acuerdo permite actuar?",
+          "scene": "Hogar quiere monto, responsable y fecha de revisión claros.",
+          "options": [
+            {
+              "label": "Jo paga 200; revisión mensual"
+            },
+            {
+              "label": "Probablemente podremos"
+            },
+            {
+              "label": "Alguien ayuda algún día"
+            }
+          ],
+          "help": [
+            "Elige compromisos claros en lugar de intenciones vagas."
+          ],
+          "feedback": {
+            "met": "El primer acuerdo identifica responsable y momento de revisión.",
+            "not_yet": "Elige compromisos claros en lugar de intenciones vagas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual acordo permite agir?",
+          "scene": "Família quer valor, responsável e data de revisão claros.",
+          "options": [
+            {
+              "label": "Jo paga 200; revisão mensal"
+            },
+            {
+              "label": "Provavelmente daremos conta"
+            },
+            {
+              "label": "Alguém ajuda algum dia"
+            }
+          ],
+          "help": [
+            "Escolha compromissos claros em vez de intenções vagas."
+          ],
+          "feedback": {
+            "met": "O primeiro acordo indica responsável e momento de revisão.",
+            "not_yet": "Escolha compromissos claros em vez de intenções vagas."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.03",
+      "copy": {
+        "en-US": {
+          "prompt": "What should change before payment?",
+          "scene": "One person cannot make the agreed contribution; the other needs time to plan.",
+          "options": [
+            {
+              "label": "Discuss an updated agreement"
+            },
+            {
+              "label": "Stay silent until payment fails"
+            },
+            {
+              "label": "Assume the other knows"
+            }
+          ],
+          "help": [
+            "Agree responsibilities before the payment becomes due."
+          ],
+          "feedback": {
+            "met": "Early communication allows a shared response to the gap.",
+            "not_yet": "Agree responsibilities before the payment becomes due."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué hacer antes del vencimiento?",
+          "scene": "Una persona no puede aportar lo acordado; la otra necesita tiempo para planear.",
+          "options": [
+            {
+              "label": "Discutir un acuerdo actualizado"
+            },
+            {
+              "label": "Callar hasta fallar el pago"
+            },
+            {
+              "label": "Suponer que la otra sabe"
+            }
+          ],
+          "help": [
+            "Acuerden responsabilidades antes de vencer el pago."
+          ],
+          "feedback": {
+            "met": "Comunicar pronto permite responder juntos al faltante.",
+            "not_yet": "Acuerden responsabilidades antes de vencer el pago."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que fazer antes do vencimento?",
+          "scene": "Uma pessoa não pode pagar o combinado; a outra precisa de tempo para planejar.",
+          "options": [
+            {
+              "label": "Discutir um acordo atualizado"
+            },
+            {
+              "label": "Calar até falhar o pagamento"
+            },
+            {
+              "label": "Supor que a outra sabe"
+            }
+          ],
+          "help": [
+            "Combinem deveres antes do vencimento."
+          ],
+          "feedback": {
+            "met": "Avisar cedo permite responder juntos à falta.",
+            "not_yet": "Combinem deveres antes do vencimento."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.03",
+      "copy": {
+        "en-US": {
+          "prompt": "What does a review date provide?",
+          "scene": "The household expects income to change next month.",
+          "options": [
+            {
+              "label": "A planned time to reassess"
+            },
+            {
+              "label": "A guarantee income rises"
+            },
+            {
+              "label": "Automatic permission to stop paying"
+            }
+          ],
+          "help": [
+            "Separate reassessment from automatic cancellation of commitments."
+          ],
+          "feedback": {
+            "met": "A review date creates a chance to update the agreement.",
+            "not_yet": "Separate reassessment from automatic cancellation of commitments."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué aporta una fecha de revisión?",
+          "scene": "Hogar espera cambios de ingreso el próximo mes.",
+          "options": [
+            {
+              "label": "Momento previsto para reevaluar"
+            },
+            {
+              "label": "Garantía de mayor ingreso"
+            },
+            {
+              "label": "Permiso automático para no pagar"
+            }
+          ],
+          "help": [
+            "Separa reevaluación de cancelar compromisos automáticamente."
+          ],
+          "feedback": {
+            "met": "Una fecha de revisión permite actualizar el acuerdo.",
+            "not_yet": "Separa reevaluación de cancelar compromisos automáticamente."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que oferece uma data de revisão?",
+          "scene": "Família espera mudança de renda no próximo mês.",
+          "options": [
+            {
+              "label": "Momento previsto para reavaliar"
+            },
+            {
+              "label": "Garantia de renda maior"
+            },
+            {
+              "label": "Permissão automática para não pagar"
+            }
+          ],
+          "help": [
+            "Separe revisão de cancelar compromissos automaticamente."
+          ],
+          "feedback": {
+            "met": "Uma data de revisão permite atualizar o acordo.",
+            "not_yet": "Separe revisão de cancelar compromissos automaticamente."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.shared-finances.03",
+      "copy": {
+        "en-US": {
+          "prompt": "What completes this arrangement?",
+          "scene": "Roommates agree amounts and who pays utilities, but never revisit changing costs.",
+          "options": [
+            {
+              "label": "Delete everyone’s records"
+            },
+            {
+              "label": "Set an agreed review date"
+            },
+            {
+              "label": "Assume bills never change"
+            }
+          ],
+          "help": [
+            "Add a clear shared moment to reconsider the plan."
+          ],
+          "feedback": {
+            "met": "A review date helps the arrangement respond to changed costs.",
+            "not_yet": "Add a clear shared moment to reconsider the plan."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué completa este acuerdo?",
+          "scene": "Compañeros acuerdan montos y quién paga servicios, pero nunca revisan costos cambiantes.",
+          "options": [
+            {
+              "label": "Borrar todos los registros"
+            },
+            {
+              "label": "Fijar fecha de revisión acordada"
+            },
+            {
+              "label": "Suponer cuentas nunca cambian"
+            }
+          ],
+          "help": [
+            "Agrega un momento claro compartido para revisar el plan."
+          ],
+          "feedback": {
+            "met": "Una revisión ayuda al acuerdo a responder a costos cambiantes.",
+            "not_yet": "Agrega un momento claro compartido para revisar el plan."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que completa este acordo?",
+          "scene": "Colegas combinam valores e quem paga contas, mas nunca reveem custos variáveis.",
+          "options": [
+            {
+              "label": "Apagar todos os registros"
+            },
+            {
+              "label": "Marcar data de revisão combinada"
+            },
+            {
+              "label": "Supor contas nunca mudam"
+            }
+          ],
+          "help": [
+            "Inclua um momento claro conjunto para rever o plano."
+          ],
+          "feedback": {
+            "met": "Uma revisão ajuda o acordo a responder a custos variáveis.",
+            "not_yet": "Inclua um momento claro conjunto para rever o plano."
+          }
+        }
+      }
+    }
+  ]
+}

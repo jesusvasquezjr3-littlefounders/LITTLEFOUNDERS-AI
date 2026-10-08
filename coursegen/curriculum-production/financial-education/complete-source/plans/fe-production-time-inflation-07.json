@@ -1,0 +1,797 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-time-inflation-part-2",
+  "lesson_id": "fe-production-time-inflation-07",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.time-inflation.07"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Determine whether a stated nominal income change keeps up with a stated basket’s price change.",
+  "title": {
+    "en-US": "Income purchasing",
+    "es-MX": "Qué puede comprar tu ingreso",
+    "pt-BR": "O que sua renda pode comprar"
+  },
+  "new_concepts": [
+    "finance.prod.time-inflation.07"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"What your income can buy\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Qué puede comprar tu ingreso\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"O que sua renda pode comprar\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.time-inflation.07",
+      "observable_action": "Determine whether a stated nominal income change keeps up with a stated basket’s price change.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.time-inflation.06",
+      "price.percent"
+    ],
+    "retrieval_skills": [],
+    "relevance": "More money does not necessarily buy more of the same basket.",
+    "misconception": "Assuming every nominal income increase improves purchasing power regardless of price changes.",
+    "numeracy_support": "Every quantity and assumption needed to decide is visible in the current scenario. Examples explain the relationship before independent application.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.time-inflation.07",
+        "context_id": "fe-production-time-inflation-07-example-01",
+        "supports_from": [],
+        "reasoning": "Income rises 5% while the same basket rises 10%. Money increased, but it buys less of that basket."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.time-inflation.07",
+        "context_id": "fe-production-time-inflation-07-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Compare relative changes over the same period."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.time-inflation.07",
+        "context_id": "fe-production-time-inflation-07-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Equal proportional changes preserve this basket purchasing capacity."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.time-inflation.07",
+        "context_id": "fe-production-time-inflation-07-practice-03",
+        "supports_from": [],
+        "reasoning": "1200 ÷ 120 = 10 baskets under this limited comparison."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.time-inflation.07",
+        "context_id": "fe-production-time-inflation-07-practice-04",
+        "supports_from": [],
+        "reasoning": "Income rises faster than this basket’s cost under the stated assumptions."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.time-inflation.07",
+        "context_id": "fe-production-time-inflation-07-practice-05",
+        "supports_from": [],
+        "reasoning": "Different periods prevent a like-for-like comparison."
+      },
+      {
+        "segment_id": "transfer-06",
+        "skill_id": "prod.time-inflation.07",
+        "context_id": "fe-production-time-inflation-07-transfer-06",
+        "supports_from": [],
+        "reasoning": "Unchanged income buys less when the same basket costs more."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.time-inflation.07",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "More money does not necessarily buy more of the same basket."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Más dinero no necesariamente compra más de la misma canasta."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Mais dinheiro não compra necessariamente mais da mesma cesta."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Follow the evidence",
+          "line": "Income rises 5% while the same basket rises 10%. Money increased, but it buys less of that basket."
+        },
+        "es-MX": {
+          "prompt": "Sigue las pruebas",
+          "line": "El ingreso sube 5% y la misma canasta sube 10%. Aumentó el dinero, pero compra menos de esa canasta."
+        },
+        "pt-BR": {
+          "prompt": "Siga as provas",
+          "line": "A renda sobe 5% e a mesma cesta sobe 10%. O dinheiro aumentou, mas compra menos dessa cesta."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.time-inflation.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Does income keep up?",
+          "scene": "Same period: income rises 4%; unchanged basket prices rise 8%.",
+          "options": [
+            {
+              "label": "No, basket prices rise faster"
+            },
+            {
+              "label": "Yes, any raise is enough"
+            },
+            {
+              "label": "Yes, both numbers are positive"
+            }
+          ],
+          "help": [
+            "Check which percentage rises more."
+          ],
+          "feedback": {
+            "met": "Compare relative changes over the same period.",
+            "not_yet": "Check which percentage rises more."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿El ingreso mantiene el paso?",
+          "scene": "Mismo periodo: ingreso sube 4%; precios de canasta idéntica suben 8%.",
+          "options": [
+            {
+              "label": "No, precios suben más rápido"
+            },
+            {
+              "label": "Sí, cualquier aumento basta"
+            },
+            {
+              "label": "Sí, ambos números son positivos"
+            }
+          ],
+          "help": [
+            "Revisa cuál porcentaje aumenta más."
+          ],
+          "feedback": {
+            "met": "Compara cambios relativos del mismo periodo.",
+            "not_yet": "Revisa cuál porcentaje aumenta más."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A renda acompanha?",
+          "scene": "Mesmo período: renda sobe 4%; preços da cesta idêntica sobem 8%.",
+          "options": [
+            {
+              "label": "Não, preços sobem mais rápido"
+            },
+            {
+              "label": "Sim, qualquer aumento basta"
+            },
+            {
+              "label": "Sim, ambos os números são positivos"
+            }
+          ],
+          "help": [
+            "Confira qual porcentagem sobe mais."
+          ],
+          "feedback": {
+            "met": "Compare mudanças relativas do mesmo período.",
+            "not_yet": "Confira qual porcentagem sobe mais."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.time-inflation.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Purchasing capacity for this basket?",
+          "scene": "Same period: income and the fixed basket’s cost both rise 6%.",
+          "options": [
+            {
+              "label": "Unchanged under these assumptions"
+            },
+            {
+              "label": "Greater because income rose"
+            },
+            {
+              "label": "Lower because prices rose"
+            }
+          ],
+          "help": [
+            "Compare income with the basket cost, not either alone."
+          ],
+          "feedback": {
+            "met": "Equal proportional changes preserve this basket purchasing capacity.",
+            "not_yet": "Compare income with the basket cost, not either alone."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Capacidad de compra de esta canasta?",
+          "scene": "Mismo periodo: ingreso y costo de la canasta fija suben ambos 6%.",
+          "options": [
+            {
+              "label": "Igual bajo estos supuestos"
+            },
+            {
+              "label": "Mayor porque aumentó ingreso"
+            },
+            {
+              "label": "Menor porque aumentaron precios"
+            }
+          ],
+          "help": [
+            "Compara ingreso con costo de canasta, no uno solo."
+          ],
+          "feedback": {
+            "met": "Cambios proporcionales iguales conservan capacidad de compra de esta canasta.",
+            "not_yet": "Compara ingreso con costo de canasta, no uno solo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Capacidade de comprar esta cesta?",
+          "scene": "Mesmo período: renda e custo da cesta fixa sobem ambos 6%.",
+          "options": [
+            {
+              "label": "Igual sob essas hipóteses"
+            },
+            {
+              "label": "Maior porque a renda subiu"
+            },
+            {
+              "label": "Menor porque os preços subiram"
+            }
+          ],
+          "help": [
+            "Compare renda com custo da cesta, não um sozinho."
+          ],
+          "feedback": {
+            "met": "Mudanças proporcionais iguais preservam capacidade de comprar esta cesta.",
+            "not_yet": "Compare renda com custo da cesta, não um sozinho."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.time-inflation.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Complete baskets now affordable?",
+          "scene": "Current income 1200; the unchanged basket now costs 120; spend all income only on baskets.",
+          "options": [
+            {
+              "label": "120"
+            },
+            {
+              "label": "12"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Divide available income by the current basket price."
+          ],
+          "feedback": {
+            "met": "1200 ÷ 120 = 10 baskets under this limited comparison.",
+            "not_yet": "Divide available income by the current basket price."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Canastas completas que puedes pagar ahora?",
+          "scene": "Ingreso actual 1200; canasta idéntica ahora cuesta 120; todo ingreso solo para canastas.",
+          "options": [
+            {
+              "label": "120"
+            },
+            {
+              "label": "12"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Divide ingreso disponible entre precio actual de canasta."
+          ],
+          "feedback": {
+            "met": "1200 ÷ 120 = 10 canastas bajo esta comparación limitada.",
+            "not_yet": "Divide ingreso disponible entre precio actual de canasta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Cestas completas que pode pagar agora?",
+          "scene": "Renda atual 1200; cesta idêntica agora custa 120; toda renda só para cestas.",
+          "options": [
+            {
+              "label": "120"
+            },
+            {
+              "label": "12"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Divida renda disponível pelo preço atual da cesta."
+          ],
+          "feedback": {
+            "met": "1200 ÷ 120 = 10 cestas nesta comparação limitada.",
+            "not_yet": "Divida renda disponível pelo preço atual da cesta."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          1200,
+          120
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.time-inflation.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Conclusion about this basket?",
+          "scene": "Income rises 10%; the same basket rises 5% over the same period.",
+          "options": [
+            {
+              "label": "Any inflation cancels every raise"
+            },
+            {
+              "label": "Income buys more of it"
+            },
+            {
+              "label": "Income buys less of it"
+            }
+          ],
+          "help": [
+            "Compare both proportional changes."
+          ],
+          "feedback": {
+            "met": "Income rises faster than this basket’s cost under the stated assumptions.",
+            "not_yet": "Compare both proportional changes."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué concluyes sobre esta canasta?",
+          "scene": "Ingreso sube 10%; misma canasta sube 5% durante el mismo periodo.",
+          "options": [
+            {
+              "label": "Cualquier inflación elimina todo aumento"
+            },
+            {
+              "label": "Ingreso compra más de ella"
+            },
+            {
+              "label": "Ingreso compra menos de ella"
+            }
+          ],
+          "help": [
+            "Compara ambos cambios proporcionales."
+          ],
+          "feedback": {
+            "met": "Ingreso sube más que el costo bajo los supuestos indicados.",
+            "not_yet": "Compara ambos cambios proporcionales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que conclui sobre esta cesta?",
+          "scene": "Renda sobe 10%; mesma cesta sobe 5% durante o mesmo período.",
+          "options": [
+            {
+              "label": "Qualquer inflação elimina todo aumento"
+            },
+            {
+              "label": "Renda compra mais dela"
+            },
+            {
+              "label": "Renda compra menos dela"
+            }
+          ],
+          "help": [
+            "Compare ambas as mudanças proporcionais."
+          ],
+          "feedback": {
+            "met": "Renda sobe mais que o custo sob as hipóteses informadas.",
+            "not_yet": "Compare ambas as mudanças proporcionais."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.time-inflation.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Fair comparison yet?",
+          "scene": "A wage change covers one month; the price change covers a whole year.",
+          "options": [
+            {
+              "label": "Yes, both are percentages"
+            },
+            {
+              "label": "Yes, larger printed numbers decide"
+            },
+            {
+              "label": "No, align the periods"
+            }
+          ],
+          "help": [
+            "Use the same starting and ending dates."
+          ],
+          "feedback": {
+            "met": "Different periods prevent a like-for-like comparison.",
+            "not_yet": "Use the same starting and ending dates."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Ya es comparación justa?",
+          "scene": "El cambio salarial cubre un mes; el cambio de precios cubre un año.",
+          "options": [
+            {
+              "label": "Sí, ambos son porcentajes"
+            },
+            {
+              "label": "Sí, decide el número impreso mayor"
+            },
+            {
+              "label": "No, iguala los periodos"
+            }
+          ],
+          "help": [
+            "Usa las mismas fechas de inicio y cierre."
+          ],
+          "feedback": {
+            "met": "Periodos distintos impiden una comparación equivalente.",
+            "not_yet": "Usa las mismas fechas de inicio y cierre."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Já é comparação justa?",
+          "scene": "A mudança salarial cobre um mês; a mudança de preços cobre um ano.",
+          "options": [
+            {
+              "label": "Sim, ambos são porcentagens"
+            },
+            {
+              "label": "Sim, decide o maior número impresso"
+            },
+            {
+              "label": "Não, iguale os períodos"
+            }
+          ],
+          "help": [
+            "Use as mesmas datas de início e fim."
+          ],
+          "feedback": {
+            "met": "Períodos diferentes impedem uma comparação equivalente.",
+            "not_yet": "Use as mesmas datas de início e fim."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.time-inflation.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Purchasing capacity here?",
+          "scene": "Household income stays unchanged; its same essential basket costs more.",
+          "options": [
+            {
+              "label": "It falls for this basket"
+            },
+            {
+              "label": "It stays equal because allowance is unchanged"
+            },
+            {
+              "label": "It rises because prices rose"
+            }
+          ],
+          "help": [
+            "Compare the money with what it can buy."
+          ],
+          "feedback": {
+            "met": "Unchanged income buys less when the same basket costs more.",
+            "not_yet": "Compare the money with what it can buy."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Capacidad de compra según estos hechos?",
+          "scene": "La asignación del hogar no cambia; su misma canasta esencial cuesta más.",
+          "options": [
+            {
+              "label": "Baja para esta canasta"
+            },
+            {
+              "label": "Sigue igual porque no cambia asignación"
+            },
+            {
+              "label": "Sube porque aumentan precios"
+            }
+          ],
+          "help": [
+            "Compara dinero con lo que permite comprar."
+          ],
+          "feedback": {
+            "met": "Ingreso igual compra menos cuando la misma canasta cuesta más.",
+            "not_yet": "Compara dinero con lo que permite comprar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Capacidade de compra segundo esses fatos?",
+          "scene": "A verba da casa não muda; sua mesma cesta essencial custa mais.",
+          "options": [
+            {
+              "label": "Cai para esta cesta"
+            },
+            {
+              "label": "Fica igual porque a verba não muda"
+            },
+            {
+              "label": "Sobe porque aumentam os preços"
+            }
+          ],
+          "help": [
+            "Compare dinheiro com o que permite comprar."
+          ],
+          "feedback": {
+            "met": "Renda igual compra menos quando a mesma cesta custa mais.",
+            "not_yet": "Compare dinheiro com o que permite comprar."
+          }
+        }
+      }
+    }
+  ]
+}

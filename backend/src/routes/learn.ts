@@ -44,6 +44,7 @@ import { guidedReviewFor, localizedTitle, recentV2Outcomes, withLearnerMentor, t
 import { offerBridgeAfterCompletion, recordV2GradedDecisions, resurfaceForLesson } from '../services/narrative/learnerNarrative.js';
 import { learnNarrativeRouter } from './learnNarrative.js';
 import { learnMotivationRouter } from './learnMotivation.js';
+import { gamesRouter } from './games.js';
 import { badgeEarnedNow, completionCelebrations, courseCompletedNow, type CelebrationMilestone } from '../services/celebrationBudget.js';
 import { pathChoice, paceStatus, type PaceStatus } from '../services/autonomy.js';
 import { topicTeaches } from '../services/narrative/narrativeData.js';
@@ -208,6 +209,10 @@ export async function loadCourseTree(accessToken: string, userId: string, course
  * same decision for all four lesson endpoints: a lesson in a chapter the age
  * safeguard closes (P4) is age-restricted whatever the learner has shown; any
  * other locked lesson is simply not on the frontier yet.
+ *
+ * The entry placement is NOT a refusal: it is an offered shortcut to find a
+ * start (B.15), never a wall. A learner who has not placed is simply at the
+ * beginning of their stage's path, which is where the frontier already points.
  */
 export function lessonAdmissionRefusal(tree: LearnerCourseTree, lessonId: string): { code: string; message: string } | null {
   const node = findLessonNode(tree, lessonId);
@@ -215,7 +220,6 @@ export function lessonAdmissionRefusal(tree: LearnerCourseTree, lessonId: string
     return { code: 'LESSON_AGE_RESTRICTED', message: 'This lesson is not available for this age' };
   }
   if (node?.state === 'locked') return { code: 'LESSON_LOCKED', message: 'This lesson is still locked' };
-  if (tree.course.placementRequired) return { code: 'PLACEMENT_REQUIRED', message: "Complete this course's placement quiz first" };
   return null;
 }
 
@@ -611,6 +615,8 @@ export function learnRouter(): Router {
   router.use(learnMotivationRouter());
   // B.23 (S05.3f): the learner's age register and its one-time graduation moment.
   router.use(learnRegisterRouter());
+  // Games embedded in /learn (docs/games/KRV1-CONTRACT.md): records, play limits, the optional AI line.
+  router.use('/games', gamesRouter());
 
   // Future Tutor-ready boundary. It returns only the caller's derived skill
   // state, never raw events, answers, or another learner's data.

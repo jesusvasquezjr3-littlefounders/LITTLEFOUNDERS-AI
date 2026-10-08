@@ -22,7 +22,7 @@ export type ContentLocale = 'en-US' | 'es-MX' | 'pt-BR';
  *   detail   — text behind a tap (hints, tap-to-explain notes): a layered sheet (§4)
  *   data     — table cells, chart labels, names, numbers: never counted (§3.3)
  */
-export type CopyRole = 'heading' | 'prompt' | 'option' | 'mentor' | 'body' | 'detail' | 'data';
+export type CopyRole = 'heading' | 'prompt' | 'option' | 'mentor' | 'body' | 'narrative' | 'detail' | 'data';
 
 export interface RoleBudget {
   words: number;
@@ -38,6 +38,7 @@ export const COPY_BUDGETS: Readonly<Record<Exclude<CopyRole, 'data'>, RoleBudget
   option: { words: 8, youngWords: 5, sentences: 1 },
   mentor: { words: 20, youngWords: 12, sentences: 2 },
   body: { words: 12, sentences: 2 },
+  narrative: { words: 30, sentences: 2 },
   // Bible 06 §4.4: "The sheet may hold up to 60 words, in short paragraphs."
   detail: { words: 60 },
 };

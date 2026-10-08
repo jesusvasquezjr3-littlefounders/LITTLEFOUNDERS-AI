@@ -1,0 +1,767 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-spending-patterns-part-1",
+  "lesson_id": "fe-production-spending-patterns-02",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.spending-patterns.02"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Separate a regular commitment from a variable expense without assuming either is optional.",
+  "title": {
+    "en-US": "Spending patterns",
+    "es-MX": "¿Regular o variable?",
+    "pt-BR": "Regular ou variável?"
+  },
+  "new_concepts": [
+    "finance.prod.spending-patterns.02"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Regular or variable?\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"¿Regular o variable?\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Regular ou variável?\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.spending-patterns.02",
+      "observable_action": "Separate a regular commitment from a variable expense without assuming either is optional.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.spending-patterns.01",
+      "prod.goals-tradeoffs.02"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Frequency and amount do not tell you whether an expense is optional.",
+    "misconception": "Assuming every regular cost is essential and every changing expense is optional.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.spending-patterns.02",
+        "context_id": "fe-production-spending-patterns-02-example-01",
+        "supports_from": [],
+        "reasoning": "Rent repeats monthly; food spending changes with need. Both can be essential even though their amounts behave differently."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.spending-patterns.02",
+        "context_id": "fe-production-spending-patterns-02-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The payment repeats under the stated agreement."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.spending-patterns.02",
+        "context_id": "fe-production-spending-patterns-02-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The amount varies while the stated need remains."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.spending-patterns.02",
+        "context_id": "fe-production-spending-patterns-02-practice-01",
+        "supports_from": [],
+        "reasoning": "Repeating charges do not prove an essential need."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.spending-patterns.02",
+        "context_id": "fe-production-spending-patterns-02-practice-02",
+        "supports_from": [],
+        "reasoning": "Changing trip counts change cost without removing the stated need."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.spending-patterns.02",
+        "context_id": "fe-production-spending-patterns-02-practice-03",
+        "supports_from": [],
+        "reasoning": "A recurring pattern can use an annual interval."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.spending-patterns.02",
+        "context_id": "fe-production-spending-patterns-02-transfer-01",
+        "supports_from": [],
+        "reasoning": "Necessity and consequences matter more than a fixed-versus-variable label."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.spending-patterns.02",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Frequency and amount do not tell you whether an expense is optional."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Frecuencia y monto no indican si un gasto es opcional."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Frequência e valor não dizem se um gasto é opcional."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Two separate questions",
+          "line": "Rent repeats monthly; food spending changes with need. Both can be essential even though their amounts behave differently."
+        },
+        "es-MX": {
+          "prompt": "Dos preguntas distintas",
+          "line": "La renta se repite cada mes; la comida cambia según necesidades. Ambas pueden ser esenciales aunque cambien distinto."
+        },
+        "pt-BR": {
+          "prompt": "Duas perguntas distintas",
+          "line": "O aluguel se repete por mês; a comida muda conforme a necessidade. Ambos podem ser essenciais."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Which description fits?",
+          "scene": "Rent repeats monthly at the same agreed amount.",
+          "options": [
+            {
+              "label": "A regular commitment"
+            },
+            {
+              "label": "A one-time surprise"
+            },
+            {
+              "label": "Always optional"
+            }
+          ],
+          "help": [
+            "Describe the pattern before judging its necessity."
+          ],
+          "feedback": {
+            "met": "The payment repeats under the stated agreement.",
+            "not_yet": "Describe the pattern before judging its necessity."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué descripción corresponde?",
+          "scene": "La renta se repite cada mes por el mismo monto acordado.",
+          "options": [
+            {
+              "label": "Un compromiso regular"
+            },
+            {
+              "label": "Una sorpresa única"
+            },
+            {
+              "label": "Siempre opcional"
+            }
+          ],
+          "help": [
+            "Describe el patrón antes de juzgar su necesidad."
+          ],
+          "feedback": {
+            "met": "El pago se repite según el acuerdo indicado.",
+            "not_yet": "Describe el patrón antes de juzgar su necesidad."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual descrição corresponde?",
+          "scene": "O aluguel se repete por mês no mesmo valor acordado.",
+          "options": [
+            {
+              "label": "Um compromisso regular"
+            },
+            {
+              "label": "Uma surpresa única"
+            },
+            {
+              "label": "Sempre opcional"
+            }
+          ],
+          "help": [
+            "Descreva o padrão antes de julgar sua necessidade."
+          ],
+          "feedback": {
+            "met": "O pagamento se repete conforme o acordo informado.",
+            "not_yet": "Descreva o padrão antes de julgar sua necessidade."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Does variation make it optional?",
+          "scene": "Necessary medicine costs change with the prescription.",
+          "options": [
+            {
+              "label": "No, it remains necessary here"
+            },
+            {
+              "label": "Yes, all changing costs are optional"
+            }
+          ],
+          "help": [
+            "Amount pattern and necessity answer different questions."
+          ],
+          "feedback": {
+            "met": "The amount varies while the stated need remains.",
+            "not_yet": "Amount pattern and necessity answer different questions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Variar lo vuelve opcional?",
+          "scene": "La medicina necesaria cambia de costo según la receta.",
+          "options": [
+            {
+              "label": "No, sigue siendo necesaria aquí"
+            },
+            {
+              "label": "Sí, todo costo variable es opcional"
+            }
+          ],
+          "help": [
+            "Patrón del monto y necesidad responden preguntas distintas."
+          ],
+          "feedback": {
+            "met": "El monto varía mientras permanece la necesidad indicada.",
+            "not_yet": "Patrón del monto y necesidad responden preguntas distintas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Variar o torna opcional?",
+          "scene": "O remédio necessário muda de custo conforme a receita.",
+          "options": [
+            {
+              "label": "Não, continua necessário aqui"
+            },
+            {
+              "label": "Sim, todo custo variável é opcional"
+            }
+          ],
+          "help": [
+            "Padrão do valor e necessidade respondem perguntas diferentes."
+          ],
+          "feedback": {
+            "met": "O valor varia enquanto a necessidade informada permanece.",
+            "not_yet": "Padrão do valor e necessidade respondem perguntas diferentes."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What follows logically?",
+          "scene": "An unused entertainment subscription renews monthly at a fixed price.",
+          "options": [
+            {
+              "label": "Unused means already canceled"
+            },
+            {
+              "label": "It is regular, not necessarily essential"
+            },
+            {
+              "label": "Regular means essential"
+            }
+          ],
+          "help": [
+            "Check usefulness separately from billing frequency."
+          ],
+          "feedback": {
+            "met": "Repeating charges do not prove an essential need.",
+            "not_yet": "Check usefulness separately from billing frequency."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué puedes concluir?",
+          "scene": "Una suscripción de entretenimiento sin uso se renueva mensualmente a precio fijo.",
+          "options": [
+            {
+              "label": "Sin uso significa cancelada"
+            },
+            {
+              "label": "Es regular, no necesariamente esencial"
+            },
+            {
+              "label": "Regular significa esencial"
+            }
+          ],
+          "help": [
+            "Revisa utilidad por separado de frecuencia de cobro."
+          ],
+          "feedback": {
+            "met": "Los cobros repetidos no demuestran una necesidad esencial.",
+            "not_yet": "Revisa utilidad por separado de frecuencia de cobro."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que pode concluir?",
+          "scene": "Uma assinatura de lazer sem uso renova mensalmente a preço fixo.",
+          "options": [
+            {
+              "label": "Sem uso significa cancelada"
+            },
+            {
+              "label": "É regular, não necessariamente essencial"
+            },
+            {
+              "label": "Regular significa essencial"
+            }
+          ],
+          "help": [
+            "Confira utilidade separadamente da frequência de cobrança."
+          ],
+          "feedback": {
+            "met": "Cobranças repetidas não comprovam uma necessidade essencial.",
+            "not_yet": "Confira utilidade separadamente da frequência de cobrança."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Which description fits?",
+          "scene": "Bus fares change because required appointments vary each month.",
+          "options": [
+            {
+              "label": "Fixed amount every month"
+            },
+            {
+              "label": "No need because it varies"
+            },
+            {
+              "label": "Variable cost for a necessary purpose"
+            }
+          ],
+          "help": [
+            "Use both the cost pattern and the stated purpose."
+          ],
+          "feedback": {
+            "met": "Changing trip counts change cost without removing the stated need.",
+            "not_yet": "Use both the cost pattern and the stated purpose."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué descripción corresponde?",
+          "scene": "Los pasajes cambian porque varían las citas necesarias de cada mes.",
+          "options": [
+            {
+              "label": "Monto fijo cada mes"
+            },
+            {
+              "label": "Sin necesidad porque varía"
+            },
+            {
+              "label": "Costo variable con propósito necesario"
+            }
+          ],
+          "help": [
+            "Usa patrón del costo y propósito indicado."
+          ],
+          "feedback": {
+            "met": "Cambiar los viajes cambia el costo sin quitar la necesidad.",
+            "not_yet": "Usa patrón del costo y propósito indicado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual descrição corresponde?",
+          "scene": "As passagens mudam porque variam as consultas necessárias de cada mês.",
+          "options": [
+            {
+              "label": "Valor fixo todo mês"
+            },
+            {
+              "label": "Sem necessidade porque varia"
+            },
+            {
+              "label": "Custo variável com propósito necessário"
+            }
+          ],
+          "help": [
+            "Use o padrão do custo e o propósito informado."
+          ],
+          "feedback": {
+            "met": "Mudar as viagens muda o custo sem retirar a necessidade.",
+            "not_yet": "Use o padrão do custo e o propósito informado."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Is it recurring?",
+          "scene": "A fee repeats yearly rather than monthly.",
+          "options": [
+            {
+              "label": "Only if the amount is large"
+            },
+            {
+              "label": "No, only monthly costs recur"
+            },
+            {
+              "label": "Yes, at a yearly interval"
+            }
+          ],
+          "help": [
+            "Frequency can differ without making the cost one-time."
+          ],
+          "feedback": {
+            "met": "A recurring pattern can use an annual interval.",
+            "not_yet": "Frequency can differ without making the cost one-time."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Es recurrente?",
+          "scene": "Una comisión se repite cada año, no cada mes.",
+          "options": [
+            {
+              "label": "Solo si el monto es grande"
+            },
+            {
+              "label": "No, solo se repiten gastos mensuales"
+            },
+            {
+              "label": "Sí, con intervalo anual"
+            }
+          ],
+          "help": [
+            "La frecuencia puede variar sin volver único el gasto."
+          ],
+          "feedback": {
+            "met": "Un patrón recurrente puede tener intervalo anual.",
+            "not_yet": "La frecuencia puede variar sin volver único el gasto."
+          }
+        },
+        "pt-BR": {
+          "prompt": "É recorrente?",
+          "scene": "Uma tarifa se repete a cada ano, não a cada mês.",
+          "options": [
+            {
+              "label": "Só se o valor for alto"
+            },
+            {
+              "label": "Não, só gastos mensais se repetem"
+            },
+            {
+              "label": "Sim, com intervalo anual"
+            }
+          ],
+          "help": [
+            "A frequência pode variar sem tornar o gasto único."
+          ],
+          "feedback": {
+            "met": "Um padrão recorrente pode ter intervalo anual.",
+            "not_yet": "A frequência pode variar sem tornar o gasto único."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.spending-patterns.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What should guide the priority?",
+          "scene": "Care supplies vary; a game subscription stays fixed. Care is necessary; the game unused.",
+          "options": [
+            {
+              "label": "Stated needs and consequences"
+            },
+            {
+              "label": "Variable costs never matter"
+            },
+            {
+              "label": "Fixed costs automatically win"
+            }
+          ],
+          "help": [
+            "Do not use a billing pattern as a necessity ranking."
+          ],
+          "feedback": {
+            "met": "Necessity and consequences matter more than a fixed-versus-variable label.",
+            "not_yet": "Do not use a billing pattern as a necessity ranking."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe guiar la prioridad?",
+          "scene": "Los insumos de cuidado varían; un juego mensual cuesta lo mismo. El cuidado es necesario; el juego no se usa.",
+          "options": [
+            {
+              "label": "Las necesidades y consecuencias indicadas"
+            },
+            {
+              "label": "Los variables nunca importan"
+            },
+            {
+              "label": "Los costos fijos ganan siempre"
+            }
+          ],
+          "help": [
+            "No uses el patrón de cobro para ordenar necesidades."
+          ],
+          "feedback": {
+            "met": "Necesidad y consecuencias importan más que una etiqueta fijo o variable.",
+            "not_yet": "No uses el patrón de cobro para ordenar necesidades."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que deve guiar a prioridade?",
+          "scene": "Itens de cuidado variam; um jogo mensal custa igual. O cuidado é necessário; o jogo não é usado.",
+          "options": [
+            {
+              "label": "As necessidades e consequências informadas"
+            },
+            {
+              "label": "Os variáveis nunca importam"
+            },
+            {
+              "label": "Custos fixos sempre vencem"
+            }
+          ],
+          "help": [
+            "Não use o padrão de cobrança para ordenar necessidades."
+          ],
+          "feedback": {
+            "met": "Necessidade e consequências importam mais que o rótulo fixo ou variável.",
+            "not_yet": "Não use o padrão de cobrança para ordenar necessidades."
+          }
+        }
+      }
+    }
+  ]
+}

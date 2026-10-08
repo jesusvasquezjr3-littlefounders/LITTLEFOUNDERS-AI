@@ -1,0 +1,743 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-retirement-future-part-2",
+  "lesson_id": "fe-production-retirement-future-07",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.retirement-future.07"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Check access restrictions before treating retirement assets as an emergency reserve.",
+  "title": {
+    "en-US": "Withdrawal Rules",
+    "es-MX": "El dinero de retiro puede estar restringido",
+    "pt-BR": "O dinheiro da aposentadoria pode estar restrito"
+  },
+  "new_concepts": [
+    "finance.prod.retirement-future.07"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Withdrawal Rules\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"El dinero de retiro puede estar restringido\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"O dinheiro da aposentadoria pode estar restrito\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.retirement-future.07",
+      "observable_action": "Check access restrictions before treating retirement assets as an emergency reserve.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.saving-resilience.04",
+      "prod.retirement-future.02"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A retirement balance is not an emergency reserve unless its access conditions fit the emergency.",
+    "misconception": "Owning retirement assets means they can cover any immediate emergency without delay, tax or penalty.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.retirement-future.07",
+        "context_id": "retirement-future-07-example-01",
+        "supports_from": [],
+        "reasoning": "A fictional retirement plan blocks early withdrawals. Its balance cannot pay an urgent repair simply because the balance is large."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.retirement-future.07",
+        "context_id": "retirement-future-07-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "A sufficient balance cannot help before permitted access."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.retirement-future.07",
+        "context_id": "retirement-future-07-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Charges can reduce the money usable for the emergency."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.retirement-future.07",
+        "context_id": "retirement-future-07-practice-01",
+        "supports_from": [],
+        "reasoning": "Urgent needs require resources with compatible access."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.retirement-future.07",
+        "context_id": "retirement-future-07-practice-02",
+        "supports_from": [],
+        "reasoning": "Different products can have different access conditions."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.retirement-future.07",
+        "context_id": "retirement-future-07-practice-03",
+        "supports_from": [],
+        "reasoning": "Owned assets can still have restrictions on use."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.retirement-future.07",
+        "context_id": "retirement-future-07-transfer-01",
+        "supports_from": [],
+        "reasoning": "The resource’s release comes after the stated need."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.retirement-future.07",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A retirement balance is not an emergency reserve unless its access conditions fit the emergency."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un saldo de retiro no es reserva de emergencia si sus condiciones no permiten atenderla."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Um saldo de aposentadoria não é reserva de emergência se suas condições não permitem atendê-la."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Access before the deadline",
+          "line": "A fictional retirement plan blocks early withdrawals. Its balance cannot pay an urgent repair simply because the balance is large."
+        },
+        "es-MX": {
+          "prompt": "Acceso antes del plazo",
+          "line": "Un plan ficticio de retiro bloquea retiros anticipados. Su saldo no paga una reparación urgente solo por ser grande."
+        },
+        "pt-BR": {
+          "prompt": "Acesso antes do prazo",
+          "line": "Um plano fictício de aposentadoria bloqueia saques antecipados. Seu saldo não paga conserto urgente só por ser grande."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Can it cover tomorrow?",
+          "scene": "The fictional retirement balance is sufficient, but withdrawals are prohibited until a later condition.",
+          "options": [
+            {
+              "label": "No, access is blocked"
+            },
+            {
+              "label": "Yes, balance alone is enough"
+            }
+          ],
+          "help": [
+            "Check availability by the payment deadline."
+          ],
+          "feedback": {
+            "met": "A sufficient balance cannot help before permitted access.",
+            "not_yet": "Check availability by the payment deadline."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Puede cubrir mañana?",
+          "scene": "El saldo ficticio de retiro alcanza, pero prohíben retirar hasta una condición posterior.",
+          "options": [
+            {
+              "label": "No, el acceso está bloqueado"
+            },
+            {
+              "label": "Sí, basta que alcance el saldo"
+            }
+          ],
+          "help": [
+            "Revisa disponibilidad antes del plazo de pago."
+          ],
+          "feedback": {
+            "met": "Un saldo suficiente no ayuda antes de poder acceder.",
+            "not_yet": "Revisa disponibilidad antes del plazo de pago."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Pode cobrir amanhã?",
+          "scene": "O saldo fictício de aposentadoria basta, mas proíbem sacar até uma condição futura.",
+          "options": [
+            {
+              "label": "Não, o acesso está bloqueado"
+            },
+            {
+              "label": "Sim, basta ter saldo suficiente"
+            }
+          ],
+          "help": [
+            "Confira disponibilidade antes do prazo da conta."
+          ],
+          "feedback": {
+            "met": "Saldo suficiente não ajuda antes do acesso permitido.",
+            "not_yet": "Confira disponibilidade antes do prazo da conta."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.07",
+      "copy": {
+        "en-US": {
+          "prompt": "What amount matters?",
+          "scene": "A fictional early withdrawal is allowed only after stated charges reduce the balance.",
+          "options": [
+            {
+              "label": "Only the withdrawal charge"
+            },
+            {
+              "label": "The net amount received"
+            },
+            {
+              "label": "The full headline balance"
+            }
+          ],
+          "help": [
+            "Check what actually arrives after required charges."
+          ],
+          "feedback": {
+            "met": "Charges can reduce the money usable for the emergency.",
+            "not_yet": "Check what actually arrives after required charges."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué monto importa?",
+          "scene": "Permiten un retiro anticipado ficticio solo después de cargos que reducen el saldo.",
+          "options": [
+            {
+              "label": "Solo el cargo por retiro"
+            },
+            {
+              "label": "El monto neto recibido"
+            },
+            {
+              "label": "El saldo completo anunciado"
+            }
+          ],
+          "help": [
+            "Revisa qué llega realmente tras cargos obligatorios."
+          ],
+          "feedback": {
+            "met": "Los cargos pueden reducir dinero utilizable para la emergencia.",
+            "not_yet": "Revisa qué llega realmente tras cargos obligatorios."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual valor importa?",
+          "scene": "Permitem saque antecipado fictício só após cobranças que reduzem o saldo.",
+          "options": [
+            {
+              "label": "Só o encargo do saque"
+            },
+            {
+              "label": "O valor líquido recebido"
+            },
+            {
+              "label": "O saldo completo anunciado"
+            }
+          ],
+          "help": [
+            "Confira o que chega de fato após cobranças obrigatórias."
+          ],
+          "feedback": {
+            "met": "Cobranças podem reduzir dinheiro utilizável na emergência.",
+            "not_yet": "Confira o que chega de fato após cobranças obrigatórias."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.07",
+      "copy": {
+        "en-US": {
+          "prompt": "What needs separate planning?",
+          "scene": "A long-term account cannot be accessed quickly. The household may face urgent expenses.",
+          "options": [
+            {
+              "label": "Pretending the account unlocks"
+            },
+            {
+              "label": "An accessible emergency resource"
+            },
+            {
+              "label": "Assuming emergencies wait"
+            }
+          ],
+          "help": [
+            "Match each resource to the timing of its purpose."
+          ],
+          "feedback": {
+            "met": "Urgent needs require resources with compatible access.",
+            "not_yet": "Match each resource to the timing of its purpose."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué necesita plan aparte?",
+          "scene": "Una cuenta de largo plazo no se puede usar rápido. El hogar puede enfrentar gastos urgentes.",
+          "options": [
+            {
+              "label": "Fingir que se libera la cuenta"
+            },
+            {
+              "label": "Un recurso de emergencia accesible"
+            },
+            {
+              "label": "Suponer que emergencias esperan"
+            }
+          ],
+          "help": [
+            "Relaciona cada recurso con el tiempo de su propósito."
+          ],
+          "feedback": {
+            "met": "Necesidades urgentes requieren recursos con acceso compatible.",
+            "not_yet": "Relaciona cada recurso con el tiempo de su propósito."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que precisa de plano separado?",
+          "scene": "Uma conta de longo prazo não pode ser usada rápido. A casa pode ter gastos urgentes.",
+          "options": [
+            {
+              "label": "Fingir que a conta libera"
+            },
+            {
+              "label": "Um recurso de emergência acessível"
+            },
+            {
+              "label": "Supor que emergências esperam"
+            }
+          ],
+          "help": [
+            "Relacione cada recurso com o prazo da sua finalidade."
+          ],
+          "feedback": {
+            "met": "Necessidades urgentes exigem recursos com acesso compatível.",
+            "not_yet": "Relacione cada recurso com o prazo da sua finalidade."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Can another person’s rule be assumed?",
+          "scene": "A friend can withdraw from their retirement product. This person has a different contract.",
+          "options": [
+            {
+              "label": "No, check this contract’s rules"
+            },
+            {
+              "label": "Yes, every retirement product is identical"
+            }
+          ],
+          "help": [
+            "Use the applicable account terms."
+          ],
+          "feedback": {
+            "met": "Different products can have different access conditions.",
+            "not_yet": "Use the applicable account terms."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Puedes suponer la regla ajena?",
+          "scene": "Una amistad puede retirar de su producto de retiro. Esta persona tiene otro contrato.",
+          "options": [
+            {
+              "label": "No, revisa reglas de este contrato"
+            },
+            {
+              "label": "Sí, todos los productos son idénticos"
+            }
+          ],
+          "help": [
+            "Usa los términos de la cuenta aplicable."
+          ],
+          "feedback": {
+            "met": "Productos distintos pueden tener condiciones de acceso diferentes.",
+            "not_yet": "Usa los términos de la cuenta aplicable."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Pode supor a regra alheia?",
+          "scene": "Uma amizade pode sacar de seu produto de aposentadoria. Esta pessoa tem outro contrato.",
+          "options": [
+            {
+              "label": "Não, confira regras deste contrato"
+            },
+            {
+              "label": "Sim, todos os produtos são iguais"
+            }
+          ],
+          "help": [
+            "Use os termos da conta aplicável."
+          ],
+          "feedback": {
+            "met": "Produtos distintos podem ter condições de acesso diferentes.",
+            "not_yet": "Use os termos da conta aplicável."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.07",
+      "copy": {
+        "en-US": {
+          "prompt": "What does ownership settle?",
+          "scene": "The person legally owns the balance, but withdrawal conditions are still unmet.",
+          "options": [
+            {
+              "label": "Every withdrawal condition disappears"
+            },
+            {
+              "label": "Ownership, not immediate access"
+            }
+          ],
+          "help": [
+            "Separate owning money from accessing it now."
+          ],
+          "feedback": {
+            "met": "Owned assets can still have restrictions on use.",
+            "not_yet": "Separate owning money from accessing it now."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué resuelve ser propietario?",
+          "scene": "La persona posee legalmente el saldo, pero no cumple condiciones de retiro.",
+          "options": [
+            {
+              "label": "Desaparecen todas las condiciones"
+            },
+            {
+              "label": "Propiedad, no acceso inmediato"
+            }
+          ],
+          "help": [
+            "Distingue poseer dinero de acceder ahora."
+          ],
+          "feedback": {
+            "met": "Activos propios aún pueden tener restricciones de uso.",
+            "not_yet": "Distingue poseer dinero de acceder ahora."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que possuir resolve?",
+          "scene": "A pessoa possui legalmente o saldo, mas não cumpre condições de saque.",
+          "options": [
+            {
+              "label": "Somem todas as condições"
+            },
+            {
+              "label": "Propriedade, não acesso imediato"
+            }
+          ],
+          "help": [
+            "Separe possuir dinheiro de acessá-lo agora."
+          ],
+          "feedback": {
+            "met": "Ativos próprios ainda podem ter restrições de uso.",
+            "not_yet": "Separe possuir dinheiro de acessá-lo agora."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.retirement-future.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Does access fit?",
+          "scene": "Care costs are due this week. The stated retirement withdrawal process takes months.",
+          "options": [
+            {
+              "label": "No, access comes late"
+            },
+            {
+              "label": "The need automatically changes terms"
+            },
+            {
+              "label": "The retirement label is enough"
+            }
+          ],
+          "help": [
+            "Use actual access conditions rather than the account label."
+          ],
+          "feedback": {
+            "met": "The resource’s release comes after the stated need.",
+            "not_yet": "Use actual access conditions rather than the account label."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿El recurso corresponde?",
+          "scene": "Una persona cuidadora necesita fondos esta semana. Según condiciones, retirar del plan de retiro toma meses.",
+          "options": [
+            {
+              "label": "No, el acceso llega tarde"
+            },
+            {
+              "label": "La necesidad cambia términos automáticamente"
+            },
+            {
+              "label": "Sí, se llama ahorro de retiro"
+            }
+          ],
+          "help": [
+            "Usa acceso real, no la etiqueta de cuenta."
+          ],
+          "feedback": {
+            "met": "La liberación del recurso llega después de la necesidad.",
+            "not_yet": "Usa acceso real, no la etiqueta de cuenta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O recurso serve?",
+          "scene": "Uma pessoa cuidadora precisa de recursos nesta semana. Pelos termos, sacar do plano de aposentadoria leva meses.",
+          "options": [
+            {
+              "label": "Não, o acesso chega tarde"
+            },
+            {
+              "label": "A necessidade muda termos automaticamente"
+            },
+            {
+              "label": "Sim, chama poupança de aposentadoria"
+            }
+          ],
+          "help": [
+            "Use acesso real, não o nome da conta."
+          ],
+          "feedback": {
+            "met": "A liberação do recurso chega após a necessidade.",
+            "not_yet": "Use acesso real, não o nome da conta."
+          }
+        }
+      }
+    }
+  ]
+}

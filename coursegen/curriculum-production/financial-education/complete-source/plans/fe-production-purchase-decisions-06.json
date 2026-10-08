@@ -1,0 +1,897 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-purchase-decisions-part-2",
+  "lesson_id": "fe-production-purchase-decisions-06",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.purchase-decisions.06"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Compare total ownership costs over the same stated period.",
+  "title": {
+    "en-US": "Ownership Costs",
+    "es-MX": "Compara el costo de usarlo",
+    "pt-BR": "Compare o custo de usar"
+  },
+  "new_concepts": [
+    "finance.prod.purchase-decisions.06"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Ownership Costs\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Compara el costo de usarlo\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Compare o custo de usar\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.purchase-decisions.06",
+      "observable_action": "Compare total ownership costs over the same stated period.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.purchase-decisions.02",
+      "prod.financial-math.11"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Buying is only one part of ownership; compare purchase, use and upkeep over the same fictional period.",
+    "misconception": "The cheapest purchase price determines the cheapest ownership cost regardless of operating costs, lifespan or period.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.purchase-decisions.06",
+        "context_id": "purchase-decisions-06-example-01",
+        "supports_from": [],
+        "reasoning": "Add purchase and stated running costs over the same period. Include maintenance and any stated resale amount consistently."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.purchase-decisions.06",
+        "context_id": "purchase-decisions-06-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "B costs less overall despite its higher purchase price."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.purchase-decisions.06",
+        "context_id": "purchase-decisions-06-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Different periods produce incomparable operating totals."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.purchase-decisions.06",
+        "context_id": "purchase-decisions-06-practice-01",
+        "supports_from": [],
+        "reasoning": "Purchase, electricity and maintenance all belong in this stated total."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.purchase-decisions.06",
+        "context_id": "purchase-decisions-06-practice-02",
+        "supports_from": [],
+        "reasoning": "Required supplies can outweigh a low purchase price."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.purchase-decisions.06",
+        "context_id": "purchase-decisions-06-practice-03",
+        "supports_from": [],
+        "reasoning": "An unsupported lifespan can distort the ownership comparison."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.purchase-decisions.06",
+        "context_id": "purchase-decisions-06-transfer-01",
+        "supports_from": [],
+        "reasoning": "The resale receipt offsets part of purchase and upkeep spending."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.purchase-decisions.06",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Buying is only one part of ownership; compare purchase, use and upkeep over the same fictional period."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Comprar es solo una parte de tener algo; compara compra, uso y cuidado durante mismo periodo ficticio."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Comprar é só uma parte de possuir algo; compare compra, uso e cuidados durante mesmo período fictício."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Same period, complete costs",
+          "line": "Add purchase and stated running costs over the same period. Include maintenance and any stated resale amount consistently."
+        },
+        "es-MX": {
+          "prompt": "Mismo periodo, costos completos",
+          "line": "Suma compra y costos indicados de uso durante mismo periodo. Incluye mantenimiento y cualquier reventa indicada de forma consistente."
+        },
+        "pt-BR": {
+          "prompt": "Mesmo período, custos completos",
+          "line": "Some compra e custos dados de uso no mesmo período. Inclua manutenção e qualquer revenda dada de modo consistente."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.06",
+      "visual": {
+        "type": "bar"
+      },
+      "payload": {
+        "data": {
+          "unit": "local",
+          "categories": [
+            {
+              "id": "earlier"
+            },
+            {
+              "id": "later"
+            }
+          ],
+          "series": [
+            {
+              "id": "projected-balance",
+              "values": [
+                180,
+                160
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "earlier"
+            },
+            {
+              "id": "later"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "later"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Same period; A purchase 100, total use 80; B purchase 140, total use 20; no other costs or resale.",
+          "title": "Ownership cost",
+          "data": {
+            "categories": [
+              {
+                "label": "A"
+              },
+              {
+                "label": "B"
+              }
+            ],
+            "series": [
+              {
+                "label": "Total cost"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Which costs less?",
+            "options": [
+              {
+                "label": "A"
+              },
+              {
+                "label": "B"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "B costs less overall despite its higher purchase price.",
+            "not_yet": "Add purchase and use costs for each option."
+          },
+          "help": [
+            "Add purchase and use costs for each option."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Mismo periodo; A compra 100, uso total 80; B compra 140, uso total 20; sin otros costos ni reventa.",
+          "title": "Costo de propiedad",
+          "data": {
+            "categories": [
+              {
+                "label": "A"
+              },
+              {
+                "label": "B"
+              }
+            ],
+            "series": [
+              {
+                "label": "Costo total"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Qué cuesta menos?",
+            "options": [
+              {
+                "label": "A"
+              },
+              {
+                "label": "B"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "B cuesta menos en total pese a mayor precio.",
+            "not_yet": "Suma compra y uso de cada opción."
+          },
+          "help": [
+            "Suma compra y uso de cada opción."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Mesmo período; A compra 100, uso total 80; B compra 140, uso total 20; sem outros custos ou revenda.",
+          "title": "Custo de posse",
+          "data": {
+            "categories": [
+              {
+                "label": "A"
+              },
+              {
+                "label": "B"
+              }
+            ],
+            "series": [
+              {
+                "label": "Custo total"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Qual custa menos?",
+            "options": [
+              {
+                "label": "A"
+              },
+              {
+                "label": "B"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "B custa menos no total apesar do preço maior.",
+            "not_yet": "Some compra e uso de cada opção."
+          },
+          "help": [
+            "Some compra e uso de cada opção."
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.06",
+      "copy": {
+        "en-US": {
+          "prompt": "What must match the comparison?",
+          "scene": "One device’s running costs cover a month; another’s cover a year.",
+          "options": [
+            {
+              "label": "Only the device brand"
+            },
+            {
+              "label": "The ownership period"
+            },
+            {
+              "label": "Only the purchase date"
+            }
+          ],
+          "help": [
+            "Put running costs on the same time basis."
+          ],
+          "feedback": {
+            "met": "Different periods produce incomparable operating totals.",
+            "not_yet": "Put running costs on the same time basis."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe igualar comparación?",
+          "scene": "Costos de uso de un aparato cubren mes; otro año.",
+          "options": [
+            {
+              "label": "Solo marca del aparato"
+            },
+            {
+              "label": "Periodo de propiedad"
+            },
+            {
+              "label": "Solo fecha de compra"
+            }
+          ],
+          "help": [
+            "Lleva costos de uso a misma base de tiempo."
+          ],
+          "feedback": {
+            "met": "Periodos distintos producen totales de uso incomparables.",
+            "not_yet": "Lleva costos de uso a misma base de tiempo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que deve igualar na comparação?",
+          "scene": "Custos de uso de um aparelho cobrem mês; outro ano.",
+          "options": [
+            {
+              "label": "Só marca do aparelho"
+            },
+            {
+              "label": "Período de posse"
+            },
+            {
+              "label": "Só data da compra"
+            }
+          ],
+          "help": [
+            "Leve custos de uso à mesma base de tempo."
+          ],
+          "feedback": {
+            "met": "Períodos distintos geram totais de uso incomparáveis.",
+            "not_yet": "Leve custos de uso à mesma base de tempo."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.06",
+      "copy": {
+        "en-US": {
+          "prompt": "What is total cost for this period?",
+          "scene": "Purchase: 300; Electricity total: 90; Maintenance total: 30; No other costs or resale.",
+          "options": [
+            {
+              "label": "300"
+            },
+            {
+              "label": "390"
+            },
+            {
+              "label": "420"
+            }
+          ],
+          "help": [
+            "Add every included cost for the same period."
+          ],
+          "feedback": {
+            "met": "Purchase, electricity and maintenance all belong in this stated total.",
+            "not_yet": "Add every included cost for the same period."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es costo total del periodo?",
+          "scene": "Compra: 300; Electricidad total: 90; Mantenimiento total: 30; Sin otros costos ni reventa.",
+          "options": [
+            {
+              "label": "300"
+            },
+            {
+              "label": "390"
+            },
+            {
+              "label": "420"
+            }
+          ],
+          "help": [
+            "Suma cada costo incluido del mismo periodo."
+          ],
+          "feedback": {
+            "met": "Compra, electricidad y mantenimiento pertenecen al total indicado.",
+            "not_yet": "Suma cada costo incluido del mismo periodo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é custo total do período?",
+          "scene": "Compra: 300; Eletricidade total: 90; Manutenção total: 30; Sem outros custos ou revenda.",
+          "options": [
+            {
+              "label": "300"
+            },
+            {
+              "label": "390"
+            },
+            {
+              "label": "420"
+            }
+          ],
+          "help": [
+            "Some cada custo incluído do mesmo período."
+          ],
+          "feedback": {
+            "met": "Compra, eletricidade e manutenção pertencem ao total dado.",
+            "not_yet": "Some cada custo incluído do mesmo período."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          300,
+          90,
+          30
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "op": "add",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.06",
+      "copy": {
+        "en-US": {
+          "prompt": "What could reverse this comparison?",
+          "scene": "A cheap printer needs expensive cartridges that the calculation omitted.",
+          "options": [
+            {
+              "label": "Required cartridge costs"
+            },
+            {
+              "label": "Only the printer’s discount"
+            },
+            {
+              "label": "Only its upfront price"
+            }
+          ],
+          "help": [
+            "Include the costs needed to keep using the product."
+          ],
+          "feedback": {
+            "met": "Required supplies can outweigh a low purchase price.",
+            "not_yet": "Include the costs needed to keep using the product."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué podría invertir comparación?",
+          "scene": "Impresora barata necesita cartuchos caros omitidos del cálculo.",
+          "options": [
+            {
+              "label": "Costos de cartuchos requeridos"
+            },
+            {
+              "label": "Solo descuento de impresora"
+            },
+            {
+              "label": "Solo su precio inicial"
+            }
+          ],
+          "help": [
+            "Incluye costos necesarios para seguir usando producto."
+          ],
+          "feedback": {
+            "met": "Materiales requeridos pueden superar ventaja del precio bajo.",
+            "not_yet": "Incluye costos necesarios para seguir usando producto."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que poderia inverter comparação?",
+          "scene": "Impressora barata precisa de cartuchos caros omitidos da conta.",
+          "options": [
+            {
+              "label": "Custos dos cartuchos exigidos"
+            },
+            {
+              "label": "Só desconto da impressora"
+            },
+            {
+              "label": "Só seu preço inicial"
+            }
+          ],
+          "help": [
+            "Inclua custos necessários para seguir usando produto."
+          ],
+          "feedback": {
+            "met": "Materiais exigidos podem superar vantagem do preço baixo.",
+            "not_yet": "Inclua custos necessários para seguir usando produto."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.06",
+      "copy": {
+        "en-US": {
+          "prompt": "What assumption needs disclosure?",
+          "scene": "One option is assumed to last much longer, but no evidence supports that lifespan.",
+          "options": [
+            {
+              "label": "Only the purchase-price estimate"
+            },
+            {
+              "label": "The unsupported lifespan estimate"
+            },
+            {
+              "label": "Nothing because assumptions are facts"
+            }
+          ],
+          "help": [
+            "Label uncertain assumptions and test how they affect costs."
+          ],
+          "feedback": {
+            "met": "An unsupported lifespan can distort the ownership comparison.",
+            "not_yet": "Label uncertain assumptions and test how they affect costs."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué supuesto necesita aclararse?",
+          "scene": "Se supone que opción dura mucho más, pero no hay evidencia de esa vida útil.",
+          "options": [
+            {
+              "label": "Solo estimación del precio de compra"
+            },
+            {
+              "label": "Estimación de duración sin respaldo"
+            },
+            {
+              "label": "Nada porque supuestos son hechos"
+            }
+          ],
+          "help": [
+            "Identifica supuestos inciertos y prueba cómo afectan costos."
+          ],
+          "feedback": {
+            "met": "Duración sin respaldo puede distorsionar comparación de propiedad.",
+            "not_yet": "Identifica supuestos inciertos y prueba cómo afectan costos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que hipótese precisa ser exposta?",
+          "scene": "Supõe-se que opção dura muito mais, mas não há prova dessa vida útil.",
+          "options": [
+            {
+              "label": "Só estimativa do preço de compra"
+            },
+            {
+              "label": "Estimativa de duração sem apoio"
+            },
+            {
+              "label": "Nada pois hipóteses são fatos"
+            }
+          ],
+          "help": [
+            "Identifique hipóteses incertas e teste como afetam custos."
+          ],
+          "feedback": {
+            "met": "Duração sem apoio pode distorcer comparação de posse.",
+            "not_yet": "Identifique hipóteses incertas e teste como afetam custos."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.purchase-decisions.06",
+      "copy": {
+        "en-US": {
+          "prompt": "What is the net ownership cost?",
+          "scene": "Purchase: 500; Total upkeep: 80; Resale at period end: 150; No other costs.",
+          "options": [
+            {
+              "label": "730"
+            },
+            {
+              "label": "580"
+            },
+            {
+              "label": "430"
+            }
+          ],
+          "help": [
+            "Add purchase and upkeep, then subtract stated resale."
+          ],
+          "feedback": {
+            "met": "The resale receipt offsets part of purchase and upkeep spending.",
+            "not_yet": "Add purchase and upkeep, then subtract stated resale."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es costo neto de propiedad?",
+          "scene": "Compra: 500; Cuidado total: 80; Reventa al final: 150; Sin otros costos.",
+          "options": [
+            {
+              "label": "730"
+            },
+            {
+              "label": "580"
+            },
+            {
+              "label": "430"
+            }
+          ],
+          "help": [
+            "Suma compra y cuidado, luego resta reventa indicada."
+          ],
+          "feedback": {
+            "met": "Ingreso de reventa compensa parte de compra y cuidado.",
+            "not_yet": "Suma compra y cuidado, luego resta reventa indicada."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é custo líquido de posse?",
+          "scene": "Compra: 500; Cuidados totais: 80; Revenda no final: 150; Sem outros custos.",
+          "options": [
+            {
+              "label": "730"
+            },
+            {
+              "label": "580"
+            },
+            {
+              "label": "430"
+            }
+          ],
+          "help": [
+            "Some compra e cuidados, depois subtraia revenda dada."
+          ],
+          "feedback": {
+            "met": "Receita de revenda compensa parte da compra e cuidados.",
+            "not_yet": "Some compra e cuidados, depois subtraia revenda dada."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          500,
+          80,
+          150
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "add",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

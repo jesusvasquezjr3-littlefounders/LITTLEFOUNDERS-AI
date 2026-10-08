@@ -1,0 +1,707 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-integrated-decisions-part-2",
+  "lesson_id": "fe-production-integrated-decisions-09",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.payments-digital.08",
+    "finance.prod.payments-digital.10",
+    "finance.prod.cashflow-budget.05"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Respond to a suspected scam while preserving essential payments and evidence.",
+  "title": {
+    "en-US": "Compromised payment",
+    "es-MX": "Pago comprometido",
+    "pt-BR": "Pagamento comprometido"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Payment compromised\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Pago comprometido\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Pagamento comprometido\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "capstone",
+    "objective": {
+      "skill_id": "prod.payments-digital.08",
+      "observable_action": "Respond to a suspected scam while preserving essential payments and evidence.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.payments-digital.05",
+      "prod.payments-digital.07"
+    ],
+    "retrieval_skills": [
+      "prod.payments-digital.08",
+      "prod.payments-digital.10",
+      "prod.cashflow-budget.05"
+    ],
+    "relevance": "Protect access, document what happened, and keep essential deadlines visible.",
+    "misconception": "Following attacker instructions or treating a disputed payment as immediately recovered money.",
+    "numeracy_support": "Use the explicitly stated totals, deadlines and constraints. Earlier financial arithmetic is retrieved; no current rate or legal entitlement is implied.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.payments-digital.08",
+        "context_id": "integrated-decisions-9-practice-01",
+        "supports_from": [],
+        "reasoning": "An independently verified channel avoids extending the credential exposure."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.payments-digital.10",
+        "context_id": "integrated-decisions-9-practice-02",
+        "supports_from": [],
+        "reasoning": "You authorized the payment; the recipient information was mistaken."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.cashflow-budget.05",
+        "context_id": "integrated-decisions-9-practice-03",
+        "supports_from": [],
+        "reasoning": "The money arrives after the essential bill’s deadline."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.payments-digital.08",
+        "context_id": "integrated-decisions-9-practice-04",
+        "supports_from": [],
+        "reasoning": "Details and the original message support an accurate report."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.payments-digital.10",
+        "context_id": "integrated-decisions-9-practice-05",
+        "supports_from": [],
+        "reasoning": "Report the unapproved payment separately from transactions you recognize."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.payments-digital.08",
+        "context_id": "integrated-decisions-9-transfer-01",
+        "supports_from": [],
+        "reasoning": "Verified support addresses exposed access without trusting the stranger."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.payments-digital.08",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Protect access, document what happened, and keep essential deadlines visible."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Protege el acceso, documenta lo sucedido y conserva visibles los plazos esenciales."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Proteja o acesso, documente o ocorrido e mantenha os prazos essenciais visíveis."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Which immediate response protects access?",
+          "scene": "Your payment password leaked; an unsolicited message offers recovery through its link.",
+          "options": [
+            {
+              "label": "Enter your password in the link"
+            },
+            {
+              "label": "Use the known official channel"
+            }
+          ],
+          "help": [
+            "Do not rely on contact details supplied by the suspicious message."
+          ],
+          "feedback": {
+            "met": "An independently verified channel avoids extending the credential exposure.",
+            "not_yet": "Do not rely on contact details supplied by the suspicious message."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué respuesta protege el acceso?",
+          "scene": "Se expusieron credenciales de pago; un mensaje no solicitado ofrece recuperarlas mediante su enlace.",
+          "options": [
+            {
+              "label": "Escribir credenciales en el enlace recibido"
+            },
+            {
+              "label": "Contactar al proveedor por un canal oficial conocido"
+            }
+          ],
+          "help": [
+            "No confíes en los contactos del mensaje sospechoso."
+          ],
+          "feedback": {
+            "met": "Un canal verificado por separado evita ampliar la exposición.",
+            "not_yet": "No confíes en los contactos del mensaje sospechoso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual resposta protege o acesso?",
+          "scene": "Sua senha vazou; uma mensagem estranha oferece ajuda por um link.",
+          "options": [
+            {
+              "label": "Digitar a senha no link"
+            },
+            {
+              "label": "Buscar o canal oficial conhecido"
+            }
+          ],
+          "help": [
+            "Não use os contatos da mensagem suspeita."
+          ],
+          "feedback": {
+            "met": "Busque o canal por conta própria para não expor mais dados.",
+            "not_yet": "Não use os contatos da mensagem suspeita."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.10",
+      "copy": {
+        "en-US": {
+          "prompt": "How should this payment be described?",
+          "scene": "You authorized a transfer but entered the wrong recipient; nobody else accessed your account.",
+          "options": [
+            {
+              "label": "A mistaken authorized transfer"
+            },
+            {
+              "label": "A payment you never authorized"
+            }
+          ],
+          "help": [
+            "Report what happened accurately instead of changing the authorization facts."
+          ],
+          "feedback": {
+            "met": "You authorized the payment; the recipient information was mistaken.",
+            "not_yet": "Report what happened accurately instead of changing the authorization facts."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cómo describir este pago?",
+          "scene": "Autorizaste una transferencia, pero pusiste destinatario equivocado; nadie más accedió a tu cuenta.",
+          "options": [
+            {
+              "label": "Una transferencia autorizada por error"
+            },
+            {
+              "label": "Un pago que nunca autorizaste"
+            }
+          ],
+          "help": [
+            "Reporta lo ocurrido sin cambiar los hechos de autorización."
+          ],
+          "feedback": {
+            "met": "Autorizaste el pago; el error estaba en el destinatario.",
+            "not_yet": "Reporta lo ocurrido sin cambiar los hechos de autorización."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Como descrever este pagamento?",
+          "scene": "Você autorizou a transferência, mas digitou o destinatário errado; ninguém mais acessou sua conta.",
+          "options": [
+            {
+              "label": "Uma transferência autorizada por engano"
+            },
+            {
+              "label": "Um pagamento nunca autorizado"
+            }
+          ],
+          "help": [
+            "Relate o ocorrido sem mudar os fatos da autorização."
+          ],
+          "feedback": {
+            "met": "Você autorizou o pagamento; o destinatário estava errado.",
+            "not_yet": "Relate o ocorrido sem mudar os fatos da autorização."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.05",
+      "copy": {
+        "en-US": {
+          "prompt": "What does the calendar reveal?",
+          "scene": "Bill due Tuesday; pay Thursday, no earlier funds. Monthly income covers expenses.",
+          "options": [
+            {
+              "label": "A shortfall before payday"
+            },
+            {
+              "label": "No problem: totals match"
+            },
+            {
+              "label": "An optional-spending problem"
+            }
+          ],
+          "help": [
+            "Monthly totals do not prove funds exist on every due date."
+          ],
+          "feedback": {
+            "met": "The money arrives after the essential bill’s deadline.",
+            "not_yet": "Monthly totals do not prove funds exist on every due date."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué muestra el calendario?",
+          "scene": "Cuenta esencial: martes; pago confirmado: jueves; sin fondos utilizables antes. El total mensual alcanzaría.",
+          "options": [
+            {
+              "label": "Un faltante antes del pago"
+            },
+            {
+              "label": "Nada; el total mensual alcanza"
+            },
+            {
+              "label": "Un problema de gasto opcional"
+            }
+          ],
+          "help": [
+            "Los totales mensuales no prueban fondos en cada fecha."
+          ],
+          "feedback": {
+            "met": "El dinero llega después del vencimiento de la cuenta esencial.",
+            "not_yet": "Los totales mensuales no prueban fondos en cada fecha."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que o calendário mostra?",
+          "scene": "Conta essencial: terça; pagamento confirmado: quinta; sem recursos utilizáveis antes. O total mensal bastaria.",
+          "options": [
+            {
+              "label": "Uma falta antes do pagamento"
+            },
+            {
+              "label": "Nada; o total mensal basta"
+            },
+            {
+              "label": "Um problema de gasto opcional"
+            }
+          ],
+          "help": [
+            "Totais mensais não comprovam recursos em cada vencimento."
+          ],
+          "feedback": {
+            "met": "O dinheiro chega depois do vencimento da conta essencial.",
+            "not_yet": "Totais mensais não comprovam recursos em cada vencimento."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Which evidence should be preserved?",
+          "scene": "Access secured; report the suspicious payment and preceding message.",
+          "options": [
+            {
+              "label": "Your password in a public post"
+            },
+            {
+              "label": "Payment details and original message"
+            },
+            {
+              "label": "Only a guess about the sender"
+            }
+          ],
+          "help": [
+            "Preserve relevant records without exposing access secrets."
+          ],
+          "feedback": {
+            "met": "Details and the original message support an accurate report.",
+            "not_yet": "Preserve relevant records without exposing access secrets."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué evidencia conservar?",
+          "scene": "Tras proteger el acceso, debes reportar un pago sospechoso y el mensaje que lo precedió.",
+          "options": [
+            {
+              "label": "Tu contraseña en una publicación"
+            },
+            {
+              "label": "Detalles del movimiento y mensaje original"
+            },
+            {
+              "label": "Solo tu sospecha sobre el remitente"
+            }
+          ],
+          "help": [
+            "Conserva registros relevantes sin exponer secretos de acceso."
+          ],
+          "feedback": {
+            "met": "Los detalles y el mensaje original respaldan un reporte preciso.",
+            "not_yet": "Conserva registros relevantes sin exponer secretos de acceso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual evidência preservar?",
+          "scene": "O acesso está seguro; relate o pagamento suspeito e guarde a mensagem.",
+          "options": [
+            {
+              "label": "Sua senha em uma publicação"
+            },
+            {
+              "label": "Detalhes da transação e mensagem original"
+            },
+            {
+              "label": "Só sua suspeita sobre o remetente"
+            }
+          ],
+          "help": [
+            "Guarde os dados do caso, sem expor sua senha."
+          ],
+          "feedback": {
+            "met": "Guarde os fatos e a mensagem para relatar o que houve.",
+            "not_yet": "Guarde os dados do caso, sem expor sua senha."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Which description matches the facts?",
+          "scene": "You did not initiate or approve this payment; you recognize the others.",
+          "options": [
+            {
+              "label": "A payment you did not authorize"
+            },
+            {
+              "label": "Your own recipient error"
+            }
+          ],
+          "help": [
+            "Do not describe an unapproved payment as your own typing error."
+          ],
+          "feedback": {
+            "met": "Report the unapproved payment separately from transactions you recognize.",
+            "not_yet": "Do not describe an unapproved payment as your own typing error."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué descripción coincide?",
+          "scene": "Aparece un pago que no iniciaste ni aprobaste; reconoces tus demás movimientos.",
+          "options": [
+            {
+              "label": "Un pago que no autorizaste"
+            },
+            {
+              "label": "Un error de destinatario que introdujiste"
+            }
+          ],
+          "help": [
+            "No describas un pago no aprobado como error propio al escribir."
+          ],
+          "feedback": {
+            "met": "Reporta el pago no aprobado separado de los movimientos reconocidos.",
+            "not_yet": "No describas un pago no aprobado como error propio al escribir."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual descrição corresponde?",
+          "scene": "Você não fez nem aprovou este pagamento; reconhece os demais.",
+          "options": [
+            {
+              "label": "Um pagamento que não autorizou"
+            },
+            {
+              "label": "Um erro de destinatário que digitou"
+            }
+          ],
+          "help": [
+            "Um pagamento sem sua ordem não é seu erro ao digitar."
+          ],
+          "feedback": {
+            "met": "Relate este pagamento à parte dos que você fez.",
+            "not_yet": "Um pagamento sem sua ordem não é seu erro ao digitar."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.payments-digital.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Which protects access?",
+          "scene": "A stolen phone accesses payments; a stranger charges to unlock it. Essential bills remain due.",
+          "options": [
+            {
+              "label": "Secure access through verified support"
+            },
+            {
+              "label": "Pay the stranger immediately"
+            },
+            {
+              "label": "Share the account password"
+            }
+          ],
+          "help": [
+            "Handle essential deadlines separately; do not buy the attacker’s promise."
+          ],
+          "feedback": {
+            "met": "Verified support addresses exposed access without trusting the stranger.",
+            "not_yet": "Handle essential deadlines separately; do not buy the attacker’s promise."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué respuesta es más segura?",
+          "scene": "Un teléfono robado accede a pagos; un desconocido cobra por desbloquearlo. Aún debes planear cuentas esenciales.",
+          "options": [
+            {
+              "label": "Proteger el acceso con soporte verificado"
+            },
+            {
+              "label": "Pagar al desconocido de inmediato"
+            },
+            {
+              "label": "Compartir la contraseña"
+            }
+          ],
+          "help": [
+            "Atiende aparte los plazos esenciales; no compres la promesa del atacante."
+          ],
+          "feedback": {
+            "met": "El soporte verificado atiende el acceso expuesto sin confiar en desconocidos.",
+            "not_yet": "Atiende aparte los plazos esenciales; no compres la promesa del atacante."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual resposta é mais segura?",
+          "scene": "Um celular roubado acessa pagamentos; um estranho cobra para desbloquear. Contas essenciais ainda precisam de planejamento.",
+          "options": [
+            {
+              "label": "Proteger o acesso com suporte verificado"
+            },
+            {
+              "label": "Pagar ao estranho imediatamente"
+            },
+            {
+              "label": "Compartilhar a senha"
+            }
+          ],
+          "help": [
+            "Cuide dos prazos das contas; não pague pela promessa do ladrão."
+          ],
+          "feedback": {
+            "met": "Use o canal oficial, sem confiar no estranho.",
+            "not_yet": "Cuide dos prazos das contas; não pague pela promessa do ladrão."
+          }
+        }
+      }
+    }
+  ]
+}

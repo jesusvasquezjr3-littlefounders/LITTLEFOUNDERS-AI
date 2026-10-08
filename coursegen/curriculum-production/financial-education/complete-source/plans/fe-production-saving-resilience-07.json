@@ -1,0 +1,754 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-saving-resilience-part-2",
+  "lesson_id": "fe-production-saving-resilience-07",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.saving-resilience.07"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Choose when an automatic transfer would create a payment shortfall.",
+  "title": {
+    "en-US": "Transfer Timing",
+    "es-MX": "Programa transferencia automática",
+    "pt-BR": "Programe transferência automática"
+  },
+  "new_concepts": [
+    "finance.prod.saving-resilience.07"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Transfer Timing\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Programa transferencia automática\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Programe transferência automática\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.saving-resilience.07",
+      "observable_action": "Choose when an automatic transfer would create a payment shortfall.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.cashflow-budget.05",
+      "prod.saving-resilience.05"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Automation follows a date, not your needs; check the spendable balance and essential bills before moving money to savings.",
+    "misconception": "An automatic saving transfer cannot cause a shortfall, or income expected later is already available today.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.saving-resilience.07",
+        "context_id": "saving-resilience-07-example-01",
+        "supports_from": [],
+        "reasoning": "Subtract the transfer from available cash. Check bills before next confirmed income; adjust transfer timing or amount if needed."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.saving-resilience.07",
+        "context_id": "saving-resilience-07-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Only fifty remains for the later essential bill."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.saving-resilience.07",
+        "context_id": "saving-resilience-07-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The transfer leaves too little cash for the earlier bills."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.saving-resilience.07",
+        "context_id": "saving-resilience-07-practice-01",
+        "supports_from": [],
+        "reasoning": "Savings transferred out is no longer in the paying balance."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.saving-resilience.07",
+        "context_id": "saving-resilience-07-practice-02",
+        "supports_from": [],
+        "reasoning": "Waiting for confirmed funds avoids the stated earlier shortfall."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.saving-resilience.07",
+        "context_id": "saving-resilience-07-practice-03",
+        "supports_from": [],
+        "reasoning": "Irregular cash arrivals can make the old schedule unsuitable."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.saving-resilience.07",
+        "context_id": "saving-resilience-07-transfer-01",
+        "supports_from": [],
+        "reasoning": "Changing the transfer protects the stated earlier essential payment."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.saving-resilience.07",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Automation follows a date, not your needs; check the spendable balance and essential bills before moving money to savings."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Automatización sigue fecha, no tus necesidades; revisa saldo disponible y cuentas esenciales antes de mover dinero a ahorro."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Automação segue data, não suas necessidades; confira saldo disponível e contas essenciais antes de mover dinheiro à poupança."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Check what remains for bills",
+          "line": "Subtract the transfer from available cash. Check bills before next confirmed income; adjust transfer timing or amount if needed."
+        },
+        "es-MX": {
+          "prompt": "Revisa qué queda para cuentas",
+          "line": "Resta transferencia prevista al efectivo disponible. Revisa cuentas antes del próximo ingreso confirmado; ajusta fecha o monto si hace falta."
+        },
+        "pt-BR": {
+          "prompt": "Confira o que sobra para contas",
+          "line": "Subtraia transferência prevista do dinheiro disponível. Confira contas antes da próxima renda confirmada; ajuste data ou valor se precisar."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "money.running-ledger.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "balance-meter"
+      },
+      "payload": {
+        "initial": 90,
+        "sale": 20,
+        "cost": 40,
+        "maxEntries": 1,
+        "personal": true,
+        "currency": "local"
+      },
+      "rubric": {
+        "target_balance": 50
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.07",
+      "copy": {
+        "en-US": {
+          "prompt": "From 90 dollars, record savings transfer 40; no income arrives. Essential bill 60 remains due.",
+          "feedback": {
+            "met": "Only fifty remains for the later essential bill.",
+            "not_yet": "Record the stated outgoing transfer, not a new receipt."
+          },
+          "help": [
+            "Record the stated outgoing transfer, not a new receipt."
+          ]
+        },
+        "es-MX": {
+          "prompt": "De 90 pesos, registra transferencia a ahorro de 40; no llega ingreso. Cuenta esencial de 60 sigue pendiente.",
+          "feedback": {
+            "met": "Solo quedan cincuenta para cuenta esencial posterior.",
+            "not_yet": "Registra salida indicada, no ingreso nuevo."
+          },
+          "help": [
+            "Registra salida indicada, no ingreso nuevo."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "De 90 reais, registre transferência à poupança de 40; não chega renda. Conta essencial de 60 segue devida.",
+          "feedback": {
+            "met": "Só restam cinquenta para conta essencial posterior.",
+            "not_yet": "Registre saída dada, não renda nova."
+          },
+          "help": [
+            "Registre saída dada, não renda nova."
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Would this create a shortfall?",
+          "scene": "After transfer, cash is below essential bills due before new income.",
+          "options": [
+            {
+              "label": "Yes, revise amount or timing"
+            },
+            {
+              "label": "No, savings cannot affect bills"
+            },
+            {
+              "label": "No, later income counts today"
+            }
+          ],
+          "help": [
+            "Compare remaining cash with obligations due before new income."
+          ],
+          "feedback": {
+            "met": "The transfer leaves too little cash for the earlier bills.",
+            "not_yet": "Compare remaining cash with obligations due before new income."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Transferencia crearía faltante?",
+          "scene": "Tras transferencia, efectivo disponible es menor que cuentas esenciales previas a cualquier ingreso.",
+          "options": [
+            {
+              "label": "Sí, revisar monto o fecha"
+            },
+            {
+              "label": "No, ahorro no afecta cuentas"
+            },
+            {
+              "label": "No, ingreso posterior cuenta hoy"
+            }
+          ],
+          "help": [
+            "Compara efectivo restante con pagos previos a ingreso nuevo."
+          ],
+          "feedback": {
+            "met": "Transferencia deja poco efectivo para cuentas anteriores al ingreso.",
+            "not_yet": "Compara efectivo restante con pagos previos a ingreso nuevo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Transferência criaria falta?",
+          "scene": "Após transferência, dinheiro disponível é menor que contas essenciais antes de qualquer renda.",
+          "options": [
+            {
+              "label": "Sim, rever valor ou data"
+            },
+            {
+              "label": "Não, poupança não afeta contas"
+            },
+            {
+              "label": "Não, renda futura conta hoje"
+            }
+          ],
+          "help": [
+            "Compare dinheiro restante com pagamentos antes de renda nova."
+          ],
+          "feedback": {
+            "met": "Transferência deixa pouco dinheiro para contas anteriores à renda.",
+            "not_yet": "Compare dinheiro restante com pagamentos antes de renda nova."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.07",
+      "copy": {
+        "en-US": {
+          "prompt": "What cash remains for bills?",
+          "scene": "Available now: 220; Automatic savings transfer: 80; No income arrives first.",
+          "options": [
+            {
+              "label": "300"
+            },
+            {
+              "label": "140"
+            },
+            {
+              "label": "220"
+            }
+          ],
+          "help": [
+            "Subtract the outgoing transfer from current cash."
+          ],
+          "feedback": {
+            "met": "Savings transferred out is no longer in the paying balance.",
+            "not_yet": "Subtract the outgoing transfer from current cash."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué efectivo queda para cuentas?",
+          "scene": "Disponible ahora: 220; Transferencia automática a ahorro: 80; No llega ingreso antes.",
+          "options": [
+            {
+              "label": "300"
+            },
+            {
+              "label": "140"
+            },
+            {
+              "label": "220"
+            }
+          ],
+          "help": [
+            "Resta transferencia saliente al efectivo actual."
+          ],
+          "feedback": {
+            "met": "Ahorro transferido fuera ya no está en saldo de pagos.",
+            "not_yet": "Resta transferencia saliente al efectivo actual."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto dinheiro resta para contas?",
+          "scene": "Disponível agora: 220; Transferência automática à poupança: 80; Não chega renda antes.",
+          "options": [
+            {
+              "label": "300"
+            },
+            {
+              "label": "140"
+            },
+            {
+              "label": "220"
+            }
+          ],
+          "help": [
+            "Subtraia transferência de saída do dinheiro atual."
+          ],
+          "feedback": {
+            "met": "Poupança transferida para fora não está no saldo de pagamentos.",
+            "not_yet": "Subtraia transferência de saída do dinheiro atual."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          220,
+          80
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Which timing avoids conflict?",
+          "scene": "Essentials precede income; after confirmed income, the transfer fits all bills.",
+          "options": [
+            {
+              "label": "Transfer before the essential bill"
+            },
+            {
+              "label": "Transfer after confirmed income arrives"
+            },
+            {
+              "label": "Assume pending income is settled"
+            }
+          ],
+          "help": [
+            "Use actual cash timing rather than expected income alone."
+          ],
+          "feedback": {
+            "met": "Waiting for confirmed funds avoids the stated earlier shortfall.",
+            "not_yet": "Use actual cash timing rather than expected income alone."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué fecha evita conflicto indicado?",
+          "scene": "Pago esencial vence antes del ingreso; tras ingreso confirmado, transferencia cabe con todas las cuentas.",
+          "options": [
+            {
+              "label": "Transferir antes de cuenta esencial"
+            },
+            {
+              "label": "Transferir tras llegar ingreso confirmado"
+            },
+            {
+              "label": "Suponer ingreso pendiente ya cobrado"
+            }
+          ],
+          "help": [
+            "Usa tiempo real del efectivo, no solo ingreso esperado."
+          ],
+          "feedback": {
+            "met": "Esperar fondos confirmados evita faltante anterior indicado.",
+            "not_yet": "Usa tiempo real del efectivo, no solo ingreso esperado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que data evita conflito dado?",
+          "scene": "Pagamento essencial vence antes da renda; após renda confirmada, transferência cabe com todas as contas.",
+          "options": [
+            {
+              "label": "Transferir antes da conta essencial"
+            },
+            {
+              "label": "Transferir após chegar renda confirmada"
+            },
+            {
+              "label": "Supor renda pendente já recebida"
+            }
+          ],
+          "help": [
+            "Use prazo real do dinheiro, não só renda esperada."
+          ],
+          "feedback": {
+            "met": "Esperar verba confirmada evita falta anterior dada.",
+            "not_yet": "Use prazo real do dinheiro, não só renda esperada."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.07",
+      "copy": {
+        "en-US": {
+          "prompt": "What needs changing after income becomes irregular?",
+          "scene": "The old automatic amount sometimes exceeds cash left after essentials.",
+          "options": [
+            {
+              "label": "Treat every shortfall as invisible"
+            },
+            {
+              "label": "Leave it unchanged regardless"
+            },
+            {
+              "label": "Review amount and timing"
+            }
+          ],
+          "help": [
+            "Check current cash flow before continuing the automatic rule."
+          ],
+          "feedback": {
+            "met": "Irregular cash arrivals can make the old schedule unsuitable.",
+            "not_yet": "Check current cash flow before continuing the automatic rule."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué cambiar con ingreso irregular?",
+          "scene": "Monto automático anterior a veces supera efectivo tras esenciales.",
+          "options": [
+            {
+              "label": "Tratar faltantes como invisibles"
+            },
+            {
+              "label": "Dejarlo igual pase lo que pase"
+            },
+            {
+              "label": "Revisar monto y fecha"
+            }
+          ],
+          "help": [
+            "Revisa flujo actual antes de continuar regla automática."
+          ],
+          "feedback": {
+            "met": "Llegadas irregulares pueden volver inadecuado calendario anterior.",
+            "not_yet": "Revisa flujo actual antes de continuar regla automática."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que mudar com renda irregular?",
+          "scene": "Valor automático antigo às vezes supera dinheiro após essenciais.",
+          "options": [
+            {
+              "label": "Tratar faltas como invisíveis"
+            },
+            {
+              "label": "Deixar igual de todo jeito"
+            },
+            {
+              "label": "Rever valor e data"
+            }
+          ],
+          "help": [
+            "Confira fluxo atual antes de seguir regra automática."
+          ],
+          "feedback": {
+            "met": "Entradas irregulares podem tornar inadequado calendário antigo.",
+            "not_yet": "Confira fluxo atual antes de seguir regra automática."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.saving-resilience.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Which choice?",
+          "scene": "Income is delayed; an automatic transfer would leave rent unpaid tomorrow, but can be rescheduled.",
+          "options": [
+            {
+              "label": "Count delayed income as available"
+            },
+            {
+              "label": "Reschedule or reduce the transfer"
+            },
+            {
+              "label": "Ignore the rent shortfall"
+            }
+          ],
+          "help": [
+            "Match savings automation to available money and due dates."
+          ],
+          "feedback": {
+            "met": "Changing the transfer protects the stated earlier essential payment.",
+            "not_yet": "Match savings automation to available money and due dates."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué elección cabe en calendario?",
+          "scene": "Ingreso se retrasa; transferencia automática dejaría renta impaga mañana, pero puede reprogramarse.",
+          "options": [
+            {
+              "label": "Contar ingreso retrasado como disponible"
+            },
+            {
+              "label": "Reprogramar o reducir transferencia"
+            },
+            {
+              "label": "Ignorar faltante de renta"
+            }
+          ],
+          "help": [
+            "Ajusta ahorro automático a dinero disponible y vencimientos."
+          ],
+          "feedback": {
+            "met": "Cambiar transferencia protege pago esencial anterior indicado.",
+            "not_yet": "Ajusta ahorro automático a dinero disponible y vencimientos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que escolha cabe no calendário?",
+          "scene": "Renda atrasa; transferência automática deixaria aluguel sem pagar amanhã, mas pode ser remarcada.",
+          "options": [
+            {
+              "label": "Contar renda atrasada como disponível"
+            },
+            {
+              "label": "Remarcar ou reduzir transferência"
+            },
+            {
+              "label": "Ignorar falta para aluguel"
+            }
+          ],
+          "help": [
+            "Ajuste poupança automática ao dinheiro disponível e vencimentos."
+          ],
+          "feedback": {
+            "met": "Mudar transferência protege pagamento essencial anterior dado.",
+            "not_yet": "Ajuste poupança automática ao dinheiro disponível e vencimentos."
+          }
+        }
+      }
+    }
+  ]
+}

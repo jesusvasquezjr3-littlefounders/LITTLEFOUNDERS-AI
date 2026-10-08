@@ -1,0 +1,707 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-credit-records-part-2",
+  "lesson_id": "fe-production-credit-records-05",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.credit-records.05"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Explain why an advertised score threshold cannot guarantee a lending decision.",
+  "title": {
+    "en-US": "Approval limits",
+    "es-MX": "Puntaje no es aprobación",
+    "pt-BR": "Pontuação não é aprovação"
+  },
+  "new_concepts": [
+    "finance.prod.credit-records.05"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"A score is not approval\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Puntaje no es aprobación\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Pontuação não é aprovação\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.credit-records.05",
+      "observable_action": "Explain why an advertised score threshold cannot guarantee a lending decision.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.credit-records.01",
+      "prod.credit-mechanics.07"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A headline score cannot tell you whether a payment fits your budget.",
+    "misconception": "Crossing an advertised score threshold guarantees approval or proves a loan affordable.",
+    "numeracy_support": "Every quantity and assumption needed to decide is visible in the current scenario. Examples explain the relationship before independent application.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.credit-records.05",
+        "context_id": "fe-production-credit-records-05-example-01",
+        "supports_from": [],
+        "reasoning": "A lender checks a score and payment capacity. Meeting its advertised score still leaves the other checks unresolved."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.credit-records.05",
+        "context_id": "fe-production-credit-records-05-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "One completed check does not satisfy both stated requirements."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.credit-records.05",
+        "context_id": "fe-production-credit-records-05-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The stated review remains a condition of the offer."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.credit-records.05",
+        "context_id": "fe-production-credit-records-05-practice-03",
+        "supports_from": [],
+        "reasoning": "Approval does not change the money needed for essential bills."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.credit-records.05",
+        "context_id": "fe-production-credit-records-05-practice-04",
+        "supports_from": [],
+        "reasoning": "Different criteria can lead to different decisions."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.credit-records.05",
+        "context_id": "fe-production-credit-records-05-practice-05",
+        "supports_from": [],
+        "reasoning": "The message explicitly leaves final verification unfinished."
+      },
+      {
+        "segment_id": "transfer-06",
+        "skill_id": "prod.credit-records.05",
+        "context_id": "fe-production-credit-records-05-transfer-06",
+        "supports_from": [],
+        "reasoning": "Missing conditions prevent a guaranteed eligibility conclusion."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.credit-records.05",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A headline score cannot tell you whether a payment fits your budget."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un puntaje anunciado no indica si un pago cabe en tu presupuesto."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Uma pontuação anunciada não indica se uma parcela cabe no orçamento."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Follow the evidence",
+          "line": "A lender checks a score and payment capacity. Meeting its advertised score still leaves the other checks unresolved."
+        },
+        "es-MX": {
+          "prompt": "Sigue las pruebas",
+          "line": "Una entidad revisa puntaje y capacidad de pago. Cumplir el puntaje anunciado no resuelve las demás comprobaciones."
+        },
+        "pt-BR": {
+          "prompt": "Siga as provas",
+          "line": "Uma entidade analisa pontuação e capacidade de pagamento. Atingir a pontuação anunciada não resolve as outras verificações."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-records.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Is approval guaranteed?",
+          "scene": "The lender requires an acceptable score and verified repayment capacity. Only the score is checked.",
+          "options": [
+            {
+              "label": "No, capacity remains unchecked"
+            },
+            {
+              "label": "Yes, the score is enough"
+            }
+          ],
+          "help": [
+            "Read every condition, not only the score threshold."
+          ],
+          "feedback": {
+            "met": "One completed check does not satisfy both stated requirements.",
+            "not_yet": "Read every condition, not only the score threshold."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿La aprobación está garantizada?",
+          "scene": "La entidad exige puntaje aceptable y capacidad de pago verificada. Solo revisaron el puntaje.",
+          "options": [
+            {
+              "label": "No, falta verificar capacidad"
+            },
+            {
+              "label": "Sí, el puntaje basta"
+            }
+          ],
+          "help": [
+            "Lee todas las condiciones, no solo el puntaje."
+          ],
+          "feedback": {
+            "met": "Una comprobación no cumple los dos requisitos indicados.",
+            "not_yet": "Lee todas las condiciones, no solo el puntaje."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A aprovação está garantida?",
+          "scene": "A entidade exige pontuação aceitável e capacidade de pagamento verificada. Só verificaram a pontuação.",
+          "options": [
+            {
+              "label": "Não, falta verificar capacidade"
+            },
+            {
+              "label": "Sim, a pontuação basta"
+            }
+          ],
+          "help": [
+            "Leia todas as condições, não só a pontuação."
+          ],
+          "feedback": {
+            "met": "Uma checagem não atende aos dois requisitos informados.",
+            "not_yet": "Leia todas as condições, não só a pontuação."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-records.05",
+      "copy": {
+        "en-US": {
+          "prompt": "What still needs checking?",
+          "scene": "An advertisement says “subject to income and debt review.” Your score qualifies.",
+          "options": [
+            {
+              "label": "Income and existing debt"
+            },
+            {
+              "label": "Only a previous score"
+            }
+          ],
+          "help": [
+            "Qualifying on one measure does not remove other conditions."
+          ],
+          "feedback": {
+            "met": "The stated review remains a condition of the offer.",
+            "not_yet": "Qualifying on one measure does not remove other conditions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué falta revisar?",
+          "scene": "El anuncio dice «sujeto a revisión de ingresos y deudas». Tu puntaje cumple.",
+          "options": [
+            {
+              "label": "Ingresos y deudas existentes"
+            },
+            {
+              "label": "Solo un puntaje anterior"
+            }
+          ],
+          "help": [
+            "Cumplir una medida no elimina las demás condiciones."
+          ],
+          "feedback": {
+            "met": "La revisión indicada sigue siendo una condición de la oferta.",
+            "not_yet": "Cumplir una medida no elimina las demás condiciones."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que falta verificar?",
+          "scene": "O anúncio diz “sujeito à análise de renda e dívidas”. Sua pontuação atende.",
+          "options": [
+            {
+              "label": "Renda e dívidas existentes"
+            },
+            {
+              "label": "Só uma pontuação anterior"
+            }
+          ],
+          "help": [
+            "Atender a uma medida não elimina as outras condições."
+          ],
+          "feedback": {
+            "met": "A análise informada continua sendo uma condição da oferta.",
+            "not_yet": "Atender a uma medida não elimina as outras condições."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-records.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Does approval prove affordability?",
+          "scene": "A payment would leave too little for stated essential bills, even if the lender approves.",
+          "options": [
+            {
+              "label": "No, the cash-flow gap remains"
+            },
+            {
+              "label": "Yes, approval removes the gap"
+            }
+          ],
+          "help": [
+            "Check the payment against your actual cash-flow constraints."
+          ],
+          "feedback": {
+            "met": "Approval does not change the money needed for essential bills.",
+            "not_yet": "Check the payment against your actual cash-flow constraints."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Aprobarlo demuestra que alcanza?",
+          "scene": "El pago dejaría poco para las cuentas esenciales, aunque la entidad lo apruebe.",
+          "options": [
+            {
+              "label": "No, el faltante permanece"
+            },
+            {
+              "label": "Sí, aprobarlo elimina el faltante"
+            }
+          ],
+          "help": [
+            "Compara el pago con tus restricciones reales de dinero."
+          ],
+          "feedback": {
+            "met": "La aprobación no cambia el dinero necesario para las cuentas.",
+            "not_yet": "Compara el pago con tus restricciones reales de dinero."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A aprovação prova que cabe?",
+          "scene": "A parcela deixaria pouco para as contas essenciais, mesmo com aprovação.",
+          "options": [
+            {
+              "label": "Não, a falta permanece"
+            },
+            {
+              "label": "Sim, aprovar elimina a falta"
+            }
+          ],
+          "help": [
+            "Compare a parcela com suas restrições reais de dinheiro."
+          ],
+          "feedback": {
+            "met": "A aprovação não muda o dinheiro necessário para as contas.",
+            "not_yet": "Compare a parcela com suas restrições reais de dinheiro."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-records.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Can you assume the same result?",
+          "scene": "Two lenders use different stated acceptance criteria for the same applicant.",
+          "options": [
+            {
+              "label": "Yes, every lender must agree"
+            },
+            {
+              "label": "No, criteria can differ"
+            }
+          ],
+          "help": [
+            "Check the actual criteria of each application."
+          ],
+          "feedback": {
+            "met": "Different criteria can lead to different decisions.",
+            "not_yet": "Check the actual criteria of each application."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Puedes suponer el mismo resultado?",
+          "scene": "Dos entidades usan criterios de aceptación distintos para la misma persona.",
+          "options": [
+            {
+              "label": "Sí, todas deben coincidir"
+            },
+            {
+              "label": "No, los criterios pueden variar"
+            }
+          ],
+          "help": [
+            "Revisa los criterios concretos de cada solicitud."
+          ],
+          "feedback": {
+            "met": "Los criterios distintos pueden producir decisiones distintas.",
+            "not_yet": "Revisa los criterios concretos de cada solicitud."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Pode supor o mesmo resultado?",
+          "scene": "Duas instituições usam critérios de aceitação diferentes para a mesma pessoa.",
+          "options": [
+            {
+              "label": "Sim, todas devem concordar"
+            },
+            {
+              "label": "Não, os critérios podem variar"
+            }
+          ],
+          "help": [
+            "Confira os critérios concretos de cada solicitação."
+          ],
+          "feedback": {
+            "met": "Critérios diferentes podem produzir decisões diferentes.",
+            "not_yet": "Confira os critérios concretos de cada solicitação."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-records.05",
+      "copy": {
+        "en-US": {
+          "prompt": "What does the offer establish?",
+          "scene": "A message says “preselected,” with final verification still required.",
+          "options": [
+            {
+              "label": "An invitation with conditions"
+            },
+            {
+              "label": "A completed final approval"
+            }
+          ],
+          "help": [
+            "Preselection does not erase the stated remaining checks."
+          ],
+          "feedback": {
+            "met": "The message explicitly leaves final verification unfinished.",
+            "not_yet": "Preselection does not erase the stated remaining checks."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué establece la oferta?",
+          "scene": "Un mensaje dice «preseleccionado» y exige verificación final.",
+          "options": [
+            {
+              "label": "Una invitación con condiciones"
+            },
+            {
+              "label": "Una aprobación final terminada"
+            }
+          ],
+          "help": [
+            "La preselección no elimina las comprobaciones indicadas."
+          ],
+          "feedback": {
+            "met": "El mensaje deja pendiente la verificación final.",
+            "not_yet": "La preselección no elimina las comprobaciones indicadas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que a oferta estabelece?",
+          "scene": "Uma mensagem diz “pré-selecionado” e exige checagem final.",
+          "options": [
+            {
+              "label": "Um convite com condições"
+            },
+            {
+              "label": "Uma aprovação final concluída"
+            }
+          ],
+          "help": [
+            "A pré-seleção não elimina as verificações informadas."
+          ],
+          "feedback": {
+            "met": "A mensagem deixa a checagem final pendente.",
+            "not_yet": "A pré-seleção não elimina as verificações informadas."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.credit-records.05",
+      "copy": {
+        "en-US": {
+          "prompt": "What is the defensible conclusion?",
+          "scene": "A vehicle offer advertises a qualifying score. Deposit and income conditions are still unknown.",
+          "options": [
+            {
+              "label": "Eligibility is still unresolved"
+            },
+            {
+              "label": "The vehicle loan is guaranteed"
+            }
+          ],
+          "help": [
+            "Obtain the complete conditions before treating the offer as approved."
+          ],
+          "feedback": {
+            "met": "Missing conditions prevent a guaranteed eligibility conclusion.",
+            "not_yet": "Obtain the complete conditions before treating the offer as approved."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué conclusión puedes sostener?",
+          "scene": "Una oferta de vehículo anuncia un puntaje. Desconoces las condiciones de enganche e ingresos.",
+          "options": [
+            {
+              "label": "La elegibilidad sigue pendiente"
+            },
+            {
+              "label": "El préstamo está garantizado"
+            }
+          ],
+          "help": [
+            "Obtén las condiciones completas antes de considerar aprobada la oferta."
+          ],
+          "feedback": {
+            "met": "Las condiciones faltantes impiden garantizar la elegibilidad.",
+            "not_yet": "Obtén las condiciones completas antes de considerar aprobada la oferta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual conclusão é defensável?",
+          "scene": "Uma oferta de veículo anuncia uma pontuação. Você desconhece as condições de entrada e renda.",
+          "options": [
+            {
+              "label": "A aceitação continua pendente"
+            },
+            {
+              "label": "O empréstimo está garantido"
+            }
+          ],
+          "help": [
+            "Obtenha as condições completas antes de considerar a oferta aprovada."
+          ],
+          "feedback": {
+            "met": "As condições ausentes impedem garantir a aceitação.",
+            "not_yet": "Obtenha as condições completas antes de considerar a oferta aprovada."
+          }
+        }
+      }
+    }
+  ]
+}

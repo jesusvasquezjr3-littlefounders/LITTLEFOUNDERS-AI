@@ -1,0 +1,1109 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-cashflow-budget-part-3",
+  "lesson_id": "fe-production-cashflow-budget-review-2",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.income-work.01",
+    "finance.plan.periodic",
+    "finance.prod.cashflow-budget.09",
+    "finance.prod.cashflow-budget.10",
+    "finance.prod.cashflow-budget.11",
+    "finance.prod.cashflow-budget.12",
+    "finance.prod.cashflow-budget.13",
+    "finance.prod.cashflow-budget.14"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Apply the previously taught financial relationships to the visible constraints of a new situation.",
+  "title": {
+    "en-US": "Closing budgets",
+    "es-MX": "Revisa y cierra un plan",
+    "pt-BR": "Revise e feche um plano"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Revise and close a plan\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Revisa y cierra un plan\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Revise e feche um plano\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "consolidate",
+    "objective": {
+      "skill_id": "prod.income-work.01",
+      "observable_action": "Apply the previously taught financial relationships to the visible constraints of a new situation.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "cash.received"
+    ],
+    "retrieval_skills": [
+      "plan.periodic",
+      "prod.cashflow-budget.09",
+      "prod.cashflow-budget.10",
+      "prod.cashflow-budget.11",
+      "prod.cashflow-budget.12",
+      "prod.cashflow-budget.13",
+      "prod.cashflow-budget.14",
+      "prod.income-work.01"
+    ],
+    "relevance": "Reconcile changed costs, future commitments and actual movements without double counting.",
+    "misconception": "Reuse an earlier answer without checking the current quantities, units and conditions.",
+    "numeracy_support": "All required quantities remain on the current board.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "plan.periodic",
+        "context_id": "fe-production-cashflow-budget-review-2-practice-01",
+        "supports_from": [],
+        "reasoning": "(280 − 100) ÷ 6 = 30 per deposit."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.cashflow-budget.09",
+        "context_id": "fe-production-cashflow-budget-review-2-practice-02",
+        "supports_from": [],
+        "reasoning": "The added cost must appear in the revised total."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.cashflow-budget.10",
+        "context_id": "fe-production-cashflow-budget-review-2-practice-03",
+        "supports_from": [],
+        "reasoning": "A sample share cannot override a verified necessary cost."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.cashflow-budget.11",
+        "context_id": "fe-production-cashflow-budget-review-2-practice-04",
+        "supports_from": [],
+        "reasoning": "Borrowed cash adds an obligation that the plan must address."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.cashflow-budget.12",
+        "context_id": "fe-production-cashflow-budget-review-2-practice-05",
+        "supports_from": [],
+        "reasoning": "A remainder alone does not establish an intentional feasible saving allocation."
+      },
+      {
+        "segment_id": "practice-06",
+        "skill_id": "prod.cashflow-budget.13",
+        "context_id": "fe-production-cashflow-budget-review-2-practice-06",
+        "supports_from": [],
+        "reasoning": "Actual results report completed movements rather than forecasts."
+      },
+      {
+        "segment_id": "practice-07",
+        "skill_id": "prod.cashflow-budget.14",
+        "context_id": "fe-production-cashflow-budget-review-2-practice-07",
+        "supports_from": [],
+        "reasoning": "150 − 85 = 65 remains on the same invoice."
+      },
+      {
+        "segment_id": "practice-08",
+        "skill_id": "prod.income-work.01",
+        "context_id": "fe-production-cashflow-budget-review-2-practice-08",
+        "supports_from": [],
+        "reasoning": "A single award does not establish recurring receipts."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.income-work.01",
+        "context_id": "fe-production-cashflow-budget-review-2-transfer-01",
+        "supports_from": [],
+        "reasoning": "Occasional requests do not establish fixed recurring receipts."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.income-work.01",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Reconcile changed costs, future commitments and actual movements without double counting."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Concilia costos cambiados, compromisos futuros y movimientos reales sin duplicar."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Concilie custos alterados, compromissos futuros e movimentos reais sem duplicar."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.plan.periodic",
+      "copy": {
+        "en-US": {
+          "prompt": "Required per deposit?",
+          "scene": "Known renewal: 280; reserved: 100; deposits remaining: 6.",
+          "options": [
+            {
+              "label": "180"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "60"
+            }
+          ],
+          "help": [
+            "Remove the funded part before dividing what remains."
+          ],
+          "feedback": {
+            "met": "(280 − 100) ÷ 6 = 30 per deposit.",
+            "not_yet": "Remove the funded part before dividing what remains."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Necesario por aportación?",
+          "scene": "Renovación conocida: 280; reservado: 100; aportaciones restantes: 6.",
+          "options": [
+            {
+              "label": "180"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "60"
+            }
+          ],
+          "help": [
+            "Resta la parte financiada antes de dividir lo faltante."
+          ],
+          "feedback": {
+            "met": "(280 − 100) ÷ 6 = 30 por aportación.",
+            "not_yet": "Resta la parte financiada antes de dividir lo faltante."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Necessário por contribuição?",
+          "scene": "Renovação conhecida: 280; reservado: 100; contribuições restantes: 6.",
+          "options": [
+            {
+              "label": "180"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "60"
+            }
+          ],
+          "help": [
+            "Subtraia a parte financiada antes de dividir o que falta."
+          ],
+          "feedback": {
+            "met": "(280 − 100) ÷ 6 = 30 por contribuição.",
+            "not_yet": "Subtraia a parte financiada antes de dividir o que falta."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          280,
+          100,
+          6
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.09",
+      "copy": {
+        "en-US": {
+          "prompt": "What must change?",
+          "scene": "A required cost rises; current income and all other allocations are unchanged.",
+          "options": [
+            {
+              "label": "Show the increase and adjust feasibly"
+            },
+            {
+              "label": "Invent an equal receipt"
+            },
+            {
+              "label": "Keep the old total unchanged"
+            }
+          ],
+          "help": [
+            "Maintain consistent amounts rather than hiding the change."
+          ],
+          "feedback": {
+            "met": "The added cost must appear in the revised total.",
+            "not_yet": "Maintain consistent amounts rather than hiding the change."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe hacer el plan revisado?",
+          "scene": "Sube un costo necesario; ingreso y demás asignaciones no cambian.",
+          "options": [
+            {
+              "label": "Mostrar el aumento y ajustar de forma viable"
+            },
+            {
+              "label": "Inventar una entrada igual"
+            },
+            {
+              "label": "Conservar el total anterior sin cambios"
+            }
+          ],
+          "help": [
+            "Conserva montos consistentes sin ocultar el cambio."
+          ],
+          "feedback": {
+            "met": "El costo adicional debe aparecer en el total revisado.",
+            "not_yet": "Conserva montos consistentes sin ocultar el cambio."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que o plano revisto deve fazer?",
+          "scene": "Sobe um custo necessário; renda e demais destinações não mudam.",
+          "options": [
+            {
+              "label": "Mostrar o aumento e ajustar de forma viável"
+            },
+            {
+              "label": "Inventar uma entrada igual"
+            },
+            {
+              "label": "Manter o total anterior sem mudanças"
+            }
+          ],
+          "help": [
+            "Mantenha valores consistentes sem esconder a mudança."
+          ],
+          "feedback": {
+            "met": "O custo adicional deve aparecer no total revisto.",
+            "not_yet": "Mantenha valores consistentes sem esconder a mudança."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.10",
+      "copy": {
+        "en-US": {
+          "prompt": "How to use it?",
+          "scene": "A sample budget share cannot cover this household’s necessary accessible housing.",
+          "options": [
+            {
+              "label": "Adapt it to actual constraints"
+            },
+            {
+              "label": "As a binding bill cap"
+            },
+            {
+              "label": "Assume actual housing costs are false"
+            }
+          ],
+          "help": [
+            "Use the guide while keeping the real obligation visible."
+          ],
+          "feedback": {
+            "met": "A sample share cannot override a verified necessary cost.",
+            "not_yet": "Use the guide while keeping the real obligation visible."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cómo tratar el ejemplo?",
+          "scene": "Una parte de presupuesto de ejemplo no cubre la vivienda accesible necesaria.",
+          "options": [
+            {
+              "label": "Adaptarlo a los límites reales"
+            },
+            {
+              "label": "Tratarlo como límite obligatorio de cuentas"
+            },
+            {
+              "label": "Suponer falsos los costos reales de vivienda"
+            }
+          ],
+          "help": [
+            "Usa la guía conservando visible la obligación real."
+          ],
+          "feedback": {
+            "met": "Una parte de ejemplo no anula un costo necesario verificado.",
+            "not_yet": "Usa la guía conservando visible la obligación real."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Como tratar o exemplo?",
+          "scene": "Uma parte de orçamento de exemplo não cobre a moradia acessível necessária.",
+          "options": [
+            {
+              "label": "Adaptá-lo aos limites reais"
+            },
+            {
+              "label": "Tratá-lo como limite obrigatório de contas"
+            },
+            {
+              "label": "Supor falsos os custos reais de moradia"
+            }
+          ],
+          "help": [
+            "Use o guia mantendo visível a obrigação real."
+          ],
+          "feedback": {
+            "met": "Uma parte de exemplo não anula um custo necessário verificado.",
+            "not_yet": "Use o guia mantendo visível a obrigação real."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.11",
+      "copy": {
+        "en-US": {
+          "prompt": "What is missing before deciding?",
+          "scene": "A proposed fix borrows money; its future repayment has not been checked.",
+          "options": [
+            {
+              "label": "Only the cash received"
+            },
+            {
+              "label": "Planned repayment costs and dates"
+            },
+            {
+              "label": "A larger written income estimate"
+            }
+          ],
+          "help": [
+            "Check what must leave the budget later."
+          ],
+          "feedback": {
+            "met": "Borrowed cash adds an obligation that the plan must address.",
+            "not_yet": "Check what must leave the budget later."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué falta antes de juzgar viabilidad?",
+          "scene": "Una solución propuesta pide prestado; no se ha revisado su pago futuro.",
+          "options": [
+            {
+              "label": "Solo el efectivo recibido"
+            },
+            {
+              "label": "Costos y fechas de devolución en el plan"
+            },
+            {
+              "label": "Una estimación de ingreso escrita mayor"
+            }
+          ],
+          "help": [
+            "Revisa qué deberá salir del presupuesto después."
+          ],
+          "feedback": {
+            "met": "El dinero prestado añade una obligación que el plan debe atender.",
+            "not_yet": "Revisa qué deberá salir del presupuesto después."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que falta antes de julgar viabilidade?",
+          "scene": "Uma solução proposta pede emprestado; seu pagamento futuro não foi conferido.",
+          "options": [
+            {
+              "label": "Só o dinheiro recebido"
+            },
+            {
+              "label": "Custos e datas de devolução no plano"
+            },
+            {
+              "label": "Uma estimativa escrita de renda maior"
+            }
+          ],
+          "help": [
+            "Confira o que deverá sair do orçamento depois."
+          ],
+          "feedback": {
+            "met": "O dinheiro emprestado adiciona uma obrigação que o plano deve tratar.",
+            "not_yet": "Confira o que deverá sair do orçamento depois."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.12",
+      "copy": {
+        "en-US": {
+          "prompt": "Is this planned saving yet?",
+          "scene": "Money remains; pending bills and a saving purpose are unchecked.",
+          "options": [
+            {
+              "label": "No, check obligations and allocate feasibly"
+            },
+            {
+              "label": "Yes, unspent always means uncommitted"
+            },
+            {
+              "label": "Yes, the balance proves intent"
+            }
+          ],
+          "help": [
+            "Separate available, committed and deliberately allocated money."
+          ],
+          "feedback": {
+            "met": "A remainder alone does not establish an intentional feasible saving allocation.",
+            "not_yet": "Separate available, committed and deliberately allocated money."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Todo el resto es ahorro planeado?",
+          "scene": "Queda dinero sin gastar, pero no se revisaron cuentas pendientes ni asignó una meta.",
+          "options": [
+            {
+              "label": "No, revisa obligaciones y asigna de forma viable"
+            },
+            {
+              "label": "Sí, sin gastar siempre significa libre"
+            },
+            {
+              "label": "Sí, el saldo demuestra intención"
+            }
+          ],
+          "help": [
+            "Distingue dinero disponible, comprometido y asignado deliberadamente."
+          ],
+          "feedback": {
+            "met": "Un resto por sí solo no demuestra ahorro intencional y viable.",
+            "not_yet": "Distingue dinero disponible, comprometido y asignado deliberadamente."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Todo o restante já é poupança planejada?",
+          "scene": "Resta dinheiro sem gastar, mas não conferiram contas pendentes nem definiram uma meta.",
+          "options": [
+            {
+              "label": "Não, confira obrigações e destine de forma viável"
+            },
+            {
+              "label": "Sim, não gasto sempre significa livre"
+            },
+            {
+              "label": "Sim, o saldo comprova intenção"
+            }
+          ],
+          "help": [
+            "Distinga dinheiro disponível, comprometido e destinado deliberadamente."
+          ],
+          "feedback": {
+            "met": "Um restante sozinho não demonstra poupança intencional e viável.",
+            "not_yet": "Distinga dinheiro disponível, comprometido e destinado deliberadamente."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.13",
+      "copy": {
+        "en-US": {
+          "prompt": "Which receipts belong in actual results?",
+          "scene": "Forecast receipts exceed actual receipts at closing; the difference is still unpaid.",
+          "options": [
+            {
+              "label": "Both totals added together"
+            },
+            {
+              "label": "The forecast copied unchanged"
+            },
+            {
+              "label": "Only completed receipts"
+            }
+          ],
+          "help": [
+            "Keep the missing receipt visible separately."
+          ],
+          "feedback": {
+            "met": "Actual results report completed movements rather than forecasts.",
+            "not_yet": "Keep the missing receipt visible separately."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué entradas corresponden al resultado real?",
+          "scene": "Las entradas estimadas superan las reales al cerrar; la diferencia sigue pendiente.",
+          "options": [
+            {
+              "label": "Ambos totales sumados"
+            },
+            {
+              "label": "La estimación copiada sin cambios"
+            },
+            {
+              "label": "Solo entradas realizadas"
+            }
+          ],
+          "help": [
+            "Conserva visible la entrada pendiente por separado."
+          ],
+          "feedback": {
+            "met": "El resultado real registra movimientos realizados, no estimaciones.",
+            "not_yet": "Conserva visible la entrada pendiente por separado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quais entradas cabem no resultado real?",
+          "scene": "As entradas previstas superam as reais no fechamento; a diferença continua pendente.",
+          "options": [
+            {
+              "label": "Ambos os totais somados"
+            },
+            {
+              "label": "A estimativa copiada sem mudanças"
+            },
+            {
+              "label": "Só entradas concluídas"
+            }
+          ],
+          "help": [
+            "Mantenha visível a entrada pendente separadamente."
+          ],
+          "feedback": {
+            "met": "O resultado real registra movimentos concluídos, não estimativas.",
+            "not_yet": "Mantenha visível a entrada pendente separadamente."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-07",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.14",
+      "copy": {
+        "en-US": {
+          "prompt": "Amount carried into the next plan?",
+          "scene": "An invoice of 150 received verified payments of 85; no new charges apply.",
+          "options": [
+            {
+              "label": "235"
+            },
+            {
+              "label": "150"
+            },
+            {
+              "label": "65"
+            }
+          ],
+          "help": [
+            "Carry the unpaid remainder, not the original total again."
+          ],
+          "feedback": {
+            "met": "150 − 85 = 65 remains on the same invoice.",
+            "not_yet": "Carry the unpaid remainder, not the original total again."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Monto que pasa al siguiente plan?",
+          "scene": "Una factura de 150 recibió pagos verificados de 85; no hay cargos nuevos.",
+          "options": [
+            {
+              "label": "235"
+            },
+            {
+              "label": "150"
+            },
+            {
+              "label": "65"
+            }
+          ],
+          "help": [
+            "Lleva lo pendiente, no repitas el total original."
+          ],
+          "feedback": {
+            "met": "150 − 85 = 65 queda en la misma factura.",
+            "not_yet": "Lleva lo pendiente, no repitas el total original."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Valor levado ao próximo plano?",
+          "scene": "Uma fatura de 150 recebeu pagamentos verificados de 85; não há cobranças novas.",
+          "options": [
+            {
+              "label": "235"
+            },
+            {
+              "label": "150"
+            },
+            {
+              "label": "65"
+            }
+          ],
+          "help": [
+            "Leve o pendente, não repita o total original."
+          ],
+          "feedback": {
+            "met": "150 − 85 = 65 resta na mesma fatura.",
+            "not_yet": "Leve o pendente, não repita o total original."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          150,
+          85
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-08",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Which future-income description fits?",
+          "scene": "A special award is paid once, with no promise of renewal.",
+          "options": [
+            {
+              "label": "One-time receipt, not regular pay"
+            },
+            {
+              "label": "Guaranteed monthly income"
+            },
+            {
+              "label": "A permanent wage increase"
+            }
+          ],
+          "help": [
+            "Use the stated frequency of this receipt."
+          ],
+          "feedback": {
+            "met": "A single award does not establish recurring receipts.",
+            "not_yet": "Use the stated frequency of this receipt."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué descripción de ingreso futuro corresponde?",
+          "scene": "Un premio especial se paga una vez, sin prometer renovación.",
+          "options": [
+            {
+              "label": "Entrada única, no pago regular"
+            },
+            {
+              "label": "Ingreso mensual garantizado"
+            },
+            {
+              "label": "Un aumento salarial permanente"
+            }
+          ],
+          "help": [
+            "Usa la frecuencia indicada de esta entrada."
+          ],
+          "feedback": {
+            "met": "Un premio único no establece entradas recurrentes.",
+            "not_yet": "Usa la frecuencia indicada de esta entrada."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual descrição de renda futura cabe?",
+          "scene": "Um prêmio especial é pago uma vez, sem prometer renovação.",
+          "options": [
+            {
+              "label": "Entrada única, não pagamento regular"
+            },
+            {
+              "label": "Renda mensal garantida"
+            },
+            {
+              "label": "Um aumento salarial permanente"
+            }
+          ],
+          "help": [
+            "Use a frequência informada dessa entrada."
+          ],
+          "feedback": {
+            "met": "Um prêmio único não estabelece entradas recorrentes.",
+            "not_yet": "Use a frequência informada dessa entrada."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.income-work.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Which description fits next?",
+          "scene": "Occasional repair requests bring varying income with no guaranteed schedule.",
+          "options": [
+            {
+              "label": "A guaranteed identical weekly payment"
+            },
+            {
+              "label": "Every requested payment already received"
+            },
+            {
+              "label": "Irregular income requiring a cautious estimate"
+            }
+          ],
+          "help": [
+            "Use the stated variability rather than a guaranteed schedule."
+          ],
+          "feedback": {
+            "met": "Occasional requests do not establish fixed recurring receipts.",
+            "not_yet": "Use the stated variability rather than a guaranteed schedule."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué descripción corresponde al siguiente plan?",
+          "scene": "Pedidos ocasionales de reparación generan ingreso variable sin calendario garantizado.",
+          "options": [
+            {
+              "label": "Un pago semanal idéntico garantizado"
+            },
+            {
+              "label": "Ingreso ya recibido por cada pedido"
+            },
+            {
+              "label": "Ingreso irregular que exige estimación prudente"
+            }
+          ],
+          "help": [
+            "Usa la variabilidad indicada sin inventar un calendario garantizado."
+          ],
+          "feedback": {
+            "met": "Pedidos ocasionales no establecen entradas recurrentes fijas.",
+            "not_yet": "Usa la variabilidad indicada sin inventar un calendario garantizado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual descrição cabe no próximo plano?",
+          "scene": "Pedidos ocasionais de conserto geram renda variável sem calendário garantido.",
+          "options": [
+            {
+              "label": "Um pagamento semanal idêntico garantido"
+            },
+            {
+              "label": "Renda já recebida por cada pedido"
+            },
+            {
+              "label": "Renda irregular que exige estimativa cautelosa"
+            }
+          ],
+          "help": [
+            "Use a variação informada sem inventar um calendário garantido."
+          ],
+          "feedback": {
+            "met": "Pedidos ocasionais não estabelecem entradas recorrentes fixas.",
+            "not_yet": "Use a variação informada sem inventar um calendário garantido."
+          }
+        }
+      }
+    }
+  ]
+}

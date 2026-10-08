@@ -1,0 +1,901 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-solid-03-compare-before-paying",
+  "lesson_id": "fe-solid-14-compare-the-final-price",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.price.final"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Compare final purchase costs after a stated discount and mandatory fee, using the same item and payment conditions.",
+  "title": {
+    "en-US": "Compare the final price",
+    "es-MX": "Compara el precio final",
+    "pt-BR": "Compare o preço final"
+  },
+  "new_concepts": [
+    "finance.price.final"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Compare the final price\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Compara el precio final\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Compare o preço final\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "price.final",
+      "observable_action": "Compare final purchase costs after a stated discount and mandatory fee, using the same item and payment conditions.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "price.percent",
+      "price.unit",
+      "cash.reserved"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A large discount can still leave a higher final price. Compare what you actually have to pay.",
+    "misconception": "Choosing the biggest discount percentage while ignoring the original price or a mandatory delivery charge.",
+    "numeracy_support": "The worked example calculates the percentage reduction, subtracts it, then adds the stated fee.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "price.final",
+        "context_id": "compare-the-final-price-example-01",
+        "supports_from": [],
+        "reasoning": "A price of 100 with 20% off removes 20, leaving 80. A required delivery charge of 10 makes 90 total."
+      },
+      {
+        "segment_id": "example-02",
+        "skill_id": "price.final",
+        "context_id": "compare-the-final-price-example-02",
+        "supports_from": [],
+        "reasoning": "The same item costs 85 elsewhere with delivery included. Its final price is lower, despite having no discount label."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "price.final",
+        "context_id": "compare-the-final-price-guided-01",
+        "supports_from": [
+          "example-02"
+        ],
+        "reasoning": "The total includes both the item and required delivery."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "price.final",
+        "context_id": "compare-the-final-price-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The identical item and included delivery make the totals comparable."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "price.final",
+        "context_id": "compare-the-final-price-practice-01",
+        "supports_from": [],
+        "reasoning": "The discount amount is removed from the original price."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "price.final",
+        "context_id": "compare-the-final-price-practice-02",
+        "supports_from": [],
+        "reasoning": "The larger discount label does not guarantee the lower final price."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "price.final",
+        "context_id": "compare-the-final-price-practice-03",
+        "supports_from": [],
+        "reasoning": "A missing mandatory cost prevents a complete comparison."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "price.final",
+        "context_id": "compare-the-final-price-transfer-01",
+        "supports_from": [],
+        "reasoning": "The full cost, including required fees, determines whether it fits."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "price.final",
+      "fresh_context": "Apply this skill in a later integrated decision with a different constraint."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A large discount can still leave a higher final price. Compare what you actually have to pay."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un descuento grande puede dejar un precio final mayor. Compara lo que realmente tienes que pagar."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Um desconto grande pode deixar um preço final maior. Compare o que realmente precisa pagar."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "From offer to total",
+          "line": "A price of 100 with 20% off removes 20, leaving 80. A required delivery charge of 10 makes 90 total."
+        },
+        "es-MX": {
+          "prompt": "De la oferta al total",
+          "line": "Un precio de 100 con 20% de descuento quita 20 y deja 80. Un envío obligatorio de 10 da 90 en total."
+        },
+        "pt-BR": {
+          "prompt": "Da oferta ao total",
+          "line": "Um preço de 100 com 20% de desconto retira 20 e deixa 80. Um frete obrigatório de 10 dá 90 no total."
+        }
+      }
+    },
+    {
+      "id": "example-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Use the same comparison",
+          "line": "The same item costs 85 elsewhere with delivery included. Its final price is lower, despite having no discount label."
+        },
+        "es-MX": {
+          "prompt": "Usa la misma comparación",
+          "line": "El mismo artículo cuesta 85 en otra tienda con envío incluido. Su precio final es menor, aunque no anuncie descuento."
+        },
+        "pt-BR": {
+          "prompt": "Use a mesma comparação",
+          "line": "O mesmo item custa 85 em outra loja com frete incluído. Seu preço final é menor, mesmo sem anunciar desconto."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.price.final",
+      "copy": {
+        "en-US": {
+          "prompt": "What is the final total?",
+          "scene": "The discounted item costs 80; required delivery costs 10.",
+          "options": [
+            {
+              "label": "10"
+            },
+            {
+              "label": "80"
+            },
+            {
+              "label": "90"
+            }
+          ],
+          "help": [
+            "Add every mandatory charge, not just the advertised item price."
+          ],
+          "feedback": {
+            "met": "The total includes both the item and required delivery.",
+            "not_yet": "Add every mandatory charge, not just the advertised item price."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es el total final?",
+          "scene": "El artículo descontado cuesta 80; el envío obligatorio cuesta 10.",
+          "options": [
+            {
+              "label": "10"
+            },
+            {
+              "label": "80"
+            },
+            {
+              "label": "90"
+            }
+          ],
+          "help": [
+            "Suma cada cargo obligatorio, no solo el precio anunciado."
+          ],
+          "feedback": {
+            "met": "El total incluye el artículo y el envío obligatorio.",
+            "not_yet": "Suma cada cargo obligatorio, no solo el precio anunciado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é o total final?",
+          "scene": "O item com desconto custa 80; o frete obrigatório custa 10.",
+          "options": [
+            {
+              "label": "10"
+            },
+            {
+              "label": "80"
+            },
+            {
+              "label": "90"
+            }
+          ],
+          "help": [
+            "Some cada cobrança obrigatória, não só o preço anunciado."
+          ],
+          "feedback": {
+            "met": "O total inclui o item e o frete obrigatório.",
+            "not_yet": "Some cada cobrança obrigatória, não só o preço anunciado."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          80,
+          10
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.price.final",
+      "copy": {
+        "en-US": {
+          "prompt": "Which final price is lower?",
+          "scene": "The identical item costs 90 including delivery in one store and 85 including delivery in another.",
+          "options": [
+            {
+              "label": "85"
+            },
+            {
+              "label": "90"
+            },
+            {
+              "label": "175"
+            }
+          ],
+          "help": [
+            "Compare complete prices under the same conditions."
+          ],
+          "feedback": {
+            "met": "The identical item and included delivery make the totals comparable.",
+            "not_yet": "Compare complete prices under the same conditions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué precio final es menor?",
+          "scene": "El artículo idéntico cuesta 90 con envío en una tienda y 85 con envío en otra.",
+          "options": [
+            {
+              "label": "85"
+            },
+            {
+              "label": "90"
+            },
+            {
+              "label": "175"
+            }
+          ],
+          "help": [
+            "Compara precios completos en las mismas condiciones."
+          ],
+          "feedback": {
+            "met": "El artículo idéntico y el envío incluido permiten comparar los totales.",
+            "not_yet": "Compara precios completos en las mismas condiciones."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual preço final é menor?",
+          "scene": "O item idêntico custa 90 com frete em uma loja e 85 com frete em outra.",
+          "options": [
+            {
+              "label": "85"
+            },
+            {
+              "label": "90"
+            },
+            {
+              "label": "175"
+            }
+          ],
+          "help": [
+            "Compare preços completos nas mesmas condições."
+          ],
+          "feedback": {
+            "met": "O item idêntico e o frete incluído permitem comparar os totais.",
+            "not_yet": "Compare preços completos nas mesmas condições."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          90,
+          85
+        ],
+        "expression": {
+          "op": "min",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.price.final",
+      "copy": {
+        "en-US": {
+          "prompt": "What do you pay after the discount?",
+          "scene": "A price of 200 has 10% off and no extra fees.",
+          "options": [
+            {
+              "label": "180"
+            },
+            {
+              "label": "190"
+            },
+            {
+              "label": "20"
+            }
+          ],
+          "help": [
+            "Calculate the share first, then subtract it from the price."
+          ],
+          "feedback": {
+            "met": "The discount amount is removed from the original price.",
+            "not_yet": "Calculate the share first, then subtract it from the price.",
+            "choice_hints": {
+              "option-1": "This is the discount amount, not the price after discount.",
+              "option-2": "Subtract the percentage amount from the original price.",
+              "option-3": "A percentage is a share, not a fixed money amount."
+            }
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto pagas tras el descuento?",
+          "scene": "Un precio de 200 tiene 10% de descuento y ningún cargo extra.",
+          "options": [
+            {
+              "label": "180"
+            },
+            {
+              "label": "190"
+            },
+            {
+              "label": "20"
+            }
+          ],
+          "help": [
+            "Calcula primero la parte y luego réstala al precio."
+          ],
+          "feedback": {
+            "met": "El monto del descuento se resta al precio original.",
+            "not_yet": "Calcula primero la parte y luego réstala al precio.",
+            "choice_hints": {
+              "option-1": "Este es el descuento, no el precio después de descontar.",
+              "option-2": "Resta el monto porcentual al precio original.",
+              "option-3": "Un porcentaje es una proporción, no un monto fijo."
+            }
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto paga após o desconto?",
+          "scene": "Um preço de 200 tem 10% de desconto e nenhuma cobrança extra.",
+          "options": [
+            {
+              "label": "180"
+            },
+            {
+              "label": "190"
+            },
+            {
+              "label": "20"
+            }
+          ],
+          "help": [
+            "Calcule primeiro a parte e depois subtraia do preço."
+          ],
+          "feedback": {
+            "met": "O valor do desconto é subtraído do preço original.",
+            "not_yet": "Calcule primeiro a parte e depois subtraia do preço.",
+            "choice_hints": {
+              "option-1": "Este é o desconto, não o preço depois de descontar.",
+              "option-2": "Subtraia o valor percentual do preço original.",
+              "option-3": "Um percentual é uma proporção, não um valor fixo."
+            }
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          200,
+          10
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "op": "divide",
+              "args": [
+                {
+                  "op": "multiply",
+                  "args": [
+                    {
+                      "input": 0
+                    },
+                    {
+                      "input": 1
+                    }
+                  ]
+                },
+                {
+                  "constant": 100
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.price.final",
+      "copy": {
+        "en-US": {
+          "prompt": "Which offer costs less?",
+          "scene": "Identical items, no fees: A costs 200 minus 25%; B costs 140.",
+          "options": [
+            {
+              "label": "Both cost the same"
+            },
+            {
+              "label": "B has the lower total"
+            },
+            {
+              "label": "A offers a discount"
+            }
+          ],
+          "help": [
+            "Calculate the reduced amount before comparing it with the other price."
+          ],
+          "feedback": {
+            "met": "The larger discount label does not guarantee the lower final price.",
+            "not_yet": "Calculate the reduced amount before comparing it with the other price."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué oferta cuesta menos?",
+          "scene": "Artículos idénticos: A cuesta 200 con 25% de descuento; B cuesta 140 sin descuento. No hay cargos extra.",
+          "options": [
+            {
+              "label": "Ambas cuestan lo mismo"
+            },
+            {
+              "label": "B, por su menor total final"
+            },
+            {
+              "label": "A, por su mayor porcentaje"
+            }
+          ],
+          "help": [
+            "Calcula el precio reducido antes de compararlo con el otro."
+          ],
+          "feedback": {
+            "met": "Un descuento mayor no garantiza el menor precio final.",
+            "not_yet": "Calcula el precio reducido antes de compararlo con el otro."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual oferta custa menos?",
+          "scene": "Itens idênticos: A custa 200 com 25% de desconto; B custa 140 sem desconto. Não há cobranças extras.",
+          "options": [
+            {
+              "label": "Ambas custam o mesmo"
+            },
+            {
+              "label": "B, por seu menor total final"
+            },
+            {
+              "label": "A, por seu maior percentual"
+            }
+          ],
+          "help": [
+            "Calcule o preço reduzido antes de compará-lo com o outro."
+          ],
+          "feedback": {
+            "met": "Um desconto maior não garante o menor preço final.",
+            "not_yet": "Calcule o preço reduzido antes de compará-lo com o outro."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.price.final",
+      "copy": {
+        "en-US": {
+          "prompt": "Can you compare totals?",
+          "scene": "One price includes delivery; another omits its mandatory delivery fee.",
+          "options": [
+            {
+              "label": "Yes, compare only item prices"
+            },
+            {
+              "label": "Yes, delivery is free"
+            },
+            {
+              "label": "No, delivery costs are missing"
+            }
+          ],
+          "help": [
+            "A price omitted from an advertisement is not necessarily zero."
+          ],
+          "feedback": {
+            "met": "A missing mandatory cost prevents a complete comparison.",
+            "not_yet": "A price omitted from an advertisement is not necessarily zero."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Puedes confirmar cuál cuesta menos?",
+          "scene": "Un vendedor incluye envío. Otro no indica cuánto cobra por el envío obligatorio.",
+          "options": [
+            {
+              "label": "Sí, compara solo los artículos"
+            },
+            {
+              "label": "Sí, supone que el envío es gratis"
+            },
+            {
+              "label": "No, falta conocer ese cargo"
+            }
+          ],
+          "help": [
+            "Un precio omitido en el anuncio no equivale a cero."
+          ],
+          "feedback": {
+            "met": "Un costo obligatorio desconocido impide comparar el total.",
+            "not_yet": "Un precio omitido en el anuncio no equivale a cero."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Pode confirmar qual custa menos?",
+          "scene": "Um vendedor inclui frete. Outro não informa quanto cobra pelo frete obrigatório.",
+          "options": [
+            {
+              "label": "Sim, compare só os itens"
+            },
+            {
+              "label": "Sim, suponha que o frete é grátis"
+            },
+            {
+              "label": "Não, falta conhecer essa cobrança"
+            }
+          ],
+          "help": [
+            "Um preço omitido no anúncio não equivale a zero."
+          ],
+          "feedback": {
+            "met": "Um custo obrigatório desconhecido impede comparar o total.",
+            "not_yet": "Um preço omitido no anúncio não equivale a zero."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.price.final",
+      "copy": {
+        "en-US": {
+          "prompt": "Which fits your 100 limit?",
+          "scene": "Same service: A costs 90 plus 20 mandatory fees; B costs 100 total.",
+          "options": [
+            {
+              "label": "B fits the limit"
+            },
+            {
+              "label": "Both fit"
+            },
+            {
+              "label": "A advertises less"
+            }
+          ],
+          "help": [
+            "Apply the spending limit after including all mandatory charges."
+          ],
+          "feedback": {
+            "met": "The full cost, including required fees, determines whether it fits.",
+            "not_yet": "Apply the spending limit after including all mandatory charges."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué total cabe en tu límite de 100?",
+          "scene": "Mismo servicio: A cobra 90 más 20 obligatorios; B cobra 100 en total.",
+          "options": [
+            {
+              "label": "B, porque su total completo cabe"
+            },
+            {
+              "label": "Ambos caben en el límite indicado"
+            },
+            {
+              "label": "A, por su precio anunciado menor"
+            }
+          ],
+          "help": [
+            "Aplica el límite después de incluir todos los cargos obligatorios."
+          ],
+          "feedback": {
+            "met": "El costo completo con cargos obligatorios determina si cabe.",
+            "not_yet": "Aplica el límite después de incluir todos los cargos obligatorios."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual total cabe no limite de 100?",
+          "scene": "Mesmo serviço: A cobra 90 mais 20 obrigatórios; B cobra 100 no total.",
+          "options": [
+            {
+              "label": "B, porque seu total completo cabe"
+            },
+            {
+              "label": "Ambos cabem no limite informado"
+            },
+            {
+              "label": "A, por seu preço anunciado menor"
+            }
+          ],
+          "help": [
+            "Aplique o limite após incluir todas as cobranças obrigatórias."
+          ],
+          "feedback": {
+            "met": "O custo completo com cobranças obrigatórias determina se cabe.",
+            "not_yet": "Aplique o limite após incluir todas as cobranças obrigatórias."
+          }
+        }
+      }
+    }
+  ]
+}

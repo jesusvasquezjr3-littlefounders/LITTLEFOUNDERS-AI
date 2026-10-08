@@ -1,0 +1,813 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-solid-03-compare-before-paying",
+  "lesson_id": "fe-solid-15-make-a-purchase-plan",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.price.unit",
+    "finance.plan.revise",
+    "finance.price.percent"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Combine a revised spending limit, equal-unit comparison and percentage interpretation in new purchase decisions.",
+  "title": {
+    "en-US": "Make a purchase plan",
+    "es-MX": "Prepara una compra",
+    "pt-BR": "Prepare uma compra"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Make a purchase plan\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Prepara una compra\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Prepare uma compra\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "consolidate",
+    "objective": {
+      "skill_id": "price.unit",
+      "observable_action": "Combine a revised spending limit, equal-unit comparison and percentage interpretation in new purchase decisions.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "cash.balance",
+      "plan.priority"
+    ],
+    "retrieval_skills": [
+      "plan.revise",
+      "price.unit",
+      "price.percent"
+    ],
+    "relevance": "A purchase can have good unit value and still not fit the plan. Use the calculations together.",
+    "misconception": "Keeping calculation skills separate from the actual spending constraint.",
+    "numeracy_support": "Recall equal sharing, percentage amounts and subtraction from earlier lessons.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "plan.revise",
+        "context_id": "make-a-purchase-plan-practice-01",
+        "supports_from": [],
+        "reasoning": "The new limit accounts for the actual extra expense."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "price.percent",
+        "context_id": "make-a-purchase-plan-practice-02",
+        "supports_from": [],
+        "reasoning": "The share is calculated from the stated original amount."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "price.unit",
+        "context_id": "make-a-purchase-plan-practice-03",
+        "supports_from": [],
+        "reasoning": "The unit comparison accounts for the different pack sizes."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "price.percent",
+        "context_id": "make-a-purchase-plan-practice-04",
+        "supports_from": [],
+        "reasoning": "The original whole determines the value of the percentage."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "plan.revise",
+        "context_id": "make-a-purchase-plan-practice-05",
+        "supports_from": [],
+        "reasoning": "Repeated actual costs support a revised plan."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "price.unit",
+        "context_id": "make-a-purchase-plan-transfer-01",
+        "supports_from": [],
+        "reasoning": "The cost of one equal box makes the offers comparable."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "price.unit",
+      "fresh_context": "Apply this skill in a later integrated decision with a different constraint."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A purchase can have good unit value and still not fit the plan. Use the calculations together."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Una compra puede tener buen precio unitario y aun así no caber en el plan. Usa los cálculos juntos."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Uma compra pode ter bom preço unitário e ainda não caber no plano. Use os cálculos juntos."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.plan.revise",
+      "copy": {
+        "en-US": {
+          "prompt": "What is the revised optional limit?",
+          "scene": "You had 60 for optional purchases. A required repair used an extra 20; no extra money arrived.",
+          "options": [
+            {
+              "label": "80"
+            },
+            {
+              "label": "60"
+            },
+            {
+              "label": "40"
+            }
+          ],
+          "help": [
+            "Revise the optional amount using the completed payment."
+          ],
+          "feedback": {
+            "met": "The new limit accounts for the actual extra expense.",
+            "not_yet": "Revise the optional amount using the completed payment."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es el nuevo límite opcional?",
+          "scene": "Tenías 60 para compras opcionales. Una reparación necesaria usó 20 extra; no llegó más dinero.",
+          "options": [
+            {
+              "label": "80"
+            },
+            {
+              "label": "60"
+            },
+            {
+              "label": "40"
+            }
+          ],
+          "help": [
+            "Ajusta el monto opcional usando el pago realizado."
+          ],
+          "feedback": {
+            "met": "El nuevo límite considera el gasto adicional real.",
+            "not_yet": "Ajusta el monto opcional usando el pago realizado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é o novo limite opcional?",
+          "scene": "Você tinha 60 para compras opcionais. Um conserto necessário usou 20 extras; não chegou mais dinheiro.",
+          "options": [
+            {
+              "label": "80"
+            },
+            {
+              "label": "60"
+            },
+            {
+              "label": "40"
+            }
+          ],
+          "help": [
+            "Ajuste o valor opcional usando o pagamento realizado."
+          ],
+          "feedback": {
+            "met": "O novo limite considera o gasto adicional real.",
+            "not_yet": "Ajuste o valor opcional usando o pagamento realizado."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          60,
+          20
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.price.percent",
+      "copy": {
+        "en-US": {
+          "prompt": "How much is the discount?",
+          "scene": "A price of 400 has 25% off. Find the amount removed, not the final price.",
+          "options": [
+            {
+              "label": "300"
+            },
+            {
+              "label": "25"
+            },
+            {
+              "label": "100"
+            }
+          ],
+          "help": [
+            "The percentage and the currency amount are different quantities."
+          ],
+          "feedback": {
+            "met": "The share is calculated from the stated original amount.",
+            "not_yet": "The percentage and the currency amount are different quantities."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto es el descuento?",
+          "scene": "Un precio de 400 tiene 25% de descuento. Halla lo que se quita, no el precio final.",
+          "options": [
+            {
+              "label": "300"
+            },
+            {
+              "label": "25"
+            },
+            {
+              "label": "100"
+            }
+          ],
+          "help": [
+            "El porcentaje y el monto en dinero son cantidades distintas."
+          ],
+          "feedback": {
+            "met": "La parte se calcula a partir del monto original indicado.",
+            "not_yet": "El porcentaje y el monto en dinero son cantidades distintas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto é o desconto?",
+          "scene": "Um preço de 400 tem 25% de desconto. Ache o valor retirado, não o preço final.",
+          "options": [
+            {
+              "label": "300"
+            },
+            {
+              "label": "25"
+            },
+            {
+              "label": "100"
+            }
+          ],
+          "help": [
+            "O percentual e o valor em dinheiro são quantidades diferentes."
+          ],
+          "feedback": {
+            "met": "A parte é calculada a partir do valor original informado.",
+            "not_yet": "O percentual e o valor em dinheiro são quantidades diferentes."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          400,
+          25
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "constant": 100
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.price.unit",
+      "copy": {
+        "en-US": {
+          "prompt": "Which has the lower price per equal bag?",
+          "scene": "Identical bags: A offers two for 18; B offers three for 24.",
+          "options": [
+            {
+              "label": "B"
+            },
+            {
+              "label": "They are equal per bag"
+            },
+            {
+              "label": "A"
+            }
+          ],
+          "help": [
+            "Find what one equal bag costs in each offer."
+          ],
+          "feedback": {
+            "met": "The unit comparison accounts for the different pack sizes.",
+            "not_yet": "Find what one equal bag costs in each offer."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál tiene menor precio por bolsa igual?",
+          "scene": "Bolsas idénticas: A ofrece dos por 18; B ofrece tres por 24.",
+          "options": [
+            {
+              "label": "B"
+            },
+            {
+              "label": "Son iguales por bolsa"
+            },
+            {
+              "label": "A"
+            }
+          ],
+          "help": [
+            "Halla cuánto cuesta una bolsa igual en cada oferta."
+          ],
+          "feedback": {
+            "met": "La comparación unitaria considera los distintos tamaños de paquete.",
+            "not_yet": "Halla cuánto cuesta una bolsa igual en cada oferta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual tem menor preço por saco igual?",
+          "scene": "Sacos idênticos: A oferece dois por 18; B oferece três por 24.",
+          "options": [
+            {
+              "label": "B"
+            },
+            {
+              "label": "São iguais por saco"
+            },
+            {
+              "label": "A"
+            }
+          ],
+          "help": [
+            "Ache quanto custa um saco igual em cada oferta."
+          ],
+          "feedback": {
+            "met": "A comparação unitária considera os diferentes tamanhos de pacote.",
+            "not_yet": "Ache quanto custa um saco igual em cada oferta."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.price.percent",
+      "copy": {
+        "en-US": {
+          "prompt": "Which amount is the stated share?",
+          "scene": "A 10% reduction is calculated on an original price of 500.",
+          "options": [
+            {
+              "label": "10"
+            },
+            {
+              "label": "450"
+            },
+            {
+              "label": "50"
+            }
+          ],
+          "help": [
+            "Find the removed share, not the amount left afterward."
+          ],
+          "feedback": {
+            "met": "The original whole determines the value of the percentage.",
+            "not_yet": "Find the removed share, not the amount left afterward."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué monto corresponde a esa parte?",
+          "scene": "Una reducción de 10% se calcula sobre un precio original de 500.",
+          "options": [
+            {
+              "label": "10"
+            },
+            {
+              "label": "450"
+            },
+            {
+              "label": "50"
+            }
+          ],
+          "help": [
+            "Halla la parte retirada, no el monto que queda después."
+          ],
+          "feedback": {
+            "met": "El total original determina el valor del porcentaje.",
+            "not_yet": "Halla la parte retirada, no el monto que queda después."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual valor corresponde a essa parte?",
+          "scene": "Uma redução de 10% é calculada sobre um preço original de 500.",
+          "options": [
+            {
+              "label": "10"
+            },
+            {
+              "label": "450"
+            },
+            {
+              "label": "50"
+            }
+          ],
+          "help": [
+            "Ache a parte retirada, não o valor que resta depois."
+          ],
+          "feedback": {
+            "met": "O total original define o valor do percentual.",
+            "not_yet": "Ache a parte retirada, não o valor que resta depois."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          10,
+          500
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "input": 1
+                },
+                {
+                  "input": 0
+                }
+              ]
+            },
+            {
+              "constant": 100
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.plan.revise",
+      "copy": {
+        "en-US": {
+          "prompt": "What comes next?",
+          "scene": "Transport has cost more for weeks, reducing optional spending.",
+          "options": [
+            {
+              "label": "Record only the old estimate"
+            },
+            {
+              "label": "Keep the old estimate unchanged"
+            },
+            {
+              "label": "Update the estimate and future choices"
+            }
+          ],
+          "help": [
+            "Use observed costs to improve the next decision."
+          ],
+          "feedback": {
+            "met": "Repeated actual costs support a revised plan.",
+            "not_yet": "Use observed costs to improve the next decision."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es el siguiente paso útil?",
+          "scene": "El transporte habitual cuesta más desde hace semanas y deja menos para gastos opcionales.",
+          "options": [
+            {
+              "label": "Registrar solo lo previsto antes"
+            },
+            {
+              "label": "Mantener la estimación anterior"
+            },
+            {
+              "label": "Actualizar la previsión y las decisiones"
+            }
+          ],
+          "help": [
+            "Usa los costos observados para mejorar la próxima decisión."
+          ],
+          "feedback": {
+            "met": "Los costos reales repetidos justifican ajustar el plan.",
+            "not_yet": "Usa los costos observados para mejorar la próxima decisión."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é o próximo passo útil?",
+          "scene": "O transporte habitual custa mais há semanas e deixa menos para gastos opcionais.",
+          "options": [
+            {
+              "label": "Registrar só o previsto antes"
+            },
+            {
+              "label": "Manter a estimativa anterior"
+            },
+            {
+              "label": "Atualizar a previsão e as decisões"
+            }
+          ],
+          "help": [
+            "Use os custos observados para melhorar a próxima decisão."
+          ],
+          "feedback": {
+            "met": "Os custos reais repetidos justificam ajustar o plano.",
+            "not_yet": "Use os custos observados para melhorar a próxima decisão."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.price.unit",
+      "copy": {
+        "en-US": {
+          "prompt": "What comparison answers this?",
+          "scene": "Packs contain different counts of identical boxes. Compare cost per box.",
+          "options": [
+            {
+              "label": "Compare only the package totals"
+            },
+            {
+              "label": "Divide total by box count"
+            },
+            {
+              "label": "Choose more boxes"
+            }
+          ],
+          "help": [
+            "Use a common unit before choosing between unequal packages."
+          ],
+          "feedback": {
+            "met": "The cost of one equal box makes the offers comparable.",
+            "not_yet": "Use a common unit before choosing between unequal packages."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué comparación responde la pregunta?",
+          "scene": "Dos servicios venden distintas cantidades de cajas idénticas. Buscas el menor costo por caja.",
+          "options": [
+            {
+              "label": "Comparar solo los totales del paquete"
+            },
+            {
+              "label": "Comparar total entre número de cajas"
+            },
+            {
+              "label": "Elegir el paquete con más cajas"
+            }
+          ],
+          "help": [
+            "Usa una unidad común antes de elegir entre paquetes distintos."
+          ],
+          "feedback": {
+            "met": "El costo de una caja igual permite comparar las ofertas.",
+            "not_yet": "Usa una unidad común antes de elegir entre paquetes distintos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual comparação responde à pergunta?",
+          "scene": "Dois serviços vendem quantidades diferentes de caixas idênticas. Você busca o menor custo por caixa.",
+          "options": [
+            {
+              "label": "Comparar só os totais do pacote"
+            },
+            {
+              "label": "Comparar total dividido pelas caixas"
+            },
+            {
+              "label": "Escolher o pacote com mais caixas"
+            }
+          ],
+          "help": [
+            "Use uma unidade comum antes de escolher entre pacotes diferentes."
+          ],
+          "feedback": {
+            "met": "O custo de uma caixa igual permite comparar as ofertas.",
+            "not_yet": "Use uma unidade comum antes de escolher entre pacotes diferentes."
+          }
+        }
+      }
+    }
+  ]
+}

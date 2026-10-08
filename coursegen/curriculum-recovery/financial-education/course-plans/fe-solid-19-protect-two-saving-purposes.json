@@ -1,0 +1,804 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-solid-04-save-with-a-purpose",
+  "lesson_id": "fe-solid-19-protect-two-saving-purposes",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.save.goal",
+    "finance.price.final",
+    "finance.save.emergency"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Distinguish a planned goal from an emergency reserve and compare complete purchase costs before funding a new goal.",
+  "title": {
+    "en-US": "Protect two saving purposes",
+    "es-MX": "Protege dos propósitos",
+    "pt-BR": "Proteja dois propósitos"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Protect two saving purposes\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Protege dos propósitos\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Proteja dois propósitos\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "consolidate",
+    "objective": {
+      "skill_id": "save.goal",
+      "observable_action": "Distinguish a planned goal from an emergency reserve and compare complete purchase costs before funding a new goal.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "plan.periodic",
+      "plan.revise"
+    ],
+    "retrieval_skills": [
+      "price.final",
+      "save.goal",
+      "save.emergency"
+    ],
+    "relevance": "Giving the same money two purposes does not double it. Keep the goal and the emergency reserve distinct.",
+    "misconception": "Counting the same reserved money as available for multiple different purposes.",
+    "numeracy_support": "Recall percentage reductions, mandatory charges and equal contributions.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "price.final",
+        "context_id": "protect-two-saving-purposes-practice-01",
+        "supports_from": [],
+        "reasoning": "The discount and mandatory delivery both affect the final total."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "save.emergency",
+        "context_id": "protect-two-saving-purposes-practice-02",
+        "supports_from": [],
+        "reasoning": "The unexpected interruption fits the emergency purpose."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "save.goal",
+        "context_id": "protect-two-saving-purposes-practice-03",
+        "supports_from": [],
+        "reasoning": "Only money assigned to this goal reduces its remaining gap."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "price.final",
+        "context_id": "protect-two-saving-purposes-practice-04",
+        "supports_from": [],
+        "reasoning": "The required charge changes which offer has the lower total."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "save.emergency",
+        "context_id": "protect-two-saving-purposes-practice-05",
+        "supports_from": [],
+        "reasoning": "Using the reserve changes its balance and the next contribution plan."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "save.goal",
+        "context_id": "protect-two-saving-purposes-transfer-01",
+        "supports_from": [],
+        "reasoning": "The contributions fill the goal gap without reusing a separate reserve."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "save.goal",
+      "fresh_context": "Apply this skill in a later integrated decision with a different constraint."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Giving the same money two purposes does not double it. Keep the goal and the emergency reserve distinct."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Dar dos propósitos al mismo dinero no lo duplica. Distingue la meta de la reserva para emergencias."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Dar dois propósitos ao mesmo dinheiro não o duplica. Distinga a meta da reserva para emergências."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.price.final",
+      "copy": {
+        "en-US": {
+          "prompt": "What is the full purchase price?",
+          "scene": "A tool costs 100 with 10% off, plus mandatory delivery of 10.",
+          "options": [
+            {
+              "label": "100"
+            },
+            {
+              "label": "110"
+            },
+            {
+              "label": "90"
+            }
+          ],
+          "help": [
+            "Subtract the stated discount, then add the required charge."
+          ],
+          "feedback": {
+            "met": "The discount and mandatory delivery both affect the final total.",
+            "not_yet": "Subtract the stated discount, then add the required charge."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es el precio completo de compra?",
+          "scene": "Una herramienta cuesta 100 con 10% de descuento, más 10 de envío obligatorio.",
+          "options": [
+            {
+              "label": "100"
+            },
+            {
+              "label": "110"
+            },
+            {
+              "label": "90"
+            }
+          ],
+          "help": [
+            "Resta el descuento indicado y suma el cargo obligatorio."
+          ],
+          "feedback": {
+            "met": "El descuento y el envío obligatorio afectan el total final.",
+            "not_yet": "Resta el descuento indicado y suma el cargo obligatorio."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é o preço completo da compra?",
+          "scene": "Uma ferramenta custa 100 com 10% de desconto, mais 10 de frete obrigatório.",
+          "options": [
+            {
+              "label": "100"
+            },
+            {
+              "label": "110"
+            },
+            {
+              "label": "90"
+            }
+          ],
+          "help": [
+            "Subtraia o desconto informado e some a cobrança obrigatória."
+          ],
+          "feedback": {
+            "met": "O desconto e o frete obrigatório afetam o total final.",
+            "not_yet": "Subtraia o desconto informado e some a cobrança obrigatória."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          100,
+          10,
+          10
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "op": "divide",
+                  "args": [
+                    {
+                      "op": "multiply",
+                      "args": [
+                        {
+                          "input": 0
+                        },
+                        {
+                          "input": 1
+                        }
+                      ]
+                    },
+                    {
+                      "constant": 100
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.save.emergency",
+      "copy": {
+        "en-US": {
+          "prompt": "Which purpose matches this cost?",
+          "scene": "A sudden necessary repair interrupts basic cooking at home.",
+          "options": [
+            {
+              "label": "A known annual renewal"
+            },
+            {
+              "label": "An unexpected necessary expense"
+            },
+            {
+              "label": "A planned decorative change"
+            }
+          ],
+          "help": [
+            "Use the stated necessity and predictability."
+          ],
+          "feedback": {
+            "met": "The unexpected interruption fits the emergency purpose.",
+            "not_yet": "Use the stated necessity and predictability."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué propósito corresponde a este costo?",
+          "scene": "Una reparación necesaria repentina impide cocinar en casa.",
+          "options": [
+            {
+              "label": "Una renovación anual conocida"
+            },
+            {
+              "label": "Un gasto necesario inesperado"
+            },
+            {
+              "label": "Un cambio decorativo planeado"
+            }
+          ],
+          "help": [
+            "Usa la necesidad y previsibilidad indicadas."
+          ],
+          "feedback": {
+            "met": "La interrupción inesperada corresponde al propósito de emergencia.",
+            "not_yet": "Usa la necesidad y previsibilidad indicadas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual propósito corresponde a esse custo?",
+          "scene": "Um conserto necessário repentino impede cozinhar em casa.",
+          "options": [
+            {
+              "label": "Uma renovação anual conhecida"
+            },
+            {
+              "label": "Um gasto necessário inesperado"
+            },
+            {
+              "label": "Uma mudança decorativa planejada"
+            }
+          ],
+          "help": [
+            "Use a necessidade e a previsibilidade informadas."
+          ],
+          "feedback": {
+            "met": "A interrupção inesperada corresponde ao propósito de emergência.",
+            "not_yet": "Use a necessidade e a previsibilidade informadas."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.save.goal",
+      "copy": {
+        "en-US": {
+          "prompt": "What remains for this goal?",
+          "scene": "The goal is 200. Only 80 is saved for that goal; other reserves have separate purposes.",
+          "options": [
+            {
+              "label": "120"
+            },
+            {
+              "label": "280"
+            },
+            {
+              "label": "200"
+            }
+          ],
+          "help": [
+            "Do not count separate reserves twice."
+          ],
+          "feedback": {
+            "met": "Only money assigned to this goal reduces its remaining gap.",
+            "not_yet": "Do not count separate reserves twice."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto falta para esta meta?",
+          "scene": "La meta es 200. Solo hay 80 ahorrados para ella; otras reservas tienen propósitos distintos.",
+          "options": [
+            {
+              "label": "120"
+            },
+            {
+              "label": "280"
+            },
+            {
+              "label": "200"
+            }
+          ],
+          "help": [
+            "No cuentes dos veces las reservas separadas."
+          ],
+          "feedback": {
+            "met": "Solo el dinero asignado a esta meta reduce su faltante.",
+            "not_yet": "No cuentes dos veces las reservas separadas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto falta para esta meta?",
+          "scene": "A meta é 200. Só há 80 poupados para ela; outras reservas têm propósitos diferentes.",
+          "options": [
+            {
+              "label": "120"
+            },
+            {
+              "label": "280"
+            },
+            {
+              "label": "200"
+            }
+          ],
+          "help": [
+            "Não conte duas vezes as reservas separadas."
+          ],
+          "feedback": {
+            "met": "Só o dinheiro destinado a esta meta reduz sua falta.",
+            "not_yet": "Não conte duas vezes as reservas separadas."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          200,
+          80
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.price.final",
+      "copy": {
+        "en-US": {
+          "prompt": "Which costs less?",
+          "scene": "Identical items: A costs 80 plus mandatory delivery of 30; B costs 100 delivered.",
+          "options": [
+            {
+              "label": "Both total 100"
+            },
+            {
+              "label": "A advertises 80"
+            },
+            {
+              "label": "B, including required costs"
+            }
+          ],
+          "help": [
+            "Compare the full amount to be paid in both offers."
+          ],
+          "feedback": {
+            "met": "The required charge changes which offer has the lower total.",
+            "not_yet": "Compare the full amount to be paid in both offers."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué precio final es menor?",
+          "scene": "Artículos idénticos: A cuesta 80 más 30 de envío obligatorio; B cuesta 100 con envío incluido.",
+          "options": [
+            {
+              "label": "Ambos suman 100"
+            },
+            {
+              "label": "A, porque anuncia 80"
+            },
+            {
+              "label": "B, al incluir todos los costos obligatorios"
+            }
+          ],
+          "help": [
+            "Compara el monto completo a pagar en ambas ofertas."
+          ],
+          "feedback": {
+            "met": "El cargo obligatorio cambia cuál oferta tiene el menor total.",
+            "not_yet": "Compara el monto completo a pagar en ambas ofertas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual preço final é menor?",
+          "scene": "Itens idênticos: A custa 80 mais 30 de frete obrigatório; B custa 100 com frete incluído.",
+          "options": [
+            {
+              "label": "Ambos somam 100"
+            },
+            {
+              "label": "A, porque anuncia 80"
+            },
+            {
+              "label": "B, ao incluir todos os custos obrigatórios"
+            }
+          ],
+          "help": [
+            "Compare o valor completo a pagar nas duas ofertas."
+          ],
+          "feedback": {
+            "met": "A cobrança obrigatória muda qual oferta tem o menor total.",
+            "not_yet": "Compare o valor completo a pagar nas duas ofertas."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.save.emergency",
+      "copy": {
+        "en-US": {
+          "prompt": "What should the next plan reflect?",
+          "scene": "An emergency reserve covered an unexpected essential repair.",
+          "options": [
+            {
+              "label": "Its unchanged old balance"
+            },
+            {
+              "label": "That saving has become pointless"
+            },
+            {
+              "label": "Its remaining balance and affordable saving"
+            }
+          ],
+          "help": [
+            "Appropriate use and rebuilding are compatible."
+          ],
+          "feedback": {
+            "met": "Using the reserve changes its balance and the next contribution plan.",
+            "not_yet": "Appropriate use and rebuilding are compatible."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe reflejar el próximo plan?",
+          "scene": "La reserva pagó una reparación necesaria que realmente fue inesperada.",
+          "options": [
+            {
+              "label": "El saldo anterior como si siguiera intacto"
+            },
+            {
+              "label": "Que ahorrar dejó de tener sentido"
+            },
+            {
+              "label": "El menor saldo y un plan viable para reponerlo"
+            }
+          ],
+          "help": [
+            "El uso adecuado y la reconstrucción son compatibles."
+          ],
+          "feedback": {
+            "met": "Usar la reserva cambia su saldo y el próximo plan de aportaciones.",
+            "not_yet": "El uso adecuado y la reconstrucción son compatibles."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que o próximo plano deve refletir?",
+          "scene": "A reserva pagou um conserto necessário que realmente foi inesperado.",
+          "options": [
+            {
+              "label": "O saldo anterior como se estivesse intacto"
+            },
+            {
+              "label": "Que poupar deixou de fazer sentido"
+            },
+            {
+              "label": "O saldo menor e um plano viável para repor"
+            }
+          ],
+          "help": [
+            "O uso adequado e a reconstrução são compatíveis."
+          ],
+          "feedback": {
+            "met": "Usar a reserva muda seu saldo e o próximo plano de contribuições.",
+            "not_yet": "O uso adequado e a reconstrução são compatíveis."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.save.goal",
+      "copy": {
+        "en-US": {
+          "prompt": "Which plan avoids double counting?",
+          "scene": "Goal: 100; saved: 40, separate from emergencies. Three affordable contributions remain.",
+          "options": [
+            {
+              "label": "Add 20 each time"
+            },
+            {
+              "label": "Add 10 each time"
+            },
+            {
+              "label": "Use the emergency reserve twice"
+            }
+          ],
+          "help": [
+            "Subtract goal savings, then split only the remaining gap."
+          ],
+          "feedback": {
+            "met": "The contributions fill the goal gap without reusing a separate reserve.",
+            "not_yet": "Subtract goal savings, then split only the remaining gap."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué plan alcanza la meta sin contar doble?",
+          "scene": "Una meta necesita 100. Tiene 40 separados de la reserva de emergencia; quedan tres aportaciones posibles.",
+          "options": [
+            {
+              "label": "Agregar 20 cada vez"
+            },
+            {
+              "label": "Agregar 10 cada vez"
+            },
+            {
+              "label": "Usar dos veces la reserva de emergencia"
+            }
+          ],
+          "help": [
+            "Resta el ahorro de la meta y reparte solo el faltante."
+          ],
+          "feedback": {
+            "met": "Las aportaciones cubren el faltante sin reutilizar una reserva separada.",
+            "not_yet": "Resta el ahorro de la meta y reparte solo el faltante."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual plano alcança a meta sem contar duas vezes?",
+          "scene": "Uma meta precisa de 100. Tem 40 separados da reserva de emergência; restam três contribuições possíveis.",
+          "options": [
+            {
+              "label": "Adicionar 20 cada vez"
+            },
+            {
+              "label": "Adicionar 10 cada vez"
+            },
+            {
+              "label": "Usar duas vezes a reserva de emergência"
+            }
+          ],
+          "help": [
+            "Subtraia a poupança da meta e divida só o que falta."
+          ],
+          "feedback": {
+            "met": "As contribuições cobrem a falta sem reutilizar uma reserva separada.",
+            "not_yet": "Subtraia a poupança da meta e divida só o que falta."
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,779 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-purchase-decisions-part-3",
+  "lesson_id": "fe-production-purchase-decisions-12",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.purchase-decisions.12"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Decide whether to repair, replace or postpone using stated costs and functional needs.",
+  "title": {
+    "en-US": "Replacement Choices",
+    "es-MX": "¿Reparar, reemplazar o esperar?",
+    "pt-BR": "Consertar, trocar ou esperar?"
+  },
+  "new_concepts": [
+    "finance.prod.purchase-decisions.12"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Replacement Choices\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"¿Reparar, reemplazar o esperar?\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Consertar, trocar ou esperar?\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.purchase-decisions.12",
+      "observable_action": "Decide whether to repair, replace or postpone using stated costs and functional needs.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.purchase-decisions.06",
+      "prod.goals-tradeoffs.03"
+    ],
+    "retrieval_skills": [],
+    "relevance": "The right response depends on safe function, cost and timing; compare the stated options instead of always buying new.",
+    "misconception": "The cheapest immediate choice is always right even when it fails required safety, function or timing.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.purchase-decisions.12",
+        "context_id": "purchase-decisions-12-example-01",
+        "supports_from": [],
+        "reasoning": "Check safe function and timing first. Then compare repair, replacement and postponement costs under the stated needs and budget."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.purchase-decisions.12",
+        "context_id": "purchase-decisions-12-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The stated repair meets the need at lower cost."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.purchase-decisions.12",
+        "context_id": "purchase-decisions-12-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "No unmet stated need requires immediate replacement."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.purchase-decisions.12",
+        "context_id": "purchase-decisions-12-practice-01",
+        "supports_from": [],
+        "reasoning": "The replacement meets the stated function, timing and budget constraints."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.purchase-decisions.12",
+        "context_id": "purchase-decisions-12-practice-02",
+        "supports_from": [],
+        "reasoning": "An unusable or unsafe repair does not meet the need."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.purchase-decisions.12",
+        "context_id": "purchase-decisions-12-practice-03",
+        "supports_from": [],
+        "reasoning": "Different constraints can make different options appropriate."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.purchase-decisions.12",
+        "context_id": "purchase-decisions-12-transfer-01",
+        "supports_from": [],
+        "reasoning": "The backup makes the lower-cost safe repair feasible."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.purchase-decisions.12",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "The right response depends on safe function, cost and timing; compare the stated options instead of always buying new."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Respuesta adecuada depende de función segura, costo y tiempo; compara opciones indicadas sin comprar nuevo siempre."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Resposta adequada depende de função segura, custo e prazo; compare opções dadas sem comprar novo sempre."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Function before price alone",
+          "line": "Check safe function and timing first. Then compare repair, replacement and postponement costs under the stated needs and budget."
+        },
+        "es-MX": {
+          "prompt": "Función antes que solo precio",
+          "line": "Revisa función segura y tiempo primero. Después compara arreglo, cambio y espera según usos y presupuesto indicados."
+        },
+        "pt-BR": {
+          "prompt": "Função antes de só preço",
+          "line": "Confira função segura e prazo primeiro. Depois compare conserto, troca e espera conforme usos e orçamento dados."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.12",
+      "copy": {
+        "en-US": {
+          "prompt": "Which option meets this need cheaply?",
+          "scene": "Required function is restored safely by repair; replacement costs more and adds no needed function.",
+          "options": [
+            {
+              "label": "Discard without checking"
+            },
+            {
+              "label": "Repair"
+            },
+            {
+              "label": "Replace for appearance alone"
+            }
+          ],
+          "help": [
+            "Compare safe restored function with replacement benefits actually needed."
+          ],
+          "feedback": {
+            "met": "The stated repair meets the need at lower cost.",
+            "not_yet": "Compare safe restored function with replacement benefits actually needed."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué opción sirve y cuesta menos?",
+          "scene": "El arreglo permite usarlo de forma segura; cambiarlo cuesta más y no añade algo que haga falta.",
+          "options": [
+            {
+              "label": "Desechar sin revisar"
+            },
+            {
+              "label": "Reparar"
+            },
+            {
+              "label": "Reemplazar solo por apariencia"
+            }
+          ],
+          "help": [
+            "Compara si funciona de forma segura y hace lo que necesitas."
+          ],
+          "feedback": {
+            "met": "El arreglo sirve y cuesta menos.",
+            "not_yet": "Compara si funciona de forma segura y hace lo que necesitas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que opção serve e custa menos?",
+          "scene": "Conserto restaura função exigida com segurança; troca custa mais sem função extra útil.",
+          "options": [
+            {
+              "label": "Descartar sem conferir"
+            },
+            {
+              "label": "Consertar"
+            },
+            {
+              "label": "Trocar só pela aparência"
+            }
+          ],
+          "help": [
+            "Compare se funciona de modo seguro e faz o que precisa."
+          ],
+          "feedback": {
+            "met": "Conserto dado atende uso com menor custo.",
+            "not_yet": "Compare se funciona de modo seguro e faz o que precisa."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.12",
+      "copy": {
+        "en-US": {
+          "prompt": "When is postponement feasible here?",
+          "scene": "The current item works safely and meets all stated needs; replacement is optional.",
+          "options": [
+            {
+              "label": "Replace because newer exists"
+            },
+            {
+              "label": "Wait and keep using it"
+            },
+            {
+              "label": "Borrow automatically to upgrade"
+            }
+          ],
+          "help": [
+            "Separate optional upgrades from essential function."
+          ],
+          "feedback": {
+            "met": "No unmet stated need requires immediate replacement.",
+            "not_yet": "Separate optional upgrades from essential function."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuándo es viable esperar aquí?",
+          "scene": "Artículo actual funciona seguro y cumple usos; cambio es opcional.",
+          "options": [
+            {
+              "label": "Reemplazar porque existe nuevo"
+            },
+            {
+              "label": "Esperar y seguir usándolo"
+            },
+            {
+              "label": "Pedir prestado automáticamente para mejorar"
+            }
+          ],
+          "help": [
+            "Separa mejoras opcionales de función esencial."
+          ],
+          "feedback": {
+            "met": "Ninguna necesidad indicada exige cambio al momento.",
+            "not_yet": "Separa mejoras opcionales de función esencial."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quando é viável esperar aqui?",
+          "scene": "Item atual funciona seguro e atende usos; troca é opcional.",
+          "options": [
+            {
+              "label": "Trocar pois existe novo"
+            },
+            {
+              "label": "Esperar e seguir usando"
+            },
+            {
+              "label": "Pegar empréstimo automaticamente para melhorar"
+            }
+          ],
+          "help": [
+            "Separe melhorias opcionais da função essencial."
+          ],
+          "feedback": {
+            "met": "Nenhum uso dado exige troca imediata.",
+            "not_yet": "Separe melhorias opcionais da função essencial."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.12",
+      "copy": {
+        "en-US": {
+          "prompt": "Which option meets the deadline?",
+          "scene": "Essential device needed tomorrow; repair takes a week, affordable suitable replacement is available today.",
+          "options": [
+            {
+              "label": "Repair despite the deadline"
+            },
+            {
+              "label": "The suitable replacement"
+            },
+            {
+              "label": "Do nothing despite essential need"
+            }
+          ],
+          "help": [
+            "Compare feasible options before choosing the lower quoted cost."
+          ],
+          "feedback": {
+            "met": "The replacement meets the stated function, timing and budget constraints.",
+            "not_yet": "Compare feasible options before choosing the lower quoted cost."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué opción cumple fecha límite?",
+          "scene": "Aparato esencial mañana; arreglo tarda semana, cambio adecuado asequible disponible hoy.",
+          "options": [
+            {
+              "label": "Reparar pese al plazo"
+            },
+            {
+              "label": "Cambio adecuado"
+            },
+            {
+              "label": "No hacer nada pese a necesidad"
+            }
+          ],
+          "help": [
+            "Compara opciones viables antes de elegir menor costo cotizado."
+          ],
+          "feedback": {
+            "met": "Cambio cumple función, tiempo y presupuesto indicados.",
+            "not_yet": "Compara opciones viables antes de elegir menor costo cotizado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que opção atende ao prazo?",
+          "scene": "Aparelho essencial amanhã; conserto leva semana, troca adequada acessível disponível hoje.",
+          "options": [
+            {
+              "label": "Consertar apesar do prazo"
+            },
+            {
+              "label": "Troca adequada"
+            },
+            {
+              "label": "Não agir apesar do uso"
+            }
+          ],
+          "help": [
+            "Compare opções viáveis antes de escolher menor custo cotado."
+          ],
+          "feedback": {
+            "met": "Troca atende função, prazo e orçamento dados.",
+            "not_yet": "Compare opções viáveis antes de escolher menor custo cotado."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.12",
+      "copy": {
+        "en-US": {
+          "prompt": "What needs checking first?",
+          "scene": "The quote is cheap but does not say whether required safe function will be restored.",
+          "options": [
+            {
+              "label": "Safety and restored function"
+            },
+            {
+              "label": "Only the low price"
+            },
+            {
+              "label": "Only the item’s age"
+            }
+          ],
+          "help": [
+            "Verify what the repair actually restores."
+          ],
+          "feedback": {
+            "met": "An unusable or unsafe repair does not meet the need.",
+            "not_yet": "Verify what the repair actually restores."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué revisar antes de reparar?",
+          "scene": "El precio es bajo, pero no dice si volverá a funcionar de forma segura.",
+          "options": [
+            {
+              "label": "Si funciona de forma segura"
+            },
+            {
+              "label": "Solo precio bajo"
+            },
+            {
+              "label": "Solo edad del artículo"
+            }
+          ],
+          "help": [
+            "Revisa qué permite hacer el arreglo."
+          ],
+          "feedback": {
+            "met": "Un arreglo que no sirve o causa riesgo no basta.",
+            "not_yet": "Revisa qué permite hacer el arreglo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que conferir antes de consertar?",
+          "scene": "Cotação barata não diz se restaura função segura exigida.",
+          "options": [
+            {
+              "label": "Se funciona de modo seguro"
+            },
+            {
+              "label": "Só preço baixo"
+            },
+            {
+              "label": "Só idade do item"
+            }
+          ],
+          "help": [
+            "Verifique o que o conserto restaura de fato."
+          ],
+          "feedback": {
+            "met": "Conserto inútil ou inseguro não atende uso.",
+            "not_yet": "Verifique o que o conserto restaura de fato."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.12",
+      "copy": {
+        "en-US": {
+          "prompt": "Can one rule decide every case?",
+          "scene": "Repair costs, safe function, urgency and available cash differ across households.",
+          "options": [
+            {
+              "label": "No, use the stated constraints"
+            },
+            {
+              "label": "Always replace"
+            },
+            {
+              "label": "Always repair"
+            }
+          ],
+          "help": [
+            "Use the scenario’s actual needs and costs."
+          ],
+          "feedback": {
+            "met": "Different constraints can make different options appropriate.",
+            "not_yet": "Use the scenario’s actual needs and costs."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Una regla decide todo caso?",
+          "scene": "Costos, función segura, urgencia y efectivo disponible varían entre hogares.",
+          "options": [
+            {
+              "label": "No, usar límites indicados"
+            },
+            {
+              "label": "Siempre reemplazar"
+            },
+            {
+              "label": "Siempre reparar"
+            }
+          ],
+          "help": [
+            "Usa los usos y costos reales del caso."
+          ],
+          "feedback": {
+            "met": "Los límites de cada caso pueden llevar a elegir otra opción.",
+            "not_yet": "Usa los usos y costos reales del caso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Uma regra decide todo caso?",
+          "scene": "Custos, função segura, urgência e dinheiro disponível variam entre famílias.",
+          "options": [
+            {
+              "label": "Não, usar limites dados"
+            },
+            {
+              "label": "Sempre trocar"
+            },
+            {
+              "label": "Sempre consertar"
+            }
+          ],
+          "help": [
+            "Use usos e custos reais do cenário."
+          ],
+          "feedback": {
+            "met": "Limites distintos podem tornar adequadas opções distintas.",
+            "not_yet": "Use usos e custos reais do cenário."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.purchase-decisions.12",
+      "copy": {
+        "en-US": {
+          "prompt": "Which option fits?",
+          "scene": "A safe backup works during the cheaper confirmed repair; replacement adds no needed benefit.",
+          "options": [
+            {
+              "label": "Use backup and repair"
+            },
+            {
+              "label": "Replace regardless of cost"
+            },
+            {
+              "label": "Use the unsafe broken item"
+            }
+          ],
+          "help": [
+            "Include available alternatives when checking function, timing and cost."
+          ],
+          "feedback": {
+            "met": "The backup makes the lower-cost safe repair feasible.",
+            "not_yet": "Include available alternatives when checking function, timing and cost."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué opción cumple usos dados?",
+          "scene": "Hay otro aparato seguro mientras termina el arreglo barato confirmado; cambiar no añade algo necesario.",
+          "options": [
+            {
+              "label": "Usar respaldo y reparar"
+            },
+            {
+              "label": "Reemplazar sin mirar costo"
+            },
+            {
+              "label": "Usar artículo roto inseguro"
+            }
+          ],
+          "help": [
+            "Incluye opciones a mano al revisar función, tiempo y costo."
+          ],
+          "feedback": {
+            "met": "El respaldo permite esperar el arreglo seguro y barato.",
+            "not_yet": "Incluye opciones a mano al revisar función, tiempo y costo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que opção atende usos dados?",
+          "scene": "Reserva segura funciona enquanto termina conserto barato confirmado; troca não acrescenta benefício necessário.",
+          "options": [
+            {
+              "label": "Usar reserva e consertar"
+            },
+            {
+              "label": "Trocar sem ver custo"
+            },
+            {
+              "label": "Usar item quebrado inseguro"
+            }
+          ],
+          "help": [
+            "Inclua opções ao alcance ao conferir função, prazo e custo."
+          ],
+          "feedback": {
+            "met": "Reserva torna viável conserto seguro de menor custo.",
+            "not_yet": "Inclua opções ao alcance ao conferir função, prazo e custo."
+          }
+        }
+      }
+    }
+  ]
+}

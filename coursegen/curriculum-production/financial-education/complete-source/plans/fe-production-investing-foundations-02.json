@@ -1,0 +1,731 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-investing-foundations-part-1",
+  "lesson_id": "fe-production-investing-foundations-02",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.investing-foundations.02"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Match a goal’s time horizon with the consequence of a temporary investment loss.",
+  "title": {
+    "en-US": "Money Timing",
+    "es-MX": "¿Cuándo lo necesitarás?",
+    "pt-BR": "Quando vai precisar?"
+  },
+  "new_concepts": [
+    "finance.prod.investing-foundations.02"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Money Timing\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"¿Cuándo lo necesitarás?\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Quando vai precisar?\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.investing-foundations.02",
+      "observable_action": "Match a goal’s time horizon with the consequence of a temporary investment loss.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.investing-foundations.01",
+      "prod.goals-tradeoffs.01"
+    ],
+    "retrieval_skills": [],
+    "relevance": "The same price drop can delay one goal and prevent another payment entirely.",
+    "misconception": "A long horizon guarantees recovery or a short horizon makes losses harmless.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.investing-foundations.02",
+        "context_id": "investing-foundations-02-example-01",
+        "supports_from": [],
+        "reasoning": "A drop before tomorrow’s payment creates an immediate gap. A flexible distant goal allows waiting, without guaranteeing recovery."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.investing-foundations.02",
+        "context_id": "investing-foundations-02-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Ana’s deadline leaves no time to wait."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.investing-foundations.02",
+        "context_id": "investing-foundations-02-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Flexibility changes the response, not the investment’s guarantee."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.investing-foundations.02",
+        "context_id": "investing-foundations-02-practice-01",
+        "supports_from": [],
+        "reasoning": "The upcoming need determines the remaining horizon."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.investing-foundations.02",
+        "context_id": "investing-foundations-02-practice-02",
+        "supports_from": [],
+        "reasoning": "A fixed need limits the response to the loss."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.investing-foundations.02",
+        "context_id": "investing-foundations-02-practice-03",
+        "supports_from": [],
+        "reasoning": "A longer horizon does not guarantee a positive result."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.investing-foundations.02",
+        "context_id": "investing-foundations-02-transfer-01",
+        "supports_from": [],
+        "reasoning": "The repair deadline has moved much closer."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.investing-foundations.02",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "The same price drop can delay one goal and prevent another payment entirely."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "La misma caída puede retrasar una meta e impedir por completo otro pago."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "A mesma queda pode atrasar uma meta e impedir completamente outro pagamento."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Time changes the consequence",
+          "line": "A drop before tomorrow’s payment creates an immediate gap. A flexible distant goal allows waiting, without guaranteeing recovery."
+        },
+        "es-MX": {
+          "prompt": "El tiempo cambia la consecuencia",
+          "line": "Una caída antes del pago de mañana deja un faltante inmediato. Una meta lejana flexible permite esperar, sin garantizar recuperación."
+        },
+        "pt-BR": {
+          "prompt": "O tempo muda a consequência",
+          "line": "Uma queda antes do pagamento de amanhã abre uma falta imediata. Uma meta distante flexível permite esperar, sem garantir recuperação."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Who cannot wait?",
+          "scene": "Both investments fall today. Ana needs the money tomorrow; Bo’s optional trip has no fixed date.",
+          "options": [
+            {
+              "label": "Bo"
+            },
+            {
+              "label": "Ana"
+            },
+            {
+              "label": "Both have identical deadlines"
+            }
+          ],
+          "help": [
+            "Compare the stated dates, not their optimism."
+          ],
+          "feedback": {
+            "met": "Ana’s deadline leaves no time to wait.",
+            "not_yet": "Compare the stated dates, not their optimism."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Quién no puede esperar?",
+          "scene": "Ambas inversiones caen hoy. Ana necesita el dinero mañana; el viaje opcional de Bo no tiene fecha.",
+          "options": [
+            {
+              "label": "Bo"
+            },
+            {
+              "label": "Ana"
+            },
+            {
+              "label": "Ambos tienen igual plazo"
+            }
+          ],
+          "help": [
+            "Compara las fechas, no el optimismo."
+          ],
+          "feedback": {
+            "met": "El plazo de Ana no permite esperar.",
+            "not_yet": "Compara las fechas, no el optimismo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quem não pode esperar?",
+          "scene": "Ambos os investimentos caem hoje. Ana precisa amanhã; a viagem opcional de Bo não tem data.",
+          "options": [
+            {
+              "label": "Bo"
+            },
+            {
+              "label": "Ana"
+            },
+            {
+              "label": "Ambos têm prazo igual"
+            }
+          ],
+          "help": [
+            "Compare as datas, não o otimismo."
+          ],
+          "feedback": {
+            "met": "O prazo de Ana não permite esperar.",
+            "not_yet": "Compare as datas, não o otimismo."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What does flexibility allow?",
+          "scene": "A workshop purchase can be postponed after an investment loss.",
+          "options": [
+            {
+              "label": "Wait or revise the goal"
+            },
+            {
+              "label": "Guarantee the loss disappears"
+            }
+          ],
+          "help": [
+            "More time is not a promise of recovery."
+          ],
+          "feedback": {
+            "met": "Flexibility changes the response, not the investment’s guarantee.",
+            "not_yet": "More time is not a promise of recovery."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué permite la flexibilidad?",
+          "scene": "Puedes posponer la compra de equipo tras una pérdida de inversión.",
+          "options": [
+            {
+              "label": "Esperar o revisar la meta"
+            },
+            {
+              "label": "Garantizar que desaparezca la pérdida"
+            }
+          ],
+          "help": [
+            "Más tiempo no promete recuperación."
+          ],
+          "feedback": {
+            "met": "La flexibilidad cambia la respuesta, no garantiza la inversión.",
+            "not_yet": "Más tiempo no promete recuperación."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que a flexibilidade permite?",
+          "scene": "Uma compra de equipamento pode ser adiada após uma perda no investimento.",
+          "options": [
+            {
+              "label": "Esperar ou rever a meta"
+            },
+            {
+              "label": "Garantir que a perda desapareça"
+            }
+          ],
+          "help": [
+            "Mais tempo não promete recuperação."
+          ],
+          "feedback": {
+            "met": "A flexibilidade muda a resposta, não garante o investimento.",
+            "not_yet": "Mais tempo não promete recuperação."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Which horizon applies?",
+          "scene": "Someone has invested for years but now needs all the money next month.",
+          "options": [
+            {
+              "label": "Next month’s need"
+            },
+            {
+              "label": "The years already elapsed"
+            }
+          ],
+          "help": [
+            "Count forward to the spending date."
+          ],
+          "feedback": {
+            "met": "The upcoming need determines the remaining horizon.",
+            "not_yet": "Count forward to the spending date."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué plazo importa?",
+          "scene": "Una persona lleva años invirtiendo, pero ahora necesita todo el dinero el próximo mes.",
+          "options": [
+            {
+              "label": "La necesidad del próximo mes"
+            },
+            {
+              "label": "Los años transcurridos"
+            }
+          ],
+          "help": [
+            "Cuenta hacia la fecha del gasto."
+          ],
+          "feedback": {
+            "met": "La próxima necesidad determina el plazo que queda.",
+            "not_yet": "Cuenta hacia la fecha del gasto."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual prazo importa?",
+          "scene": "Uma pessoa investe há anos, mas agora precisa de todo o dinheiro no próximo mês.",
+          "options": [
+            {
+              "label": "A necessidade do próximo mês"
+            },
+            {
+              "label": "Os anos já passados"
+            }
+          ],
+          "help": [
+            "Conte até a data do gasto."
+          ],
+          "feedback": {
+            "met": "A necessidade futura determina o prazo restante.",
+            "not_yet": "Conte até a data do gasto."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What changes the consequence?",
+          "scene": "Two identical holdings fall. One funds a fixed medical date; the other a postponable hobby.",
+          "options": [
+            {
+              "label": "The holding’s identical name"
+            },
+            {
+              "label": "The ability to postpone spending"
+            }
+          ],
+          "help": [
+            "Use the goal’s deadline and flexibility."
+          ],
+          "feedback": {
+            "met": "A fixed need limits the response to the loss.",
+            "not_yet": "Use the goal’s deadline and flexibility."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué cambia la consecuencia?",
+          "scene": "Dos inversiones iguales caen. Una paga una cita médica fija; otra, un pasatiempo que puede esperar.",
+          "options": [
+            {
+              "label": "El nombre idéntico de la inversión"
+            },
+            {
+              "label": "Poder posponer el gasto"
+            }
+          ],
+          "help": [
+            "Usa la fecha y flexibilidad de la meta."
+          ],
+          "feedback": {
+            "met": "Una necesidad fija limita la respuesta ante la pérdida.",
+            "not_yet": "Usa la fecha y flexibilidad de la meta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que muda a consequência?",
+          "scene": "Duas aplicações iguais caem. Uma paga consulta com data fixa; outra, um passatempo adiável.",
+          "options": [
+            {
+              "label": "O nome igual da aplicação"
+            },
+            {
+              "label": "Poder adiar o gasto"
+            }
+          ],
+          "help": [
+            "Use o prazo e a flexibilidade da meta."
+          ],
+          "feedback": {
+            "met": "Uma necessidade fixa limita a resposta à perda.",
+            "not_yet": "Use o prazo e a flexibilidade da meta."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Is this promise justified?",
+          "scene": "An offer says a distant goal cannot suffer investment losses.",
+          "options": [
+            {
+              "label": "Yes, distant means guaranteed"
+            },
+            {
+              "label": "No, time does not eliminate loss"
+            }
+          ],
+          "help": [
+            "Separate time available from certainty."
+          ],
+          "feedback": {
+            "met": "A longer horizon does not guarantee a positive result.",
+            "not_yet": "Separate time available from certainty."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Se justifica la promesa?",
+          "scene": "Una oferta afirma que una meta lejana no puede sufrir pérdidas de inversión.",
+          "options": [
+            {
+              "label": "Sí, lejana significa garantizada"
+            },
+            {
+              "label": "No, el tiempo no elimina pérdidas"
+            }
+          ],
+          "help": [
+            "Distingue tiempo disponible de certeza."
+          ],
+          "feedback": {
+            "met": "Un plazo mayor no garantiza un resultado positivo.",
+            "not_yet": "Distingue tiempo disponible de certeza."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A promessa se justifica?",
+          "scene": "Uma oferta diz que uma meta distante não pode sofrer perdas no investimento.",
+          "options": [
+            {
+              "label": "Sim, distante significa garantida"
+            },
+            {
+              "label": "Não, tempo não elimina perdas"
+            }
+          ],
+          "help": [
+            "Separe tempo disponível de certeza."
+          ],
+          "feedback": {
+            "met": "Um prazo maior não garante resultado positivo.",
+            "not_yet": "Separe tempo disponível de certeza."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.investing-foundations.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Recheck which assumption?",
+          "scene": "A house repair was planned for later. Storm damage makes it necessary this week.",
+          "options": [
+            {
+              "label": "Only last year’s return"
+            },
+            {
+              "label": "The money’s time horizon"
+            },
+            {
+              "label": "The expected investment return"
+            }
+          ],
+          "help": [
+            "A changed spending date changes the investment constraint."
+          ],
+          "feedback": {
+            "met": "The repair deadline has moved much closer.",
+            "not_yet": "A changed spending date changes the investment constraint."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué supuesto revisas?",
+          "scene": "Una reparación estaba planeada para después. Una tormenta la vuelve necesaria esta semana.",
+          "options": [
+            {
+              "label": "Solo el rendimiento anterior"
+            },
+            {
+              "label": "El plazo del dinero"
+            },
+            {
+              "label": "El rendimiento esperado"
+            }
+          ],
+          "help": [
+            "Cambiar la fecha del gasto cambia la restricción."
+          ],
+          "feedback": {
+            "met": "La fecha de reparación ahora está mucho más cerca.",
+            "not_yet": "Cambiar la fecha del gasto cambia la restricción."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual hipótese revisar?",
+          "scene": "Uma reforma estava prevista para depois. Uma tempestade a torna necessária nesta semana.",
+          "options": [
+            {
+              "label": "Só o rendimento passado"
+            },
+            {
+              "label": "O prazo desse dinheiro"
+            },
+            {
+              "label": "O retorno esperado"
+            }
+          ],
+          "help": [
+            "Mudar a data do gasto muda a restrição."
+          ],
+          "feedback": {
+            "met": "A data da reforma ficou muito mais próxima.",
+            "not_yet": "Mudar a data do gasto muda a restrição."
+          }
+        }
+      }
+    }
+  ]
+}

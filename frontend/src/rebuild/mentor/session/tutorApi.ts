@@ -64,6 +64,8 @@ export interface StartSessionInput {
   courseId?: string | null;
   topicId?: string | null;
   skillKey?: string | null;
+  /** OD-43: a guided review opened FROM a lesson carries its id; Core resolves the topic/course. */
+  lessonId?: string | null;
   wantsVoice: boolean;
 }
 

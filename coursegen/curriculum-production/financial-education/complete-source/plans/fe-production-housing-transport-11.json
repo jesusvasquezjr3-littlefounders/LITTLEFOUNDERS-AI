@@ -1,0 +1,798 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-housing-transport-part-3",
+  "lesson_id": "fe-production-housing-transport-11",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.housing-transport.11"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Identify repair or maintenance costs that a purchase price does not cover.",
+  "title": {
+    "en-US": "Maintenance Planning",
+    "es-MX": "Planea más allá de comprar",
+    "pt-BR": "Planeje além da compra"
+  },
+  "new_concepts": [
+    "finance.prod.housing-transport.11"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Maintenance Planning\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Planea más allá de comprar\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Planeje além da compra\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.housing-transport.11",
+      "observable_action": "Identify repair or maintenance costs that a purchase price does not cover.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.housing-transport.04",
+      "prod.housing-transport.08",
+      "prod.spending-patterns.05"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Homes and vehicles keep needing care after purchase; plan fictional dollars for scheduled work and uncertain repairs.",
+    "misconception": "A purchase budget covers maintenance forever or a scheduled service is an unforeseeable emergency.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.housing-transport.11",
+        "context_id": "housing-transport-11-example-01",
+        "supports_from": [],
+        "reasoning": "Save toward known maintenance dates; keep uncertain repairs separate. An estimate helps planning but does not guarantee the final bill."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.housing-transport.11",
+        "context_id": "housing-transport-11-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "A known service date supports advance planning."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.housing-transport.11",
+        "context_id": "housing-transport-11-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Existing reserved money reduces the remaining amount to save."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.housing-transport.11",
+        "context_id": "housing-transport-11-practice-01",
+        "supports_from": [],
+        "reasoning": "Funding the purchase does not fund later care."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.housing-transport.11",
+        "context_id": "housing-transport-11-practice-02",
+        "supports_from": [],
+        "reasoning": "Excluded damage makes the final cost uncertain."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.housing-transport.11",
+        "context_id": "housing-transport-11-practice-03",
+        "supports_from": [],
+        "reasoning": "A known recurring inspection can be budgeted in advance."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.housing-transport.11",
+        "context_id": "housing-transport-11-transfer-01",
+        "supports_from": [],
+        "reasoning": "Known maintenance and uncertain faults need distinct planning."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.housing-transport.11",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Homes and vehicles keep needing care after purchase; plan fictional dollars for scheduled work and uncertain repairs."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Viviendas y vehículos necesitan cuidado tras comprarse; planea pesos ficticios para trabajo previsto y reparaciones inciertas."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Casas e veículos precisam de cuidado após a compra; planeje reais fictícios para serviços marcados e consertos incertos."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Known work, uncertain faults",
+          "line": "Save toward known maintenance dates; keep uncertain repairs separate. An estimate helps planning but does not guarantee the final bill."
+        },
+        "es-MX": {
+          "prompt": "Trabajo previsto, fallas inciertas",
+          "line": "Ahorra para fechas conocidas de cuidado; separa reparaciones inciertas. Un cálculo ayuda a planear pero no garantiza la factura final."
+        },
+        "pt-BR": {
+          "prompt": "Serviço previsto, falhas incertas",
+          "line": "Poupe para datas conhecidas de manutenção; separe consertos incertos. Uma estimativa ajuda a planejar mas não garante a conta final."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.11",
+      "copy": {
+        "en-US": {
+          "prompt": "Which expense can be scheduled?",
+          "scene": "A vehicle’s stated service is due next season.",
+          "options": [
+            {
+              "label": "An unknown breakdown date"
+            },
+            {
+              "label": "An assumed free repair"
+            },
+            {
+              "label": "Known service"
+            }
+          ],
+          "help": [
+            "Separate scheduled upkeep from unpredictable faults."
+          ],
+          "feedback": {
+            "met": "A known service date supports advance planning.",
+            "not_yet": "Separate scheduled upkeep from unpredictable faults."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué gasto puede programarse?",
+          "scene": "Servicio indicado de vehículo vence la próxima temporada.",
+          "options": [
+            {
+              "label": "Fecha de avería desconocida"
+            },
+            {
+              "label": "Reparación gratis supuesta"
+            },
+            {
+              "label": "Servicio conocido"
+            }
+          ],
+          "help": [
+            "Separa cuidado previsto de fallas sin fecha."
+          ],
+          "feedback": {
+            "met": "Una fecha de servicio conocida permite planear con tiempo.",
+            "not_yet": "Separa cuidado previsto de fallas sin fecha."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual gasto pode ser marcado?",
+          "scene": "Serviço indicado do veículo vence na próxima estação.",
+          "options": [
+            {
+              "label": "Data de pane desconhecida"
+            },
+            {
+              "label": "Conserto grátis suposto"
+            },
+            {
+              "label": "Serviço conhecido"
+            }
+          ],
+          "help": [
+            "Separe cuidado marcado de falhas imprevisíveis."
+          ],
+          "feedback": {
+            "met": "Uma data de serviço conhecida permite planejar antes.",
+            "not_yet": "Separe cuidado marcado de falhas imprevisíveis."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.11",
+      "copy": {
+        "en-US": {
+          "prompt": "How much is still needed?",
+          "scene": "Scheduled repair estimate: 600; Already reserved: 250.",
+          "options": [
+            {
+              "label": "850"
+            },
+            {
+              "label": "350"
+            },
+            {
+              "label": "600"
+            }
+          ],
+          "help": [
+            "Subtract the reserved amount from the estimate."
+          ],
+          "feedback": {
+            "met": "Existing reserved money reduces the remaining amount to save.",
+            "not_yet": "Subtract the reserved amount from the estimate."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto falta todavía?",
+          "scene": "Costo de reparación prevista: 600; Ya reservado: 250.",
+          "options": [
+            {
+              "label": "850"
+            },
+            {
+              "label": "350"
+            },
+            {
+              "label": "600"
+            }
+          ],
+          "help": [
+            "Resta el monto reservado al cálculo."
+          ],
+          "feedback": {
+            "met": "El dinero reservado reduce lo que falta ahorrar.",
+            "not_yet": "Resta el monto reservado al cálculo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto ainda falta?",
+          "scene": "Estimativa de conserto marcado: 600; Já reservado: 250.",
+          "options": [
+            {
+              "label": "850"
+            },
+            {
+              "label": "350"
+            },
+            {
+              "label": "600"
+            }
+          ],
+          "help": [
+            "Subtraia o valor reservado da estimativa."
+          ],
+          "feedback": {
+            "met": "O dinheiro reservado reduz o que falta poupar.",
+            "not_yet": "Subtraia o valor reservado da estimativa."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          600,
+          250
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.11",
+      "copy": {
+        "en-US": {
+          "prompt": "Which budget is more complete?",
+          "scene": "A home’s purchase is funded, but routine upkeep has no planned money.",
+          "options": [
+            {
+              "label": "Assume purchase covers upkeep"
+            },
+            {
+              "label": "Ignore known maintenance"
+            },
+            {
+              "label": "Add ongoing upkeep funding"
+            }
+          ],
+          "help": [
+            "Create space for ongoing costs after purchase."
+          ],
+          "feedback": {
+            "met": "Funding the purchase does not fund later care.",
+            "not_yet": "Create space for ongoing costs after purchase."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué presupuesto está más completo?",
+          "scene": "Compra de vivienda cubierta, pero no hay dinero previsto para cuidado habitual.",
+          "options": [
+            {
+              "label": "Suponer compra cubre cuidado"
+            },
+            {
+              "label": "Ignorar cuidado conocido"
+            },
+            {
+              "label": "Agregar fondos para cuidado continuo"
+            }
+          ],
+          "help": [
+            "Reserva espacio para costos continuos tras comprar."
+          ],
+          "feedback": {
+            "met": "Financiar compra no financia cuidado posterior.",
+            "not_yet": "Reserva espacio para costos continuos tras comprar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual orçamento está mais completo?",
+          "scene": "Compra da casa coberta, mas não há dinheiro previsto para cuidados regulares.",
+          "options": [
+            {
+              "label": "Supor compra cobre cuidado"
+            },
+            {
+              "label": "Ignorar manutenção conhecida"
+            },
+            {
+              "label": "Acrescentar verba para cuidado contínuo"
+            }
+          ],
+          "help": [
+            "Reserve espaço para custos contínuos após comprar."
+          ],
+          "feedback": {
+            "met": "Financiar compra não financia cuidado posterior.",
+            "not_yet": "Reserve espaço para custos contínuos após comprar."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.11",
+      "copy": {
+        "en-US": {
+          "prompt": "What does this estimate mean?",
+          "scene": "A repair quote excludes any hidden damage found during inspection.",
+          "options": [
+            {
+              "label": "Every possible cost is fixed"
+            },
+            {
+              "label": "The repair is unnecessary"
+            },
+            {
+              "label": "Final cost may differ"
+            }
+          ],
+          "help": [
+            "Read what the estimate includes and excludes."
+          ],
+          "feedback": {
+            "met": "Excluded damage makes the final cost uncertain.",
+            "not_yet": "Read what the estimate includes and excludes."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué significa este cálculo?",
+          "scene": "Precio dado excluye daño oculto encontrado durante inspección.",
+          "options": [
+            {
+              "label": "Todo costo posible es fijo"
+            },
+            {
+              "label": "El arreglo es innecesario"
+            },
+            {
+              "label": "Costo final puede cambiar"
+            }
+          ],
+          "help": [
+            "Lee qué incluye y excluye el cálculo."
+          ],
+          "feedback": {
+            "met": "El daño excluido vuelve incierto el costo final.",
+            "not_yet": "Lee qué incluye y excluye el cálculo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que significa esta estimativa?",
+          "scene": "Orçamento exclui dano oculto encontrado na inspeção.",
+          "options": [
+            {
+              "label": "Todo custo possível é fixo"
+            },
+            {
+              "label": "O conserto é inútil"
+            },
+            {
+              "label": "Custo final pode mudar"
+            }
+          ],
+          "help": [
+            "Leia o que a estimativa inclui e exclui."
+          ],
+          "feedback": {
+            "met": "O dano excluído torna incerto o custo final.",
+            "not_yet": "Leia o que a estimativa inclui e exclui."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.11",
+      "copy": {
+        "en-US": {
+          "prompt": "How should this cost be classified?",
+          "scene": "The contract specifies an annual inspection fee with a known due date.",
+          "options": [
+            {
+              "label": "Entirely unforeseeable emergency"
+            },
+            {
+              "label": "Planned recurring upkeep"
+            },
+            {
+              "label": "Part of the resale proceeds"
+            }
+          ],
+          "help": [
+            "Use its stated recurrence and due date."
+          ],
+          "feedback": {
+            "met": "A known recurring inspection can be budgeted in advance.",
+            "not_yet": "Use its stated recurrence and due date."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cómo clasificar este costo?",
+          "scene": "Contrato indica cuota anual de inspección con fecha conocida.",
+          "options": [
+            {
+              "label": "Emergencia sin aviso"
+            },
+            {
+              "label": "Cuidado regular previsto"
+            },
+            {
+              "label": "Parte del ingreso de reventa"
+            }
+          ],
+          "help": [
+            "Usa la frecuencia y fecha indicadas."
+          ],
+          "feedback": {
+            "met": "Una inspección regular conocida puede planearse antes.",
+            "not_yet": "Usa la frecuencia y fecha indicadas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Como classificar este custo?",
+          "scene": "Contrato indica taxa anual de inspeção com data conhecida.",
+          "options": [
+            {
+              "label": "Emergência totalmente imprevisível"
+            },
+            {
+              "label": "Cuidado contínuo previsto"
+            },
+            {
+              "label": "Parte da receita de revenda"
+            }
+          ],
+          "help": [
+            "Use a frequência e data dadas."
+          ],
+          "feedback": {
+            "met": "Uma inspeção contínua conhecida pode ser prevista antes.",
+            "not_yet": "Use a frequência e data dadas."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.housing-transport.11",
+      "copy": {
+        "en-US": {
+          "prompt": "Which plan addresses both needs?",
+          "scene": "A household faces scheduled roof care and possible unexpected plumbing faults.",
+          "options": [
+            {
+              "label": "Treat both as impossible"
+            },
+            {
+              "label": "Fund only the purchase deposit"
+            },
+            {
+              "label": "Plan upkeep plus uncertain repairs"
+            }
+          ],
+          "help": [
+            "Include scheduled care and room for unexpected repairs."
+          ],
+          "feedback": {
+            "met": "Known maintenance and uncertain faults need distinct planning.",
+            "not_yet": "Include scheduled care and room for unexpected repairs."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué plan atiende ambas necesidades?",
+          "scene": "Hogar enfrenta cuidado previsto del techo y posibles fallas inesperadas de tuberías.",
+          "options": [
+            {
+              "label": "Tratar ambos como imposibles"
+            },
+            {
+              "label": "Cubrir solo enganche de compra"
+            },
+            {
+              "label": "Planear cuidado y reparaciones inciertas"
+            }
+          ],
+          "help": [
+            "Incluye cuidado previsto y espacio para reparaciones inesperadas."
+          ],
+          "feedback": {
+            "met": "Mantenimiento conocido y fallas inciertas necesitan planeación distinta.",
+            "not_yet": "Incluye cuidado previsto y espacio para reparaciones inesperadas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual plano atende ambas necessidades?",
+          "scene": "Família tem cuidado marcado do telhado e possíveis falhas imprevistas nos canos.",
+          "options": [
+            {
+              "label": "Tratar ambos como impossíveis"
+            },
+            {
+              "label": "Cobrir só entrada da compra"
+            },
+            {
+              "label": "Planejar cuidados e consertos incertos"
+            }
+          ],
+          "help": [
+            "Inclua cuidado marcado e espaço para consertos imprevistos."
+          ],
+          "feedback": {
+            "met": "Cuidado conhecido e falhas incertas precisam de planos distintos.",
+            "not_yet": "Inclua cuidado marcado e espaço para consertos imprevistos."
+          }
+        }
+      }
+    }
+  ]
+}

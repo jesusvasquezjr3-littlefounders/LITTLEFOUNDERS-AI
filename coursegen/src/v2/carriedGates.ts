@@ -490,6 +490,22 @@ export function v2ArithmeticGate(document: Json, answerKeys: Json | undefined): 
   const block = (segmentId: string, message: string) => found.push({ gate: 4, severity: 'block', segmentId, message });
   for (const segment of (document.segments ?? []) as Json[]) {
     const key = answerKeys?.[segment.id];
+    // A displayed worked equality must also be true when narrated as prose.
+    // Deliberately wrong candidate answers and the Mentor's misjudgment are excluded.
+    const assertion = segment.type === 'voice.mentor-turn.v2' ? segment.payload?.line
+      : segment.type === 'voice.mentor-episode.v2' ? segment.payload?.recovery : undefined;
+    if (typeof assertion === 'string') {
+      const term = '[-−]?\\d+(?:[.,]\\d+)*%?';
+      const equalities = new RegExp(`(${term}(?:\\s*[+−×÷*/-]\\s*${term})+)\\s*=\\s*(${term})`, 'g');
+      const normalize = (text: string) => document.locale === 'pt-BR' ? text.replace(/\./g, '').replace(/,/g, '.') : text.replace(/,/g, '');
+      for (const match of assertion.matchAll(equalities)) {
+        const actual = evaluateExpression(normalize(match[1]!));
+        const stated = evaluateExpression(normalize(match[2]!));
+        if (actual === null || stated === null || Math.abs(actual - stated) > 1e-9) {
+          block(segment.id, `displayed equality is false or undefined: ${match[0]}`);
+        }
+      }
+    }
     if (segment.type === 'math.worked-example.v2') {
       for (const step of segment.payload.steps as Json[]) {
         const value = evaluateExpression(step.expression); const result = numeric(step.result);

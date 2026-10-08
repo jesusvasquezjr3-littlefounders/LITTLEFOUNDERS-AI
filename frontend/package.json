@@ -9,6 +9,7 @@
   },
   "scripts": {
     "dev": "vite",
+    "review:course": "vite --config scripts/course-review/vite.config.ts --open /scripts/course-review/index.html",
     "build": "tsc --noEmit && vite build && node scripts/check-lesson-layer-budget.mjs && node scripts/seo/build-seo.mjs",
     "build:local": "node scripts/build-local.mjs",
     "preview": "vite preview",

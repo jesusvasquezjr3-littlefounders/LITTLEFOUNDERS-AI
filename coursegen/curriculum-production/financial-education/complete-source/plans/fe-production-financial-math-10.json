@@ -1,0 +1,849 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-financial-math-part-2",
+  "lesson_id": "fe-production-financial-math-10",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.financial-math.10"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Distinguish a percentage-point difference from a relative percentage change.",
+  "title": {
+    "en-US": "Rate changes",
+    "es-MX": "Dos tipos de cambio",
+    "pt-BR": "Dois tipos de mudança"
+  },
+  "new_concepts": [
+    "finance.prod.financial-math.10"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Two kinds of change\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Dos tipos de cambio\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Dois tipos de mudança\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.financial-math.10",
+      "observable_action": "Distinguish a percentage-point difference from a relative percentage change.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.financial-math.07",
+      "price.percent"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Read claims about changing percentages without mixing their units.",
+    "misconception": "Call a difference in rates a relative percentage change without dividing by the original rate.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.financial-math.10",
+        "context_id": "fe-production-financial-math-10-example-01",
+        "supports_from": [],
+        "reasoning": "From 10% to 15% is five percentage points. Relative to the original ten, the increase is one half: fifty percent."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.financial-math.10",
+        "context_id": "fe-production-financial-math-10-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Percentage points measure direct subtraction of rates."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.financial-math.10",
+        "context_id": "fe-production-financial-math-10-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Doubling adds the entire original amount."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.financial-math.10",
+        "context_id": "fe-production-financial-math-10-practice-01",
+        "supports_from": [],
+        "reasoning": "Direct subtraction gives the point difference."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.financial-math.10",
+        "context_id": "fe-production-financial-math-10-practice-02",
+        "supports_from": [],
+        "reasoning": "The ten-point increase is one quarter of the starting rate."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.financial-math.10",
+        "context_id": "fe-production-financial-math-10-practice-03",
+        "supports_from": [],
+        "reasoning": "The two units describe different comparisons."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.financial-math.10",
+        "context_id": "fe-production-financial-math-10-transfer-01",
+        "supports_from": [],
+        "reasoning": "A point difference does not require the original-rate division."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.financial-math.10",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Read claims about changing percentages without mixing their units."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Lee cambios porcentuales sin mezclar sus unidades."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Leia mudanças percentuais sem misturar suas unidades."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Name the comparison",
+          "line": "From 10% to 15% is five percentage points. Relative to the original ten, the increase is one half: fifty percent."
+        },
+        "es-MX": {
+          "prompt": "Nombra la comparación",
+          "line": "De 10% a 15% son cinco puntos porcentuales. Respecto al diez original, el aumento es la mitad: cincuenta por ciento."
+        },
+        "pt-BR": {
+          "prompt": "Nomeie a comparação",
+          "line": "De 10% a 15% são cinco pontos percentuais. Em relação aos dez originais, o aumento é metade: cinquenta por cento."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Difference in percentage points?",
+          "scene": "A share rises from 20% to 30%. Subtract the two rates.",
+          "options": [
+            {
+              "label": "10"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "50"
+            }
+          ],
+          "help": [
+            "The requested unit is percentage points."
+          ],
+          "feedback": {
+            "met": "Percentage points measure direct subtraction of rates.",
+            "not_yet": "The requested unit is percentage points."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Diferencia en puntos porcentuales?",
+          "scene": "Una proporción sube de 20% a 30%. Resta ambas tasas.",
+          "options": [
+            {
+              "label": "10"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "50"
+            }
+          ],
+          "help": [
+            "La unidad pedida es puntos porcentuales."
+          ],
+          "feedback": {
+            "met": "Los puntos porcentuales miden la resta directa de tasas.",
+            "not_yet": "La unidad pedida es puntos porcentuales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Diferença em pontos percentuais?",
+          "scene": "Uma proporção sobe de 20% para 30%. Subtraia as duas taxas.",
+          "options": [
+            {
+              "label": "10"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "50"
+            }
+          ],
+          "help": [
+            "A unidade pedida é pontos percentuais."
+          ],
+          "feedback": {
+            "met": "Pontos percentuais medem a subtração direta de taxas.",
+            "not_yet": "A unidade pedida é pontos percentuais."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          20,
+          30
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 1
+            },
+            {
+              "input": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Relative increase?",
+          "scene": "A rate rises from 4% to 8%. It doubles.",
+          "options": [
+            {
+              "label": "Eight percentage points"
+            },
+            {
+              "label": "One hundred percent"
+            },
+            {
+              "label": "Four percent"
+            }
+          ],
+          "help": [
+            "Compare the increase with the starting rate."
+          ],
+          "feedback": {
+            "met": "Doubling adds the entire original amount.",
+            "not_yet": "Compare the increase with the starting rate."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Aumento relativo?",
+          "scene": "Una tasa sube de 4% a 8%. Se duplica.",
+          "options": [
+            {
+              "label": "Ocho puntos porcentuales"
+            },
+            {
+              "label": "Cien por ciento"
+            },
+            {
+              "label": "Cuatro por ciento"
+            }
+          ],
+          "help": [
+            "Compara el aumento con la tasa inicial."
+          ],
+          "feedback": {
+            "met": "Duplicar añade el monto original completo.",
+            "not_yet": "Compara el aumento con la tasa inicial."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Aumento relativo?",
+          "scene": "Uma taxa sobe de 4% para 8%. Ela dobra.",
+          "options": [
+            {
+              "label": "Oito pontos percentuais"
+            },
+            {
+              "label": "Cem por cento"
+            },
+            {
+              "label": "Quatro por cento"
+            }
+          ],
+          "help": [
+            "Compare o aumento com a taxa inicial."
+          ],
+          "feedback": {
+            "met": "Dobrar acrescenta o valor original inteiro.",
+            "not_yet": "Compare o aumento com a taxa inicial."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Fall in percentage points?",
+          "scene": "A rate falls from 12% to 9%.",
+          "options": [
+            {
+              "label": "9"
+            },
+            {
+              "label": "3"
+            },
+            {
+              "label": "25"
+            }
+          ],
+          "help": [
+            "Keep the requested comparison unit."
+          ],
+          "feedback": {
+            "met": "Direct subtraction gives the point difference.",
+            "not_yet": "Keep the requested comparison unit."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Baja en puntos porcentuales?",
+          "scene": "Una tasa baja de 12% a 9%.",
+          "options": [
+            {
+              "label": "9"
+            },
+            {
+              "label": "3"
+            },
+            {
+              "label": "25"
+            }
+          ],
+          "help": [
+            "Conserva la unidad de comparación pedida."
+          ],
+          "feedback": {
+            "met": "La resta directa da la diferencia en puntos.",
+            "not_yet": "Conserva la unidad de comparación pedida."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Queda em pontos percentuais?",
+          "scene": "Uma taxa cai de 12% para 9%.",
+          "options": [
+            {
+              "label": "9"
+            },
+            {
+              "label": "3"
+            },
+            {
+              "label": "25"
+            }
+          ],
+          "help": [
+            "Mantenha a unidade de comparação pedida."
+          ],
+          "feedback": {
+            "met": "A subtração direta dá a diferença em pontos.",
+            "not_yet": "Mantenha a unidade de comparação pedida."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          12,
+          9
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Relative increase, as a percent?",
+          "scene": "A share goes from 40% to 50%.",
+          "options": [
+            {
+              "label": "50"
+            },
+            {
+              "label": "10"
+            },
+            {
+              "label": "25"
+            }
+          ],
+          "help": [
+            "Divide the increase by the original rate, then multiply by one hundred."
+          ],
+          "feedback": {
+            "met": "The ten-point increase is one quarter of the starting rate.",
+            "not_yet": "Divide the increase by the original rate, then multiply by one hundred."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Aumento relativo, en porcentaje?",
+          "scene": "Una proporción pasa de 40% a 50%.",
+          "options": [
+            {
+              "label": "50"
+            },
+            {
+              "label": "10"
+            },
+            {
+              "label": "25"
+            }
+          ],
+          "help": [
+            "Divide el aumento entre la tasa original y multiplica por cien."
+          ],
+          "feedback": {
+            "met": "El aumento de diez puntos es un cuarto de la tasa inicial.",
+            "not_yet": "Divide el aumento entre la tasa original y multiplica por cien."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Aumento relativo, em porcentagem?",
+          "scene": "Uma proporção passa de 40% para 50%.",
+          "options": [
+            {
+              "label": "50"
+            },
+            {
+              "label": "10"
+            },
+            {
+              "label": "25"
+            }
+          ],
+          "help": [
+            "Divida o aumento pela taxa original e multiplique por cem."
+          ],
+          "feedback": {
+            "met": "O aumento de dez pontos é um quarto da taxa inicial.",
+            "not_yet": "Divida o aumento pela taxa original e multiplique por cem."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          40,
+          50
+        ],
+        "expression": {
+          "op": "multiply",
+          "args": [
+            {
+              "op": "divide",
+              "args": [
+                {
+                  "op": "subtract",
+                  "args": [
+                    {
+                      "input": 1
+                    },
+                    {
+                      "input": 0
+                    }
+                  ]
+                },
+                {
+                  "input": 0
+                }
+              ]
+            },
+            {
+              "constant": 100
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.10",
+      "copy": {
+        "en-US": {
+          "prompt": "What needs clarification?",
+          "scene": "An advertisement says a rate improved by five, without a unit.",
+          "options": [
+            {
+              "label": "Points or relative percent"
+            },
+            {
+              "label": "Only the final rate"
+            },
+            {
+              "label": "Nothing, they are identical"
+            }
+          ],
+          "help": [
+            "Ask for the starting rate and the stated unit."
+          ],
+          "feedback": {
+            "met": "The two units describe different comparisons.",
+            "not_yet": "Ask for the starting rate and the stated unit."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué necesitas aclarar?",
+          "scene": "Un anuncio dice que una tasa mejoró cinco, sin unidad.",
+          "options": [
+            {
+              "label": "Puntos o porcentaje relativo"
+            },
+            {
+              "label": "Solo la tasa final"
+            },
+            {
+              "label": "Nada, son idénticos"
+            }
+          ],
+          "help": [
+            "Pide la tasa inicial y la unidad indicada."
+          ],
+          "feedback": {
+            "met": "Las dos unidades describen comparaciones distintas.",
+            "not_yet": "Pide la tasa inicial y la unidad indicada."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que precisa esclarecer?",
+          "scene": "Um anúncio diz que uma taxa melhorou cinco, sem unidade.",
+          "options": [
+            {
+              "label": "Pontos ou porcentagem relativa"
+            },
+            {
+              "label": "Só a taxa final"
+            },
+            {
+              "label": "Nada, são idênticos"
+            }
+          ],
+          "help": [
+            "Peça a taxa inicial e a unidade informada."
+          ],
+          "feedback": {
+            "met": "As duas unidades descrevem comparações diferentes.",
+            "not_yet": "Peça a taxa inicial e a unidade informada."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.financial-math.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Is that unit correct?",
+          "scene": "Budget share: 30% to 20%. Report: ten percentage points.",
+          "options": [
+            {
+              "label": "No, both shares are equal"
+            },
+            {
+              "label": "Yes, it subtracts the rates"
+            },
+            {
+              "label": "No, it means ten percent relative"
+            }
+          ],
+          "help": [
+            "Distinguish rate subtraction from proportional change."
+          ],
+          "feedback": {
+            "met": "A point difference does not require the original-rate division.",
+            "not_yet": "Distinguish rate subtraction from proportional change."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Es correcta esa unidad?",
+          "scene": "Una parte del presupuesto baja de 30% a 20%. Un informe dice diez puntos porcentuales.",
+          "options": [
+            {
+              "label": "No, ambas partes son iguales"
+            },
+            {
+              "label": "Sí, resta las tasas"
+            },
+            {
+              "label": "No, significa diez por ciento relativo"
+            }
+          ],
+          "help": [
+            "Distingue resta de tasas y cambio proporcional."
+          ],
+          "feedback": {
+            "met": "Una diferencia en puntos no requiere dividir entre la tasa original.",
+            "not_yet": "Distingue resta de tasas y cambio proporcional."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Essa unidade está correta?",
+          "scene": "Uma parte do orçamento cai de 30% para 20%. Um relatório diz dez pontos percentuais.",
+          "options": [
+            {
+              "label": "Não, as partes são iguais"
+            },
+            {
+              "label": "Sim, subtrai as taxas"
+            },
+            {
+              "label": "Não, significa dez por cento relativo"
+            }
+          ],
+          "help": [
+            "Distinga subtração de taxas e mudança proporcional."
+          ],
+          "feedback": {
+            "met": "Uma diferença em pontos não exige dividir pela taxa original.",
+            "not_yet": "Distinga subtração de taxas e mudança proporcional."
+          }
+        }
+      }
+    }
+  ]
+}

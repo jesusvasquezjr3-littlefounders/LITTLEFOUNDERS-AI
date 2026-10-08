@@ -1,0 +1,861 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-housing-transport-part-2",
+  "lesson_id": "fe-production-housing-transport-06",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.housing-transport.06"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Stress-test a housing payment under a stated income drop or variable-rate increase.",
+  "title": {
+    "en-US": "Housing Setbacks",
+    "es-MX": "Prueba un contratiempo de vivienda",
+    "pt-BR": "Teste um revés na moradia"
+  },
+  "new_concepts": [
+    "finance.prod.housing-transport.06"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Housing Setbacks\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Prueba un contratiempo de vivienda\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Teste um revés na moradia\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.housing-transport.06",
+      "observable_action": "Stress-test a housing payment under a stated income drop or variable-rate increase.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.housing-transport.04",
+      "prod.credit-mechanics.10",
+      "prod.cashflow-budget.09"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A housing payment that fits today may fail after income falls; test fictional dollars under changed conditions.",
+    "misconception": "Approval or today’s positive balance proves a housing payment survives income or rate changes.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.housing-transport.06",
+        "context_id": "housing-transport-06-example-01",
+        "supports_from": [],
+        "reasoning": "Recalculate money left after a setback. A negative result exposes a gap; it does not predict the setback will occur."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.housing-transport.06",
+        "context_id": "housing-transport-06-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Subtract both essential cost groups from the reduced income."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.housing-transport.06",
+        "context_id": "housing-transport-06-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The result depends on the tested assumption."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.housing-transport.06",
+        "context_id": "housing-transport-06-practice-01",
+        "supports_from": [],
+        "reasoning": "The new combined costs exceed income by one hundred."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.housing-transport.06",
+        "context_id": "housing-transport-06-practice-02",
+        "supports_from": [],
+        "reasoning": "A changing rate can change payments under the stated terms."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.housing-transport.06",
+        "context_id": "housing-transport-06-practice-03",
+        "supports_from": [],
+        "reasoning": "A recurring gap needs a recurring solution or changed plan."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.housing-transport.06",
+        "context_id": "housing-transport-06-transfer-01",
+        "supports_from": [],
+        "reasoning": "Both changed conditions must enter the same calculation."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.housing-transport.06",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A housing payment that fits today may fail after income falls; test fictional dollars under changed conditions."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un pago que cabe hoy puede fallar si cae el ingreso; prueba pesos ficticios bajo condiciones distintas."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Uma prestação que cabe hoje pode falhar se a renda cair; teste reais fictícios sob condições diferentes."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Change the assumptions",
+          "line": "Recalculate money left after a setback. A negative result exposes a gap; it does not predict the setback will occur."
+        },
+        "es-MX": {
+          "prompt": "Cambia los supuestos",
+          "line": "Recalcula el dinero restante tras un contratiempo. Un resultado negativo muestra un faltante; no predice que ocurrirá."
+        },
+        "pt-BR": {
+          "prompt": "Mude as hipóteses",
+          "line": "Recalcule o dinheiro restante após um revés. Um resultado negativo mostra uma falta; não prevê que ela ocorrerá."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.06",
+      "copy": {
+        "en-US": {
+          "prompt": "What remains after the income drop?",
+          "scene": "Reduced income: 1800; Housing: 900; Other essentials: 700.",
+          "options": [
+            {
+              "label": "900"
+            },
+            {
+              "label": "1100"
+            },
+            {
+              "label": "200"
+            }
+          ],
+          "help": [
+            "Use the changed income, not the old one."
+          ],
+          "feedback": {
+            "met": "Subtract both essential cost groups from the reduced income.",
+            "not_yet": "Use the changed income, not the old one."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué queda tras caer el ingreso?",
+          "scene": "Ingreso reducido: 1800; Vivienda: 900; Otros esenciales: 700.",
+          "options": [
+            {
+              "label": "900"
+            },
+            {
+              "label": "1100"
+            },
+            {
+              "label": "200"
+            }
+          ],
+          "help": [
+            "Usa el ingreso cambiado, no el anterior."
+          ],
+          "feedback": {
+            "met": "Resta ambos grupos esenciales al ingreso reducido.",
+            "not_yet": "Usa el ingreso cambiado, no el anterior."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto sobra após cair a renda?",
+          "scene": "Renda reduzida: 1800; Moradia: 900; Outros essenciais: 700.",
+          "options": [
+            {
+              "label": "900"
+            },
+            {
+              "label": "1100"
+            },
+            {
+              "label": "200"
+            }
+          ],
+          "help": [
+            "Use a renda mudada, não a anterior."
+          ],
+          "feedback": {
+            "met": "Subtraia ambos os grupos essenciais da renda reduzida.",
+            "not_yet": "Use a renda mudada, não a anterior."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          1800,
+          900,
+          700
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.06",
+      "copy": {
+        "en-US": {
+          "prompt": "What does a stress test show?",
+          "scene": "A hypothetical income cut makes the household budget negative.",
+          "options": [
+            {
+              "label": "Automatic loan cancellation"
+            },
+            {
+              "label": "A gap under that assumption"
+            },
+            {
+              "label": "A certain future income cut"
+            }
+          ],
+          "help": [
+            "Separate a scenario test from a forecast."
+          ],
+          "feedback": {
+            "met": "The result depends on the tested assumption.",
+            "not_yet": "Separate a scenario test from a forecast."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué muestra la prueba?",
+          "scene": "Una caída hipotética del ingreso vuelve negativo el presupuesto familiar.",
+          "options": [
+            {
+              "label": "Cancelación automática del préstamo"
+            },
+            {
+              "label": "Un faltante bajo ese supuesto"
+            },
+            {
+              "label": "Una caída futura segura"
+            }
+          ],
+          "help": [
+            "Separa probar un escenario de predecirlo."
+          ],
+          "feedback": {
+            "met": "El resultado depende del supuesto probado.",
+            "not_yet": "Separa probar un escenario de predecirlo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que mostra o teste?",
+          "scene": "Uma queda hipotética da renda torna negativo o orçamento familiar.",
+          "options": [
+            {
+              "label": "Cancelamento automático da dívida"
+            },
+            {
+              "label": "Uma falta nessa hipótese"
+            },
+            {
+              "label": "Uma queda futura certa"
+            }
+          ],
+          "help": [
+            "Separe testar um cenário de prever o futuro."
+          ],
+          "feedback": {
+            "met": "O resultado depende da hipótese testada.",
+            "not_yet": "Separe testar um cenário de prever o futuro."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.06",
+      "copy": {
+        "en-US": {
+          "prompt": "What remains after payment rises?",
+          "scene": "Income: 2100; New housing payment: 1300; Other essentials: 900.",
+          "options": [
+            {
+              "label": "800"
+            },
+            {
+              "label": "-100"
+            },
+            {
+              "label": "100"
+            }
+          ],
+          "help": [
+            "Use the new payment and include other essentials."
+          ],
+          "feedback": {
+            "met": "The new combined costs exceed income by one hundred.",
+            "not_yet": "Use the new payment and include other essentials."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué queda tras subir el pago?",
+          "scene": "Ingreso: 2100; Nuevo pago de vivienda: 1300; Otros esenciales: 900.",
+          "options": [
+            {
+              "label": "800"
+            },
+            {
+              "label": "-100"
+            },
+            {
+              "label": "100"
+            }
+          ],
+          "help": [
+            "Usa el pago nuevo e incluye otros esenciales."
+          ],
+          "feedback": {
+            "met": "Los costos nuevos superan el ingreso en cien.",
+            "not_yet": "Usa el pago nuevo e incluye otros esenciales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto sobra após subir a prestação?",
+          "scene": "Renda: 2100; Nova prestação: 1300; Outros essenciais: 900.",
+          "options": [
+            {
+              "label": "800"
+            },
+            {
+              "label": "-100"
+            },
+            {
+              "label": "100"
+            }
+          ],
+          "help": [
+            "Use a nova prestação e inclua outros essenciais."
+          ],
+          "feedback": {
+            "met": "Os novos custos superam a renda em cem.",
+            "not_yet": "Use a nova prestação e inclua outros essenciais."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          2100,
+          1300,
+          900
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which assumption needs checking?",
+          "scene": "A variable-rate loan estimate uses today’s payment for every future period.",
+          "options": [
+            {
+              "label": "Only the initial loan balance"
+            },
+            {
+              "label": "Possible payment changes"
+            },
+            {
+              "label": "Only the first payment amount"
+            }
+          ],
+          "help": [
+            "Inspect the contract’s adjustment conditions."
+          ],
+          "feedback": {
+            "met": "A changing rate can change payments under the stated terms.",
+            "not_yet": "Inspect the contract’s adjustment conditions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué supuesto debe revisarse?",
+          "scene": "Estimación de préstamo con tasa variable usa pago actual para todo periodo futuro.",
+          "options": [
+            {
+              "label": "Solo el saldo inicial"
+            },
+            {
+              "label": "Posibles cambios del pago"
+            },
+            {
+              "label": "Solo el primer pago"
+            }
+          ],
+          "help": [
+            "Examina las condiciones de ajuste del contrato."
+          ],
+          "feedback": {
+            "met": "Una tasa cambiante puede modificar pagos según las condiciones.",
+            "not_yet": "Examina las condiciones de ajuste del contrato."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que hipótese precisa de revisão?",
+          "scene": "Estimativa de empréstimo com taxa variável usa a prestação atual para todo período futuro.",
+          "options": [
+            {
+              "label": "Só o saldo inicial"
+            },
+            {
+              "label": "Possíveis mudanças da prestação"
+            },
+            {
+              "label": "Só o primeiro pagamento"
+            }
+          ],
+          "help": [
+            "Examine as condições de ajuste do contrato."
+          ],
+          "feedback": {
+            "met": "Uma taxa variável pode mudar prestações conforme os termos.",
+            "not_yet": "Examine as condições de ajuste do contrato."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which response addresses a repeated gap?",
+          "scene": "The setback scenario leaves a shortfall every month.",
+          "options": [
+            {
+              "label": "Treat a one-time gift as permanent"
+            },
+            {
+              "label": "Ignore it after approval"
+            },
+            {
+              "label": "Revise recurring costs or income"
+            }
+          ],
+          "help": [
+            "Match the response to the duration of the shortfall."
+          ],
+          "feedback": {
+            "met": "A recurring gap needs a recurring solution or changed plan.",
+            "not_yet": "Match the response to the duration of the shortfall."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué atiende un faltante repetido?",
+          "scene": "El escenario adverso deja faltante cada mes.",
+          "options": [
+            {
+              "label": "Tratar un regalo como permanente"
+            },
+            {
+              "label": "Ignorarlo tras aprobación"
+            },
+            {
+              "label": "Revisar costos recurrentes o ingreso"
+            }
+          ],
+          "help": [
+            "Ajusta la respuesta a la duración del faltante."
+          ],
+          "feedback": {
+            "met": "Un faltante recurrente necesita solución continua o cambiar el plan.",
+            "not_yet": "Ajusta la respuesta a la duración del faltante."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que resolve uma falta repetida?",
+          "scene": "O cenário adverso deixa falta de dinheiro todo mês.",
+          "options": [
+            {
+              "label": "Tratar presente único como permanente"
+            },
+            {
+              "label": "Ignorar após aprovação"
+            },
+            {
+              "label": "Rever custos contínuos ou renda"
+            }
+          ],
+          "help": [
+            "Ajuste a resposta à duração da falta."
+          ],
+          "feedback": {
+            "met": "Uma falta contínua exige solução contínua ou mudar o plano.",
+            "not_yet": "Ajuste a resposta à duração da falta."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.housing-transport.06",
+      "copy": {
+        "en-US": {
+          "prompt": "What is the stressed monthly balance?",
+          "scene": "Reduced income: 2400; Raised housing payment: 1400; Other essentials: 1100.",
+          "options": [
+            {
+              "label": "100"
+            },
+            {
+              "label": "1000"
+            },
+            {
+              "label": "-100"
+            }
+          ],
+          "help": [
+            "Subtract the raised payment and essentials from reduced income."
+          ],
+          "feedback": {
+            "met": "Both changed conditions must enter the same calculation.",
+            "not_yet": "Subtract the raised payment and essentials from reduced income."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es el saldo mensual adverso?",
+          "scene": "Ingreso reducido: 2400; Pago de vivienda aumentado: 1400; Otros esenciales: 1100.",
+          "options": [
+            {
+              "label": "100"
+            },
+            {
+              "label": "1000"
+            },
+            {
+              "label": "-100"
+            }
+          ],
+          "help": [
+            "Resta pago aumentado y esenciales al ingreso reducido."
+          ],
+          "feedback": {
+            "met": "Ambas condiciones cambiadas entran en el mismo cálculo.",
+            "not_yet": "Resta pago aumentado y esenciales al ingreso reducido."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é o saldo mensal adverso?",
+          "scene": "Renda reduzida: 2400; Prestação aumentada: 1400; Outros essenciais: 1100.",
+          "options": [
+            {
+              "label": "100"
+            },
+            {
+              "label": "1000"
+            },
+            {
+              "label": "-100"
+            }
+          ],
+          "help": [
+            "Subtraia prestação aumentada e essenciais da renda reduzida."
+          ],
+          "feedback": {
+            "met": "Ambas as mudanças entram na mesma conta.",
+            "not_yet": "Subtraia prestação aumentada e essenciais da renda reduzida."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          2400,
+          1400,
+          1100
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

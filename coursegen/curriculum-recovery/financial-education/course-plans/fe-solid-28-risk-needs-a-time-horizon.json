@@ -1,0 +1,852 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-solid-07-risk-and-protection",
+  "lesson_id": "fe-solid-28-risk-needs-a-time-horizon",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.invest.horizon"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Evaluate a possible loss and access delay against a fixed payment date without treating time as a return guarantee.",
+  "title": {
+    "en-US": "Risk and timing",
+    "es-MX": "El riesgo necesita un plazo",
+    "pt-BR": "O risco precisa de um prazo"
+  },
+  "new_concepts": [
+    "finance.invest.horizon"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Risk and timing\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"El riesgo necesita un plazo\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"O risco precisa de um prazo\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "invest.horizon",
+      "observable_action": "Evaluate a possible loss and access delay against a fixed payment date without treating time as a return guarantee.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "save.access",
+      "time.purchasing-power",
+      "time.compound"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Money needed soon faces a deadline. A possible future recovery cannot pay a bill today.",
+    "misconception": "Assuming an investment that may recover eventually can safely fund an unavoidable near-term payment.",
+    "numeracy_support": "Use only the stated quantities, dates and conditions; distinguish a modeled result from a guarantee.",
+    "evidence": [
+      {
+        "segment_id": "example-investment",
+        "skill_id": "invest.horizon",
+        "context_id": "risk-needs-a-time-horizon-example-investment",
+        "supports_from": [],
+        "reasoning": "An investment is bought expecting future income or value. It can lose value; the hoped-for gain is uncertain."
+      },
+      {
+        "segment_id": "example-01",
+        "skill_id": "invest.horizon",
+        "context_id": "risk-needs-a-time-horizon-example-01",
+        "supports_from": [],
+        "reasoning": "Rent is due tomorrow; selling this investment takes days and risks losses. Expected returns cannot meet that deadline."
+      },
+      {
+        "segment_id": "example-02",
+        "skill_id": "invest.horizon",
+        "context_id": "risk-needs-a-time-horizon-example-02",
+        "supports_from": [],
+        "reasoning": "A longer horizon allows more time to respond to losses. It guarantees neither recovery nor profit nor timely access."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "invest.horizon",
+        "context_id": "risk-needs-a-time-horizon-guided-01",
+        "supports_from": [
+          "example-02"
+        ],
+        "reasoning": "Access timing fails the stated need."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "invest.horizon",
+        "context_id": "risk-needs-a-time-horizon-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Time does not remove the stated possibility of loss."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "invest.horizon",
+        "context_id": "risk-needs-a-time-horizon-practice-01",
+        "supports_from": [],
+        "reasoning": "The consequence of a loss matters alongside the deadline."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "invest.horizon",
+        "context_id": "risk-needs-a-time-horizon-practice-02",
+        "supports_from": [],
+        "reasoning": "Access and value are separate properties."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "invest.horizon",
+        "context_id": "risk-needs-a-time-horizon-practice-03",
+        "supports_from": [],
+        "reasoning": "Return figures alone cannot establish suitability for a deadline."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "invest.horizon",
+        "context_id": "risk-needs-a-time-horizon-transfer-01",
+        "supports_from": [],
+        "reasoning": "The changed deadline changes the decision constraints."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "invest.horizon",
+      "fresh_context": "Apply this skill in a later integrated decision with a different constraint."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Money needed soon faces a deadline. A possible future recovery cannot pay a bill today."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "El dinero necesario pronto tiene un plazo. Una posible recuperación futura no paga una cuenta hoy."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "O dinheiro necessário logo tem prazo. Uma possível recuperação futura não paga uma conta hoje."
+        }
+      }
+    },
+    {
+      "id": "example-investment",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "What an investment is",
+          "line": "An investment is bought expecting future income or value. It can lose value; the hoped-for gain is uncertain."
+        },
+        "es-MX": {
+          "prompt": "Qué es una inversión",
+          "line": "Una inversión se compra esperando ingresos o valor futuro. Puede perder valor; la ganancia esperada es incierta."
+        },
+        "pt-BR": {
+          "prompt": "O que é um investimento",
+          "line": "Um investimento é comprado esperando renda ou valor futuro. Pode perder valor; o ganho esperado é incerto."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Match money to its deadline",
+          "line": "Rent is due tomorrow; selling this investment takes days and risks losses. Expected returns cannot meet that deadline."
+        },
+        "es-MX": {
+          "prompt": "Relaciona el dinero con su plazo",
+          "line": "La renta vence mañana; vender esta inversión tarda días y puede causar pérdidas. Su rendimiento esperado no cumple ese plazo."
+        },
+        "pt-BR": {
+          "prompt": "Relacione dinheiro e prazo",
+          "line": "O aluguel vence amanhã; vender este investimento leva dias e pode causar perdas. O retorno esperado não atende ao prazo."
+        }
+      }
+    },
+    {
+      "id": "example-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Separate risk and time",
+          "line": "A longer horizon allows more time to respond to losses. It guarantees neither recovery nor profit nor timely access."
+        },
+        "es-MX": {
+          "prompt": "Separa riesgo y tiempo",
+          "line": "Un plazo largo puede dar más tiempo para responder a pérdidas. No garantiza recuperación, ganancia ni acceso en una fecha elegida."
+        },
+        "pt-BR": {
+          "prompt": "Separe risco e tempo",
+          "line": "Um prazo longo pode dar mais tempo para reagir a perdas. Não garante recuperação, lucro nem acesso em uma data escolhida."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.invest.horizon",
+      "copy": {
+        "en-US": {
+          "prompt": "What prevents payment?",
+          "scene": "Bill due tomorrow; selling the investment takes days.",
+          "options": [
+            {
+              "label": "The return is quoted annually"
+            },
+            {
+              "label": "The money would arrive late"
+            },
+            {
+              "label": "The bill has a fixed amount"
+            }
+          ],
+          "help": [
+            "Compare access time with the due date."
+          ],
+          "feedback": {
+            "met": "Access timing fails the stated need.",
+            "not_yet": "Compare access time with the due date."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué contradice la necesidad de pago?",
+          "scene": "Una cuenta obligatoria vence mañana. Vender la inversión propuesta tarda varios días.",
+          "options": [
+            {
+              "label": "El rendimiento se expresa por año"
+            },
+            {
+              "label": "El dinero no llega para el vencimiento"
+            },
+            {
+              "label": "La cuenta tiene un monto fijo"
+            }
+          ],
+          "help": [
+            "Compara el plazo de acceso con el vencimiento."
+          ],
+          "feedback": {
+            "met": "El plazo de acceso no cumple la necesidad.",
+            "not_yet": "Compara el plazo de acceso con el vencimiento."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que conflita com a necessidade de pagamento?",
+          "scene": "Uma conta obrigatória vence amanhã. Vender o investimento proposto leva vários dias.",
+          "options": [
+            {
+              "label": "O retorno é expresso por ano"
+            },
+            {
+              "label": "O dinheiro não chega até o vencimento"
+            },
+            {
+              "label": "A conta tem valor fixo"
+            }
+          ],
+          "help": [
+            "Compare o prazo de acesso com o vencimento."
+          ],
+          "feedback": {
+            "met": "O prazo de acesso não atende à necessidade.",
+            "not_yet": "Compare o prazo de acesso com o vencimento."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.invest.horizon",
+      "copy": {
+        "en-US": {
+          "prompt": "What remains uncertain?",
+          "scene": "Money can remain invested for years, without protection against losses.",
+          "options": [
+            {
+              "label": "Whether you need it tomorrow"
+            },
+            {
+              "label": "Whether its value will rise"
+            },
+            {
+              "label": "Whether the horizon is long"
+            }
+          ],
+          "help": [
+            "A long horizon is not a promise of a return."
+          ],
+          "feedback": {
+            "met": "Time does not remove the stated possibility of loss.",
+            "not_yet": "A long horizon is not a promise of a return."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué sigue siendo incierto?",
+          "scene": "El dinero puede permanecer invertido muchos años. La inversión no garantiza evitar pérdidas.",
+          "options": [
+            {
+              "label": "Si el dinero se necesita mañana"
+            },
+            {
+              "label": "Si su valor aumentará"
+            },
+            {
+              "label": "Si el plazo es largo"
+            }
+          ],
+          "help": [
+            "Un plazo largo no promete un rendimiento."
+          ],
+          "feedback": {
+            "met": "El tiempo no elimina la posibilidad de pérdida.",
+            "not_yet": "Un plazo largo no promete un rendimiento."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que continua incerto?",
+          "scene": "O dinheiro pode ficar investido muitos anos. O investimento não garante evitar perdas.",
+          "options": [
+            {
+              "label": "Se o dinheiro é necessário amanhã"
+            },
+            {
+              "label": "Se o valor vai aumentar"
+            },
+            {
+              "label": "Se o prazo é longo"
+            }
+          ],
+          "help": [
+            "Um prazo longo não promete retorno."
+          ],
+          "feedback": {
+            "met": "O tempo não elimina a possibilidade de perda.",
+            "not_yet": "Um prazo longo não promete retorno."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.invest.horizon",
+      "copy": {
+        "en-US": {
+          "prompt": "What matters first?",
+          "scene": "Repair money is needed next month. An investment could lose value.",
+          "options": [
+            {
+              "label": "Only the investment name"
+            },
+            {
+              "label": "Only the best possible gain"
+            },
+            {
+              "label": "Could losses prevent repairs?"
+            }
+          ],
+          "help": [
+            "Connect a possible loss with the required payment."
+          ],
+          "feedback": {
+            "met": "The consequence of a loss matters alongside the deadline.",
+            "not_yet": "Connect a possible loss with the required payment."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debes revisar primero?",
+          "scene": "Tu ahorro cubre reparaciones esenciales del próximo mes; la inversión puede perder valor.",
+          "options": [
+            {
+              "label": "Solo el nombre de la inversión"
+            },
+            {
+              "label": "Solo la mayor ganancia posible"
+            },
+            {
+              "label": "Si una pérdida impediría las reparaciones"
+            }
+          ],
+          "help": [
+            "Relaciona una posible pérdida con el pago necesario."
+          ],
+          "feedback": {
+            "met": "La consecuencia de perder importa junto con el plazo.",
+            "not_yet": "Relaciona una posible pérdida con el pago necesario."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que conferir primeiro?",
+          "scene": "Seu dinheiro cobre reparos essenciais no próximo mês; o investimento pode perder valor.",
+          "options": [
+            {
+              "label": "Só o nome do investimento"
+            },
+            {
+              "label": "Só o maior ganho possível"
+            },
+            {
+              "label": "Se uma perda impediria os reparos"
+            }
+          ],
+          "help": [
+            "Relacione uma possível perda com o pagamento necessário."
+          ],
+          "feedback": {
+            "met": "A consequência da perda importa junto com o prazo.",
+            "not_yet": "Relacione uma possível perda com o pagamento necessário."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.invest.horizon",
+      "copy": {
+        "en-US": {
+          "prompt": "Does quick sale remove all risk?",
+          "scene": "You can sell today, but below the purchase price.",
+          "options": [
+            {
+              "label": "Yes, access guarantees the original amount"
+            },
+            {
+              "label": "Yes, selling erases losses"
+            },
+            {
+              "label": "No, you can lose money"
+            }
+          ],
+          "help": [
+            "Check both sale timing and proceeds."
+          ],
+          "feedback": {
+            "met": "Access and value are separate properties.",
+            "not_yet": "Check both sale timing and proceeds."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Vender rápido elimina todo riesgo?",
+          "scene": "Puedes vender hoy, pero por menos de lo que pagaste.",
+          "options": [
+            {
+              "label": "Sí, el acceso garantiza el monto original"
+            },
+            {
+              "label": "Sí, vender cancela el cambio de precio"
+            },
+            {
+              "label": "No, aún puedes perder dinero"
+            }
+          ],
+          "help": [
+            "Revisa el plazo de venta y lo recibido."
+          ],
+          "feedback": {
+            "met": "El acceso y el valor son propiedades distintas.",
+            "not_yet": "Revisa el plazo de venta y lo recibido."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Vender rápido elimina todo risco?",
+          "scene": "Pode vender hoje, mas por menos do que pagou.",
+          "options": [
+            {
+              "label": "Sim, o acesso garante o valor original"
+            },
+            {
+              "label": "Sim, vender cancela a mudança de preço"
+            },
+            {
+              "label": "Não, acesso rápido ainda pode gerar perda"
+            }
+          ],
+          "help": [
+            "Confira o prazo de venda e o valor recebido."
+          ],
+          "feedback": {
+            "met": "Acesso e valor são propriedades diferentes.",
+            "not_yet": "Confira o prazo de venda e o valor recebido."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.invest.horizon",
+      "copy": {
+        "en-US": {
+          "prompt": "Which information is still needed?",
+          "scene": "An investment lists returns, omitting losses and withdrawal rules.",
+          "options": [
+            {
+              "label": "Only its previous highest price"
+            },
+            {
+              "label": "Loss and access conditions"
+            },
+            {
+              "label": "A larger historical return number"
+            }
+          ],
+          "help": [
+            "Identify what could stop a required payment."
+          ],
+          "feedback": {
+            "met": "Return figures alone cannot establish suitability for a deadline.",
+            "not_yet": "Identify what could stop a required payment."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué información sigue faltando?",
+          "scene": "Una descripción enumera rendimientos, pero no explica ventas, restricciones de retiro ni posibles pérdidas.",
+          "options": [
+            {
+              "label": "Solo su mayor precio anterior"
+            },
+            {
+              "label": "Condiciones de pérdida y acceso"
+            },
+            {
+              "label": "Un rendimiento histórico mayor"
+            }
+          ],
+          "help": [
+            "Identifica qué podría impedir un pago necesario."
+          ],
+          "feedback": {
+            "met": "Los rendimientos solos no demuestran que se cumpla un plazo.",
+            "not_yet": "Identifica qué podría impedir un pago necesario."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual informação ainda falta?",
+          "scene": "Uma descrição lista retornos, mas não explica vendas, restrições de retirada nem possíveis perdas.",
+          "options": [
+            {
+              "label": "Só seu maior preço anterior"
+            },
+            {
+              "label": "Condições de perda e acesso"
+            },
+            {
+              "label": "Um retorno histórico maior"
+            }
+          ],
+          "help": [
+            "Identifique o que poderia impedir um pagamento necessário."
+          ],
+          "feedback": {
+            "met": "Retornos sozinhos não demonstram adequação a um prazo.",
+            "not_yet": "Identifique o que poderia impedir um pagamento necessário."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.invest.horizon",
+      "copy": {
+        "en-US": {
+          "prompt": "What changes now?",
+          "scene": "Repairs move forward to next month. The investment can lose value and restrict withdrawals.",
+          "options": [
+            {
+              "label": "Recheck risk and access"
+            },
+            {
+              "label": "Keep the old plan"
+            },
+            {
+              "label": "The return becomes guaranteed"
+            }
+          ],
+          "help": [
+            "Use the current need rather than the old timetable."
+          ],
+          "feedback": {
+            "met": "The changed deadline changes the decision constraints.",
+            "not_yet": "Use the current need rather than the old timetable."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué cambia si la meta se adelanta?",
+          "scene": "La reparación se adelanta al próximo mes; la inversión puede perder valor y restringir retiros.",
+          "options": [
+            {
+              "label": "Revisar riesgos y acceso"
+            },
+            {
+              "label": "El plan anterior sigue sirviendo automáticamente"
+            },
+            {
+              "label": "El rendimiento se vuelve garantizado"
+            }
+          ],
+          "help": [
+            "Usa la necesidad actual y no el calendario anterior."
+          ],
+          "feedback": {
+            "met": "El nuevo plazo cambia las condiciones de la decisión.",
+            "not_yet": "Usa la necesidad actual y no el calendario anterior."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que muda se a meta for antecipada?",
+          "scene": "O reparo será no próximo mês; a aplicação pode perder valor e restringir retiradas.",
+          "options": [
+            {
+              "label": "Rever riscos e acesso"
+            },
+            {
+              "label": "O plano anterior continua adequado automaticamente"
+            },
+            {
+              "label": "O retorno passa a ser garantido"
+            }
+          ],
+          "help": [
+            "Use a necessidade atual em vez do calendário anterior."
+          ],
+          "feedback": {
+            "met": "O novo prazo muda as condições da decisão.",
+            "not_yet": "Use a necessidade atual em vez do calendário anterior."
+          }
+        }
+      }
+    }
+  ]
+}

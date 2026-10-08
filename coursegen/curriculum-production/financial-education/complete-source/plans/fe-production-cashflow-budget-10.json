@@ -1,0 +1,841 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-cashflow-budget-part-2",
+  "lesson_id": "fe-production-cashflow-budget-10",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.cashflow-budget.10"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Explain why a sample percentage budget must be adapted when essential costs exceed its allowance.",
+  "title": {
+    "en-US": "Percentage guidelines",
+    "es-MX": "Un porcentaje es un punto de partida",
+    "pt-BR": "Uma porcentagem é um ponto de partida"
+  },
+  "new_concepts": [
+    "finance.prod.cashflow-budget.10"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"A percentage is a starting point\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Un porcentaje es un punto de partida\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Uma porcentagem é um ponto de partida\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.cashflow-budget.10",
+      "observable_action": "Explain why a sample percentage budget must be adapted when essential costs exceed its allowance.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.cashflow-budget.03",
+      "price.percent",
+      "prod.spending-patterns.10"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Adapt a sample budget to actual essential costs and available income.",
+    "misconception": "Treating an illustrative percentage split as a requirement that overrides actual needs or creates missing income.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.cashflow-budget.10",
+        "context_id": "fe-production-cashflow-budget-10-example-01",
+        "supports_from": [],
+        "reasoning": "A sample percentage suggests an allocation. It does not lower actual rent or guarantee that essential costs fit."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.cashflow-budget.10",
+        "context_id": "fe-production-cashflow-budget-10-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "200 × 50 ÷ 100 = 100 in this example."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.cashflow-budget.10",
+        "context_id": "fe-production-cashflow-budget-10-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Actual obligations must stay visible when adapting the guide."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.cashflow-budget.10",
+        "context_id": "fe-production-cashflow-budget-10-practice-01",
+        "supports_from": [],
+        "reasoning": "Actual costs exceed the sample share by 60."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.cashflow-budget.10",
+        "context_id": "fe-production-cashflow-budget-10-practice-02",
+        "supports_from": [],
+        "reasoning": "A target share does not create the money to fund it."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.cashflow-budget.10",
+        "context_id": "fe-production-cashflow-budget-10-practice-03",
+        "supports_from": [],
+        "reasoning": "Equal income does not imply equal unavoidable costs."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.cashflow-budget.10",
+        "context_id": "fe-production-cashflow-budget-10-transfer-01",
+        "supports_from": [],
+        "reasoning": "A useful guide accommodates the stated access requirement."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.cashflow-budget.10",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Adapt a sample budget to actual essential costs and available income."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Adapta un presupuesto de ejemplo a costos esenciales e ingreso reales."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Adapte um orçamento de exemplo a custos essenciais e renda reais."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A guide, not a bill limit",
+          "line": "A sample percentage suggests an allocation. It does not lower actual rent or guarantee that essential costs fit."
+        },
+        "es-MX": {
+          "prompt": "Una guía, no un límite de cuentas",
+          "line": "Un porcentaje de ejemplo sugiere una asignación. No reduce la renta real ni garantiza que lo esencial quepa."
+        },
+        "pt-BR": {
+          "prompt": "Um guia, não um limite de contas",
+          "line": "Uma porcentagem de exemplo sugere uma destinação. Não reduz o aluguel real nem garante que o essencial caiba."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Amount suggested by that share?",
+          "scene": "Illustrative income: 200; an example budget assigns 50% to essentials.",
+          "options": [
+            {
+              "label": "250"
+            },
+            {
+              "label": "50"
+            },
+            {
+              "label": "100"
+            }
+          ],
+          "help": [
+            "Multiply income by the percentage, then divide by one hundred."
+          ],
+          "feedback": {
+            "met": "200 × 50 ÷ 100 = 100 in this example.",
+            "not_yet": "Multiply income by the percentage, then divide by one hundred."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Monto sugerido por esa parte?",
+          "scene": "Ingreso ilustrativo: 200; un presupuesto de ejemplo asigna 50% a lo esencial.",
+          "options": [
+            {
+              "label": "250"
+            },
+            {
+              "label": "50"
+            },
+            {
+              "label": "100"
+            }
+          ],
+          "help": [
+            "Multiplica ingreso por porcentaje y divide entre cien."
+          ],
+          "feedback": {
+            "met": "200 × 50 ÷ 100 = 100 en este ejemplo.",
+            "not_yet": "Multiplica ingreso por porcentaje y divide entre cien."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Valor sugerido por essa parte?",
+          "scene": "Renda ilustrativa: 200; um orçamento de exemplo destina 50% ao essencial.",
+          "options": [
+            {
+              "label": "250"
+            },
+            {
+              "label": "50"
+            },
+            {
+              "label": "100"
+            }
+          ],
+          "help": [
+            "Multiplique renda pela porcentagem e divida por cem."
+          ],
+          "feedback": {
+            "met": "200 × 50 ÷ 100 = 100 neste exemplo.",
+            "not_yet": "Multiplique renda pela porcentagem e divida por cem."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          200,
+          50
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "constant": 100
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.10",
+      "copy": {
+        "en-US": {
+          "prompt": "What should change?",
+          "scene": "The sample allowance is below the household’s unavoidable essential costs.",
+          "options": [
+            {
+              "label": "Remove necessities automatically"
+            },
+            {
+              "label": "Pretend the bills match the sample"
+            },
+            {
+              "label": "Adapt the plan to actual constraints"
+            }
+          ],
+          "help": [
+            "A sample split does not change what is owed."
+          ],
+          "feedback": {
+            "met": "Actual obligations must stay visible when adapting the guide.",
+            "not_yet": "A sample split does not change what is owed."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe cambiar?",
+          "scene": "La asignación de ejemplo es menor que los costos esenciales inevitables del hogar.",
+          "options": [
+            {
+              "label": "Quitar necesidades automáticamente"
+            },
+            {
+              "label": "Fingir que las cuentas coinciden"
+            },
+            {
+              "label": "Adaptar el plan a límites reales"
+            }
+          ],
+          "help": [
+            "Una división de ejemplo no cambia lo debido."
+          ],
+          "feedback": {
+            "met": "Las obligaciones reales deben seguir visibles al adaptar la guía.",
+            "not_yet": "Una división de ejemplo no cambia lo debido."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que deve mudar?",
+          "scene": "A destinação de exemplo é menor que os custos essenciais inevitáveis da casa.",
+          "options": [
+            {
+              "label": "Retirar necessidades automaticamente"
+            },
+            {
+              "label": "Fingir que as contas coincidem"
+            },
+            {
+              "label": "Adaptar o plano aos limites reais"
+            }
+          ],
+          "help": [
+            "Uma divisão de exemplo não muda o que é devido."
+          ],
+          "feedback": {
+            "met": "As obrigações reais devem continuar visíveis ao adaptar o guia.",
+            "not_yet": "Uma divisão de exemplo não muda o que é devido."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Actual essentials above the sample amount?",
+          "scene": "Income: 300; sample essentials share: 50%; actual essentials: 210.",
+          "options": [
+            {
+              "label": "150"
+            },
+            {
+              "label": "60"
+            },
+            {
+              "label": "90"
+            }
+          ],
+          "help": [
+            "Calculate the suggested amount before comparing actual costs."
+          ],
+          "feedback": {
+            "met": "Actual costs exceed the sample share by 60.",
+            "not_yet": "Calculate the suggested amount before comparing actual costs."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Lo esencial real sobre el monto sugerido?",
+          "scene": "Ingreso: 300; parte esencial de ejemplo: 50%; lo esencial real: 210.",
+          "options": [
+            {
+              "label": "150"
+            },
+            {
+              "label": "60"
+            },
+            {
+              "label": "90"
+            }
+          ],
+          "help": [
+            "Calcula el monto sugerido antes de comparar costos reales."
+          ],
+          "feedback": {
+            "met": "Los costos reales superan la parte de ejemplo por 60.",
+            "not_yet": "Calcula el monto sugerido antes de comparar costos reales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Essencial real acima do valor sugerido?",
+          "scene": "Renda: 300; parte essencial de exemplo: 50%; essencial real: 210.",
+          "options": [
+            {
+              "label": "150"
+            },
+            {
+              "label": "60"
+            },
+            {
+              "label": "90"
+            }
+          ],
+          "help": [
+            "Calcule o valor sugerido antes de comparar custos reais."
+          ],
+          "feedback": {
+            "met": "Os custos reais superam a parte de exemplo em 60.",
+            "not_yet": "Calcule o valor sugerido antes de comparar custos reais."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          300,
+          50,
+          210
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 2
+            },
+            {
+              "op": "divide",
+              "args": [
+                {
+                  "op": "multiply",
+                  "args": [
+                    {
+                      "input": 0
+                    },
+                    {
+                      "input": 1
+                    }
+                  ]
+                },
+                {
+                  "constant": 100
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.10",
+      "copy": {
+        "en-US": {
+          "prompt": "What can the plan show?",
+          "scene": "Sample saving does not fit after unavoidable costs; no feasible cut is established.",
+          "options": [
+            {
+              "label": "A guaranteed saving contribution"
+            },
+            {
+              "label": "Income created by the percentage"
+            },
+            {
+              "label": "The current saving constraint"
+            }
+          ],
+          "help": [
+            "Separate a target from a feasible current allocation."
+          ],
+          "feedback": {
+            "met": "A target share does not create the money to fund it.",
+            "not_yet": "Separate a target from a feasible current allocation."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué puede mostrar honestamente el plan?",
+          "scene": "Un ahorro de ejemplo no cabe tras costos inevitables; no hay recorte viable identificado.",
+          "options": [
+            {
+              "label": "Una aportación de ahorro garantizada"
+            },
+            {
+              "label": "Ingreso creado por el porcentaje"
+            },
+            {
+              "label": "El límite actual para ahorrar"
+            }
+          ],
+          "help": [
+            "Separa una meta de una asignación actual viable."
+          ],
+          "feedback": {
+            "met": "Una parte objetivo no crea dinero para financiarla.",
+            "not_yet": "Separa una meta de una asignación actual viable."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que o plano pode mostrar honestamente?",
+          "scene": "Uma poupança de exemplo não cabe após custos inevitáveis; não há corte viável identificado.",
+          "options": [
+            {
+              "label": "Uma contribuição de poupança garantida"
+            },
+            {
+              "label": "Renda criada pela porcentagem"
+            },
+            {
+              "label": "O limite atual para poupar"
+            }
+          ],
+          "help": [
+            "Separe uma meta de uma destinação atual viável."
+          ],
+          "feedback": {
+            "met": "Uma parte desejada não cria dinheiro para financiá-la.",
+            "not_yet": "Separe uma meta de uma destinação atual viável."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Must their feasible budget shares match?",
+          "scene": "Two households have equal income but different required care and housing costs.",
+          "options": [
+            {
+              "label": "No, actual constraints differ"
+            },
+            {
+              "label": "Yes, percentages remove differences"
+            },
+            {
+              "label": "Yes, income determines every cost"
+            }
+          ],
+          "help": [
+            "Check needs and obligations, not income alone."
+          ],
+          "feedback": {
+            "met": "Equal income does not imply equal unavoidable costs.",
+            "not_yet": "Check needs and obligations, not income alone."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Deben coincidir sus partes viables?",
+          "scene": "Dos hogares tienen igual ingreso y distintos costos necesarios de cuidados y vivienda.",
+          "options": [
+            {
+              "label": "No, sus límites reales difieren"
+            },
+            {
+              "label": "Sí, porcentajes eliminan diferencias"
+            },
+            {
+              "label": "Sí, el ingreso determina todo costo"
+            }
+          ],
+          "help": [
+            "Revisa necesidades y obligaciones además del ingreso."
+          ],
+          "feedback": {
+            "met": "Igual ingreso no implica iguales costos inevitables.",
+            "not_yet": "Revisa necesidades y obligaciones además del ingreso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Suas partes viáveis precisam coincidir?",
+          "scene": "Duas casas têm renda igual e custos necessários diferentes de cuidados e moradia.",
+          "options": [
+            {
+              "label": "Não, seus limites reais diferem"
+            },
+            {
+              "label": "Sim, porcentagens eliminam diferenças"
+            },
+            {
+              "label": "Sim, renda determina todo custo"
+            }
+          ],
+          "help": [
+            "Confira necessidades e obrigações além da renda."
+          ],
+          "feedback": {
+            "met": "Renda igual não implica custos inevitáveis iguais.",
+            "not_yet": "Confira necessidades e obrigações além da renda."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.cashflow-budget.10",
+      "copy": {
+        "en-US": {
+          "prompt": "How should it be used?",
+          "scene": "A sample budget underfunds this household’s required accessible transport.",
+          "options": [
+            {
+              "label": "As a guide to adapt"
+            },
+            {
+              "label": "As proof transport must be removed"
+            },
+            {
+              "label": "As a replacement for actual bills"
+            }
+          ],
+          "help": [
+            "Preserve the real constraint while revising the allocation."
+          ],
+          "feedback": {
+            "met": "A useful guide accommodates the stated access requirement.",
+            "not_yet": "Preserve the real constraint while revising the allocation."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cómo debe usarse?",
+          "scene": "Una gráfica genérica deja poco para el transporte accesible necesario en este hogar.",
+          "options": [
+            {
+              "label": "Como guía que adaptar a la necesidad"
+            },
+            {
+              "label": "Como prueba de que debes quitar transporte"
+            },
+            {
+              "label": "Como sustituto de cuentas reales"
+            }
+          ],
+          "help": [
+            "Conserva el límite real al revisar la asignación."
+          ],
+          "feedback": {
+            "met": "Una guía útil considera la necesidad de acceso indicada.",
+            "not_yet": "Conserva el límite real al revisar la asignación."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Como deve ser usado?",
+          "scene": "Um gráfico genérico deixa pouco para o transporte acessível necessário nesta casa.",
+          "options": [
+            {
+              "label": "Como guia a adaptar à necessidade"
+            },
+            {
+              "label": "Como prova de que deve retirar transporte"
+            },
+            {
+              "label": "Como substituto das contas reais"
+            }
+          ],
+          "help": [
+            "Preserve o limite real ao rever a destinação."
+          ],
+          "feedback": {
+            "met": "Um guia útil considera a necessidade de acesso informada.",
+            "not_yet": "Preserve o limite real ao rever a destinação."
+          }
+        }
+      }
+    }
+  ]
+}

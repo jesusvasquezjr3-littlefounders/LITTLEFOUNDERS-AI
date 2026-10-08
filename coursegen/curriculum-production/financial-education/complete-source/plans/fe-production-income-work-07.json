@@ -1,0 +1,824 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-income-work-part-2",
+  "lesson_id": "fe-production-income-work-07",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.income-work.07"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Separate a household owner’s withdrawal from the receipts and costs of a small activity.",
+  "title": {
+    "en-US": "Business withdrawals",
+    "es-MX": "Dinero de actividad y hogar",
+    "pt-BR": "Dinheiro da atividade e da casa"
+  },
+  "new_concepts": [
+    "finance.prod.income-work.07"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Activity money and home money\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Dinero de actividad y hogar\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Dinheiro da atividade e da casa\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.income-work.07",
+      "observable_action": "Separate a household owner’s withdrawal from the receipts and costs of a small activity.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.financial-math.02",
+      "cash.transfer"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A small activity’s receipts are not all available for household withdrawal.",
+    "misconception": "Treat all customer receipts as household earnings or confuse an owner withdrawal with a business cost.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.income-work.07",
+        "context_id": "fe-production-income-work-07-example-01",
+        "supports_from": [],
+        "reasoning": "100 dollars received minus 60 costs leaves 40. Withdrawing 20 moves cash home; it is not another sale."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.income-work.07",
+        "context_id": "fe-production-income-work-07-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Stated activity costs reduce the amount left from receipts."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.income-work.07",
+        "context_id": "fe-production-income-work-07-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The destination is the owner’s household, not a supplier."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.income-work.07",
+        "context_id": "fe-production-income-work-07-practice-01",
+        "supports_from": [],
+        "reasoning": "Receiving customer money does not erase supplier obligations."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.income-work.07",
+        "context_id": "fe-production-income-work-07-practice-02",
+        "supports_from": [],
+        "reasoning": "The source is the owner, not a customer purchase."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.income-work.07",
+        "context_id": "fe-production-income-work-07-practice-03",
+        "supports_from": [],
+        "reasoning": "Moving owner money does not undo customer transactions."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.income-work.07",
+        "context_id": "fe-production-income-work-07-transfer-01",
+        "supports_from": [],
+        "reasoning": "Both costs and the owner withdrawal leave the activity’s cash."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.income-work.07",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A small activity’s receipts are not all available for household withdrawal."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Las entradas de una actividad no quedan todas para retirar al hogar."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Entradas de uma atividade não ficam todas disponíveis para retirar para casa."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Separate the records",
+          "line": "100 dollars received minus 60 costs leaves 40. Withdrawing 20 moves cash home; it is not another sale."
+        },
+        "es-MX": {
+          "prompt": "Separa los registros",
+          "line": "Una actividad recibe 100 pesos y debe 60 en costos indicados. Retirar 20 mueve dinero al hogar; no es otra venta."
+        },
+        "pt-BR": {
+          "prompt": "Separe os registros",
+          "line": "Uma atividade recebe 100 reais e deve 60 em custos informados. Retirar 20 move dinheiro para casa; não é outra venda."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Remainder before owner withdrawal?",
+          "scene": "Customer receipts are 90; required activity costs are 55.",
+          "options": [
+            {
+              "label": "145"
+            },
+            {
+              "label": "90"
+            },
+            {
+              "label": "35"
+            }
+          ],
+          "help": [
+            "Remove the costs before considering household use."
+          ],
+          "feedback": {
+            "met": "Stated activity costs reduce the amount left from receipts.",
+            "not_yet": "Remove the costs before considering household use."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Resto antes de retiro del dueño?",
+          "scene": "Entradas de clientes 90; costos necesarios de actividad 55.",
+          "options": [
+            {
+              "label": "145"
+            },
+            {
+              "label": "90"
+            },
+            {
+              "label": "35"
+            }
+          ],
+          "help": [
+            "Retira costos antes de considerar uso doméstico."
+          ],
+          "feedback": {
+            "met": "Los costos indicados reducen lo restante de las entradas.",
+            "not_yet": "Retira costos antes de considerar uso doméstico."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Resto antes da retirada do dono?",
+          "scene": "Entradas de clientes 90; custos necessários da atividade 55.",
+          "options": [
+            {
+              "label": "145"
+            },
+            {
+              "label": "90"
+            },
+            {
+              "label": "35"
+            }
+          ],
+          "help": [
+            "Retire custos antes de considerar uso doméstico."
+          ],
+          "feedback": {
+            "met": "Os custos informados reduzem o que resta das entradas.",
+            "not_yet": "Retire custos antes de considerar uso doméstico."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          90,
+          55
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.07",
+      "copy": {
+        "en-US": {
+          "prompt": "What is this movement?",
+          "scene": "An owner moves money from the activity’s cash box to the household.",
+          "options": [
+            {
+              "label": "A supplier payment"
+            },
+            {
+              "label": "An owner withdrawal"
+            },
+            {
+              "label": "A new customer sale"
+            }
+          ],
+          "help": [
+            "Identify who receives the activity’s money."
+          ],
+          "feedback": {
+            "met": "The destination is the owner’s household, not a supplier.",
+            "not_yet": "Identify who receives the activity’s money."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué es este movimiento?",
+          "scene": "El dueño mueve dinero de la caja de actividad al hogar.",
+          "options": [
+            {
+              "label": "Un pago a proveedor"
+            },
+            {
+              "label": "Un retiro del dueño"
+            },
+            {
+              "label": "Una nueva venta a cliente"
+            }
+          ],
+          "help": [
+            "Identifica quién recibe dinero de la actividad."
+          ],
+          "feedback": {
+            "met": "El destino es el hogar del dueño, no un proveedor.",
+            "not_yet": "Identifica quién recibe dinero de la actividad."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que é esse movimento?",
+          "scene": "O dono move dinheiro do caixa da atividade para casa.",
+          "options": [
+            {
+              "label": "Um pagamento a fornecedor"
+            },
+            {
+              "label": "Uma retirada do dono"
+            },
+            {
+              "label": "Uma nova venda a cliente"
+            }
+          ],
+          "help": [
+            "Identifique quem recebe dinheiro da atividade."
+          ],
+          "feedback": {
+            "met": "O destino é a casa do dono, não um fornecedor.",
+            "not_yet": "Identifique quem recebe dinheiro da atividade."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Can every receipt be withdrawn safely?",
+          "scene": "A supplier bill remains unpaid after customers pay.",
+          "options": [
+            {
+              "label": "Yes, receipts are all profit"
+            },
+            {
+              "label": "Yes, unpaid means optional"
+            },
+            {
+              "label": "No, protect the unpaid cost"
+            }
+          ],
+          "help": [
+            "Separate revenue from money after required costs."
+          ],
+          "feedback": {
+            "met": "Receiving customer money does not erase supplier obligations.",
+            "not_yet": "Separate revenue from money after required costs."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Puede retirarse toda entrada de forma segura?",
+          "scene": "Una cuenta de proveedor sigue pendiente después de cobrar a clientes.",
+          "options": [
+            {
+              "label": "Sí, toda entrada es ganancia"
+            },
+            {
+              "label": "Sí, pendiente significa opcional"
+            },
+            {
+              "label": "No, protege el costo pendiente"
+            }
+          ],
+          "help": [
+            "Separa ventas y dinero posterior a costos necesarios."
+          ],
+          "feedback": {
+            "met": "Cobrar a clientes no borra obligaciones con proveedores.",
+            "not_yet": "Separa ventas y dinero posterior a costos necesarios."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Pode retirar toda entrada com segurança?",
+          "scene": "Uma conta de fornecedor segue pendente após receber de clientes.",
+          "options": [
+            {
+              "label": "Sim, toda entrada é lucro"
+            },
+            {
+              "label": "Sim, pendente significa opcional"
+            },
+            {
+              "label": "Não, proteja o custo pendente"
+            }
+          ],
+          "help": [
+            "Separe vendas e dinheiro após custos necessários."
+          ],
+          "feedback": {
+            "met": "Receber de clientes não apaga obrigações com fornecedores.",
+            "not_yet": "Separe vendas e dinheiro após custos necessários."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Is this another customer receipt?",
+          "scene": "An owner adds personal savings to the activity’s cash box.",
+          "options": [
+            {
+              "label": "Yes, if cash was used"
+            },
+            {
+              "label": "Yes, every increase is a sale"
+            },
+            {
+              "label": "No, it is owner funding"
+            }
+          ],
+          "help": [
+            "Track the source as well as the amount."
+          ],
+          "feedback": {
+            "met": "The source is the owner, not a customer purchase.",
+            "not_yet": "Track the source as well as the amount."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Es otra entrada de cliente?",
+          "scene": "El dueño añade ahorro personal a la caja de actividad.",
+          "options": [
+            {
+              "label": "Sí, si fue efectivo"
+            },
+            {
+              "label": "Sí, todo aumento es venta"
+            },
+            {
+              "label": "No, es aporte del dueño"
+            }
+          ],
+          "help": [
+            "Registra fuente además de monto."
+          ],
+          "feedback": {
+            "met": "La fuente es el dueño, no una compra de cliente.",
+            "not_yet": "Registra fuente además de monto."
+          }
+        },
+        "pt-BR": {
+          "prompt": "É outra entrada de cliente?",
+          "scene": "O dono põe poupança pessoal no caixa da atividade.",
+          "options": [
+            {
+              "label": "Sim, se foi dinheiro físico"
+            },
+            {
+              "label": "Sim, todo aumento é venda"
+            },
+            {
+              "label": "Não, é aporte do dono"
+            }
+          ],
+          "help": [
+            "Registre fonte além de valor."
+          ],
+          "feedback": {
+            "met": "A fonte é o dono, não uma compra de cliente.",
+            "not_yet": "Registre fonte além de valor."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Does withdrawing cash reduce recorded sales?",
+          "scene": "A withdrawal reduces cash available inside the activity.",
+          "options": [
+            {
+              "label": "Sales and withdrawals are separate records"
+            },
+            {
+              "label": "It is a customer refund"
+            },
+            {
+              "label": "It cancels a sale"
+            }
+          ],
+          "help": [
+            "Separate cash location from the reason it was earned."
+          ],
+          "feedback": {
+            "met": "Moving owner money does not undo customer transactions.",
+            "not_yet": "Separate cash location from the reason it was earned."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿El retiro reduce por sí mismo ventas realizadas?",
+          "scene": "Un retiro reduce efectivo disponible dentro de la actividad.",
+          "options": [
+            {
+              "label": "No, ventas y retiros son registros distintos"
+            },
+            {
+              "label": "Sí, es devolución a cliente"
+            },
+            {
+              "label": "Sí, cancela una venta"
+            }
+          ],
+          "help": [
+            "Separa ubicación del efectivo y motivo de ganancia."
+          ],
+          "feedback": {
+            "met": "Mover dinero del dueño no deshace transacciones de clientes.",
+            "not_yet": "Separa ubicación del efectivo y motivo de ganancia."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A retirada reduz por si as vendas já feitas?",
+          "scene": "Uma retirada reduz dinheiro disponível dentro da atividade.",
+          "options": [
+            {
+              "label": "Não, vendas e retiradas são registros distintos"
+            },
+            {
+              "label": "Sim, é reembolso a cliente"
+            },
+            {
+              "label": "Sim, cancela uma venda"
+            }
+          ],
+          "help": [
+            "Separe localização do dinheiro e motivo do ganho."
+          ],
+          "feedback": {
+            "met": "Mover dinheiro do dono não desfaz transações de clientes.",
+            "not_yet": "Separe localização do dinheiro e motivo do ganho."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.income-work.07",
+      "copy": {
+        "en-US": {
+          "prompt": "How much of these receipts remains?",
+          "scene": "A repair activity receives 200, pays required costs of 130, and transfers 40 home.",
+          "options": [
+            {
+              "label": "70"
+            },
+            {
+              "label": "110"
+            },
+            {
+              "label": "30"
+            }
+          ],
+          "help": [
+            "Subtract each outgoing movement once."
+          ],
+          "feedback": {
+            "met": "Both costs and the owner withdrawal leave the activity’s cash.",
+            "not_yet": "Subtract each outgoing movement once."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto queda de estas entradas?",
+          "scene": "Una actividad de reparación recibe 200, paga costos necesarios de 130 y mueve 40 al hogar.",
+          "options": [
+            {
+              "label": "70"
+            },
+            {
+              "label": "110"
+            },
+            {
+              "label": "30"
+            }
+          ],
+          "help": [
+            "Resta cada movimiento de salida una vez."
+          ],
+          "feedback": {
+            "met": "Costos y retiro del dueño salen del efectivo de actividad.",
+            "not_yet": "Resta cada movimiento de salida una vez."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto resta destas entradas?",
+          "scene": "Uma atividade de conserto recebe 200, paga custos necessários de 130 e move 40 para casa.",
+          "options": [
+            {
+              "label": "70"
+            },
+            {
+              "label": "110"
+            },
+            {
+              "label": "30"
+            }
+          ],
+          "help": [
+            "Subtraia cada movimento de saída uma vez."
+          ],
+          "feedback": {
+            "met": "Custos e retirada do dono saem do caixa da atividade.",
+            "not_yet": "Subtraia cada movimento de saída uma vez."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          200,
+          130,
+          40
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

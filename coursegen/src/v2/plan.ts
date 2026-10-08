@@ -16,6 +16,8 @@ import { readdirSync, readFileSync } from 'node:fs';
 import path from 'node:path';
 import { z } from 'zod';
 import { marketScenarioSchema } from '../catalog/schema.js';
+import { instructionalContractSchema } from './instructionalContract.js';
+import { numericProofSchema } from './numericEvidence.js';
 import { hasNeutralPayload, V2_AGE_BANDS, V2_ID, V2_SEGMENT_TYPES, type V2SegmentType } from './contract.js';
 
 const id = z.string().regex(V2_ID);
@@ -50,7 +52,7 @@ const segmentCopySchema = z
   .object({
     prompt: z.string().trim().min(1).max(500),
     help: z.array(z.string().trim().min(1).max(160)).min(1).max(2).optional(),
-    feedback: z.object({ met: feedbackLine.optional(), not_yet: feedbackLine.optional() }).strict().optional(),
+    feedback: z.object({ met: feedbackLine.optional(), not_yet: feedbackLine.optional(), choice_hints: z.record(id, feedbackLine).optional() }).strict().optional(),
   })
   .catchall(z.unknown());
 
@@ -72,6 +74,8 @@ export const v2PlanSegmentSchema = z
      * keys are written from its own entry; it replaces `rubric`.
      */
     rubric_by_locale: localized(z.record(z.string(), z.unknown())).optional(),
+    /** Private arithmetic derivation linked to visible inputs, never emitted to learners. */
+    numeric_proof: numericProofSchema.optional(),
     /** Appendix C 1.1 (GAP-FIX-R1): practice or transfer item, and the KC it evidences. */
     item_role: z.enum(['practice', 'transfer']).optional(),
     item_phase: z.enum(['pre', 'post']).optional(),
@@ -92,6 +96,8 @@ export const v2PlanSegmentSchema = z
 export const v2LessonPlanSchema = z
   .object({
     plan_version: z.literal(1),
+    /** Private authoring evidence shared by Forge, Codex and Claude; never emitted to learners. */
+    instruction: instructionalContractSchema.optional(),
     course_id: id,
     pathway_id: id,
     chapter_id: id,

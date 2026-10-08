@@ -1,0 +1,468 @@
+{
+  "version": 1,
+  "status": "scope-design-only",
+  "publication_intent": "calibration-only",
+  "generatedLessons": 0,
+  "course": "financial-education",
+  "audience": "Adult beginners; arithmetic support is taught before use. Child and teen pathways need separate adaptation.",
+  "purpose": "Separate production curriculum planning. The existing 36 lessons remain calibration material and are not counted as production delivery.",
+  "countPolicy": "Ranges are planning estimates, not generation quotas. Replace them with distinct measurable lesson objectives before authoring; never pad by reskinning numbers or repeating definitions.",
+  "provisionalTotalRange": [
+    280,
+    418
+  ],
+  "boundaries": [
+    "General introductory personal finance, not personalized advice",
+    "Teach product families and decision criteria, not product rankings or trading tactics",
+    "Explain taxes, protections and rights conceptually; verify every jurisdiction-specific fact with current official sources",
+    "Specialist investing, business accounting, professional tax preparation and estate drafting belong in separate courses"
+  ],
+  "sources": [
+    {
+      "id": "oecd",
+      "url": "https://www.oecd.org/content/dam/oecd/en/publications/reports/2022/01/financial-competence-framework-for-adults-in-the-european-union_614b8b97/510f133c-en.pdf",
+      "use": "Coverage cross-check across the four adult personal-finance areas; not a copied teaching sequence or imported EU law."
+    },
+    {
+      "id": "cfpb",
+      "url": "https://www.consumerfinance.gov/consumer-tools/educator-tools/your-money-your-goals/toolkit/",
+      "use": "Practical decision and record-keeping task cross-check; US legal procedures are not transferable to other markets."
+    },
+    {
+      "id": "condusef",
+      "url": "https://www.condusef.gob.mx/?idc=228&p=contenido",
+      "use": "Mexican topic coverage and starting point for local source verification."
+    },
+    {
+      "id": "bcb",
+      "url": "https://www.bcb.gov.br/cidadaniafinanceira/indexcidadaniafinanceira",
+      "use": "Brazilian financial citizenship and local-source starting point; current rules require specific primary documents."
+    }
+  ],
+  "designStatus": "Original proposed decomposition informed by source coverage. Not an official framework, validated pedagogy, approved course or authored lesson graph.",
+  "domains": [
+    {
+      "id": "usable-money",
+      "title": "Money available for a decision",
+      "prerequisites": [],
+      "provisionalLessonRange": [
+        8,
+        12
+      ],
+      "outcomes": [
+        "Track received and paid amounts",
+        "Separate promised money from available money",
+        "Protect existing commitments before another purchase"
+      ]
+    },
+    {
+      "id": "financial-math",
+      "title": "Arithmetic for financial decisions",
+      "prerequisites": [
+        "usable-money"
+      ],
+      "provisionalLessonRange": [
+        14,
+        20
+      ],
+      "outcomes": [
+        "Compare equal units and totals",
+        "Calculate shares, percentage changes and rates",
+        "Read tables and distinguish stocks from flows"
+      ]
+    },
+    {
+      "id": "goals-tradeoffs",
+      "title": "Goals and trade-offs",
+      "prerequisites": [
+        "usable-money"
+      ],
+      "provisionalLessonRange": [
+        8,
+        12
+      ],
+      "outcomes": [
+        "Turn a wish into an amount and date",
+        "Identify what a choice leaves unfunded",
+        "Revise a goal when constraints change"
+      ]
+    },
+    {
+      "id": "income-work",
+      "title": "Income and work",
+      "prerequisites": [
+        "usable-money",
+        "financial-math"
+      ],
+      "provisionalLessonRange": [
+        10,
+        16
+      ],
+      "outcomes": [
+        "Plan with variable payment amounts and dates",
+        "Distinguish gross, deductions and usable pay",
+        "Compare work offers using costs, time and benefits"
+      ]
+    },
+    {
+      "id": "spending-patterns",
+      "title": "Spending patterns and habits",
+      "prerequisites": [
+        "usable-money",
+        "goals-tradeoffs"
+      ],
+      "provisionalLessonRange": [
+        10,
+        14
+      ],
+      "outcomes": [
+        "Find recurring costs in a spending record",
+        "Distinguish a useful purchase from a persuasive offer",
+        "Design a small repeatable change without assuming spare income"
+      ]
+    },
+    {
+      "id": "cashflow-budget",
+      "title": "Budgets and cash-flow timing",
+      "prerequisites": [
+        "income-work",
+        "spending-patterns"
+      ],
+      "provisionalLessonRange": [
+        16,
+        22
+      ],
+      "outcomes": [
+        "Build a feasible dated plan",
+        "Prepare for periodic expenses",
+        "Revise allocations after a shortfall or surprise"
+      ]
+    },
+    {
+      "id": "accounts-records",
+      "title": "Accounts, records and access",
+      "prerequisites": [
+        "usable-money",
+        "financial-math"
+      ],
+      "provisionalLessonRange": [
+        10,
+        16
+      ],
+      "outcomes": [
+        "Compare account conditions for actual use",
+        "Reconcile recorded movements and balances",
+        "Distinguish available access from advertised balance"
+      ]
+    },
+    {
+      "id": "payments-digital",
+      "title": "Payments and digital access",
+      "prerequisites": [
+        "accounts-records"
+      ],
+      "provisionalLessonRange": [
+        10,
+        16
+      ],
+      "outcomes": [
+        "Choose a payment method for timing, cost and reversibility",
+        "Check recipient details and payment status",
+        "Protect credentials and recover access through verified channels"
+      ]
+    },
+    {
+      "id": "purchase-decisions",
+      "title": "Prices, contracts and purchases",
+      "prerequisites": [
+        "financial-math",
+        "cashflow-budget"
+      ],
+      "provisionalLessonRange": [
+        12,
+        18
+      ],
+      "outcomes": [
+        "Compare total cost rather than headline price",
+        "Evaluate discounts, subscriptions and installment offers",
+        "Clarify terms before accepting a commitment"
+      ]
+    },
+    {
+      "id": "saving-resilience",
+      "title": "Saving and financial resilience",
+      "prerequisites": [
+        "cashflow-budget",
+        "accounts-records",
+        "goals-tradeoffs"
+      ],
+      "provisionalLessonRange": [
+        12,
+        18
+      ],
+      "outcomes": [
+        "Separate planned spending from emergency reserves",
+        "Match saving access to a deadline",
+        "Adapt contributions when income changes"
+      ]
+    },
+    {
+      "id": "time-inflation",
+      "title": "Money through time",
+      "prerequisites": [
+        "financial-math",
+        "saving-resilience"
+      ],
+      "provisionalLessonRange": [
+        12,
+        18
+      ],
+      "outcomes": [
+        "Compare purchasing power across dates",
+        "Model simple and compound growth with explicit assumptions",
+        "Distinguish nominal results, real results and uncertainty"
+      ]
+    },
+    {
+      "id": "credit-mechanics",
+      "title": "How borrowing works",
+      "prerequisites": [
+        "cashflow-budget",
+        "financial-math"
+      ],
+      "provisionalLessonRange": [
+        14,
+        20
+      ],
+      "outcomes": [
+        "Trace principal, interest, fees and payments",
+        "Compare repayment schedules on the same basis",
+        "Test affordability without treating approval as advice"
+      ]
+    },
+    {
+      "id": "credit-products",
+      "title": "Using credit products",
+      "prerequisites": [
+        "credit-mechanics",
+        "purchase-decisions"
+      ],
+      "provisionalLessonRange": [
+        12,
+        18
+      ],
+      "outcomes": [
+        "Read a revolving-credit statement",
+        "Explain minimum payments and remaining debt",
+        "Compare secured, unsecured and installment commitments"
+      ]
+    },
+    {
+      "id": "debt-recovery",
+      "title": "Debt problems and recovery",
+      "prerequisites": [
+        "credit-products",
+        "cashflow-budget"
+      ],
+      "provisionalLessonRange": [
+        10,
+        16
+      ],
+      "outcomes": [
+        "Build a complete debt inventory",
+        "Compare repayment approaches under explicit constraints",
+        "Identify reliable help and avoid rescue scams"
+      ]
+    },
+    {
+      "id": "credit-records",
+      "title": "Credit records and borrowing decisions",
+      "prerequisites": [
+        "credit-mechanics",
+        "accounts-records"
+      ],
+      "provisionalLessonRange": [
+        8,
+        12
+      ],
+      "outcomes": [
+        "Distinguish a credit record from income or wealth",
+        "Identify errors in a sample record",
+        "Find official local procedures without assuming universal score rules"
+      ]
+    },
+    {
+      "id": "insurance-risk",
+      "title": "Risk, insurance and protection",
+      "prerequisites": [
+        "financial-math",
+        "saving-resilience",
+        "purchase-decisions"
+      ],
+      "provisionalLessonRange": [
+        14,
+        20
+      ],
+      "outcomes": [
+        "Compare retaining and transferring a risk",
+        "Read coverage, exclusions, deductibles and limits",
+        "Compare premiums and possible out-of-pocket costs"
+      ]
+    },
+    {
+      "id": "investing-foundations",
+      "title": "Investing foundations",
+      "prerequisites": [
+        "time-inflation",
+        "saving-resilience"
+      ],
+      "provisionalLessonRange": [
+        16,
+        24
+      ],
+      "outcomes": [
+        "Match risk and access to a goal horizon",
+        "Distinguish ownership, lending and pooled investments",
+        "Explain diversification without promising protection from every loss"
+      ]
+    },
+    {
+      "id": "investment-comparison",
+      "title": "Investment information and costs",
+      "prerequisites": [
+        "investing-foundations",
+        "purchase-decisions"
+      ],
+      "provisionalLessonRange": [
+        12,
+        18
+      ],
+      "outcomes": [
+        "Compare costs and uncertain outcomes using equal assumptions",
+        "Read a simplified product disclosure",
+        "Distinguish evidence, forecasts and guaranteed-return claims"
+      ]
+    },
+    {
+      "id": "tax-public-systems",
+      "title": "Taxes and public financial systems",
+      "prerequisites": [
+        "income-work",
+        "financial-math",
+        "accounts-records"
+      ],
+      "provisionalLessonRange": [
+        10,
+        16
+      ],
+      "outcomes": [
+        "Distinguish withholding, tax owed and refunds in a stated model",
+        "Keep records needed for an official process",
+        "Locate current local eligibility and filing information"
+      ]
+    },
+    {
+      "id": "retirement-future",
+      "title": "Retirement and longer-term needs",
+      "prerequisites": [
+        "time-inflation",
+        "investing-foundations",
+        "tax-public-systems"
+      ],
+      "provisionalLessonRange": [
+        12,
+        18
+      ],
+      "outcomes": [
+        "Model changing long-term needs and uncertain contributions",
+        "Distinguish sources of retirement income",
+        "Compare access restrictions and costs without recommending a product"
+      ]
+    },
+    {
+      "id": "housing-transport",
+      "title": "Housing and transport decisions",
+      "prerequisites": [
+        "purchase-decisions",
+        "credit-products",
+        "insurance-risk"
+      ],
+      "provisionalLessonRange": [
+        14,
+        20
+      ],
+      "outcomes": [
+        "Compare ongoing and upfront housing costs",
+        "Assess total transport ownership costs",
+        "Reassess rent, purchase or financing when circumstances change"
+      ]
+    },
+    {
+      "id": "shared-finances",
+      "title": "Shared finances and life changes",
+      "prerequisites": [
+        "cashflow-budget",
+        "insurance-risk",
+        "accounts-records"
+      ],
+      "provisionalLessonRange": [
+        10,
+        16
+      ],
+      "outcomes": [
+        "Agree on shared obligations while preserving informed consent",
+        "Plan around caregiving, separation or income interruption",
+        "Identify documents and professional help needed after major changes"
+      ]
+    },
+    {
+      "id": "financial-landscape",
+      "title": "Providers, rights and cross-border money",
+      "prerequisites": [
+        "payments-digital",
+        "purchase-decisions",
+        "credit-records"
+      ],
+      "provisionalLessonRange": [
+        12,
+        18
+      ],
+      "outcomes": [
+        "Verify a provider and the scope of its protections",
+        "Compare remittance cost and exchange-rate effects",
+        "Prepare a supported complaint and recognize misleading sustainability claims"
+      ]
+    },
+    {
+      "id": "integrated-decisions",
+      "title": "Integrated financial decisions",
+      "prerequisites": [
+        "debt-recovery",
+        "investment-comparison",
+        "retirement-future",
+        "housing-transport",
+        "shared-finances",
+        "financial-landscape"
+      ],
+      "provisionalLessonRange": [
+        14,
+        20
+      ],
+      "outcomes": [
+        "Revise a whole-household plan after multiple changes",
+        "Explain trade-offs across saving, debt and protection",
+        "Recognize uncertainty and decide when qualified local help is necessary"
+      ]
+    }
+  ],
+  "preGenerationRequirements": [
+    "Owner feedback from calibration must be translated into shared authoring rules and regression evidence",
+    "Specify each lesson objective, misconception, prerequisite and independent transfer task",
+    "Map narrow lesson skills to the shared KC graph; this domain graph is not a substitute",
+    "Plan delayed retrieval across batches before generating the first batch",
+    "Write per-market source records and fictional-example assumptions",
+    "Select engine interactions based on the relationship being taught",
+    "Run schema, math, localization, duplication and actual-player checks per batch and course-wide",
+    "Keep generation local and provider-free unless separately authorized; no production activation from this planning artifact"
+  ]
+}

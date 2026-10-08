@@ -1,0 +1,814 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-usable-money",
+  "lesson_id": "fe-production-usable-money-01",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.cash.received"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Distinguish money already received from money someone has promised.",
+  "title": {
+    "en-US": "Received or still expected?",
+    "es-MX": "¿Recibido o todavía pendiente?",
+    "pt-BR": "Recebido ou ainda esperado?"
+  },
+  "new_concepts": [
+    "finance.cash.received"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Received or still expected?\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"¿Recibido o todavía pendiente?\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Recebido ou ainda esperado?\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "cash.received",
+      "observable_action": "Distinguish money already received from money someone has promised.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "cash.direction"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A promised payment can help you plan. It is not money you can spend yet.",
+    "misconception": "Someone has agreed to pay, so that money is already available to spend.",
+    "numeracy_support": "No addition or percentage is required. Keep the received and promised amounts in visibly separate statements.",
+    "evidence": [
+      {
+        "segment_id": "example-promise",
+        "skill_id": "cash.received",
+        "context_id": "production-money-1-example-promise",
+        "supports_from": [],
+        "reasoning": "Ana finishes a repair. Her customer promises payment tomorrow; Ana has not received that money today."
+      },
+      {
+        "segment_id": "example-received",
+        "skill_id": "cash.received",
+        "context_id": "production-money-1-example-received",
+        "supports_from": [],
+        "reasoning": "The customer pays Ana in cash. Now she has that money and can include it in today’s amount."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "cash.received",
+        "context_id": "production-money-1-guided-01",
+        "supports_from": [
+          "example-received"
+        ],
+        "reasoning": "A promise does not put money in your hands today."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "cash.received",
+        "context_id": "production-money-1-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "This payment is already in your hands."
+      },
+      {
+        "segment_id": "example-account",
+        "skill_id": "cash.received",
+        "context_id": "production-money-1-example-account",
+        "supports_from": [],
+        "reasoning": "Money can arrive as cash or in an account. Count it when received and available, not when announced."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "cash.received",
+        "context_id": "production-money-1-practice-01",
+        "supports_from": [],
+        "reasoning": "The payment is still expected, even with an agreed price."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "cash.received",
+        "context_id": "production-money-1-practice-02",
+        "supports_from": [],
+        "reasoning": "Available money in the account has already arrived."
+      },
+      {
+        "segment_id": "example-pending",
+        "skill_id": "cash.received",
+        "context_id": "production-money-1-example-pending",
+        "supports_from": [],
+        "reasoning": "An approved refund can still be unpaid. Wait for the money to arrive before counting it as available."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "cash.received",
+        "context_id": "production-money-1-practice-03",
+        "supports_from": [],
+        "reasoning": "Approval is not the same as receiving the refund."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "cash.received",
+        "context_id": "production-money-1-transfer-01",
+        "supports_from": [],
+        "reasoning": "You spotted a timing gap before relying on future money."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "cash.received",
+      "fresh_context": "Use the skill in the scheduled usable-money review and later financial decisions; this draft does not yet contain those review exercises."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A promised payment can help you plan. It is not money you can spend yet."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un pago prometido ayuda a planear. Todavía no es dinero que puedas gastar."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Um pagamento prometido ajuda a planejar. Ainda não é dinheiro que você pode gastar."
+        }
+      }
+    },
+    {
+      "id": "example-promise",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A customer will pay later",
+          "line": "Ana finishes a repair. Her customer promises payment tomorrow; Ana has not received that money today."
+        },
+        "es-MX": {
+          "prompt": "Un cliente pagará después",
+          "line": "Ana termina una reparación. Su cliente promete pagar mañana; Ana todavía no ha recibido ese dinero."
+        },
+        "pt-BR": {
+          "prompt": "Um cliente pagará depois",
+          "line": "Ana termina um conserto. O cliente promete pagar amanhã; Ana ainda não recebeu esse dinheiro."
+        }
+      }
+    },
+    {
+      "id": "example-received",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Now the payment arrives",
+          "line": "The customer pays Ana in cash. Now she has that money and can include it in today’s amount."
+        },
+        "es-MX": {
+          "prompt": "Ahora llega el pago",
+          "line": "El cliente paga a Ana en efectivo. Ahora tiene ese dinero y puede incluirlo en el monto de hoy."
+        },
+        "pt-BR": {
+          "prompt": "Agora o pagamento chega",
+          "line": "O cliente paga Ana em dinheiro. Agora ela tem esse valor e pode incluí-lo no total de hoje."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.received",
+      "copy": {
+        "en-US": {
+          "prompt": "Is this money already received or still expected?",
+          "scene": "A customer says they will pay you Friday.",
+          "options": [
+            {
+              "label": "Already received"
+            },
+            {
+              "label": "Still expected"
+            }
+          ],
+          "help": [
+            "Has the payment actually arrived?"
+          ],
+          "feedback": {
+            "met": "A promise does not put money in your hands today.",
+            "not_yet": "Has the payment actually arrived?"
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Este dinero ya llegó o todavía lo esperas?",
+          "scene": "Un cliente dice que te pagará el viernes.",
+          "options": [
+            {
+              "label": "Ya recibido"
+            },
+            {
+              "label": "Todavía esperado"
+            }
+          ],
+          "help": [
+            "¿El pago ya llegó?"
+          ],
+          "feedback": {
+            "met": "Una promesa no pone dinero en tus manos hoy.",
+            "not_yet": "¿El pago ya llegó?"
+          }
+        },
+        "pt-BR": {
+          "prompt": "Esse dinheiro já chegou ou ainda é esperado?",
+          "scene": "Um cliente diz que pagará você na sexta.",
+          "options": [
+            {
+              "label": "Já recebido"
+            },
+            {
+              "label": "Ainda esperado"
+            }
+          ],
+          "help": [
+            "O pagamento já chegou?"
+          ],
+          "feedback": {
+            "met": "Uma promessa não coloca dinheiro nas suas mãos hoje.",
+            "not_yet": "O pagamento já chegou?"
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.received",
+      "copy": {
+        "en-US": {
+          "prompt": "Is this money already received or still expected?",
+          "scene": "You have just received cash for completed work.",
+          "options": [
+            {
+              "label": "Already received"
+            },
+            {
+              "label": "Still expected"
+            }
+          ],
+          "help": [
+            "Notice whether this is a promise or a completed payment."
+          ],
+          "feedback": {
+            "met": "This payment is already in your hands.",
+            "not_yet": "Notice whether this is a promise or a completed payment."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Este dinero ya llegó o todavía lo esperas?",
+          "scene": "Acabas de recibir efectivo por un trabajo terminado.",
+          "options": [
+            {
+              "label": "Ya recibido"
+            },
+            {
+              "label": "Todavía esperado"
+            }
+          ],
+          "help": [
+            "Revisa si es una promesa o un pago realizado."
+          ],
+          "feedback": {
+            "met": "Este pago ya está en tus manos.",
+            "not_yet": "Revisa si es una promesa o un pago realizado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Esse dinheiro já chegou ou ainda é esperado?",
+          "scene": "Você acabou de receber dinheiro por um trabalho concluído.",
+          "options": [
+            {
+              "label": "Já recebido"
+            },
+            {
+              "label": "Ainda esperado"
+            }
+          ],
+          "help": [
+            "Confira se é promessa ou pagamento realizado."
+          ],
+          "feedback": {
+            "met": "Esse pagamento já está nas suas mãos.",
+            "not_yet": "Confira se é promessa ou pagamento realizado."
+          }
+        }
+      }
+    },
+    {
+      "id": "example-account",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Check what is available",
+          "line": "Money can arrive as cash or in an account. Count it when received and available, not when announced."
+        },
+        "es-MX": {
+          "prompt": "Revisa lo disponible",
+          "line": "El dinero puede llegar en efectivo o a una cuenta. Cuéntalo cuando esté recibido y disponible, no cuando lo anuncien."
+        },
+        "pt-BR": {
+          "prompt": "Confira o disponível",
+          "line": "O dinheiro pode chegar em espécie ou à conta. Conte quando estiver recebido e disponível, não quando for anunciado."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.received",
+      "copy": {
+        "en-US": {
+          "prompt": "Is this money already received or still expected?",
+          "scene": "A buyer promises payment after collecting your used table.",
+          "options": [
+            {
+              "label": "Already received"
+            },
+            {
+              "label": "Still expected"
+            }
+          ],
+          "help": [
+            "An agreed price is not a received payment."
+          ],
+          "feedback": {
+            "met": "The payment is still expected, even with an agreed price.",
+            "not_yet": "An agreed price is not a received payment."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Este dinero ya llegó o todavía lo esperas?",
+          "scene": "Alguien promete pagarte después de recoger tu mesa usada.",
+          "options": [
+            {
+              "label": "Ya recibido"
+            },
+            {
+              "label": "Todavía esperado"
+            }
+          ],
+          "help": [
+            "Un precio acordado no es un pago recibido."
+          ],
+          "feedback": {
+            "met": "El pago sigue pendiente, aunque hayan acordado el precio.",
+            "not_yet": "Un precio acordado no es un pago recibido."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Esse dinheiro já chegou ou ainda é esperado?",
+          "scene": "Alguém promete pagar depois de buscar sua mesa usada.",
+          "options": [
+            {
+              "label": "Já recebido"
+            },
+            {
+              "label": "Ainda esperado"
+            }
+          ],
+          "help": [
+            "Preço combinado não é pagamento recebido."
+          ],
+          "feedback": {
+            "met": "O pagamento continua pendente, mesmo com o preço combinado.",
+            "not_yet": "Preço combinado não é pagamento recebido."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.received",
+      "copy": {
+        "en-US": {
+          "prompt": "Is this money already received or still expected?",
+          "scene": "Your completed payment is available in your account.",
+          "options": [
+            {
+              "label": "Already received"
+            },
+            {
+              "label": "Still expected"
+            }
+          ],
+          "help": [
+            "Check whether the money is available, not merely announced."
+          ],
+          "feedback": {
+            "met": "Available money in the account has already arrived.",
+            "not_yet": "Check whether the money is available, not merely announced."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Este dinero ya llegó o todavía lo esperas?",
+          "scene": "El pago recibido ya está disponible en tu cuenta.",
+          "options": [
+            {
+              "label": "Ya recibido"
+            },
+            {
+              "label": "Todavía esperado"
+            }
+          ],
+          "help": [
+            "Revisa si el dinero está disponible, no solo anunciado."
+          ],
+          "feedback": {
+            "met": "El dinero disponible en la cuenta ya llegó.",
+            "not_yet": "Revisa si el dinero está disponible, no solo anunciado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Esse dinheiro já chegou ou ainda é esperado?",
+          "scene": "O pagamento recebido já está disponível na sua conta.",
+          "options": [
+            {
+              "label": "Já recebido"
+            },
+            {
+              "label": "Ainda esperado"
+            }
+          ],
+          "help": [
+            "Confira se o dinheiro está disponível, não apenas anunciado."
+          ],
+          "feedback": {
+            "met": "O dinheiro disponível na conta já chegou.",
+            "not_yet": "Confira se o dinheiro está disponível, não apenas anunciado."
+          }
+        }
+      }
+    },
+    {
+      "id": "example-pending",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Pending is still pending",
+          "line": "An approved refund can still be unpaid. Wait for the money to arrive before counting it as available."
+        },
+        "es-MX": {
+          "prompt": "Pendiente sigue siendo pendiente",
+          "line": "Una devolución aprobada puede seguir sin pagarse. Espera a recibir el dinero antes de contarlo como disponible."
+        },
+        "pt-BR": {
+          "prompt": "Pendente continua pendente",
+          "line": "Um reembolso aprovado pode continuar sem pagamento. Espere o dinheiro chegar antes de contá-lo como disponível."
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.received",
+      "copy": {
+        "en-US": {
+          "prompt": "Is this money already received or still expected?",
+          "scene": "A shop approves your refund; payment is still pending.",
+          "options": [
+            {
+              "label": "Already received"
+            },
+            {
+              "label": "Still expected"
+            }
+          ],
+          "help": [
+            "Look for the completed payment."
+          ],
+          "feedback": {
+            "met": "Approval is not the same as receiving the refund.",
+            "not_yet": "Look for the completed payment."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Este dinero ya llegó o todavía lo esperas?",
+          "scene": "Una tienda aprueba tu devolución; el pago sigue pendiente.",
+          "options": [
+            {
+              "label": "Ya recibido"
+            },
+            {
+              "label": "Todavía esperado"
+            }
+          ],
+          "help": [
+            "Busca si el pago ya se realizó."
+          ],
+          "feedback": {
+            "met": "La aprobación no equivale a recibir el dinero.",
+            "not_yet": "Busca si el pago ya se realizó."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Esse dinheiro já chegou ou ainda é esperado?",
+          "scene": "Uma loja aprova seu reembolso; o pagamento continua pendente.",
+          "options": [
+            {
+              "label": "Já recebido"
+            },
+            {
+              "label": "Ainda esperado"
+            }
+          ],
+          "help": [
+            "Confira se o pagamento foi realizado."
+          ],
+          "feedback": {
+            "met": "A aprovação não é o mesmo que receber o dinheiro.",
+            "not_yet": "Confira se o pagamento foi realizado."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "transfer",
+      "knowledge_component_id": "finance.cash.received",
+      "copy": {
+        "en-US": {
+          "prompt": "Can tomorrow’s payment cover today’s bill now?",
+          "scene": "Your bill is due today; your promised payment arrives tomorrow.",
+          "options": [
+            {
+              "label": "Yes, it was promised"
+            },
+            {
+              "label": "No, it has not arrived"
+            }
+          ],
+          "help": [
+            "Compare when the bill is due with when payment arrives."
+          ],
+          "feedback": {
+            "met": "You spotted a timing gap before relying on future money.",
+            "not_yet": "Compare when the bill is due with when payment arrives."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿El pago de mañana puede cubrir el recibo ahora?",
+          "scene": "Tu recibo vence hoy; el pago prometido llegará mañana.",
+          "options": [
+            {
+              "label": "Sí, ya lo prometieron"
+            },
+            {
+              "label": "No, todavía no llega"
+            }
+          ],
+          "help": [
+            "Compara cuándo vence el recibo y cuándo llega el pago."
+          ],
+          "feedback": {
+            "met": "Detectaste que las fechas no coinciden antes de contar con ese dinero.",
+            "not_yet": "Compara cuándo vence el recibo y cuándo llega el pago."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O pagamento de amanhã pode cobrir a conta agora?",
+          "scene": "Sua conta vence hoje; o pagamento prometido chega amanhã.",
+          "options": [
+            {
+              "label": "Sim, já foi prometido"
+            },
+            {
+              "label": "Não, ainda não chegou"
+            }
+          ],
+          "help": [
+            "Compare quando a conta vence e quando o pagamento chega."
+          ],
+          "feedback": {
+            "met": "Você percebeu a diferença entre as datas antes de contar com esse dinheiro.",
+            "not_yet": "Compare quando a conta vence e quando o pagamento chega."
+          }
+        }
+      },
+      "item_phase": "post"
+    }
+  ]
+}

@@ -1,0 +1,707 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-credit-mechanics-part-3",
+  "lesson_id": "fe-production-credit-mechanics-11",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.credit-mechanics.11"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Compare periodic rates only after aligning periods and compounding assumptions.",
+  "title": {
+    "en-US": "Comparable rates",
+    "es-MX": "Compara tasas equivalentes",
+    "pt-BR": "Compare taxas equivalentes"
+  },
+  "new_concepts": [
+    "finance.prod.credit-mechanics.11"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Put rates on equal terms\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Compara tasas equivalentes\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Compare taxas equivalentes\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.credit-mechanics.11",
+      "observable_action": "Compare periodic rates only after aligning periods and compounding assumptions.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.credit-mechanics.03",
+      "time.compound"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A smaller percentage can describe a shorter period and still cost more.",
+    "misconception": "Percentages with different periods or compounding rules can be ranked by their printed numbers alone.",
+    "numeracy_support": "Every quantity and assumption needed to decide is visible in the current scenario. Examples explain the relationship before independent application.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.credit-mechanics.11",
+        "context_id": "fe-production-credit-mechanics-11-example-01",
+        "supports_from": [],
+        "reasoning": "On unchanged principal, 1% monthly for three months totals 3% without compounding. That exceeds 2% for the whole quarter."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.credit-mechanics.11",
+        "context_id": "fe-production-credit-mechanics-11-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The periods and assumptions match, so compare their quarterly totals."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.credit-mechanics.11",
+        "context_id": "fe-production-credit-mechanics-11-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Different periods prevent direct comparison of the printed percentages."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.credit-mechanics.11",
+        "context_id": "fe-production-credit-mechanics-11-practice-03",
+        "supports_from": [],
+        "reasoning": "An annual label alone does not align compounding treatment."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.credit-mechanics.11",
+        "context_id": "fe-production-credit-mechanics-11-practice-04",
+        "supports_from": [],
+        "reasoning": "Comparable effective annual figures allow this stated interest comparison."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.credit-mechanics.11",
+        "context_id": "fe-production-credit-mechanics-11-practice-05",
+        "supports_from": [],
+        "reasoning": "Compounding changes the base after each interest period."
+      },
+      {
+        "segment_id": "transfer-06",
+        "skill_id": "prod.credit-mechanics.11",
+        "context_id": "fe-production-credit-mechanics-11-transfer-06",
+        "supports_from": [],
+        "reasoning": "The quotes use different periods and may use different assumptions."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.credit-mechanics.11",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A smaller percentage can describe a shorter period and still cost more."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un porcentaje menor puede corresponder a un periodo más corto y costar más."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Um percentual menor pode corresponder a um período mais curto e custar mais."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Follow the evidence",
+          "line": "On unchanged principal, 1% monthly for three months totals 3% without compounding. That exceeds 2% for the whole quarter."
+        },
+        "es-MX": {
+          "prompt": "Sigue las pruebas",
+          "line": "Con capital constante, 1% mensual durante tres meses suma 3% sin capitalización. Supera el 2% de todo el trimestre."
+        },
+        "pt-BR": {
+          "prompt": "Siga as provas",
+          "line": "Com principal constante, 1% mensal por três meses soma 3% sem capitalização. Supera 2% pelo trimestre inteiro."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.11",
+      "copy": {
+        "en-US": {
+          "prompt": "Which rate costs less here?",
+          "scene": "Same constant principal, no compounding: A totals 3% over a quarter; B totals 2% over that quarter.",
+          "options": [
+            {
+              "label": "A"
+            },
+            {
+              "label": "B"
+            }
+          ],
+          "help": [
+            "Use the same period and interest treatment for both."
+          ],
+          "feedback": {
+            "met": "The periods and assumptions match, so compare their quarterly totals.",
+            "not_yet": "Use the same period and interest treatment for both."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué tasa cuesta menos aquí?",
+          "scene": "Mismo capital constante, sin capitalización: A suma 3% en un trimestre; B suma 2% en ese trimestre.",
+          "options": [
+            {
+              "label": "A"
+            },
+            {
+              "label": "B"
+            }
+          ],
+          "help": [
+            "Usa el mismo periodo y tratamiento de interés para ambas."
+          ],
+          "feedback": {
+            "met": "Los periodos y supuestos coinciden: compara los totales trimestrales.",
+            "not_yet": "Usa el mismo periodo y tratamiento de interés para ambas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual taxa custa menos aqui?",
+          "scene": "Mesmo principal constante, sem capitalização: A soma 3% no trimestre; B soma 2% nesse trimestre.",
+          "options": [
+            {
+              "label": "A"
+            },
+            {
+              "label": "B"
+            }
+          ],
+          "help": [
+            "Use o mesmo período e tratamento dos juros para ambas."
+          ],
+          "feedback": {
+            "met": "Os períodos e as regras coincidem: compare os totais trimestrais.",
+            "not_yet": "Use o mesmo período e tratamento dos juros para ambas."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.11",
+      "copy": {
+        "en-US": {
+          "prompt": "Can these numbers be ranked directly?",
+          "scene": "One quote is monthly; another is yearly. No conversion is supplied.",
+          "options": [
+            {
+              "label": "Yes, choose the smaller number"
+            },
+            {
+              "label": "No, first align their periods"
+            }
+          ],
+          "help": [
+            "A percentage needs its time period to have meaning."
+          ],
+          "feedback": {
+            "met": "Different periods prevent direct comparison of the printed percentages.",
+            "not_yet": "A percentage needs its time period to have meaning."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Puedes ordenar estos números directamente?",
+          "scene": "Una tasa es mensual y otra anual. No se proporciona conversión.",
+          "options": [
+            {
+              "label": "Sí, elige el número menor"
+            },
+            {
+              "label": "No, primero iguala los periodos"
+            }
+          ],
+          "help": [
+            "Un porcentaje necesita su periodo para tener significado."
+          ],
+          "feedback": {
+            "met": "Los periodos distintos impiden comparar directamente los porcentajes impresos.",
+            "not_yet": "Un porcentaje necesita su periodo para tener significado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Pode ordenar estes números diretamente?",
+          "scene": "Uma taxa é mensal e outra anual. Não há conversão fornecida.",
+          "options": [
+            {
+              "label": "Sim, escolha o menor número"
+            },
+            {
+              "label": "Não, primeiro iguale os períodos"
+            }
+          ],
+          "help": [
+            "Um percentual precisa do período para ter sentido."
+          ],
+          "feedback": {
+            "met": "Períodos diferentes impedem comparar diretamente os percentuais impressos.",
+            "not_yet": "Um percentual precisa do período para ter sentido."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.11",
+      "copy": {
+        "en-US": {
+          "prompt": "What else must match?",
+          "scene": "Both quotes say annual, but one compounds monthly and the other gives a nominal rate.",
+          "options": [
+            {
+              "label": "The effective-period calculation assumptions"
+            },
+            {
+              "label": "Only the word annual"
+            }
+          ],
+          "help": [
+            "Check whether both figures represent the same effective period."
+          ],
+          "feedback": {
+            "met": "An annual label alone does not align compounding treatment.",
+            "not_yet": "Check whether both figures represent the same effective period."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué más debe coincidir?",
+          "scene": "Ambas tasas dicen anual, pero una capitaliza mensualmente y otra muestra una tasa nominal.",
+          "options": [
+            {
+              "label": "Los supuestos del cálculo efectivo"
+            },
+            {
+              "label": "Solo la palabra anual"
+            }
+          ],
+          "help": [
+            "Revisa si ambas cifras representan el mismo periodo efectivo."
+          ],
+          "feedback": {
+            "met": "Decir anual no iguala por sí solo la capitalización.",
+            "not_yet": "Revisa si ambas cifras representan el mismo periodo efectivo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que mais deve coincidir?",
+          "scene": "Ambas dizem anual, mas uma capitaliza mensalmente e outra mostra taxa nominal.",
+          "options": [
+            {
+              "label": "As regras do cálculo efetivo"
+            },
+            {
+              "label": "Só a palavra anual"
+            }
+          ],
+          "help": [
+            "Confira se ambas representam o mesmo período efetivo."
+          ],
+          "feedback": {
+            "met": "Dizer anual não iguala por si só a capitalização.",
+            "not_yet": "Confira se ambas representam o mesmo período efetivo."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.11",
+      "copy": {
+        "en-US": {
+          "prompt": "Choose the lower comparable rate.",
+          "scene": "Same principal and terms: effective annual rate A 12%, B 10%; no fees.",
+          "options": [
+            {
+              "label": "B"
+            },
+            {
+              "label": "A"
+            }
+          ],
+          "help": [
+            "Compare like-for-like rates, not unrelated monthly figures."
+          ],
+          "feedback": {
+            "met": "Comparable effective annual figures allow this stated interest comparison.",
+            "not_yet": "Compare like-for-like rates, not unrelated monthly figures."
+          }
+        },
+        "es-MX": {
+          "prompt": "Elige la menor tasa comparable.",
+          "scene": "Mismo capital y condiciones: tasa anual efectiva A 12%, B 10%; sin comisiones.",
+          "options": [
+            {
+              "label": "B"
+            },
+            {
+              "label": "A"
+            }
+          ],
+          "help": [
+            "Compara tasas equivalentes, no cifras mensuales ajenas."
+          ],
+          "feedback": {
+            "met": "Las tasas anuales efectivas comparables permiten comparar este interés.",
+            "not_yet": "Compara tasas equivalentes, no cifras mensuales ajenas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Escolha a menor taxa comparável.",
+          "scene": "Mesmo principal e regras: taxa anual efetiva A 12%, B 10%; sem tarifas.",
+          "options": [
+            {
+              "label": "B"
+            },
+            {
+              "label": "A"
+            }
+          ],
+          "help": [
+            "Compare taxas equivalentes, não valores mensais diferentes."
+          ],
+          "feedback": {
+            "met": "Taxas anuais efetivas comparáveis permitem comparar estes juros.",
+            "not_yet": "Compare taxas equivalentes, não valores mensais diferentes."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.11",
+      "copy": {
+        "en-US": {
+          "prompt": "Is simple multiplication enough?",
+          "scene": "The monthly rate compounds on prior interest. You want the effective yearly rate.",
+          "options": [
+            {
+              "label": "No, include interest on interest"
+            },
+            {
+              "label": "Yes, ignore compounding"
+            }
+          ],
+          "help": [
+            "A simple sum omits interest earned on earlier interest."
+          ],
+          "feedback": {
+            "met": "Compounding changes the base after each interest period.",
+            "not_yet": "A simple sum omits interest earned on earlier interest."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Basta multiplicar sin más?",
+          "scene": "La tasa mensual capitaliza intereses anteriores. Buscas la tasa anual efectiva.",
+          "options": [
+            {
+              "label": "No, incluye interés sobre interés"
+            },
+            {
+              "label": "Sí, ignora la capitalización"
+            }
+          ],
+          "help": [
+            "Una suma simple omite el interés sobre intereses anteriores."
+          ],
+          "feedback": {
+            "met": "La capitalización cambia la base después de cada periodo.",
+            "not_yet": "Una suma simple omite el interés sobre intereses anteriores."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Basta multiplicar diretamente?",
+          "scene": "A taxa mensal capitaliza juros anteriores. Você busca a taxa anual efetiva.",
+          "options": [
+            {
+              "label": "Não, inclua juros sobre juros"
+            },
+            {
+              "label": "Sim, ignore a capitalização"
+            }
+          ],
+          "help": [
+            "Uma soma simples omite juros sobre juros anteriores."
+          ],
+          "feedback": {
+            "met": "A capitalização muda a base após cada período.",
+            "not_yet": "Uma soma simples omite juros sobre juros anteriores."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.credit-mechanics.11",
+      "copy": {
+        "en-US": {
+          "prompt": "Can the lower number decide?",
+          "scene": "Refinancing quote: daily rate; current loan: effective annual rate.",
+          "options": [
+            {
+              "label": "Yes, the daily number is smaller"
+            },
+            {
+              "label": "No, align periods and assumptions first"
+            }
+          ],
+          "help": [
+            "Obtain comparable rates before treating refinancing as cheaper."
+          ],
+          "feedback": {
+            "met": "The quotes use different periods and may use different assumptions.",
+            "not_yet": "Obtain comparable rates before treating refinancing as cheaper."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Decide el número menor?",
+          "scene": "Una oferta de refinanciamiento da tasa diaria; tu préstamo actual da tasa anual efectiva.",
+          "options": [
+            {
+              "label": "Sí, la cifra diaria es menor"
+            },
+            {
+              "label": "No, iguala periodos y supuestos primero"
+            }
+          ],
+          "help": [
+            "Obtén tasas comparables antes de considerar más barato el cambio."
+          ],
+          "feedback": {
+            "met": "Las cotizaciones usan periodos y posiblemente supuestos diferentes.",
+            "not_yet": "Obtén tasas comparables antes de considerar más barato el cambio."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O menor número decide?",
+          "scene": "Uma oferta de refinanciamento dá taxa diária; seu empréstimo atual dá taxa anual efetiva.",
+          "options": [
+            {
+              "label": "Sim, o número diário é menor"
+            },
+            {
+              "label": "Não, iguale períodos e regras primeiro"
+            }
+          ],
+          "help": [
+            "Obtenha taxas comparáveis antes de considerar a troca mais barata."
+          ],
+          "feedback": {
+            "met": "As cotações usam períodos e talvez regras diferentes.",
+            "not_yet": "Obtenha taxas comparáveis antes de considerar a troca mais barata."
+          }
+        }
+      }
+    }
+  ]
+}

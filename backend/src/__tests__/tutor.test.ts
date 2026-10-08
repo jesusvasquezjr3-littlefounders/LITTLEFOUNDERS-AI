@@ -137,6 +137,7 @@ interface StubOpts {
   ageDeclarations?: unknown[];
   /** Catalog fixtures for the ladder. Absent means "no published content". */
   courses?: unknown[];
+  adultChapters?: unknown[];
   topics?: unknown[];
   lessons?: unknown[];
   lessonDocuments?: unknown[];
@@ -264,6 +265,7 @@ function stub(opts: StubOpts = {}) {
        * says so explicitly.
        */
       if (url.includes('/rest/v1/courses')) return Promise.resolve(jsonResponse(200, opts.courses ?? []));
+      if (url.includes('/rest/v1/adventures?pathway_stage=eq.adult')) return Promise.resolve(jsonResponse(200, opts.adultChapters ?? []));
       if (url.includes('/rest/v1/topics')) {
         /*
          * The slug filter is HONOURED here, not ignored. A stub that returns
@@ -1130,6 +1132,51 @@ describe('POST /api/v1/tutor/sessions — the microphone gate', () => {
         .set('Authorization', `Bearer ${mintToken({ sub: KID })}`)
         .send({ intent: 'weak_skill', skillKey: REAL_SKILL_KEY });
       expect(response.status).toBe(201);
+    });
+
+    const adultChapters = [{ id: 'adult-chapter', age_tier: 'tier3', pathway_stage: 'adult', eligibility_min_age: 18, eligibility_max_age: null,
+      courses: { slug: 'financial-education' }, sagas: [{ topics: [{ id: '77777777-7777-4777-8777-777777777777', slug: 'cobrar-y-dar-cambio' }] }] }];
+    it('refuses an adult-bound weak skill for a calibrated tier-3 minor before provider/session writes', async () => {
+      const calls = stub({ kcs: [REAL_KC], adultChapters, declaredAgeBand: '13_to_17', profile: { ...KID_PROFILE, birth_date: null } });
+      const response = await request(createApp()).post('/api/v1/tutor/sessions')
+        .set('Authorization', `Bearer ${mintToken({ sub: KID })}`).send({ intent: 'weak_skill', skillKey: REAL_SKILL_KEY });
+      expect(response.status).toBe(403);
+      expect(response.body.error.code).toBe('CONTENT_AGE_RESTRICTED');
+      expect(calls.some(call => call.url.includes('/api/v1/tutor/preflight') || call.url.includes('start_tutor_session'))).toBe(false);
+    });
+    it('keeps an adult-bound weak skill available to an authoritatively screened adult', async () => {
+      stub({ kcs: [REAL_KC], adultChapters, declaredAgeBand: 'adult', profile: { ...KID_PROFILE, birth_date: '1990-01-01' }, roles: [{ role: 'universal' }] });
+      const response = await request(createApp()).post('/api/v1/tutor/sessions')
+        .set('Authorization', `Bearer ${mintToken({ sub: KID })}`).send({ intent: 'weak_skill', skillKey: REAL_SKILL_KEY });
+      expect(response.status).toBe(201);
+    });
+    it('refuses weak-skill start when authoritative adult catalog scope cannot be read', async () => {
+      stub({ kcs: [REAL_KC], restFailures: ['/rest/v1/adventures?pathway_stage=eq.adult'] });
+      const response = await request(createApp()).post('/api/v1/tutor/sessions')
+        .set('Authorization', `Bearer ${mintToken({ sub: KID })}`).send({ intent: 'weak_skill', skillKey: REAL_SKILL_KEY });
+      expect(response.status).toBe(502);
+    });
+    it('refuses an already persisted adult weak-skill session after resolving the learner as a minor', async () => {
+      stub({ kcs: [REAL_KC], adultChapters, declaredAgeBand: '13_to_17', profile: { ...KID_PROFILE, birth_date: null },
+        session: [{ ...SESSION_ROW, tier: 3, intent: 'weak_skill', skill_key: REAL_SKILL_KEY, course_id: null, topic_id: null }] });
+      const response = await request(createApp()).get(`/api/v1/tutor/internal/sessions/${SESSION}`)
+        .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string);
+      expect(response.status).toBe(403);expect(response.body.error.code).toBe('CONTENT_AGE_RESTRICTED');
+    });
+    it('blocks a direct adult skill request before catalog, bank or generation fallback', async () => {
+      const calls = stub({ kcs: [REAL_KC], adultChapters, declaredAgeBand: '13_to_17', profile: { ...KID_PROFILE, birth_date: null } });
+      const response = await request(createApp()).post('/api/v1/tutor/internal/segments')
+        .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+        .send({sessionId:SESSION,skillKey:REAL_SKILL_KEY,difficulty:2,framing:'Try this example',rationale:'Practise the selected skill'});
+      expect(response.status).toBe(403);expect(response.body.error.code).toBe('CONTENT_AGE_RESTRICTED');
+      expect(calls.some(call=>call.url.includes('/rest/v1/lessons?')||call.url.includes('/rest/v1/activity_packs?'))).toBe(false);
+    });
+    it('blocks a generated adult skill candidate before persisting it', async () => {
+      stub({ kcs: [REAL_KC], adultChapters, declaredAgeBand: '13_to_17', profile: { ...KID_PROFILE, birth_date: null } });
+      const response = await request(createApp()).post('/api/v1/tutor/internal/segments/verify')
+        .set('x-internal-api-key', process.env.INTERNAL_API_KEY as string)
+        .send({sessionId:SESSION,segment:{},provenance:{skill_key:REAL_SKILL_KEY}});
+      expect(response.status).toBe(403);expect(response.body.error.code).toBe('CONTENT_AGE_RESTRICTED');
     });
 
     it('refuses the session — never lets an unverifiable skillKey through — when the KC read itself fails', async () => {

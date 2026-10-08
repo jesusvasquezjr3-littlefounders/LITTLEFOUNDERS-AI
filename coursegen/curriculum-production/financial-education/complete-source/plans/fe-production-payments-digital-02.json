@@ -1,0 +1,778 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-payments-digital-part-1",
+  "lesson_id": "fe-production-payments-digital-02",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.payments-digital.02"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Check recipient, amount and reference before confirming a transfer.",
+  "title": {
+    "en-US": "Transfer checks",
+    "es-MX": "Revisa antes de confirmar una transferencia",
+    "pt-BR": "Confira antes de confirmar uma transferência"
+  },
+  "new_concepts": [
+    "finance.prod.payments-digital.02"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Check before confirming a transfer\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Revisa antes de confirmar una transferencia\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Confira antes de confirmar uma transferência\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.payments-digital.02",
+      "observable_action": "Check recipient, amount and reference before confirming a transfer.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.accounts-records.04"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Verify the destination, amount and required reference before authorizing the transfer.",
+    "misconception": "Assuming that a familiar saved name or a pasted payment instruction guarantees the recipient, amount and reference are correct.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.payments-digital.02",
+        "context_id": "fe-production-payments-digital-02-example-01",
+        "supports_from": [],
+        "reasoning": "Before confirming, compare recipient details, amount and required reference with trusted instructions. A saved nickname alone does not verify them."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.payments-digital.02",
+        "context_id": "fe-production-payments-digital-02-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The actual destination must match the verified recipient."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.payments-digital.02",
+        "context_id": "fe-production-payments-digital-02-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The screen amount does not match the verified bill."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.payments-digital.02",
+        "context_id": "fe-production-payments-digital-02-practice-01",
+        "supports_from": [],
+        "reasoning": "The required reference helps connect payment to the intended obligation."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.payments-digital.02",
+        "context_id": "fe-production-payments-digital-02-practice-02",
+        "supports_from": [],
+        "reasoning": "A familiar name does not authenticate changed payment instructions."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.payments-digital.02",
+        "context_id": "fe-production-payments-digital-02-practice-03",
+        "supports_from": [],
+        "reasoning": "A correct recipient does not fix an incorrect amount unit."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.payments-digital.02",
+        "context_id": "fe-production-payments-digital-02-transfer-01",
+        "supports_from": [],
+        "reasoning": "The full instruction requires the right destination and identifying payment details."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.payments-digital.02",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Verify the destination, amount and required reference before authorizing the transfer."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Verifica destino, monto y referencia requerida antes de autorizar la transferencia."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Confira destino, valor e referência exigida antes de autorizar a transferência."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Check the actual destination",
+          "line": "Before confirming, compare recipient details, amount and required reference with trusted instructions. A saved nickname alone does not verify them."
+        },
+        "es-MX": {
+          "prompt": "Revisa el destino real",
+          "line": "Antes de confirmar, compara destinatario, monto y referencia con instrucciones fiables. Un apodo guardado no los verifica por sí solo."
+        },
+        "pt-BR": {
+          "prompt": "Confira o destino real",
+          "line": "Antes de confirmar, compare destinatário, valor e referência com instruções confiáveis. Um apelido salvo não os verifica sozinho."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What happens before confirmation?",
+          "scene": "A saved recipient nickname looks familiar, but the destination details differ from verified instructions.",
+          "options": [
+            {
+              "label": "Send first and verify afterward"
+            },
+            {
+              "label": "Resolve the destination mismatch"
+            },
+            {
+              "label": "Trust the nickname alone"
+            }
+          ],
+          "help": [
+            "A label is not proof of destination details."
+          ],
+          "feedback": {
+            "met": "The actual destination must match the verified recipient.",
+            "not_yet": "A label is not proof of destination details."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué hacer antes de confirmar?",
+          "scene": "Un apodo guardado parece conocido, pero los datos de destino difieren de instrucciones verificadas.",
+          "options": [
+            {
+              "label": "Enviar y verificar después"
+            },
+            {
+              "label": "Aclarar la diferencia de destino"
+            },
+            {
+              "label": "Confiar solo en el apodo"
+            }
+          ],
+          "help": [
+            "Una etiqueta no prueba los datos de destino."
+          ],
+          "feedback": {
+            "met": "El destino real debe coincidir con el destinatario verificado.",
+            "not_yet": "Una etiqueta no prueba los datos de destino."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que fazer antes de confirmar?",
+          "scene": "Um apelido salvo parece conhecido, mas os dados de destino diferem das instruções verificadas.",
+          "options": [
+            {
+              "label": "Enviar e conferir depois"
+            },
+            {
+              "label": "Esclarecer a diferença de destino"
+            },
+            {
+              "label": "Confiar só no apelido"
+            }
+          ],
+          "help": [
+            "Um rótulo não comprova os dados de destino."
+          ],
+          "feedback": {
+            "met": "O destino real deve corresponder ao destinatário verificado.",
+            "not_yet": "Um rótulo não comprova os dados de destino."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Which detail needs correction?",
+          "scene": "The verified bill requests 48; the confirmation screen shows 84.",
+          "options": [
+            {
+              "label": "The transfer amount"
+            },
+            {
+              "label": "Nothing because the digits are the same"
+            },
+            {
+              "label": "The bill’s verified amount"
+            }
+          ],
+          "help": [
+            "Compare the full amount before confirming."
+          ],
+          "feedback": {
+            "met": "The screen amount does not match the verified bill.",
+            "not_yet": "Compare the full amount before confirming."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué dato necesita corregirse?",
+          "scene": "La cuenta verificada pide 48; la pantalla de confirmación muestra 84.",
+          "options": [
+            {
+              "label": "El monto de transferencia"
+            },
+            {
+              "label": "Nada porque son los mismos dígitos"
+            },
+            {
+              "label": "El monto verificado de la cuenta"
+            }
+          ],
+          "help": [
+            "Compara el monto completo antes de confirmar."
+          ],
+          "feedback": {
+            "met": "El monto de pantalla no coincide con la cuenta verificada.",
+            "not_yet": "Compara el monto completo antes de confirmar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual dado precisa de correção?",
+          "scene": "A conta verificada pede 48; a tela de confirmação mostra 84.",
+          "options": [
+            {
+              "label": "O valor da transferência"
+            },
+            {
+              "label": "Nada porque são os mesmos dígitos"
+            },
+            {
+              "label": "O valor verificado da conta"
+            }
+          ],
+          "help": [
+            "Compare o valor completo antes de confirmar."
+          ],
+          "feedback": {
+            "met": "O valor da tela não corresponde à conta verificada.",
+            "not_yet": "Compare o valor completo antes de confirmar."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What needs checking before sending?",
+          "scene": "The required payment reference is missing.",
+          "options": [
+            {
+              "label": "Enter and verify the required reference"
+            },
+            {
+              "label": "Copy a reference from an unrelated bill"
+            },
+            {
+              "label": "Assume recipient alone identifies every bill"
+            }
+          ],
+          "help": [
+            "Use the reference for this payment, not another one."
+          ],
+          "feedback": {
+            "met": "The required reference helps connect payment to the intended obligation.",
+            "not_yet": "Use the reference for this payment, not another one."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué revisar antes de enviar?",
+          "scene": "Instrucciones fiables exigen referencia de pago específica; la pantalla la deja vacía.",
+          "options": [
+            {
+              "label": "Introducir y verificar la referencia requerida"
+            },
+            {
+              "label": "Copiar referencia de otra cuenta ajena"
+            },
+            {
+              "label": "Suponer que destinatario identifica toda cuenta"
+            }
+          ],
+          "help": [
+            "Usa referencia de este pago, no de otro."
+          ],
+          "feedback": {
+            "met": "La referencia requerida vincula el pago con la obligación correcta.",
+            "not_yet": "Usa referencia de este pago, no de otro."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que conferir antes de enviar?",
+          "scene": "Instruções confiáveis exigem referência de pagamento específica; a tela a deixa vazia.",
+          "options": [
+            {
+              "label": "Inserir e conferir a referência exigida"
+            },
+            {
+              "label": "Copiar referência de outra conta alheia"
+            },
+            {
+              "label": "Supor que destinatário identifica toda conta"
+            }
+          ],
+          "help": [
+            "Use a referência deste pagamento, não de outro."
+          ],
+          "feedback": {
+            "met": "A referência exigida vincula o pagamento à obrigação correta.",
+            "not_yet": "Use a referência deste pagamento, não de outro."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Next verification step?",
+          "scene": "A message changes supplier payment details without confirmation.",
+          "options": [
+            {
+              "label": "Use the message’s new contact alone"
+            },
+            {
+              "label": "Assume a familiar signature is proof"
+            },
+            {
+              "label": "Confirm through a previously verified channel"
+            }
+          ],
+          "help": [
+            "Verify the change independently of the message carrying it."
+          ],
+          "feedback": {
+            "met": "A familiar name does not authenticate changed payment instructions.",
+            "not_yet": "Verify the change independently of the message carrying it."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cómo verificar el cambio?",
+          "scene": "Un mensaje cambia datos de pago de un proveedor conocido sin confirmación independiente.",
+          "options": [
+            {
+              "label": "Usar solo el contacto nuevo del mensaje"
+            },
+            {
+              "label": "Suponer que una firma conocida es prueba"
+            },
+            {
+              "label": "Confirmar por un canal ya verificado"
+            }
+          ],
+          "help": [
+            "Verifica el cambio fuera del mensaje que lo trae."
+          ],
+          "feedback": {
+            "met": "Un nombre conocido no autentica instrucciones de pago cambiadas.",
+            "not_yet": "Verifica el cambio fuera del mensaje que lo trae."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual a próxima conferência?",
+          "scene": "Uma mensagem muda dados de pagamento de um fornecedor conhecido sem confirmação independente.",
+          "options": [
+            {
+              "label": "Usar só o contato novo da mensagem"
+            },
+            {
+              "label": "Supor que uma assinatura conhecida comprova"
+            },
+            {
+              "label": "Confirmar por um canal já verificado"
+            }
+          ],
+          "help": [
+            "Confira a mudança fora da mensagem que a trouxe."
+          ],
+          "feedback": {
+            "met": "Um nome conhecido não autentica instruções de pagamento alteradas.",
+            "not_yet": "Confira a mudança fora da mensagem que a trouxe."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Is the transfer ready to authorize?",
+          "scene": "The screen shows the right recipient but wrong currency.",
+          "options": [
+            {
+              "label": "Yes, recipient identity is sufficient"
+            },
+            {
+              "label": "No, resolve the currency mismatch"
+            },
+            {
+              "label": "Yes, currency never changes payment meaning"
+            }
+          ],
+          "help": [
+            "Check the amount and its currency together."
+          ],
+          "feedback": {
+            "met": "A correct recipient does not fix an incorrect amount unit.",
+            "not_yet": "Check the amount and its currency together."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Está lista para autorizarse?",
+          "scene": "La pantalla muestra destinatario correcto, pero moneda incorrecta.",
+          "options": [
+            {
+              "label": "Sí, basta identificar destinatario"
+            },
+            {
+              "label": "No, corrige la diferencia de moneda"
+            },
+            {
+              "label": "Sí, moneda nunca cambia significado del pago"
+            }
+          ],
+          "help": [
+            "Revisa monto y moneda juntos."
+          ],
+          "feedback": {
+            "met": "Un destinatario correcto no corrige la unidad monetaria incorrecta.",
+            "not_yet": "Revisa monto y moneda juntos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Está pronta para autorizar?",
+          "scene": "A tela mostra destinatário correto, mas moeda errada.",
+          "options": [
+            {
+              "label": "Sim, basta identificar destinatário"
+            },
+            {
+              "label": "Não, corrija a diferença de moeda"
+            },
+            {
+              "label": "Sim, moeda nunca muda significado do pagamento"
+            }
+          ],
+          "help": [
+            "Confira valor e moeda juntos."
+          ],
+          "feedback": {
+            "met": "Um destinatário correto não corrige a unidade monetária errada.",
+            "not_yet": "Confira valor e moeda juntos."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.payments-digital.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Which check covers the instruction?",
+          "scene": "A school fee requires its verified account and student reference.",
+          "options": [
+            {
+              "label": "Only the school’s saved nickname"
+            },
+            {
+              "label": "Only whether any reference is present"
+            },
+            {
+              "label": "Destination, amount and student reference"
+            }
+          ],
+          "help": [
+            "Match every required field before authorizing."
+          ],
+          "feedback": {
+            "met": "The full instruction requires the right destination and identifying payment details.",
+            "not_yet": "Match every required field before authorizing."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué revisión final cubre la instrucción?",
+          "scene": "Una cuota escolar va a la cuenta escolar verificada con referencia indicada del estudiante.",
+          "options": [
+            {
+              "label": "Solo el apodo escolar guardado"
+            },
+            {
+              "label": "Solo si aparece cualquier referencia"
+            },
+            {
+              "label": "Destino, monto y referencia del estudiante"
+            }
+          ],
+          "help": [
+            "Compara cada campo requerido antes de autorizar."
+          ],
+          "feedback": {
+            "met": "La instrucción completa requiere destino y datos de pago correctos.",
+            "not_yet": "Compara cada campo requerido antes de autorizar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual conferência final cobre a instrução?",
+          "scene": "Uma taxa escolar vai à conta escolar verificada com referência informada do estudante.",
+          "options": [
+            {
+              "label": "Só o apelido escolar salvo"
+            },
+            {
+              "label": "Só se aparece qualquer referência"
+            },
+            {
+              "label": "Destino, valor e referência do estudante"
+            }
+          ],
+          "help": [
+            "Compare cada campo exigido antes de autorizar."
+          ],
+          "feedback": {
+            "met": "A instrução completa exige destino e dados de pagamento corretos.",
+            "not_yet": "Compare cada campo exigido antes de autorizar."
+          }
+        }
+      }
+    }
+  ]
+}

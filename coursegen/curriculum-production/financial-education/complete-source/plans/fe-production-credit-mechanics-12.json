@@ -1,0 +1,708 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-credit-mechanics-part-3",
+  "lesson_id": "fe-production-credit-mechanics-12",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.credit-mechanics.12"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Identify which disclosed annual cost measure and included charges need local interpretation.",
+  "title": {
+    "en-US": "Annual disclosures",
+    "es-MX": "Lee el indicador anual",
+    "pt-BR": "Leia o indicador anual"
+  },
+  "new_concepts": [
+    "finance.prod.credit-mechanics.12"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Read the annual disclosure\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Lee el indicador anual\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Leia o indicador anual\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.credit-mechanics.12",
+      "observable_action": "Identify which disclosed annual cost measure and included charges need local interpretation.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.credit-mechanics.01",
+      "prod.credit-mechanics.02",
+      "prod.credit-mechanics.11"
+    ],
+    "retrieval_skills": [],
+    "relevance": "An annual percentage label does not replace the complete repayment schedule.",
+    "misconception": "APR, CAT and CET are identical worldwide formulas or guarantee that every possible charge is already included.",
+    "numeracy_support": "Every quantity and assumption needed to decide is visible in the current scenario. Examples explain the relationship before independent application.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.credit-mechanics.12",
+        "context_id": "fe-production-credit-mechanics-12-example-01",
+        "supports_from": [],
+        "reasoning": "APR uses defined disclosure rules. Check included charges before comparing it with an interest rate or another product."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.credit-mechanics.12",
+        "context_id": "fe-production-credit-mechanics-12-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The annual disclosure can differ from the interest rate."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.credit-mechanics.12",
+        "context_id": "fe-production-credit-mechanics-12-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "An excluded chosen service still affects what you pay."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.credit-mechanics.12",
+        "context_id": "fe-production-credit-mechanics-12-practice-03",
+        "supports_from": [],
+        "reasoning": "Local disclosure rules can define different included costs and assumptions."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.credit-mechanics.12",
+        "context_id": "fe-production-credit-mechanics-12-practice-04",
+        "supports_from": [],
+        "reasoning": "The relevant authority explains the applicable local disclosure rules."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.credit-mechanics.12",
+        "context_id": "fe-production-credit-mechanics-12-practice-05",
+        "supports_from": [],
+        "reasoning": "An annual measure does not establish monthly payment feasibility."
+      },
+      {
+        "segment_id": "transfer-06",
+        "skill_id": "prod.credit-mechanics.12",
+        "context_id": "fe-production-credit-mechanics-12-transfer-06",
+        "supports_from": [],
+        "reasoning": "Missing scope prevents a defensible comparison between different disclosures."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.credit-mechanics.12",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "An annual percentage label does not replace the complete repayment schedule."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Una etiqueta porcentual anual no sustituye el calendario completo de pagos."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Uma taxa anual divulgada não substitui o calendário completo de pagamentos."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Follow the evidence",
+          "line": "APR uses defined disclosure rules. Check included charges before comparing it with an interest rate or another product."
+        },
+        "es-MX": {
+          "prompt": "Sigue las pruebas",
+          "line": "El CAT usa reglas definidas. Revisa los cargos incluidos antes de compararlo con una tasa de interés u otro producto."
+        },
+        "pt-BR": {
+          "prompt": "Siga as provas",
+          "line": "O CET usa regras definidas. Confira os encargos incluídos antes de compará-lo com uma taxa de juros ou outro produto."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.12",
+      "copy": {
+        "en-US": {
+          "prompt": "Which detail must you check?",
+          "scene": "An offer lists interest and APR separately.",
+          "options": [
+            {
+              "label": "Only the interest rate"
+            },
+            {
+              "label": "Which charges its APR includes"
+            }
+          ],
+          "help": [
+            "Read what the disclosure measures for this product."
+          ],
+          "feedback": {
+            "met": "The annual disclosure can differ from the interest rate.",
+            "not_yet": "Read what the disclosure measures for this product."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué dato debes revisar?",
+          "scene": "Una oferta separa tasa de interés y CAT.",
+          "options": [
+            {
+              "label": "Solo la tasa de interés"
+            },
+            {
+              "label": "Qué cargos incluye su CAT"
+            }
+          ],
+          "help": [
+            "Lee qué mide el indicador para este producto."
+          ],
+          "feedback": {
+            "met": "El indicador anual puede diferir de la tasa de interés.",
+            "not_yet": "Lee qué mide el indicador para este producto."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual dado deve conferir?",
+          "scene": "Uma oferta separa taxa de juros e CET.",
+          "options": [
+            {
+              "label": "Só a taxa de juros"
+            },
+            {
+              "label": "Quais encargos o CET inclui"
+            }
+          ],
+          "help": [
+            "Leia o que o indicador mede para este produto."
+          ],
+          "feedback": {
+            "met": "O indicador anual pode diferir da taxa de juros.",
+            "not_yet": "Leia o que o indicador mede para este produto."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.12",
+      "copy": {
+        "en-US": {
+          "prompt": "Does the headline settle total cost?",
+          "scene": "The fictional disclosure explicitly excludes a separately payable optional service.",
+          "options": [
+            {
+              "label": "No, add any service you actually choose"
+            },
+            {
+              "label": "Yes, the measure already includes it"
+            }
+          ],
+          "help": [
+            "Use the disclosure’s scope and your actual selected services."
+          ],
+          "feedback": {
+            "met": "An excluded chosen service still affects what you pay.",
+            "not_yet": "Use the disclosure’s scope and your actual selected services."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿El indicador resuelve todo el costo?",
+          "scene": "La divulgación ficticia excluye un servicio opcional que se paga aparte.",
+          "options": [
+            {
+              "label": "No, añade el servicio que elijas"
+            },
+            {
+              "label": "Sí, el indicador ya lo incluye"
+            }
+          ],
+          "help": [
+            "Usa el alcance indicado y los servicios que realmente elijas."
+          ],
+          "feedback": {
+            "met": "Un servicio elegido excluido sigue afectando lo que pagas.",
+            "not_yet": "Usa el alcance indicado y los servicios que realmente elijas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O indicador resolve todo o custo?",
+          "scene": "A divulgação fictícia exclui um serviço opcional pago à parte.",
+          "options": [
+            {
+              "label": "Não, some o serviço que escolher"
+            },
+            {
+              "label": "Sim, o indicador já inclui o serviço"
+            }
+          ],
+          "help": [
+            "Use o alcance informado e os serviços que realmente escolher."
+          ],
+          "feedback": {
+            "met": "Um serviço escolhido excluído ainda afeta o que você paga.",
+            "not_yet": "Use o alcance informado e os serviços que realmente escolher."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.12",
+      "copy": {
+        "en-US": {
+          "prompt": "Are these labels interchangeable?",
+          "scene": "An overseas offer uses a different annual disclosure and local calculation rules.",
+          "options": [
+            {
+              "label": "No, verify each measure’s definition"
+            },
+            {
+              "label": "Yes, all annual labels mean the same"
+            }
+          ],
+          "help": [
+            "Do not equate labels without checking their definitions."
+          ],
+          "feedback": {
+            "met": "Local disclosure rules can define different included costs and assumptions.",
+            "not_yet": "Do not equate labels without checking their definitions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Son etiquetas intercambiables?",
+          "scene": "Una oferta extranjera usa otro indicador anual y reglas locales de cálculo.",
+          "options": [
+            {
+              "label": "No, verifica la definición de cada uno"
+            },
+            {
+              "label": "Sí, toda etiqueta anual significa lo mismo"
+            }
+          ],
+          "help": [
+            "No iguales etiquetas sin revisar sus definiciones."
+          ],
+          "feedback": {
+            "met": "Las reglas locales pueden definir costos y supuestos diferentes.",
+            "not_yet": "No iguales etiquetas sin revisar sus definiciones."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Os nomes são intercambiáveis?",
+          "scene": "Uma oferta estrangeira usa outro indicador anual e regras locais de cálculo.",
+          "options": [
+            {
+              "label": "Não, confira a definição de cada um"
+            },
+            {
+              "label": "Sim, todo nome anual significa o mesmo"
+            }
+          ],
+          "help": [
+            "Não iguale nomes sem conferir suas definições."
+          ],
+          "feedback": {
+            "met": "As regras locais podem definir custos e hipóteses diferentes.",
+            "not_yet": "Não iguale nomes sem conferir suas definições."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.12",
+      "copy": {
+        "en-US": {
+          "prompt": "Which source should explain the measure?",
+          "scene": "You need the current local definition for this annual disclosure.",
+          "options": [
+            {
+              "label": "The relevant financial authority’s guidance"
+            },
+            {
+              "label": "A foreign advertisement using another label"
+            }
+          ],
+          "help": [
+            "Match the authority, market and product before interpreting the label."
+          ],
+          "feedback": {
+            "met": "The relevant authority explains the applicable local disclosure rules.",
+            "not_yet": "Match the authority, market and product before interpreting the label."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué fuente explica el indicador?",
+          "scene": "Necesitas la definición local vigente de este indicador anual.",
+          "options": [
+            {
+              "label": "La guía de la autoridad financiera correspondiente"
+            },
+            {
+              "label": "Un anuncio extranjero con otra etiqueta"
+            }
+          ],
+          "help": [
+            "Relaciona autoridad, mercado y producto antes de interpretar la etiqueta."
+          ],
+          "feedback": {
+            "met": "La autoridad correspondiente explica las reglas locales aplicables.",
+            "not_yet": "Relaciona autoridad, mercado y producto antes de interpretar la etiqueta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual fonte explica o indicador?",
+          "scene": "Você precisa da definição local atual deste indicador anual.",
+          "options": [
+            {
+              "label": "A orientação da autoridade financeira local"
+            },
+            {
+              "label": "Um anúncio estrangeiro com outro nome"
+            }
+          ],
+          "help": [
+            "Confira autoridade, mercado e produto antes de interpretar o nome."
+          ],
+          "feedback": {
+            "met": "A autoridade local explica as regras aplicáveis.",
+            "not_yet": "Confira autoridade, mercado e produto antes de interpretar o nome."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.12",
+      "copy": {
+        "en-US": {
+          "prompt": "What else matters to affordability?",
+          "scene": "The annual measure is lower, but monthly payments exceed your available cash.",
+          "options": [
+            {
+              "label": "Only the lower annual percentage"
+            },
+            {
+              "label": "The actual payment schedule and budget"
+            }
+          ],
+          "help": [
+            "Compare required payments with available money on each due date."
+          ],
+          "feedback": {
+            "met": "An annual measure does not establish monthly payment feasibility.",
+            "not_yet": "Compare required payments with available money on each due date."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué más importa para poder pagar?",
+          "scene": "El indicador anual es menor, pero la mensualidad supera tu dinero disponible.",
+          "options": [
+            {
+              "label": "Solo el porcentaje anual menor"
+            },
+            {
+              "label": "El calendario real y el presupuesto"
+            }
+          ],
+          "help": [
+            "Compara pagos y dinero disponible en cada fecha."
+          ],
+          "feedback": {
+            "met": "Un indicador anual no demuestra que puedas cubrir cada pago.",
+            "not_yet": "Compara pagos y dinero disponible en cada fecha."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que mais importa para pagar?",
+          "scene": "O indicador anual é menor, mas a parcela supera seu dinheiro disponível.",
+          "options": [
+            {
+              "label": "Só o percentual anual menor"
+            },
+            {
+              "label": "O calendário real e o orçamento"
+            }
+          ],
+          "help": [
+            "Compare pagamentos e dinheiro disponível em cada data."
+          ],
+          "feedback": {
+            "met": "Um indicador anual não prova que cada parcela cabe.",
+            "not_yet": "Compare pagamentos e dinheiro disponível em cada data."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.credit-mechanics.12",
+      "copy": {
+        "en-US": {
+          "prompt": "What must be clarified first?",
+          "scene": "Refinancing offers use different annual labels; included fees are unknown.",
+          "options": [
+            {
+              "label": "Definitions, included fees and matching assumptions"
+            },
+            {
+              "label": "Which printed percentage looks smaller"
+            }
+          ],
+          "help": [
+            "Get comparable definitions and complete costs before choosing by percentage."
+          ],
+          "feedback": {
+            "met": "Missing scope prevents a defensible comparison between different disclosures.",
+            "not_yet": "Get comparable definitions and complete costs before choosing by percentage."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debes aclarar primero?",
+          "scene": "Dos refinanciamientos usan etiquetas anuales distintas; sus documentos no indican qué comisiones incluyen.",
+          "options": [
+            {
+              "label": "Definiciones, cargos incluidos y supuestos equivalentes"
+            },
+            {
+              "label": "Qué porcentaje impreso parece menor"
+            }
+          ],
+          "help": [
+            "Obtén definiciones comparables y costos completos antes de elegir porcentajes."
+          ],
+          "feedback": {
+            "met": "Sin el alcance no puedes comparar indicadores distintos con fundamento.",
+            "not_yet": "Obtén definiciones comparables y costos completos antes de elegir porcentajes."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que esclarecer primeiro?",
+          "scene": "Dois refinanciamentos usam nomes anuais diferentes; os documentos não indicam quais tarifas incluem.",
+          "options": [
+            {
+              "label": "Definições, encargos incluídos e hipóteses equivalentes"
+            },
+            {
+              "label": "Qual percentual impresso parece menor"
+            }
+          ],
+          "help": [
+            "Obtenha definições comparáveis e custos completos antes de escolher percentuais."
+          ],
+          "feedback": {
+            "met": "Sem o alcance não dá para comparar indicadores distintos adequadamente.",
+            "not_yet": "Obtenha definições comparáveis e custos completos antes de escolher percentuais."
+          }
+        }
+      }
+    }
+  ]
+}

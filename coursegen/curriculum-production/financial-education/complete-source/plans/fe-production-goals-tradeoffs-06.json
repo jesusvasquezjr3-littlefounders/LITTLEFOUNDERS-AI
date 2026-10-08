@@ -1,0 +1,779 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-goals-tradeoffs-part-2",
+  "lesson_id": "fe-production-goals-tradeoffs-06",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.goals-tradeoffs.06"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Recognize when changing a goal or its deadline is necessary because no contribution fits.",
+  "title": {
+    "en-US": "Revising scope",
+    "es-MX": "Cambia un plan imposible",
+    "pt-BR": "Mude um plano impossível"
+  },
+  "new_concepts": [
+    "finance.prod.goals-tradeoffs.06"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Change an impossible plan\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Cambia un plan imposible\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Mude um plano impossível\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.goals-tradeoffs.06",
+      "observable_action": "Recognize when changing a goal or its deadline is necessary because no contribution fits.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.goals-tradeoffs.05",
+      "cash.reserved"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A feasible goal respects the money actually available.",
+    "misconception": "Treat an impossible contribution as a discipline problem rather than a constraint.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.goals-tradeoffs.06",
+        "context_id": "fe-production-goals-tradeoffs-06-example-01",
+        "supports_from": [],
+        "reasoning": "You need 80 dollars; only 20 fits each period. Two periods cannot cover it; extend time or reduce scope."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.goals-tradeoffs.06",
+        "context_id": "fe-production-goals-tradeoffs-06-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "A safe plan cannot allocate money that is unavailable."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.goals-tradeoffs.06",
+        "context_id": "fe-production-goals-tradeoffs-06-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "More periods spread the same remaining amount more widely."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.goals-tradeoffs.06",
+        "context_id": "fe-production-goals-tradeoffs-06-practice-01",
+        "supports_from": [],
+        "reasoning": "A lower-cost scope can reduce the required contribution."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.goals-tradeoffs.06",
+        "context_id": "fe-production-goals-tradeoffs-06-practice-02",
+        "supports_from": [],
+        "reasoning": "A zero-capacity constraint requires a realistic revision."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.goals-tradeoffs.06",
+        "context_id": "fe-production-goals-tradeoffs-06-practice-03",
+        "supports_from": [],
+        "reasoning": "An uncertain receipt cannot establish dependable capacity."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.goals-tradeoffs.06",
+        "context_id": "fe-production-goals-tradeoffs-06-transfer-01",
+        "supports_from": [],
+        "reasoning": "Changing scope can produce a feasible plan worth checking."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.goals-tradeoffs.06",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A feasible goal respects the money actually available."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Una meta viable respeta el dinero realmente disponible."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Uma meta viável respeita o dinheiro realmente disponível."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "The gap cannot disappear",
+          "line": "You need 80 dollars; only 20 fits each period. Two periods cannot cover it; extend time or reduce scope."
+        },
+        "es-MX": {
+          "prompt": "Lo faltante no desaparece",
+          "line": "Una meta necesita 80 pesos en dos periodos; solo caben 20 por periodo. Amplía plazo o reduce alcance; desear no financia."
+        },
+        "pt-BR": {
+          "prompt": "O que falta não desaparece",
+          "line": "Uma meta exige 80 reais em dois períodos; só cabem 20 por período. Amplie prazo ou reduza alcance; desejar não financia."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which fact forces revision?",
+          "scene": "A plan requires 40 each month; essentials leave at most 20.",
+          "options": [
+            {
+              "label": "The capacity is positive"
+            },
+            {
+              "label": "Required saving exceeds safe capacity"
+            },
+            {
+              "label": "Having any monthly saving"
+            }
+          ],
+          "help": [
+            "Keep essential obligations protected."
+          ],
+          "feedback": {
+            "met": "A safe plan cannot allocate money that is unavailable.",
+            "not_yet": "Keep essential obligations protected."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué dato obliga a revisar?",
+          "scene": "Un plan requiere 40 al mes; lo esencial deja máximo 20.",
+          "options": [
+            {
+              "label": "La capacidad es positiva"
+            },
+            {
+              "label": "El ahorro requerido supera la capacidad segura"
+            },
+            {
+              "label": "Ahorrar algo cada mes"
+            }
+          ],
+          "help": [
+            "Protege las obligaciones esenciales."
+          ],
+          "feedback": {
+            "met": "Un plan seguro no asigna dinero inexistente.",
+            "not_yet": "Protege las obligaciones esenciales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual dado exige revisão?",
+          "scene": "Um plano exige 40 por mês; o essencial deixa no máximo 20.",
+          "options": [
+            {
+              "label": "A capacidade é positiva"
+            },
+            {
+              "label": "A poupança exigida supera a capacidade segura"
+            },
+            {
+              "label": "Poupar algo todo mês"
+            }
+          ],
+          "help": [
+            "Proteja as obrigações essenciais."
+          ],
+          "feedback": {
+            "met": "Um plano seguro não destina dinheiro inexistente.",
+            "not_yet": "Proteja as obrigações essenciais."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which change can lower each contribution?",
+          "scene": "The deadline is flexible and the goal amount stays fixed.",
+          "options": [
+            {
+              "label": "Allow more contribution periods"
+            },
+            {
+              "label": "Ignore the amount"
+            },
+            {
+              "label": "Shorten the deadline"
+            }
+          ],
+          "help": [
+            "The amount is fixed; time can change."
+          ],
+          "feedback": {
+            "met": "More periods spread the same remaining amount more widely.",
+            "not_yet": "The amount is fixed; time can change."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué cambio puede bajar cada aportación?",
+          "scene": "La fecha es flexible y el monto objetivo permanece fijo.",
+          "options": [
+            {
+              "label": "Permitir más periodos de aportación"
+            },
+            {
+              "label": "Ignorar el monto"
+            },
+            {
+              "label": "Acortar el plazo"
+            }
+          ],
+          "help": [
+            "El monto es fijo; el tiempo puede cambiar."
+          ],
+          "feedback": {
+            "met": "Más periodos reparten más el mismo monto restante.",
+            "not_yet": "El monto es fijo; el tiempo puede cambiar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual mudança pode reduzir cada contribuição?",
+          "scene": "O prazo é flexível e o valor pretendido permanece fixo.",
+          "options": [
+            {
+              "label": "Permitir mais períodos de contribuição"
+            },
+            {
+              "label": "Ignorar o valor"
+            },
+            {
+              "label": "Encurtar o prazo"
+            }
+          ],
+          "help": [
+            "O valor é fixo; o tempo pode mudar."
+          ],
+          "feedback": {
+            "met": "Mais períodos distribuem mais o mesmo valor restante.",
+            "not_yet": "O valor é fixo; o tempo pode mudar."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which revision may fit?",
+          "scene": "A deadline cannot move, but a simpler version meets the same purpose for less.",
+          "options": [
+            {
+              "label": "Count unpaid promises as cash"
+            },
+            {
+              "label": "Reduce the goal’s scope"
+            },
+            {
+              "label": "Invent another payday"
+            }
+          ],
+          "help": [
+            "Preserve the purpose while checking the new cost."
+          ],
+          "feedback": {
+            "met": "A lower-cost scope can reduce the required contribution.",
+            "not_yet": "Preserve the purpose while checking the new cost."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué revisión podría caber?",
+          "scene": "Una fecha no cambia, pero una versión sencilla cumple el propósito por menos.",
+          "options": [
+            {
+              "label": "Contar promesas como efectivo"
+            },
+            {
+              "label": "Reducir el alcance de la meta"
+            },
+            {
+              "label": "Inventar otro día de pago"
+            }
+          ],
+          "help": [
+            "Conserva el propósito y revisa el nuevo costo."
+          ],
+          "feedback": {
+            "met": "Un alcance de menor costo puede reducir la aportación requerida.",
+            "not_yet": "Conserva el propósito y revisa el nuevo costo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual revisão pode caber?",
+          "scene": "Um prazo não muda, mas uma versão simples cumpre o propósito por menos.",
+          "options": [
+            {
+              "label": "Contar promessas como dinheiro"
+            },
+            {
+              "label": "Reduzir o alcance da meta"
+            },
+            {
+              "label": "Inventar outro pagamento"
+            }
+          ],
+          "help": [
+            "Preserve o propósito e confira o novo custo."
+          ],
+          "feedback": {
+            "met": "Um alcance de menor custo pode reduzir a contribuição exigida.",
+            "not_yet": "Preserve o propósito e confira o novo custo."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.06",
+      "copy": {
+        "en-US": {
+          "prompt": "What is a valid planning conclusion?",
+          "scene": "All income is needed for essentials; no safe contribution exists now.",
+          "options": [
+            {
+              "label": "Assume personal failure"
+            },
+            {
+              "label": "Skip essential payments silently"
+            },
+            {
+              "label": "Pause or revise the funding plan"
+            }
+          ],
+          "help": [
+            "Do not create fictitious spare money."
+          ],
+          "feedback": {
+            "met": "A zero-capacity constraint requires a realistic revision.",
+            "not_yet": "Do not create fictitious spare money."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué conclusión de planificación es válida?",
+          "scene": "Todo ingreso se necesita para lo esencial; ahora no cabe una aportación segura.",
+          "options": [
+            {
+              "label": "Suponer fracaso personal"
+            },
+            {
+              "label": "Omitir pagos esenciales sin avisar"
+            },
+            {
+              "label": "Pausar o revisar el financiamiento"
+            }
+          ],
+          "help": [
+            "No crees dinero sobrante ficticio."
+          ],
+          "feedback": {
+            "met": "Una capacidad de cero exige una revisión realista.",
+            "not_yet": "No crees dinero sobrante ficticio."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual conclusão de planejamento é válida?",
+          "scene": "Toda renda é necessária para o essencial; agora não cabe contribuição segura.",
+          "options": [
+            {
+              "label": "Supor fracasso pessoal"
+            },
+            {
+              "label": "Omitir pagamentos essenciais sem avisar"
+            },
+            {
+              "label": "Pausar ou rever o financiamento"
+            }
+          ],
+          "help": [
+            "Não crie dinheiro sobrando fictício."
+          ],
+          "feedback": {
+            "met": "Uma capacidade zero exige revisão realista.",
+            "not_yet": "Não crie dinheiro sobrando fictício."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Is its feasibility established?",
+          "scene": "A new plan depends on extra work that is not confirmed.",
+          "options": [
+            {
+              "label": "Yes, every offer pays"
+            },
+            {
+              "label": "Yes, writing it confirms it"
+            },
+            {
+              "label": "No, the extra income is uncertain"
+            }
+          ],
+          "help": [
+            "Separate confirmed resources from hoped-for resources."
+          ],
+          "feedback": {
+            "met": "An uncertain receipt cannot establish dependable capacity.",
+            "not_yet": "Separate confirmed resources from hoped-for resources."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Está demostrada su viabilidad?",
+          "scene": "Un nuevo plan depende de trabajo extra no confirmado.",
+          "options": [
+            {
+              "label": "Sí, toda oferta paga"
+            },
+            {
+              "label": "Sí, escribirlo lo confirma"
+            },
+            {
+              "label": "No, el ingreso extra es incierto"
+            }
+          ],
+          "help": [
+            "Separa recursos confirmados de esperados."
+          ],
+          "feedback": {
+            "met": "Una entrada incierta no demuestra capacidad confiable.",
+            "not_yet": "Separa recursos confirmados de esperados."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Sua viabilidade está demonstrada?",
+          "scene": "Um novo plano depende de trabalho extra não confirmado.",
+          "options": [
+            {
+              "label": "Sim, toda oferta paga"
+            },
+            {
+              "label": "Sim, escrever confirma"
+            },
+            {
+              "label": "Não, a renda extra é incerta"
+            }
+          ],
+          "help": [
+            "Separe recursos confirmados de esperados."
+          ],
+          "feedback": {
+            "met": "Uma entrada incerta não demonstra capacidade confiável.",
+            "not_yet": "Separe recursos confirmados de esperados."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.goals-tradeoffs.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which response?",
+          "scene": "The club cannot fund its event on time. A smaller free venue meets its purpose.",
+          "options": [
+            {
+              "label": "Keep unfunded costs hidden"
+            },
+            {
+              "label": "Pretend the shortfall is income"
+            },
+            {
+              "label": "Recalculate with the smaller venue"
+            }
+          ],
+          "help": [
+            "Test the revised costs against actual resources."
+          ],
+          "feedback": {
+            "met": "Changing scope can produce a feasible plan worth checking.",
+            "not_yet": "Test the revised costs against actual resources."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué respuesta atiende la condición?",
+          "scene": "Un club no financia su evento a tiempo. Un espacio gratuito menor cumple su propósito.",
+          "options": [
+            {
+              "label": "Ocultar costos sin financiar"
+            },
+            {
+              "label": "Tratar el faltante como ingreso"
+            },
+            {
+              "label": "Recalcular con el espacio menor"
+            }
+          ],
+          "help": [
+            "Contrasta costos revisados con recursos reales."
+          ],
+          "feedback": {
+            "met": "Cambiar el alcance puede producir un plan viable que revisar.",
+            "not_yet": "Contrasta costos revisados con recursos reales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual resposta atende à condição?",
+          "scene": "Um clube não financia seu evento a tempo. Um espaço gratuito menor cumpre seu propósito.",
+          "options": [
+            {
+              "label": "Ocultar custos não financiados"
+            },
+            {
+              "label": "Tratar a falta como renda"
+            },
+            {
+              "label": "Recalcular com o espaço menor"
+            }
+          ],
+          "help": [
+            "Compare custos revistos com recursos reais."
+          ],
+          "feedback": {
+            "met": "Mudar o alcance pode produzir um plano viável a conferir.",
+            "not_yet": "Compare custos revistos com recursos reais."
+          }
+        }
+      }
+    }
+  ]
+}

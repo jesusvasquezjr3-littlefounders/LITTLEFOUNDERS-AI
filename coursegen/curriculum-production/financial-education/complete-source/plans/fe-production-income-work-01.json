@@ -1,0 +1,778 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-income-work-part-1",
+  "lesson_id": "fe-production-income-work-01",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.income-work.01"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Separate recurring, irregular and one-time receipts when estimating future income.",
+  "title": {
+    "en-US": "Recurring income",
+    "es-MX": "No toda entrada se repite",
+    "pt-BR": "Nem toda entrada se repete"
+  },
+  "new_concepts": [
+    "finance.prod.income-work.01"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Not every receipt repeats\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"No toda entrada se repite\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Nem toda entrada se repete\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.income-work.01",
+      "observable_action": "Separate recurring, irregular and one-time receipts when estimating future income.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "cash.received"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Separate repeatable receipts from one-time money before planning.",
+    "misconception": "Treat every recent receipt as dependable future income.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.income-work.01",
+        "context_id": "fe-production-income-work-01-example-01",
+        "supports_from": [],
+        "reasoning": "A 50-dollar gift arrived once. Weekly pay repeats under its agreement; the gift has no such agreement."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.income-work.01",
+        "context_id": "fe-production-income-work-01-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "No repeating payment was agreed."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.income-work.01",
+        "context_id": "fe-production-income-work-01-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The work condition limits when payment occurs."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.income-work.01",
+        "context_id": "fe-production-income-work-01-practice-01",
+        "supports_from": [],
+        "reasoning": "The repeating agreement still has a stated condition."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.income-work.01",
+        "context_id": "fe-production-income-work-01-practice-02",
+        "supports_from": [],
+        "reasoning": "An asset sale is not a repeating payment agreement."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.income-work.01",
+        "context_id": "fe-production-income-work-01-practice-03",
+        "supports_from": [],
+        "reasoning": "The exceptional receipt should not silently become recurring income."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.income-work.01",
+        "context_id": "fe-production-income-work-01-transfer-01",
+        "supports_from": [],
+        "reasoning": "The stated one-time condition limits future estimates."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.income-work.01",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Separate repeatable receipts from one-time money before planning."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Separa entradas repetibles de dinero de una sola vez antes de planear."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Separe entradas repetidas de dinheiro recebido uma só vez antes de planejar."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Check the pattern",
+          "line": "A 50-dollar gift arrived once. Weekly pay repeats under its agreement; the gift has no such agreement."
+        },
+        "es-MX": {
+          "prompt": "Revisa el patrón",
+          "line": "Llegó un regalo único de 50 pesos; el pago semanal acordado se repite mientras siga el trabajo. No repitas el regalo."
+        },
+        "pt-BR": {
+          "prompt": "Confira o padrão",
+          "line": "Chegou um presente único de 50 reais; o pagamento semanal combinado se repete enquanto o trabalho continua. Não repita o presente."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Which category fits?",
+          "scene": "A birthday gift arrived with no promise of another.",
+          "options": [
+            {
+              "label": "A recurring bill"
+            },
+            {
+              "label": "Guaranteed weekly pay"
+            },
+            {
+              "label": "One-time receipt"
+            }
+          ],
+          "help": [
+            "Separate receipt from expectation of repetition."
+          ],
+          "feedback": {
+            "met": "No repeating payment was agreed.",
+            "not_yet": "Separate receipt from expectation of repetition."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué categoría corresponde?",
+          "scene": "Llegó un regalo de cumpleaños sin promesa de otro.",
+          "options": [
+            {
+              "label": "Una cuenta recurrente"
+            },
+            {
+              "label": "Pago semanal garantizado"
+            },
+            {
+              "label": "Entrada de una sola vez"
+            }
+          ],
+          "help": [
+            "Separa recibir de esperar repetición."
+          ],
+          "feedback": {
+            "met": "No se acordó un pago repetido.",
+            "not_yet": "Separa recibir de esperar repetición."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual categoria corresponde?",
+          "scene": "Chegou um presente de aniversário sem promessa de outro.",
+          "options": [
+            {
+              "label": "Uma conta recorrente"
+            },
+            {
+              "label": "Pagamento semanal garantido"
+            },
+            {
+              "label": "Entrada única"
+            }
+          ],
+          "help": [
+            "Separe receber de esperar repetição."
+          ],
+          "feedback": {
+            "met": "Não foi combinado pagamento repetido.",
+            "not_yet": "Separe receber de esperar repetição."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.01",
+      "copy": {
+        "en-US": {
+          "prompt": "How should future receipts be described?",
+          "scene": "A client pays only when an occasional order is completed.",
+          "options": [
+            {
+              "label": "Irregular and conditional"
+            },
+            {
+              "label": "Money already received"
+            },
+            {
+              "label": "The same amount every week"
+            }
+          ],
+          "help": [
+            "Check whether both timing and amount repeat."
+          ],
+          "feedback": {
+            "met": "The work condition limits when payment occurs.",
+            "not_yet": "Check whether both timing and amount repeat."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cómo describir entradas futuras?",
+          "scene": "Un cliente paga solo al completar pedidos ocasionales.",
+          "options": [
+            {
+              "label": "Irregulares y condicionadas"
+            },
+            {
+              "label": "Dinero ya recibido"
+            },
+            {
+              "label": "El mismo monto cada semana"
+            }
+          ],
+          "help": [
+            "Revisa si se repiten fecha y monto."
+          ],
+          "feedback": {
+            "met": "La condición del trabajo limita cuándo ocurre el pago.",
+            "not_yet": "Revisa si se repiten fecha y monto."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Como descrever entradas futuras?",
+          "scene": "Um cliente paga só ao concluir pedidos ocasionais.",
+          "options": [
+            {
+              "label": "Irregulares e condicionais"
+            },
+            {
+              "label": "Dinheiro já recebido"
+            },
+            {
+              "label": "O mesmo valor toda semana"
+            }
+          ],
+          "help": [
+            "Confira se prazo e valor se repetem."
+          ],
+          "feedback": {
+            "met": "A condição do trabalho limita quando ocorre o pagamento.",
+            "not_yet": "Confira se prazo e valor se repetem."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Which description is supported?",
+          "scene": "A fixed monthly payment is agreed while an ongoing contract remains active.",
+          "options": [
+            {
+              "label": "A one-time gift"
+            },
+            {
+              "label": "Recurring under the stated condition"
+            },
+            {
+              "label": "Guaranteed forever"
+            }
+          ],
+          "help": [
+            "Do not remove the contract condition."
+          ],
+          "feedback": {
+            "met": "The repeating agreement still has a stated condition.",
+            "not_yet": "Do not remove the contract condition."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué descripción está respaldada?",
+          "scene": "Se acuerda pago mensual fijo mientras siga activo un contrato.",
+          "options": [
+            {
+              "label": "Un regalo único"
+            },
+            {
+              "label": "Recurrente bajo la condición indicada"
+            },
+            {
+              "label": "Garantizado para siempre"
+            }
+          ],
+          "help": [
+            "No elimines la condición del contrato."
+          ],
+          "feedback": {
+            "met": "El acuerdo repetido aún tiene una condición indicada.",
+            "not_yet": "No elimines la condición del contrato."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual descrição é sustentada?",
+          "scene": "Há pagamento mensal fixo combinado enquanto o contrato estiver ativo.",
+          "options": [
+            {
+              "label": "Um presente único"
+            },
+            {
+              "label": "Recorrente sob a condição informada"
+            },
+            {
+              "label": "Garantido para sempre"
+            }
+          ],
+          "help": [
+            "Não elimine a condição do contrato."
+          ],
+          "feedback": {
+            "met": "O acordo repetido ainda tem uma condição informada.",
+            "not_yet": "Não elimine a condição do contrato."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Will it repeat monthly?",
+          "scene": "A sale of your old bicycle brings money once.",
+          "options": [
+            {
+              "label": "Yes, every receipt repeats"
+            },
+            {
+              "label": "Yes, if the plan needs money"
+            },
+            {
+              "label": "No, the same bicycle cannot be sold repeatedly"
+            }
+          ],
+          "help": [
+            "Look for evidence of another actual receipt."
+          ],
+          "feedback": {
+            "met": "An asset sale is not a repeating payment agreement.",
+            "not_yet": "Look for evidence of another actual receipt."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Debe aparecer cada mes futuro?",
+          "scene": "Vender tu bicicleta usada trae dinero una vez.",
+          "options": [
+            {
+              "label": "Sí, toda entrada se repite"
+            },
+            {
+              "label": "Sí, si el plan necesita dinero"
+            },
+            {
+              "label": "No, la misma bicicleta no se vende repetidamente"
+            }
+          ],
+          "help": [
+            "Busca evidencia de otra entrada real."
+          ],
+          "feedback": {
+            "met": "Vender un bien no es un acuerdo de pago repetido.",
+            "not_yet": "Busca evidencia de otra entrada real."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Deve aparecer todo mês futuro?",
+          "scene": "Vender sua bicicleta usada traz dinheiro uma vez.",
+          "options": [
+            {
+              "label": "Sim, toda entrada se repete"
+            },
+            {
+              "label": "Sim, se o plano precisa de dinheiro"
+            },
+            {
+              "label": "Não, a mesma bicicleta não é vendida repetidamente"
+            }
+          ],
+          "help": [
+            "Procure evidência de outra entrada real."
+          ],
+          "feedback": {
+            "met": "Vender um bem não é um acordo de pagamento repetido.",
+            "not_yet": "Procure evidência de outra entrada real."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What should next month’s estimate separate?",
+          "scene": "Last month included ordinary pay and a one-time reimbursement.",
+          "options": [
+            {
+              "label": "Nothing, copy the full total"
+            },
+            {
+              "label": "Only the largest number"
+            },
+            {
+              "label": "Recurring pay from the one-time reimbursement"
+            }
+          ],
+          "help": [
+            "Use each receipt’s expected pattern."
+          ],
+          "feedback": {
+            "met": "The exceptional receipt should not silently become recurring income.",
+            "not_yet": "Use each receipt’s expected pattern."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe separar la estimación siguiente?",
+          "scene": "El mes pasado incluyó pago habitual y una devolución única.",
+          "options": [
+            {
+              "label": "Nada, copiar el total completo"
+            },
+            {
+              "label": "Solo el número más grande"
+            },
+            {
+              "label": "Pago recurrente de devolución única"
+            }
+          ],
+          "help": [
+            "Usa el patrón esperado de cada entrada."
+          ],
+          "feedback": {
+            "met": "La entrada excepcional no debe volverse ingreso recurrente sin evidencia.",
+            "not_yet": "Usa el patrón esperado de cada entrada."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que a próxima estimativa deve separar?",
+          "scene": "O mês passado incluiu pagamento habitual e reembolso único.",
+          "options": [
+            {
+              "label": "Nada, copiar o total inteiro"
+            },
+            {
+              "label": "Só o maior número"
+            },
+            {
+              "label": "Pagamento recorrente de reembolso único"
+            }
+          ],
+          "help": [
+            "Use o padrão esperado de cada entrada."
+          ],
+          "feedback": {
+            "met": "A entrada excepcional não deve virar renda recorrente sem evidência.",
+            "not_yet": "Use o padrão esperado de cada entrada."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.income-work.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What is the sound planning distinction?",
+          "scene": "A household receives regular support plus disaster aid explicitly paid once.",
+          "options": [
+            {
+              "label": "Keep the one-time aid separate"
+            },
+            {
+              "label": "Ignore all support"
+            },
+            {
+              "label": "Assume both repeat indefinitely"
+            }
+          ],
+          "help": [
+            "Use the payment conditions, not just the total."
+          ],
+          "feedback": {
+            "met": "The stated one-time condition limits future estimates.",
+            "not_yet": "Use the payment conditions, not just the total."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué distinción permite planear?",
+          "scene": "Un hogar recibe apoyo regular más ayuda por desastre pagada una sola vez.",
+          "options": [
+            {
+              "label": "Mantener separada la ayuda única"
+            },
+            {
+              "label": "Ignorar todo el apoyo"
+            },
+            {
+              "label": "Suponer que ambos se repiten indefinidamente"
+            }
+          ],
+          "help": [
+            "Usa condiciones de pago, no solo el total."
+          ],
+          "feedback": {
+            "met": "La condición de una sola vez limita estimaciones futuras.",
+            "not_yet": "Usa condiciones de pago, no solo el total."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual distinção permite planejar?",
+          "scene": "Uma família recebe apoio regular mais auxílio por desastre pago uma só vez.",
+          "options": [
+            {
+              "label": "Manter separado o auxílio único"
+            },
+            {
+              "label": "Ignorar todo o apoio"
+            },
+            {
+              "label": "Supor que ambos se repetem indefinidamente"
+            }
+          ],
+          "help": [
+            "Use condições de pagamento, não só o total."
+          ],
+          "feedback": {
+            "met": "A condição de uma só vez limita estimativas futuras.",
+            "not_yet": "Use condições de pagamento, não só o total."
+          }
+        }
+      }
+    }
+  ]
+}

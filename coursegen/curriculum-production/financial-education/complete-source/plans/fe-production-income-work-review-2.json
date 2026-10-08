@@ -1,0 +1,897 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-income-work-part-2",
+  "lesson_id": "fe-production-income-work-review-2",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.cash.received",
+    "finance.prod.income-work.06",
+    "finance.prod.income-work.07",
+    "finance.prod.income-work.08",
+    "finance.prod.income-work.09",
+    "finance.prod.income-work.10"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Apply the previously taught financial relationships to the visible constraints of a new situation.",
+  "title": {
+    "en-US": "Activity records",
+    "es-MX": "Revisa una actividad pequeña",
+    "pt-BR": "Confira uma atividade pequena"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Check a small activity\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Revisa una actividad pequeña\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Confira uma atividade pequena\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "consolidate",
+    "objective": {
+      "skill_id": "cash.received",
+      "observable_action": "Apply the previously taught financial relationships to the visible constraints of a new situation.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "cash.direction"
+    ],
+    "retrieval_skills": [
+      "prod.income-work.06",
+      "prod.income-work.07",
+      "prod.income-work.08",
+      "prod.income-work.09",
+      "prod.income-work.10",
+      "cash.received"
+    ],
+    "relevance": "Use records and stated constraints to interpret an activity’s income.",
+    "misconception": "Reuse an earlier answer without checking the current quantities, units and conditions.",
+    "numeracy_support": "All required quantities remain on the current board.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.income-work.06",
+        "context_id": "fe-production-income-work-review-2-practice-01",
+        "supports_from": [],
+        "reasoning": "A peak does not override evidence about the coming period."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.income-work.07",
+        "context_id": "fe-production-income-work-review-2-practice-02",
+        "supports_from": [],
+        "reasoning": "Both costs and the home withdrawal leave the activity."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.income-work.08",
+        "context_id": "fe-production-income-work-review-2-practice-03",
+        "supports_from": [],
+        "reasoning": "Compare agreed work with its matching completed receipts."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.income-work.09",
+        "context_id": "fe-production-income-work-review-2-practice-04",
+        "supports_from": [],
+        "reasoning": "The comparable after-cost amount is higher for B."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.income-work.10",
+        "context_id": "fe-production-income-work-review-2-practice-05",
+        "supports_from": [],
+        "reasoning": "Official scope matters more than a viral claim."
+      },
+      {
+        "segment_id": "practice-06",
+        "skill_id": "cash.received",
+        "context_id": "fe-production-income-work-review-2-practice-06",
+        "supports_from": [],
+        "reasoning": "A payment request does not transfer money by itself."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "cash.received",
+        "context_id": "fe-production-income-work-review-2-transfer-01",
+        "supports_from": [],
+        "reasoning": "An award announcement is not completed disbursement."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "cash.received",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Use records and stated constraints to interpret an activity’s income."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Usa registros y condiciones indicadas para interpretar ingresos de una actividad."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Use registros e condições informadas para interpretar renda de uma atividade."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which estimate respects this change?",
+          "scene": "Holiday orders peaked; the coming ordinary month has fewer confirmed orders.",
+          "options": [
+            {
+              "label": "Update for current confirmed work"
+            },
+            {
+              "label": "Repeat the peak automatically"
+            },
+            {
+              "label": "Treat all hoped-for orders as paid"
+            }
+          ],
+          "help": [
+            "Use relevant current conditions alongside history."
+          ],
+          "feedback": {
+            "met": "A peak does not override evidence about the coming period.",
+            "not_yet": "Use relevant current conditions alongside history."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué estimación respeta ese cambio?",
+          "scene": "Pedidos festivos dieron un mes máximo; el próximo mes normal tiene menos pedidos confirmados.",
+          "options": [
+            {
+              "label": "Actualizar por trabajo confirmado actual"
+            },
+            {
+              "label": "Repetir el máximo automáticamente"
+            },
+            {
+              "label": "Tratar pedidos deseados como pagados"
+            }
+          ],
+          "help": [
+            "Usa condiciones actuales pertinentes junto al historial."
+          ],
+          "feedback": {
+            "met": "Un máximo no supera evidencia sobre el periodo próximo.",
+            "not_yet": "Usa condiciones actuales pertinentes junto al historial."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual estimativa respeita essa mudança?",
+          "scene": "Pedidos festivos geraram um mês alto; o próximo mês comum tem menos pedidos confirmados.",
+          "options": [
+            {
+              "label": "Atualizar pelo trabalho confirmado atual"
+            },
+            {
+              "label": "Repetir o pico automaticamente"
+            },
+            {
+              "label": "Tratar pedidos desejados como pagos"
+            }
+          ],
+          "help": [
+            "Use condições atuais relevantes junto ao histórico."
+          ],
+          "feedback": {
+            "met": "Um pico não supera evidência sobre o período seguinte.",
+            "not_yet": "Use condições atuais relevantes junto ao histórico."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.07",
+      "copy": {
+        "en-US": {
+          "prompt": "How much of these receipts remains?",
+          "scene": "The activity receives 170 dollars, pays 90 in costs, and moves 30 home.",
+          "options": [
+            {
+              "label": "50"
+            },
+            {
+              "label": "80"
+            },
+            {
+              "label": "110"
+            }
+          ],
+          "help": [
+            "Track each movement by its actual direction."
+          ],
+          "feedback": {
+            "met": "Both costs and the home withdrawal leave the activity.",
+            "not_yet": "Track each movement by its actual direction."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto queda de estas entradas?",
+          "scene": "La actividad recibe 170 pesos, paga 90 de costos y mueve 30 al hogar.",
+          "options": [
+            {
+              "label": "50"
+            },
+            {
+              "label": "80"
+            },
+            {
+              "label": "110"
+            }
+          ],
+          "help": [
+            "Sigue cada movimiento según su dirección real."
+          ],
+          "feedback": {
+            "met": "Costos y retiro al hogar salen de la actividad.",
+            "not_yet": "Sigue cada movimiento según su dirección real."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto resta destas entradas?",
+          "scene": "A atividade recebe 170 reais, paga 90 de custos e move 30 para casa.",
+          "options": [
+            {
+              "label": "50"
+            },
+            {
+              "label": "80"
+            },
+            {
+              "label": "110"
+            }
+          ],
+          "help": [
+            "Acompanhe cada movimento pela direção real."
+          ],
+          "feedback": {
+            "met": "Custos e retirada para casa saem da atividade.",
+            "not_yet": "Acompanhe cada movimento pela direção real."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          170,
+          90,
+          30
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Unmatched amount?",
+          "scene": "An accepted assignment owes 130; matching completed receipts total 85.",
+          "options": [
+            {
+              "label": "85"
+            },
+            {
+              "label": "45"
+            },
+            {
+              "label": "215"
+            }
+          ],
+          "help": [
+            "Subtract the matching paid amount from what is owed."
+          ],
+          "feedback": {
+            "met": "Compare agreed work with its matching completed receipts.",
+            "not_yet": "Subtract the matching paid amount from what is owed."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Monto sin cubrir?",
+          "scene": "Un trabajo aceptado debe pagar 130; comprobantes realizados suman 85.",
+          "options": [
+            {
+              "label": "85"
+            },
+            {
+              "label": "45"
+            },
+            {
+              "label": "215"
+            }
+          ],
+          "help": [
+            "Resta lo pagado correspondiente de lo debido."
+          ],
+          "feedback": {
+            "met": "Compara trabajo acordado y entradas realizadas correspondientes.",
+            "not_yet": "Resta lo pagado correspondiente de lo debido."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Valor sem cobertura?",
+          "scene": "Um trabalho aceito deve pagar 130; comprovantes concluídos somam 85.",
+          "options": [
+            {
+              "label": "85"
+            },
+            {
+              "label": "45"
+            },
+            {
+              "label": "215"
+            }
+          ],
+          "help": [
+            "Subtraia o pago correspondente do devido."
+          ],
+          "feedback": {
+            "met": "Compare trabalho combinado e entradas concluídas correspondentes.",
+            "not_yet": "Subtraia o pago correspondente do devido."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          130,
+          85
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Which leaves more under these terms?",
+          "scene": "Same duration: offer A leaves 65 after all costs; offer B leaves 75 after all costs.",
+          "options": [
+            {
+              "label": "They are equal"
+            },
+            {
+              "label": "Offer B"
+            },
+            {
+              "label": "Offer A"
+            }
+          ],
+          "help": [
+            "These figures already remove the stated costs."
+          ],
+          "feedback": {
+            "met": "The comparable after-cost amount is higher for B.",
+            "not_yet": "These figures already remove the stated costs."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál deja más bajo esas condiciones?",
+          "scene": "Misma duración: oferta A deja 65 tras costos; B deja 75 tras costos.",
+          "options": [
+            {
+              "label": "Son iguales"
+            },
+            {
+              "label": "Oferta B"
+            },
+            {
+              "label": "Oferta A"
+            }
+          ],
+          "help": [
+            "Estas cifras ya retiran los costos indicados."
+          ],
+          "feedback": {
+            "met": "El monto comparable tras costos es mayor en B.",
+            "not_yet": "Estas cifras ya retiran los costos indicados."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual deixa mais sob essas condições?",
+          "scene": "Mesma duração: oferta A deixa 65 após custos; B deixa 75 após custos.",
+          "options": [
+            {
+              "label": "São iguais"
+            },
+            {
+              "label": "Oferta B"
+            },
+            {
+              "label": "Oferta A"
+            }
+          ],
+          "help": [
+            "Esses valores já retiram os custos informados."
+          ],
+          "feedback": {
+            "met": "O valor comparável após custos é maior em B.",
+            "not_yet": "Esses valores já retiram os custos informados."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Which source should verify applicability?",
+          "scene": "A viral post promises a universal work benefit but cites no jurisdiction.",
+          "options": [
+            {
+              "label": "The applicable official labor authority"
+            },
+            {
+              "label": "An unrelated product seller"
+            },
+            {
+              "label": "The most-liked reply"
+            }
+          ],
+          "help": [
+            "Check place, date and work conditions."
+          ],
+          "feedback": {
+            "met": "Official scope matters more than a viral claim.",
+            "not_yet": "Check place, date and work conditions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué fuente debe verificar aplicación?",
+          "scene": "Una publicación viral promete beneficio laboral universal sin citar jurisdicción.",
+          "options": [
+            {
+              "label": "La autoridad laboral oficial aplicable"
+            },
+            {
+              "label": "Un vendedor de producto ajeno"
+            },
+            {
+              "label": "La respuesta con más me gusta"
+            }
+          ],
+          "help": [
+            "Revisa lugar, fecha y condiciones laborales."
+          ],
+          "feedback": {
+            "met": "El alcance oficial importa más que una afirmación viral.",
+            "not_yet": "Revisa lugar, fecha y condiciones laborales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual fonte deve conferir aplicação?",
+          "scene": "Uma postagem viral promete benefício trabalhista universal sem citar jurisdição.",
+          "options": [
+            {
+              "label": "O órgão trabalhista oficial aplicável"
+            },
+            {
+              "label": "Um vendedor de produto alheio"
+            },
+            {
+              "label": "A resposta mais curtida"
+            }
+          ],
+          "help": [
+            "Confira local, data e condições de trabalho."
+          ],
+          "feedback": {
+            "met": "O alcance oficial importa mais que uma alegação viral.",
+            "not_yet": "Confira local, data e condições de trabalho."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.received",
+      "copy": {
+        "en-US": {
+          "prompt": "Has the activity received money?",
+          "scene": "A customer sent a payment request, not a completed payment.",
+          "options": [
+            {
+              "label": "Any payment message is cash"
+            },
+            {
+              "label": "The amount is written"
+            },
+            {
+              "label": "A request is not receipt"
+            }
+          ],
+          "help": [
+            "Confirm actual receipt independently."
+          ],
+          "feedback": {
+            "met": "A payment request does not transfer money by itself.",
+            "not_yet": "Confirm actual receipt independently."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿La actividad ya tiene ese dinero?",
+          "scene": "Un cliente envió solicitud de pago, no pago realizado.",
+          "options": [
+            {
+              "label": "Sí, todo mensaje de pago es efectivo"
+            },
+            {
+              "label": "Sí, el monto está escrito"
+            },
+            {
+              "label": "No, solicitar no es recibir"
+            }
+          ],
+          "help": [
+            "Confirma recepción real de forma independiente."
+          ],
+          "feedback": {
+            "met": "Una solicitud de pago no transfiere dinero por sí sola.",
+            "not_yet": "Confirma recepción real de forma independiente."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A atividade já tem esse dinheiro?",
+          "scene": "Um cliente enviou pedido de pagamento, não pagamento concluído.",
+          "options": [
+            {
+              "label": "Sim, toda mensagem de pagamento é dinheiro"
+            },
+            {
+              "label": "Sim, o valor está escrito"
+            },
+            {
+              "label": "Não, pedir não é receber"
+            }
+          ],
+          "help": [
+            "Confirme o recebimento real de forma independente."
+          ],
+          "feedback": {
+            "met": "Um pedido de pagamento não transfere dinheiro sozinho.",
+            "not_yet": "Confirme o recebimento real de forma independente."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.cash.received",
+      "copy": {
+        "en-US": {
+          "prompt": "How should current available money treat it?",
+          "scene": "An activity wins a grant, but disbursement is scheduled after a document check.",
+          "options": [
+            {
+              "label": "Not yet received"
+            },
+            {
+              "label": "Already in the cash box"
+            },
+            {
+              "label": "Available because announced"
+            }
+          ],
+          "help": [
+            "Check receipt rather than only approval."
+          ],
+          "feedback": {
+            "met": "An award announcement is not completed disbursement.",
+            "not_yet": "Check receipt rather than only approval."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cómo tratarlo en el dinero disponible actual?",
+          "scene": "Una actividad gana apoyo, pero el desembolso será tras revisar documentos.",
+          "options": [
+            {
+              "label": "Aún no recibido"
+            },
+            {
+              "label": "Ya en la caja"
+            },
+            {
+              "label": "Disponible por anunciarse"
+            }
+          ],
+          "help": [
+            "Revisa recepción, no solo aprobación."
+          ],
+          "feedback": {
+            "met": "Anunciar un apoyo no es realizar el desembolso.",
+            "not_yet": "Revisa recepción, no solo aprobación."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Como tratá-lo no dinheiro disponível atual?",
+          "scene": "Uma atividade ganha auxílio, mas o repasse ocorrerá após conferir documentos.",
+          "options": [
+            {
+              "label": "Ainda não recebido"
+            },
+            {
+              "label": "Já no caixa"
+            },
+            {
+              "label": "Disponível porque foi anunciado"
+            }
+          ],
+          "help": [
+            "Confira recebimento, não só aprovação."
+          ],
+          "feedback": {
+            "met": "Anunciar um auxílio não é concluir o repasse.",
+            "not_yet": "Confira recebimento, não só aprovação."
+          }
+        }
+      }
+    }
+  ]
+}

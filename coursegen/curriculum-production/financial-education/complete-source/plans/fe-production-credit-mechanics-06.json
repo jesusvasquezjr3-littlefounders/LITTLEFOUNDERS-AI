@@ -1,0 +1,707 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-credit-mechanics-part-2",
+  "lesson_id": "fe-production-credit-mechanics-06",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.credit-mechanics.06"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Compare loans with different payment sizes using total cost and duration.",
+  "title": {
+    "en-US": "Payment duration",
+    "es-MX": "Pago pequeño, préstamo largo",
+    "pt-BR": "Parcela pequena, prazo longo"
+  },
+  "new_concepts": [
+    "finance.prod.credit-mechanics.06"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Small payment, long loan\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Pago pequeño, préstamo largo\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Parcela pequena, prazo longo\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.credit-mechanics.06",
+      "observable_action": "Compare loans with different payment sizes using total cost and duration.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.credit-mechanics.02",
+      "prod.credit-mechanics.05"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Compare how long payments last and how much they add up to.",
+    "misconception": "A lower periodic payment necessarily means a less expensive loan.",
+    "numeracy_support": "Every quantity and assumption needed to decide is visible in the current scenario. Examples explain the relationship before independent application.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.credit-mechanics.06",
+        "context_id": "fe-production-credit-mechanics-06-example-01",
+        "supports_from": [],
+        "reasoning": "Four payments of 30 total 120; eight of 20 total 160. The smaller payment lasts longer and costs more."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.credit-mechanics.06",
+        "context_id": "fe-production-credit-mechanics-06-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Compare the complete totals, not just the monthly payment."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.credit-mechanics.06",
+        "context_id": "fe-production-credit-mechanics-06-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The shorter stated duration ends repayment sooner."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.credit-mechanics.06",
+        "context_id": "fe-production-credit-mechanics-06-practice-03",
+        "supports_from": [],
+        "reasoning": "A has the lower total despite its larger installments."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.credit-mechanics.06",
+        "context_id": "fe-production-credit-mechanics-06-practice-04",
+        "supports_from": [],
+        "reasoning": "Lower regular payments can accompany a higher overall total."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.credit-mechanics.06",
+        "context_id": "fe-production-credit-mechanics-06-practice-05",
+        "supports_from": [],
+        "reasoning": "The totals match even though repayment duration differs."
+      },
+      {
+        "segment_id": "transfer-06",
+        "skill_id": "prod.credit-mechanics.06",
+        "context_id": "fe-production-credit-mechanics-06-transfer-06",
+        "supports_from": [],
+        "reasoning": "B’s final balloon brings its complete repayment above A’s."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.credit-mechanics.06",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Compare how long payments last and how much they add up to."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Compara cuánto duran los pagos y cuánto suman."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Compare quanto tempo duram as parcelas e quanto somam."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Follow the evidence",
+          "line": "Four payments of 30 total 120; eight of 20 total 160. The smaller payment lasts longer and costs more."
+        },
+        "es-MX": {
+          "prompt": "Sigue las pruebas",
+          "line": "Cuatro pagos de 30 suman 120; ocho de 20 suman 160. El pago menor dura más y cuesta más."
+        },
+        "pt-BR": {
+          "prompt": "Siga as provas",
+          "line": "Quatro parcelas de 30 somam 120; oito de 20 somam 160. A parcela menor dura mais e custa mais."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which costs less overall?",
+          "scene": "Same borrowed amount; all charges included. A: total 120 over 4 months; B: 160 over 8.",
+          "options": [
+            {
+              "label": "A"
+            },
+            {
+              "label": "B"
+            }
+          ],
+          "help": [
+            "The longer schedule can outweigh its smaller payments."
+          ],
+          "feedback": {
+            "met": "Compare the complete totals, not just the monthly payment.",
+            "not_yet": "The longer schedule can outweigh its smaller payments."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál cuesta menos en total?",
+          "scene": "Mismo préstamo; cargos incluidos. A: total 120 en 4 meses; B: 160 en 8.",
+          "options": [
+            {
+              "label": "A"
+            },
+            {
+              "label": "B"
+            }
+          ],
+          "help": [
+            "El plazo mayor puede superar la ventaja de pagos pequeños."
+          ],
+          "feedback": {
+            "met": "Compara los totales completos, no solo el pago mensual.",
+            "not_yet": "El plazo mayor puede superar la ventaja de pagos pequeños."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual custa menos no total?",
+          "scene": "Mesmo empréstimo; encargos incluídos. A: total 120 em 4 meses; B: 160 em 8.",
+          "options": [
+            {
+              "label": "A"
+            },
+            {
+              "label": "B"
+            }
+          ],
+          "help": [
+            "O prazo maior pode superar a vantagem de parcelas menores."
+          ],
+          "feedback": {
+            "met": "Compare os totais completos, não só a parcela mensal.",
+            "not_yet": "O prazo maior pode superar a vantagem de parcelas menores."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which ends sooner?",
+          "scene": "Same start date. A ends after 6 months; B after 10 months.",
+          "options": [
+            {
+              "label": "A"
+            },
+            {
+              "label": "B"
+            }
+          ],
+          "help": [
+            "Compare the duration from the same starting date."
+          ],
+          "feedback": {
+            "met": "The shorter stated duration ends repayment sooner.",
+            "not_yet": "Compare the duration from the same starting date."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál termina antes?",
+          "scene": "Misma fecha inicial. A termina en 6 meses; B en 10 meses.",
+          "options": [
+            {
+              "label": "A"
+            },
+            {
+              "label": "B"
+            }
+          ],
+          "help": [
+            "Compara la duración desde la misma fecha inicial."
+          ],
+          "feedback": {
+            "met": "La menor duración indicada termina los pagos antes.",
+            "not_yet": "Compara la duración desde la misma fecha inicial."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual termina antes?",
+          "scene": "Mesma data inicial. A termina em 6 meses; B em 10 meses.",
+          "options": [
+            {
+              "label": "A"
+            },
+            {
+              "label": "B"
+            }
+          ],
+          "help": [
+            "Compare a duração a partir da mesma data inicial."
+          ],
+          "feedback": {
+            "met": "A menor duração indicada termina os pagamentos antes.",
+            "not_yet": "Compare a duração a partir da mesma data inicial."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Choose the lower total.",
+          "scene": "Same amount borrowed; A: 5 payments of 30; B: 8 payments of 20. No extra charges.",
+          "options": [
+            {
+              "label": "B"
+            },
+            {
+              "label": "A"
+            }
+          ],
+          "help": [
+            "Multiply each payment by its count before comparing."
+          ],
+          "feedback": {
+            "met": "A has the lower total despite its larger installments.",
+            "not_yet": "Multiply each payment by its count before comparing."
+          }
+        },
+        "es-MX": {
+          "prompt": "Elige el menor total.",
+          "scene": "Mismo dinero prestado; A: 5 pagos de 30; B: 8 pagos de 20. Sin cargos extra.",
+          "options": [
+            {
+              "label": "B"
+            },
+            {
+              "label": "A"
+            }
+          ],
+          "help": [
+            "Multiplica cada pago por su cantidad antes de comparar."
+          ],
+          "feedback": {
+            "met": "A tiene el menor total pese a sus pagos mayores.",
+            "not_yet": "Multiplica cada pago por su cantidad antes de comparar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Escolha o menor total.",
+          "scene": "Mesmo dinheiro emprestado; A: 5 parcelas de 30; B: 8 de 20. Sem encargos extras.",
+          "options": [
+            {
+              "label": "B"
+            },
+            {
+              "label": "A"
+            }
+          ],
+          "help": [
+            "Multiplique cada parcela pela quantidade antes de comparar."
+          ],
+          "feedback": {
+            "met": "A tem o menor total apesar de suas parcelas maiores.",
+            "not_yet": "Multiplique cada parcela pela quantidade antes de comparar."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.06",
+      "copy": {
+        "en-US": {
+          "prompt": "What changes?",
+          "scene": "Same principal, all charges included: A repays 180 over 6 months; B, 200 over 10.",
+          "options": [
+            {
+              "label": "B lasts longer and costs more"
+            },
+            {
+              "label": "B costs less"
+            }
+          ],
+          "help": [
+            "Consider both the total and the duration."
+          ],
+          "feedback": {
+            "met": "Lower regular payments can accompany a higher overall total.",
+            "not_yet": "Consider both the total and the duration."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué implica la diferencia?",
+          "scene": "Mismo préstamo, cargos incluidos: A devuelve 180 en 6 meses; B, 200 en 10.",
+          "options": [
+            {
+              "label": "B dura más y cuesta más"
+            },
+            {
+              "label": "B cuesta menos por sus pagos menores"
+            }
+          ],
+          "help": [
+            "Considera tanto el total como la duración."
+          ],
+          "feedback": {
+            "met": "Los pagos menores pueden acompañar un total más alto.",
+            "not_yet": "Considera tanto el total como la duración."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é a diferença?",
+          "scene": "Mesmo empréstimo, encargos incluídos: A devolve 180 em 6 meses; B, 200 em 10.",
+          "options": [
+            {
+              "label": "B dura mais e custa mais"
+            },
+            {
+              "label": "B custa menos pelas parcelas menores"
+            }
+          ],
+          "help": [
+            "Considere tanto o total quanto a duração."
+          ],
+          "feedback": {
+            "met": "Parcelas menores podem acompanhar um total maior.",
+            "not_yet": "Considere tanto o total quanto a duração."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which conclusion is supported?",
+          "scene": "Same loan amount: A total 150 over 5 months; B total 150 over 10.",
+          "options": [
+            {
+              "label": "Equal total, different duration"
+            },
+            {
+              "label": "B is cheaper because it lasts longer"
+            }
+          ],
+          "help": [
+            "A longer schedule alone does not determine total cost."
+          ],
+          "feedback": {
+            "met": "The totals match even though repayment duration differs.",
+            "not_yet": "A longer schedule alone does not determine total cost."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué conclusión está respaldada?",
+          "scene": "Mismo préstamo: A suma 150 en 5 meses; B suma 150 en 10.",
+          "options": [
+            {
+              "label": "Igual total, distinta duración"
+            },
+            {
+              "label": "B es más barato por durar más"
+            }
+          ],
+          "help": [
+            "Un plazo mayor por sí solo no determina el costo total."
+          ],
+          "feedback": {
+            "met": "Los totales coinciden aunque la duración sea distinta.",
+            "not_yet": "Un plazo mayor por sí solo no determina el costo total."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual conclusão tem respaldo?",
+          "scene": "Mesmo empréstimo: A soma 150 em 5 meses; B soma 150 em 10.",
+          "options": [
+            {
+              "label": "Mesmo total, duração diferente"
+            },
+            {
+              "label": "B é mais barato porque dura mais"
+            }
+          ],
+          "help": [
+            "Um prazo maior sozinho não define o custo total."
+          ],
+          "feedback": {
+            "met": "Os totais coincidem embora a duração seja diferente.",
+            "not_yet": "Um prazo maior sozinho não define o custo total."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.credit-mechanics.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which complete schedule costs less?",
+          "scene": "Same repair loan, no other charges: A total 180; B installments total 150 plus final payment 50.",
+          "options": [
+            {
+              "label": "A"
+            },
+            {
+              "label": "B"
+            }
+          ],
+          "help": [
+            "Include the distinct final payment before comparing totals."
+          ],
+          "feedback": {
+            "met": "B’s final balloon brings its complete repayment above A’s.",
+            "not_yet": "Include the distinct final payment before comparing totals."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué calendario completo cuesta menos?",
+          "scene": "Mismo préstamo de reparación, sin otros cargos: A suma 180; B suma 150 en cuotas y pago final 50.",
+          "options": [
+            {
+              "label": "A"
+            },
+            {
+              "label": "B"
+            }
+          ],
+          "help": [
+            "Incluye el pago final diferente antes de comparar totales."
+          ],
+          "feedback": {
+            "met": "El pago final de B eleva su total por encima de A.",
+            "not_yet": "Incluye el pago final diferente antes de comparar totales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual calendário completo custa menos?",
+          "scene": "Mesmo empréstimo de reparo, sem outros encargos: A soma 180; B soma 150 em parcelas e pagamento final 50.",
+          "options": [
+            {
+              "label": "A"
+            },
+            {
+              "label": "B"
+            }
+          ],
+          "help": [
+            "Inclua o pagamento final diferente antes de comparar totais."
+          ],
+          "feedback": {
+            "met": "O pagamento final de B eleva seu total acima de A.",
+            "not_yet": "Inclua o pagamento final diferente antes de comparar totais."
+          }
+        }
+      }
+    }
+  ]
+}

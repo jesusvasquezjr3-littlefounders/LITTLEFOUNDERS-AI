@@ -1,0 +1,834 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-cashflow-budget-part-2",
+  "lesson_id": "fe-production-cashflow-budget-09",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.cashflow-budget.09"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Rebalance a plan after an expense increases while keeping its totals consistent.",
+  "title": {
+    "en-US": "Rebalancing plans",
+    "es-MX": "Reequilibra después de un cambio",
+    "pt-BR": "Reequilibre após uma mudança"
+  },
+  "new_concepts": [
+    "finance.prod.cashflow-budget.09"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Rebalance after a change\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Reequilibra después de un cambio\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Reequilibre após uma mudança\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.cashflow-budget.09",
+      "observable_action": "Rebalance a plan after an expense increases while keeping its totals consistent.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.cashflow-budget.03",
+      "prod.cashflow-budget.04"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A changed cost must change the total or another feasible allocation.",
+    "misconception": "Increasing one allocation while leaving the total and every other allocation unchanged.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.cashflow-budget.09",
+        "context_id": "fe-production-cashflow-budget-09-example-01",
+        "supports_from": [],
+        "reasoning": "If a required cost rises, update the total. Reduce another feasible allocation or show the remaining gap."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.cashflow-budget.09",
+        "context_id": "fe-production-cashflow-budget-09-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "100 − 80 = 20 remains under the new cost."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.cashflow-budget.09",
+        "context_id": "fe-production-cashflow-budget-09-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Without another change, the added cost creates a gap."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.cashflow-budget.09",
+        "context_id": "fe-production-cashflow-budget-09-practice-01",
+        "supports_from": [],
+        "reasoning": "18 − 10 = 8 still needs a feasible response."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.cashflow-budget.09",
+        "context_id": "fe-production-cashflow-budget-09-practice-02",
+        "supports_from": [],
+        "reasoning": "An adjustment must be feasible and protect the stated necessity."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.cashflow-budget.09",
+        "context_id": "fe-production-cashflow-budget-09-practice-03",
+        "supports_from": [],
+        "reasoning": "A plan edit cannot reverse an actual completed payment."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.cashflow-budget.09",
+        "context_id": "fe-production-cashflow-budget-09-transfer-01",
+        "supports_from": [],
+        "reasoning": "150 − 125 = 25 remains within the total."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.cashflow-budget.09",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A changed cost must change the total or another feasible allocation."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un costo cambiado debe cambiar el total u otra asignación viable."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Um custo alterado deve mudar o total ou outra destinação viável."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Keep the total honest",
+          "line": "If a required cost rises, update the total. Reduce another feasible allocation or show the remaining gap."
+        },
+        "es-MX": {
+          "prompt": "Conserva el total real",
+          "line": "Si sube un costo necesario, actualiza el total. Reduce otra asignación viable o muestra el faltante restante."
+        },
+        "pt-BR": {
+          "prompt": "Mantenha o total correto",
+          "line": "Se um custo necessário sobe, atualize o total. Reduza outra destinação viável ou mostre a falta restante."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.09",
+      "copy": {
+        "en-US": {
+          "prompt": "New optional remainder?",
+          "scene": "Money available: 100; essentials rise from 70 to 80; the rest was optional.",
+          "options": [
+            {
+              "label": "20"
+            },
+            {
+              "label": "10"
+            },
+            {
+              "label": "30"
+            }
+          ],
+          "help": [
+            "Use the new essential cost rather than the old allocation."
+          ],
+          "feedback": {
+            "met": "100 − 80 = 20 remains under the new cost.",
+            "not_yet": "Use the new essential cost rather than the old allocation."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Nuevo resto opcional?",
+          "scene": "Disponible: 100; lo esencial sube de 70 a 80; el resto era opcional.",
+          "options": [
+            {
+              "label": "20"
+            },
+            {
+              "label": "10"
+            },
+            {
+              "label": "30"
+            }
+          ],
+          "help": [
+            "Usa el costo esencial nuevo, no la asignación anterior."
+          ],
+          "feedback": {
+            "met": "100 − 80 = 20 queda con el costo nuevo.",
+            "not_yet": "Usa el costo esencial nuevo, no la asignación anterior."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Novo restante opcional?",
+          "scene": "Disponível: 100; o essencial sobe de 70 para 80; o restante era opcional.",
+          "options": [
+            {
+              "label": "20"
+            },
+            {
+              "label": "10"
+            },
+            {
+              "label": "30"
+            }
+          ],
+          "help": [
+            "Use o custo essencial novo, não a destinação anterior."
+          ],
+          "feedback": {
+            "met": "100 − 80 = 20 resta com o custo novo.",
+            "not_yet": "Use o custo essencial novo, não a destinação anterior."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          100,
+          70,
+          80
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.09",
+      "copy": {
+        "en-US": {
+          "prompt": "What happens now?",
+          "scene": "A balanced plan has no unassigned money; one cost rises with everything else unchanged.",
+          "options": [
+            {
+              "label": "It remains balanced automatically"
+            },
+            {
+              "label": "Its expenses now exceed its money"
+            },
+            {
+              "label": "The increase creates income"
+            }
+          ],
+          "help": [
+            "Recalculate rather than keeping the old total."
+          ],
+          "feedback": {
+            "met": "Without another change, the added cost creates a gap.",
+            "not_yet": "Recalculate rather than keeping the old total."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué ocurre con el plan?",
+          "scene": "Un plan equilibrado no tiene dinero sin asignar; sube un costo sin cambiar lo demás.",
+          "options": [
+            {
+              "label": "Sigue equilibrado automáticamente"
+            },
+            {
+              "label": "Sus gastos superan su dinero"
+            },
+            {
+              "label": "El aumento crea ingreso"
+            }
+          ],
+          "help": [
+            "Recalcula en vez de conservar el total anterior."
+          ],
+          "feedback": {
+            "met": "Sin otro cambio, el costo adicional crea un faltante.",
+            "not_yet": "Recalcula en vez de conservar el total anterior."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que acontece com o plano?",
+          "scene": "Um plano equilibrado não tem dinheiro sem destinar; sobe um custo sem mudar o restante.",
+          "options": [
+            {
+              "label": "Continua equilibrado automaticamente"
+            },
+            {
+              "label": "Seus gastos superam seu dinheiro"
+            },
+            {
+              "label": "O aumento cria renda"
+            }
+          ],
+          "help": [
+            "Recalcule em vez de manter o total anterior."
+          ],
+          "feedback": {
+            "met": "Sem outra mudança, o custo adicional cria uma falta.",
+            "not_yet": "Recalcule em vez de manter o total anterior."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Uncovered increase after that adjustment?",
+          "scene": "An expense increases by 18; a freely adjustable allocation can fall by only 10.",
+          "options": [
+            {
+              "label": "28"
+            },
+            {
+              "label": "0"
+            },
+            {
+              "label": "8"
+            }
+          ],
+          "help": [
+            "A partial adjustment leaves part of the gap visible."
+          ],
+          "feedback": {
+            "met": "18 − 10 = 8 still needs a feasible response.",
+            "not_yet": "A partial adjustment leaves part of the gap visible."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Aumento sin cubrir tras ajustar?",
+          "scene": "Un gasto aumenta 18; una asignación libremente ajustable solo puede bajar 10.",
+          "options": [
+            {
+              "label": "28"
+            },
+            {
+              "label": "0"
+            },
+            {
+              "label": "8"
+            }
+          ],
+          "help": [
+            "Un ajuste parcial deja visible parte del faltante."
+          ],
+          "feedback": {
+            "met": "18 − 10 = 8 aún requiere una respuesta viable.",
+            "not_yet": "Un ajuste parcial deja visible parte del faltante."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Aumento sem cobertura após ajustar?",
+          "scene": "Um gasto aumenta 18; uma destinação livremente ajustável só pode cair 10.",
+          "options": [
+            {
+              "label": "28"
+            },
+            {
+              "label": "0"
+            },
+            {
+              "label": "8"
+            }
+          ],
+          "help": [
+            "Um ajuste parcial deixa visível parte da falta."
+          ],
+          "feedback": {
+            "met": "18 − 10 = 8 ainda exige uma resposta viável.",
+            "not_yet": "Um ajuste parcial deixa visível parte da falta."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          18,
+          10
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Which adjustment preserves this need?",
+          "scene": "A plan lists required medicine and an optional unused subscription with free cancellation.",
+          "options": [
+            {
+              "label": "Review canceling the unused subscription"
+            },
+            {
+              "label": "Remove the necessary medicine"
+            },
+            {
+              "label": "Delete the recorded increase"
+            }
+          ],
+          "help": [
+            "Changing the record alone does not change the actual expense."
+          ],
+          "feedback": {
+            "met": "An adjustment must be feasible and protect the stated necessity.",
+            "not_yet": "Changing the record alone does not change the actual expense."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué ajuste conserva la necesidad indicada?",
+          "scene": "Un plan incluye medicina necesaria y una suscripción opcional sin uso, cancelable gratis.",
+          "options": [
+            {
+              "label": "Revisar cancelar la suscripción sin uso"
+            },
+            {
+              "label": "Eliminar la medicina necesaria"
+            },
+            {
+              "label": "Borrar el aumento del registro"
+            }
+          ],
+          "help": [
+            "Cambiar el registro no cambia el gasto real."
+          ],
+          "feedback": {
+            "met": "Un ajuste debe ser viable y proteger la necesidad indicada.",
+            "not_yet": "Cambiar el registro no cambia el gasto real."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual ajuste preserva a necessidade informada?",
+          "scene": "Um plano inclui remédio necessário e uma assinatura opcional sem uso, cancelável grátis.",
+          "options": [
+            {
+              "label": "Rever cancelar a assinatura sem uso"
+            },
+            {
+              "label": "Eliminar o remédio necessário"
+            },
+            {
+              "label": "Apagar o aumento do registro"
+            }
+          ],
+          "help": [
+            "Mudar o registro não muda o gasto real."
+          ],
+          "feedback": {
+            "met": "Um ajuste deve ser viável e proteger a necessidade informada.",
+            "not_yet": "Mudar o registro não muda o gasto real."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Does editing the plan recover that cash?",
+          "scene": "You lower an allocation after spending its entire amount.",
+          "options": [
+            {
+              "label": "Yes, plans reverse payments"
+            },
+            {
+              "label": "No, completed spending remains spent"
+            },
+            {
+              "label": "Yes, the lower label refunds it"
+            }
+          ],
+          "help": [
+            "Adjust what can still change, and keep actual spending recorded."
+          ],
+          "feedback": {
+            "met": "A plan edit cannot reverse an actual completed payment.",
+            "not_yet": "Adjust what can still change, and keep actual spending recorded."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Editar el plan recupera ese efectivo?",
+          "scene": "Reduces una asignación después de haber gastado todo su monto.",
+          "options": [
+            {
+              "label": "Sí, los planes revierten pagos"
+            },
+            {
+              "label": "No, lo gastado sigue gastado"
+            },
+            {
+              "label": "Sí, la etiqueta menor lo reembolsa"
+            }
+          ],
+          "help": [
+            "Ajusta lo aún modificable y conserva el gasto real registrado."
+          ],
+          "feedback": {
+            "met": "Editar un plan no revierte un pago real realizado.",
+            "not_yet": "Ajusta lo aún modificable y conserva el gasto real registrado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Editar o plano recupera esse dinheiro?",
+          "scene": "Reduz uma destinação depois de ter gastado todo o valor.",
+          "options": [
+            {
+              "label": "Sim, planos revertem pagamentos"
+            },
+            {
+              "label": "Não, o gasto continua realizado"
+            },
+            {
+              "label": "Sim, o rótulo menor devolve"
+            }
+          ],
+          "help": [
+            "Ajuste o que ainda muda e mantenha o gasto real registrado."
+          ],
+          "feedback": {
+            "met": "Editar um plano não reverte um pagamento real concluído.",
+            "not_yet": "Ajuste o que ainda muda e mantenha o gasto real registrado."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.cashflow-budget.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Maximum remaining decoration allocation?",
+          "scene": "An event has 150 available; revised required costs are 125; decoration is optional.",
+          "options": [
+            {
+              "label": "125"
+            },
+            {
+              "label": "25"
+            },
+            {
+              "label": "150"
+            }
+          ],
+          "help": [
+            "Respect the revised costs and the unchanged available money."
+          ],
+          "feedback": {
+            "met": "150 − 125 = 25 remains within the total.",
+            "not_yet": "Respect the revised costs and the unchanged available money."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Máxima asignación restante para decorar?",
+          "scene": "Un evento tiene 150 disponibles; costos necesarios revisados son 125; decorar es opcional.",
+          "options": [
+            {
+              "label": "125"
+            },
+            {
+              "label": "25"
+            },
+            {
+              "label": "150"
+            }
+          ],
+          "help": [
+            "Respeta costos revisados y dinero disponible sin cambios."
+          ],
+          "feedback": {
+            "met": "150 − 125 = 25 queda dentro del total.",
+            "not_yet": "Respeta costos revisados y dinero disponible sin cambios."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Máxima destinação restante para decorar?",
+          "scene": "Um evento tem 150 disponíveis; custos necessários revistos são 125; decorar é opcional.",
+          "options": [
+            {
+              "label": "125"
+            },
+            {
+              "label": "25"
+            },
+            {
+              "label": "150"
+            }
+          ],
+          "help": [
+            "Respeite custos revistos e dinheiro disponível sem mudanças."
+          ],
+          "feedback": {
+            "met": "150 − 125 = 25 resta dentro do total.",
+            "not_yet": "Respeite custos revistos e dinheiro disponível sem mudanças."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          150,
+          125
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

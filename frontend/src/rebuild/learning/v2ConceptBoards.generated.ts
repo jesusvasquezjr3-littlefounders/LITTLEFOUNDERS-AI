@@ -115,7 +115,7 @@ const base = {
   id, prompt: z.string().trim().min(1).max(500),
   help: z.array(z.string().trim().min(1).max(160)).min(1).max(2).optional(),
   // GAP-FIX-R6 (B.20, Bible 02 §9.2): the same authored feedback banner every v2 segment may carry (v2SegmentFamilies' v2SegmentFeedback).
-  feedback: z.object({ met: z.string().trim().min(1).max(160).optional(), not_yet: z.string().trim().min(1).max(160).optional() }).strict()
+  feedback: z.object({ met: z.string().trim().min(1).max(160).optional(), not_yet: z.string().trim().min(1).max(160).optional(), choice_hints: z.record(z.string().regex(/^[a-z0-9][a-z0-9._:-]{2,100}$/), z.string().trim().min(1).max(160)).optional() }).strict()
     .refine((value) => value.met !== undefined || value.not_yet !== undefined, 'Feedback needs met or not_yet').optional(),
   item_role: z.enum(['practice', 'transfer']).optional(),
   knowledge_component_id: id.optional(),

@@ -73,10 +73,11 @@ describe('course client (both engines)', () => {
 
   it('derives the next step from what Core computed, for both engines', () => {
     expect(nextStep({ engine: 'pathway', path: childPathFixture() })).toMatchObject({ kind: 'lesson', lessonId: 'l-1' });
-    expect(nextStep({ engine: 'pathway', path: placementPathFixture() })).toEqual({ kind: 'placement' });
+    expect(nextStep({ engine: 'pathway', path: placementPathFixture() })).toMatchObject({ kind: 'lesson', lessonId: 'a-1' });
     expect(nextStep({ engine: 'pathway', path: completePathFixture() })).toEqual({ kind: 'done' });
     expect(nextStep({ engine: 'linear', tree: childTree() })).toMatchObject({ kind: 'lesson', lessonId: 'l-needs-1', minutes: 5 });
-    expect(nextStep({ engine: 'linear', tree: childTree(true) })).toEqual({ kind: 'placement' });
+    // The entry placement is offered, never a wall: a not-placed linear tree with no next lesson simply has nothing to start.
+    expect(nextStep({ engine: 'linear', tree: childTree(true) })).toEqual({ kind: 'none' });
   });
 
   it('picks the learner locale, then the authoring locale, then any title', () => {
@@ -118,14 +119,12 @@ describe('course screen under the pathway engine (B.6)', () => {
     expect(container.firstElementChild?.getAttribute('data-theme')).toBe('dark');
   });
 
-  it('puts placement first when the stage has no entry placement, with no lesson to start', () => {
-    const { onNavigate } = view(coursePathPreviewStates.placement!, { locale: 'pt-BR' });
-    const hero = screen.getByRole('region', { name: 'Encontre seu início' });
-    fireEvent.click(within(hero).getByRole('link', { name: 'Começar' }));
-    expect(onNavigate).toHaveBeenCalledWith('/learn/financial-education/placement', undefined);
-    // The one call to action is the placement: no lesson link anywhere before it.
-    expect(document.querySelectorAll('a[href^="/learn/lesson/"]')).toHaveLength(0);
-    expect(screen.queryByRole('region', { name: 'Mais para abrir' })).toBeNull();
+  it('leads the path with its first lesson when the stage owes a placement, never gating on it', () => {
+    view(coursePathPreviewStates.placement!, { locale: 'pt-BR' });
+    expect(document.querySelector('[data-step="lesson"]')).not.toBeNull();
+    expect(document.querySelectorAll('a[href^="/learn/lesson/"]').length).toBeGreaterThan(0);
+    // The entry placement is offered by the course world, not forced as the only action here.
+    expect(screen.queryByRole('region', { name: 'Encontre seu início' })).toBeNull();
   });
 
   it('GAP-FIX-R5 (Block B autonomy): 6-9 picks between two next steps; 13-17 and adults may explore optional depth lessons', () => {
@@ -212,11 +211,10 @@ describe('course screen under the linear engine', () => {
     expect(toggle.getAttribute('aria-expanded')).toBe('false');
   });
 
-  it('offers the placement instead of redirecting into it, and opens no lesson before it (B.15)', () => {
+  it('does not gate the linear path on placement: no placement hero, chapters stay open (B.15)', () => {
     view(coursePreviewStates['linear-placement']!);
-    expect(screen.getByRole('link', { name: 'Start' }).getAttribute('href')).toBe('/learn/financial-education/placement');
-    expect(screen.getByText('A few questions show where you begin.')).toBeTruthy();
-    expect(screen.queryByRole('button', { name: 'Lessons' })).toBeNull();
+    expect(screen.queryByRole('region', { name: 'Find your start' })).toBeNull();
+    expect(screen.getAllByRole('button', { name: 'Lessons' }).length).toBeGreaterThan(0);
   });
 
   it('keeps the way to the territory map and says when a course is still being built', () => {

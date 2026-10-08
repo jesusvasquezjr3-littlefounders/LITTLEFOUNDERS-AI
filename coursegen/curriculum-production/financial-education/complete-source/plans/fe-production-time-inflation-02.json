@@ -1,0 +1,887 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-time-inflation-part-1",
+  "lesson_id": "fe-production-time-inflation-02",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.time-inflation.02"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Distinguish earned interest from a contribution to an account.",
+  "title": {
+    "en-US": "Growth sources",
+    "es-MX": "¿De dónde vino el aumento?",
+    "pt-BR": "De onde veio o aumento?"
+  },
+  "new_concepts": [
+    "finance.prod.time-inflation.02"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Where did the increase come from?\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"¿De dónde vino el aumento?\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"De onde veio o aumento?\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.time-inflation.02",
+      "observable_action": "Distinguish earned interest from a contribution to an account.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.time-inflation.01",
+      "cash.transfer"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A rising account balance can include your own added money.",
+    "misconception": "Treating all account growth as interest, including money contributed by the account holder.",
+    "numeracy_support": "Every quantity and assumption needed to decide is visible in the current scenario. Examples explain the relationship before independent application.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.time-inflation.02",
+        "context_id": "fe-production-time-inflation-02-example-01",
+        "supports_from": [],
+        "reasoning": "Start with 100, add your own 20 and earn interest 5: balance 125. Only 5 is interest."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.time-inflation.02",
+        "context_id": "fe-production-time-inflation-02-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "250 − 200 − 40 = 10 interest."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.time-inflation.02",
+        "context_id": "fe-production-time-inflation-02-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Your transfer moves existing money; the interest credit is different."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.time-inflation.02",
+        "context_id": "fe-production-time-inflation-02-practice-03",
+        "supports_from": [],
+        "reasoning": "372 − 300 − 60 = 12 interest."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.time-inflation.02",
+        "context_id": "fe-production-time-inflation-02-practice-04",
+        "supports_from": [],
+        "reasoning": "100 − 80 − 20 = 0; contributions explain the increase."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.time-inflation.02",
+        "context_id": "fe-production-time-inflation-02-practice-05",
+        "supports_from": [],
+        "reasoning": "The cause of growth cannot be established from totals alone."
+      },
+      {
+        "segment_id": "transfer-06",
+        "skill_id": "prod.time-inflation.02",
+        "context_id": "fe-production-time-inflation-02-transfer-06",
+        "supports_from": [],
+        "reasoning": "645 − 500 − 120 = 25 interest."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.time-inflation.02",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A rising account balance can include your own added money."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un saldo creciente puede incluir dinero que tú añadiste."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Um saldo crescente pode incluir dinheiro que você acrescentou."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Follow the evidence",
+          "line": "Start with 100, add your own 20 and earn interest 5: balance 125. Only 5 is interest."
+        },
+        "es-MX": {
+          "prompt": "Sigue las pruebas",
+          "line": "Empieza con 100, añade 20 propios y gana interés 5: saldo 125. Solo 5 es interés."
+        },
+        "pt-BR": {
+          "prompt": "Siga as provas",
+          "line": "Comece com 100, acrescente 20 seus e ganhe juros 5: saldo 125. Só 5 é juros."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.time-inflation.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Interest portion?",
+          "scene": "Opening 200; your contribution 40; closing 250; no other movement.",
+          "options": [
+            {
+              "label": "40"
+            },
+            {
+              "label": "10"
+            },
+            {
+              "label": "50"
+            }
+          ],
+          "help": [
+            "Remove the opening balance and your added money."
+          ],
+          "feedback": {
+            "met": "250 − 200 − 40 = 10 interest.",
+            "not_yet": "Remove the opening balance and your added money."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Parte de interés?",
+          "scene": "Inicio 200; aportación tuya 40; cierre 250; sin otros movimientos.",
+          "options": [
+            {
+              "label": "40"
+            },
+            {
+              "label": "10"
+            },
+            {
+              "label": "50"
+            }
+          ],
+          "help": [
+            "Resta el saldo inicial y el dinero que añadiste."
+          ],
+          "feedback": {
+            "met": "250 − 200 − 40 = 10 de interés.",
+            "not_yet": "Resta el saldo inicial y el dinero que añadiste."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Parte de juros?",
+          "scene": "Início 200; aporte seu 40; fechamento 250; sem outros movimentos.",
+          "options": [
+            {
+              "label": "40"
+            },
+            {
+              "label": "10"
+            },
+            {
+              "label": "50"
+            }
+          ],
+          "help": [
+            "Subtraia o saldo inicial e o dinheiro que acrescentou."
+          ],
+          "feedback": {
+            "met": "250 − 200 − 40 = 10 de juros.",
+            "not_yet": "Subtraia o saldo inicial e o dinheiro que acrescentou."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          200,
+          40,
+          250
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 2
+                },
+                {
+                  "input": 0
+                }
+              ]
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.time-inflation.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Which entry is earned interest?",
+          "scene": "Records list your transfer and a separate bank interest credit.",
+          "options": [
+            {
+              "label": "Both because both increase balance"
+            },
+            {
+              "label": "Your transfer"
+            },
+            {
+              "label": "The bank interest credit"
+            }
+          ],
+          "help": [
+            "Identify the source of each increase."
+          ],
+          "feedback": {
+            "met": "Your transfer moves existing money; the interest credit is different.",
+            "not_yet": "Identify the source of each increase."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué entrada es interés ganado?",
+          "scene": "El registro separa tu transferencia y un abono de interés bancario.",
+          "options": [
+            {
+              "label": "Ambos porque aumentan el saldo"
+            },
+            {
+              "label": "Tu transferencia"
+            },
+            {
+              "label": "El abono de interés bancario"
+            }
+          ],
+          "help": [
+            "Identifica el origen de cada aumento."
+          ],
+          "feedback": {
+            "met": "Tu transferencia mueve dinero existente; el abono de interés es distinto.",
+            "not_yet": "Identifica el origen de cada aumento."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual entrada é juros ganhos?",
+          "scene": "O registro separa sua transferência e um crédito de juros bancários.",
+          "options": [
+            {
+              "label": "Ambos porque aumentam o saldo"
+            },
+            {
+              "label": "Sua transferência"
+            },
+            {
+              "label": "O crédito de juros bancários"
+            }
+          ],
+          "help": [
+            "Identifique a origem de cada aumento."
+          ],
+          "feedback": {
+            "met": "Sua transferência move dinheiro existente; o crédito de juros é diferente.",
+            "not_yet": "Identifique a origem de cada aumento."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.time-inflation.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Interest earned?",
+          "scene": "Opening 300; contribution 60; closing 372; no other movements.",
+          "options": [
+            {
+              "label": "60"
+            },
+            {
+              "label": "72"
+            },
+            {
+              "label": "12"
+            }
+          ],
+          "help": [
+            "The contribution is not interest."
+          ],
+          "feedback": {
+            "met": "372 − 300 − 60 = 12 interest.",
+            "not_yet": "The contribution is not interest."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Interés ganado?",
+          "scene": "Inicio 300; aportación 60; cierre 372; sin otros movimientos.",
+          "options": [
+            {
+              "label": "60"
+            },
+            {
+              "label": "72"
+            },
+            {
+              "label": "12"
+            }
+          ],
+          "help": [
+            "La aportación no es interés."
+          ],
+          "feedback": {
+            "met": "372 − 300 − 60 = 12 de interés.",
+            "not_yet": "La aportación no es interés."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Juros ganhos?",
+          "scene": "Início 300; aporte 60; fechamento 372; sem outros movimentos.",
+          "options": [
+            {
+              "label": "60"
+            },
+            {
+              "label": "72"
+            },
+            {
+              "label": "12"
+            }
+          ],
+          "help": [
+            "O aporte não é juros."
+          ],
+          "feedback": {
+            "met": "372 − 300 − 60 = 12 de juros.",
+            "not_yet": "O aporte não é juros."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          300,
+          60,
+          372
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 2
+                },
+                {
+                  "input": 0
+                }
+              ]
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.time-inflation.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Interest earned?",
+          "scene": "Opening 80; your addition 20; closing 100; no other changes.",
+          "options": [
+            {
+              "label": "20"
+            },
+            {
+              "label": "100"
+            },
+            {
+              "label": "0"
+            }
+          ],
+          "help": [
+            "An increasing balance does not necessarily mean interest."
+          ],
+          "feedback": {
+            "met": "100 − 80 − 20 = 0; contributions explain the increase.",
+            "not_yet": "An increasing balance does not necessarily mean interest."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Interés ganado?",
+          "scene": "Inicio 80; añades 20; cierre 100; sin otros cambios.",
+          "options": [
+            {
+              "label": "20"
+            },
+            {
+              "label": "100"
+            },
+            {
+              "label": "0"
+            }
+          ],
+          "help": [
+            "Un saldo creciente no implica necesariamente interés."
+          ],
+          "feedback": {
+            "met": "100 − 80 − 20 = 0; la aportación explica el aumento.",
+            "not_yet": "Un saldo creciente no implica necesariamente interés."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Juros ganhos?",
+          "scene": "Início 80; acrescenta 20; fechamento 100; sem outras mudanças.",
+          "options": [
+            {
+              "label": "20"
+            },
+            {
+              "label": "100"
+            },
+            {
+              "label": "0"
+            }
+          ],
+          "help": [
+            "Um saldo crescente não implica necessariamente juros."
+          ],
+          "feedback": {
+            "met": "100 − 80 − 20 = 0; o aporte explica o aumento.",
+            "not_yet": "Um saldo crescente não implica necessariamente juros."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          80,
+          20,
+          100
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 2
+                },
+                {
+                  "input": 0
+                }
+              ]
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.time-inflation.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Can all growth be called interest?",
+          "scene": "The balance increased, but contribution records are missing.",
+          "options": [
+            {
+              "label": "Yes, missing records mean no contributions"
+            },
+            {
+              "label": "No, identify the movements first"
+            },
+            {
+              "label": "Yes, every increase is interest"
+            }
+          ],
+          "help": [
+            "Missing contribution data is not proof of zero contributions."
+          ],
+          "feedback": {
+            "met": "The cause of growth cannot be established from totals alone.",
+            "not_yet": "Missing contribution data is not proof of zero contributions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Todo aumento puede llamarse interés?",
+          "scene": "El saldo aumentó, pero faltan registros de aportaciones.",
+          "options": [
+            {
+              "label": "Sí, sin registros no hubo aportaciones"
+            },
+            {
+              "label": "No, identifica primero los movimientos"
+            },
+            {
+              "label": "Sí, todo aumento es interés"
+            }
+          ],
+          "help": [
+            "Falta de datos no prueba ausencia de aportaciones."
+          ],
+          "feedback": {
+            "met": "Los totales solos no permiten establecer la causa del aumento.",
+            "not_yet": "Falta de datos no prueba ausencia de aportaciones."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Todo aumento pode ser chamado de juros?",
+          "scene": "O saldo subiu, mas faltam registros de aportes.",
+          "options": [
+            {
+              "label": "Sim, sem registros não houve aportes"
+            },
+            {
+              "label": "Não, identifique primeiro os movimentos"
+            },
+            {
+              "label": "Sim, todo aumento é juros"
+            }
+          ],
+          "help": [
+            "Falta de dados não prova ausência de aportes."
+          ],
+          "feedback": {
+            "met": "Os totais sozinhos não mostram a causa do aumento.",
+            "not_yet": "Falta de dados não prova ausência de aportes."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.time-inflation.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Interest under these facts?",
+          "scene": "Shared fund: opening 500; member contributions 120; closing 645; no other movement.",
+          "options": [
+            {
+              "label": "145"
+            },
+            {
+              "label": "25"
+            },
+            {
+              "label": "120"
+            }
+          ],
+          "help": [
+            "Separate members’ added money from earnings."
+          ],
+          "feedback": {
+            "met": "645 − 500 − 120 = 25 interest.",
+            "not_yet": "Separate members’ added money from earnings."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Interés según estos datos?",
+          "scene": "Fondo compartido: inicio 500; aportaciones 120; cierre 645; sin otros movimientos.",
+          "options": [
+            {
+              "label": "145"
+            },
+            {
+              "label": "25"
+            },
+            {
+              "label": "120"
+            }
+          ],
+          "help": [
+            "Separa dinero aportado por miembros de ganancias."
+          ],
+          "feedback": {
+            "met": "645 − 500 − 120 = 25 de interés.",
+            "not_yet": "Separa dinero aportado por miembros de ganancias."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Juros segundo esses dados?",
+          "scene": "Fundo compartilhado: início 500; aportes 120; fechamento 645; sem outros movimentos.",
+          "options": [
+            {
+              "label": "145"
+            },
+            {
+              "label": "25"
+            },
+            {
+              "label": "120"
+            }
+          ],
+          "help": [
+            "Separe dinheiro dos membros dos ganhos."
+          ],
+          "feedback": {
+            "met": "645 − 500 − 120 = 25 de juros.",
+            "not_yet": "Separe dinheiro dos membros dos ganhos."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          500,
+          120,
+          645
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 2
+                },
+                {
+                  "input": 0
+                }
+              ]
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

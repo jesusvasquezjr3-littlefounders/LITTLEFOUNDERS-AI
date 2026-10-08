@@ -53,7 +53,9 @@ import { milestoneReceipt, rhythmPreviewStates } from '../../learning/motivation
 import { RegisterGraduationView } from '../../learning/RegisterGraduationView';
 import { GuidedReviewOffer } from '../../learning/GuidedReviewOffer';
 import { LessonStageRequestHost } from '../../learning/lessonStage';
-import { framed, type PreviewContext, type PreviewRegistry } from './types';
+import { PlayScreen } from '../../games/PlayScreen';
+import { CIRCUITS, LENSES, MENTORS, MODES, SPEEDS, type ClosedKind, type ErrorKind, type GarageSelection, type PitOutcome, type PlayPhase, type Reply } from '../../games/vocabulary';
+import { framed, standalone, type PreviewContext, type PreviewRegistry } from './types';
 import v2FixtureDocuments from '../fixtures/v2FixtureDocuments.generated.json';
 import { segmentCapabilities, type LessonClientSegment } from '../../learning/lessonDocument';
 
@@ -85,7 +87,7 @@ const LearnPreviewHost = ({ children }: { children: ReactNode }) => <main classN
 /* W2L.1: the learner pages' links, as preview screens (a plain press opens that screen in place). */
 const previewLinks: LearnLinks = {
   home: '?screen=learnhome', course: () => '?screen=course', lesson: () => '?screen=lesson', placement: () => '?screen=placement',
-  territory: () => '?screen=territory', rhythm: '?screen=rhythm', journal: '?screen=journal', together: '?screen=together', mentor: '?screen=mentor',
+  territory: () => '?screen=territory', rhythm: '?screen=rhythm', journal: '?screen=journal', together: '?screen=together', mentor: '?screen=mentor', play: '?screen=play',
 };
 const REPORT_COPY = { 'en-US': enProfile.report, 'es-MX': esProfile.report, 'pt-BR': ptProfile.report } as const;
 
@@ -105,6 +107,43 @@ function PlacementPreview({ locale, theme, ageBand, params, go, t }: PreviewCont
   </SingleStateScreen>;
 }
 const previewNavigate = (go: PreviewContext['go']) => (href: string) => go(new URLSearchParams(href.replace(/^[^?]*\?/, '')).get('screen') ?? 'home');
+
+/*
+ * The game host (/learn/play/:gameId) in every phase (`?phase=garage|loading|gate|racing|paused|pitstop|soft|closed|error`),
+ * with no game behind it: a plain stage stands where the iframe goes. `?mentor=` is the learner's Mentor, `?lens=` and
+ * `?outcome=pending|none|failed|ready` the pit stop's facts, `?reply=a|b|unsure` an answered question, `?closed=` and `?error=`
+ * the card's kind, `?rotate=1` the phone-held-upright card. A press moves the visit on in place, as the route would.
+ */
+function pick<T extends string>(value: string | null, allowed: readonly T[], fallback: T): T {
+  return value !== null && (allowed as readonly string[]).includes(value) ? value as T : fallback;
+}
+const PLAY_PHASES = ['garage', 'loading', 'gate', 'racing', 'paused', 'pitstop', 'soft', 'closed', 'error'] as const satisfies readonly PlayPhase[];
+
+function PlayPreview({ locale, theme, ageBand, params }: PreviewContext) {
+  const [phase, setPhase] = useState<PlayPhase>(() => pick(params.get('phase'), PLAY_PHASES, 'garage'));
+  const [selection, setSelection] = useState<GarageSelection>({
+    circuit: pick(params.get('circuit'), CIRCUITS, 'jungleNeck'), mode: pick(params.get('mode'), MODES, 'single'),
+    driver: pick(params.get('driver'), MENTORS, 'rho'), speed: pick(params.get('speed'), SPEEDS, '100cc'),
+  });
+  const [muted, setMuted] = useState(false);
+  const [reply, setReply] = useState<Reply | null>(() => pick(params.get('reply'), ['a', 'b', 'unsure', 'none'] as const, 'none') === 'none' ? null : pick(params.get('reply'), ['a', 'b', 'unsure'] as const, 'a'));
+  const outcomeKind = pick(params.get('outcome'), ['pending', 'none', 'failed', 'ready'] as const, 'ready');
+  const outcome: PitOutcome = outcomeKind === 'ready' ? { status: 'ready', lens: pick(params.get('lens'), LENSES, 'steady') } : { status: outcomeKind };
+  const mentor = pick(params.get('mentor'), MENTORS, 'zara');
+  const hasFrame = phase !== 'garage' && phase !== 'closed' && phase !== 'error';
+  return <PlayScreen fixture locale={locale} dark={theme === 'dark'} ageBand={ageBand} phase={phase} mentor={mentor} selection={selection} muted={muted}
+    closed={phase === 'closed' ? pick(params.get('closed'), ['limit', 'ended', 'disabled'] as const satisfies readonly ClosedKind[], 'limit') : null}
+    error={phase === 'error' ? pick(params.get('error'), ['webgl', 'offline', 'unavailable'] as const satisfies readonly ErrorKind[], 'unavailable') : null}
+    pit={{ outcome, reply, aiText: params.get('ai') === '1' ? enGamesAi[locale] : null }}
+    frame={hasFrame ? <div className="lf-play-fixture" aria-hidden="true" /> : null} frameHidden={false} rotate={params.get('rotate') === '1'}
+    onSelect={(patch) => setSelection((current) => ({ ...current, ...patch }))} onMuted={setMuted} onGo={() => setPhase('gate')} onExit={() => setPhase('garage')}
+    onResume={() => setPhase('racing')} onRestart={() => setPhase('racing')} onRaceAgain={() => { setReply(null); setPhase('racing'); }} onChangeKart={() => setPhase('garage')}
+    onAskMentor={() => setPhase('garage')} onReply={setReply} onSoftStop={() => setPhase('garage')} onSoftKeep={() => setPhase('racing')} onRetry={() => setPhase('loading')} />;
+}
+/** A generated pit-stop line as the preview shows it (`?ai=1`): the same shape and length as the authored ones. */
+const enGamesAi: Record<PreviewContext['locale'], string> = {
+  'en-US': 'You waited for the big boost. I noticed.', 'es-MX': 'Esperaste el gran impulso. Lo noté.', 'pt-BR': 'Você esperou o grande impulso. Eu notei.',
+};
 
 const transport = framed(({ screen, locale, go }) => <LessonTransportStateView state={screen === 'loaderror' ? 'load-error' : screen as 'opening' | 'offline'}
   locale={locale} onBack={() => go('home')} onRetry={() => go('lesson')} />);
@@ -203,6 +242,8 @@ export const learnPreviewScreens: PreviewRegistry = {
     courseTitles={{ entre: 'Entrepreneurship' }} links={previewLinks} onNavigate={previewNavigate(go)} onRetry={() => go('coursepath')}
     // OD-25 (`?path=offers`): the preview answers yes without Core; the real route re-reads the course.
     onOpenEarly={async () => 'done'} onAcceptMastery={async () => 'done'} onDeclineMastery={async () => 'done'} /></LearnPreviewHost>),
+  // The game host in every phase (`?phase=`), with no game behind it.
+  play: standalone((context) => <PlayPreview key={`play:${context.locale}`} {...context} />),
   // W2L.1 (L2): the one course screen in every state, both course engines (`?course=`).
   course: framed(({ locale, theme, ageBand, params, go }) => <LearnPreviewHost><CourseView key={`course:${locale}:${params.get('course')}`} fixture locale={locale} dark={theme === 'dark'} ageBand={ageBand}
     slug="financial-education" state={coursePreviewStates[params.get('course') ?? 'linear'] ?? coursePreviewStates.linear!} inProgress={params.get('building') === '1'}
@@ -219,6 +260,7 @@ export const learnPreviewScreens: PreviewRegistry = {
       shelf={shelf} featured={featured} rhythm={rhythmPreviewStates[params.get('rhythm') ?? 'open'] ?? rhythmPreviewStates.open!}
       bridges={params.get('bridges') === '1' ? selfBridgesFixture() : []} links={previewLinks} onNavigate={previewNavigate(go)}
       together={params.get('together') === '1' ? { eligible: true, asked: true } : null}
+      play={params.get('play') === '1' ? { enabled: true } : null}
       onRetry={() => go('learnhome')} onBridge={async (_id, _answer, goal) => (goal ? 'goal' : 'done')} onOpenWallet={() => go('home')}
       graduation={params.get('graduation') === '1' ? <RegisterGraduationView fixture locale={locale} dark={theme === 'dark'} into="transition" onAcknowledge={async () => true} /> : null} /></LearnPreviewHost>;
   }),

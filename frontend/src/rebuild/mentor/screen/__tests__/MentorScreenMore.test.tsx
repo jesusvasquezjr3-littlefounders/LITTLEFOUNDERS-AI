@@ -441,10 +441,10 @@ describe('W2M.4: the conversation layer (T1c), the close (T1d) and OD-28', () =>
 
   it('T1d: the closing says the talk was saved to replay, never after a safety stop', () => {
     const history = [{ speaker: 'tutor' as const, text: 'Hi', seq: 1 }];
-    const { unmount } = show(session({ phase: 'closing', history, closing: { sessionId: 's1', script: 'completed', effort: 'kept_going', topic: null } }));
+    const { unmount } = show(session({ phase: 'closing', history, closing: { sessionId: 's1', script: 'completed', effort: 'kept_going', topic: null, summary: null, xp: null } }));
     expect(screen.getByText(t.savedReplay)).toBeInTheDocument();
     unmount();
-    show(session({ phase: 'closing', history, closing: { sessionId: 's1', script: 'safety_stop', effort: null, topic: null } }));
+    show(session({ phase: 'closing', history, closing: { sessionId: 's1', script: 'safety_stop', effort: null, topic: null, summary: null, xp: null } }));
     expect(screen.queryByText(t.savedReplay)).toBeNull();
   });
 });

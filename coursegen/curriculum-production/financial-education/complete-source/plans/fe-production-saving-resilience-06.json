@@ -1,0 +1,824 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-saving-resilience-part-1",
+  "lesson_id": "fe-production-saving-resilience-06",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.saving-resilience.06"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Adjust a contribution plan after a missed contribution without concealing the gap.",
+  "title": {
+    "en-US": "Missed Contributions",
+    "es-MX": "Ajusta tras un aporte faltante",
+    "pt-BR": "Ajuste após um aporte perdido"
+  },
+  "new_concepts": [
+    "finance.prod.saving-resilience.06"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Missed Contributions\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Ajusta tras un aporte faltante\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Ajuste após um aporte perdido\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.saving-resilience.06",
+      "observable_action": "Adjust a contribution plan after a missed contribution without concealing the gap.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.saving-resilience.05",
+      "prod.cashflow-budget.09"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Missing a contribution changes the balance, not your worth; update the gap and choose a feasible next step.",
+    "misconception": "A missed payment can be recorded as saved, or catching up must always come before essential bills.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.saving-resilience.06",
+        "context_id": "saving-resilience-06-example-01",
+        "supports_from": [],
+        "reasoning": "Use the actual saved balance. Recalculate the gap and adjust timing or feasible contributions without sacrificing stated essential payments."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.saving-resilience.06",
+        "context_id": "saving-resilience-06-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Only money actually saved can count toward the target."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.saving-resilience.06",
+        "context_id": "saving-resilience-06-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The revised gap uses the actual balance, not the schedule."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.saving-resilience.06",
+        "context_id": "saving-resilience-06-practice-01",
+        "supports_from": [],
+        "reasoning": "The actual remaining gap requires the stated number of contributions."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.saving-resilience.06",
+        "context_id": "saving-resilience-06-practice-02",
+        "supports_from": [],
+        "reasoning": "A flexible date can absorb the missed contribution without skipping essentials."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.saving-resilience.06",
+        "context_id": "saving-resilience-06-practice-03",
+        "supports_from": [],
+        "reasoning": "Repeated gaps can reveal an infeasible contribution plan."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.saving-resilience.06",
+        "context_id": "saving-resilience-06-transfer-01",
+        "supports_from": [],
+        "reasoning": "The feasible revision reflects both actual money and current capacity."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.saving-resilience.06",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Missing a contribution changes the balance, not your worth; update the gap and choose a feasible next step."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Faltar un aporte cambia saldo, no tu valor; actualiza faltante y elige siguiente paso viable."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Perder um aporte muda saldo, não seu valor; atualize falta e escolha próximo passo viável."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Record reality, revise the plan",
+          "line": "Use the actual saved balance. Recalculate the gap and adjust timing or feasible contributions without sacrificing stated essential payments."
+        },
+        "es-MX": {
+          "prompt": "Registra realidad, revisa plan",
+          "line": "Usa saldo realmente ahorrado. Recalcula faltante y ajusta fechas o aportes viables sin sacrificar pagos esenciales indicados."
+        },
+        "pt-BR": {
+          "prompt": "Registre realidade, reveja plano",
+          "line": "Use saldo de fato poupado. Recalcule falta e ajuste datas ou aportes viáveis sem sacrificar pagamentos essenciais dados."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which balance belongs in the revised plan?",
+          "scene": "One scheduled contribution never happened.",
+          "options": [
+            {
+              "label": "Planned balance as if paid"
+            },
+            {
+              "label": "Actual saved balance"
+            },
+            {
+              "label": "The target as already funded"
+            }
+          ],
+          "help": [
+            "Record the missed contribution honestly before recalculating."
+          ],
+          "feedback": {
+            "met": "Only money actually saved can count toward the target.",
+            "not_yet": "Record the missed contribution honestly before recalculating."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué saldo entra en plan revisado?",
+          "scene": "Un aporte programado nunca ocurrió.",
+          "options": [
+            {
+              "label": "Saldo previsto como si se pagó"
+            },
+            {
+              "label": "Saldo realmente ahorrado"
+            },
+            {
+              "label": "Meta como ya cubierta"
+            }
+          ],
+          "help": [
+            "Registra aporte faltante con claridad antes de recalcular."
+          ],
+          "feedback": {
+            "met": "Solo dinero realmente ahorrado cuenta hacia meta.",
+            "not_yet": "Registra aporte faltante con claridad antes de recalcular."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que saldo entra no plano revisto?",
+          "scene": "Um aporte marcado nunca ocorreu.",
+          "options": [
+            {
+              "label": "Saldo previsto como se pago"
+            },
+            {
+              "label": "Saldo de fato poupado"
+            },
+            {
+              "label": "Meta como já coberta"
+            }
+          ],
+          "help": [
+            "Registre aporte perdido com clareza antes de recalcular."
+          ],
+          "feedback": {
+            "met": "Só dinheiro de fato poupado conta para meta.",
+            "not_yet": "Registre aporte perdido com clareza antes de recalcular."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.06",
+      "copy": {
+        "en-US": {
+          "prompt": "What gap remains now?",
+          "scene": "Target: 500; Actual saved balance after missed contribution: 200; No return.",
+          "options": [
+            {
+              "label": "200"
+            },
+            {
+              "label": "500"
+            },
+            {
+              "label": "300"
+            }
+          ],
+          "help": [
+            "Subtract actual savings from the target."
+          ],
+          "feedback": {
+            "met": "The revised gap uses the actual balance, not the schedule.",
+            "not_yet": "Subtract actual savings from the target."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué faltante queda ahora?",
+          "scene": "Meta: 500; Saldo real tras aporte faltante: 200; Sin rendimiento.",
+          "options": [
+            {
+              "label": "200"
+            },
+            {
+              "label": "500"
+            },
+            {
+              "label": "300"
+            }
+          ],
+          "help": [
+            "Resta ahorro real a meta."
+          ],
+          "feedback": {
+            "met": "Faltante revisado usa saldo real, no calendario.",
+            "not_yet": "Resta ahorro real a meta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que falta resta agora?",
+          "scene": "Meta: 500; Saldo real após aporte perdido: 200; Sem rendimento.",
+          "options": [
+            {
+              "label": "200"
+            },
+            {
+              "label": "500"
+            },
+            {
+              "label": "300"
+            }
+          ],
+          "help": [
+            "Subtraia poupança real da meta."
+          ],
+          "feedback": {
+            "met": "Falta revista usa saldo real, não calendário.",
+            "not_yet": "Subtraia poupança real da meta."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          500,
+          200
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.06",
+      "copy": {
+        "en-US": {
+          "prompt": "How many more contributions are needed?",
+          "scene": "Target: 700; Actual savings: 300; Feasible contribution: 100; No return.",
+          "options": [
+            {
+              "label": "3"
+            },
+            {
+              "label": "4"
+            },
+            {
+              "label": "7"
+            }
+          ],
+          "help": [
+            "Subtract savings and divide by the feasible contribution."
+          ],
+          "feedback": {
+            "met": "The actual remaining gap requires the stated number of contributions.",
+            "not_yet": "Subtract savings and divide by the feasible contribution."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuántos aportes más se necesitan?",
+          "scene": "Meta: 700; Ahorro real: 300; Aporte viable: 100; Sin rendimiento.",
+          "options": [
+            {
+              "label": "3"
+            },
+            {
+              "label": "4"
+            },
+            {
+              "label": "7"
+            }
+          ],
+          "help": [
+            "Resta ahorro y divide entre aporte viable."
+          ],
+          "feedback": {
+            "met": "Faltante real necesita cantidad indicada de aportes.",
+            "not_yet": "Resta ahorro y divide entre aporte viable."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quantos aportes a mais são necessários?",
+          "scene": "Meta: 700; Poupança real: 300; Aporte viável: 100; Sem rendimento.",
+          "options": [
+            {
+              "label": "3"
+            },
+            {
+              "label": "4"
+            },
+            {
+              "label": "7"
+            }
+          ],
+          "help": [
+            "Subtraia poupança e divida pelo aporte viável."
+          ],
+          "feedback": {
+            "met": "Falta real precisa da quantidade dada de aportes.",
+            "not_yet": "Subtraia poupança e divida pelo aporte viável."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          700,
+          300,
+          100
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which adjustment is feasible here?",
+          "scene": "Doubling the next contribution would leave food unpaid; the goal deadline can move.",
+          "options": [
+            {
+              "label": "Double despite essential shortfall"
+            },
+            {
+              "label": "Keep feasible contribution; extend time"
+            },
+            {
+              "label": "Pretend nothing was missed"
+            }
+          ],
+          "help": [
+            "Choose an adjustment consistent with the stated budget."
+          ],
+          "feedback": {
+            "met": "A flexible date can absorb the missed contribution without skipping essentials.",
+            "not_yet": "Choose an adjustment consistent with the stated budget."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué ajuste es viable aquí?",
+          "scene": "Duplicar siguiente aporte deja comida sin pagar; fecha de meta puede moverse.",
+          "options": [
+            {
+              "label": "Duplicar pese a faltante esencial"
+            },
+            {
+              "label": "Mantener aporte viable; ampliar plazo"
+            },
+            {
+              "label": "Fingir que no faltó nada"
+            }
+          ],
+          "help": [
+            "Elige ajuste compatible con presupuesto indicado."
+          ],
+          "feedback": {
+            "met": "Fecha flexible absorbe aporte faltante sin omitir esenciales.",
+            "not_yet": "Elige ajuste compatible con presupuesto indicado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que ajuste é viável aqui?",
+          "scene": "Dobrar próximo aporte deixa comida sem pagar; data da meta pode mudar.",
+          "options": [
+            {
+              "label": "Dobrar apesar da falta essencial"
+            },
+            {
+              "label": "Manter aporte viável; ampliar prazo"
+            },
+            {
+              "label": "Fingir que não faltou nada"
+            }
+          ],
+          "help": [
+            "Escolha ajuste compatível com orçamento dado."
+          ],
+          "feedback": {
+            "met": "Data flexível absorve aporte perdido sem pular essenciais.",
+            "not_yet": "Escolha ajuste compatível com orçamento dado."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.06",
+      "copy": {
+        "en-US": {
+          "prompt": "What changes after repeated misses?",
+          "scene": "The plan repeatedly exceeds money actually available after essentials.",
+          "options": [
+            {
+              "label": "Only the record to hide misses"
+            },
+            {
+              "label": "Nothing because the target feels important"
+            },
+            {
+              "label": "Contribution amount or goal timing"
+            }
+          ],
+          "help": [
+            "Review actual capacity rather than conceal the shortfall."
+          ],
+          "feedback": {
+            "met": "Repeated gaps can reveal an infeasible contribution plan.",
+            "not_yet": "Review actual capacity rather than conceal the shortfall."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué cambiar tras faltas repetidas?",
+          "scene": "Plan supera repetidamente dinero real tras esenciales.",
+          "options": [
+            {
+              "label": "Solo registro para ocultar faltas"
+            },
+            {
+              "label": "Nada porque meta parece importante"
+            },
+            {
+              "label": "Monto de aporte o fecha de meta"
+            }
+          ],
+          "help": [
+            "Revisa capacidad real sin ocultar faltante."
+          ],
+          "feedback": {
+            "met": "Faltas repetidas pueden revelar plan de aportes inviable.",
+            "not_yet": "Revisa capacidad real sin ocultar faltante."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que mudar após faltas repetidas?",
+          "scene": "Plano supera repetidamente dinheiro real após essenciais.",
+          "options": [
+            {
+              "label": "Só registro para ocultar faltas"
+            },
+            {
+              "label": "Nada pois meta parece importante"
+            },
+            {
+              "label": "Valor do aporte ou data da meta"
+            }
+          ],
+          "help": [
+            "Reveja capacidade real sem ocultar falta."
+          ],
+          "feedback": {
+            "met": "Faltas repetidas podem revelar plano de aportes inviável.",
+            "not_yet": "Reveja capacidade real sem ocultar falta."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.saving-resilience.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which revision works?",
+          "scene": "A missed deposit delays a flexible goal; only the original contribution fits.",
+          "options": [
+            {
+              "label": "Record gap and revise completion date"
+            },
+            {
+              "label": "Record money never deposited"
+            },
+            {
+              "label": "Borrow to preserve the old date"
+            }
+          ],
+          "help": [
+            "Update the plan without inventing savings or ignoring essentials."
+          ],
+          "feedback": {
+            "met": "The feasible revision reflects both actual money and current capacity.",
+            "not_yet": "Update the plan without inventing savings or ignoring essentials."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué revisión es honesta y viable?",
+          "scene": "Depósito faltante retrasa meta flexible; solo aporte pequeño original sigue asequible.",
+          "options": [
+            {
+              "label": "Registrar faltante y revisar fecha final"
+            },
+            {
+              "label": "Registrar dinero nunca depositado"
+            },
+            {
+              "label": "Pedir préstamo para conservar fecha"
+            }
+          ],
+          "help": [
+            "Actualiza plan sin inventar ahorro ni ignorar esenciales."
+          ],
+          "feedback": {
+            "met": "Revisión viable refleja dinero real y capacidad actual.",
+            "not_yet": "Actualiza plan sin inventar ahorro ni ignorar esenciales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que revisão é honesta e viável?",
+          "scene": "Depósito perdido atrasa meta flexível; só aporte pequeno original segue acessível.",
+          "options": [
+            {
+              "label": "Registrar falta e rever data final"
+            },
+            {
+              "label": "Registrar dinheiro nunca depositado"
+            },
+            {
+              "label": "Pegar empréstimo para manter data"
+            }
+          ],
+          "help": [
+            "Atualize plano sem inventar poupança nem ignorar essenciais."
+          ],
+          "feedback": {
+            "met": "Revisão viável reflete dinheiro real e capacidade atual.",
+            "not_yet": "Atualize plano sem inventar poupança nem ignorar essenciais."
+          }
+        }
+      }
+    }
+  ]
+}

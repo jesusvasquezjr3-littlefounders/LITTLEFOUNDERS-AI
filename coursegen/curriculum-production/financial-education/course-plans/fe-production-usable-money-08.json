@@ -1,0 +1,834 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-usable-money",
+  "lesson_id": "fe-production-usable-money-08",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.plan.uncertain-income"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Revise today’s purchase decision after a promised payment is delayed.",
+  "title": {
+    "en-US": "When a receipt changes",
+    "es-MX": "Si cambia una entrada",
+    "pt-BR": "Se uma entrada muda"
+  },
+  "new_concepts": [
+    "finance.plan.uncertain-income"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"When a receipt changes\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Si cambia una entrada\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Se uma entrada muda\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "plan.uncertain-income",
+      "observable_action": "Revise today’s purchase decision after a promised payment is delayed.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "cash.received",
+      "cash.reserved",
+      "cash.dates"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A changed payment changes what a plan can afford. Recheck the money actually received.",
+    "misconception": "An earlier spending decision remains affordable even when the expected receipt is delayed or smaller.",
+    "numeracy_support": "Teach the current-balance update and reservation as separate visible steps before removing support. All transfer facts remain on its screen.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "plan.uncertain-income",
+        "context_id": "production-money-8-example-01",
+        "supports_from": [],
+        "reasoning": "A promised receipt is delayed. You have 60 and protect 40: 60 − 40 = 20 free without the missing receipt."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "plan.uncertain-income",
+        "context_id": "production-money-8-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "25 − 20 = 5. The unreceived promise does not increase today’s money."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "plan.uncertain-income",
+        "context_id": "production-money-8-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The canceled receipt no longer supports the purchase plan."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "plan.uncertain-income",
+        "context_id": "production-money-8-practice-01",
+        "supports_from": [],
+        "reasoning": "30 − 20 = 10 is free today."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "plan.uncertain-income",
+        "context_id": "production-money-8-practice-02",
+        "supports_from": [],
+        "reasoning": "40 − 30 = 10. The purchase of 8 now fits."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "plan.uncertain-income",
+        "context_id": "production-money-8-practice-03",
+        "supports_from": [],
+        "reasoning": "The receipt changed, but the stated obligation did not disappear."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "plan.uncertain-income",
+        "context_id": "production-money-8-transfer-01",
+        "supports_from": [],
+        "reasoning": "10 + 15 = 25 received; 25 − 20 = 5 free. Exclude the unreceived remainder."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "plan.uncertain-income",
+      "fresh_context": "Use the skill in the scheduled usable-money review and later financial decisions; this draft does not yet contain those review exercises."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A changed payment changes what a plan can afford. Recheck the money actually received."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Si cambia un pago, cambia lo que tu plan permite. Revisa el dinero realmente recibido."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Se um pagamento muda, muda o que seu plano permite. Confira o dinheiro realmente recebido."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Rebuild from what arrived",
+          "line": "A promised receipt is delayed. You have 60 and protect 40: 60 − 40 = 20 free without the missing receipt."
+        },
+        "es-MX": {
+          "prompt": "Parte de lo recibido",
+          "line": "Una entrada prometida se retrasa. Tienes 60 y proteges 40: 60 − 40 = 20 libres sin contar la entrada pendiente."
+        },
+        "pt-BR": {
+          "prompt": "Parta do que chegou",
+          "line": "Uma entrada prometida atrasa. Você tem 60 e protege 40: 60 − 40 = 20 livres sem contar a entrada pendente."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.plan.uncertain-income",
+      "copy": {
+        "en-US": {
+          "prompt": "How much is free now?",
+          "scene": "You have 25 and protect 20. Another 10 is promised but has not arrived.",
+          "options": [
+            {
+              "label": "15"
+            },
+            {
+              "label": "5"
+            },
+            {
+              "label": "35"
+            }
+          ],
+          "help": [
+            "Use the amount actually held, then protect the commitment."
+          ],
+          "feedback": {
+            "met": "25 − 20 = 5. The unreceived promise does not increase today’s money.",
+            "not_yet": "Use the amount actually held, then protect the commitment."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto queda libre ahora?",
+          "scene": "Tienes 25 y proteges 20. Hay otros 10 prometidos que no han llegado.",
+          "options": [
+            {
+              "label": "15"
+            },
+            {
+              "label": "5"
+            },
+            {
+              "label": "35"
+            }
+          ],
+          "help": [
+            "Usa el monto que realmente tienes y protege el compromiso."
+          ],
+          "feedback": {
+            "met": "25 − 20 = 5. La promesa pendiente no aumenta el dinero de hoy.",
+            "not_yet": "Usa el monto que realmente tienes y protege el compromiso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto fica livre agora?",
+          "scene": "Você tem 25 e protege 20. Outros 10 foram prometidos, mas não chegaram.",
+          "options": [
+            {
+              "label": "15"
+            },
+            {
+              "label": "5"
+            },
+            {
+              "label": "35"
+            }
+          ],
+          "help": [
+            "Use o valor que realmente tem e proteja o compromisso."
+          ],
+          "feedback": {
+            "met": "25 − 20 = 5. A promessa pendente não aumenta o dinheiro de hoje.",
+            "not_yet": "Use o valor que realmente tem e proteja o compromisso."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          25,
+          20,
+          10
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.plan.uncertain-income",
+      "copy": {
+        "en-US": {
+          "prompt": "What should the plan use?",
+          "scene": "A planned purchase depended on a receipt that is now canceled.",
+          "options": [
+            {
+              "label": "Current money and commitments"
+            },
+            {
+              "label": "The purchase price alone"
+            },
+            {
+              "label": "The original expected amount"
+            }
+          ],
+          "help": [
+            "Update the information before repeating the earlier decision."
+          ],
+          "feedback": {
+            "met": "The canceled receipt no longer supports the purchase plan.",
+            "not_yet": "Update the information before repeating the earlier decision."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe usar el plan?",
+          "scene": "Una compra planeada dependía de una entrada que ahora está cancelada.",
+          "options": [
+            {
+              "label": "Dinero actual y compromisos"
+            },
+            {
+              "label": "Solo el precio de compra"
+            },
+            {
+              "label": "El monto esperado originalmente"
+            }
+          ],
+          "help": [
+            "Actualiza la información antes de repetir la decisión anterior."
+          ],
+          "feedback": {
+            "met": "La entrada cancelada ya no sostiene el plan de compra.",
+            "not_yet": "Actualiza la información antes de repetir la decisión anterior."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que o plano deve usar?",
+          "scene": "Uma compra planejada dependia de uma entrada agora cancelada.",
+          "options": [
+            {
+              "label": "Dinheiro atual e compromissos"
+            },
+            {
+              "label": "Só o preço da compra"
+            },
+            {
+              "label": "O valor esperado originalmente"
+            }
+          ],
+          "help": [
+            "Atualize a informação antes de repetir a decisão anterior."
+          ],
+          "feedback": {
+            "met": "A entrada cancelada não sustenta mais o plano da compra.",
+            "not_yet": "Atualize a informação antes de repetir a decisão anterior."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.plan.uncertain-income",
+      "copy": {
+        "en-US": {
+          "prompt": "What can you spend today?",
+          "scene": "You hold 30 and protect 20. An expected 50 will arrive next week.",
+          "options": [
+            {
+              "label": "60"
+            },
+            {
+              "label": "10"
+            },
+            {
+              "label": "30"
+            }
+          ],
+          "help": [
+            "Next week’s receipt cannot increase today’s available money."
+          ],
+          "feedback": {
+            "met": "30 − 20 = 10 is free today.",
+            "not_yet": "Next week’s receipt cannot increase today’s available money."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto puedes gastar hoy?",
+          "scene": "Tienes 30 y proteges 20. Los 50 esperados llegarán la próxima semana.",
+          "options": [
+            {
+              "label": "60"
+            },
+            {
+              "label": "10"
+            },
+            {
+              "label": "30"
+            }
+          ],
+          "help": [
+            "La entrada de la próxima semana no aumenta el dinero disponible hoy."
+          ],
+          "feedback": {
+            "met": "30 − 20 = 10 libres hoy.",
+            "not_yet": "La entrada de la próxima semana no aumenta el dinero disponible hoy."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto pode gastar hoje?",
+          "scene": "Você tem 30 e protege 20. Os 50 esperados chegarão na próxima semana.",
+          "options": [
+            {
+              "label": "60"
+            },
+            {
+              "label": "10"
+            },
+            {
+              "label": "30"
+            }
+          ],
+          "help": [
+            "A entrada da próxima semana não aumenta o dinheiro disponível hoje."
+          ],
+          "feedback": {
+            "met": "30 − 20 = 10 livres hoje.",
+            "not_yet": "A entrada da próxima semana não aumenta o dinheiro disponível hoje."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          30,
+          20,
+          50
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.plan.uncertain-income",
+      "copy": {
+        "en-US": {
+          "prompt": "Does it fit now?",
+          "scene": "The receipt arrived: you have 40, protect 30; the purchase costs 8.",
+          "options": [
+            {
+              "label": "No, ignore the received money"
+            },
+            {
+              "label": "Yes, it fits the free 10"
+            }
+          ],
+          "help": [
+            "Update the plan for completed receipts as well as delays."
+          ],
+          "feedback": {
+            "met": "40 − 30 = 10. The purchase of 8 now fits.",
+            "not_yet": "Update the plan for completed receipts as well as delays."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿La compra cabe ahora?",
+          "scene": "La entrada llegó. Ahora tienes 40, proteges 30 y consideras una compra de 8.",
+          "options": [
+            {
+              "label": "No, ignora el dinero recibido"
+            },
+            {
+              "label": "Sí, cabe en los 10 libres"
+            }
+          ],
+          "help": [
+            "Actualiza el plan por entradas realizadas, no solo por retrasos."
+          ],
+          "feedback": {
+            "met": "40 − 30 = 10. El precio de 8 cabe después de recibir el dinero.",
+            "not_yet": "Actualiza el plan por entradas realizadas, no solo por retrasos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A compra cabe agora?",
+          "scene": "A entrada chegou. Agora você tem 40, protege 30 e considera uma compra de 8.",
+          "options": [
+            {
+              "label": "Não, ignore o dinheiro recebido"
+            },
+            {
+              "label": "Sim, cabe nos 10 livres"
+            }
+          ],
+          "help": [
+            "Atualize o plano por entradas concluídas, não só por atrasos."
+          ],
+          "feedback": {
+            "met": "40 − 30 = 10. O preço de 8 cabe após receber o dinheiro.",
+            "not_yet": "Atualize o plano por entradas concluídas, não só por atrasos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.plan.uncertain-income",
+      "copy": {
+        "en-US": {
+          "prompt": "What still needs protection?",
+          "scene": "A promised receipt is delayed. An existing unpaid obligation has not changed.",
+          "options": [
+            {
+              "label": "Only the optional purchase"
+            },
+            {
+              "label": "Nothing; the delay canceled it"
+            },
+            {
+              "label": "The existing obligation"
+            }
+          ],
+          "help": [
+            "Check which fact changed and which commitment still applies."
+          ],
+          "feedback": {
+            "met": "The receipt changed, but the stated obligation did not disappear.",
+            "not_yet": "Check which fact changed and which commitment still applies."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué sigue necesitando protección?",
+          "scene": "Una entrada prometida se retrasa. Una obligación pendiente no ha cambiado.",
+          "options": [
+            {
+              "label": "Solo la compra opcional"
+            },
+            {
+              "label": "Nada; el retraso la canceló"
+            },
+            {
+              "label": "La obligación existente"
+            }
+          ],
+          "help": [
+            "Revisa qué dato cambió y qué compromiso sigue vigente."
+          ],
+          "feedback": {
+            "met": "Cambió la entrada, pero la obligación indicada no desapareció.",
+            "not_yet": "Revisa qué dato cambió y qué compromiso sigue vigente."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que ainda precisa de proteção?",
+          "scene": "Uma entrada prometida atrasa. Uma obrigação pendente não mudou.",
+          "options": [
+            {
+              "label": "Só a compra opcional"
+            },
+            {
+              "label": "Nada; o atraso a cancelou"
+            },
+            {
+              "label": "A obrigação existente"
+            }
+          ],
+          "help": [
+            "Confira qual fato mudou e qual compromisso continua valendo."
+          ],
+          "feedback": {
+            "met": "A entrada mudou, mas a obrigação informada não desapareceu.",
+            "not_yet": "Confira qual fato mudou e qual compromisso continua valendo."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.plan.uncertain-income",
+      "copy": {
+        "en-US": {
+          "prompt": "How much is free after this receipt?",
+          "scene": "You had 10; of a promised 30, only 15 arrived. Protect 20.",
+          "options": [
+            {
+              "label": "5"
+            },
+            {
+              "label": "25"
+            },
+            {
+              "label": "20"
+            }
+          ],
+          "help": [
+            "Include only the part that arrived before protecting the commitment."
+          ],
+          "feedback": {
+            "met": "10 + 15 = 25 received; 25 − 20 = 5 free. Exclude the unreceived remainder.",
+            "not_yet": "Include only the part that arrived before protecting the commitment."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto queda libre tras esta entrada?",
+          "scene": "Tenías 10; de los 30 prometidos, solo llegaron 15. Protege 20.",
+          "options": [
+            {
+              "label": "5"
+            },
+            {
+              "label": "25"
+            },
+            {
+              "label": "20"
+            }
+          ],
+          "help": [
+            "Incluye solo lo que llegó antes de proteger el compromiso."
+          ],
+          "feedback": {
+            "met": "10 + 15 = 25 recibidos; 25 − 20 = 5 libres. No cuentas la parte pendiente.",
+            "not_yet": "Incluye solo lo que llegó antes de proteger el compromiso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto fica livre após esta entrada?",
+          "scene": "Você tinha 10; dos 30 prometidos, só chegaram 15. Proteja 20.",
+          "options": [
+            {
+              "label": "5"
+            },
+            {
+              "label": "25"
+            },
+            {
+              "label": "20"
+            }
+          ],
+          "help": [
+            "Inclua só o que chegou antes de proteger o compromisso."
+          ],
+          "feedback": {
+            "met": "10 + 15 = 25 recebidos; 25 − 20 = 5 livres. Não conte a parte pendente.",
+            "not_yet": "Inclua só o que chegou antes de proteger o compromisso."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          10,
+          30,
+          15,
+          20
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "add",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 2
+                }
+              ]
+            },
+            {
+              "input": 3
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

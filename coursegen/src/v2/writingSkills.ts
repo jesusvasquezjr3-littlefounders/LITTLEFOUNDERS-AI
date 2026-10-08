@@ -120,24 +120,24 @@ function tierFor(skeleton: SkillSkeleton): string {
 export const EXAMPLES_FIRST_SKILL: readonly string[] = [
   'TEACHING ORDER: EXAMPLES FIRST, EXERCISES ONLY TO REAFFIRM. A learner is never asked to do a move they have not just watched. The lesson runs: a hook, (optional) a try-first probe, THEN a worked example, THEN guided practice, THEN practice to reaffirm, THEN one transfer. The exercises confirm what the example taught; they never introduce it.',
   'A WORKED EXAMPLE IS ONE COMPLETE CASE SHOWN ON SCREEN. Narration audio is not generated yet, so everything the learner must see is in the visible text. The Mentor does the case in consecutive turns, ONE step per turn: (1) the situation and what we want to find out; (2..n) each move, with the number it uses and WHY this move; (last) the result, checked against the goal. Use real numbers and the named thing from the lesson. A turn is a short line, never a paragraph. No question is asked of the learner inside the example.',
-  'role hook: the Mentor opens the one situation of the lesson (a named character, a place, a stake) in a line or two. It asks the child nothing and promises nothing; it makes the child want to see how it turns out.',
-  'role pre: ONE low-pressure item before any teaching, to see what the child already thinks. Its feedback never says wrong; it says what the child chose and promises to look at it together ("Gracias, ya veo cómo piensas. Ahora lo vemos paso a paso."). Both feedback lines are neutral.',
-  'role example: a Mentor turn that demonstrates, one step per turn. It teaches by showing: name the deciding fact first, then the move, then the result. It never asks the child a question.',
-  'role guided: the SAME move on NEW numbers; the child does one step and the help lines restate the step the example showed. `not_yet` points back to the example ("Mira cómo empezó Rho: por el precio.") and never gives the answer.',
-  'role practice: reaffirm only. The move just shown and practised, a fresh instance, no new idea. `met` names the action the child took, not the child.',
-  'role transfer: the same idea in a different place or object, so the child must decide what carries over. `met` names the move that carried over.',
+  'role hook: the Mentor opens the one situation of the lesson (a named character, a place, a stake) in a line or two. It asks the learner nothing and promises nothing; it makes the learner want to see how it turns out.',
+  'role pre: ONE low-pressure item before any teaching, to see what the learner already thinks. Its feedback never says wrong; it says what the learner chose and promises to look at it together ("Gracias, ya veo cómo piensas. Ahora lo vemos paso a paso."). Both feedback lines are neutral.',
+  'role example: a Mentor turn that demonstrates, one step per turn. It teaches by showing: name the deciding fact first, then the move, then the result. It never asks the learner a question.',
+  'role guided: the SAME move on NEW numbers; the learner does one step and the help lines restate the step the example showed. `not_yet` points back to the example ("Mira cómo empezó Rho: por el precio.") and never gives the answer.',
+  'role practice: reaffirm only. The move just shown and practised, a fresh instance, no new idea. `met` names the action the learner took, not the learner.',
+  'role transfer: the same idea in a different place or object, so the learner must decide what carries over. `met` names the move that carried over.',
   'Never grade a case whose answer a previous segment already showed: keep the characters and the setting, change the data (followability rule 3).',
 ];
 
 /** What the pilot reviewers kept finding in rounds 1-2, as rules to apply the first time (docs/content/FORGE-V2-PILOT-ROUNDS.md). */
 export const PILOT_LESSONS: readonly string[] = [
   'THE EXAMPLE SHOWS WHAT THE EXERCISE GRADES. Before writing a practice or transfer item, name the criterion it grades (a decimal comparison, a "nothing is wrong here" case, "do not reply", spoilage). The example must already have demonstrated that exact criterion, with numbers of the same kind (decimals when the exercise uses decimals) and never with the exercise\'s own answer.',
-  'THE WHY IS ON SCREEN. A reason that lives only in `narration.script` is never heard, because narration audio is not generated: put it in the visible line, in one clause, and mark the turn `text_only`. Keep `differentiated` narration for a turn whose plate would otherwise carry nothing the child can read.',
+  'THE WHY IS ON SCREEN. A reason that lives only in `narration.script` is never heard, because narration audio is not generated: put it in the visible line, in one clause, and mark the turn `text_only`. Keep `differentiated` narration for a turn whose plate would otherwise carry nothing the learner can read.',
   'A HOOK IS A PICTURE, NOT AN INSTRUCTION. "Listen to Rho" is not a hook. Say who is where and what they are looking at ("Nia and her club look at the picnic basket"), in one line, before anything is asked.',
   'NUMBER THE STEPS of an example with three or more moves ("Paso 1: lo que falta", "Paso 2: las semanas") so a learner who looked away can find the thread again.',
-  'A STEP NEVER LEAKS THE NEXT RESULT. A worked-example or guided step expression such as "60 − 50" shows an earlier hidden result: label it in words ("Meta − total redondeado"). `feedback.met` credits only what the child did, never a step the board already showed, and never makes a categorical safety claim ("es seguro").',
+  'A STEP NEVER LEAKS THE NEXT RESULT. A worked-example or guided step expression such as "60 − 50" shows an earlier hidden result: label it in words ("Meta − total redondeado"). `feedback.met` credits only what the learner did, never a step the board already showed, and never makes a categorical safety claim ("es seguro").',
   'VARY WHERE THE RIGHT CHOICE SITS. In a set of choices the correct one is not always first; reorder the options and the payload together.',
-  'A MISTAKE ENDS WITH A COMMITMENT. A Mentor episode\'s recovery names what the Mentor will do next time ("la próxima vez comparo el precio de uno"), in the child\'s words, and the three markets agree on what went wrong.',
+  'A MISTAKE ENDS WITH A COMMITMENT. A Mentor episode\'s recovery names what the Mentor will do next time ("la próxima vez comparo el precio de uno"), in the learner\'s words, and the three markets agree on what went wrong.',
 ];
 
 /** Lessons for 13-17 and adults: the Mentor steps back, the stakes are real, and teaching opens with something the learner already lives. */
@@ -150,13 +150,13 @@ export const OLDER_LEARNER_SKILL: readonly string[] = [
 
 /** Adults (18+) come with a real decision and little time: teach the method, respect the person. */
 export const ADULT_LEARNER_SKILL: readonly string[] = [
-  'ADULT LEARNER (18+): they arrive with a real decision to make (a payslip, a rent increase, a loan offer, a first stall at a weekend market) and little time. Open with their situation, not a character in a story. Praise is utility ("Ya puedes comparar dos ofertas por su costo total"), never "good job". No treats, no stars, no story rewards, no childish framing. Respect what they already know: one example, then straight to their own numbers.',
+  'ADULT LEARNER (18+): follow the declared objective and prerequisites. Adult age does not imply knowledge of payslips, percentages, accounts or credit. A complete beginner starts with concrete money decisions and receives the same explicit teaching support as any novice, in an adult register. Open with a relevant everyday decision, without a forced fictional cast. Demonstrate the method, guide practice, then require independent application and fresh-context transfer. Feedback names only the action actually checked. No treats, stars, story rewards or childish praise.',
   'ADULT MONEY IS LOCAL. Use each market\'s own general, stable products and institutions where they help (es-MX: Afore, CETES, IMSS, SAT, tanda, Buró de Crédito; pt-BR: Pix, FGTS, 13º salário, Tesouro Direto, CDB, Serasa, MEI; en-US: 401(k), credit score, APR, Roth IRA, paycheck, W-2) and declare the scenario regional. NEVER present a current interest rate, tax rate, fee, limit or deadline as fact: use a labelled illustrative number ("suppose the card charges 3 % a month"). Never give personal financial advice and never tell the adult to buy or open anything: teach the method and let the numbers decide.',
 ];
 
 /** Rules the catalog build adds to the pilot ones: they save a review round when applied the first time. */
 export const CATALOG_LESSONS: readonly string[] = [
-  'ONE SITUATION PER LESSON. Name the character, the place and the thing at stake in the hook, and keep them in every segment through the transfer; a transfer changes the setting, never the cast.',
+  'ONE COHERENT SKILL PER LESSON. Connect the hook, demonstration and guided practice through the same decision. Independent practice changes the case; transfer requires recognizing the skill in a fresh context. For children, characters can make a situation concrete. For adults, focus on the everyday decision without requiring a fictional cast.',
   'WRITE THE EN-US LINE SHORT FIRST. The Copy Budget is per market and en-US is the tightest: aim at about 80 % of the cap so a later edit does not break gate 13. A Mentor line is one idea.',
   'WHEN THE NUMBERS CAN DIFFER BY MARKET, THEY DO: a regional lesson carries its own amounts, items and currency per market (rubric_by_locale where the answer differs), written for that market and never converted from es-MX.',
   'CHECK EVERY ANSWER TWICE: recompute each graded answer, each explanation and each worked-example step from the payload before you save the plan; Core\'s check recomputes them and a wrong key blocks the lesson.',

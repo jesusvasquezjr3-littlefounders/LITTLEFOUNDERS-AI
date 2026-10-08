@@ -697,12 +697,14 @@ export interface SessionSummary {
 }
 
 /**
- * The guardian "what is happening" narrative (/ORACLE.md §12, 2026-09-01) —
+ * The "what is happening" narrative (/ORACLE.md §12, 2026-09-01) —
  * structured data, not a pre-composed sentence: the CALLER picks the i18n
  * template and grammar for its own locale (/AGENTS.md §1.8 — no user-facing
  * string is ever backend-composed), the same convention `intent` and
- * `closeReason` above already follow. Guardian-view only; the child's own
- * `SessionSummary` reads (`listSessions`) never carry this field.
+ * `closeReason` above already follow. The guardian view reads it through
+ * `getKidTutorHistory`; the learner reads their own through the transcript
+ * (`GET /tutor/sessions/:id`, the closing summary). `listSessions` still does
+ * not carry it.
  */
 export interface SessionNarrative {
   /** Localized topic names practiced this session, in the order first attempted (0-2 entries). */
@@ -780,6 +782,13 @@ export interface TranscriptSegment {
 
 export interface SessionTranscript {
   session: SessionSummary;
+  /**
+   * the learner's own closing summary, built by Core's deterministic
+   * `buildSessionNarrative` (topics practised, the one that was tricky and
+   * whether it was worked through, and the graded fraction). Null when the
+   * session carries nothing topic- or number-specific to say.
+   */
+  narrative: SessionNarrative | null;
   turns: TranscriptTurn[];
   segments: TranscriptSegment[];
 }

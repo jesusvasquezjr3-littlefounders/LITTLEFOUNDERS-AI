@@ -1,0 +1,872 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-payments-digital-part-2",
+  "lesson_id": "fe-production-payments-digital-review-1",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.debt.obligation",
+    "finance.prod.payments-digital.01",
+    "finance.prod.payments-digital.02",
+    "finance.prod.payments-digital.03",
+    "finance.prod.payments-digital.04",
+    "finance.prod.payments-digital.05"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Apply the previously taught financial relationships to the visible constraints of a new situation.",
+  "title": {
+    "en-US": "Tracing payments",
+    "es-MX": "Sigue el pago antes de confirmar",
+    "pt-BR": "Siga o pagamento antes de confirmar"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Trace a payment before confirming\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Sigue el pago antes de confirmar\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Siga o pagamento antes de confirmar\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "consolidate",
+    "objective": {
+      "skill_id": "debt.obligation",
+      "observable_action": "Apply the previously taught financial relationships to the visible constraints of a new situation.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "cash.received",
+      "cash.balance",
+      "cash.commitment"
+    ],
+    "retrieval_skills": [
+      "prod.payments-digital.01",
+      "prod.payments-digital.02",
+      "prod.payments-digital.03",
+      "prod.payments-digital.04",
+      "prod.payments-digital.05",
+      "debt.obligation"
+    ],
+    "relevance": "Combine funding, destination, receipt, cost and access checks.",
+    "misconception": "Reuse an earlier answer without checking the current quantities, units and conditions.",
+    "numeracy_support": "All required quantities remain on the current board.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.payments-digital.01",
+        "context_id": "fe-production-payments-digital-review-1-practice-01",
+        "supports_from": [],
+        "reasoning": "The app’s appearance does not change the borrowed source."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.payments-digital.02",
+        "context_id": "fe-production-payments-digital-review-1-practice-02",
+        "supports_from": [],
+        "reasoning": "A similar name does not establish the intended destination."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.payments-digital.03",
+        "context_id": "fe-production-payments-digital-review-1-practice-03",
+        "supports_from": [],
+        "reasoning": "Sender-provided images do not establish receipt in your account."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.payments-digital.04",
+        "context_id": "fe-production-payments-digital-review-1-practice-04",
+        "supports_from": [],
+        "reasoning": "80 + 4 = 84 leaves the sender."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.payments-digital.05",
+        "context_id": "fe-production-payments-digital-review-1-practice-05",
+        "supports_from": [],
+        "reasoning": "Claiming verification does not make sharing access secrets safe."
+      },
+      {
+        "segment_id": "practice-06",
+        "skill_id": "debt.obligation",
+        "context_id": "fe-production-payments-digital-review-1-practice-06",
+        "supports_from": [],
+        "reasoning": "Received borrowed money still has a repayment obligation."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "debt.obligation",
+        "context_id": "fe-production-payments-digital-review-1-transfer-01",
+        "supports_from": [],
+        "reasoning": "Direct payment to the supplier does not erase your borrowing obligation."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "debt.obligation",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Combine funding, destination, receipt, cost and access checks."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Combina revisiones de fondos, destino, recepción, costo y acceso."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Combine conferências de recursos, destino, recebimento, custo e acesso."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What does using them create?",
+          "scene": "A payment app offers borrowed funds repayable later.",
+          "options": [
+            {
+              "label": "New earnings"
+            },
+            {
+              "label": "A repayment obligation"
+            },
+            {
+              "label": "A transfer only between your own funds"
+            }
+          ],
+          "help": [
+            "Identify who supplied the money and who must repay."
+          ],
+          "feedback": {
+            "met": "The app’s appearance does not change the borrowed source.",
+            "not_yet": "Identify who supplied the money and who must repay."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué crea usarlos?",
+          "scene": "Una aplicación ofrece fondos prestados que debes devolver después.",
+          "options": [
+            {
+              "label": "Ganancias nuevas"
+            },
+            {
+              "label": "Una obligación de devolución"
+            },
+            {
+              "label": "Solo traslado de fondos propios"
+            }
+          ],
+          "help": [
+            "Identifica quién dio el dinero y quién debe devolverlo."
+          ],
+          "feedback": {
+            "met": "La apariencia de la aplicación no cambia el origen prestado.",
+            "not_yet": "Identifica quién dio el dinero y quién debe devolverlo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que usar esse dinheiro cria?",
+          "scene": "Um aplicativo oferece dinheiro emprestado que deve devolver depois.",
+          "options": [
+            {
+              "label": "Ganhos novos"
+            },
+            {
+              "label": "Uma obrigação de devolver"
+            },
+            {
+              "label": "Só mudança de recursos próprios"
+            }
+          ],
+          "help": [
+            "Veja quem deu o dinheiro e quem deve devolver."
+          ],
+          "feedback": {
+            "met": "A aparência do aplicativo não muda a origem emprestada.",
+            "not_yet": "Veja quem deu o dinheiro e quem deve devolver."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Before confirming?",
+          "scene": "A saved payee has a similar name but different verified account details.",
+          "options": [
+            {
+              "label": "Send first and ask afterward"
+            },
+            {
+              "label": "Resolve the destination mismatch"
+            },
+            {
+              "label": "Trust the similar name"
+            }
+          ],
+          "help": [
+            "Match verified payment details."
+          ],
+          "feedback": {
+            "met": "A similar name does not establish the intended destination.",
+            "not_yet": "Match verified payment details."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Antes de confirmar?",
+          "scene": "Un destinatario guardado tiene nombre parecido, pero datos de cuenta distintos.",
+          "options": [
+            {
+              "label": "Enviar primero y preguntar después"
+            },
+            {
+              "label": "Resolver la diferencia de destino"
+            },
+            {
+              "label": "Confiar en el nombre parecido"
+            }
+          ],
+          "help": [
+            "Compara datos de pago verificados."
+          ],
+          "feedback": {
+            "met": "Un nombre parecido no demuestra que sea el destino previsto.",
+            "not_yet": "Compara datos de pago verificados."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Antes de confirmar?",
+          "scene": "Um destinatário salvo tem nome parecido, mas dados de conta diferentes.",
+          "options": [
+            {
+              "label": "Enviar primeiro e perguntar depois"
+            },
+            {
+              "label": "Resolver a diferença de destino"
+            },
+            {
+              "label": "Confiar no nome parecido"
+            }
+          ],
+          "help": [
+            "Compare dados de pagamento verificados."
+          ],
+          "feedback": {
+            "met": "Um nome parecido não prova que seja o destino previsto.",
+            "not_yet": "Compare dados de pagamento verificados."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.03",
+      "copy": {
+        "en-US": {
+          "prompt": "What is established?",
+          "scene": "A customer shows a screenshot; your own account shows no received payment.",
+          "options": [
+            {
+              "label": "The screenshot overrides your records"
+            },
+            {
+              "label": "The funds must already be yours"
+            },
+            {
+              "label": "Receipt is not yet confirmed"
+            }
+          ],
+          "help": [
+            "Verify receipt in your own trusted records."
+          ],
+          "feedback": {
+            "met": "Sender-provided images do not establish receipt in your account.",
+            "not_yet": "Verify receipt in your own trusted records."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué está demostrado?",
+          "scene": "Un cliente muestra una captura; tu cuenta no muestra el pago recibido.",
+          "options": [
+            {
+              "label": "La captura sustituye tus registros"
+            },
+            {
+              "label": "Los fondos ya deben ser tuyos"
+            },
+            {
+              "label": "La recepción aún no está confirmada"
+            }
+          ],
+          "help": [
+            "Verifica recepción en tus registros confiables."
+          ],
+          "feedback": {
+            "met": "Imágenes del remitente no demuestran recepción en tu cuenta.",
+            "not_yet": "Verifica recepción en tus registros confiables."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que está comprovado?",
+          "scene": "Um cliente mostra uma captura; sua conta não mostra o pagamento recebido.",
+          "options": [
+            {
+              "label": "A captura substitui seus registros"
+            },
+            {
+              "label": "O dinheiro já deve ser seu"
+            },
+            {
+              "label": "O recebimento ainda não foi confirmado"
+            }
+          ],
+          "help": [
+            "Confira recebimento nos seus registros confiáveis."
+          ],
+          "feedback": {
+            "met": "Imagens de quem envia não provam recebimento na sua conta.",
+            "not_yet": "Confira recebimento nos seus registros confiáveis."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Total sender outflow?",
+          "scene": "Fictional transfer: recipient gets 80; sender separately pays a fee of 4.",
+          "options": [
+            {
+              "label": "76"
+            },
+            {
+              "label": "84"
+            },
+            {
+              "label": "80"
+            }
+          ],
+          "help": [
+            "Add the separate fee once."
+          ],
+          "feedback": {
+            "met": "80 + 4 = 84 leaves the sender.",
+            "not_yet": "Add the separate fee once."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Salida total del remitente?",
+          "scene": "Transferencia ficticia: destinatario recibe 80; remitente paga comisión aparte de 4.",
+          "options": [
+            {
+              "label": "76"
+            },
+            {
+              "label": "84"
+            },
+            {
+              "label": "80"
+            }
+          ],
+          "help": [
+            "Suma la comisión separada una vez."
+          ],
+          "feedback": {
+            "met": "80 + 4 = 84 sale del remitente.",
+            "not_yet": "Suma la comisión separada una vez."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Saída total de quem envia?",
+          "scene": "Transferência fictícia: destinatário recebe 80; remetente paga tarifa separada de 4.",
+          "options": [
+            {
+              "label": "76"
+            },
+            {
+              "label": "84"
+            },
+            {
+              "label": "80"
+            }
+          ],
+          "help": [
+            "Some a tarifa separada uma vez."
+          ],
+          "feedback": {
+            "met": "80 + 4 = 84 sai de quem envia.",
+            "not_yet": "Some a tarifa separada uma vez."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          80,
+          4
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Which response protects you?",
+          "scene": "A caller requests your private payment code as evidence of account ownership.",
+          "options": [
+            {
+              "label": "Keep the code private"
+            },
+            {
+              "label": "Give only half, then the rest"
+            },
+            {
+              "label": "Give it because ownership matters"
+            }
+          ],
+          "help": [
+            "Look at what the code permits."
+          ],
+          "feedback": {
+            "met": "Claiming verification does not make sharing access secrets safe.",
+            "not_yet": "Look at what the code permits."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué respuesta te protege?",
+          "scene": "Alguien pide tu código privado de pago como prueba de titularidad.",
+          "options": [
+            {
+              "label": "Conservar privado el código"
+            },
+            {
+              "label": "Dar la mitad y luego el resto"
+            },
+            {
+              "label": "Entregarlo porque importa la titularidad"
+            }
+          ],
+          "help": [
+            "Mira qué permite el código."
+          ],
+          "feedback": {
+            "met": "Alegar verificación no vuelve seguro compartir secretos de acceso.",
+            "not_yet": "Mira qué permite el código."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual resposta protege você?",
+          "scene": "Alguém pede seu código privado de pagamento como prova de titularidade.",
+          "options": [
+            {
+              "label": "Manter o código privado"
+            },
+            {
+              "label": "Dar metade e depois o resto"
+            },
+            {
+              "label": "Dar porque a titularidade importa"
+            }
+          ],
+          "help": [
+            "Veja o que o código permite."
+          ],
+          "feedback": {
+            "met": "Alegar conferência não torna seguro compartilhar segredos de acesso.",
+            "not_yet": "Veja o que o código permite."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.debt.obligation",
+      "copy": {
+        "en-US": {
+          "prompt": "How to plan for it?",
+          "scene": "An advance enters your wallet and requires repayment.",
+          "options": [
+            {
+              "label": "Ignore it because it is temporary"
+            },
+            {
+              "label": "Track funds and the repayment obligation"
+            },
+            {
+              "label": "Count it as earnings without obligation"
+            }
+          ],
+          "help": [
+            "Money entering and money earned are different questions."
+          ],
+          "feedback": {
+            "met": "Received borrowed money still has a repayment obligation.",
+            "not_yet": "Money entering and money earned are different questions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cómo debe tratarlo el plan?",
+          "scene": "Un adelanto entra a tu cartera y debes devolverlo.",
+          "options": [
+            {
+              "label": "Ignorarlo porque es temporal"
+            },
+            {
+              "label": "Registrar fondos y obligación de devolución"
+            },
+            {
+              "label": "Contarlo como ganancias sin obligación"
+            }
+          ],
+          "help": [
+            "Dinero que entra y dinero ganado son preguntas distintas."
+          ],
+          "feedback": {
+            "met": "El dinero prestado recibido mantiene una obligación de devolución.",
+            "not_yet": "Dinero que entra y dinero ganado son preguntas distintas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Como o plano deve tratar isso?",
+          "scene": "Um adiantamento entra na sua carteira e deve ser devolvido.",
+          "options": [
+            {
+              "label": "Ignorar porque é temporário"
+            },
+            {
+              "label": "Registrar recursos e obrigação de devolver"
+            },
+            {
+              "label": "Contar como ganhos sem obrigação"
+            }
+          ],
+          "help": [
+            "Dinheiro que entra e dinheiro ganho são questões distintas."
+          ],
+          "feedback": {
+            "met": "O dinheiro emprestado recebido mantém obrigação de devolver.",
+            "not_yet": "Dinheiro que entra e dinheiro ganho são questões distintas."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.debt.obligation",
+      "copy": {
+        "en-US": {
+          "prompt": "Did bypassing your wallet remove debt?",
+          "scene": "A lender pays your supplier directly; you owe the lender.",
+          "options": [
+            {
+              "label": "Yes, suppliers create income"
+            },
+            {
+              "label": "No, the repayment obligation remains"
+            },
+            {
+              "label": "Yes, only cash received creates debt"
+            }
+          ],
+          "help": [
+            "Follow who is owed money afterward."
+          ],
+          "feedback": {
+            "met": "Direct payment to the supplier does not erase your borrowing obligation.",
+            "not_yet": "Follow who is owed money afterward."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿No pasar por tu cartera elimina deuda?",
+          "scene": "Un prestamista paga al proveedor por ti; después debes pagarle.",
+          "options": [
+            {
+              "label": "Sí, proveedores crean ingresos"
+            },
+            {
+              "label": "No, queda la obligación de devolución"
+            },
+            {
+              "label": "Sí, solo efectivo recibido crea deuda"
+            }
+          ],
+          "help": [
+            "Sigue a quién se debe dinero después."
+          ],
+          "feedback": {
+            "met": "Pagar directamente al proveedor no elimina tu obligación de préstamo.",
+            "not_yet": "Sigue a quién se debe dinero después."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Não passar pela carteira elimina dívida?",
+          "scene": "Um credor paga ao fornecedor por você; depois deve pagar ao credor.",
+          "options": [
+            {
+              "label": "Sim, fornecedores criam renda"
+            },
+            {
+              "label": "Não, fica a obrigação de devolver"
+            },
+            {
+              "label": "Sim, só dinheiro recebido cria dívida"
+            }
+          ],
+          "help": [
+            "Veja a quem se deve dinheiro depois."
+          ],
+          "feedback": {
+            "met": "Pagar direto ao fornecedor não elimina sua obrigação de empréstimo.",
+            "not_yet": "Veja a quem se deve dinheiro depois."
+          }
+        }
+      }
+    }
+  ]
+}

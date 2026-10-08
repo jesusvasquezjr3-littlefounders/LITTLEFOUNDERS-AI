@@ -1,0 +1,778 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-accounts-records-part-1",
+  "lesson_id": "fe-production-accounts-records-01",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.accounts-records.01"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Match a basic transaction, saving or payment need to the relevant account features.",
+  "title": {
+    "en-US": "Account features",
+    "es-MX": "Elige funciones según la necesidad",
+    "pt-BR": "Escolha funções conforme a necessidade"
+  },
+  "new_concepts": [
+    "finance.prod.accounts-records.01"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Choose features for the need\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Elige funciones según la necesidad\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Escolha funções conforme a necessidade\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.accounts-records.01",
+      "observable_action": "Match a basic transaction, saving or payment need to the relevant account features.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "cash.commitment"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Start with the payment or saving task, then check whether the account supports it.",
+    "misconception": "Choosing an account by its name or advertised return without checking required access and payment features.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.accounts-records.01",
+        "context_id": "fe-production-accounts-records-01-example-01",
+        "supports_from": [],
+        "reasoning": "If money must pay bills soon, check payment access and restrictions. An attractive account name does not establish those features."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.accounts-records.01",
+        "context_id": "fe-production-accounts-records-01-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The payment feature directly supports the stated task."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.accounts-records.01",
+        "context_id": "fe-production-accounts-records-01-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Locked withdrawals conflict with prompt access in this scenario."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.accounts-records.01",
+        "context_id": "fe-production-accounts-records-01-practice-01",
+        "supports_from": [],
+        "reasoning": "Deposit access must match how the person actually receives money."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.accounts-records.01",
+        "context_id": "fe-production-accounts-records-01-practice-02",
+        "supports_from": [],
+        "reasoning": "A descriptive label does not specify withdrawal conditions."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.accounts-records.01",
+        "context_id": "fe-production-accounts-records-01-practice-03",
+        "supports_from": [],
+        "reasoning": "A supported feature can still have a relevant cost."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.accounts-records.01",
+        "context_id": "fe-production-accounts-records-01-transfer-01",
+        "supports_from": [],
+        "reasoning": "The account must support the actual payment requirement."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.accounts-records.01",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Start with the payment or saving task, then check whether the account supports it."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Empieza por la tarea de pagar o ahorrar y revisa si la cuenta la permite."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Comece pela tarefa de pagar ou poupar e confira se a conta permite isso."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Task before label",
+          "line": "If money must pay bills soon, check payment access and restrictions. An attractive account name does not establish those features."
+        },
+        "es-MX": {
+          "prompt": "Tarea antes que etiqueta",
+          "line": "Si necesitas pagar pronto, revisa acceso a pagos y restricciones. Un nombre atractivo de cuenta no demuestra esas funciones."
+        },
+        "pt-BR": {
+          "prompt": "Tarefa antes do rótulo",
+          "line": "Se precisa pagar logo, confira acesso a pagamentos e restrições. Um nome atraente de conta não demonstra essas funções."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Which feature matches that need?",
+          "scene": "You need to pay rent electronically; a fictional account permits electronic bill payments.",
+          "options": [
+            {
+              "label": "A savings goal label"
+            },
+            {
+              "label": "Electronic bill payments"
+            },
+            {
+              "label": "A long-term withdrawal lock"
+            }
+          ],
+          "help": [
+            "Match a concrete feature to the required action."
+          ],
+          "feedback": {
+            "met": "The payment feature directly supports the stated task.",
+            "not_yet": "Match a concrete feature to the required action."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué función coincide con la necesidad?",
+          "scene": "Necesitas pagar renta electrónicamente; una cuenta ficticia permite pagos electrónicos de cuentas.",
+          "options": [
+            {
+              "label": "Una etiqueta de meta de ahorro"
+            },
+            {
+              "label": "Pagos electrónicos de cuentas"
+            },
+            {
+              "label": "Un bloqueo de retiro a largo plazo"
+            }
+          ],
+          "help": [
+            "Relaciona una función concreta con la acción necesaria."
+          ],
+          "feedback": {
+            "met": "La función de pago cubre directamente la tarea indicada.",
+            "not_yet": "Relaciona una función concreta con la acción necesaria."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual função combina com a necessidade?",
+          "scene": "Precisa pagar aluguel eletronicamente; uma conta fictícia permite pagamentos eletrônicos de contas.",
+          "options": [
+            {
+              "label": "Um rótulo de meta de poupança"
+            },
+            {
+              "label": "Pagamentos eletrônicos de contas"
+            },
+            {
+              "label": "Um bloqueio de saque a longo prazo"
+            }
+          ],
+          "help": [
+            "Relacione uma função concreta com a ação necessária."
+          ],
+          "feedback": {
+            "met": "A função de pagamento atende diretamente à tarefa informada.",
+            "not_yet": "Relacione uma função concreta com a ação necessária."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Which feature conflicts here?",
+          "scene": "Emergency money may be needed promptly; a fictional account locks withdrawals for a year.",
+          "options": [
+            {
+              "label": "The withdrawal lock"
+            },
+            {
+              "label": "The stated deposit date"
+            },
+            {
+              "label": "A record of past deposits"
+            }
+          ],
+          "help": [
+            "Check access timing before comparing advertised benefits."
+          ],
+          "feedback": {
+            "met": "Locked withdrawals conflict with prompt access in this scenario.",
+            "not_yet": "Check access timing before comparing advertised benefits."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué función contradice la necesidad?",
+          "scene": "Puedes necesitar pronto dinero de emergencia; una cuenta ficticia bloquea retiros por un año.",
+          "options": [
+            {
+              "label": "El bloqueo de retiros"
+            },
+            {
+              "label": "La fecha de depósito indicada"
+            },
+            {
+              "label": "Un registro de depósitos anteriores"
+            }
+          ],
+          "help": [
+            "Revisa plazos de acceso antes de comparar beneficios anunciados."
+          ],
+          "feedback": {
+            "met": "Retiros bloqueados contradicen el acceso pronto en esta situación.",
+            "not_yet": "Revisa plazos de acceso antes de comparar beneficios anunciados."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual função contraria a necessidade?",
+          "scene": "Pode precisar logo de dinheiro de emergência; uma conta fictícia bloqueia saques por um ano.",
+          "options": [
+            {
+              "label": "O bloqueio de saques"
+            },
+            {
+              "label": "A data de depósito informada"
+            },
+            {
+              "label": "Um registro de depósitos anteriores"
+            }
+          ],
+          "help": [
+            "Confira prazos de acesso antes de comparar benefícios anunciados."
+          ],
+          "feedback": {
+            "met": "Saques bloqueados contrariam o acesso rápido nesta situação.",
+            "not_yet": "Confira prazos de acesso antes de comparar benefícios anunciados."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What needs checking?",
+          "scene": "You receive cash regularly; a fictional account accepts electronic deposits only.",
+          "options": [
+            {
+              "label": "Assuming cash needs no deposit"
+            },
+            {
+              "label": "A usable way to deposit your cash"
+            },
+            {
+              "label": "Only the interest rate"
+            }
+          ],
+          "help": [
+            "Check the steps and costs of the required deposit method."
+          ],
+          "feedback": {
+            "met": "Deposit access must match how the person actually receives money.",
+            "not_yet": "Check the steps and costs of the required deposit method."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué revisar antes de elegirla?",
+          "scene": "Recibes efectivo regularmente; una cuenta ficticia solo acepta depósitos electrónicos.",
+          "options": [
+            {
+              "label": "Suponer que efectivo no requiere depósito"
+            },
+            {
+              "label": "Una forma viable de depositar efectivo"
+            },
+            {
+              "label": "Solo la tasa de interés"
+            }
+          ],
+          "help": [
+            "Revisa pasos y costos del método de depósito necesario."
+          ],
+          "feedback": {
+            "met": "El acceso a depósitos debe coincidir con cómo se recibe dinero.",
+            "not_yet": "Revisa pasos y costos del método de depósito necesario."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que conferir antes de escolhê-la?",
+          "scene": "Recebe dinheiro vivo regularmente; uma conta fictícia só aceita depósitos eletrônicos.",
+          "options": [
+            {
+              "label": "Supor que dinheiro não exige depósito"
+            },
+            {
+              "label": "Uma forma viável de depositar dinheiro"
+            },
+            {
+              "label": "Só a taxa de juros"
+            }
+          ],
+          "help": [
+            "Confira etapas e custos do método de depósito necessário."
+          ],
+          "feedback": {
+            "met": "O acesso a depósitos deve combinar com como se recebe dinheiro.",
+            "not_yet": "Confira etapas e custos do método de depósito necessário."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Does that confirm access?",
+          "scene": "The account’s description says “flexible,” but lists no withdrawal timing or fees.",
+          "options": [
+            {
+              "label": "No, verify the actual terms"
+            },
+            {
+              "label": "Yes, all accounts work identically"
+            },
+            {
+              "label": "Yes, the adjective guarantees it"
+            }
+          ],
+          "help": [
+            "Look for concrete access rules and costs."
+          ],
+          "feedback": {
+            "met": "A descriptive label does not specify withdrawal conditions.",
+            "not_yet": "Look for concrete access rules and costs."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Basta para confirmar el acceso?",
+          "scene": "La descripción dice «flexible», sin indicar plazos de retiro ni comisiones.",
+          "options": [
+            {
+              "label": "No, verifica condiciones reales"
+            },
+            {
+              "label": "Sí, todas las cuentas funcionan igual"
+            },
+            {
+              "label": "Sí, el adjetivo lo garantiza"
+            }
+          ],
+          "help": [
+            "Busca reglas concretas de acceso y costos."
+          ],
+          "feedback": {
+            "met": "Una etiqueta descriptiva no indica condiciones de retiro.",
+            "not_yet": "Busca reglas concretas de acceso y costos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Basta para confirmar o acesso?",
+          "scene": "A descrição diz «flexível», sem informar prazos de saque nem tarifas.",
+          "options": [
+            {
+              "label": "Não, confira condições reais"
+            },
+            {
+              "label": "Sim, todas as contas funcionam igual"
+            },
+            {
+              "label": "Sim, o adjetivo garante"
+            }
+          ],
+          "help": [
+            "Busque regras concretas de acesso e custos."
+          ],
+          "feedback": {
+            "met": "Um rótulo descritivo não informa condições de saque.",
+            "not_yet": "Busque regras concretas de acesso e custos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What else matters?",
+          "scene": "A fictional account supports a needed transfer, but charges for each use.",
+          "options": [
+            {
+              "label": "An assumption that supported means free"
+            },
+            {
+              "label": "The function’s name alone"
+            },
+            {
+              "label": "The fee at your expected usage"
+            }
+          ],
+          "help": [
+            "Check both function and cost for the intended use."
+          ],
+          "feedback": {
+            "met": "A supported feature can still have a relevant cost.",
+            "not_yet": "Check both function and cost for the intended use."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué más corresponde a la comparación?",
+          "scene": "Una cuenta ficticia permite la transferencia necesaria, pero cobra por cada uso.",
+          "options": [
+            {
+              "label": "Suponer que permitido significa gratis"
+            },
+            {
+              "label": "Solo el nombre de la función"
+            },
+            {
+              "label": "La comisión según tu uso previsto"
+            }
+          ],
+          "help": [
+            "Revisa función y costo del uso previsto."
+          ],
+          "feedback": {
+            "met": "Una función permitida puede tener un costo relevante.",
+            "not_yet": "Revisa función y costo del uso previsto."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que mais cabe na comparação?",
+          "scene": "Uma conta fictícia permite a transferência necessária, mas cobra por uso.",
+          "options": [
+            {
+              "label": "Supor que permitido significa grátis"
+            },
+            {
+              "label": "Só o nome da função"
+            },
+            {
+              "label": "A tarifa conforme seu uso previsto"
+            }
+          ],
+          "help": [
+            "Confira função e custo do uso previsto."
+          ],
+          "feedback": {
+            "met": "Uma função permitida pode ter um custo relevante.",
+            "not_yet": "Confira função e custo do uso previsto."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.accounts-records.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What must be checked?",
+          "scene": "Work requires payments in one currency; the account supports another only.",
+          "options": [
+            {
+              "label": "Whether the required payment is supported"
+            },
+            {
+              "label": "Only domestic withdrawal access"
+            },
+            {
+              "label": "Assume every currency is supported"
+            }
+          ],
+          "help": [
+            "Verify the specific feature rather than inferring from its name."
+          ],
+          "feedback": {
+            "met": "The account must support the actual payment requirement.",
+            "not_yet": "Verify the specific feature rather than inferring from its name."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe revisarse?",
+          "scene": "Una persona remota necesita pagos en cierta moneda; la cuenta solo permite otra.",
+          "options": [
+            {
+              "label": "Si permite el pago necesario"
+            },
+            {
+              "label": "Solo acceso a retiros nacionales"
+            },
+            {
+              "label": "Suponer que permite cualquier moneda"
+            }
+          ],
+          "help": [
+            "Verifica la función específica sin deducirla del nombre."
+          ],
+          "feedback": {
+            "met": "La cuenta debe permitir el requisito real de pago.",
+            "not_yet": "Verifica la función específica sin deducirla del nombre."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que deve ser conferido?",
+          "scene": "Uma pessoa remota precisa de pagamentos numa moeda; a conta só permite outra.",
+          "options": [
+            {
+              "label": "Se permite o pagamento necessário"
+            },
+            {
+              "label": "Só acesso a saques nacionais"
+            },
+            {
+              "label": "Supor que permite qualquer moeda"
+            }
+          ],
+          "help": [
+            "Confira a função específica sem deduzir pelo nome."
+          ],
+          "feedback": {
+            "met": "A conta deve permitir o requisito real de pagamento.",
+            "not_yet": "Confira a função específica sem deduzir pelo nome."
+          }
+        }
+      }
+    }
+  ]
+}

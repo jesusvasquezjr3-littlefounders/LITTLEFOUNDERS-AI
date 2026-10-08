@@ -627,7 +627,7 @@ export function MentorScreen({ header, session, copy: all, locale, theme, guardi
   const closingEl = session.phase === 'closing' && session.closing && !replayOn
     ? <div className="lf-mentor-closing" ref={response as React.RefObject<HTMLDivElement>}>
           <SessionClosing copy={all.mentorSessionEnd} locale={locale} dark={dark} script={session.closing.script}
-            effort={session.closing.effort} topic={session.closing.topic} onBack={onPath} />
+            effort={session.closing.effort} topic={session.closing.topic} summary={session.closing.summary} xp={session.closing.xp} onBack={onPath} />
           {/* T1d: the talk is kept, and it can be heard again from past talks (never after a safety stop). */}
           {session.closing.sessionId && session.closing.script !== 'safety_stop' && session.history.length > 0
             ? <p className="lf-mentor-saved" data-copy-role="body">{copy.savedReplay}</p> : null}

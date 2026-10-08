@@ -1,0 +1,779 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-financial-landscape-part-2",
+  "lesson_id": "fe-production-financial-landscape-09",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.financial-landscape.09"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Distinguish a specific verifiable sustainability claim from an unsupported financial-product label.",
+  "title": {
+    "en-US": "Sustainability Claims",
+    "es-MX": "Revisa una frase sostenible",
+    "pt-BR": "Confira uma alegação sustentável"
+  },
+  "new_concepts": [
+    "finance.prod.financial-landscape.09"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Sustainability Claims\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Revisa una frase sostenible\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Confira uma alegação sustentável\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.financial-landscape.09",
+      "observable_action": "Distinguish a specific verifiable sustainability claim from an unsupported financial-product label.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.purchase-decisions.11",
+      "prod.investment-comparison.03"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A green label is not evidence by itself; look for a precise claim and information that can be checked.",
+    "misconception": "A green label proves environmental impact, low risk and good returns without supporting methodology or evidence.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.financial-landscape.09",
+        "context_id": "financial-landscape-09-example-01",
+        "supports_from": [],
+        "reasoning": "Ask what is measured, over which period and by what method. Check evidence; a sustainability label does not establish returns."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.financial-landscape.09",
+        "context_id": "financial-landscape-09-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "A defined measure, method and period make checking possible."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.financial-landscape.09",
+        "context_id": "financial-landscape-09-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The label alone leaves the claim unverified."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.financial-landscape.09",
+        "context_id": "financial-landscape-09-practice-01",
+        "supports_from": [],
+        "reasoning": "Evidence supports its stated measure and period, not everything."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.financial-landscape.09",
+        "context_id": "financial-landscape-09-practice-02",
+        "supports_from": [],
+        "reasoning": "Different measures or periods may not support direct comparison."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.financial-landscape.09",
+        "context_id": "financial-landscape-09-practice-03",
+        "supports_from": [],
+        "reasoning": "Environmental evidence does not eliminate investment risk or cost."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.financial-landscape.09",
+        "context_id": "financial-landscape-09-transfer-01",
+        "supports_from": [],
+        "reasoning": "Documentation makes verification possible without automatically proving the claim."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.financial-landscape.09",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A green label is not evidence by itself; look for a precise claim and information that can be checked."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Una etiqueta verde no es prueba por sí sola; busca frase precisa e información verificable."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Um rótulo verde não é prova por si só; busque alegação precisa e informação que possa conferir."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Claim, method and evidence",
+          "line": "Ask what is measured, over which period and by what method. Check evidence; a sustainability label does not establish returns."
+        },
+        "es-MX": {
+          "prompt": "Afirmación, método y prueba",
+          "line": "Pregunta qué se mide, en qué periodo y con qué método. Revisa prueba; una etiqueta sostenible no establece rendimientos."
+        },
+        "pt-BR": {
+          "prompt": "Alegação, método e prova",
+          "line": "Pergunte o que se mede, em qual período e com qual método. Confira provas; um rótulo sustentável não define rendimentos."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Which claim can be checked more directly?",
+          "scene": "A product compares two descriptions of environmental impact.",
+          "options": [
+            {
+              "label": "A green leaf picture"
+            },
+            {
+              "label": "“Good for the planet” alone"
+            },
+            {
+              "label": "Measured emissions with method and period"
+            }
+          ],
+          "help": [
+            "Look for a specific testable statement rather than decoration."
+          ],
+          "feedback": {
+            "met": "A defined measure, method and period make checking possible.",
+            "not_yet": "Look for a specific testable statement rather than decoration."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué frase puede revisarse mejor?",
+          "scene": "Producto compara dos descripciones de impacto ambiental.",
+          "options": [
+            {
+              "label": "Imagen de hoja verde"
+            },
+            {
+              "label": "Solo «bueno para el planeta»"
+            },
+            {
+              "label": "Emisiones medidas con método y periodo"
+            }
+          ],
+          "help": [
+            "Busca frase precisa comprobable, no decoración."
+          ],
+          "feedback": {
+            "met": "Medida, método y periodo definidos permiten verificar.",
+            "not_yet": "Busca frase precisa comprobable, no decoración."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que alegação pode ser conferida melhor?",
+          "scene": "Produto compara duas descrições de impacto ambiental.",
+          "options": [
+            {
+              "label": "Imagem de folha verde"
+            },
+            {
+              "label": "Só “bom para o planeta”"
+            },
+            {
+              "label": "Emissões medidas com método e período"
+            }
+          ],
+          "help": [
+            "Busque alegação precisa testável, não decoração."
+          ],
+          "feedback": {
+            "met": "Medida, método e período definidos permitem conferir.",
+            "not_yet": "Busque alegação precisa testável, não decoração."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.09",
+      "copy": {
+        "en-US": {
+          "prompt": "What is missing from this label?",
+          "scene": "A fund calls itself “sustainable” but gives no criteria or supporting report.",
+          "options": [
+            {
+              "label": "Definition and supporting evidence"
+            },
+            {
+              "label": "Nothing because the label suffices"
+            },
+            {
+              "label": "A brighter green color"
+            }
+          ],
+          "help": [
+            "Ask how the term is defined and evidenced."
+          ],
+          "feedback": {
+            "met": "The label alone leaves the claim unverified.",
+            "not_yet": "Ask how the term is defined and evidenced."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué falta a esta etiqueta?",
+          "scene": "Fondo se llama «sostenible» pero no da criterios ni informe de respaldo.",
+          "options": [
+            {
+              "label": "Definición y prueba de respaldo"
+            },
+            {
+              "label": "Nada porque etiqueta basta"
+            },
+            {
+              "label": "Verde más brillante"
+            }
+          ],
+          "help": [
+            "Pregunta cómo se define y respalda el término."
+          ],
+          "feedback": {
+            "met": "La etiqueta sola deja frase sin verificar.",
+            "not_yet": "Pregunta cómo se define y respalda el término."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que falta neste rótulo?",
+          "scene": "Fundo se chama “sustentável” mas não dá critérios nem relatório de apoio.",
+          "options": [
+            {
+              "label": "Definição e provas de apoio"
+            },
+            {
+              "label": "Nada pois rótulo basta"
+            },
+            {
+              "label": "Verde mais forte"
+            }
+          ],
+          "help": [
+            "Pergunte como se define e comprova o termo."
+          ],
+          "feedback": {
+            "met": "O rótulo só deixa alegação sem conferir.",
+            "not_yet": "Pergunte como se define e comprova o termo."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Does this prove everything?",
+          "scene": "A report verifies one selected measure for a limited period.",
+          "options": [
+            {
+              "label": "Yes, every environmental claim follows"
+            },
+            {
+              "label": "Yes, all future impact is known"
+            },
+            {
+              "label": "No, the evidence has limited scope"
+            }
+          ],
+          "help": [
+            "Keep the conclusion within the evidence’s actual scope."
+          ],
+          "feedback": {
+            "met": "Evidence supports its stated measure and period, not everything.",
+            "not_yet": "Keep the conclusion within the evidence’s actual scope."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Esto prueba todo impacto del producto?",
+          "scene": "Informe verifica una medida seleccionada durante periodo limitado.",
+          "options": [
+            {
+              "label": "Sí, prueba toda frase ambiental"
+            },
+            {
+              "label": "Sí, conoce todo impacto futuro"
+            },
+            {
+              "label": "No, prueba tiene alcance limitado"
+            }
+          ],
+          "help": [
+            "Mantén conclusión dentro del alcance real de las pruebas."
+          ],
+          "feedback": {
+            "met": "Evidencia respalda medida y periodo indicados, no todo.",
+            "not_yet": "Mantén conclusión dentro del alcance real de las pruebas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Isso prova todo impacto do produto?",
+          "scene": "Relatório verifica uma medida escolhida durante período limitado.",
+          "options": [
+            {
+              "label": "Sim, prova toda alegação ambiental"
+            },
+            {
+              "label": "Sim, sabe todo impacto futuro"
+            },
+            {
+              "label": "Não, prova tem alcance limitado"
+            }
+          ],
+          "help": [
+            "Mantenha conclusão dentro do alcance real das provas."
+          ],
+          "feedback": {
+            "met": "Prova apoia medida e período dados, não tudo.",
+            "not_yet": "Mantenha conclusão dentro do alcance real das provas."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.09",
+      "copy": {
+        "en-US": {
+          "prompt": "What must be aligned to compare?",
+          "scene": "Two environmental reports use different measures and periods.",
+          "options": [
+            {
+              "label": "Measure, scope and period"
+            },
+            {
+              "label": "Only their investment returns"
+            },
+            {
+              "label": "Only the product names"
+            }
+          ],
+          "help": [
+            "Align definitions before comparing the reported results."
+          ],
+          "feedback": {
+            "met": "Different measures or periods may not support direct comparison.",
+            "not_yet": "Align definitions before comparing the reported results."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué igualar al comparar?",
+          "scene": "Dos informes del ambiente usan medidas y periodos distintos.",
+          "options": [
+            {
+              "label": "Medida, alcance y periodo"
+            },
+            {
+              "label": "Solo sus rendimientos financieros"
+            },
+            {
+              "label": "Solo nombres de productos"
+            }
+          ],
+          "help": [
+            "Iguala definiciones antes de comparar resultados reportados."
+          ],
+          "feedback": {
+            "met": "Medidas o periodos distintos pueden impedir comparación directa.",
+            "not_yet": "Iguala definiciones antes de comparar resultados reportados."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que igualar ao comparar?",
+          "scene": "Dois relatórios ambientais usam medidas e períodos distintos.",
+          "options": [
+            {
+              "label": "Medida, alcance e período"
+            },
+            {
+              "label": "Só seus retornos financeiros"
+            },
+            {
+              "label": "Só nomes dos produtos"
+            }
+          ],
+          "help": [
+            "Iguale definições antes de comparar resultados relatados."
+          ],
+          "feedback": {
+            "met": "Medidas ou períodos distintos podem impedir comparação direta.",
+            "not_yet": "Iguale definições antes de comparar resultados relatados."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-landscape.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Does this establish financial safety?",
+          "scene": "An investment supports its environmental claim but still has market exposure.",
+          "options": [
+            {
+              "label": "No, assess financial risks separately"
+            },
+            {
+              "label": "Yes, environmental evidence removes losses"
+            },
+            {
+              "label": "Yes, fees no longer matter"
+            }
+          ],
+          "help": [
+            "Check the financial terms separately from the environmental claim."
+          ],
+          "feedback": {
+            "met": "Environmental evidence does not eliminate investment risk or cost.",
+            "not_yet": "Check the financial terms separately from the environmental claim."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Etiqueta establece seguridad financiera?",
+          "scene": "Inversión tiene frase ambiental respaldada pero sigue expuesta al mercado.",
+          "options": [
+            {
+              "label": "No, evaluar riesgos financieros aparte"
+            },
+            {
+              "label": "Sí, prueba ambiental elimina pérdidas"
+            },
+            {
+              "label": "Sí, comisiones dejan de importar"
+            }
+          ],
+          "help": [
+            "Revisa términos financieros aparte de frase ambiental."
+          ],
+          "feedback": {
+            "met": "Evidencia ambiental no elimina riesgo ni costo de inversión.",
+            "not_yet": "Revisa términos financieros aparte de frase ambiental."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Rótulo define segurança financeira?",
+          "scene": "Aplicação tem alegação ambiental comprovada mas segue exposta ao mercado.",
+          "options": [
+            {
+              "label": "Não, avaliar riscos financeiros à parte"
+            },
+            {
+              "label": "Sim, prova ambiental elimina perdas"
+            },
+            {
+              "label": "Sim, taxas deixam de importar"
+            }
+          ],
+          "help": [
+            "Confira termos financeiros além da alegação ambiental."
+          ],
+          "feedback": {
+            "met": "Prova ambiental não elimina risco nem custo da aplicação.",
+            "not_yet": "Confira termos financeiros além da alegação ambiental."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.financial-landscape.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Which claim deserves further checking?",
+          "scene": "A provider publishes criteria, dated measures and method; another only displays “planet-friendly.”",
+          "options": [
+            {
+              "label": "Both are already proven"
+            },
+            {
+              "label": "The documented claim is checkable"
+            },
+            {
+              "label": "The slogan proves more"
+            }
+          ],
+          "help": [
+            "Inspect the supplied method and evidence before accepting it."
+          ],
+          "feedback": {
+            "met": "Documentation makes verification possible without automatically proving the claim.",
+            "not_yet": "Inspect the supplied method and evidence before accepting it."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué frase permite más revisión?",
+          "scene": "Proveedor publica criterios, medidas fechadas y método; otro solo dice «amigable con planeta».",
+          "options": [
+            {
+              "label": "Ambas ya están probadas"
+            },
+            {
+              "label": "La documentada puede verificarse"
+            },
+            {
+              "label": "El lema prueba más"
+            }
+          ],
+          "help": [
+            "Examina método y prueba dados antes de aceptarla."
+          ],
+          "feedback": {
+            "met": "Un informe permite verificar sin probar por sí solo la frase.",
+            "not_yet": "Examina método y prueba dados antes de aceptarla."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que alegação permite mais conferência?",
+          "scene": "Provedor publica critérios, medidas datadas e método; outro só diz “amigo do planeta”.",
+          "options": [
+            {
+              "label": "Ambas já estão provadas"
+            },
+            {
+              "label": "A documentada pode ser verificada"
+            },
+            {
+              "label": "O lema prova mais"
+            }
+          ],
+          "help": [
+            "Examine método e provas dados antes de aceitar."
+          ],
+          "feedback": {
+            "met": "Documentação permite conferir sem provar automaticamente a alegação.",
+            "not_yet": "Examine método e provas dados antes de aceitar."
+          }
+        }
+      }
+    }
+  ]
+}

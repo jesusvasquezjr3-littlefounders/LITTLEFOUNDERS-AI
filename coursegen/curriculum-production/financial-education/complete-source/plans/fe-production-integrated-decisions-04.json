@@ -1,0 +1,786 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-integrated-decisions-part-1",
+  "lesson_id": "fe-production-integrated-decisions-04",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.income-work.09",
+    "finance.prod.housing-transport.01",
+    "finance.prod.tax-public-systems.07"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Evaluate a job move using net pay, relocation costs, timing and lost benefits.",
+  "title": {
+    "en-US": "Changing work",
+    "es-MX": "Cambiar de trabajo",
+    "pt-BR": "Mudar de trabalho"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Changing work\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Cambiar de trabajo\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Mudar de trabalho\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "capstone",
+    "objective": {
+      "skill_id": "prod.income-work.09",
+      "observable_action": "Evaluate a job move using net pay, relocation costs, timing and lost benefits.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.income-work.04",
+      "prod.income-work.05",
+      "prod.financial-math.11"
+    ],
+    "retrieval_skills": [
+      "prod.income-work.09",
+      "prod.housing-transport.01",
+      "prod.tax-public-systems.07"
+    ],
+    "relevance": "Compare what the move changes, including costs before the first payment.",
+    "misconception": "Treating a higher advertised salary as an immediate increase in available money.",
+    "numeracy_support": "Use the explicitly stated totals, deadlines and constraints. Earlier financial arithmetic is retrieved; no current rate or legal entitlement is implied.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.income-work.09",
+        "context_id": "integrated-decisions-4-practice-01",
+        "supports_from": [],
+        "reasoning": "Compare pay after deductions on the same basis."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.housing-transport.01",
+        "context_id": "integrated-decisions-4-practice-02",
+        "supports_from": [],
+        "reasoning": "200 + 100 + 300 = 600 must be available."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.tax-public-systems.07",
+        "context_id": "integrated-decisions-4-practice-03",
+        "supports_from": [],
+        "reasoning": "The specific rule determines whether this income change matters."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.income-work.09",
+        "context_id": "integrated-decisions-4-practice-04",
+        "supports_from": [],
+        "reasoning": "900 − 180 − 680 = 40 more each month."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.housing-transport.01",
+        "context_id": "integrated-decisions-4-practice-05",
+        "supports_from": [],
+        "reasoning": "Monday needs accessible funds before Friday’s payment arrives."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.income-work.09",
+        "context_id": "integrated-decisions-4-transfer-01",
+        "supports_from": [],
+        "reasoning": "Unknown replacement costs prevent a complete financial comparison."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.income-work.09",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Compare what the move changes, including costs before the first payment."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Compara lo que cambia al mudarte, incluidos costos antes del primer pago."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Compare o que muda, incluindo custos antes do primeiro pagamento."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Which comparison is fair?",
+          "scene": "Offer A states gross pay; offer B states take-home pay. Deductions for A are unknown.",
+          "options": [
+            {
+              "label": "First estimate A’s take-home pay"
+            },
+            {
+              "label": "Compare the stated amounts"
+            }
+          ],
+          "help": [
+            "Gross and take-home amounts are not directly comparable."
+          ],
+          "feedback": {
+            "met": "Compare pay after deductions on the same basis.",
+            "not_yet": "Gross and take-home amounts are not directly comparable."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué comparación es justa?",
+          "scene": "A indica sueldo bruto; B indica pago neto. Desconoces las deducciones de A.",
+          "options": [
+            {
+              "label": "Estimar primero el neto de A"
+            },
+            {
+              "label": "Comparar los montos indicados"
+            }
+          ],
+          "help": [
+            "El bruto y el neto no se comparan directamente."
+          ],
+          "feedback": {
+            "met": "Compara el pago tras deducciones con la misma base.",
+            "not_yet": "El bruto y el neto no se comparan directamente."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual comparação é justa?",
+          "scene": "A informa salário bruto; B informa líquido. As deduções de A são desconhecidas.",
+          "options": [
+            {
+              "label": "Estimar primeiro o líquido de A"
+            },
+            {
+              "label": "Comparar os valores informados"
+            }
+          ],
+          "help": [
+            "Valores brutos e líquidos não são diretamente comparáveis."
+          ],
+          "feedback": {
+            "met": "Compare o pagamento após deduções na mesma base.",
+            "not_yet": "Valores brutos e líquidos não são diretamente comparáveis."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Cash needed before moving?",
+          "scene": "Required before arrival: deposit 200, moving service 100, first rent 300.",
+          "options": [
+            {
+              "label": "600"
+            },
+            {
+              "label": "300"
+            },
+            {
+              "label": "400"
+            }
+          ],
+          "help": [
+            "Include all required upfront payments, even a refundable deposit."
+          ],
+          "feedback": {
+            "met": "200 + 100 + 300 = 600 must be available.",
+            "not_yet": "Include all required upfront payments, even a refundable deposit."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Dinero previo a la mudanza?",
+          "scene": "Antes de llegar: depósito 200, mudanza 100, primera renta 300.",
+          "options": [
+            {
+              "label": "600"
+            },
+            {
+              "label": "300"
+            },
+            {
+              "label": "400"
+            }
+          ],
+          "help": [
+            "Incluye todos los pagos iniciales, aunque el depósito sea reembolsable."
+          ],
+          "feedback": {
+            "met": "200 + 100 + 300 = 600 deben estar disponibles.",
+            "not_yet": "Incluye todos los pagos iniciales, aunque el depósito sea reembolsable."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Dinheiro antes da mudança?",
+          "scene": "Antes de chegar: caução 200, mudança 100, primeiro aluguel 300.",
+          "options": [
+            {
+              "label": "600"
+            },
+            {
+              "label": "300"
+            },
+            {
+              "label": "400"
+            }
+          ],
+          "help": [
+            "Inclua todos os pagamentos iniciais, mesmo uma caução reembolsável."
+          ],
+          "feedback": {
+            "met": "200 + 100 + 300 = 600 precisam estar disponíveis.",
+            "not_yet": "Inclua todos os pagamentos iniciais, mesmo uma caução reembolsável."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          200,
+          100,
+          300
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "op": "add",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.tax-public-systems.07",
+      "copy": {
+        "en-US": {
+          "prompt": "What must be checked?",
+          "scene": "New work raises income; an income-linked benefit’s rule is unknown.",
+          "options": [
+            {
+              "label": "Assume every benefit stops"
+            },
+            {
+              "label": "Verify this benefit’s official rule"
+            },
+            {
+              "label": "Assume the benefit continues"
+            }
+          ],
+          "help": [
+            "A change in work alone does not establish eligibility or ineligibility."
+          ],
+          "feedback": {
+            "met": "The specific rule determines whether this income change matters.",
+            "not_yet": "A change in work alone does not establish eligibility or ineligibility."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debes verificar?",
+          "scene": "Un apoyo depende del ingreso declarado. El nuevo trabajo lo aumenta; desconoces la regla aplicable.",
+          "options": [
+            {
+              "label": "Suponer que todos se cancelan"
+            },
+            {
+              "label": "Verificar la regla oficial del apoyo"
+            },
+            {
+              "label": "Suponer que sigue el apoyo"
+            }
+          ],
+          "help": [
+            "Cambiar de trabajo no demuestra por sí solo elegibilidad o exclusión."
+          ],
+          "feedback": {
+            "met": "La regla concreta determina si este cambio de ingreso afecta.",
+            "not_yet": "Cambiar de trabajo no demuestra por sí solo elegibilidad o exclusión."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que verificar?",
+          "scene": "Um benefício depende da renda declarada. O novo trabalho aumenta a renda; a regra aplicável é desconhecida.",
+          "options": [
+            {
+              "label": "Supor que todos acabam"
+            },
+            {
+              "label": "Verificar a regra oficial do benefício"
+            },
+            {
+              "label": "Supor que o benefício continua"
+            }
+          ],
+          "help": [
+            "Mudar de emprego não comprova, sozinho, elegibilidade ou exclusão."
+          ],
+          "feedback": {
+            "met": "A regra específica determina se esta mudança de renda afeta.",
+            "not_yet": "Mudar de emprego não comprova, sozinho, elegibilidade ou exclusão."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Monthly gain after work costs?",
+          "scene": "New take-home pay: 900; new work costs: 180. Current take-home after work costs: 680.",
+          "options": [
+            {
+              "label": "40"
+            },
+            {
+              "label": "720"
+            },
+            {
+              "label": "220"
+            }
+          ],
+          "help": [
+            "Compare both roles after their work costs."
+          ],
+          "feedback": {
+            "met": "900 − 180 − 680 = 40 more each month.",
+            "not_yet": "Compare both roles after their work costs."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Mejora mensual tras costos laborales?",
+          "scene": "Nuevo pago neto: 900; nuevos costos laborales: 180. Neto actual tras costos laborales: 680.",
+          "options": [
+            {
+              "label": "40"
+            },
+            {
+              "label": "720"
+            },
+            {
+              "label": "220"
+            }
+          ],
+          "help": [
+            "Compara ambos trabajos tras sus respectivos costos laborales."
+          ],
+          "feedback": {
+            "met": "900 − 180 − 680 = 40 más al mes.",
+            "not_yet": "Compara ambos trabajos tras sus respectivos costos laborales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Ganho mensal após custos do trabalho?",
+          "scene": "Novo líquido: 900; novos custos do trabalho: 180. Líquido atual após custos: 680.",
+          "options": [
+            {
+              "label": "40"
+            },
+            {
+              "label": "720"
+            },
+            {
+              "label": "220"
+            }
+          ],
+          "help": [
+            "Compare os dois empregos após seus respectivos custos de trabalho."
+          ],
+          "feedback": {
+            "met": "900 − 180 − 680 = 40 a mais por mês.",
+            "not_yet": "Compare os dois empregos após seus respectivos custos de trabalho."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          900,
+          180,
+          680
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What blocks the move now?",
+          "scene": "Deposit due Monday; first pay arrives Friday, with no funds for Monday.",
+          "options": [
+            {
+              "label": "A proven monthly shortfall"
+            },
+            {
+              "label": "The deposit’s refundable label"
+            },
+            {
+              "label": "The upfront funding gap"
+            }
+          ],
+          "help": [
+            "A refundable payment still needs funding when it is due."
+          ],
+          "feedback": {
+            "met": "Monday needs accessible funds before Friday’s payment arrives.",
+            "not_yet": "A refundable payment still needs funding when it is due."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué impide mudarte ahora?",
+          "scene": "El depósito vence el lunes; el primer sueldo llega el viernes. No hay fondos para el lunes.",
+          "options": [
+            {
+              "label": "Un faltante mensual comprobado"
+            },
+            {
+              "label": "Que el depósito sea reembolsable"
+            },
+            {
+              "label": "El faltante de fondos iniciales"
+            }
+          ],
+          "help": [
+            "Un pago reembolsable necesita fondos cuando vence."
+          ],
+          "feedback": {
+            "met": "El lunes exige fondos accesibles antes del pago del viernes.",
+            "not_yet": "Un pago reembolsable necesita fondos cuando vence."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que impede a mudança agora?",
+          "scene": "A caução vence segunda; o primeiro salário chega sexta. Não há recursos para segunda.",
+          "options": [
+            {
+              "label": "Uma falta mensal comprovada"
+            },
+            {
+              "label": "A caução ser reembolsável"
+            },
+            {
+              "label": "A falta de recursos iniciais"
+            }
+          ],
+          "help": [
+            "Um pagamento reembolsável precisa de recursos no vencimento."
+          ],
+          "feedback": {
+            "met": "Segunda exige recursos acessíveis antes do pagamento de sexta.",
+            "not_yet": "Um pagamento reembolsável precisa de recursos no vencimento."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.income-work.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Which conclusion is supported?",
+          "scene": "Remote work pays more net but removes valuable coverage; replacement cost is unknown.",
+          "options": [
+            {
+              "label": "Definitely better finances"
+            },
+            {
+              "label": "Ignore the lost coverage"
+            },
+            {
+              "label": "Compare replacement cost before deciding"
+            }
+          ],
+          "help": [
+            "Compare the whole change, not only the larger payment."
+          ],
+          "feedback": {
+            "met": "Unknown replacement costs prevent a complete financial comparison.",
+            "not_yet": "Compare the whole change, not only the larger payment."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué conclusión está respaldada?",
+          "scene": "Una oferta remota paga más neto, pero quita cobertura valiosa. Desconoces cuánto cuesta reemplazarla.",
+          "options": [
+            {
+              "label": "La oferta mejora seguro tus finanzas"
+            },
+            {
+              "label": "Ignorar la cobertura perdida"
+            },
+            {
+              "label": "Comparar el costo de reemplazo"
+            }
+          ],
+          "help": [
+            "Compara todo el cambio, no solo el pago mayor."
+          ],
+          "feedback": {
+            "met": "El costo de reemplazo desconocido impide una comparación financiera completa.",
+            "not_yet": "Compara todo el cambio, no solo el pago mayor."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual conclusão tem respaldo?",
+          "scene": "Uma oferta remota paga mais líquido, mas retira cobertura valiosa. O custo de reposição é desconhecido.",
+          "options": [
+            {
+              "label": "A oferta certamente melhora as finanças"
+            },
+            {
+              "label": "Ignorar a cobertura perdida"
+            },
+            {
+              "label": "Comparar o custo de reposição"
+            }
+          ],
+          "help": [
+            "Compare a mudança inteira, não apenas o pagamento maior."
+          ],
+          "feedback": {
+            "met": "O custo de reposição desconhecido impede uma comparação financeira completa.",
+            "not_yet": "Compare a mudança inteira, não apenas o pagamento maior."
+          }
+        }
+      }
+    }
+  ]
+}

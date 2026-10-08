@@ -1,0 +1,863 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-credit-mechanics-part-3",
+  "lesson_id": "fe-production-credit-mechanics-review-2",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.credit-mechanics.07",
+    "finance.prod.credit-mechanics.08",
+    "finance.prod.credit-mechanics.09",
+    "finance.prod.credit-mechanics.10",
+    "finance.prod.credit-mechanics.11",
+    "finance.prod.credit-mechanics.12",
+    "finance.debt.obligation"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Check payment feasibility, contractual risks and comparable cost disclosures before accepting a fictional borrowing offer.",
+  "title": {
+    "en-US": "Borrowing decisions",
+    "es-MX": "Revisa la decisión de crédito",
+    "pt-BR": "Confira a decisão de crédito"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Check the borrowing decision\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Revisa la decisión de crédito\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Confira a decisão de crédito\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "consolidate",
+    "objective": {
+      "skill_id": "prod.credit-mechanics.07",
+      "observable_action": "Check payment feasibility, contractual risks and comparable cost disclosures before accepting a fictional borrowing offer.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.cashflow-budget.05",
+      "prod.credit-mechanics.02"
+    ],
+    "retrieval_skills": [
+      "prod.credit-mechanics.07",
+      "prod.credit-mechanics.08",
+      "prod.credit-mechanics.09",
+      "prod.credit-mechanics.10",
+      "prod.credit-mechanics.11",
+      "prod.credit-mechanics.12",
+      "debt.obligation"
+    ],
+    "relevance": "Combine the cash calendar with the loan’s actual terms.",
+    "misconception": "A low headline rate proves a loan affordable and harmless regardless of its terms.",
+    "numeracy_support": "Every quantity and assumption needed to decide is visible in the current scenario. Examples explain the relationship before independent application.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.credit-mechanics.07",
+        "context_id": "fe-production-credit-mechanics-review-2-practice-01",
+        "supports_from": [],
+        "reasoning": "The payments share the same available money and deadline."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.credit-mechanics.08",
+        "context_id": "fe-production-credit-mechanics-review-2-practice-02",
+        "supports_from": [],
+        "reasoning": "The payment arrived after this agreement’s stated deadline."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.credit-mechanics.09",
+        "context_id": "fe-production-credit-mechanics-review-2-practice-03",
+        "supports_from": [],
+        "reasoning": "The contract names the vehicle, not the purchased training."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.credit-mechanics.10",
+        "context_id": "fe-production-credit-mechanics-review-2-practice-04",
+        "supports_from": [],
+        "reasoning": "The later rate reset can change the remaining payments."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.credit-mechanics.11",
+        "context_id": "fe-production-credit-mechanics-review-2-practice-05",
+        "supports_from": [],
+        "reasoning": "Different periods and rate definitions need a common basis."
+      },
+      {
+        "segment_id": "practice-06",
+        "skill_id": "prod.credit-mechanics.12",
+        "context_id": "fe-production-credit-mechanics-review-2-practice-06",
+        "supports_from": [],
+        "reasoning": "Scope determines whether adding the charge would double-count it."
+      },
+      {
+        "segment_id": "practice-07",
+        "skill_id": "debt.obligation",
+        "context_id": "fe-production-credit-mechanics-review-2-practice-07",
+        "supports_from": [],
+        "reasoning": "The loan improves current cash but creates repayment obligations."
+      },
+      {
+        "segment_id": "transfer-08",
+        "skill_id": "prod.credit-mechanics.07",
+        "context_id": "fe-production-credit-mechanics-review-2-transfer-08",
+        "supports_from": [],
+        "reasoning": "Later income cannot cover this earlier unfunded deadline."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.credit-mechanics.07",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Combine the cash calendar with the loan’s actual terms."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Combina el calendario de dinero con las condiciones reales del préstamo."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Combine o calendário do dinheiro com as regras reais do empréstimo."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Does the new payment fit?",
+          "scene": "Free cash after essentials: 40; existing loan: 25; new loan: 20, both due today.",
+          "options": [
+            {
+              "label": "Yes, each loan alone fits"
+            },
+            {
+              "label": "No, their combined amount exceeds the remainder"
+            }
+          ],
+          "help": [
+            "Count existing debt payments before adding a new one."
+          ],
+          "feedback": {
+            "met": "The payments share the same available money and deadline.",
+            "not_yet": "Count existing debt payments before adding a new one."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cabe el pago nuevo?",
+          "scene": "Libre tras lo esencial: 40; préstamo existente: 25; nuevo: 20, ambos vencen hoy.",
+          "options": [
+            {
+              "label": "Sí, cada préstamo solo cabe"
+            },
+            {
+              "label": "No, juntos superan el resto"
+            }
+          ],
+          "help": [
+            "Cuenta pagos de deuda existentes antes de añadir otro."
+          ],
+          "feedback": {
+            "met": "Los pagos usan el mismo dinero y fecha.",
+            "not_yet": "Cuenta pagos de deuda existentes antes de añadir otro."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A nova parcela cabe?",
+          "scene": "Livre após o essencial: 40; empréstimo existente: 25; novo: 20, ambos vencem hoje.",
+          "options": [
+            {
+              "label": "Sim, cada empréstimo sozinho cabe"
+            },
+            {
+              "label": "Não, juntos superam a sobra"
+            }
+          ],
+          "help": [
+            "Conte parcelas existentes antes de acrescentar outra."
+          ],
+          "feedback": {
+            "met": "As parcelas usam o mesmo dinheiro e a mesma data.",
+            "not_yet": "Conte parcelas existentes antes de acrescentar outra."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.08",
+      "copy": {
+        "en-US": {
+          "prompt": "What follows from the clause?",
+          "scene": "A missed Friday payment triggers the stated fee. The money arrives Monday.",
+          "options": [
+            {
+              "label": "Monday automatically counts as Friday"
+            },
+            {
+              "label": "The stated trigger was met"
+            }
+          ],
+          "help": [
+            "Use the agreed receipt deadline, not the eventual arrival."
+          ],
+          "feedback": {
+            "met": "The payment arrived after this agreement’s stated deadline.",
+            "not_yet": "Use the agreed receipt deadline, not the eventual arrival."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué implica la cláusula?",
+          "scene": "Omitir el pago del viernes activa el cargo indicado. El dinero llega el lunes.",
+          "options": [
+            {
+              "label": "El lunes cuenta automáticamente como viernes"
+            },
+            {
+              "label": "Se cumplió la condición del cargo"
+            }
+          ],
+          "help": [
+            "Usa el plazo de recepción, no la llegada posterior."
+          ],
+          "feedback": {
+            "met": "El pago llegó después del plazo indicado en este contrato.",
+            "not_yet": "Usa el plazo de recepción, no la llegada posterior."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que implica a cláusula?",
+          "scene": "Não pagar sexta gera a tarifa indicada. O dinheiro chega segunda.",
+          "options": [
+            {
+              "label": "Segunda conta automaticamente como sexta"
+            },
+            {
+              "label": "A condição da tarifa ocorreu"
+            }
+          ],
+          "help": [
+            "Use o prazo de recebimento, não a chegada posterior."
+          ],
+          "feedback": {
+            "met": "O pagamento chegou após o prazo indicado neste contrato.",
+            "not_yet": "Use o prazo de recebimento, não a chegada posterior."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Identify the pledged asset.",
+          "scene": "A training loan uses your vehicle as collateral under the stated agreement.",
+          "options": [
+            {
+              "label": "The training certificate"
+            },
+            {
+              "label": "The vehicle"
+            }
+          ],
+          "help": [
+            "The funded purpose and pledged asset need not match."
+          ],
+          "feedback": {
+            "met": "The contract names the vehicle, not the purchased training.",
+            "not_yet": "The funded purpose and pledged asset need not match."
+          }
+        },
+        "es-MX": {
+          "prompt": "Identifica el bien en garantía.",
+          "scene": "Un préstamo de capacitación usa tu vehículo como garantía según el contrato.",
+          "options": [
+            {
+              "label": "El certificado de capacitación"
+            },
+            {
+              "label": "El vehículo"
+            }
+          ],
+          "help": [
+            "El propósito financiado y la garantía no tienen que coincidir."
+          ],
+          "feedback": {
+            "met": "El contrato nombra el vehículo, no la capacitación comprada.",
+            "not_yet": "El propósito financiado y la garantía no tienen que coincidir."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Identifique o bem em garantia.",
+          "scene": "Um empréstimo para curso usa seu veículo como garantia pelo contrato.",
+          "options": [
+            {
+              "label": "O certificado do curso"
+            },
+            {
+              "label": "O veículo"
+            }
+          ],
+          "help": [
+            "A finalidade financiada e a garantia não precisam coincidir."
+          ],
+          "feedback": {
+            "met": "O contrato indica o veículo, não o curso comprado.",
+            "not_yet": "A finalidade financiada e a garantia não precisam coincidir."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Which payment needs testing?",
+          "scene": "An initial fixed period ends before the loan ends; afterward, a variable-rate reset applies.",
+          "options": [
+            {
+              "label": "The payment after the reset"
+            },
+            {
+              "label": "Only the initial fixed payment"
+            }
+          ],
+          "help": [
+            "A temporary fixed period does not cover the entire loan."
+          ],
+          "feedback": {
+            "met": "The later rate reset can change the remaining payments.",
+            "not_yet": "A temporary fixed period does not cover the entire loan."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué pago debes probar?",
+          "scene": "El periodo fijo inicial termina antes del préstamo; después se ajusta la tasa variable.",
+          "options": [
+            {
+              "label": "El pago después del ajuste"
+            },
+            {
+              "label": "Solo el pago fijo inicial"
+            }
+          ],
+          "help": [
+            "Un periodo fijo temporal no cubre todo el préstamo."
+          ],
+          "feedback": {
+            "met": "El ajuste posterior puede cambiar los pagos restantes.",
+            "not_yet": "Un periodo fijo temporal no cubre todo el préstamo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual parcela deve testar?",
+          "scene": "O período fixo inicial termina antes do empréstimo; depois há ajuste de taxa variável.",
+          "options": [
+            {
+              "label": "A parcela após o ajuste"
+            },
+            {
+              "label": "Só a parcela fixa inicial"
+            }
+          ],
+          "help": [
+            "Um período fixo temporário não cobre todo o empréstimo."
+          ],
+          "feedback": {
+            "met": "O ajuste posterior pode mudar as parcelas restantes.",
+            "not_yet": "Um período fixo temporário não cobre todo o empréstimo."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.11",
+      "copy": {
+        "en-US": {
+          "prompt": "Can these figures be compared directly?",
+          "scene": "A daily nominal quote is compared with an annual effective quote.",
+          "options": [
+            {
+              "label": "Yes, choose the smaller printed number"
+            },
+            {
+              "label": "No, align period and compounding"
+            }
+          ],
+          "help": [
+            "Match the period and interest treatment before ranking."
+          ],
+          "feedback": {
+            "met": "Different periods and rate definitions need a common basis.",
+            "not_yet": "Match the period and interest treatment before ranking."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Puedes comparar directamente las cifras?",
+          "scene": "Se compara una tasa diaria nominal con una tasa anual efectiva.",
+          "options": [
+            {
+              "label": "Sí, elige la menor cifra impresa"
+            },
+            {
+              "label": "No, iguala periodo y capitalización"
+            }
+          ],
+          "help": [
+            "Iguala periodo y tratamiento del interés antes de ordenar."
+          ],
+          "feedback": {
+            "met": "Los periodos y definiciones distintos necesitan una base común.",
+            "not_yet": "Iguala periodo y tratamiento del interés antes de ordenar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Pode comparar diretamente os números?",
+          "scene": "Compara-se uma taxa diária nominal com uma taxa anual efetiva.",
+          "options": [
+            {
+              "label": "Sim, escolha o menor número impresso"
+            },
+            {
+              "label": "Não, iguale período e capitalização"
+            }
+          ],
+          "help": [
+            "Iguale período e tratamento dos juros antes de ordenar."
+          ],
+          "feedback": {
+            "met": "Períodos e definições diferentes precisam de uma base comum.",
+            "not_yet": "Iguale período e tratamento dos juros antes de ordenar."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.12",
+      "copy": {
+        "en-US": {
+          "prompt": "Which missing information matters?",
+          "scene": "The annual disclosure does not say whether the separately listed charge is included.",
+          "options": [
+            {
+              "label": "The measure’s included-charge definition"
+            },
+            {
+              "label": "Only its percentage size"
+            }
+          ],
+          "help": [
+            "Clarify inclusion before calculating the complete comparison."
+          ],
+          "feedback": {
+            "met": "Scope determines whether adding the charge would double-count it.",
+            "not_yet": "Clarify inclusion before calculating the complete comparison."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué información faltante importa?",
+          "scene": "El indicador anual no aclara si incluye el cargo que aparece por separado.",
+          "options": [
+            {
+              "label": "La definición de cargos incluidos"
+            },
+            {
+              "label": "Solo el tamaño del porcentaje"
+            }
+          ],
+          "help": [
+            "Aclara qué incluye antes de calcular la comparación completa."
+          ],
+          "feedback": {
+            "met": "El alcance determina si añadir el cargo lo contaría doble.",
+            "not_yet": "Aclara qué incluye antes de calcular la comparación completa."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual informação ausente importa?",
+          "scene": "O indicador anual não esclarece se inclui o encargo listado à parte.",
+          "options": [
+            {
+              "label": "A definição dos encargos incluídos"
+            },
+            {
+              "label": "Só o tamanho do percentual"
+            }
+          ],
+          "help": [
+            "Esclareça o que está incluído antes de comparar o total."
+          ],
+          "feedback": {
+            "met": "O alcance define se somar o encargo contaria duas vezes.",
+            "not_yet": "Esclareça o que está incluído antes de comparar o total."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-07",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.debt.obligation",
+      "copy": {
+        "en-US": {
+          "prompt": "Does receiving a loan settle the problem?",
+          "scene": "Emergency cash arrives as a loan with a stated repayment obligation.",
+          "options": [
+            {
+              "label": "It adds cash and a future obligation"
+            },
+            {
+              "label": "It is income with nothing owed"
+            }
+          ],
+          "help": [
+            "Keep the receipt and its future obligation visible together."
+          ],
+          "feedback": {
+            "met": "The loan improves current cash but creates repayment obligations.",
+            "not_yet": "Keep the receipt and its future obligation visible together."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Recibir el préstamo resuelve todo?",
+          "scene": "Llega efectivo de emergencia como préstamo con obligación de devolverlo.",
+          "options": [
+            {
+              "label": "Añade efectivo y una obligación futura"
+            },
+            {
+              "label": "Es ingreso sin nada pendiente"
+            }
+          ],
+          "help": [
+            "Mantén visibles la entrada y su obligación futura."
+          ],
+          "feedback": {
+            "met": "El préstamo mejora el efectivo actual y crea pagos futuros.",
+            "not_yet": "Mantén visibles la entrada y su obligación futura."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Receber o empréstimo resolve tudo?",
+          "scene": "Chega dinheiro de emergência como empréstimo com obrigação de devolver.",
+          "options": [
+            {
+              "label": "Acrescenta dinheiro e obrigação futura"
+            },
+            {
+              "label": "É renda sem nada devido"
+            }
+          ],
+          "help": [
+            "Mantenha visíveis a entrada e sua obrigação futura."
+          ],
+          "feedback": {
+            "met": "O empréstimo melhora o dinheiro atual e cria pagamentos futuros.",
+            "not_yet": "Mantenha visíveis a entrada e sua obrigação futura."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-08",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.credit-mechanics.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Is this feasible on time?",
+          "scene": "A seasonal worker’s money arrives after the proposed installment deadline; no reserve covers the gap.",
+          "options": [
+            {
+              "label": "The payment timing is unfunded"
+            },
+            {
+              "label": "Seasonal totals are sufficient later"
+            }
+          ],
+          "help": [
+            "Test the due date, not just eventual total earnings."
+          ],
+          "feedback": {
+            "met": "Later income cannot cover this earlier unfunded deadline.",
+            "not_yet": "Test the due date, not just eventual total earnings."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿El plan es viable a tiempo?",
+          "scene": "El ingreso temporal llega después del vencimiento propuesto; no hay reserva para cubrir el desfase.",
+          "options": [
+            {
+              "label": "No, falta dinero en la fecha"
+            },
+            {
+              "label": "Sí, los totales alcanzan después"
+            }
+          ],
+          "help": [
+            "Prueba la fecha de pago, no solo los ingresos finales."
+          ],
+          "feedback": {
+            "met": "El ingreso posterior no cubre este vencimiento sin fondos.",
+            "not_yet": "Prueba la fecha de pago, no solo los ingresos finales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O plano cabe no prazo?",
+          "scene": "A renda temporária chega depois do vencimento proposto; não há reserva para cobrir o intervalo.",
+          "options": [
+            {
+              "label": "Não, falta dinheiro na data"
+            },
+            {
+              "label": "Sim, os totais bastam depois"
+            }
+          ],
+          "help": [
+            "Teste a data de pagamento, não só a renda final."
+          ],
+          "feedback": {
+            "met": "A renda posterior não cobre este vencimento sem fundos.",
+            "not_yet": "Teste a data de pagamento, não só a renda final."
+          }
+        }
+      }
+    }
+  ]
+}

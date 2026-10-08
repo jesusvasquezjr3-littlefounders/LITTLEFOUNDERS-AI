@@ -1,0 +1,14 @@
+{
+  "review_date": "2026-10-06",
+  "scope": "General debt records, essential consequences, feasible repayment comparisons, creditor discussions and verification of support. Examples use fictional terms. No universal repayment priority, legal deadline, forgiveness promise or personalized recommendation. This record does not replace human market review.",
+  "sources": [
+    { "publisher": "CFPB", "url": "https://www.consumerfinance.gov/ask-cfpb/how-do-i-negotiate-a-settlement-with-a-debt-collector-en-1447/", "use": "Verify the debt, assess a feasible proposal and retain written terms." },
+    { "publisher": "CFPB", "url": "https://www.consumerfinance.gov/ask-cfpb/what-is-the-difference-between-credit-counseling-and-debt-settlement-debt-consolidation-or-credit-repair-en-1449/", "use": "Distinguish counseling, settlement and replacement borrowing; compare risks and full costs." },
+    { "publisher": "CFPB", "url": "https://www.consumerfinance.gov/ask-cfpb/what-is-credit-counseling-en-1451/", "use": "Understand counseling services and evaluate suitability rather than assuming a promise is reliable." },
+    { "publisher": "CONDUSEF", "url": "https://www.condusef.gob.mx/?idc=1540&p=contenido", "use": "Mexican context for debt restructuring and comparing payment capacity with revised terms." },
+    { "publisher": "CONDUSEF", "url": "https://revista.condusef.gob.mx/credito/tarjeta/2020/12/reparar-tu-deuda-puede-salirte-caro/", "use": "Verify debt-repair claims and authority; do not assume an intermediary can erase an obligation." },
+    { "publisher": "Banco Central do Brasil", "url": "https://www.bcb.gov.br/meubc/faqs/p/renegociacao-de-dividas", "use": "Brazilian debt renegotiation context and the distinction between requesting and agreeing revised terms." },
+    { "publisher": "Brazil Ministry of Justice", "url": "https://www.gov.br/mj/pt-br/assuntos/seus-direitos/consumidor/defesadoconsumidor/Biblioteca/manuais-upload/vol_1_prevencao_e_tratamento_do_superendividamento.pdf/view", "use": "Overindebtedness and consumer-support context, including preservation of essential needs." },
+    { "publisher": "FTC", "url": "https://consumer.ftc.gov/consumer-alerts/2026/04/say-no-thanks-unexpected-offers-lower-your-credit-card-interest-rate", "use": "Unexpected interest-reduction offers need independent verification; no guarantee of relief." }
+  ]
+}

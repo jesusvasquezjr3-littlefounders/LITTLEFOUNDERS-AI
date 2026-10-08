@@ -1,0 +1,779 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-accounts-records-part-2",
+  "lesson_id": "fe-production-accounts-records-07",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.accounts-records.07"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Identify the evidence to preserve when reporting an unfamiliar transaction.",
+  "title": {
+    "en-US": "Unfamiliar charges",
+    "es-MX": "Conserva evidencia de un cobro desconocido",
+    "pt-BR": "Guarde os dados de um débito"
+  },
+  "new_concepts": [
+    "finance.prod.accounts-records.07"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Preserve evidence of an unfamiliar charge\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Conserva evidencia de un cobro desconocido\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Guarde os dados de um débito\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.accounts-records.07",
+      "observable_action": "Identify the evidence to preserve when reporting an unfamiliar transaction.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.accounts-records.04",
+      "prod.accounts-records.05"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Keep the identifying record so a verified provider can investigate the right transaction.",
+    "misconception": "Deleting an unfamiliar entry, altering its details or sharing access credentials instead of preserving relevant transaction evidence.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.accounts-records.07",
+        "context_id": "fe-production-accounts-records-07-example-01",
+        "supports_from": [],
+        "reasoning": "Preserve the date, amount, description and reference. Report through verified channels; passwords and security codes are not transaction evidence."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.accounts-records.07",
+        "context_id": "fe-production-accounts-records-07-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The entry’s details let the provider locate the relevant movement."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.accounts-records.07",
+        "context_id": "fe-production-accounts-records-07-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Report observations separately from an unverified explanation."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.accounts-records.07",
+        "context_id": "fe-production-accounts-records-07-practice-01",
+        "supports_from": [],
+        "reasoning": "Knowing transaction details does not authorize access to your account."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.accounts-records.07",
+        "context_id": "fe-production-accounts-records-07-practice-02",
+        "supports_from": [],
+        "reasoning": "A case reference links follow-up to the original report."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.accounts-records.07",
+        "context_id": "fe-production-accounts-records-07-practice-03",
+        "supports_from": [],
+        "reasoning": "Applicable procedures and deadlines require verification, not assumptions."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.accounts-records.07",
+        "context_id": "fe-production-accounts-records-07-transfer-01",
+        "supports_from": [],
+        "reasoning": "A preserved record supports investigation without exposing account access."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.accounts-records.07",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Keep the identifying record so a verified provider can investigate the right transaction."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Guarda los datos del pago y usa un canal oficial para pedir ayuda."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Guarde os dados do débito e use um canal oficial para pedir ajuda."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Keep facts intact",
+          "line": "Preserve the date, amount, description and reference. Report through verified channels; passwords and security codes are not transaction evidence."
+        },
+        "es-MX": {
+          "prompt": "Conserva intactos los datos",
+          "line": "Conserva fecha, monto, descripción y referencia. Reporta por canales verificados; contraseñas y códigos no son evidencia de operación."
+        },
+        "pt-BR": {
+          "prompt": "Mantenha os dados intactos",
+          "line": "Guarde data, valor, nome e código do débito. Use um canal oficial; não envie senhas nem códigos de acesso."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Which evidence identifies it?",
+          "scene": "An unfamiliar outgoing entry appears with its date, amount and payment reference.",
+          "options": [
+            {
+              "label": "A replacement amount you estimate"
+            },
+            {
+              "label": "Those transaction details"
+            },
+            {
+              "label": "Your account password"
+            }
+          ],
+          "help": [
+            "Preserve the record as shown."
+          ],
+          "feedback": {
+            "met": "The entry’s details let the provider locate the relevant movement.",
+            "not_yet": "Preserve the record as shown."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué evidencia la identifica?",
+          "scene": "Aparece una salida desconocida con fecha, monto y referencia de pago.",
+          "options": [
+            {
+              "label": "Un monto sustituto que estimes"
+            },
+            {
+              "label": "Esos datos de la operación"
+            },
+            {
+              "label": "Tu contraseña de cuenta"
+            }
+          ],
+          "help": [
+            "Conserva el registro tal como aparece."
+          ],
+          "feedback": {
+            "met": "Los datos permiten localizar el movimiento pertinente.",
+            "not_yet": "Conserva el registro tal como aparece."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quais dados ajudam a localizá-lo?",
+          "scene": "Há um débito que não conhece, com data, valor e código.",
+          "options": [
+            {
+              "label": "Um valor que você supõe"
+            },
+            {
+              "label": "Os dados desse débito"
+            },
+            {
+              "label": "Sua senha da conta"
+            }
+          ],
+          "help": [
+            "Guarde os dados como aparecem."
+          ],
+          "feedback": {
+            "met": "Esses dados ajudam a achar o débito certo.",
+            "not_yet": "Guarde os dados como aparecem."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.07",
+      "copy": {
+        "en-US": {
+          "prompt": "What facts belong in the report?",
+          "scene": "You saved the unfamiliar entry and checked receipts without finding a match.",
+          "options": [
+            {
+              "label": "What appears and what you checked"
+            },
+            {
+              "label": "A guaranteed cause"
+            },
+            {
+              "label": "Invented identity evidence"
+            }
+          ],
+          "help": [
+            "Describe the evidence without inventing its cause."
+          ],
+          "feedback": {
+            "met": "Report observations separately from an unverified explanation.",
+            "not_yet": "Describe the evidence without inventing its cause."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué hechos debes reportar?",
+          "scene": "Guardaste la entrada desconocida y revisaste comprobantes sin coincidencia.",
+          "options": [
+            {
+              "label": "Qué aparece y qué revisaste"
+            },
+            {
+              "label": "Una explicación garantizada de la causa"
+            },
+            {
+              "label": "Prueba inventada de identidad de alguien"
+            }
+          ],
+          "help": [
+            "Describe evidencia sin inventar su causa."
+          ],
+          "feedback": {
+            "met": "Separa observaciones de una explicación sin verificar.",
+            "not_yet": "Describe evidencia sin inventar su causa."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quais fatos deve relatar?",
+          "scene": "Guardou os dados e conferiu recibos; não achou esse débito.",
+          "options": [
+            {
+              "label": "O que aparece e o que conferiu"
+            },
+            {
+              "label": "Uma causa dada como certa"
+            },
+            {
+              "label": "Dados falsos sobre quem fez isso"
+            }
+          ],
+          "help": [
+            "Conte os fatos sem supor a causa."
+          ],
+          "feedback": {
+            "met": "Separe o que viu do que ainda não sabe.",
+            "not_yet": "Conte os fatos sem supor a causa."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Which protects access?",
+          "scene": "A caller requests your password to “attach evidence” to a charge report.",
+          "options": [
+            {
+              "label": "Send it with the transaction date"
+            },
+            {
+              "label": "Share if they know the amount"
+            },
+            {
+              "label": "Refuse; use verified support"
+            }
+          ],
+          "help": [
+            "A password grants access; it is not a receipt."
+          ],
+          "feedback": {
+            "met": "Knowing transaction details does not authorize access to your account.",
+            "not_yet": "A password grants access; it is not a receipt."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué respuesta protege el acceso?",
+          "scene": "Quien llama pide tu contraseña para «adjuntar evidencia» al reporte de cobro.",
+          "options": [
+            {
+              "label": "Enviarla con fecha de operación"
+            },
+            {
+              "label": "Compartirla si sabe el monto"
+            },
+            {
+              "label": "No compartirla; usar soporte verificado"
+            }
+          ],
+          "help": [
+            "Una contraseña da acceso; no es comprobante."
+          ],
+          "feedback": {
+            "met": "Conocer datos de operación no autoriza acceso a tu cuenta.",
+            "not_yet": "Una contraseña da acceso; no es comprobante."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual resposta protege o acesso?",
+          "scene": "Uma pessoa liga e pede sua senha para «provar o débito».",
+          "options": [
+            {
+              "label": "Enviar com a data do débito"
+            },
+            {
+              "label": "Dar a senha se souber o valor"
+            },
+            {
+              "label": "Não dar a senha; usar canal oficial"
+            }
+          ],
+          "help": [
+            "A senha dá acesso; não é prova do débito."
+          ],
+          "feedback": {
+            "met": "Saber o valor não dá direito à senha da conta.",
+            "not_yet": "A senha dá acesso; não é prova do débito."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.07",
+      "copy": {
+        "en-US": {
+          "prompt": "What should you retain?",
+          "scene": "A provider gives you a case reference after your report.",
+          "options": [
+            {
+              "label": "Only memories of the call"
+            },
+            {
+              "label": "The case reference and relevant records"
+            },
+            {
+              "label": "Your password in the case title"
+            }
+          ],
+          "help": [
+            "Keep the evidence and the support interaction connected."
+          ],
+          "feedback": {
+            "met": "A case reference links follow-up to the original report.",
+            "not_yet": "Keep the evidence and the support interaction connected."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué conservar para dar seguimiento?",
+          "scene": "El proveedor te da una referencia de caso tras reportar.",
+          "options": [
+            {
+              "label": "Solo un recuerdo vago de la llamada"
+            },
+            {
+              "label": "La referencia y registros pertinentes"
+            },
+            {
+              "label": "La contraseña en el título del caso"
+            }
+          ],
+          "help": [
+            "Conecta evidencia y atención recibida."
+          ],
+          "feedback": {
+            "met": "Una referencia vincula el seguimiento con el reporte original.",
+            "not_yet": "Conecta evidencia y atención recibida."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que guardar para acompanhar?",
+          "scene": "Após o relato, recebe um código do caso.",
+          "options": [
+            {
+              "label": "Só uma lembrança vaga da ligação"
+            },
+            {
+              "label": "O código do caso e seus dados"
+            },
+            {
+              "label": "A senha junto ao nome do caso"
+            }
+          ],
+          "help": [
+            "Guarde os dados do débito e do caso juntos."
+          ],
+          "feedback": {
+            "met": "O código permite retomar o mesmo caso.",
+            "not_yet": "Guarde os dados do débito e do caso juntos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.07",
+      "copy": {
+        "en-US": {
+          "prompt": "What happens next?",
+          "scene": "You do not know the reporting deadline for an unfamiliar transaction.",
+          "options": [
+            {
+              "label": "Check official instructions promptly"
+            },
+            {
+              "label": "Wait until evidence is harder to retrieve"
+            },
+            {
+              "label": "Invent a deadline from another country"
+            }
+          ],
+          "help": [
+            "Use the actual provider and jurisdiction’s instructions."
+          ],
+          "feedback": {
+            "met": "Applicable procedures and deadlines require verification, not assumptions.",
+            "not_yet": "Use the actual provider and jurisdiction’s instructions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe ocurrir después?",
+          "scene": "Desconoces el plazo aplicable para reportar una operación desconocida.",
+          "options": [
+            {
+              "label": "Revisar pronto instrucciones oficiales"
+            },
+            {
+              "label": "Esperar a que sea difícil recuperar evidencia"
+            },
+            {
+              "label": "Inventar plazo de otro país"
+            }
+          ],
+          "help": [
+            "Usa instrucciones del proveedor y jurisdicción aplicables."
+          ],
+          "feedback": {
+            "met": "Procedimientos y plazos aplicables requieren verificación, no suposiciones.",
+            "not_yet": "Usa instrucciones del proveedor y jurisdicción aplicables."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que deve ocorrer depois?",
+          "scene": "Não sabe o prazo para relatar um débito que não conhece.",
+          "options": [
+            {
+              "label": "Conferir logo instruções oficiais"
+            },
+            {
+              "label": "Esperar perder os dados do débito"
+            },
+            {
+              "label": "Usar sem checar o prazo de outro país"
+            }
+          ],
+          "help": [
+            "Use as regras do seu país e da sua conta."
+          ],
+          "feedback": {
+            "met": "Confira as regras e prazos reais sem supor.",
+            "not_yet": "Use as regras do seu país e da sua conta."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.accounts-records.07",
+      "copy": {
+        "en-US": {
+          "prompt": "How to preserve evidence?",
+          "scene": "An unexpected wallet debit has an identifier; its app notification may disappear.",
+          "options": [
+            {
+              "label": "Save the relevant record securely"
+            },
+            {
+              "label": "Publish account and login details"
+            },
+            {
+              "label": "Replace facts with a guess"
+            }
+          ],
+          "help": [
+            "Keep identifying evidence accessible only where needed."
+          ],
+          "feedback": {
+            "met": "A preserved record supports investigation without exposing account access.",
+            "not_yet": "Keep identifying evidence accessible only where needed."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué acción conserva evidencia útil?",
+          "scene": "Un débito inesperado tiene identificador; su notificación podría desaparecer de la aplicación.",
+          "options": [
+            {
+              "label": "Guardar de forma segura el registro pertinente"
+            },
+            {
+              "label": "Publicar cuenta completa y acceso"
+            },
+            {
+              "label": "Sustituirlo por un resumen supuesto"
+            }
+          ],
+          "help": [
+            "Guarda los datos y limita quién puede verlos."
+          ],
+          "feedback": {
+            "met": "Un registro conservado permite investigar sin exponer acceso.",
+            "not_yet": "Guarda los datos y limita quién puede verlos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Como guardar os dados úteis?",
+          "scene": "Um débito que não esperava tem um código; o aviso pode sumir do app.",
+          "options": [
+            {
+              "label": "Guardar os dados em local seguro"
+            },
+            {
+              "label": "Publicar conta e senha"
+            },
+            {
+              "label": "Trocar os dados por um palpite"
+            }
+          ],
+          "help": [
+            "Guarde os dados e limite quem pode vê-los."
+          ],
+          "feedback": {
+            "met": "Guardar os dados ajuda na análise sem expor a senha.",
+            "not_yet": "Guarde os dados e limite quem pode vê-los."
+          }
+        }
+      }
+    }
+  ]
+}

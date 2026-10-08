@@ -1,0 +1,706 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-credit-mechanics-part-2",
+  "lesson_id": "fe-production-credit-mechanics-09",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.credit-mechanics.09"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Distinguish collateral at risk from the amount originally borrowed.",
+  "title": {
+    "en-US": "Pledged assets",
+    "es-MX": "¿Qué queda en garantía?",
+    "pt-BR": "O que fica em garantia?"
+  },
+  "new_concepts": [
+    "finance.prod.credit-mechanics.09"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"What is pledged?\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"¿Qué queda en garantía?\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"O que fica em garantia?\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.credit-mechanics.09",
+      "observable_action": "Distinguish collateral at risk from the amount originally borrowed.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.credit-mechanics.01"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A pledged asset can be at risk even when its value exceeds the loan.",
+    "misconception": "Collateral means the borrowed cash or limits every possible loss to the original loan amount.",
+    "numeracy_support": "Every quantity and assumption needed to decide is visible in the current scenario. Examples explain the relationship before independent application.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.credit-mechanics.09",
+        "context_id": "fe-production-credit-mechanics-09-example-01",
+        "supports_from": [],
+        "reasoning": "A vehicle secures a loan. The borrowed amount is principal; the vehicle is collateral, subject to the agreement’s enforcement terms."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.credit-mechanics.09",
+        "context_id": "fe-production-credit-mechanics-09-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The bicycle is the asset pledged to secure repayment."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.credit-mechanics.09",
+        "context_id": "fe-production-credit-mechanics-09-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The clause identifies the machine as the asset at risk."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.credit-mechanics.09",
+        "context_id": "fe-production-credit-mechanics-09-practice-03",
+        "supports_from": [],
+        "reasoning": "The debt amount and pledged asset are different concepts."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.credit-mechanics.09",
+        "context_id": "fe-production-credit-mechanics-09-practice-04",
+        "supports_from": [],
+        "reasoning": "Higher value does not itself remove the contractual pledge."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.credit-mechanics.09",
+        "context_id": "fe-production-credit-mechanics-09-practice-05",
+        "supports_from": [],
+        "reasoning": "The excerpt does not establish treatment of any remaining debt."
+      },
+      {
+        "segment_id": "transfer-06",
+        "skill_id": "prod.credit-mechanics.09",
+        "context_id": "fe-production-credit-mechanics-09-transfer-06",
+        "supports_from": [],
+        "reasoning": "The agreement names work equipment as collateral for this loan."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.credit-mechanics.09",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A pledged asset can be at risk even when its value exceeds the loan."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un bien en garantía puede estar en riesgo aunque valga más que el préstamo."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Um bem em garantia pode estar em risco mesmo valendo mais que o empréstimo."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Follow the evidence",
+          "line": "A vehicle secures a loan. The borrowed amount is principal; the vehicle is collateral, subject to the agreement’s enforcement terms."
+        },
+        "es-MX": {
+          "prompt": "Sigue las pruebas",
+          "line": "Un vehículo garantiza un préstamo. El dinero prestado es capital; el vehículo es garantía, sujeto a las condiciones del contrato."
+        },
+        "pt-BR": {
+          "prompt": "Siga as provas",
+          "line": "Um veículo garante um empréstimo. O dinheiro emprestado é principal; o veículo é garantia, sujeito às regras do contrato."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Which is collateral?",
+          "scene": "A fictional agreement pledges a bicycle to secure borrowed cash.",
+          "options": [
+            {
+              "label": "The cash borrowed"
+            },
+            {
+              "label": "The pledged bicycle"
+            }
+          ],
+          "help": [
+            "Separate the pledged asset from the borrowed money."
+          ],
+          "feedback": {
+            "met": "The bicycle is the asset pledged to secure repayment.",
+            "not_yet": "Separate the pledged asset from the borrowed money."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es la garantía?",
+          "scene": "Un contrato ficticio deja una bicicleta en garantía del dinero prestado.",
+          "options": [
+            {
+              "label": "El dinero prestado"
+            },
+            {
+              "label": "La bicicleta comprometida"
+            }
+          ],
+          "help": [
+            "Distingue el bien comprometido del dinero prestado."
+          ],
+          "feedback": {
+            "met": "La bicicleta es el bien que garantiza el pago.",
+            "not_yet": "Distingue el bien comprometido del dinero prestado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é a garantia?",
+          "scene": "Um contrato fictício dá uma bicicleta em garantia do dinheiro emprestado.",
+          "options": [
+            {
+              "label": "O dinheiro emprestado"
+            },
+            {
+              "label": "A bicicleta dada em garantia"
+            }
+          ],
+          "help": [
+            "Separe o bem dado em garantia do dinheiro emprestado."
+          ],
+          "feedback": {
+            "met": "A bicicleta é o bem que garante o pagamento.",
+            "not_yet": "Separe o bem dado em garantia do dinheiro emprestado."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.09",
+      "copy": {
+        "en-US": {
+          "prompt": "What is potentially at risk?",
+          "scene": "The agreement permits claiming the pledged machine after the stated default process.",
+          "options": [
+            {
+              "label": "The pledged machine"
+            },
+            {
+              "label": "Only the cash originally borrowed"
+            }
+          ],
+          "help": [
+            "Read which asset secures this loan."
+          ],
+          "feedback": {
+            "met": "The clause identifies the machine as the asset at risk.",
+            "not_yet": "Read which asset secures this loan."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué bien está en riesgo?",
+          "scene": "El contrato permite reclamar la máquina en garantía tras el procedimiento de incumplimiento indicado.",
+          "options": [
+            {
+              "label": "La máquina en garantía"
+            },
+            {
+              "label": "Solo el dinero originalmente prestado"
+            }
+          ],
+          "help": [
+            "Lee qué bien garantiza este préstamo."
+          ],
+          "feedback": {
+            "met": "La cláusula identifica la máquina como el bien en riesgo.",
+            "not_yet": "Lee qué bien garantiza este préstamo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual bem está em risco?",
+          "scene": "O contrato permite tomar a máquina em garantia após o processo de falta de pagamento indicado.",
+          "options": [
+            {
+              "label": "A máquina em garantia"
+            },
+            {
+              "label": "Só o dinheiro tomado emprestado"
+            }
+          ],
+          "help": [
+            "Leia qual bem garante este empréstimo."
+          ],
+          "feedback": {
+            "met": "A cláusula aponta a máquina como o bem em risco.",
+            "not_yet": "Leia qual bem garante este empréstimo."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Are these the same thing?",
+          "scene": "The loan names an outstanding balance and a pledged vehicle separately.",
+          "options": [
+            {
+              "label": "Yes, the vehicle is the cash balance"
+            },
+            {
+              "label": "No, debt and collateral are distinct"
+            }
+          ],
+          "help": [
+            "One is an amount owed; the other is an asset."
+          ],
+          "feedback": {
+            "met": "The debt amount and pledged asset are different concepts.",
+            "not_yet": "One is an amount owed; the other is an asset."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Son lo mismo?",
+          "scene": "El préstamo distingue saldo pendiente y vehículo en garantía.",
+          "options": [
+            {
+              "label": "Sí, el vehículo es el saldo"
+            },
+            {
+              "label": "No, deuda y garantía son distintas"
+            }
+          ],
+          "help": [
+            "Uno es dinero debido; el otro es un bien."
+          ],
+          "feedback": {
+            "met": "El importe de deuda y el bien comprometido son distintos.",
+            "not_yet": "Uno es dinero debido; el otro es un bien."
+          }
+        },
+        "pt-BR": {
+          "prompt": "São a mesma coisa?",
+          "scene": "O empréstimo distingue saldo devedor e veículo em garantia.",
+          "options": [
+            {
+              "label": "Sim, o veículo é o saldo"
+            },
+            {
+              "label": "Não, dívida e garantia são distintos"
+            }
+          ],
+          "help": [
+            "Um é dinheiro devido; o outro é um bem."
+          ],
+          "feedback": {
+            "met": "O valor da dívida e o bem dado em garantia diferem.",
+            "not_yet": "Um é dinheiro devido; o outro é um bem."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Does higher value remove the risk?",
+          "scene": "The pledged tool exceeds the loan’s value; the contract still names it as collateral.",
+          "options": [
+            {
+              "label": "Yes, greater value cancels the pledge"
+            },
+            {
+              "label": "No, it remains pledged"
+            }
+          ],
+          "help": [
+            "Collateral depends on the agreement, not value alone."
+          ],
+          "feedback": {
+            "met": "Higher value does not itself remove the contractual pledge.",
+            "not_yet": "Collateral depends on the agreement, not value alone."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿El mayor valor elimina el riesgo?",
+          "scene": "La herramienta vale más que el préstamo. El contrato la mantiene en garantía.",
+          "options": [
+            {
+              "label": "Sí, el valor mayor cancela la garantía"
+            },
+            {
+              "label": "No, sigue comprometida"
+            }
+          ],
+          "help": [
+            "La garantía depende del contrato, no solo del valor."
+          ],
+          "feedback": {
+            "met": "Un valor mayor no elimina por sí mismo la garantía.",
+            "not_yet": "La garantía depende del contrato, no solo del valor."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O maior valor elimina o risco?",
+          "scene": "A ferramenta vale mais que o empréstimo. O contrato a mantém em garantia.",
+          "options": [
+            {
+              "label": "Sim, o maior valor cancela a garantia"
+            },
+            {
+              "label": "Não, continua em garantia"
+            }
+          ],
+          "help": [
+            "A garantia depende do contrato, não só do valor."
+          ],
+          "feedback": {
+            "met": "Um valor maior não elimina por si só a garantia.",
+            "not_yet": "A garantia depende do contrato, não só do valor."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Does surrender settle everything?",
+          "scene": "The excerpt allows selling collateral but does not explain any remaining debt after sale.",
+          "options": [
+            {
+              "label": "Surrender always erases every debt"
+            },
+            {
+              "label": "More terms and local rules are needed"
+            }
+          ],
+          "help": [
+            "Do not assume surrender and full settlement are identical."
+          ],
+          "feedback": {
+            "met": "The excerpt does not establish treatment of any remaining debt.",
+            "not_yet": "Do not assume surrender and full settlement are identical."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Entregar el bien liquida todo?",
+          "scene": "El extracto permite vender la garantía, pero no explica la deuda que pudiera quedar.",
+          "options": [
+            {
+              "label": "Entregar siempre borra toda deuda"
+            },
+            {
+              "label": "Faltan condiciones y reglas locales"
+            }
+          ],
+          "help": [
+            "No supongas que entregar el bien equivale a liquidar todo."
+          ],
+          "feedback": {
+            "met": "El extracto no establece qué pasa con la deuda restante.",
+            "not_yet": "No supongas que entregar el bien equivale a liquidar todo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Entregar o bem quita tudo?",
+          "scene": "O trecho permite vender a garantia, mas não explica a dívida que pode restar.",
+          "options": [
+            {
+              "label": "Entregar sempre apaga toda dívida"
+            },
+            {
+              "label": "Faltam regras do contrato e locais"
+            }
+          ],
+          "help": [
+            "Não suponha que entregar o bem seja quitar tudo."
+          ],
+          "feedback": {
+            "met": "O trecho não define o que ocorre com a dívida restante.",
+            "not_yet": "Não suponha que entregar o bem seja quitar tudo."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.credit-mechanics.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Identify the exposure.",
+          "scene": "A repair loan pledges your work equipment, not the item being repaired.",
+          "options": [
+            {
+              "label": "The work equipment is pledged"
+            },
+            {
+              "label": "Only the repaired item is at risk"
+            }
+          ],
+          "help": [
+            "The financed purchase and the pledged asset can differ."
+          ],
+          "feedback": {
+            "met": "The agreement names work equipment as collateral for this loan.",
+            "not_yet": "The financed purchase and the pledged asset can differ."
+          }
+        },
+        "es-MX": {
+          "prompt": "Identifica el riesgo.",
+          "scene": "Un préstamo para reparar deja en garantía tu equipo de trabajo, no el artículo reparado.",
+          "options": [
+            {
+              "label": "El equipo de trabajo está comprometido"
+            },
+            {
+              "label": "Solo está en riesgo el artículo reparado"
+            }
+          ],
+          "help": [
+            "La compra financiada y el bien en garantía pueden diferir."
+          ],
+          "feedback": {
+            "met": "El contrato nombra el equipo de trabajo como garantía.",
+            "not_yet": "La compra financiada y el bien en garantía pueden diferir."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Identifique o risco.",
+          "scene": "Um empréstimo para reparo dá seu equipamento de trabalho em garantia, não o item reparado.",
+          "options": [
+            {
+              "label": "O equipamento de trabalho está em garantia"
+            },
+            {
+              "label": "Só o item reparado está em risco"
+            }
+          ],
+          "help": [
+            "A compra financiada e o bem em garantia podem diferir."
+          ],
+          "feedback": {
+            "met": "O contrato dá o equipamento de trabalho como garantia.",
+            "not_yet": "A compra financiada e o bem em garantia podem diferir."
+          }
+        }
+      }
+    }
+  ]
+}

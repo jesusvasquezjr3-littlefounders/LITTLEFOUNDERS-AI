@@ -1,0 +1,726 @@
+{
+  "publication_intent": "calibration-only",
+  "version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "age_band": "adult",
+  "metadata": {
+    "title": {
+      "en-US": "Financial Education",
+      "es-MX": "Educación Financiera",
+      "pt-BR": "Educação Financeira"
+    },
+    "description": {
+      "en-US": "Build practical foundations for everyday money decisions.",
+      "es-MX": "Construye bases prácticas para decidir sobre tu dinero cotidiano.",
+      "pt-BR": "Construa bases práticas para decidir sobre seu dinheiro cotidiano."
+    },
+    "subject": "money",
+    "position": 1,
+    "badge_asset": "course-badges/financial-education.png",
+    "requires": []
+  },
+  "scope": "Adult financial foundations: progress from usable money and feasible plans to saving, borrowing, percentage calculations, purchasing power, modeled growth, basic investment risk and informed consumer decisions. This is a bounded foundation course, not a claim to exhaust financial knowledge or qualify a learner to advise others.",
+  "excluded_scope": [
+    "Personal financial or investment recommendations",
+    "Current product offers, forecasts or market returns",
+    "Jurisdiction-specific tax filing, benefit eligibility and deposit-insurance limits",
+    "Advanced securities valuation, derivatives and professional financial advice",
+    "Child and teen pathways; family wallet operations"
+  ],
+  "units": [
+    {
+      "id": "fe-solid-01-money-today",
+      "title": {
+        "en-US": "Money available today",
+        "es-MX": "Dinero disponible hoy",
+        "pt-BR": "Dinheiro disponível hoje"
+      },
+      "objective": "Track received money, balance, reservations and payment dates before planning a purchase."
+    },
+    {
+      "id": "fe-solid-02-a-plan-that-fits",
+      "title": {
+        "en-US": "A plan that fits",
+        "es-MX": "Un plan que sí cabe",
+        "pt-BR": "Um plano que cabe"
+      },
+      "objective": "Prioritize by consequences and revise a feasible plan under uncertainty and predictable future costs."
+    },
+    {
+      "id": "fe-solid-03-compare-before-paying",
+      "title": {
+        "en-US": "Compare before paying",
+        "es-MX": "Compara antes de pagar",
+        "pt-BR": "Compare antes de pagar"
+      },
+      "objective": "Compare equal units, percentage shares and complete prices rather than advertising headlines."
+    },
+    {
+      "id": "fe-solid-04-save-with-a-purpose",
+      "title": {
+        "en-US": "Save with a purpose",
+        "es-MX": "Ahorra con propósito",
+        "pt-BR": "Poupe com um propósito"
+      },
+      "objective": "Prepare goals and unexpected needs while checking real contribution capacity and access conditions."
+    },
+    {
+      "id": "fe-solid-05-understand-borrowing",
+      "title": {
+        "en-US": "Understand borrowing",
+        "es-MX": "Comprende los préstamos",
+        "pt-BR": "Entenda os empréstimos"
+      },
+      "objective": "Distinguish income from debt and calculate total obligations, period interest and remaining balances."
+    },
+    {
+      "id": "fe-solid-06-money-over-time",
+      "title": {
+        "en-US": "Money over time",
+        "es-MX": "El dinero con el tiempo",
+        "pt-BR": "O dinheiro com o tempo"
+      },
+      "objective": "Distinguish purchasing power and modeled compound growth from nominal amounts and guarantees."
+    },
+    {
+      "id": "fe-solid-07-risk-and-protection",
+      "title": {
+        "en-US": "Risk and protection",
+        "es-MX": "Riesgo y protección",
+        "pt-BR": "Risco e proteção"
+      },
+      "objective": "Check time horizons, concentration and claims of safe returns without recommending products."
+    },
+    {
+      "id": "fe-solid-08-decide-with-evidence",
+      "title": {
+        "en-US": "Decide with evidence",
+        "es-MX": "Decide con información",
+        "pt-BR": "Decida com informação"
+      },
+      "objective": "Protect credentials, read complete terms and apply prior skills in integrated decisions."
+    }
+  ],
+  "sources": [
+    {
+      "url": "https://www.consumerfinance.gov/ask-cfpb/what-are-some-classic-warning-signs-of-possible-fraud-and-scams-en-2094/",
+      "use": "Independent identity verification and pressured-payment warning signs; no US reporting procedure is presented as universal."
+    },
+    {
+      "url": "https://www.consumerfinance.gov/ask-cfpb/i-received-an-email-from-my-bank-or-credit-union-asking-me-to-verify-my-account-information-what-should-i-do-en-999/",
+      "use": "Protecting credentials and verifying account messages through a separate official channel."
+    },
+    {
+      "url": "https://www.condusef.gob.mx/?idc=2023&idcat=1&p=contenido",
+      "use": "Compare actual financial product costs, conditions and service information rather than advertisements alone."
+    },
+    {
+      "url": "https://www.consumerfinance.gov/consumer-tools/educator-tools/your-money-your-goals/toolkit/",
+      "use": "Coverage of goals, income, bills, cash flow, debt, products and protection; US legal rules are not exported to other markets."
+    },
+    {
+      "url": "https://www.fdic.gov/consumer-resource-center/money-smart-adults",
+      "use": "Adult financial capability coverage; adapted into prerequisite-led micro-lessons rather than copied module order."
+    },
+    {
+      "url": "https://www.oecd.org/en/publications/financial-competence-framework-for-adults-in-the-european-union_510f133c-en.html",
+      "use": "Competency coverage reference; bounded course scope does not claim complete professional financial competence."
+    },
+    {
+      "url": "https://webappsos.condusef.gob.mx/EducaTuCartera/presupuesto.html",
+      "use": "Mexican financial education reference for budgeting and distinguishing actual resources from planned spending."
+    },
+    {
+      "url": "https://www.consumerfinance.gov/consumer-tools/credit-cards/answers/key-terms/",
+      "use": "Borrowing vocabulary and the distinction between balances, minimum payments and borrowing charges; contractual examples remain explicitly fictional."
+    },
+    {
+      "url": "https://www.investor.gov/introduction-investing",
+      "use": "Compound growth and investment risk concepts; examples make no return promises or product recommendations."
+    },
+    {
+      "url": "https://www.investor.gov/additional-resources/general-resources/publications-research/info-sheets/beginners-guide-asset",
+      "use": "Time horizon and diversification concepts, including the limits of diversification."
+    },
+    {
+      "url": "https://ies.ed.gov/ncee/wwc/PracticeGuide/1",
+      "use": "Instructional sequence with worked examples, independent practice and later retrieval; no claim of measured learner outcomes."
+    }
+  ],
+  "skills": [
+    {
+      "id": "cash.direction",
+      "knowledge_component_id": "finance.cash.direction",
+      "domain": "cash-flow",
+      "outcome": "Identify how a completed payment changes the named person money.",
+      "prerequisites": []
+    },
+    {
+      "id": "cash.received",
+      "knowledge_component_id": "finance.cash.received",
+      "domain": "cash-flow",
+      "outcome": "Distinguish received, usable money from a promised or pending payment.",
+      "prerequisites": [
+        "cash.direction"
+      ]
+    },
+    {
+      "id": "cash.balance",
+      "knowledge_component_id": "finance.cash.balance",
+      "domain": "cash-flow",
+      "outcome": "Update a starting balance after completed receipts and payments.",
+      "prerequisites": [
+        "cash.direction",
+        "cash.received"
+      ]
+    },
+    {
+      "id": "cash.reserved",
+      "knowledge_component_id": "finance.cash.reserved",
+      "domain": "cash-flow",
+      "outcome": "Calculate money free to spend after protecting stated necessary payments.",
+      "prerequisites": [
+        "cash.received",
+        "cash.balance"
+      ]
+    },
+    {
+      "id": "cash.dates",
+      "knowledge_component_id": "finance.cash.dates",
+      "domain": "cash-flow",
+      "outcome": "Check whether money arrives before the stated payment deadline.",
+      "prerequisites": [
+        "cash.received",
+        "cash.reserved"
+      ]
+    },
+    {
+      "id": "plan.priority",
+      "knowledge_component_id": "finance.plan.priority",
+      "domain": "planning",
+      "outcome": "Prioritize a payment using its stated consequence and deadline.",
+      "prerequisites": [
+        "cash.reserved",
+        "cash.dates"
+      ]
+    },
+    {
+      "id": "plan.uncertain-income",
+      "knowledge_component_id": "finance.plan.uncertain-income",
+      "domain": "planning",
+      "outcome": "Revise spending that depends on an uncertain or canceled receipt.",
+      "prerequisites": [
+        "cash.received",
+        "cash.reserved",
+        "plan.priority"
+      ]
+    },
+    {
+      "id": "plan.periodic",
+      "knowledge_component_id": "finance.plan.periodic",
+      "domain": "planning",
+      "outcome": "Prepare a known future bill with contributions before its due date.",
+      "prerequisites": [
+        "cash.dates",
+        "cash.reserved"
+      ]
+    },
+    {
+      "id": "plan.revise",
+      "knowledge_component_id": "finance.plan.revise",
+      "domain": "planning",
+      "outcome": "Use differences between planned and actual spending to revise future decisions.",
+      "prerequisites": [
+        "cash.balance",
+        "cash.reserved",
+        "plan.priority",
+        "plan.uncertain-income",
+        "plan.periodic"
+      ]
+    },
+    {
+      "id": "price.unit",
+      "knowledge_component_id": "finance.price.unit",
+      "domain": "purchasing",
+      "outcome": "Calculate and compare prices per equal useful unit while respecting a spending limit.",
+      "prerequisites": [
+        "cash.balance",
+        "plan.priority"
+      ]
+    },
+    {
+      "id": "price.percent",
+      "knowledge_component_id": "finance.price.percent",
+      "domain": "purchasing",
+      "outcome": "Calculate a percentage amount using the stated whole and equal hundredths.",
+      "prerequisites": [
+        "cash.balance",
+        "price.unit"
+      ]
+    },
+    {
+      "id": "price.final",
+      "knowledge_component_id": "finance.price.final",
+      "domain": "purchasing",
+      "outcome": "Compare final costs after a stated discount and mandatory fees.",
+      "prerequisites": [
+        "price.percent",
+        "price.unit",
+        "cash.reserved"
+      ]
+    },
+    {
+      "id": "save.goal",
+      "knowledge_component_id": "finance.save.goal",
+      "domain": "saving",
+      "outcome": "Fund the remaining goal amount with affordable contributions before the deadline.",
+      "prerequisites": [
+        "plan.periodic",
+        "plan.revise"
+      ]
+    },
+    {
+      "id": "save.emergency",
+      "knowledge_component_id": "finance.save.emergency",
+      "domain": "saving",
+      "outcome": "Distinguish unexpected necessary costs from planned costs and optional purchases.",
+      "prerequisites": [
+        "plan.priority",
+        "plan.periodic",
+        "save.goal"
+      ]
+    },
+    {
+      "id": "save.access",
+      "knowledge_component_id": "finance.save.access",
+      "domain": "saving",
+      "outcome": "Check the timing and net amount of access against a stated payment need.",
+      "prerequisites": [
+        "cash.dates",
+        "save.emergency"
+      ]
+    },
+    {
+      "id": "debt.obligation",
+      "knowledge_component_id": "finance.debt.obligation",
+      "domain": "borrowing",
+      "outcome": "Distinguish borrowed resources from income and identify the repayment obligation.",
+      "prerequisites": [
+        "cash.balance",
+        "cash.dates",
+        "plan.revise"
+      ]
+    },
+    {
+      "id": "debt.total-cost",
+      "knowledge_component_id": "finance.debt.total-cost",
+      "domain": "borrowing",
+      "outcome": "Calculate full repayment and borrowing cost from all stated required payments.",
+      "prerequisites": [
+        "debt.obligation",
+        "price.final",
+        "cash.dates"
+      ]
+    },
+    {
+      "id": "debt.interest",
+      "knowledge_component_id": "finance.debt.interest",
+      "domain": "borrowing",
+      "outcome": "Update a debt after interest calculated for a stated period and a subsequent payment.",
+      "prerequisites": [
+        "debt.total-cost",
+        "price.percent",
+        "cash.balance"
+      ]
+    },
+    {
+      "id": "debt.minimum",
+      "knowledge_component_id": "finance.debt.minimum",
+      "domain": "borrowing",
+      "outcome": "Distinguish a minimum payment from clearing the debt or eliminating interest.",
+      "prerequisites": [
+        "debt.interest",
+        "debt.total-cost",
+        "plan.revise"
+      ]
+    },
+    {
+      "id": "time.purchasing-power",
+      "knowledge_component_id": "finance.time.purchasing-power",
+      "domain": "time-and-risk",
+      "outcome": "Distinguish unchanged money from what it can buy after a stated price change.",
+      "prerequisites": [
+        "price.percent",
+        "cash.reserved"
+      ]
+    },
+    {
+      "id": "time.compound",
+      "knowledge_component_id": "finance.time.compound",
+      "domain": "time-and-risk",
+      "outcome": "Calculate growth on an updated balance under explicit reinvestment assumptions.",
+      "prerequisites": [
+        "price.percent",
+        "debt.interest",
+        "time.purchasing-power"
+      ]
+    },
+    {
+      "id": "invest.horizon",
+      "knowledge_component_id": "finance.invest.horizon",
+      "domain": "time-and-risk",
+      "outcome": "Compare possible loss and access time with a required payment date.",
+      "prerequisites": [
+        "save.access",
+        "time.purchasing-power",
+        "time.compound"
+      ]
+    },
+    {
+      "id": "invest.diversify",
+      "knowledge_component_id": "finance.invest.diversify",
+      "domain": "time-and-risk",
+      "outcome": "Identify shared exposures and the limits of diversification.",
+      "prerequisites": [
+        "invest.horizon"
+      ]
+    },
+    {
+      "id": "safety.fraud",
+      "knowledge_component_id": "finance.safety.fraud",
+      "domain": "protection",
+      "outcome": "Verify a pressured financial request through an independent official channel.",
+      "prerequisites": [
+        "debt.total-cost",
+        "invest.horizon"
+      ]
+    },
+    {
+      "id": "safety.credentials",
+      "knowledge_component_id": "finance.safety.credentials",
+      "domain": "protection",
+      "outcome": "Protect authentication secrets and respond to suspected exposure through verified recovery.",
+      "prerequisites": [
+        "safety.fraud"
+      ]
+    },
+    {
+      "id": "product.conditions",
+      "knowledge_component_id": "finance.product.conditions",
+      "domain": "protection",
+      "outcome": "Compare complete account conditions against the same actual use and payment needs.",
+      "prerequisites": [
+        "price.final",
+        "save.access",
+        "debt.obligation",
+        "plan.periodic"
+      ]
+    },
+    {
+      "id": "rights.agreement",
+      "knowledge_component_id": "finance.rights.agreement",
+      "domain": "protection",
+      "outcome": "Clarify conflicting terms before acceptance and preserve evidence of agreed obligations.",
+      "prerequisites": [
+        "product.conditions",
+        "debt.total-cost",
+        "safety.fraud"
+      ]
+    }
+  ],
+  "lessons": [
+    {
+      "lesson_id": "fe-solid-01-money-moves",
+      "unit_id": "fe-solid-01-money-today",
+      "primary_skill": "cash.direction",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-solid-02-received-not-promised",
+      "unit_id": "fe-solid-01-money-today",
+      "primary_skill": "cash.received",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-solid-03-update-your-balance",
+      "unit_id": "fe-solid-01-money-today",
+      "primary_skill": "cash.balance",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-solid-04-protect-committed-money",
+      "unit_id": "fe-solid-01-money-today",
+      "primary_skill": "cash.reserved",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-solid-05-money-has-dates",
+      "unit_id": "fe-solid-01-money-today",
+      "primary_skill": "cash.dates",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-solid-06-protect-what-matters",
+      "unit_id": "fe-solid-02-a-plan-that-fits",
+      "primary_skill": "plan.priority",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-solid-07-a-week-of-real-payments",
+      "unit_id": "fe-solid-02-a-plan-that-fits",
+      "primary_skill": "cash.received",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "cash.direction",
+        "cash.received",
+        "cash.balance",
+        "cash.reserved",
+        "cash.dates"
+      ]
+    },
+    {
+      "lesson_id": "fe-solid-08-income-can-change",
+      "unit_id": "fe-solid-02-a-plan-that-fits",
+      "primary_skill": "plan.uncertain-income",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-solid-09-prepare-for-known-costs",
+      "unit_id": "fe-solid-02-a-plan-that-fits",
+      "primary_skill": "plan.periodic",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-solid-10-revise-a-plan",
+      "unit_id": "fe-solid-02-a-plan-that-fits",
+      "primary_skill": "plan.revise",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-solid-11-choose-a-workable-plan",
+      "unit_id": "fe-solid-02-a-plan-that-fits",
+      "primary_skill": "plan.priority",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "plan.priority",
+        "plan.uncertain-income",
+        "plan.periodic"
+      ]
+    },
+    {
+      "lesson_id": "fe-solid-12-compare-equal-units",
+      "unit_id": "fe-solid-03-compare-before-paying",
+      "primary_skill": "price.unit",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-solid-13-a-percent-is-a-share",
+      "unit_id": "fe-solid-03-compare-before-paying",
+      "primary_skill": "price.percent",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-solid-14-compare-the-final-price",
+      "unit_id": "fe-solid-03-compare-before-paying",
+      "primary_skill": "price.final",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-solid-15-make-a-purchase-plan",
+      "unit_id": "fe-solid-03-compare-before-paying",
+      "primary_skill": "price.unit",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "plan.revise",
+        "price.unit",
+        "price.percent"
+      ]
+    },
+    {
+      "lesson_id": "fe-solid-16-make-a-saving-goal",
+      "unit_id": "fe-solid-04-save-with-a-purpose",
+      "primary_skill": "save.goal",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-solid-17-prepare-for-a-surprise",
+      "unit_id": "fe-solid-04-save-with-a-purpose",
+      "primary_skill": "save.emergency",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-solid-18-can-you-use-it-in-time",
+      "unit_id": "fe-solid-04-save-with-a-purpose",
+      "primary_skill": "save.access",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-solid-19-protect-two-saving-purposes",
+      "unit_id": "fe-solid-04-save-with-a-purpose",
+      "primary_skill": "save.goal",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "price.final",
+        "save.goal",
+        "save.emergency"
+      ]
+    },
+    {
+      "lesson_id": "fe-solid-20-borrowing-is-an-obligation",
+      "unit_id": "fe-solid-05-understand-borrowing",
+      "primary_skill": "debt.obligation",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-solid-21-count-the-full-repayment",
+      "unit_id": "fe-solid-05-understand-borrowing",
+      "primary_skill": "debt.total-cost",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-solid-22-interest-changes-the-debt",
+      "unit_id": "fe-solid-05-understand-borrowing",
+      "primary_skill": "debt.interest",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-solid-23-read-the-whole-commitment",
+      "unit_id": "fe-solid-05-understand-borrowing",
+      "primary_skill": "debt.total-cost",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "save.access",
+        "debt.obligation",
+        "debt.total-cost"
+      ]
+    },
+    {
+      "lesson_id": "fe-solid-24-minimum-is-not-interest-free",
+      "unit_id": "fe-solid-05-understand-borrowing",
+      "primary_skill": "debt.minimum",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-solid-25-what-your-money-can-buy",
+      "unit_id": "fe-solid-06-money-over-time",
+      "primary_skill": "time.purchasing-power",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-solid-26-growth-on-earlier-growth",
+      "unit_id": "fe-solid-06-money-over-time",
+      "primary_skill": "time.compound",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-solid-27-when-time-changes-the-balance",
+      "unit_id": "fe-solid-06-money-over-time",
+      "primary_skill": "debt.interest",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "debt.interest",
+        "debt.minimum",
+        "time.purchasing-power"
+      ]
+    },
+    {
+      "lesson_id": "fe-solid-28-risk-needs-a-time-horizon",
+      "unit_id": "fe-solid-07-risk-and-protection",
+      "primary_skill": "invest.horizon",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-solid-29-spread-the-exposure",
+      "unit_id": "fe-solid-07-risk-and-protection",
+      "primary_skill": "invest.diversify",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-solid-30-recognize-a-financial-trap",
+      "unit_id": "fe-solid-07-risk-and-protection",
+      "primary_skill": "safety.fraud",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-solid-31-check-the-investment-story",
+      "unit_id": "fe-solid-07-risk-and-protection",
+      "primary_skill": "invest.horizon",
+      "kind": "consolidate",
+      "retrieve_skills": [
+        "time.compound",
+        "invest.horizon",
+        "invest.diversify"
+      ]
+    },
+    {
+      "lesson_id": "fe-solid-32-protect-access-to-your-money",
+      "unit_id": "fe-solid-08-decide-with-evidence",
+      "primary_skill": "safety.credentials",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-solid-33-compare-account-conditions",
+      "unit_id": "fe-solid-08-decide-with-evidence",
+      "primary_skill": "product.conditions",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-solid-34-check-an-agreement-before-signing",
+      "unit_id": "fe-solid-08-decide-with-evidence",
+      "primary_skill": "rights.agreement",
+      "kind": "teach",
+      "retrieve_skills": []
+    },
+    {
+      "lesson_id": "fe-solid-35-choose-under-pressure",
+      "unit_id": "fe-solid-08-decide-with-evidence",
+      "primary_skill": "safety.fraud",
+      "kind": "capstone",
+      "retrieve_skills": [
+        "safety.fraud",
+        "safety.credentials",
+        "product.conditions"
+      ]
+    },
+    {
+      "lesson_id": "fe-solid-36-plan-a-new-month",
+      "unit_id": "fe-solid-08-decide-with-evidence",
+      "primary_skill": "plan.revise",
+      "kind": "capstone",
+      "retrieve_skills": [
+        "rights.agreement",
+        "save.goal",
+        "debt.minimum",
+        "plan.revise",
+        "cash.reserved"
+      ]
+    }
+  ]
+}

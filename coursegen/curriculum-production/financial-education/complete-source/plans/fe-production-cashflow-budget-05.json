@@ -1,0 +1,797 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-cashflow-budget-part-1",
+  "lesson_id": "fe-production-cashflow-budget-05",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.cashflow-budget.05"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Build a payment calendar that reveals an otherwise hidden within-month shortfall.",
+  "title": {
+    "en-US": "Payment calendar",
+    "es-MX": "Pon los pagos en un calendario",
+    "pt-BR": "Coloque pagamentos num calendário"
+  },
+  "new_concepts": [
+    "finance.prod.cashflow-budget.05"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Put payments on a calendar\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Pon los pagos en un calendario\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Coloque pagamentos num calendário\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.cashflow-budget.05",
+      "observable_action": "Build a payment calendar that reveals an otherwise hidden within-month shortfall.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.cashflow-budget.01",
+      "cash.dates"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A positive monthly total does not guarantee money is available on each due date.",
+    "misconception": "Using money expected later in the month to cover an earlier due date without checking the intervening balance.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.cashflow-budget.05",
+        "context_id": "fe-production-cashflow-budget-05-example-01",
+        "supports_from": [],
+        "reasoning": "A bill is due Tuesday; pay arrives Friday. Put both dates on the calendar and check cash available Tuesday."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.cashflow-budget.05",
+        "context_id": "fe-production-cashflow-budget-05-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Thursday’s receipt is unavailable at Monday’s deadline."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.cashflow-budget.05",
+        "context_id": "fe-production-cashflow-budget-05-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "45 − 30 = 15 missing when payment is due."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.cashflow-budget.05",
+        "context_id": "fe-production-cashflow-budget-05-practice-01",
+        "supports_from": [],
+        "reasoning": "A monthly surplus can coexist with an earlier cash shortage."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.cashflow-budget.05",
+        "context_id": "fe-production-cashflow-budget-05-practice-02",
+        "supports_from": [],
+        "reasoning": "A requested change does not yet replace the existing deadline."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.cashflow-budget.05",
+        "context_id": "fe-production-cashflow-budget-05-practice-03",
+        "supports_from": [],
+        "reasoning": "A missing due payment hides part of the required cash."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.cashflow-budget.05",
+        "context_id": "fe-production-cashflow-budget-05-transfer-01",
+        "supports_from": [],
+        "reasoning": "Even within one day, the order of cash movements matters."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.cashflow-budget.05",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A positive monthly total does not guarantee money is available on each due date."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un total mensual positivo no garantiza dinero disponible en cada vencimiento."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Um total mensal positivo não garante dinheiro disponível em cada vencimento."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Check before the receipt",
+          "line": "A bill is due Tuesday; pay arrives Friday. Put both dates on the calendar and check cash available Tuesday."
+        },
+        "es-MX": {
+          "prompt": "Revisa antes de recibir",
+          "line": "Una cuenta vence el martes; recibes el viernes. Anota ambas fechas y revisa el efectivo disponible el martes."
+        },
+        "pt-BR": {
+          "prompt": "Confira antes de receber",
+          "line": "Uma conta vence na terça; recebe na sexta. Anote ambas as datas e confira o dinheiro disponível na terça."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.05",
+      "copy": {
+        "en-US": {
+          "prompt": "When is payment unfunded?",
+          "scene": "Rent is due Monday; the receipt arrives Thursday; current cash cannot cover rent.",
+          "options": [
+            {
+              "label": "Thursday, after receiving"
+            },
+            {
+              "label": "Monday, before the receipt"
+            },
+            {
+              "label": "No gap because income is expected"
+            }
+          ],
+          "help": [
+            "Place the due date before the receipt date."
+          ],
+          "feedback": {
+            "met": "Thursday’s receipt is unavailable at Monday’s deadline.",
+            "not_yet": "Place the due date before the receipt date."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿En qué momento queda un pago descubierto?",
+          "scene": "La renta vence el lunes; recibes el jueves; el efectivo actual no cubre la renta.",
+          "options": [
+            {
+              "label": "El jueves, después de recibir"
+            },
+            {
+              "label": "El lunes, antes de recibir"
+            },
+            {
+              "label": "No falta porque se espera ingreso"
+            }
+          ],
+          "help": [
+            "Coloca vencimiento antes de recepción."
+          ],
+          "feedback": {
+            "met": "La entrada del jueves no está disponible al vencer el lunes.",
+            "not_yet": "Coloca vencimiento antes de recepción."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Em qual momento fica um pagamento descoberto?",
+          "scene": "O aluguel vence na segunda; recebe na quinta; o dinheiro atual não cobre o aluguel.",
+          "options": [
+            {
+              "label": "Na quinta, depois de receber"
+            },
+            {
+              "label": "Na segunda, antes de receber"
+            },
+            {
+              "label": "Não falta porque se espera renda"
+            }
+          ],
+          "help": [
+            "Coloque vencimento antes de recebimento."
+          ],
+          "feedback": {
+            "met": "A entrada de quinta não está disponível no vencimento de segunda.",
+            "not_yet": "Coloque vencimento antes de recebimento."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Gap at that due date?",
+          "scene": "Before the next receipt, cash available is 30 and the due bill is 45.",
+          "options": [
+            {
+              "label": "75"
+            },
+            {
+              "label": "0"
+            },
+            {
+              "label": "15"
+            }
+          ],
+          "help": [
+            "Use only cash available by this deadline."
+          ],
+          "feedback": {
+            "met": "45 − 30 = 15 missing when payment is due.",
+            "not_yet": "Use only cash available by this deadline."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Faltante al vencer?",
+          "scene": "Antes de la próxima entrada, hay 30 disponibles y vence una cuenta de 45.",
+          "options": [
+            {
+              "label": "75"
+            },
+            {
+              "label": "0"
+            },
+            {
+              "label": "15"
+            }
+          ],
+          "help": [
+            "Usa solo efectivo disponible antes de vencer."
+          ],
+          "feedback": {
+            "met": "45 − 30 = 15 faltantes al vencer.",
+            "not_yet": "Usa solo efectivo disponible antes de vencer."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Falta no vencimento?",
+          "scene": "Antes da próxima entrada, há 30 disponíveis e vence uma conta de 45.",
+          "options": [
+            {
+              "label": "75"
+            },
+            {
+              "label": "0"
+            },
+            {
+              "label": "15"
+            }
+          ],
+          "help": [
+            "Use só dinheiro disponível até o vencimento."
+          ],
+          "feedback": {
+            "met": "45 − 30 = 15 faltando no vencimento.",
+            "not_yet": "Use só dinheiro disponível até o vencimento."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          30,
+          45
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 1
+            },
+            {
+              "input": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Does the monthly surplus prove on-time payment?",
+          "scene": "Income arrives after a bill’s deadline; total monthly income covers all bills.",
+          "options": [
+            {
+              "label": "Expected means received"
+            },
+            {
+              "label": "The dates still matter"
+            },
+            {
+              "label": "Totals erase deadlines"
+            }
+          ],
+          "help": [
+            "Check the balance at the due date, not only month-end."
+          ],
+          "feedback": {
+            "met": "A monthly surplus can coexist with an earlier cash shortage.",
+            "not_yet": "Check the balance at the due date, not only month-end."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿El excedente mensual demuestra pago puntual?",
+          "scene": "El ingreso llega después de vencer una cuenta; el ingreso mensual supera todas las cuentas.",
+          "options": [
+            {
+              "label": "Sí, esperado significa recibido"
+            },
+            {
+              "label": "No, aún importan las fechas"
+            },
+            {
+              "label": "Sí, los totales eliminan vencimientos"
+            }
+          ],
+          "help": [
+            "Revisa saldo al vencer, no solo al cerrar el mes."
+          ],
+          "feedback": {
+            "met": "Un excedente mensual puede coexistir con un faltante anterior.",
+            "not_yet": "Revisa saldo al vencer, no solo al cerrar el mes."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O excedente mensal comprova pagamento pontual?",
+          "scene": "A renda chega após vencer uma conta; a renda mensal supera todas as contas.",
+          "options": [
+            {
+              "label": "Sim, esperado significa recebido"
+            },
+            {
+              "label": "Não, as datas ainda importam"
+            },
+            {
+              "label": "Sim, os totais eliminam vencimentos"
+            }
+          ],
+          "help": [
+            "Confira saldo no vencimento, não só no fim do mês."
+          ],
+          "feedback": {
+            "met": "Um excedente mensal pode coexistir com uma falta anterior.",
+            "not_yet": "Confira saldo no vencimento, não só no fim do mês."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Which date belongs in the calendar?",
+          "scene": "The bill issuer has not accepted your proposed deadline change.",
+          "options": [
+            {
+              "label": "The hoped-for date"
+            },
+            {
+              "label": "No date until a reply arrives"
+            },
+            {
+              "label": "The existing agreed due date"
+            }
+          ],
+          "help": [
+            "Update only when the new arrangement is confirmed."
+          ],
+          "feedback": {
+            "met": "A requested change does not yet replace the existing deadline.",
+            "not_yet": "Update only when the new arrangement is confirmed."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué fecha corresponde al calendario actual?",
+          "scene": "Quien cobra aún no acepta el cambio de vencimiento propuesto.",
+          "options": [
+            {
+              "label": "La fecha que esperas obtener"
+            },
+            {
+              "label": "Ninguna fecha hasta recibir respuesta"
+            },
+            {
+              "label": "El vencimiento acordado vigente"
+            }
+          ],
+          "help": [
+            "Actualiza cuando se confirme el nuevo acuerdo."
+          ],
+          "feedback": {
+            "met": "Solicitar un cambio aún no sustituye el vencimiento vigente.",
+            "not_yet": "Actualiza cuando se confirme el nuevo acuerdo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual data cabe no calendário atual?",
+          "scene": "Quem cobra ainda não aceitou a mudança de vencimento proposta.",
+          "options": [
+            {
+              "label": "A data que espera obter"
+            },
+            {
+              "label": "Nenhuma data até receber resposta"
+            },
+            {
+              "label": "O vencimento combinado vigente"
+            }
+          ],
+          "help": [
+            "Atualize quando o novo acordo for confirmado."
+          ],
+          "feedback": {
+            "met": "Pedir mudança ainda não substitui o vencimento vigente.",
+            "not_yet": "Atualize quando o novo acordo for confirmado."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Correct what?",
+          "scene": "Two payments precede the next reliable receipt; one is missing from the calendar.",
+          "options": [
+            {
+              "label": "Move income earlier without evidence"
+            },
+            {
+              "label": "Add the missing payment date"
+            },
+            {
+              "label": "Assume the missing bill is paid"
+            }
+          ],
+          "help": [
+            "The calendar needs every stated obligation in that window."
+          ],
+          "feedback": {
+            "met": "A missing due payment hides part of the required cash.",
+            "not_yet": "The calendar needs every stated obligation in that window."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe corregirse primero?",
+          "scene": "Dos pagos necesarios vencen antes de la próxima entrada fiable; solo uno está anotado.",
+          "options": [
+            {
+              "label": "Adelantar ingreso sin evidencia"
+            },
+            {
+              "label": "Añadir el pago y fecha omitidos"
+            },
+            {
+              "label": "Suponer pagada la cuenta faltante"
+            }
+          ],
+          "help": [
+            "El calendario necesita cada obligación indicada en esa ventana."
+          ],
+          "feedback": {
+            "met": "Un pago omitido oculta parte del efectivo necesario.",
+            "not_yet": "El calendario necesita cada obligación indicada en esa ventana."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que deve ser corrigido primeiro?",
+          "scene": "Dois pagamentos necessários vencem antes da próxima entrada confiável; só um está anotado.",
+          "options": [
+            {
+              "label": "Antecipar renda sem evidência"
+            },
+            {
+              "label": "Adicionar o pagamento e data omitidos"
+            },
+            {
+              "label": "Supor paga a conta ausente"
+            }
+          ],
+          "help": [
+            "O calendário precisa de cada obrigação informada nessa janela."
+          ],
+          "feedback": {
+            "met": "Um pagamento omitido esconde parte do dinheiro necessário.",
+            "not_yet": "O calendário precisa de cada obrigação informada nessa janela."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.cashflow-budget.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Can reimbursement fund this trip?",
+          "scene": "Travel requires cash Friday morning; reimbursement arrives that evening, with nothing available earlier.",
+          "options": [
+            {
+              "label": "The calendar date matches"
+            },
+            {
+              "label": "A promise is cash"
+            },
+            {
+              "label": "It arrives afterward"
+            }
+          ],
+          "help": [
+            "Check arrival time as well as calendar date."
+          ],
+          "feedback": {
+            "met": "Even within one day, the order of cash movements matters.",
+            "not_yet": "Check arrival time as well as calendar date."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cubre el viaje matutino?",
+          "scene": "Necesitas efectivo para viajar el viernes por la mañana; reembolsan por la tarde; antes no hay efectivo.",
+          "options": [
+            {
+              "label": "Sí, coincide la fecha del calendario"
+            },
+            {
+              "label": "Sí, prometer equivale a efectivo"
+            },
+            {
+              "label": "No, llega después"
+            }
+          ],
+          "help": [
+            "Revisa hora de llegada además de fecha."
+          ],
+          "feedback": {
+            "met": "Incluso en un día importa el orden de movimientos.",
+            "not_yet": "Revisa hora de llegada además de fecha."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O reembolso cobre a viagem da manhã?",
+          "scene": "Precisa de dinheiro para viajar na sexta de manhã; reembolsam à tarde; antes não há dinheiro.",
+          "options": [
+            {
+              "label": "Sim, coincide a data do calendário"
+            },
+            {
+              "label": "Sim, prometer equivale a dinheiro"
+            },
+            {
+              "label": "Não, chega depois"
+            }
+          ],
+          "help": [
+            "Confira horário de chegada além da data."
+          ],
+          "feedback": {
+            "met": "Mesmo num dia importa a ordem dos movimentos.",
+            "not_yet": "Confira horário de chegada além da data."
+          }
+        }
+      }
+    }
+  ]
+}

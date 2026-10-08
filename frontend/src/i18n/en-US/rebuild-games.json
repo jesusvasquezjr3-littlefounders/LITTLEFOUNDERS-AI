@@ -1,0 +1,189 @@
+{
+  "gamePlay": {
+    "pageTitle": "Racing",
+    "exit": "Exit",
+    "loading": "Getting your kart ready.",
+    "gateHint": "Tap the game to start.",
+    "frameTitle": "KartRush racing game",
+    "startLabel": "Tap to start",
+    "sound": "Sound",
+    "soundOn": "On",
+    "soundOff": "Off",
+    "racingHint": "Press Escape to pause."
+  },
+  "gameGarage": {
+    "heading": "Garage",
+    "greeting": {
+      "rho": "Pick your circuit. I will watch and take notes.",
+      "zara": "Pick a circuit! What will we find today?",
+      "liruf": "Let's race. Pick a circuit and a driver!",
+      "dina": "Take your time. Pick a circuit when ready."
+    },
+    "circuitLegend": "Circuit",
+    "modeLegend": "Mode",
+    "driverLegend": "Driver",
+    "speedLegend": "Speed",
+    "circuits": {
+      "jungleNeck": "Jungle Neck",
+      "boulevard": "Boulevard of Suits",
+      "fossilFire": "Fossil Fire",
+      "factory": "Factory Circuit",
+      "saltBay": "Salt Bay",
+      "glacier": "Glacier Circuit"
+    },
+    "modes": {
+      "single": "Race",
+      "timeTrial": "Time trial",
+      "practice": "Practice lap"
+    },
+    "speeds": {
+      "100cc": "100cc",
+      "150cc": "150cc"
+    },
+    "go": "Go"
+  },
+  "gamePaused": {
+    "heading": "Paused",
+    "resume": "Resume",
+    "restart": "Restart",
+    "leave": "Leave",
+    "body": "Your race is waiting."
+  },
+  "gamePitstop": {
+    "heading": "Pit stop",
+    "observation": {
+      "item_hold": {
+        "rho": "I measured it. You kept your item and passed item boxes.",
+        "zara": "Hmm, you kept your item and rolled past the item boxes.",
+        "liruf": "You kept your item and zoomed past the boxes. Wow!",
+        "dina": "You held on to your item as you passed the boxes."
+      },
+      "drift_patient": {
+        "rho": "I timed it. You waited for the big boost.",
+        "zara": "Ooh, you waited and waited for the big boost!",
+        "liruf": "You waited for the big boost. Whoosh!",
+        "dina": "You took your time and waited for the big boost."
+      },
+      "drift_early": {
+        "rho": "I counted. You let go of the boost early, again and again.",
+        "zara": "Hmm, you let go of the boost early, again and again.",
+        "liruf": "You let go of the boost early, again and again. Zip!",
+        "dina": "You let go of the boost early, again and again. No rush."
+      },
+      "steady": {
+        "rho": "I compared your laps. They were close together.",
+        "zara": "Look at that, your laps were all close together!",
+        "liruf": "Your laps were all close together. Zoom, zoom, zoom!",
+        "dina": "Your laps were close together. Calm and even."
+      },
+      "swingy": {
+        "rho": "I compared your laps. They changed a lot.",
+        "zara": "Interesting, your laps changed a lot from one to the next.",
+        "liruf": "Your laps changed a lot. Fast, slow, fast!",
+        "dina": "Your laps changed a lot. Let's wonder why, no rush."
+      },
+      "neutral": {
+        "rho": "Race done. I wrote down your laps.",
+        "zara": "Race done! I already have ideas for the next one.",
+        "liruf": "You raced. That was so fun to watch!",
+        "dina": "You finished the race. Take a breath."
+      }
+    },
+    "question": {
+      "item_hold": "Why did you keep the item?",
+      "drift_patient": "How did waiting feel?",
+      "drift_early": "What made you let go early?",
+      "steady": "What helped you stay steady?",
+      "swingy": "What changed between laps?",
+      "neutral": "What will you try next?"
+    },
+    "replies": {
+      "item_hold": {
+        "a": "I was saving it",
+        "b": "I did not notice",
+        "unsure": "Not sure"
+      },
+      "drift_patient": {
+        "a": "The boost was big",
+        "b": "I wanted to go faster",
+        "unsure": "Not sure"
+      },
+      "drift_early": {
+        "a": "I wanted speed now",
+        "b": "The turn came fast",
+        "unsure": "Not sure"
+      },
+      "steady": {
+        "a": "I knew the track",
+        "b": "I drove slower",
+        "unsure": "Not sure"
+      },
+      "swingy": {
+        "a": "I tried new things",
+        "b": "Some turns were tricky",
+        "unsure": "Not sure"
+      },
+      "neutral": {
+        "a": "Go faster",
+        "b": "Drive smoother",
+        "unsure": "Not sure"
+      }
+    },
+    "replied": "Got it.",
+    "pending": "Checking your race.",
+    "again": "Race again",
+    "change": "Change kart",
+    "ask": "Ask {name}",
+    "close": "Close"
+  },
+  "gameSoft": {
+    "heading": "Quick break?",
+    "line": {
+      "rho": "We have raced a good while. A rest helps us think.",
+      "zara": "Our brains worked hard. Let's rest them a bit!",
+      "liruf": "Time for a snack and a stretch!",
+      "dina": "You have raced for a while. Shall we rest a little?"
+    },
+    "stop": "Take a break",
+    "keep": "Keep racing"
+  },
+  "gameClosed": {
+    "limit": {
+      "heading": "All done for today",
+      "body": "Come back tomorrow for more racing."
+    },
+    "ended": {
+      "heading": "Racing time is over",
+      "body": "Time to rest. See you soon."
+    },
+    "disabled": {
+      "heading": "Racing is off",
+      "body": "A grown-up turned games off."
+    },
+    "home": "Back to Learn"
+  },
+  "gameError": {
+    "webgl": {
+      "heading": "Cannot show the game",
+      "body": "Try another device or browser."
+    },
+    "offline": {
+      "heading": "No connection",
+      "body": "Check your internet, then try again."
+    },
+    "unavailable": {
+      "heading": "The game did not start",
+      "body": "Try again in a moment."
+    },
+    "retry": "Try again",
+    "home": "Back to Learn"
+  },
+  "gameRotate": {
+    "heading": "Turn your device",
+    "body": "Hold it sideways to race."
+  },
+  "gameHome": {
+    "heading": "Play with {name}",
+    "play": "Let's race"
+  }
+}

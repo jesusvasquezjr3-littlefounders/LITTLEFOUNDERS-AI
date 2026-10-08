@@ -1,0 +1,778 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-accounts-records-part-2",
+  "lesson_id": "fe-production-accounts-records-10",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.accounts-records.10"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Choose a secure way to retain financial records without exposing access credentials.",
+  "title": {
+    "en-US": "Private records",
+    "es-MX": "Conserva registros útiles y privados",
+    "pt-BR": "Guarde registros úteis e privados"
+  },
+  "new_concepts": [
+    "finance.prod.accounts-records.10"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Keep useful records private\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Conserva registros útiles y privados\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Guarde registros úteis e privados\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.accounts-records.10",
+      "observable_action": "Choose a secure way to retain financial records without exposing access credentials.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.accounts-records.04"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Save what you need for follow-up without exposing account access.",
+    "misconception": "Treating convenience as sufficient protection or keeping passwords and security codes inside shared financial records.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.accounts-records.10",
+        "context_id": "fe-production-accounts-records-10-example-01",
+        "supports_from": [],
+        "reasoning": "Keep receipts and statements in protected storage. Passwords and security codes do not belong in a shared record of payments."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.accounts-records.10",
+        "context_id": "fe-production-accounts-records-10-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The record should remain retrievable while access stays limited."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.accounts-records.10",
+        "context_id": "fe-production-accounts-records-10-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "A shared spending record does not require account credentials."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.accounts-records.10",
+        "context_id": "fe-production-accounts-records-10-practice-01",
+        "supports_from": [],
+        "reasoning": "Relevant details can support a report without public exposure."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.accounts-records.10",
+        "context_id": "fe-production-accounts-records-10-practice-02",
+        "supports_from": [],
+        "reasoning": "A protected backup can preserve records if the device is lost."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.accounts-records.10",
+        "context_id": "fe-production-accounts-records-10-practice-03",
+        "supports_from": [],
+        "reasoning": "Retention depends on the actual record and applicable requirements."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.accounts-records.10",
+        "context_id": "fe-production-accounts-records-10-transfer-01",
+        "supports_from": [],
+        "reasoning": "Proof of a shared expense does not require an access secret."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.accounts-records.10",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Save what you need for follow-up without exposing account access."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Guarda lo necesario para seguimiento sin exponer el acceso a tu cuenta."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Guarde o necessário para acompanhar sem expor o acesso à sua conta."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Record versus access secret",
+          "line": "Keep receipts and statements in protected storage. Passwords and security codes do not belong in a shared record of payments."
+        },
+        "es-MX": {
+          "prompt": "Registro y secreto de acceso",
+          "line": "Guarda comprobantes y estados en un lugar protegido. Contraseñas y códigos de acceso no van en registros compartidos de pagos."
+        },
+        "pt-BR": {
+          "prompt": "Registro e segredo de acesso",
+          "line": "Guarde recibos e extratos em local protegido. Senhas e códigos de acesso não vão em registros compartilhados de pagamentos."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Which storage fits?",
+          "scene": "You save a receipt for a later billing question.",
+          "options": [
+            {
+              "label": "A stranger’s shared device without controls"
+            },
+            {
+              "label": "A protected folder you can retrieve"
+            },
+            {
+              "label": "A public link with your login notes"
+            }
+          ],
+          "help": [
+            "Protect the record while preserving its usefulness."
+          ],
+          "feedback": {
+            "met": "The record should remain retrievable while access stays limited.",
+            "not_yet": "Protect the record while preserving its usefulness."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué lugar cumple esta necesidad?",
+          "scene": "Guardas un comprobante para consultar luego un cobro.",
+          "options": [
+            {
+              "label": "Un dispositivo ajeno compartido sin controles"
+            },
+            {
+              "label": "Una carpeta protegida que puedas consultar"
+            },
+            {
+              "label": "Un enlace público con notas de acceso"
+            }
+          ],
+          "help": [
+            "Protege el registro sin perder su utilidad."
+          ],
+          "feedback": {
+            "met": "El registro debe poder recuperarse con acceso limitado.",
+            "not_yet": "Protege el registro sin perder su utilidad."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Onde pode guardar?",
+          "scene": "Guarda um recibo para perguntar depois sobre uma cobrança.",
+          "options": [
+            {
+              "label": "Um aparelho alheio compartilhado sem controles"
+            },
+            {
+              "label": "Uma pasta segura que possa consultar"
+            },
+            {
+              "label": "Um link público com notas de acesso"
+            }
+          ],
+          "help": [
+            "Proteja o registro sem perder sua utilidade."
+          ],
+          "feedback": {
+            "met": "Precisa achar o registro depois, sem dar acesso a todos.",
+            "not_yet": "Proteja o registro sem perder sua utilidade."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Which item must stay out of it?",
+          "scene": "A household expense sheet is shared with another person.",
+          "options": [
+            {
+              "label": "The agreed shared expense amount"
+            },
+            {
+              "label": "The shared bill’s due date"
+            },
+            {
+              "label": "The account password"
+            }
+          ],
+          "help": [
+            "Separate information needed to plan from secrets granting access."
+          ],
+          "feedback": {
+            "met": "A shared spending record does not require account credentials.",
+            "not_yet": "Separate information needed to plan from secrets granting access."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué dato debe quedar fuera?",
+          "scene": "Una hoja de gastos del hogar se comparte con otra persona.",
+          "options": [
+            {
+              "label": "El monto del gasto compartido acordado"
+            },
+            {
+              "label": "El vencimiento de la cuenta compartida"
+            },
+            {
+              "label": "La contraseña de cuenta"
+            }
+          ],
+          "help": [
+            "Separa datos para planear de secretos que dan acceso."
+          ],
+          "feedback": {
+            "met": "Un registro compartido de gastos no requiere credenciales de cuenta.",
+            "not_yet": "Separa datos para planear de secretos que dan acceso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual dado deve ficar fora?",
+          "scene": "Uma planilha de gastos da casa é compartilhada com outra pessoa.",
+          "options": [
+            {
+              "label": "O valor do gasto compartilhado combinado"
+            },
+            {
+              "label": "O vencimento da conta compartilhada"
+            },
+            {
+              "label": "A senha da conta"
+            }
+          ],
+          "help": [
+            "Separe dados para planejar de segredos que dão acesso."
+          ],
+          "feedback": {
+            "met": "Um registro compartilhado de gastos não exige senhas da conta.",
+            "not_yet": "Separe dados para planejar de segredos que dão acesso."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Which limits exposure?",
+          "scene": "A public support post would reveal account details and unrelated purchases.",
+          "options": [
+            {
+              "label": "Add your password for identification"
+            },
+            {
+              "label": "Publish all statements for speed"
+            },
+            {
+              "label": "Use verified private support and relevant details"
+            }
+          ],
+          "help": [
+            "Share only necessary records through the appropriate verified channel."
+          ],
+          "feedback": {
+            "met": "Relevant details can support a report without public exposure.",
+            "not_yet": "Share only necessary records through the appropriate verified channel."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué enfoque limita exposición innecesaria?",
+          "scene": "Publicar una consulta revelaría datos completos de cuenta y compras ajenas al caso.",
+          "options": [
+            {
+              "label": "Añadir contraseña para identificar más rápido"
+            },
+            {
+              "label": "Publicar todos los estados para ahorrar tiempo"
+            },
+            {
+              "label": "Usar soporte privado verificado con datos pertinentes"
+            }
+          ],
+          "help": [
+            "Comparte solo registros necesarios por el canal verificado adecuado."
+          ],
+          "feedback": {
+            "met": "Datos pertinentes permiten reportar sin exposición pública.",
+            "not_yet": "Comparte solo registros necesarios por el canal verificado adecuado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Como limitar dados expostos?",
+          "scene": "Publicar uma dúvida revelaria dados completos da conta e compras alheias ao caso.",
+          "options": [
+            {
+              "label": "Adicionar senha para identificar mais rápido"
+            },
+            {
+              "label": "Publicar todos os extratos para poupar tempo"
+            },
+            {
+              "label": "Usar canal privado oficial com dados do caso"
+            }
+          ],
+          "help": [
+            "Compartilhe só registros necessários pelo canal verificado adequado."
+          ],
+          "feedback": {
+            "met": "Dados do caso ajudam sem expor tudo ao público.",
+            "not_yet": "Compartilhe só registros necessários pelo canal verificado adequado."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.10",
+      "copy": {
+        "en-US": {
+          "prompt": "What improves private recovery?",
+          "scene": "Receipts exist on one device that could be lost.",
+          "options": [
+            {
+              "label": "Keeping no record at all"
+            },
+            {
+              "label": "A public folder anyone can edit"
+            },
+            {
+              "label": "A protected backup with limited access"
+            }
+          ],
+          "help": [
+            "Recovery and privacy should both be addressed."
+          ],
+          "feedback": {
+            "met": "A protected backup can preserve records if the device is lost.",
+            "not_yet": "Recovery and privacy should both be addressed."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué mejora recuperación sin hacerlo público?",
+          "scene": "Un archivo local de comprobantes está solo en un dispositivo que podría perderse.",
+          "options": [
+            {
+              "label": "No conservar ningún registro"
+            },
+            {
+              "label": "Una carpeta pública editable por cualquiera"
+            },
+            {
+              "label": "Un respaldo protegido con acceso limitado"
+            }
+          ],
+          "help": [
+            "Atiende recuperación y privacidad."
+          ],
+          "feedback": {
+            "met": "Un respaldo protegido conserva registros si pierdes el dispositivo.",
+            "not_yet": "Atiende recuperación y privacidad."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Como ter uma cópia sem expor os dados?",
+          "scene": "Um arquivo local de recibos está só num aparelho que pode ser perdido.",
+          "options": [
+            {
+              "label": "Não guardar registro algum"
+            },
+            {
+              "label": "Uma pasta pública editável por qualquer pessoa"
+            },
+            {
+              "label": "Uma cópia segura com acesso limitado"
+            }
+          ],
+          "help": [
+            "Precisa recuperar os dados e manter o acesso seguro."
+          ],
+          "feedback": {
+            "met": "Uma cópia protegida conserva registros se perder o aparelho.",
+            "not_yet": "Precisa recuperar os dados e manter o acesso seguro."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.10",
+      "copy": {
+        "en-US": {
+          "prompt": "What guides you?",
+          "scene": "You do not know this financial record’s required retention period.",
+          "options": [
+            {
+              "label": "Assuming every file can be deleted"
+            },
+            {
+              "label": "A universal period invented from memory"
+            },
+            {
+              "label": "The applicable purpose and retention rules"
+            }
+          ],
+          "help": [
+            "Verify requirements before deleting needed evidence."
+          ],
+          "feedback": {
+            "met": "Retention depends on the actual record and applicable requirements.",
+            "not_yet": "Verify requirements before deleting needed evidence."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe guiar la decisión?",
+          "scene": "Desconoces cuánto tiempo exigen las reglas aplicables guardar un registro financiero.",
+          "options": [
+            {
+              "label": "Decir que todo archivo puede borrarse"
+            },
+            {
+              "label": "Un plazo universal inventado de memoria"
+            },
+            {
+              "label": "El propósito y reglas de conservación aplicables"
+            }
+          ],
+          "help": [
+            "Verifica requisitos antes de borrar evidencia necesaria."
+          ],
+          "feedback": {
+            "met": "Conservar depende del registro concreto y requisitos aplicables.",
+            "not_yet": "Verifica requisitos antes de borrar evidencia necesaria."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que orienta você?",
+          "scene": "Não sabe por quanto tempo as regras aplicáveis exigem guardar um registro financeiro.",
+          "options": [
+            {
+              "label": "Dizer que todo arquivo pode ser apagado"
+            },
+            {
+              "label": "Um prazo universal inventado de memória"
+            },
+            {
+              "label": "O uso do registro e as regras de guarda"
+            }
+          ],
+          "help": [
+            "Confira requisitos antes de apagar provas necessárias."
+          ],
+          "feedback": {
+            "met": "Guardar depende do registro concreto e requisitos aplicáveis.",
+            "not_yet": "Confira requisitos antes de apagar provas necessárias."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.accounts-records.10",
+      "copy": {
+        "en-US": {
+          "prompt": "What to share?",
+          "scene": "A shared care receipt image includes an unrelated access code.",
+          "options": [
+            {
+              "label": "Only the code without the receipt"
+            },
+            {
+              "label": "Relevant receipt details without the code"
+            },
+            {
+              "label": "The full image including access code"
+            }
+          ],
+          "help": [
+            "Keep the protected original and share only the needed evidence."
+          ],
+          "feedback": {
+            "met": "Proof of a shared expense does not require an access secret.",
+            "not_yet": "Keep the protected original and share only the needed evidence."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué compartir?",
+          "scene": "Un gasto de cuidados necesita comprobante, pero su imagen incluye un código de acceso ajeno al caso.",
+          "options": [
+            {
+              "label": "Solo el código sin comprobante"
+            },
+            {
+              "label": "Datos pertinentes del comprobante sin código de acceso"
+            },
+            {
+              "label": "La imagen completa con código de acceso"
+            }
+          ],
+          "help": [
+            "Conserva el original protegido y comparte solo evidencia necesaria."
+          ],
+          "feedback": {
+            "met": "Probar un gasto compartido no requiere un secreto de acceso.",
+            "not_yet": "Conserva el original protegido y comparte solo evidencia necesaria."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que é adequado compartilhar?",
+          "scene": "Um recibo de cuidados compartilhados inclui um código de acesso alheio ao caso.",
+          "options": [
+            {
+              "label": "Só o código sem recibo"
+            },
+            {
+              "label": "Dados do recibo sem código de acesso"
+            },
+            {
+              "label": "A imagem completa com código de acesso"
+            }
+          ],
+          "help": [
+            "Guarde o original protegido e compartilhe só provas necessárias."
+          ],
+          "feedback": {
+            "met": "Provar um gasto compartilhado não exige um segredo de acesso.",
+            "not_yet": "Guarde o original protegido e compartilhe só provas necessárias."
+          }
+        }
+      }
+    }
+  ]
+}

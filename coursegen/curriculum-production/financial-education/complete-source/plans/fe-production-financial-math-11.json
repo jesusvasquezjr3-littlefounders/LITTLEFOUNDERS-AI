@@ -1,0 +1,833 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-financial-math-part-3",
+  "lesson_id": "fe-production-financial-math-11",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.financial-math.11"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Compare amounts expressed for different time periods on a common time basis.",
+  "title": {
+    "en-US": "Same period",
+    "es-MX": "Iguala el periodo",
+    "pt-BR": "Iguale o período"
+  },
+  "new_concepts": [
+    "finance.prod.financial-math.11"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Match the period\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Iguala el periodo\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Iguale o período\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.financial-math.11",
+      "observable_action": "Compare amounts expressed for different time periods on a common time basis.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.financial-math.05",
+      "prod.financial-math.06"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Compare costs over the same length of time.",
+    "misconception": "Compare a weekly quote directly with a monthly quote.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.financial-math.11",
+        "context_id": "fe-production-financial-math-11-example-01",
+        "supports_from": [],
+        "reasoning": "A plan costs 8 weekly. Exactly four weeks cost 32; compare plans over those same weeks."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.financial-math.11",
+        "context_id": "fe-production-financial-math-11-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Repeat the weekly cost across the stated weeks."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.financial-math.11",
+        "context_id": "fe-production-financial-math-11-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Amounts need matching time units for comparison."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.financial-math.11",
+        "context_id": "fe-production-financial-math-11-practice-01",
+        "supports_from": [],
+        "reasoning": "The annual total includes every monthly payment."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.financial-math.11",
+        "context_id": "fe-production-financial-math-11-practice-02",
+        "supports_from": [],
+        "reasoning": "The equivalent spreads the total across equal months."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.financial-math.11",
+        "context_id": "fe-production-financial-math-11-practice-03",
+        "supports_from": [],
+        "reasoning": "Calendar periods must be stated rather than assumed."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.financial-math.11",
+        "context_id": "fe-production-financial-math-11-transfer-01",
+        "supports_from": [],
+        "reasoning": "Six daily charges total fifty-four, above the package price."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.financial-math.11",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Compare costs over the same length of time."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Compara costos durante el mismo tiempo."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Compare custos durante o mesmo tempo."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Same time window",
+          "line": "A plan costs 8 weekly. Exactly four weeks cost 32; compare plans over those same weeks."
+        },
+        "es-MX": {
+          "prompt": "La misma ventana de tiempo",
+          "line": "Un plan cuesta 8 semanales. En exactamente cuatro semanas cuesta 32; compáralo con otro plan durante esas mismas semanas."
+        },
+        "pt-BR": {
+          "prompt": "A mesma janela de tempo",
+          "line": "Um plano custa 8 por semana. Em exatamente quatro semanas custa 32; compare com outro plano durante essas mesmas semanas."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.11",
+      "copy": {
+        "en-US": {
+          "prompt": "Cost for that period?",
+          "scene": "A service costs 7 weekly. Compare exactly 4 weeks.",
+          "options": [
+            {
+              "label": "28"
+            },
+            {
+              "label": "7"
+            },
+            {
+              "label": "11"
+            }
+          ],
+          "help": [
+            "Multiply only by the stated number of weeks."
+          ],
+          "feedback": {
+            "met": "Repeat the weekly cost across the stated weeks.",
+            "not_yet": "Multiply only by the stated number of weeks."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Costo de ese periodo?",
+          "scene": "Un servicio cuesta 7 semanales. Compara exactamente 4 semanas.",
+          "options": [
+            {
+              "label": "28"
+            },
+            {
+              "label": "7"
+            },
+            {
+              "label": "11"
+            }
+          ],
+          "help": [
+            "Multiplica solo por las semanas indicadas."
+          ],
+          "feedback": {
+            "met": "Repite el costo semanal durante las semanas indicadas.",
+            "not_yet": "Multiplica solo por las semanas indicadas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Custo desse período?",
+          "scene": "Um serviço custa 7 por semana. Compare exatamente 4 semanas.",
+          "options": [
+            {
+              "label": "28"
+            },
+            {
+              "label": "7"
+            },
+            {
+              "label": "11"
+            }
+          ],
+          "help": [
+            "Multiplique só pelas semanas informadas."
+          ],
+          "feedback": {
+            "met": "Repita o custo semanal pelas semanas informadas.",
+            "not_yet": "Multiplique só pelas semanas informadas."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          7,
+          4
+        ],
+        "expression": {
+          "op": "multiply",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.11",
+      "copy": {
+        "en-US": {
+          "prompt": "Before comparing, what is needed?",
+          "scene": "One quote is weekly; the other covers a year.",
+          "options": [
+            {
+              "label": "Different periods for each"
+            },
+            {
+              "label": "The smaller printed number"
+            },
+            {
+              "label": "A common time period"
+            }
+          ],
+          "help": [
+            "Match what each quote covers."
+          ],
+          "feedback": {
+            "met": "Amounts need matching time units for comparison.",
+            "not_yet": "Match what each quote covers."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué necesitas antes de comparar?",
+          "scene": "Una cotización es semanal; otra cubre un año.",
+          "options": [
+            {
+              "label": "Periodos distintos para cada una"
+            },
+            {
+              "label": "El número impreso menor"
+            },
+            {
+              "label": "Un periodo común"
+            }
+          ],
+          "help": [
+            "Iguala lo que cubre cada cotización."
+          ],
+          "feedback": {
+            "met": "Los montos necesitan unidades de tiempo iguales para compararse.",
+            "not_yet": "Iguala lo que cubre cada cotización."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Do que precisa antes de comparar?",
+          "scene": "Uma cotação é semanal; outra cobre um ano.",
+          "options": [
+            {
+              "label": "Períodos diferentes para cada uma"
+            },
+            {
+              "label": "O menor número impresso"
+            },
+            {
+              "label": "Um período comum"
+            }
+          ],
+          "help": [
+            "Iguale o que cada cotação cobre."
+          ],
+          "feedback": {
+            "met": "Valores precisam de unidades de tempo iguais para comparação.",
+            "not_yet": "Iguale o que cada cotação cobre."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.11",
+      "copy": {
+        "en-US": {
+          "prompt": "Annual total?",
+          "scene": "A subscription costs 15 monthly for 12 months, with no other charges.",
+          "options": [
+            {
+              "label": "27"
+            },
+            {
+              "label": "15"
+            },
+            {
+              "label": "180"
+            }
+          ],
+          "help": [
+            "Use all months in the stated year."
+          ],
+          "feedback": {
+            "met": "The annual total includes every monthly payment.",
+            "not_yet": "Use all months in the stated year."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Total anual?",
+          "scene": "Una suscripción cuesta 15 mensuales por 12 meses, sin otros cargos.",
+          "options": [
+            {
+              "label": "27"
+            },
+            {
+              "label": "15"
+            },
+            {
+              "label": "180"
+            }
+          ],
+          "help": [
+            "Usa todos los meses del año indicado."
+          ],
+          "feedback": {
+            "met": "El total anual incluye cada pago mensual.",
+            "not_yet": "Usa todos los meses del año indicado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Total anual?",
+          "scene": "Uma assinatura custa 15 mensais por 12 meses, sem outras cobranças.",
+          "options": [
+            {
+              "label": "27"
+            },
+            {
+              "label": "15"
+            },
+            {
+              "label": "180"
+            }
+          ],
+          "help": [
+            "Use todos os meses do ano informado."
+          ],
+          "feedback": {
+            "met": "O total anual inclui cada pagamento mensal.",
+            "not_yet": "Use todos os meses do ano informado."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          15,
+          12
+        ],
+        "expression": {
+          "op": "multiply",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.11",
+      "copy": {
+        "en-US": {
+          "prompt": "Monthly equivalent?",
+          "scene": "A yearly charge of 240 covers 12 equal monthly portions.",
+          "options": [
+            {
+              "label": "20"
+            },
+            {
+              "label": "240"
+            },
+            {
+              "label": "252"
+            }
+          ],
+          "help": [
+            "An equivalent is not necessarily the actual billing schedule."
+          ],
+          "feedback": {
+            "met": "The equivalent spreads the total across equal months.",
+            "not_yet": "An equivalent is not necessarily the actual billing schedule."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Equivalente mensual?",
+          "scene": "Un cargo anual de 240 cubre 12 partes mensuales iguales.",
+          "options": [
+            {
+              "label": "20"
+            },
+            {
+              "label": "240"
+            },
+            {
+              "label": "252"
+            }
+          ],
+          "help": [
+            "Un equivalente no necesariamente es el calendario real de cobro."
+          ],
+          "feedback": {
+            "met": "El equivalente reparte el total entre meses iguales.",
+            "not_yet": "Un equivalente no necesariamente es el calendario real de cobro."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Equivalente mensal?",
+          "scene": "Uma cobrança anual de 240 cobre 12 parcelas mensais iguais.",
+          "options": [
+            {
+              "label": "20"
+            },
+            {
+              "label": "240"
+            },
+            {
+              "label": "252"
+            }
+          ],
+          "help": [
+            "Um equivalente não é necessariamente o calendário real de cobrança."
+          ],
+          "feedback": {
+            "met": "O equivalente distribui o total por meses iguais.",
+            "not_yet": "Um equivalente não é necessariamente o calendário real de cobrança."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          240,
+          12
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.11",
+      "copy": {
+        "en-US": {
+          "prompt": "Can four weeks always stand for a month?",
+          "scene": "Calendar months can span more than four weeks.",
+          "options": [
+            {
+              "label": "No, check the actual period"
+            },
+            {
+              "label": "Yes, always exactly"
+            },
+            {
+              "label": "Only if the price is low"
+            }
+          ],
+          "help": [
+            "Check dates before converting a recurring charge."
+          ],
+          "feedback": {
+            "met": "Calendar periods must be stated rather than assumed.",
+            "not_yet": "Check dates before converting a recurring charge."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuatro semanas siempre equivalen a un mes?",
+          "scene": "Un mes calendario puede durar más de cuatro semanas.",
+          "options": [
+            {
+              "label": "No, revisa el periodo real"
+            },
+            {
+              "label": "Sí, siempre exactamente"
+            },
+            {
+              "label": "Solo si el precio es bajo"
+            }
+          ],
+          "help": [
+            "Revisa fechas antes de convertir un cargo recurrente."
+          ],
+          "feedback": {
+            "met": "Los periodos calendario deben indicarse, no suponerse.",
+            "not_yet": "Revisa fechas antes de convertir un cargo recurrente."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quatro semanas sempre equivalem a um mês?",
+          "scene": "Um mês do calendário pode durar mais de quatro semanas.",
+          "options": [
+            {
+              "label": "Não, confira o período real"
+            },
+            {
+              "label": "Sim, sempre exatamente"
+            },
+            {
+              "label": "Só se o preço for baixo"
+            }
+          ],
+          "help": [
+            "Confira datas antes de converter uma cobrança recorrente."
+          ],
+          "feedback": {
+            "met": "Períodos do calendário devem ser informados, não supostos.",
+            "not_yet": "Confira datas antes de converter uma cobrança recorrente."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.financial-math.11",
+      "copy": {
+        "en-US": {
+          "prompt": "Which total is lower?",
+          "scene": "A rental costs 9 daily or 50 for the same 6 days. No extra charges.",
+          "options": [
+            {
+              "label": "They are equal"
+            },
+            {
+              "label": "The six-day package"
+            },
+            {
+              "label": "The daily plan"
+            }
+          ],
+          "help": [
+            "Compare totals over the identical rental dates."
+          ],
+          "feedback": {
+            "met": "Six daily charges total fifty-four, above the package price.",
+            "not_yet": "Compare totals over the identical rental dates."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué total es menor?",
+          "scene": "Una renta cuesta 9 diarios o 50 por los mismos 6 días. Sin cargos extra.",
+          "options": [
+            {
+              "label": "Son iguales"
+            },
+            {
+              "label": "El paquete de seis días"
+            },
+            {
+              "label": "El plan diario"
+            }
+          ],
+          "help": [
+            "Compara totales durante fechas de renta idénticas."
+          ],
+          "feedback": {
+            "met": "Seis cargos diarios suman cincuenta y cuatro, más que el paquete.",
+            "not_yet": "Compara totales durante fechas de renta idénticas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual total é menor?",
+          "scene": "Um aluguel custa 9 diários ou 50 pelos mesmos 6 dias. Sem cobranças extras.",
+          "options": [
+            {
+              "label": "São iguais"
+            },
+            {
+              "label": "O pacote de seis dias"
+            },
+            {
+              "label": "O plano diário"
+            }
+          ],
+          "help": [
+            "Compare totais nas mesmas datas de aluguel."
+          ],
+          "feedback": {
+            "met": "Seis cobranças diárias somam cinquenta e quatro, acima do pacote.",
+            "not_yet": "Compare totais nas mesmas datas de aluguel."
+          }
+        }
+      }
+    }
+  ]
+}

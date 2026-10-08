@@ -1,0 +1,817 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-spending-patterns-part-2",
+  "lesson_id": "fe-production-spending-patterns-10",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.spending-patterns.10"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Explain why low income can leave a deficit even after discretionary purchases are removed.",
+  "title": {
+    "en-US": "Insufficient cuts",
+    "es-MX": "Cuando recortar no basta",
+    "pt-BR": "Quando cortar não basta"
+  },
+  "new_concepts": [
+    "finance.prod.spending-patterns.10"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"When cuts cannot close the gap\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Cuando recortar no basta\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Quando cortar não basta\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.spending-patterns.10",
+      "observable_action": "Explain why low income can leave a deficit even after discretionary purchases are removed.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.spending-patterns.02",
+      "prod.spending-patterns.07",
+      "prod.financial-math.04"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Check whether essential costs exceed income before proposing more cuts.",
+    "misconception": "Assuming every shortfall can be eliminated by stopping discretionary purchases.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.spending-patterns.10",
+        "context_id": "fe-production-spending-patterns-10-example-01",
+        "supports_from": [],
+        "reasoning": "Income is 80; essential costs are 90. Even with no optional purchases, the shortfall remains 10."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.spending-patterns.10",
+        "context_id": "fe-production-spending-patterns-10-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "115 − 100 = 15; no optional spending remains to remove."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.spending-patterns.10",
+        "context_id": "fe-production-spending-patterns-10-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The stated situation has no remaining optional cut."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.spending-patterns.10",
+        "context_id": "fe-production-spending-patterns-10-practice-01",
+        "supports_from": [],
+        "reasoning": "150 − 130 = 20 remains uncovered."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.spending-patterns.10",
+        "context_id": "fe-production-spending-patterns-10-practice-02",
+        "supports_from": [],
+        "reasoning": "Checking options does not guarantee eligibility or an agreement."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.spending-patterns.10",
+        "context_id": "fe-production-spending-patterns-10-practice-03",
+        "supports_from": [],
+        "reasoning": "Unconfirmed income does not close today’s known shortfall."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.spending-patterns.10",
+        "context_id": "fe-production-spending-patterns-10-transfer-01",
+        "supports_from": [],
+        "reasoning": "Higher essentials can enlarge a gap without any optional purchases."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.spending-patterns.10",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Check whether essential costs exceed income before proposing more cuts."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Revisa si los costos esenciales superan el ingreso antes de proponer más recortes."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Confira se custos essenciais superam a renda antes de propor mais cortes."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A remaining shortfall",
+          "line": "Income is 80; essential costs are 90. Even with no optional purchases, the shortfall remains 10."
+        },
+        "es-MX": {
+          "prompt": "Un faltante restante",
+          "line": "El ingreso es 80; lo esencial cuesta 90. Aun sin compras opcionales, faltan 10."
+        },
+        "pt-BR": {
+          "prompt": "Uma falta restante",
+          "line": "A renda é 80; o essencial custa 90. Mesmo sem compras opcionais, faltam 10."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Remaining shortfall?",
+          "scene": "Income: 100; essential costs: 115. Optional spending: 0.",
+          "options": [
+            {
+              "label": "0"
+            },
+            {
+              "label": "215"
+            },
+            {
+              "label": "15"
+            }
+          ],
+          "help": [
+            "Compare essential costs with income."
+          ],
+          "feedback": {
+            "met": "115 − 100 = 15; no optional spending remains to remove.",
+            "not_yet": "Compare essential costs with income."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Faltante restante?",
+          "scene": "Ingreso: 100; costos esenciales: 115. Gasto opcional: 0.",
+          "options": [
+            {
+              "label": "0"
+            },
+            {
+              "label": "215"
+            },
+            {
+              "label": "15"
+            }
+          ],
+          "help": [
+            "Compara costos esenciales con ingreso."
+          ],
+          "feedback": {
+            "met": "115 − 100 = 15; no queda gasto opcional que eliminar.",
+            "not_yet": "Compara costos esenciales con ingreso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Falta restante?",
+          "scene": "Renda: 100; custos essenciais: 115. Gasto opcional: 0.",
+          "options": [
+            {
+              "label": "0"
+            },
+            {
+              "label": "215"
+            },
+            {
+              "label": "15"
+            }
+          ],
+          "help": [
+            "Compare custos essenciais com renda."
+          ],
+          "feedback": {
+            "met": "115 − 100 = 15; não resta gasto opcional para eliminar.",
+            "not_yet": "Compare custos essenciais com renda."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          100,
+          115,
+          0
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 1
+            },
+            {
+              "input": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Would more optional cuts solve this?",
+          "scene": "A household removed all optional purchases; essential bills still exceed income.",
+          "options": [
+            {
+              "label": "None remain to remove"
+            },
+            {
+              "label": "Recording costs pays them"
+            },
+            {
+              "label": "Recording creates spare money"
+            }
+          ],
+          "help": [
+            "Use the actual constraint rather than inventing spending."
+          ],
+          "feedback": {
+            "met": "The stated situation has no remaining optional cut.",
+            "not_yet": "Use the actual constraint rather than inventing spending."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Quitar más compras opcionales lo resuelve?",
+          "scene": "Un hogar quitó todas las compras opcionales; las cuentas esenciales aún superan su ingreso.",
+          "options": [
+            {
+              "label": "No, ya no queda ninguna"
+            },
+            {
+              "label": "Sí, registrar costos los paga"
+            },
+            {
+              "label": "Sí, registrar crea dinero sobrante"
+            }
+          ],
+          "help": [
+            "Usa el límite real sin inventar gastos."
+          ],
+          "feedback": {
+            "met": "La situación indicada no tiene otro recorte opcional disponible.",
+            "not_yet": "Usa el límite real sin inventar gastos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Retirar mais compras opcionais resolve isso?",
+          "scene": "Uma casa retirou todas as compras opcionais; as contas essenciais ainda superam sua renda.",
+          "options": [
+            {
+              "label": "Não, já não resta nenhuma"
+            },
+            {
+              "label": "Sim, registrar custos os paga"
+            },
+            {
+              "label": "Sim, registrar cria dinheiro sobrando"
+            }
+          ],
+          "help": [
+            "Use o limite real sem inventar gastos."
+          ],
+          "feedback": {
+            "met": "A situação informada não tem outro corte opcional disponível.",
+            "not_yet": "Use o limite real sem inventar gastos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.10",
+      "copy": {
+        "en-US": {
+          "prompt": "How much remains uncovered?",
+          "scene": "Essential costs: 150; income: 130. No optional expenses remain.",
+          "options": [
+            {
+              "label": "20"
+            },
+            {
+              "label": "0"
+            },
+            {
+              "label": "280"
+            }
+          ],
+          "help": [
+            "Find the difference between essentials and income."
+          ],
+          "feedback": {
+            "met": "150 − 130 = 20 remains uncovered.",
+            "not_yet": "Find the difference between essentials and income."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto sigue sin cubrirse?",
+          "scene": "Costos esenciales: 150; ingreso: 130. No quedan gastos opcionales.",
+          "options": [
+            {
+              "label": "20"
+            },
+            {
+              "label": "0"
+            },
+            {
+              "label": "280"
+            }
+          ],
+          "help": [
+            "Encuentra la diferencia entre lo esencial y el ingreso."
+          ],
+          "feedback": {
+            "met": "150 − 130 = 20 sigue sin cubrirse.",
+            "not_yet": "Encuentra la diferencia entre lo esencial y el ingreso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto continua sem cobertura?",
+          "scene": "Custos essenciais: 150; renda: 130. Não restam gastos opcionais.",
+          "options": [
+            {
+              "label": "20"
+            },
+            {
+              "label": "0"
+            },
+            {
+              "label": "280"
+            }
+          ],
+          "help": [
+            "Encontre a diferença entre o essencial e a renda."
+          ],
+          "feedback": {
+            "met": "150 − 130 = 20 continua sem cobertura.",
+            "not_yet": "Encontre a diferença entre o essencial e a renda."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          150,
+          130
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Which next step helps?",
+          "scene": "Essential costs exceed income; available support and payment arrangements have not been checked.",
+          "options": [
+            {
+              "label": "Assume support is guaranteed"
+            },
+            {
+              "label": "Remove required medicine without review"
+            },
+            {
+              "label": "Verify support and available arrangements"
+            }
+          ],
+          "help": [
+            "Seek verified possibilities without treating them as confirmed funds."
+          ],
+          "feedback": {
+            "met": "Checking options does not guarantee eligibility or an agreement.",
+            "not_yet": "Seek verified possibilities without treating them as confirmed funds."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué paso obtiene información útil?",
+          "scene": "Lo esencial supera el ingreso; no se han revisado apoyos ni acuerdos de pago.",
+          "options": [
+            {
+              "label": "Suponer que el apoyo está garantizado"
+            },
+            {
+              "label": "Eliminar medicina necesaria sin revisar"
+            },
+            {
+              "label": "Verificar apoyos y acuerdos disponibles"
+            }
+          ],
+          "help": [
+            "Busca posibilidades verificadas sin contarlas como fondos confirmados."
+          ],
+          "feedback": {
+            "met": "Revisar opciones no garantiza elegibilidad ni un acuerdo.",
+            "not_yet": "Busca posibilidades verificadas sin contarlas como fondos confirmados."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual passo obtém informação útil?",
+          "scene": "O essencial supera a renda; apoios e acordos de pagamento não foram verificados.",
+          "options": [
+            {
+              "label": "Supor que o apoio é garantido"
+            },
+            {
+              "label": "Eliminar remédio necessário sem conferir"
+            },
+            {
+              "label": "Verificar apoios e acordos disponíveis"
+            }
+          ],
+          "help": [
+            "Busque possibilidades verificadas sem contá-las como recursos confirmados."
+          ],
+          "feedback": {
+            "met": "Conferir opções não garante elegibilidade nem um acordo.",
+            "not_yet": "Busque possibilidades verificadas sem contá-las como recursos confirmados."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.10",
+      "copy": {
+        "en-US": {
+          "prompt": "How to plan for it?",
+          "scene": "An extra shift might help; its hours and pay are unconfirmed.",
+          "options": [
+            {
+              "label": "As proof the shortfall never existed"
+            },
+            {
+              "label": "As a possibility to verify"
+            },
+            {
+              "label": "As money already available"
+            }
+          ],
+          "help": [
+            "Separate potential income from available income."
+          ],
+          "feedback": {
+            "met": "Unconfirmed income does not close today’s known shortfall.",
+            "not_yet": "Separate potential income from available income."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cómo debe tratarlo el plan actual?",
+          "scene": "Un turno extra podría ayudar, pero sus horas y pago no están confirmados.",
+          "options": [
+            {
+              "label": "Como prueba de que nunca faltó dinero"
+            },
+            {
+              "label": "Como posibilidad que verificar"
+            },
+            {
+              "label": "Como dinero ya disponible"
+            }
+          ],
+          "help": [
+            "Separa ingreso posible de ingreso disponible."
+          ],
+          "feedback": {
+            "met": "El ingreso sin confirmar no cierra el faltante conocido de hoy.",
+            "not_yet": "Separa ingreso posible de ingreso disponible."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Como o plano atual deve tratá-lo?",
+          "scene": "Um turno extra poderia ajudar, mas suas horas e pagamento não estão confirmados.",
+          "options": [
+            {
+              "label": "Como prova de que nunca faltou dinheiro"
+            },
+            {
+              "label": "Como possibilidade a verificar"
+            },
+            {
+              "label": "Como dinheiro já disponível"
+            }
+          ],
+          "help": [
+            "Separe renda possível de renda disponível."
+          ],
+          "feedback": {
+            "met": "Renda não confirmada não cobre a falta conhecida de hoje.",
+            "not_yet": "Separe renda possível de renda disponível."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.spending-patterns.10",
+      "copy": {
+        "en-US": {
+          "prompt": "What is shown?",
+          "scene": "Already short of money, necessary care costs rise; income stays unchanged and optional spending remains zero.",
+          "options": [
+            {
+              "label": "That the care need disappeared"
+            },
+            {
+              "label": "A larger shortfall"
+            },
+            {
+              "label": "Proof of unnecessary shopping"
+            }
+          ],
+          "help": [
+            "Trace the changed cost instead of blaming an unstated purchase."
+          ],
+          "feedback": {
+            "met": "Higher essentials can enlarge a gap without any optional purchases.",
+            "not_yet": "Trace the changed cost instead of blaming an unstated purchase."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué muestra este cambio?",
+          "scene": "Ya faltaba dinero. Sube un cuidado necesario; el ingreso no cambia y el gasto opcional sigue en cero.",
+          "options": [
+            {
+              "label": "Que desapareció la necesidad de cuidado"
+            },
+            {
+              "label": "Un faltante mayor que exige revisar opciones"
+            },
+            {
+              "label": "Prueba de compras innecesarias"
+            }
+          ],
+          "help": [
+            "Revisa el costo cambiado sin culpar una compra no indicada."
+          ],
+          "feedback": {
+            "met": "Lo esencial más caro puede ampliar el faltante sin compras opcionales.",
+            "not_yet": "Revisa el costo cambiado sin culpar una compra no indicada."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que essa mudança mostra?",
+          "scene": "Já faltava dinheiro. Um cuidado necessário encarece; a renda não muda e o gasto opcional continua zero.",
+          "options": [
+            {
+              "label": "Que a necessidade de cuidado desapareceu"
+            },
+            {
+              "label": "Uma falta maior que exige rever opções"
+            },
+            {
+              "label": "Prova de compras desnecessárias"
+            }
+          ],
+          "help": [
+            "Confira o custo alterado sem culpar uma compra não informada."
+          ],
+          "feedback": {
+            "met": "O essencial mais caro pode aumentar a falta sem compras opcionais.",
+            "not_yet": "Confira o custo alterado sem culpar uma compra não informada."
+          }
+        }
+      }
+    }
+  ]
+}

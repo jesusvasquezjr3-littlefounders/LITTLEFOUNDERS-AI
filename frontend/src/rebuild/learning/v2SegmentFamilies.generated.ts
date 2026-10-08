@@ -35,7 +35,7 @@ const option = z.object({ id, label: label(80) }).strict();
  *   answerless (it travels with the segment, never with the answer key):
  *   `v2FeedbackProblem` refuses a number the step does not already show.
  */
-export const v2SegmentFeedback = z.object({ met: label(160).optional(), not_yet: label(160).optional() }).strict()
+export const v2SegmentFeedback = z.object({ met: label(160).optional(), not_yet: label(160).optional(), choice_hints: z.record(id, label(160)).optional() }).strict()
   .refine((value) => value.met !== undefined || value.not_yet !== undefined, 'Feedback needs met or not_yet');
 export type V2SegmentFeedback = z.infer<typeof v2SegmentFeedback>;
 
@@ -904,7 +904,7 @@ function publicDigits(node: unknown, out: Set<string>): void {
 
 export function v2FeedbackProblems(document: {
   age_band: string;
-  segments: ReadonlyArray<{ id: string; grading: string; prompt?: string; payload?: unknown; help?: readonly string[]; feedback?: V2SegmentFeedback }>;
+  segments: ReadonlyArray<{ id: string; type?: string; grading: string; prompt?: string; payload?: unknown; help?: readonly string[]; feedback?: V2SegmentFeedback }>;
 }): string[] {
   const problems: string[] = [];
   for (const segment of document.segments) {
@@ -916,7 +916,16 @@ export function v2FeedbackProblems(document: {
     if (!feedback) continue;
     const shown = new Set<string>();
     publicDigits([segment.prompt, segment.payload, segment.help], shown);
-    for (const [field, text] of Object.entries(feedback)) {
+    if (feedback.choice_hints) {
+      if (!['story.branch.v2', 'story.dialogue-choice.v2', 'story.would-you-rather.v2', 'visual.chart.v2'].includes(segment.type ?? '')) problems.push(`${segment.id}: choice_hints are unsupported by this board`);
+      const payload = segment.payload as { options?: Array<{ id: string }>; replies?: Array<{ id: string }>; question?: { options?: Array<{ id: string }> } } | undefined;
+      const options = payload?.options ?? payload?.replies ?? payload?.question?.options;
+      const ids = Array.isArray(options) ? options.map(option => option.id) : [];
+      const hints = Object.keys(feedback.choice_hints);
+      if (!ids.length || hints.length !== ids.length || hints.some(key => !ids.includes(key))) problems.push(`${segment.id}: choice_hints must cover every visible choice and no other id`);
+    }
+    const lines: Array<[string, string | undefined]> = [['met', feedback.met], ['not_yet', feedback.not_yet], ...Object.entries(feedback.choice_hints ?? {}).map(([key, value]): [string, string] => [`choice_hints.${key}`, value])];
+    for (const [field, text] of lines) {
       const extra = (text ?? '').match(FEEDBACK_DIGITS)?.filter((run) => !/^0+$/.test(run) && !shown.has(run)) ?? [];
       if (extra.length) problems.push(`${segment.id}: feedback.${field} shows ${extra.join(', ')}, a number the step does not show (answerless feedback)`);
     }

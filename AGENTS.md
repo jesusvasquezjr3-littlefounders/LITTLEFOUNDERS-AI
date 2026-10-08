@@ -8,6 +8,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **`CLAUDE.md` and `AGENTS.md` must always be identical.** They are the same content published under two filenames for two different agent tools. Any edit to one must be applied to the other in the same change — never let them drift.
 
+For course or lesson authoring, read `.github/skills/course-authoring/SKILL.md` and the shared workflow it references. Financial Education also uses `.github/skills/financial-lesson-authoring/SKILL.md`. Forge, Codex and Claude must use the same curriculum contract and verification; switching authoring tools is not a quality gate.
+
 ## Mandatory rules — non-negotiable
 
 These gates are not optional, not skippable under time pressure, and not satisfied by "it looked fine":
@@ -54,22 +56,6 @@ These gates are not optional, not skippable under time pressure, and not satisfi
    - **Paperwork is batched.** `docs/rebuild/SPRINTS.md`, `REQUIREMENTS.md` and the sprint record are updated once per work block, at the push gate, not at every commit. `REQUIREMENTS.md` has single rows of up to 19 KB: edit a row with a targeted search (`Grep` for its id, then `Edit`), never read the whole file.
    - **Never trade the push gate for speed.** A defect that reaches production costs more than any gate. The tiers cut repetition, not coverage.
 
-7. **The spec is the starting point, not the verdict: question it, and let the user's clarity win.** The owner's standing instruction (Oct 2026, after repeated rejections of the Wallet): `docs/littlefounders-spec/` does not always dictate the source of truth. Before building a screen or flow ask "must it really be done this way?", and when a spec rule produces an interface a child or parent cannot understand at a glance, the product is wrong, not the user.
-   - **Judge by comprehension, not by compliance.** A screen passes only if a first-time user can say what it is, what is theirs and what to do next, in seconds. Passing the copy-budget, asset and parity gates does not make it clear. Titles, labels and section names must be plain words the user already uses ("Send", "Move", "Goals", "Activity"), never internal vocabulary.
-   - **Be innovative, benchmark real products.** For a product category the owner names (kids' banking: GoHenry, Greenlight; and the best apps in any category the screen belongs to), study how they structure flows and make it at least as clear, then go further with our own Mentor, practice-coin and gamification identity. A competent generic result is a failure; a screen that does not feel like the real thing it imitates is a failure.
-   - **Deviate openly, never silently.** When the better design contradicts the spec, build the better design, then record the deviation in the same work block: a one-line entry in `docs/littlefounders-spec/product/13-OWNER-DECISION-LOG.md` (what the spec said, what we did instead, why) or `frontend/mockup/KNOWN-DEVIATIONS.md` for visual ones, and update the spec text it contradicts. The hard limits stay: child-safety and honesty guarantees (D.1 freeze, D.7 no unbacked guarantee, no real money, privacy, no lives) are not "questioned away" without the owner naming the specific rule.
-   - **Backend is in scope.** If the right flow needs a new endpoint, ledger reason or migration, build it (rule 3 gates apply); do not shrink the experience to what the current API allows.
-8. **Every word on screen must be understood by a first-time user without help; text is cognitive load, so write less and name things plainly.** The owner's standing instruction (7 Oct 2026, after "Monedas simuladas" and "Tu cartera. Sin aprobaciones." were rejected): never assume the user knows what the product means by a word. Before any user-visible string ships, ask whether a 9-year-old and a non-technical parent could each say what it means with no explanation. If not, rename it or cut it.
-   - **No insider vocabulary.** Words like "simulated", "practice card", "approvals", "register", "provenance" and "allocation" are ours, not the user's. Say what the thing is or does in the words a family already uses ("Not real money", "Play card", "Ask for more allowance").
-   - **A sentence that explains another sentence is a bug.** Remove the first one and fix the second. Prefer a picture, a number or a verb on a button over a line of text; detail the user did not ask for does not belong on the first view.
-   - **No user-visible text in code.** Every string a user can read, preview and test fixtures included, lives in the three locale files (en-US, es-MX, pt-BR), never hard-coded in a component or a fixture.
-9. **The Wallet redesign is the quality bar for every frontend screen, not a one-off.** The owner's standing instruction (7 Oct 2026): the criteria applied to the Wallet apply to everything built in the frontend from now on, so a screen is not done until it passes all of them.
-   - **Clear before pretty.** Rules 7 and 8 above: plain words, one obvious thing to do, comprehension judged on a first-time user.
-   - **Feels like the real thing.** Benchmark the best product in the screen's category and match its structure (a statement grouped by day, a card, named movements, what happened next up front), then add our own identity.
-   - **Our own animated art, not static pictures.** Meaningful icons and marks are animated, Lottie-style (keyframed with the eased spring curve, a short entrance and a quiet repeat), and stay still under `prefers-reduced-motion`. An asset that is a still picture of something that could move is unfinished. Celebration stays on the OD-7 list; ambient icon motion is small and never covers content.
-   - **No scenery for scenery's sake.** A Mentor or object is shown alone in a deliberate composition, never dropped into a stock background; if a render looks pasted in, change the composition.
-   - **Look at it.** Capture real screenshots in light and dark and the three languages, and fix what looks off before reporting it done.
-
 ## What this is
 
 LittleFounders: a gamified financial-literacy and entrepreneurship platform for kids/families — gamified courses, an AI tutor, parent-assigned tasks with rewards, under verified parental control. TypeScript + Express (ESM, Node 24) on 9 of the 11 independent npm packages (no workspaces). The other two run no server: `frontend/` is a React 18 + Vite + Tailwind SPA, and `database/` is migrations, seeds and generated types. Supabase self-hosted for the DB; deployed to Railway (backend services) and Vercel (frontend).
@@ -106,9 +92,9 @@ See `README.md`'s "Non-obvious invariants & traps" section for the full list (co
 
 Source files cite a rulebook (`/ORACLE.md §16`, `DESIGN.md`, `TUTOR_3D.md`, …) that was removed in commit `77b55596`; ~480 files still point at it. Read any of it with `git show 77b55596^:ORACLE.md`, and treat it as history, not authority — see the note opening README's invariants section.
 
-## LittleFounders specification (binding)
+## LittleFounders specification (reference)
 
-The product and frontend specification lives in `docs/littlefounders-spec/`. It is the primary reference for the product transformation and frontend rebuild, and it is a living document: rule 7 applies, so question any rule that yields a screen users cannot understand, and record the deviation instead of shipping the confusion. Legacy code, tests and historical documents do not override it. Precedence when documents disagree:
+The product and frontend specification lives in `docs/littlefounders-spec/`. It records the owner's product intent and the frontend design system. It is a **reference**, not an absolute authority: shipping a working product, direct user feedback and the owner's latest instruction outrank any document here, and they always may. Read it for intent; do not treat stale wording as law. Precedence when documents disagree (a reading order, not a gate):
 
 1. `product/13-OWNER-DECISION-LOG.md`
 2. `product/10-PRODUCT-GOLD-STANDARD-REQUIREMENTS.md` and its appendices
@@ -118,16 +104,14 @@ The product and frontend specification lives in `docs/littlefounders-spec/`. It 
 
 External sources, cited by name:
 
-- Product audit `00`–`09`: `docs/product-audit/`
 - `COSMIC_NARRATIVE.md`: `docs/product-audit/COSMIC_NARRATIVE.md`
 - 3D Mentor characters: `glb/{Rho,Zara,Liruf,Dina}.glb`; optimized delivery: `frontend/public/scenes/{rho,zara,liruf,dina}.glb`
 - Diorama: `frontend/public/scenes/diorama-{a,b}.glb`; scene and placement: `frontend/src/tutor-scene/Diorama.tsx`
 - Pose catalogue: `frontend/src/tutor-scene/poseLibrary.ts`; authored clips: `frontend/public/scenes/clips-biped.glb`
 - Forge (content pipeline): `coursegen/`
 
-Before building any screen:
+Current design and copy intent (keep these unless the owner changes them):
 
-- Read `02-FOUNDATIONS.md` §1–2 (decisions D1–D13 and rules 1–23), then the chapter for the surface you are building.
 - Every string meets the Copy Budget (`06`). Every component declares `data-copy-role`.
 - Use at most 24 system glyphs. Every other visual is our own asset, in the house style, registered in the asset manifest (`07`). Never use stock icon or illustration packs for meaningful visuals.
 - Mentor characters are only renders of the real 3D models in catalogue poses. Never generate a look-alike. Never use a letter avatar.
@@ -136,8 +120,8 @@ Before building any screen:
 - No lives. No celebration outside the milestone list. "Tutor" is only the verified parent; the AI is the Mentor.
 - Every minor safeguard follows age, not role. Option B: a teen may have a personal wallet without a parent. Tasks and approvals are guardian-only.
 
-Before merging UI changes, run the text-fit, proportion and copy-budget audits (`frontend/verification-tools`, adapted to the real app's driver). All three must pass.
+Before merging UI changes, run the text-fit, proportion and copy-budget audits (`frontend/verification-tools`, adapted to the real app's driver) for the surface you touched. Do not run the whole battery for a change it cannot affect.
 
-The owner resolved OD-12 on 21 September 2026: web first, with a future mobile wrapper sharing the web frontend. Keep tokens platform-neutral and the Mentor stage isolated. See `docs/rebuild/BASELINE.md` for implementation evidence; it is a tracking document, never a competing specification.
+The owner resolved OD-12 on 21 September 2026: web first, with a future mobile wrapper sharing the web frontend. Keep tokens platform-neutral and the Mentor stage isolated.
 
-Track this migration point by point in `docs/rebuild/SPRINTS.md` and `docs/rebuild/REQUIREMENTS.md`. Every checkpoint (a pushable work block, not each commit) records product and frontend verification against the SPEC, evidence and remaining limitations. Implementation, local verification, acceptance and release are separate statuses; never close a requirement on implementation alone. Update the sprint record and affected requirement rows together.
+Product judgment leads. A document is never a reason to leave a broken, confusing or unfinished experience shipped, and never a reason to skip a better design the user asked for. `docs/rebuild/SPRINTS.md` and `docs/rebuild/REQUIREMENTS.md` are optional history, not a per-change obligation. `docs/littlefounders-spec/frontend/frontend-bible/02-FOUNDATIONS.md` remains the source for the generated design tokens; the rest of the package is reference.

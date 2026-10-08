@@ -1,0 +1,730 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-investment-comparison-part-1",
+  "lesson_id": "fe-production-investment-comparison-05",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.investment-comparison.05"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Distinguish an index-tracking strategy from a promise to beat the market.",
+  "title": {
+    "en-US": "Index Tracking",
+    "es-MX": "Seguir un índice no es prometer",
+    "pt-BR": "Seguir um índice não é prometer"
+  },
+  "new_concepts": [
+    "finance.prod.investment-comparison.05"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Index Tracking\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Seguir un índice no es prometer\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Seguir um índice não é prometer\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.investment-comparison.05",
+      "observable_action": "Distinguish an index-tracking strategy from a promise to beat the market.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.investing-foundations.10"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A strategy explains what a fund tries to follow; it does not promise to outperform or avoid losses.",
+    "misconception": "Index tracking promises to beat the index, avoid losses or match it exactly after costs.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.investment-comparison.05",
+        "context_id": "investment-comparison-05-example-01",
+        "supports_from": [],
+        "reasoning": "An index tracks a defined basket. An index fund aims to follow that basket, with fees and tracking differences possible."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.investment-comparison.05",
+        "context_id": "investment-comparison-05-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Tracking aims to follow, not promise superiority."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.investment-comparison.05",
+        "context_id": "investment-comparison-05-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Following a falling basket can include losses."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.investment-comparison.05",
+        "context_id": "investment-comparison-05-practice-01",
+        "supports_from": [],
+        "reasoning": "Fees can reduce the fund’s result relative to its index."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.investment-comparison.05",
+        "context_id": "investment-comparison-05-practice-02",
+        "supports_from": [],
+        "reasoning": "The selected index determines the exposure being followed."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.investment-comparison.05",
+        "context_id": "investment-comparison-05-practice-03",
+        "supports_from": [],
+        "reasoning": "Tracking alone cannot support a promise of always outperforming."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.investment-comparison.05",
+        "context_id": "investment-comparison-05-transfer-01",
+        "supports_from": [],
+        "reasoning": "The tracked baskets create different underlying exposures."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.investment-comparison.05",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A strategy explains what a fund tries to follow; it does not promise to outperform or avoid losses."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Una estrategia explica qué intenta seguir un fondo; no promete superar resultados ni evitar pérdidas."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Uma estratégia explica o que um fundo tenta seguir; não promete superar resultados nem evitar perdas."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "A reference basket",
+          "line": "An index tracks a defined basket. An index fund aims to follow that basket, with fees and tracking differences possible."
+        },
+        "es-MX": {
+          "prompt": "Una canasta de referencia",
+          "line": "Un índice sigue una canasta definida. Un fondo indexado intenta seguirla; puede haber comisiones y diferencias de seguimiento."
+        },
+        "pt-BR": {
+          "prompt": "Uma cesta de referência",
+          "line": "Um índice acompanha uma cesta definida. Um fundo de índice tenta segui-la; pode haver tarifas e diferenças de acompanhamento."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.05",
+      "copy": {
+        "en-US": {
+          "prompt": "What is the stated aim?",
+          "scene": "A fund says its strategy is to track a specified index.",
+          "options": [
+            {
+              "label": "Guarantee beating the index"
+            },
+            {
+              "label": "Guarantee no losses"
+            },
+            {
+              "label": "Follow that index’s performance"
+            }
+          ],
+          "help": [
+            "Read the strategy’s actual objective."
+          ],
+          "feedback": {
+            "met": "Tracking aims to follow, not promise superiority.",
+            "not_yet": "Read the strategy’s actual objective."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es el objetivo?",
+          "scene": "Un fondo dice que su estrategia sigue un índice específico.",
+          "options": [
+            {
+              "label": "Garantizar superarlo"
+            },
+            {
+              "label": "Garantizar cero pérdidas"
+            },
+            {
+              "label": "Seguir el rendimiento del índice"
+            }
+          ],
+          "help": [
+            "Lee el objetivo real de la estrategia."
+          ],
+          "feedback": {
+            "met": "Seguir busca aproximarse, no prometer superioridad.",
+            "not_yet": "Lee el objetivo real de la estrategia."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é a meta?",
+          "scene": "Um fundo diz que sua estratégia segue um índice específico.",
+          "options": [
+            {
+              "label": "Garantir superá-lo"
+            },
+            {
+              "label": "Garantir zero perdas"
+            },
+            {
+              "label": "Seguir o rendimento do índice"
+            }
+          ],
+          "help": [
+            "Leia a meta real da estratégia."
+          ],
+          "feedback": {
+            "met": "Seguir busca acompanhar, não prometer superar.",
+            "not_yet": "Leia a meta real da estratégia."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.05",
+      "copy": {
+        "en-US": {
+          "prompt": "What if the index falls?",
+          "scene": "The tracked basket loses market value during a downturn.",
+          "options": [
+            {
+              "label": "The fund can fall too"
+            },
+            {
+              "label": "Tracking prevents any decline"
+            }
+          ],
+          "help": [
+            "An index is not a loss-protection policy."
+          ],
+          "feedback": {
+            "met": "Following a falling basket can include losses.",
+            "not_yet": "An index is not a loss-protection policy."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Y si cae el índice?",
+          "scene": "La canasta seguida pierde valor de mercado durante una caída económica.",
+          "options": [
+            {
+              "label": "El fondo también puede caer"
+            },
+            {
+              "label": "Seguir impide cualquier caída"
+            }
+          ],
+          "help": [
+            "Un índice no es protección contra pérdidas."
+          ],
+          "feedback": {
+            "met": "Seguir una canasta que cae puede incluir pérdidas.",
+            "not_yet": "Un índice no es protección contra pérdidas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "E se o índice cair?",
+          "scene": "A cesta seguida perde valor de mercado durante uma crise.",
+          "options": [
+            {
+              "label": "O fundo também pode cair"
+            },
+            {
+              "label": "Seguir impede qualquer queda"
+            }
+          ],
+          "help": [
+            "Um índice não é proteção contra perdas."
+          ],
+          "feedback": {
+            "met": "Seguir uma cesta que cai pode incluir perdas.",
+            "not_yet": "Um índice não é proteção contra perdas."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Must results match exactly?",
+          "scene": "A fund follows an index but charges fees that the index calculation excludes.",
+          "options": [
+            {
+              "label": "No, fees can create a difference"
+            },
+            {
+              "label": "Yes, tracking erases fees"
+            }
+          ],
+          "help": [
+            "Compare the fund’s costs with the reference calculation."
+          ],
+          "feedback": {
+            "met": "Fees can reduce the fund’s result relative to its index.",
+            "not_yet": "Compare the fund’s costs with the reference calculation."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Deben coincidir exactamente?",
+          "scene": "Un fondo sigue un índice, pero cobra comisiones excluidas del cálculo del índice.",
+          "options": [
+            {
+              "label": "No, comisiones pueden crear diferencias"
+            },
+            {
+              "label": "Sí, seguir elimina comisiones"
+            }
+          ],
+          "help": [
+            "Compara costos del fondo con el cálculo de referencia."
+          ],
+          "feedback": {
+            "met": "Las comisiones pueden reducir el resultado frente al índice.",
+            "not_yet": "Compara costos del fondo con el cálculo de referencia."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Devem coincidir exatamente?",
+          "scene": "Um fundo segue um índice, mas cobra tarifas que o cálculo do índice não inclui.",
+          "options": [
+            {
+              "label": "Não, tarifas podem criar diferenças"
+            },
+            {
+              "label": "Sim, seguir apaga tarifas"
+            }
+          ],
+          "help": [
+            "Compare custos do fundo com o cálculo de referência."
+          ],
+          "feedback": {
+            "met": "Tarifas podem reduzir o resultado diante do índice.",
+            "not_yet": "Compare custos do fundo com o cálculo de referência."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Is every index broad?",
+          "scene": "A fund tracks an index containing only companies in one narrow industry.",
+          "options": [
+            {
+              "label": "Yes, index means all industries"
+            },
+            {
+              "label": "No, this index is concentrated"
+            }
+          ],
+          "help": [
+            "Inspect the basket before assuming diversification."
+          ],
+          "feedback": {
+            "met": "The selected index determines the exposure being followed.",
+            "not_yet": "Inspect the basket before assuming diversification."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Todo índice es amplio?",
+          "scene": "Un fondo sigue un índice formado solo por empresas de una industria específica.",
+          "options": [
+            {
+              "label": "Sí, índice significa todas las industrias"
+            },
+            {
+              "label": "No, este índice está concentrado"
+            }
+          ],
+          "help": [
+            "Inspecciona la canasta antes de suponer diversificación."
+          ],
+          "feedback": {
+            "met": "El índice elegido determina la exposición seguida.",
+            "not_yet": "Inspecciona la canasta antes de suponer diversificación."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Todo índice é amplo?",
+          "scene": "Um fundo segue um índice só com empresas de um setor específico.",
+          "options": [
+            {
+              "label": "Sim, índice significa todos os setores"
+            },
+            {
+              "label": "Não, esse índice é concentrado"
+            }
+          ],
+          "help": [
+            "Veja a cesta antes de supor variedade."
+          ],
+          "feedback": {
+            "met": "O índice escolhido define o risco seguido.",
+            "not_yet": "Veja a cesta antes de supor variedade."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Which claim exceeds the strategy?",
+          "scene": "An ad says its index fund follows a basket and therefore always beats that basket.",
+          "options": [
+            {
+              "label": "Following a stated basket"
+            },
+            {
+              "label": "Always beating the basket"
+            }
+          ],
+          "help": [
+            "Separate the strategy from the extra advertising promise."
+          ],
+          "feedback": {
+            "met": "Tracking alone cannot support a promise of always outperforming.",
+            "not_yet": "Separate the strategy from the extra advertising promise."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué afirmación excede la estrategia?",
+          "scene": "Un anuncio dice que su fondo sigue una canasta y por eso siempre la supera.",
+          "options": [
+            {
+              "label": "Seguir una canasta indicada"
+            },
+            {
+              "label": "Superar siempre la canasta"
+            }
+          ],
+          "help": [
+            "Distingue estrategia de promesa publicitaria adicional."
+          ],
+          "feedback": {
+            "met": "Seguir no respalda prometer que siempre superará resultados.",
+            "not_yet": "Distingue estrategia de promesa publicitaria adicional."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual afirmação excede a estratégia?",
+          "scene": "Um anúncio diz que seu fundo segue uma cesta e por isso sempre a supera.",
+          "options": [
+            {
+              "label": "Seguir uma cesta dada"
+            },
+            {
+              "label": "Sempre superar a cesta"
+            }
+          ],
+          "help": [
+            "Separe estratégia de promessa extra do anúncio."
+          ],
+          "feedback": {
+            "met": "Seguir não sustenta prometer que sempre superará resultados.",
+            "not_yet": "Separe estratégia de promessa extra do anúncio."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.investment-comparison.05",
+      "copy": {
+        "en-US": {
+          "prompt": "What needs checking?",
+          "scene": "Two index funds follow different baskets: local bonds and global shares.",
+          "options": [
+            {
+              "label": "Which prints index larger"
+            },
+            {
+              "label": "Which basket fits the goal"
+            },
+            {
+              "label": "Both must have equal risk"
+            }
+          ],
+          "help": [
+            "The common strategy label does not make holdings identical."
+          ],
+          "feedback": {
+            "met": "The tracked baskets create different underlying exposures.",
+            "not_yet": "The common strategy label does not make holdings identical."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debes aclarar?",
+          "scene": "Dos fondos indexados siguen canastas distintas: bonos locales y acciones mundiales.",
+          "options": [
+            {
+              "label": "Cuál escribe índice más grande"
+            },
+            {
+              "label": "Qué canasta coincide con la exposición buscada"
+            },
+            {
+              "label": "Ambos deben tener igual riesgo"
+            }
+          ],
+          "help": [
+            "Compartir estrategia no vuelve iguales sus inversiones."
+          ],
+          "feedback": {
+            "met": "Las canastas seguidas crean exposiciones subyacentes distintas.",
+            "not_yet": "Compartir estrategia no vuelve iguales sus inversiones."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que esclarecer?",
+          "scene": "Dois fundos de índice seguem cestas distintas: títulos locais e ações mundiais.",
+          "options": [
+            {
+              "label": "Qual escreve índice maior"
+            },
+            {
+              "label": "Qual cesta combina com o risco buscado"
+            },
+            {
+              "label": "Ambos devem ter risco igual"
+            }
+          ],
+          "help": [
+            "O nome comum da estratégia não torna os ativos iguais."
+          ],
+          "feedback": {
+            "met": "As cestas seguidas criam riscos subjacentes diferentes.",
+            "not_yet": "O nome comum da estratégia não torna os ativos iguais."
+          }
+        }
+      }
+    }
+  ]
+}

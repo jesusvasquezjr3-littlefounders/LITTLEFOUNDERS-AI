@@ -1,0 +1,842 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-financial-math-part-1",
+  "lesson_id": "fe-production-financial-math-05",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.financial-math.05"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Calculate the cost of several identical items by multiplication.",
+  "title": {
+    "en-US": "Equal groups",
+    "es-MX": "Grupos iguales",
+    "pt-BR": "Grupos iguais"
+  },
+  "new_concepts": [
+    "finance.prod.financial-math.05"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Equal groups\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Grupos iguales\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Grupos iguais\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.financial-math.05",
+      "observable_action": "Calculate the cost of several identical items by multiplication.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.financial-math.03"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Find a total when the same price repeats.",
+    "misconception": "Add the unit price to the quantity instead of multiplying.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.financial-math.05",
+        "context_id": "fe-production-financial-math-05-example-01",
+        "supports_from": [],
+        "reasoning": "Three tickets at 8 each cost 8 + 8 + 8 = 24. Multiplication writes the same repeated addition as 3 × 8."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.financial-math.05",
+        "context_id": "fe-production-financial-math-05-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Each item contributes the same price."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.financial-math.05",
+        "context_id": "fe-production-financial-math-05-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Two groups require two copies of the price."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.financial-math.05",
+        "context_id": "fe-production-financial-math-05-practice-01",
+        "supports_from": [],
+        "reasoning": "Five equal prices form the total."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.financial-math.05",
+        "context_id": "fe-production-financial-math-05-practice-02",
+        "supports_from": [],
+        "reasoning": "The quoted price already covers the whole box."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.financial-math.05",
+        "context_id": "fe-production-financial-math-05-practice-03",
+        "supports_from": [],
+        "reasoning": "Different prices must be added individually."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.financial-math.05",
+        "context_id": "fe-production-financial-math-05-transfer-01",
+        "supports_from": [],
+        "reasoning": "Only the repeated chair price contributes here."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.financial-math.05",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Find a total when the same price repeats."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Encuentra un total cuando se repite el mismo precio."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Encontre o total quando o mesmo preço se repete."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Count repeated prices",
+          "line": "Three tickets at 8 each cost 8 + 8 + 8 = 24. Multiplication writes the same repeated addition as 3 × 8."
+        },
+        "es-MX": {
+          "prompt": "Cuenta precios repetidos",
+          "line": "Tres boletos de 8 cuestan 8 + 8 + 8 = 24. Multiplicar expresa esa suma repetida como 3 × 8."
+        },
+        "pt-BR": {
+          "prompt": "Conte preços repetidos",
+          "line": "Três ingressos de 8 custam 8 + 8 + 8 = 24. Multiplicar expressa essa soma repetida como 3 × 8."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Total cost?",
+          "scene": "Buy 4 identical items at 6 each. Multiply quantity by unit price.",
+          "options": [
+            {
+              "label": "10"
+            },
+            {
+              "label": "24"
+            },
+            {
+              "label": "6"
+            }
+          ],
+          "help": [
+            "Repeat the price for every item."
+          ],
+          "feedback": {
+            "met": "Each item contributes the same price.",
+            "not_yet": "Repeat the price for every item."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Costo total?",
+          "scene": "Compra 4 artículos iguales de 6 cada uno. Multiplica cantidad por precio unitario.",
+          "options": [
+            {
+              "label": "10"
+            },
+            {
+              "label": "24"
+            },
+            {
+              "label": "6"
+            }
+          ],
+          "help": [
+            "Repite el precio por cada artículo."
+          ],
+          "feedback": {
+            "met": "Cada artículo aporta el mismo precio.",
+            "not_yet": "Repite el precio por cada artículo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Custo total?",
+          "scene": "Compre 4 itens iguais de 6 cada. Multiplique quantidade pelo preço unitário.",
+          "options": [
+            {
+              "label": "10"
+            },
+            {
+              "label": "24"
+            },
+            {
+              "label": "6"
+            }
+          ],
+          "help": [
+            "Repita o preço para cada item."
+          ],
+          "feedback": {
+            "met": "Cada item contribui com o mesmo preço.",
+            "not_yet": "Repita o preço para cada item."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          4,
+          6
+        ],
+        "expression": {
+          "op": "multiply",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Which calculation fits?",
+          "scene": "Two fares cost 9 each.",
+          "options": [
+            {
+              "label": "Divide nine by two"
+            },
+            {
+              "label": "Add nine twice"
+            },
+            {
+              "label": "Add two to nine"
+            }
+          ],
+          "help": [
+            "Quantity tells you how often the price repeats."
+          ],
+          "feedback": {
+            "met": "Two groups require two copies of the price.",
+            "not_yet": "Quantity tells you how often the price repeats."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué cálculo corresponde?",
+          "scene": "Dos pasajes cuestan 9 cada uno.",
+          "options": [
+            {
+              "label": "Divide nueve entre dos"
+            },
+            {
+              "label": "Suma nueve dos veces"
+            },
+            {
+              "label": "Suma dos a nueve"
+            }
+          ],
+          "help": [
+            "La cantidad indica cuántas veces se repite el precio."
+          ],
+          "feedback": {
+            "met": "Dos grupos requieren dos copias del precio.",
+            "not_yet": "La cantidad indica cuántas veces se repite el precio."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual cálculo corresponde?",
+          "scene": "Duas passagens custam 9 cada.",
+          "options": [
+            {
+              "label": "Divida nove por dois"
+            },
+            {
+              "label": "Some nove duas vezes"
+            },
+            {
+              "label": "Some dois a nove"
+            }
+          ],
+          "help": [
+            "A quantidade indica quantas vezes o preço se repete."
+          ],
+          "feedback": {
+            "met": "Dois grupos exigem duas cópias do preço.",
+            "not_yet": "A quantidade indica quantas vezes o preço se repete."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Total cost?",
+          "scene": "A refill costs 7; you buy 5.",
+          "options": [
+            {
+              "label": "12"
+            },
+            {
+              "label": "35"
+            },
+            {
+              "label": "7"
+            }
+          ],
+          "help": [
+            "Multiply price by quantity."
+          ],
+          "feedback": {
+            "met": "Five equal prices form the total.",
+            "not_yet": "Multiply price by quantity."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Costo total?",
+          "scene": "Una recarga cuesta 7; compras 5.",
+          "options": [
+            {
+              "label": "12"
+            },
+            {
+              "label": "35"
+            },
+            {
+              "label": "7"
+            }
+          ],
+          "help": [
+            "Multiplica precio por cantidad."
+          ],
+          "feedback": {
+            "met": "Cinco precios iguales forman el total.",
+            "not_yet": "Multiplica precio por cantidad."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Custo total?",
+          "scene": "Uma recarga custa 7; compra 5.",
+          "options": [
+            {
+              "label": "12"
+            },
+            {
+              "label": "35"
+            },
+            {
+              "label": "7"
+            }
+          ],
+          "help": [
+            "Multiplique preço por quantidade."
+          ],
+          "feedback": {
+            "met": "Cinco preços iguais formam o total.",
+            "not_yet": "Multiplique preço por quantidade."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          7,
+          5
+        ],
+        "expression": {
+          "op": "multiply",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.05",
+      "copy": {
+        "en-US": {
+          "prompt": "What does one box cost?",
+          "scene": "A box contains 6 items. Its stated price is 30 per box.",
+          "options": [
+            {
+              "label": "36"
+            },
+            {
+              "label": "180"
+            },
+            {
+              "label": "30"
+            }
+          ],
+          "help": [
+            "Check what unit the price describes."
+          ],
+          "feedback": {
+            "met": "The quoted price already covers the whole box.",
+            "not_yet": "Check what unit the price describes."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto cuesta una caja?",
+          "scene": "Una caja contiene 6 artículos. Su precio es 30 por caja.",
+          "options": [
+            {
+              "label": "36"
+            },
+            {
+              "label": "180"
+            },
+            {
+              "label": "30"
+            }
+          ],
+          "help": [
+            "Revisa qué unidad describe el precio."
+          ],
+          "feedback": {
+            "met": "El precio indicado ya cubre la caja completa.",
+            "not_yet": "Revisa qué unidad describe el precio."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto custa uma caixa?",
+          "scene": "Uma caixa contém 6 itens. Seu preço é 30 por caixa.",
+          "options": [
+            {
+              "label": "36"
+            },
+            {
+              "label": "180"
+            },
+            {
+              "label": "30"
+            }
+          ],
+          "help": [
+            "Confira qual unidade o preço descreve."
+          ],
+          "feedback": {
+            "met": "O preço informado já cobre a caixa inteira.",
+            "not_yet": "Confira qual unidade o preço descreve."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          6,
+          30
+        ],
+        "expression": {
+          "input": 1
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Which method fits?",
+          "scene": "One item costs 5; another different item costs 8.",
+          "options": [
+            {
+              "label": "Multiply five by eight"
+            },
+            {
+              "label": "Use either price twice"
+            },
+            {
+              "label": "Add the different prices"
+            }
+          ],
+          "help": [
+            "Equal-price multiplication needs equal prices."
+          ],
+          "feedback": {
+            "met": "Different prices must be added individually.",
+            "not_yet": "Equal-price multiplication needs equal prices."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué método corresponde?",
+          "scene": "Un artículo cuesta 5; otro diferente cuesta 8.",
+          "options": [
+            {
+              "label": "Multiplica cinco por ocho"
+            },
+            {
+              "label": "Repite cualquier precio dos veces"
+            },
+            {
+              "label": "Suma los precios distintos"
+            }
+          ],
+          "help": [
+            "Multiplicar precios iguales exige precios iguales."
+          ],
+          "feedback": {
+            "met": "Los precios distintos se suman individualmente.",
+            "not_yet": "Multiplicar precios iguales exige precios iguales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual método corresponde?",
+          "scene": "Um item custa 5; outro diferente custa 8.",
+          "options": [
+            {
+              "label": "Multiplique cinco por oito"
+            },
+            {
+              "label": "Repita qualquer preço duas vezes"
+            },
+            {
+              "label": "Some os preços diferentes"
+            }
+          ],
+          "help": [
+            "Multiplicar preços iguais exige preços iguais."
+          ],
+          "feedback": {
+            "met": "Os preços diferentes são somados individualmente.",
+            "not_yet": "Multiplicar preços iguais exige preços iguais."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.financial-math.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Rental total?",
+          "scene": "A shared event needs 8 chairs rented at 12 each. Delivery is free.",
+          "options": [
+            {
+              "label": "96"
+            },
+            {
+              "label": "12"
+            },
+            {
+              "label": "20"
+            }
+          ],
+          "help": [
+            "Count every chair at the stated price."
+          ],
+          "feedback": {
+            "met": "Only the repeated chair price contributes here.",
+            "not_yet": "Count every chair at the stated price."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Total de renta?",
+          "scene": "Un evento necesita 8 sillas rentadas a 12 cada una. La entrega es gratis.",
+          "options": [
+            {
+              "label": "96"
+            },
+            {
+              "label": "12"
+            },
+            {
+              "label": "20"
+            }
+          ],
+          "help": [
+            "Cuenta cada silla al precio indicado."
+          ],
+          "feedback": {
+            "met": "Aquí solo contribuye el precio repetido de las sillas.",
+            "not_yet": "Cuenta cada silla al precio indicado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Total do aluguel?",
+          "scene": "Um evento precisa de 8 cadeiras alugadas a 12 cada. A entrega é grátis.",
+          "options": [
+            {
+              "label": "96"
+            },
+            {
+              "label": "12"
+            },
+            {
+              "label": "20"
+            }
+          ],
+          "help": [
+            "Conte cada cadeira pelo preço informado."
+          ],
+          "feedback": {
+            "met": "Aqui só contribui o preço repetido das cadeiras.",
+            "not_yet": "Conte cada cadeira pelo preço informado."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          8,
+          12
+        ],
+        "expression": {
+          "op": "multiply",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

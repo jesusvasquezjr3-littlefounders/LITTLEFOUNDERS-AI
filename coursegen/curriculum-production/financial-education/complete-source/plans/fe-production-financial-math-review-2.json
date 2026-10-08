@@ -1,0 +1,1092 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-financial-math-part-3",
+  "lesson_id": "fe-production-financial-math-review-2",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.cash.balance",
+    "finance.price.percent",
+    "finance.prod.financial-math.09",
+    "finance.prod.financial-math.10",
+    "finance.prod.financial-math.11",
+    "finance.prod.financial-math.12",
+    "finance.prod.financial-math.13"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Apply the previously taught financial relationships to the visible constraints of a new situation.",
+  "title": {
+    "en-US": "Project estimates",
+    "es-MX": "Revisa un presupuesto de proyecto",
+    "pt-BR": "Confira uma estimativa de projeto"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Check a project estimate\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Revisa un presupuesto de proyecto\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Confira uma estimativa de projeto\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "consolidate",
+    "objective": {
+      "skill_id": "cash.balance",
+      "observable_action": "Apply the previously taught financial relationships to the visible constraints of a new situation.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "cash.direction",
+      "cash.received"
+    ],
+    "retrieval_skills": [
+      "price.percent",
+      "prod.financial-math.09",
+      "prod.financial-math.10",
+      "prod.financial-math.11",
+      "prod.financial-math.12",
+      "prod.financial-math.13",
+      "cash.balance"
+    ],
+    "relevance": "Combine shares, time periods and arithmetic checks in a new project.",
+    "misconception": "Reuse an earlier answer without checking the current quantities, units and conditions.",
+    "numeracy_support": "All required quantities remain on the current board.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "price.percent",
+        "context_id": "fe-production-financial-math-review-2-practice-01",
+        "supports_from": [],
+        "reasoning": "The reserved amount is a share of the whole budget."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.financial-math.09",
+        "context_id": "fe-production-financial-math-review-2-practice-02",
+        "supports_from": [],
+        "reasoning": "Recover the whole from the deposit’s stated share."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.financial-math.10",
+        "context_id": "fe-production-financial-math-review-2-practice-03",
+        "supports_from": [],
+        "reasoning": "Subtracting rates gives a percentage-point difference."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.financial-math.11",
+        "context_id": "fe-production-financial-math-review-2-practice-04",
+        "supports_from": [],
+        "reasoning": "Every covered month contributes one monthly charge."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.financial-math.12",
+        "context_id": "fe-production-financial-math-review-2-practice-05",
+        "supports_from": [],
+        "reasoning": "The rounded shares sum to one cent above the total."
+      },
+      {
+        "segment_id": "practice-06",
+        "skill_id": "prod.financial-math.13",
+        "context_id": "fe-production-financial-math-review-2-practice-06",
+        "supports_from": [],
+        "reasoning": "The displayed result has the wrong approximate scale."
+      },
+      {
+        "segment_id": "practice-07",
+        "skill_id": "cash.balance",
+        "context_id": "fe-production-financial-math-review-2-practice-07",
+        "supports_from": [],
+        "reasoning": "The completed receipt increases the balance."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "cash.balance",
+        "context_id": "fe-production-financial-math-review-2-transfer-01",
+        "supports_from": [],
+        "reasoning": "A refund enters; the fee leaves the project’s money."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "cash.balance",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Combine shares, time periods and arithmetic checks in a new project."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Combina proporciones, periodos y comprobaciones en un proyecto nuevo."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Combine proporções, períodos e conferências num projeto novo."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.price.percent",
+      "copy": {
+        "en-US": {
+          "prompt": "Delivery reserve?",
+          "scene": "A project reserves 15% of its 200 budget for delivery.",
+          "options": [
+            {
+              "label": "15"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "185"
+            }
+          ],
+          "help": [
+            "Use the stated budget as the base."
+          ],
+          "feedback": {
+            "met": "The reserved amount is a share of the whole budget.",
+            "not_yet": "Use the stated budget as the base."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Reserva de entrega?",
+          "scene": "Un proyecto reserva 15% de su presupuesto de 200 para entrega.",
+          "options": [
+            {
+              "label": "15"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "185"
+            }
+          ],
+          "help": [
+            "Usa el presupuesto indicado como base."
+          ],
+          "feedback": {
+            "met": "La reserva es una parte del presupuesto completo.",
+            "not_yet": "Usa el presupuesto indicado como base."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Reserva da entrega?",
+          "scene": "Um projeto reserva 15% do orçamento de 200 para entrega.",
+          "options": [
+            {
+              "label": "15"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "185"
+            }
+          ],
+          "help": [
+            "Use o orçamento informado como base."
+          ],
+          "feedback": {
+            "met": "A reserva é uma parte do orçamento inteiro.",
+            "not_yet": "Use o orçamento informado como base."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          15,
+          200
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "constant": 100
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.09",
+      "copy": {
+        "en-US": {
+          "prompt": "Full rental price?",
+          "scene": "A deposit of 24 covers 40% of a rental.",
+          "options": [
+            {
+              "label": "9.6"
+            },
+            {
+              "label": "60"
+            },
+            {
+              "label": "64"
+            }
+          ],
+          "help": [
+            "The deposit is not the whole rental cost."
+          ],
+          "feedback": {
+            "met": "Recover the whole from the deposit’s stated share.",
+            "not_yet": "The deposit is not the whole rental cost."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Precio completo de renta?",
+          "scene": "Un depósito de 24 cubre 40% de una renta.",
+          "options": [
+            {
+              "label": "9.6"
+            },
+            {
+              "label": "60"
+            },
+            {
+              "label": "64"
+            }
+          ],
+          "help": [
+            "El depósito no es el costo completo de renta."
+          ],
+          "feedback": {
+            "met": "Recupera el total a partir de la parte del depósito.",
+            "not_yet": "El depósito no es el costo completo de renta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Preço completo do aluguel?",
+          "scene": "Um sinal de 24 cobre 40% de um aluguel.",
+          "options": [
+            {
+              "label": "9,6"
+            },
+            {
+              "label": "60"
+            },
+            {
+              "label": "64"
+            }
+          ],
+          "help": [
+            "O sinal não é o custo inteiro do aluguel."
+          ],
+          "feedback": {
+            "met": "Recupere o total a partir da parte do sinal.",
+            "not_yet": "O sinal não é o custo inteiro do aluguel."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          24,
+          40
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "constant": 100
+                }
+              ]
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Direct difference in percentage points?",
+          "scene": "A project’s delivery share rises from 10% to 12%.",
+          "options": [
+            {
+              "label": "2"
+            },
+            {
+              "label": "20"
+            },
+            {
+              "label": "12"
+            }
+          ],
+          "help": [
+            "Use the requested comparison unit."
+          ],
+          "feedback": {
+            "met": "Subtracting rates gives a percentage-point difference.",
+            "not_yet": "Use the requested comparison unit."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Diferencia directa en puntos porcentuales?",
+          "scene": "La proporción de entrega de un proyecto sube de 10% a 12%.",
+          "options": [
+            {
+              "label": "2"
+            },
+            {
+              "label": "20"
+            },
+            {
+              "label": "12"
+            }
+          ],
+          "help": [
+            "Usa la unidad de comparación pedida."
+          ],
+          "feedback": {
+            "met": "Restar tasas da una diferencia en puntos porcentuales.",
+            "not_yet": "Usa la unidad de comparación pedida."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Diferença direta em pontos percentuais?",
+          "scene": "A proporção de entrega de um projeto sobe de 10% para 12%.",
+          "options": [
+            {
+              "label": "2"
+            },
+            {
+              "label": "20"
+            },
+            {
+              "label": "12"
+            }
+          ],
+          "help": [
+            "Use a unidade de comparação pedida."
+          ],
+          "feedback": {
+            "met": "Subtrair taxas dá uma diferença em pontos percentuais.",
+            "not_yet": "Use a unidade de comparação pedida."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          10,
+          12
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 1
+            },
+            {
+              "input": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.11",
+      "copy": {
+        "en-US": {
+          "prompt": "Storage total?",
+          "scene": "Storage costs 18 monthly; the project lasts 5 months.",
+          "options": [
+            {
+              "label": "23"
+            },
+            {
+              "label": "18"
+            },
+            {
+              "label": "90"
+            }
+          ],
+          "help": [
+            "Match the cost to the full project period."
+          ],
+          "feedback": {
+            "met": "Every covered month contributes one monthly charge.",
+            "not_yet": "Match the cost to the full project period."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Total de almacenamiento?",
+          "scene": "Almacenar cuesta 18 mensuales; el proyecto dura 5 meses.",
+          "options": [
+            {
+              "label": "23"
+            },
+            {
+              "label": "18"
+            },
+            {
+              "label": "90"
+            }
+          ],
+          "help": [
+            "Iguala el costo al periodo completo del proyecto."
+          ],
+          "feedback": {
+            "met": "Cada mes cubierto aporta un cargo mensual.",
+            "not_yet": "Iguala el costo al periodo completo del proyecto."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Total de armazenamento?",
+          "scene": "Armazenar custa 18 mensais; o projeto dura 5 meses.",
+          "options": [
+            {
+              "label": "23"
+            },
+            {
+              "label": "18"
+            },
+            {
+              "label": "90"
+            }
+          ],
+          "help": [
+            "Iguale o custo ao período inteiro do projeto."
+          ],
+          "feedback": {
+            "met": "Cada mês coberto contribui com uma cobrança mensal.",
+            "not_yet": "Iguale o custo ao período inteiro do projeto."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          18,
+          5
+        ],
+        "expression": {
+          "op": "multiply",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.12",
+      "copy": {
+        "en-US": {
+          "prompt": "What must be resolved?",
+          "scene": "A project splits 20 equally three ways. Each rounded share is 6.67.",
+          "options": [
+            {
+              "label": "The extra collected cent"
+            },
+            {
+              "label": "Nothing, rounding is exact"
+            },
+            {
+              "label": "A missing whole payment"
+            }
+          ],
+          "help": [
+            "Recombine rounded shares and compare with the bill."
+          ],
+          "feedback": {
+            "met": "The rounded shares sum to one cent above the total.",
+            "not_yet": "Recombine rounded shares and compare with the bill."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debes resolver?",
+          "scene": "Un proyecto reparte 20 entre tres por igual. Cada parte redondeada es 6.67.",
+          "options": [
+            {
+              "label": "El centavo cobrado de más"
+            },
+            {
+              "label": "Nada, el redondeo es exacto"
+            },
+            {
+              "label": "Un pago completo faltante"
+            }
+          ],
+          "help": [
+            "Reúne partes redondeadas y compara con la cuenta."
+          ],
+          "feedback": {
+            "met": "Las partes redondeadas suman un centavo sobre el total.",
+            "not_yet": "Reúne partes redondeadas y compara con la cuenta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que precisa resolver?",
+          "scene": "Um projeto divide 20 entre três igualmente. Cada parte arredondada é 6,67.",
+          "options": [
+            {
+              "label": "O centavo cobrado a mais"
+            },
+            {
+              "label": "Nada, arredondar é exato"
+            },
+            {
+              "label": "Um pagamento inteiro faltante"
+            }
+          ],
+          "help": [
+            "Reúna partes arredondadas e compare com a conta."
+          ],
+          "feedback": {
+            "met": "As partes arredondadas somam um centavo acima do total.",
+            "not_yet": "Reúna partes arredondadas e compare com a conta."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.13",
+      "copy": {
+        "en-US": {
+          "prompt": "Best next step?",
+          "scene": "Five supplies cost just over 20 each. A calculator gives 1,020.",
+          "options": [
+            {
+              "label": "Assume all prices multiplied by ten"
+            },
+            {
+              "label": "Trust the displayed total"
+            },
+            {
+              "label": "Check input against a rough hundred"
+            }
+          ],
+          "help": [
+            "Estimate from the item count and approximate unit price."
+          ],
+          "feedback": {
+            "met": "The displayed result has the wrong approximate scale.",
+            "not_yet": "Estimate from the item count and approximate unit price."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Mejor paso siguiente?",
+          "scene": "Cinco insumos cuestan poco más de 20 cada uno. Una calculadora da 1,020.",
+          "options": [
+            {
+              "label": "Supón que todos los precios subieron diez veces"
+            },
+            {
+              "label": "Confía en el total mostrado"
+            },
+            {
+              "label": "Revisa datos contra una estimación de cien"
+            }
+          ],
+          "help": [
+            "Estima con cantidad y precio unitario aproximado."
+          ],
+          "feedback": {
+            "met": "El resultado mostrado tiene una magnitud aproximada incorrecta.",
+            "not_yet": "Estima con cantidad y precio unitario aproximado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Melhor próximo passo?",
+          "scene": "Cinco materiais custam pouco mais de 20 cada. Uma calculadora dá 1.020.",
+          "options": [
+            {
+              "label": "Suponha que os preços aumentaram dez vezes"
+            },
+            {
+              "label": "Confie no total mostrado"
+            },
+            {
+              "label": "Confira dados com uma estimativa de cem"
+            }
+          ],
+          "help": [
+            "Estime com quantidade e preço unitário aproximado."
+          ],
+          "feedback": {
+            "met": "O resultado mostrado tem uma ordem aproximada incorreta.",
+            "not_yet": "Estime com quantidade e preço unitário aproximado."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-07",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.cash.balance",
+      "copy": {
+        "en-US": {
+          "prompt": "Updated balance?",
+          "scene": "A project has 55 and receives a completed contribution of 35.",
+          "options": [
+            {
+              "label": "20"
+            },
+            {
+              "label": "90"
+            },
+            {
+              "label": "55"
+            }
+          ],
+          "help": [
+            "Add the received contribution once."
+          ],
+          "feedback": {
+            "met": "The completed receipt increases the balance.",
+            "not_yet": "Add the received contribution once."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Saldo actualizado?",
+          "scene": "Un proyecto tiene 55 y recibe una aportación realizada de 35.",
+          "options": [
+            {
+              "label": "20"
+            },
+            {
+              "label": "90"
+            },
+            {
+              "label": "55"
+            }
+          ],
+          "help": [
+            "Suma la aportación recibida una vez."
+          ],
+          "feedback": {
+            "met": "La entrada realizada aumenta el saldo.",
+            "not_yet": "Suma la aportación recibida una vez."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Saldo atualizado?",
+          "scene": "Um projeto tem 55 e recebe uma contribuição concluída de 35.",
+          "options": [
+            {
+              "label": "20"
+            },
+            {
+              "label": "90"
+            },
+            {
+              "label": "55"
+            }
+          ],
+          "help": [
+            "Some a contribuição recebida uma vez."
+          ],
+          "feedback": {
+            "met": "A entrada concluída aumenta o saldo.",
+            "not_yet": "Some a contribuição recebida uma vez."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          55,
+          35
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.cash.balance",
+      "copy": {
+        "en-US": {
+          "prompt": "Final balance?",
+          "scene": "The project holds 110, receives a 30 refund, and pays a 45 fee.",
+          "options": [
+            {
+              "label": "95"
+            },
+            {
+              "label": "185"
+            },
+            {
+              "label": "65"
+            }
+          ],
+          "help": [
+            "Track the direction of each completed movement."
+          ],
+          "feedback": {
+            "met": "A refund enters; the fee leaves the project’s money.",
+            "not_yet": "Track the direction of each completed movement."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Saldo final?",
+          "scene": "El proyecto tiene 110, recibe una devolución de 30 y paga un cargo de 45.",
+          "options": [
+            {
+              "label": "95"
+            },
+            {
+              "label": "185"
+            },
+            {
+              "label": "65"
+            }
+          ],
+          "help": [
+            "Sigue la dirección de cada movimiento realizado."
+          ],
+          "feedback": {
+            "met": "La devolución entra; el cargo sale del dinero del proyecto.",
+            "not_yet": "Sigue la dirección de cada movimiento realizado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Saldo final?",
+          "scene": "O projeto tem 110, recebe um reembolso de 30 e paga uma tarifa de 45.",
+          "options": [
+            {
+              "label": "95"
+            },
+            {
+              "label": "185"
+            },
+            {
+              "label": "65"
+            }
+          ],
+          "help": [
+            "Acompanhe a direção de cada movimento concluído."
+          ],
+          "feedback": {
+            "met": "O reembolso entra; a tarifa sai do dinheiro do projeto.",
+            "not_yet": "Acompanhe a direção de cada movimento concluído."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          110,
+          30,
+          45
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "add",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

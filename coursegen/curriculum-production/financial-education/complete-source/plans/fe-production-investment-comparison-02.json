@@ -1,0 +1,743 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-investment-comparison-part-1",
+  "lesson_id": "fe-production-investment-comparison-02",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.investment-comparison.02"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Compare reported performance over the same period and with consistent treatment of distributions.",
+  "title": {
+    "en-US": "Comparable Returns",
+    "es-MX": "Compara el mismo rendimiento",
+    "pt-BR": "Compare o mesmo rendimento"
+  },
+  "new_concepts": [
+    "finance.prod.investment-comparison.02"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Comparable Returns\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Compara el mismo rendimiento\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Compare o mesmo rendimento\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.investment-comparison.02",
+      "observable_action": "Compare reported performance over the same period and with consistent treatment of distributions.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.time-inflation.05",
+      "prod.financial-math.11"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Two attractive percentages may describe different periods or leave out different payments.",
+    "misconception": "Any pair of reported percentages can be ranked without checking dates and distributions.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.investment-comparison.02",
+        "context_id": "investment-comparison-02-example-01",
+        "supports_from": [],
+        "reasoning": "One report includes cash payouts; another reports price change alone. Compare the same period and include payouts consistently."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.investment-comparison.02",
+        "context_id": "investment-comparison-02-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Different periods do not provide the same return comparison."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.investment-comparison.02",
+        "context_id": "investment-comparison-02-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Including payouts in only one report distorts the comparison."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.investment-comparison.02",
+        "context_id": "investment-comparison-02-practice-01",
+        "supports_from": [],
+        "reasoning": "Different fee treatment still makes the reported results unequal."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.investment-comparison.02",
+        "context_id": "investment-comparison-02-practice-02",
+        "supports_from": [],
+        "reasoning": "The first pair answers the same period-and-component question."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.investment-comparison.02",
+        "context_id": "investment-comparison-02-practice-03",
+        "supports_from": [],
+        "reasoning": "Reinvestment assumptions can change the reported growth."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.investment-comparison.02",
+        "context_id": "investment-comparison-02-transfer-01",
+        "supports_from": [],
+        "reasoning": "The two reports include different components of investment return."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.investment-comparison.02",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Two attractive percentages may describe different periods or leave out different payments."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Dos porcentajes atractivos pueden describir periodos distintos u omitir pagos diferentes."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Dois percentuais atraentes podem descrever períodos distintos ou deixar pagamentos diferentes de fora."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Align the comparison",
+          "line": "One report includes cash payouts; another reports price change alone. Compare the same period and include payouts consistently."
+        },
+        "es-MX": {
+          "prompt": "Alinea la comparación",
+          "line": "Un reporte incluye pagos en efectivo; otro solo cambios de precio. Compara el mismo periodo y trata igual los pagos."
+        },
+        "pt-BR": {
+          "prompt": "Alinhe a comparação",
+          "line": "Um relatório inclui pagamentos; outro mostra só mudança no preço. Compare o mesmo período e trate os pagamentos igualmente."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What must match?",
+          "scene": "A return covers one month; another covers one year. Someone ranks the percentages directly.",
+          "options": [
+            {
+              "label": "Only the larger printed number"
+            },
+            {
+              "label": "The comparison period"
+            }
+          ],
+          "help": [
+            "Align the start and end dates."
+          ],
+          "feedback": {
+            "met": "Different periods do not provide the same return comparison.",
+            "not_yet": "Align the start and end dates."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe coincidir?",
+          "scene": "Un rendimiento cubre un mes; otro, un año. Comparan directamente los porcentajes.",
+          "options": [
+            {
+              "label": "Solo el número mayor"
+            },
+            {
+              "label": "El periodo comparado"
+            }
+          ],
+          "help": [
+            "Alinea las fechas de inicio y fin."
+          ],
+          "feedback": {
+            "met": "Periodos distintos no ofrecen la misma comparación de rendimiento.",
+            "not_yet": "Alinea las fechas de inicio y fin."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que deve coincidir?",
+          "scene": "Um rendimento cobre um mês; outro, um ano. Comparam os percentuais diretamente.",
+          "options": [
+            {
+              "label": "Só o número maior"
+            },
+            {
+              "label": "O período comparado"
+            }
+          ],
+          "help": [
+            "Alinhe as datas de início e fim."
+          ],
+          "feedback": {
+            "met": "Períodos distintos não oferecem a mesma comparação de rendimento.",
+            "not_yet": "Alinhe as datas de início e fim."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What is inconsistent?",
+          "scene": "Both reports cover the same dates. Only one includes dividends paid during that period.",
+          "options": [
+            {
+              "label": "Treatment of distributions"
+            },
+            {
+              "label": "The matching dates"
+            },
+            {
+              "label": "Their starting balances"
+            }
+          ],
+          "help": [
+            "Count the same return components on both sides."
+          ],
+          "feedback": {
+            "met": "Including payouts in only one report distorts the comparison.",
+            "not_yet": "Count the same return components on both sides."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué es inconsistente?",
+          "scene": "Ambos reportes cubren iguales fechas. Solo uno incluye dividendos pagados durante ese periodo.",
+          "options": [
+            {
+              "label": "El tratamiento de pagos"
+            },
+            {
+              "label": "Las fechas coincidentes"
+            },
+            {
+              "label": "Sus saldos iniciales"
+            }
+          ],
+          "help": [
+            "Cuenta los mismos componentes en ambos lados."
+          ],
+          "feedback": {
+            "met": "Incluir pagos solo en un reporte distorsiona la comparación.",
+            "not_yet": "Cuenta los mismos componentes en ambos lados."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que está desigual?",
+          "scene": "Os dois relatórios cobrem as mesmas datas. Só um inclui dividendos pagos no período.",
+          "options": [
+            {
+              "label": "O tratamento dos pagamentos"
+            },
+            {
+              "label": "As datas iguais"
+            },
+            {
+              "label": "Seus saldos iniciais"
+            }
+          ],
+          "help": [
+            "Conte as mesmas partes dos ganhos nos dois lados."
+          ],
+          "feedback": {
+            "met": "Incluir pagamentos só num relatório distorce a comparação.",
+            "not_yet": "Conte as mesmas partes dos ganhos nos dois lados."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Can these be ranked fairly?",
+          "scene": "Two reports share dates and both include distributions, but only one deducts fees.",
+          "options": [
+            {
+              "label": "Yes, matching dates settle everything"
+            },
+            {
+              "label": "Not until costs are treated consistently"
+            }
+          ],
+          "help": [
+            "Align components as well as time."
+          ],
+          "feedback": {
+            "met": "Different fee treatment still makes the reported results unequal.",
+            "not_yet": "Align components as well as time."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Puedes ordenarlos justamente?",
+          "scene": "Dos reportes coinciden en fechas y pagos, pero solo uno descuenta comisiones.",
+          "options": [
+            {
+              "label": "Sí, bastan fechas iguales"
+            },
+            {
+              "label": "No, falta igualar el tratamiento de costos"
+            }
+          ],
+          "help": [
+            "Alinea componentes además del tiempo."
+          ],
+          "feedback": {
+            "met": "Tratar distinto las comisiones mantiene resultados no comparables.",
+            "not_yet": "Alinea componentes además del tiempo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Pode comparar de forma justa?",
+          "scene": "Dois relatórios têm datas e pagamentos iguais, mas só um desconta tarifas.",
+          "options": [
+            {
+              "label": "Sim, datas iguais bastam"
+            },
+            {
+              "label": "Não, falta tratar custos do mesmo modo"
+            }
+          ],
+          "help": [
+            "Alinhe as partes além do tempo."
+          ],
+          "feedback": {
+            "met": "Tratar tarifas de modo distinto mantém resultados não comparáveis.",
+            "not_yet": "Alinhe as partes além do tempo."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Which comparison fits?",
+          "scene": "A learner wants the result for the last calendar year, including cash payouts.",
+          "options": [
+            {
+              "label": "Both reports for that year with payouts"
+            },
+            {
+              "label": "One lifetime chart and one yearly price change"
+            }
+          ],
+          "help": [
+            "Use the question’s exact period and included payments."
+          ],
+          "feedback": {
+            "met": "The first pair answers the same period-and-component question.",
+            "not_yet": "Use the question’s exact period and included payments."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué comparación sirve?",
+          "scene": "Buscan el resultado del último año calendario, incluidos pagos en efectivo.",
+          "options": [
+            {
+              "label": "Ambos reportes de ese año con pagos"
+            },
+            {
+              "label": "Una gráfica histórica y un cambio anual"
+            }
+          ],
+          "help": [
+            "Usa el periodo exacto y pagos incluidos de la pregunta."
+          ],
+          "feedback": {
+            "met": "El primer par responde al mismo periodo y componentes.",
+            "not_yet": "Usa el periodo exacto y pagos incluidos de la pregunta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual comparação serve?",
+          "scene": "Buscam o resultado do último ano civil, incluindo pagamentos em dinheiro.",
+          "options": [
+            {
+              "label": "Ambos desse ano com pagamentos"
+            },
+            {
+              "label": "Um gráfico histórico e uma mudança anual"
+            }
+          ],
+          "help": [
+            "Use o período exato e os pagamentos da pergunta."
+          ],
+          "feedback": {
+            "met": "O primeiro par responde ao mesmo período e às mesmas partes.",
+            "not_yet": "Use o período exato e os pagamentos da pergunta."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What must be clarified?",
+          "scene": "One chart says “growth” without saying whether payouts were reinvested.",
+          "options": [
+            {
+              "label": "How payouts were treated"
+            },
+            {
+              "label": "Only the starting price"
+            },
+            {
+              "label": "Nothing, growth is always identical"
+            }
+          ],
+          "help": [
+            "Read what the return measure includes."
+          ],
+          "feedback": {
+            "met": "Reinvestment assumptions can change the reported growth.",
+            "not_yet": "Read what the return measure includes."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debes aclarar?",
+          "scene": "Una gráfica dice «crecimiento» sin indicar si se reinvirtieron los pagos.",
+          "options": [
+            {
+              "label": "Cómo trataron los pagos"
+            },
+            {
+              "label": "Solo el precio inicial"
+            },
+            {
+              "label": "Nada, crecer siempre significa lo mismo"
+            }
+          ],
+          "help": [
+            "Lee qué incluye la medida de rendimiento."
+          ],
+          "feedback": {
+            "met": "Suponer reinversión puede cambiar el crecimiento reportado.",
+            "not_yet": "Lee qué incluye la medida de rendimiento."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que esclarecer?",
+          "scene": "Um gráfico diz “crescimento” sem dizer se os pagamentos foram reaplicados.",
+          "options": [
+            {
+              "label": "Como trataram os pagamentos"
+            },
+            {
+              "label": "Só o preço inicial"
+            },
+            {
+              "label": "Nada, crescer sempre significa o mesmo"
+            }
+          ],
+          "help": [
+            "Leia o que a medida de rendimento inclui."
+          ],
+          "feedback": {
+            "met": "Supor reaplicação pode mudar o crescimento mostrado.",
+            "not_yet": "Leia o que a medida de rendimento inclui."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.investment-comparison.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What needs repair?",
+          "scene": "For the same year, a property report includes rent; a fund report shows only prices.",
+          "options": [
+            {
+              "label": "Include income consistently"
+            },
+            {
+              "label": "Compare headings alone"
+            },
+            {
+              "label": "Ignore rent"
+            }
+          ],
+          "help": [
+            "Keep the same dates and treatment of income."
+          ],
+          "feedback": {
+            "met": "The two reports include different components of investment return.",
+            "not_yet": "Keep the same dates and treatment of income."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué comparación corriges?",
+          "scene": "Un reporte inmobiliario incluye rentas; uno de fondo solo cambios de precio. Ambos cubren igual año.",
+          "options": [
+            {
+              "label": "Incluir ingresos de forma consistente"
+            },
+            {
+              "label": "Comparar solo títulos"
+            },
+            {
+              "label": "Ignorar rentas solo por ser efectivo"
+            }
+          ],
+          "help": [
+            "Conserva iguales fechas y tratamiento de ingresos."
+          ],
+          "feedback": {
+            "met": "Los reportes incluyen componentes distintos del rendimiento.",
+            "not_yet": "Conserva iguales fechas y tratamiento de ingresos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual comparação corrigir?",
+          "scene": "Um relatório de imóvel inclui aluguéis; um de fundo mostra só preços. Ambos cobrem o mesmo ano.",
+          "options": [
+            {
+              "label": "Incluir rendimentos de modo igual"
+            },
+            {
+              "label": "Comparar só os títulos"
+            },
+            {
+              "label": "Ignorar aluguéis só por serem dinheiro"
+            }
+          ],
+          "help": [
+            "Mantenha iguais as datas e o tratamento da renda."
+          ],
+          "feedback": {
+            "met": "Os relatórios incluem partes distintas do rendimento.",
+            "not_yet": "Mantenha iguais as datas e o tratamento da renda."
+          }
+        }
+      }
+    }
+  ]
+}

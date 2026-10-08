@@ -1,0 +1,947 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-retirement-future-part-1",
+  "lesson_id": "fe-production-retirement-future-05",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.retirement-future.05"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Identify how fees affect a long-term projection without treating the projection as guaranteed.",
+  "title": {
+    "en-US": "Projection Fees",
+    "es-MX": "Comisiones en una proyección larga",
+    "pt-BR": "Tarifas numa projeção longa"
+  },
+  "new_concepts": [
+    "finance.prod.retirement-future.05"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Projection Fees\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Comisiones en una proyección larga\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Tarifas numa projeção longa\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.retirement-future.05",
+      "observable_action": "Identify how fees affect a long-term projection without treating the projection as guaranteed.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.retirement-future.04",
+      "prod.investment-comparison.01"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Compare fictional dollar projections after their costs, while keeping future growth uncertain.",
+    "misconception": "Small recurring fees have no effect on a long-term projection, or a lower-fee projection guarantees the outcome.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.retirement-future.05",
+        "context_id": "retirement-future-05-example-01",
+        "supports_from": [],
+        "reasoning": "A recurring fee removes money each period. Under equal growth assumptions, less remains to carry into the next period."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.retirement-future.05",
+        "context_id": "retirement-future-05-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The recurring fee reduces the modeled ending balance."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.retirement-future.05",
+        "context_id": "retirement-future-05-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Less money remains for the next period’s modeled growth."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.retirement-future.05",
+        "context_id": "retirement-future-05-practice-01",
+        "supports_from": [],
+        "reasoning": "The lower fee leaves more under identical stated assumptions."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.retirement-future.05",
+        "context_id": "retirement-future-05-practice-02",
+        "supports_from": [],
+        "reasoning": "Lower costs do not eliminate underlying investment risk."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.retirement-future.05",
+        "context_id": "retirement-future-05-practice-03",
+        "supports_from": [],
+        "reasoning": "Multiple changed assumptions prevent isolating the fee effect."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.retirement-future.05",
+        "context_id": "retirement-future-05-transfer-01",
+        "supports_from": [],
+        "reasoning": "Fees reduce resources even without assumed investment growth."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.retirement-future.05",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Compare fictional dollar projections after their costs, while keeping future growth uncertain."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Compara proyecciones ficticias en pesos después de costos, sin dar por seguro el crecimiento futuro."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Compare projeções fictícias em reais após custos, sem dar como certo o crescimento futuro."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Costs change the path",
+          "line": "A recurring fee removes money each period. Under equal growth assumptions, less remains to carry into the next period."
+        },
+        "es-MX": {
+          "prompt": "Los costos cambian la trayectoria",
+          "line": "Una comisión recurrente quita dinero cada periodo. Bajo igual crecimiento supuesto, queda menos para pasar al periodo siguiente."
+        },
+        "pt-BR": {
+          "prompt": "Custos mudam o caminho",
+          "line": "Uma tarifa recorrente retira dinheiro a cada período. Sob igual crescimento suposto, sobra menos para o próximo período."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.05",
+      "visual": {
+        "type": "bar"
+      },
+      "payload": {
+        "data": {
+          "unit": "local",
+          "categories": [
+            {
+              "id": "earlier"
+            },
+            {
+              "id": "later"
+            }
+          ],
+          "series": [
+            {
+              "id": "projected-balance",
+              "values": [
+                364.1,
+                347.55
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "earlier"
+            },
+            {
+              "id": "later"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "earlier"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Fictional: deposit 100, grow 10%, then fee 0 or 5; repeat three periods.",
+          "title": "After fees",
+          "data": {
+            "categories": [
+              {
+                "label": "No fee"
+              },
+              {
+                "label": "Fee 5"
+              }
+            ],
+            "series": [
+              {
+                "label": "Balance"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Which ends higher?",
+            "options": [
+              {
+                "label": "No fee"
+              },
+              {
+                "label": "Fee 5"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "The recurring fee reduces the modeled ending balance.",
+            "not_yet": "Both cases use the same deposits and growth assumption."
+          },
+          "help": [
+            "Both cases use the same deposits and growth assumption."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Ficticio: deposita 100, crece 10%, luego comisión 0 o 5; repite tres periodos.",
+          "title": "Tras costos",
+          "data": {
+            "categories": [
+              {
+                "label": "Sin comisión"
+              },
+              {
+                "label": "Comisión 5"
+              }
+            ],
+            "series": [
+              {
+                "label": "Saldo"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Cuál termina mayor?",
+            "options": [
+              {
+                "label": "Sin comisión"
+              },
+              {
+                "label": "Comisión 5"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "La comisión recurrente reduce el saldo final modelado.",
+            "not_yet": "Ambos casos usan depósitos y crecimiento supuesto iguales."
+          },
+          "help": [
+            "Ambos casos usan depósitos y crecimiento supuesto iguales."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Fictício: deposite 100, cresça 10%, depois tarifa 0 ou 5; repita três períodos.",
+          "title": "Após custos",
+          "data": {
+            "categories": [
+              {
+                "label": "Sem tarifa"
+              },
+              {
+                "label": "Tarifa 5"
+              }
+            ],
+            "series": [
+              {
+                "label": "Saldo"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Qual termina maior?",
+            "options": [
+              {
+                "label": "Sem tarifa"
+              },
+              {
+                "label": "Tarifa 5"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "A tarifa recorrente reduz o saldo final modelado.",
+            "not_yet": "Ambos os casos usam aportes e crescimento suposto iguais."
+          },
+          "help": [
+            "Ambos os casos usam aportes e crescimento suposto iguais."
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.05",
+      "copy": {
+        "en-US": {
+          "prompt": "What also changes next period?",
+          "scene": "A fee is deducted before the next period’s assumed growth.",
+          "options": [
+            {
+              "label": "The balance receiving future growth"
+            },
+            {
+              "label": "Only the statement’s appearance"
+            },
+            {
+              "label": "Nothing beyond the current fee"
+            }
+          ],
+          "help": [
+            "Track the balance carried forward after costs."
+          ],
+          "feedback": {
+            "met": "Less money remains for the next period’s modeled growth.",
+            "not_yet": "Track the balance carried forward after costs."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué cambia también después?",
+          "scene": "Se descuenta comisión antes del crecimiento supuesto del siguiente periodo.",
+          "options": [
+            {
+              "label": "El saldo que recibirá crecimiento futuro"
+            },
+            {
+              "label": "Solo la apariencia del estado"
+            },
+            {
+              "label": "Nada aparte del cargo actual"
+            }
+          ],
+          "help": [
+            "Sigue el saldo que pasa al futuro tras costos."
+          ],
+          "feedback": {
+            "met": "Queda menos dinero para el crecimiento modelado siguiente.",
+            "not_yet": "Sigue el saldo que pasa al futuro tras costos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que também muda depois?",
+          "scene": "Uma tarifa é descontada antes do crescimento suposto do próximo período.",
+          "options": [
+            {
+              "label": "O saldo que recebe crescimento futuro"
+            },
+            {
+              "label": "Só a aparência do extrato"
+            },
+            {
+              "label": "Nada além da cobrança atual"
+            }
+          ],
+          "help": [
+            "Siga o saldo que passa ao futuro após custos."
+          ],
+          "feedback": {
+            "met": "Sobra menos dinheiro para o crescimento modelado seguinte.",
+            "not_yet": "Siga o saldo que passa ao futuro após custos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.05",
+      "visual": {
+        "type": "bar"
+      },
+      "payload": {
+        "data": {
+          "unit": "local",
+          "categories": [
+            {
+              "id": "earlier"
+            },
+            {
+              "id": "later"
+            }
+          ],
+          "series": [
+            {
+              "id": "projected-balance",
+              "values": [
+                220.5,
+                210
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "later"
+            },
+            {
+              "id": "earlier"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "earlier"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Fictional: deposit 100, grow 10%, then fee 5 or 10; repeat two periods.",
+          "title": "After fees",
+          "data": {
+            "categories": [
+              {
+                "label": "Fee 5"
+              },
+              {
+                "label": "Fee 10"
+              }
+            ],
+            "series": [
+              {
+                "label": "Balance"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Which ends higher?",
+            "options": [
+              {
+                "label": "Fee 10"
+              },
+              {
+                "label": "Fee 5"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "The lower fee leaves more under identical stated assumptions.",
+            "not_yet": "Compare costs without assuming either projected result is guaranteed."
+          },
+          "help": [
+            "Compare costs without assuming either projected result is guaranteed."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Ficticio: deposita 100, crece 10%, luego comisión 5 o 10; repite dos periodos.",
+          "title": "Tras costos",
+          "data": {
+            "categories": [
+              {
+                "label": "Comisión 5"
+              },
+              {
+                "label": "Comisión 10"
+              }
+            ],
+            "series": [
+              {
+                "label": "Saldo"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Cuál termina mayor?",
+            "options": [
+              {
+                "label": "Comisión 10"
+              },
+              {
+                "label": "Comisión 5"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "La comisión menor deja más bajo iguales supuestos indicados.",
+            "not_yet": "Compara costos sin suponer garantizado ningún resultado proyectado."
+          },
+          "help": [
+            "Compara costos sin suponer garantizado ningún resultado proyectado."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Fictício: deposite 100, cresça 10%, depois tarifa 5 ou 10; repita dois períodos.",
+          "title": "Após custos",
+          "data": {
+            "categories": [
+              {
+                "label": "Tarifa 5"
+              },
+              {
+                "label": "Tarifa 10"
+              }
+            ],
+            "series": [
+              {
+                "label": "Saldo"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Qual termina maior?",
+            "options": [
+              {
+                "label": "Tarifa 10"
+              },
+              {
+                "label": "Tarifa 5"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "A tarifa menor deixa mais sob hipóteses dadas iguais.",
+            "not_yet": "Compare custos sem supor garantido nenhum resultado projetado."
+          },
+          "help": [
+            "Compare custos sem supor garantido nenhum resultado projetado."
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Does a lower fee guarantee profit?",
+          "scene": "The cheaper plan still invests in assets whose value can fall.",
+          "options": [
+            {
+              "label": "No, market risk remains"
+            },
+            {
+              "label": "Yes, cheap means guaranteed gains"
+            }
+          ],
+          "help": [
+            "Separate fee comparison from uncertain market performance."
+          ],
+          "feedback": {
+            "met": "Lower costs do not eliminate underlying investment risk.",
+            "not_yet": "Separate fee comparison from uncertain market performance."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Menor comisión garantiza utilidad?",
+          "scene": "El plan más barato aún invierte en activos cuyo valor puede caer.",
+          "options": [
+            {
+              "label": "No, sigue el riesgo de mercado"
+            },
+            {
+              "label": "Sí, barato garantiza ganar"
+            }
+          ],
+          "help": [
+            "Distingue comparar comisiones de resultados de mercado inciertos."
+          ],
+          "feedback": {
+            "met": "Costos menores no eliminan el riesgo subyacente de inversión.",
+            "not_yet": "Distingue comparar comisiones de resultados de mercado inciertos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Tarifa menor garante lucro?",
+          "scene": "O plano mais barato ainda aplica em ativos cujo valor pode cair.",
+          "options": [
+            {
+              "label": "Não, o risco de mercado continua"
+            },
+            {
+              "label": "Sim, barato garante ganhar"
+            }
+          ],
+          "help": [
+            "Separe comparar tarifas de resultados de mercado incertos."
+          ],
+          "feedback": {
+            "met": "Custos menores não eliminam o risco dos ativos.",
+            "not_yet": "Separe comparar tarifas de resultados de mercado incertos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Is this a fee-only comparison?",
+          "scene": "One projection assumes higher growth and lower fees; another assumes both differently.",
+          "options": [
+            {
+              "label": "Yes, fees explain every difference"
+            },
+            {
+              "label": "No, growth assumptions also changed"
+            }
+          ],
+          "help": [
+            "Hold growth and deposits equal to compare fee effects."
+          ],
+          "feedback": {
+            "met": "Multiple changed assumptions prevent isolating the fee effect.",
+            "not_yet": "Hold growth and deposits equal to compare fee effects."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Comparas solo comisiones?",
+          "scene": "Una proyección supone mayor crecimiento y menor comisión; otra cambia ambas cosas.",
+          "options": [
+            {
+              "label": "Sí, comisiones explican toda diferencia"
+            },
+            {
+              "label": "No, cambió también el crecimiento supuesto"
+            }
+          ],
+          "help": [
+            "Iguala crecimiento y depósitos para comparar efectos de comisiones."
+          ],
+          "feedback": {
+            "met": "Cambiar varios supuestos impide aislar el efecto de comisiones.",
+            "not_yet": "Iguala crecimiento y depósitos para comparar efectos de comisiones."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Compara só tarifas?",
+          "scene": "Uma projeção supõe mais crescimento e menos tarifa; outra muda ambas as coisas.",
+          "options": [
+            {
+              "label": "Sim, tarifas explicam toda diferença"
+            },
+            {
+              "label": "Não, mudou também o crescimento suposto"
+            }
+          ],
+          "help": [
+            "Iguale crescimento e aportes para comparar efeitos de tarifas."
+          ],
+          "feedback": {
+            "met": "Mudar várias hipóteses impede isolar o efeito das tarifas.",
+            "not_yet": "Iguale crescimento e aportes para comparar efeitos de tarifas."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.retirement-future.05",
+      "visual": {
+        "type": "bar"
+      },
+      "payload": {
+        "data": {
+          "unit": "local",
+          "categories": [
+            {
+              "id": "earlier"
+            },
+            {
+              "id": "later"
+            }
+          ],
+          "series": [
+            {
+              "id": "projected-balance",
+              "values": [
+                400,
+                380
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "earlier"
+            },
+            {
+              "id": "later"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "earlier"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Fictional: deposit 200, no growth, then fee 0 or 10; repeat two periods.",
+          "title": "After fees",
+          "data": {
+            "categories": [
+              {
+                "label": "No fee"
+              },
+              {
+                "label": "Fee 10"
+              }
+            ],
+            "series": [
+              {
+                "label": "Balance"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Which ends higher?",
+            "options": [
+              {
+                "label": "No fee"
+              },
+              {
+                "label": "Fee 10"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "Fees reduce resources even without assumed investment growth.",
+            "not_yet": "Use this zero-growth model’s actual fee conditions."
+          },
+          "help": [
+            "Use this zero-growth model’s actual fee conditions."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Ficticio: deposita 200, sin crecimiento, luego comisión 0 o 10; repite dos periodos.",
+          "title": "Tras costos",
+          "data": {
+            "categories": [
+              {
+                "label": "Sin comisión"
+              },
+              {
+                "label": "Comisión 10"
+              }
+            ],
+            "series": [
+              {
+                "label": "Saldo"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Cuál termina mayor?",
+            "options": [
+              {
+                "label": "Sin comisión"
+              },
+              {
+                "label": "Comisión 10"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "Las comisiones reducen recursos incluso sin crecimiento de inversión supuesto.",
+            "not_yet": "Usa las condiciones reales de este modelo sin crecimiento."
+          },
+          "help": [
+            "Usa las condiciones reales de este modelo sin crecimiento."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Fictício: deposite 200, sem crescimento, depois tarifa 0 ou 10; repita dois períodos.",
+          "title": "Após custos",
+          "data": {
+            "categories": [
+              {
+                "label": "Sem tarifa"
+              },
+              {
+                "label": "Tarifa 10"
+              }
+            ],
+            "series": [
+              {
+                "label": "Saldo"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Qual termina maior?",
+            "options": [
+              {
+                "label": "Sem tarifa"
+              },
+              {
+                "label": "Tarifa 10"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "Tarifas reduzem recursos mesmo sem crescimento suposto do investimento.",
+            "not_yet": "Use as condições reais deste modelo sem crescimento."
+          },
+          "help": [
+            "Use as condições reais deste modelo sem crescimento."
+          ]
+        }
+      }
+    }
+  ]
+}

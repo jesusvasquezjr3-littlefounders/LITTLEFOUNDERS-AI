@@ -23,6 +23,10 @@
 .lf-story-scene { font-size: 1.125rem; line-height: 1.4; }
 .lf-story-options { display: grid; gap: var(--spacing-2); }
 .lf-story-options--pair { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); }
+/* Chart answers sit on a neutral board, not the primary lesson background (Bible 05 V2). */
+.lf-story-options .lf-choice { background: var(--sunken); color: var(--content); }
+.lf-story-options .lf-choice[aria-pressed='true'] { background: var(--primary-soft); color: var(--primary-strong); outline-color: var(--primary-strong); }
+.lf-story-options .lf-choice:focus-visible { outline: 3px solid var(--primary-strong); outline-offset: 3px; }
 .lf-mentor-turn { justify-self: start; }
 .lf-mentor-episode { display: grid; gap: var(--spacing-3); list-style: none; padding: 0; margin: 0; }
 .lf-story-board { gap: var(--spacing-3); }

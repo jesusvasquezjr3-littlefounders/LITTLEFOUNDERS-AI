@@ -1,0 +1,798 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-accounts-records-part-1",
+  "lesson_id": "fe-production-accounts-records-05",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.accounts-records.05"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Reconcile a statement with a receipt log and identify the unmatched transaction.",
+  "title": {
+    "en-US": "Unmatched movements",
+    "es-MX": "Encuentra el movimiento sin conciliar",
+    "pt-BR": "Encontre o movimento sem conciliar"
+  },
+  "new_concepts": [
+    "finance.prod.accounts-records.05"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Find the unmatched movement\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Encuentra el movimiento sin conciliar\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Encontre o movimento sem conciliar\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.accounts-records.05",
+      "observable_action": "Reconcile a statement with a receipt log and identify the unmatched transaction.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.accounts-records.04",
+      "prod.spending-patterns.01",
+      "prod.financial-math.02"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Match statement entries with receipts before explaining any difference.",
+    "misconception": "Assuming a difference is fraud or treating equal totals as proof that every individual transaction matches.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.accounts-records.05",
+        "context_id": "fe-production-accounts-records-05-example-01",
+        "supports_from": [],
+        "reasoning": "Match dates, amounts and references across records. Investigate unmatched entries; a difference alone does not explain its cause."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.accounts-records.05",
+        "context_id": "fe-production-accounts-records-05-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The extra entry lacks a matching record in this scene."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.accounts-records.05",
+        "context_id": "fe-production-accounts-records-05-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Matching identifying details link the records without duplicating the payment."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.accounts-records.05",
+        "context_id": "fe-production-accounts-records-05-practice-01",
+        "supports_from": [],
+        "reasoning": "86 − 71 = 15 remains to reconcile."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.accounts-records.05",
+        "context_id": "fe-production-accounts-records-05-practice-02",
+        "supports_from": [],
+        "reasoning": "Equal totals can hide mismatched individual entries."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.accounts-records.05",
+        "context_id": "fe-production-accounts-records-05-practice-03",
+        "supports_from": [],
+        "reasoning": "Pending status may explain why a completed entry is absent."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.accounts-records.05",
+        "context_id": "fe-production-accounts-records-05-transfer-01",
+        "supports_from": [],
+        "reasoning": "Reconciliation includes verified returns as well as outgoing purchases."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.accounts-records.05",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Match statement entries with receipts before explaining any difference."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Relaciona entradas del estado con comprobantes antes de explicar diferencias."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Relacione registros do extrato com comprovantes antes de explicar diferenças."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Match records, then investigate",
+          "line": "Match dates, amounts and references across records. Investigate unmatched entries; a difference alone does not explain its cause."
+        },
+        "es-MX": {
+          "prompt": "Relaciona registros y luego investiga",
+          "line": "Relaciona fechas, montos y referencias entre registros. Investiga entradas sin conciliar; una diferencia sola no explica su causa."
+        },
+        "pt-BR": {
+          "prompt": "Relacione registros e depois investigue",
+          "line": "Relacione datas, valores e referências entre registros. Investigue entradas sem conciliar; uma diferença sozinha não explica sua causa."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Which entry needs review?",
+          "scene": "Receipts show purchases of 12 and 18; statement adds an unmatched 5 charge.",
+          "options": [
+            {
+              "label": "The unmatched charge of 5"
+            },
+            {
+              "label": "The matched 12 purchase"
+            },
+            {
+              "label": "Both matched purchases as income"
+            }
+          ],
+          "help": [
+            "Start with entries that have not been matched."
+          ],
+          "feedback": {
+            "met": "The extra entry lacks a matching record in this scene.",
+            "not_yet": "Start with entries that have not been matched."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué entrada necesita investigarse?",
+          "scene": "Comprobantes muestran compras de 12 y 18; el estado añade un cobro sin conciliar de 5.",
+          "options": [
+            {
+              "label": "El cobro sin conciliar de 5"
+            },
+            {
+              "label": "La compra ya conciliada de 12"
+            },
+            {
+              "label": "Ambas compras conciliadas como ingreso"
+            }
+          ],
+          "help": [
+            "Empieza por entradas que aún no coinciden."
+          ],
+          "feedback": {
+            "met": "La entrada adicional no tiene registro coincidente en esta escena.",
+            "not_yet": "Empieza por entradas que aún no coinciden."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual registro precisa de investigação?",
+          "scene": "Comprovantes mostram compras de 12 e 18; o extrato acrescenta cobrança sem conciliar de 5.",
+          "options": [
+            {
+              "label": "A cobrança sem conciliar de 5"
+            },
+            {
+              "label": "A compra já conciliada de 12"
+            },
+            {
+              "label": "Ambas as compras conciliadas como renda"
+            }
+          ],
+          "help": [
+            "Comece por registros que ainda não correspondem."
+          ],
+          "feedback": {
+            "met": "O registro adicional não tem comprovante correspondente nesta cena.",
+            "not_yet": "Comece por registros que ainda não correspondem."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.05",
+      "copy": {
+        "en-US": {
+          "prompt": "How to link them?",
+          "scene": "Receipt and statement entry share date, amount and unique payment reference.",
+          "options": [
+            {
+              "label": "As the same payment’s records"
+            },
+            {
+              "label": "As two separate purchases"
+            },
+            {
+              "label": "As proof of a second payment"
+            }
+          ],
+          "help": [
+            "Distinguish a payment from its two records."
+          ],
+          "feedback": {
+            "met": "Matching identifying details link the records without duplicating the payment.",
+            "not_yet": "Distinguish a payment from its two records."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cómo deben vincularse?",
+          "scene": "Un comprobante y una entrada comparten fecha, monto y referencia única de pago.",
+          "options": [
+            {
+              "label": "Como registros del mismo pago"
+            },
+            {
+              "label": "Como dos compras distintas"
+            },
+            {
+              "label": "Como prueba de un segundo pago"
+            }
+          ],
+          "help": [
+            "Distingue un pago de sus dos registros."
+          ],
+          "feedback": {
+            "met": "Datos identificadores coincidentes vinculan registros sin duplicar el pago.",
+            "not_yet": "Distingue un pago de sus dos registros."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Como devem ser vinculados?",
+          "scene": "Um comprovante e um registro compartilham data, valor e referência única de pagamento.",
+          "options": [
+            {
+              "label": "Como registros do mesmo pagamento"
+            },
+            {
+              "label": "Como duas compras diferentes"
+            },
+            {
+              "label": "Como prova de um segundo pagamento"
+            }
+          ],
+          "help": [
+            "Distinga um pagamento de seus dois registros."
+          ],
+          "feedback": {
+            "met": "Dados identificadores correspondentes vinculam registros sem duplicar o pagamento.",
+            "not_yet": "Distinga um pagamento de seus dois registros."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Amount still needing reconciliation?",
+          "scene": "Statement spending totals 86; matched receipt spending totals 71; nothing else is matched yet.",
+          "options": [
+            {
+              "label": "0"
+            },
+            {
+              "label": "157"
+            },
+            {
+              "label": "15"
+            }
+          ],
+          "help": [
+            "A numerical difference identifies work to do, not its cause."
+          ],
+          "feedback": {
+            "met": "86 − 71 = 15 remains to reconcile.",
+            "not_yet": "A numerical difference identifies work to do, not its cause."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Monto aún por conciliar?",
+          "scene": "El estado suma gasto 86; comprobantes conciliados suman 71; nada más está conciliado.",
+          "options": [
+            {
+              "label": "0"
+            },
+            {
+              "label": "157"
+            },
+            {
+              "label": "15"
+            }
+          ],
+          "help": [
+            "Una diferencia numérica indica qué revisar, no su causa."
+          ],
+          "feedback": {
+            "met": "86 − 71 = 15 queda por conciliar.",
+            "not_yet": "Una diferencia numérica indica qué revisar, no su causa."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Valor ainda a conciliar?",
+          "scene": "O extrato soma gasto 86; comprovantes conciliados somam 71; nada mais está conciliado.",
+          "options": [
+            {
+              "label": "0"
+            },
+            {
+              "label": "157"
+            },
+            {
+              "label": "15"
+            }
+          ],
+          "help": [
+            "Uma diferença numérica indica o que conferir, não sua causa."
+          ],
+          "feedback": {
+            "met": "86 − 71 = 15 resta a conciliar.",
+            "not_yet": "Uma diferença numérica indica o que conferir, não sua causa."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          86,
+          71
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Is every transaction match established?",
+          "scene": "Receipt totals match statement totals, but individual references have not been compared.",
+          "options": [
+            {
+              "label": "References are never relevant"
+            },
+            {
+              "label": "Totals prove every match"
+            },
+            {
+              "label": "Compare the individual entries"
+            }
+          ],
+          "help": [
+            "Check identities as well as totals."
+          ],
+          "feedback": {
+            "met": "Equal totals can hide mismatched individual entries.",
+            "not_yet": "Check identities as well as totals."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Ya se demuestra coincidencia de cada operación?",
+          "scene": "Totales de comprobantes y estado coinciden, pero no comparaste referencias individuales.",
+          "options": [
+            {
+              "label": "Sí, referencias nunca importan"
+            },
+            {
+              "label": "Sí, totales prueban cada coincidencia"
+            },
+            {
+              "label": "No, compara entradas individuales"
+            }
+          ],
+          "help": [
+            "Revisa identidades además de totales."
+          ],
+          "feedback": {
+            "met": "Totales iguales pueden ocultar entradas individuales distintas.",
+            "not_yet": "Revisa identidades además de totales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Já se comprova correspondência de cada operação?",
+          "scene": "Totais de comprovantes e extrato coincidem, mas não comparou referências individuais.",
+          "options": [
+            {
+              "label": "Sim, referências nunca importam"
+            },
+            {
+              "label": "Sim, totais comprovam cada correspondência"
+            },
+            {
+              "label": "Não, compare registros individuais"
+            }
+          ],
+          "help": [
+            "Confira identidades além de totais."
+          ],
+          "feedback": {
+            "met": "Totais iguais podem esconder registros individuais diferentes.",
+            "not_yet": "Confira identidades além de totais."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.05",
+      "copy": {
+        "en-US": {
+          "prompt": "What must remain?",
+          "scene": "A receipt has no statement match; the provider marks its payment as pending.",
+          "options": [
+            {
+              "label": "Assuming the purchase was free"
+            },
+            {
+              "label": "The receipt and pending status"
+            },
+            {
+              "label": "A second invented completed payment"
+            }
+          ],
+          "help": [
+            "Keep the evidence while checking the payment’s actual state."
+          ],
+          "feedback": {
+            "met": "Pending status may explain why a completed entry is absent.",
+            "not_yet": "Keep the evidence while checking the payment’s actual state."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe conservar la conciliación?",
+          "scene": "Un comprobante no coincide con el estado; el proveedor marca el pago pendiente.",
+          "options": [
+            {
+              "label": "Suponer que la compra fue gratuita"
+            },
+            {
+              "label": "El comprobante y estado pendiente"
+            },
+            {
+              "label": "Un segundo pago realizado inventado"
+            }
+          ],
+          "help": [
+            "Conserva evidencia al revisar el estado real del pago."
+          ],
+          "feedback": {
+            "met": "Estar pendiente puede explicar la ausencia de una entrada realizada.",
+            "not_yet": "Conserva evidencia al revisar el estado real del pago."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que a conciliação deve manter?",
+          "scene": "Um comprovante não corresponde ao extrato; o fornecedor marca o pagamento pendente.",
+          "options": [
+            {
+              "label": "Supor que a compra foi gratuita"
+            },
+            {
+              "label": "O comprovante e o estado pendente"
+            },
+            {
+              "label": "Um segundo pagamento concluído inventado"
+            }
+          ],
+          "help": [
+            "Mantenha evidências ao conferir o estado real do pagamento."
+          ],
+          "feedback": {
+            "met": "Estar pendente pode explicar a ausência de um registro concluído.",
+            "not_yet": "Mantenha evidências ao conferir o estado real do pagamento."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.accounts-records.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Which step?",
+          "scene": "A refund appears in payment history but not the shared purchase log.",
+          "options": [
+            {
+              "label": "Delete the refund to match totals"
+            },
+            {
+              "label": "Verify and record the refund"
+            },
+            {
+              "label": "Count the refund as a purchase"
+            }
+          ],
+          "help": [
+            "Use the movement’s actual direction when updating the log."
+          ],
+          "feedback": {
+            "met": "Reconciliation includes verified returns as well as outgoing purchases.",
+            "not_yet": "Use the movement’s actual direction when updating the log."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué paso de conciliación corresponde?",
+          "scene": "Un registro compartido y el historial de pagos difieren; un reembolso aparece solo en el historial.",
+          "options": [
+            {
+              "label": "Borrar el reembolso para igualar totales"
+            },
+            {
+              "label": "Verificar y registrar el reembolso correspondiente"
+            },
+            {
+              "label": "Contar el reembolso como otra compra"
+            }
+          ],
+          "help": [
+            "Usa la dirección real al actualizar el registro."
+          ],
+          "feedback": {
+            "met": "Conciliar incluye devoluciones verificadas y compras salientes.",
+            "not_yet": "Usa la dirección real al actualizar el registro."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual etapa de conciliação cabe?",
+          "scene": "Um registro compartilhado e o histórico de pagamentos diferem; um reembolso aparece só no histórico.",
+          "options": [
+            {
+              "label": "Apagar o reembolso para igualar totais"
+            },
+            {
+              "label": "Conferir e registrar o reembolso correspondente"
+            },
+            {
+              "label": "Contar o reembolso como outra compra"
+            }
+          ],
+          "help": [
+            "Use a direção real ao atualizar o registro."
+          ],
+          "feedback": {
+            "met": "Conciliar inclui devoluções verificadas e compras de saída.",
+            "not_yet": "Use a direção real ao atualizar o registro."
+          }
+        }
+      }
+    }
+  ]
+}

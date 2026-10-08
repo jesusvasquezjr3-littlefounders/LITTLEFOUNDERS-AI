@@ -1,0 +1,972 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-insurance-risk-part-1",
+  "lesson_id": "fe-production-insurance-risk-05",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.insurance-risk.05"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Calculate a claim’s out-of-pocket cost under a stated deductible and coverage limit.",
+  "title": {
+    "en-US": "Retained Loss",
+    "es-MX": "Calcula pérdida a tu cargo",
+    "pt-BR": "Calcule perda a seu cargo"
+  },
+  "new_concepts": [
+    "finance.prod.insurance-risk.05"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Retained Loss\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Calcula pérdida a tu cargo\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Calcule perda a seu cargo\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.insurance-risk.05",
+      "observable_action": "Calculate a claim’s out-of-pocket cost under a stated deductible and coverage limit.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.insurance-risk.04",
+      "prod.financial-math.02"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A covered claim may leave a deductible and amounts above the payout cap; calculate both with fictional local currency.",
+    "misconception": "The deductible is the only possible retained cost even when the insurer payout is capped.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.insurance-risk.05",
+        "context_id": "insurance-risk-05-example-01",
+        "supports_from": [],
+        "reasoning": "Subtract the deductible from loss, floor at zero, then cap insurer payment. Your cost is loss minus that payment."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.insurance-risk.05",
+        "context_id": "insurance-risk-05-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The cap leaves more than the deductible unpaid."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.insurance-risk.05",
+        "context_id": "insurance-risk-05-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The zero floor prevents a negative insurer payment."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.insurance-risk.05",
+        "context_id": "insurance-risk-05-practice-01",
+        "supports_from": [],
+        "reasoning": "Your cost is loss minus the capped insurer payment."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.insurance-risk.05",
+        "context_id": "insurance-risk-05-practice-02",
+        "supports_from": [],
+        "reasoning": "Your cost is loss minus the capped insurer payment."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.insurance-risk.05",
+        "context_id": "insurance-risk-05-practice-03",
+        "supports_from": [],
+        "reasoning": "Your cost is loss minus the capped insurer payment."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.insurance-risk.05",
+        "context_id": "insurance-risk-05-transfer-01",
+        "supports_from": [],
+        "reasoning": "Insurance pays 400; budget the remaining 350 to complete the repairs."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.insurance-risk.05",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A covered claim may leave a deductible and amounts above the payout cap; calculate both with fictional local currency."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Reclamo cubierto puede dejar deducible y monto sobre tope de pago; calcula ambos con pesos ficticios."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Pedido coberto pode deixar franquia e valor acima do teto de pagamento; calcule ambos com reais fictícios."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Apply the exact payment rule",
+          "line": "Subtract the deductible from loss, floor at zero, then cap insurer payment. Your cost is loss minus that payment."
+        },
+        "es-MX": {
+          "prompt": "Aplica regla exacta de pago",
+          "line": "Resta deducible de pérdida sin bajar de cero; limita pago del seguro al tope. Tu costo es pérdida menos pago."
+        },
+        "pt-BR": {
+          "prompt": "Aplique regra exata de pagamento",
+          "line": "Subtraia franquia da perda sem ficar abaixo de zero; limite pagamento do seguro ao teto. Seu custo é perda menos pagamento."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.05",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "step-1"
+          },
+          {
+            "id": "step-2"
+          },
+          {
+            "id": "step-3"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "step-2",
+          "step-3"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "step-2": "600",
+          "step-3": "300"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Fictional covered loss 900 dollars; deductible 100; insurer payout cap 600 after deduction; no other costs. Find household cost.",
+          "feedback": {
+            "met": "The cap leaves more than the deductible unpaid.",
+            "not_yet": "Deduct, apply the payout cap, then subtract payment from loss."
+          },
+          "help": [
+            "Deduct, apply the payout cap, then subtract payment from loss."
+          ],
+          "steps": [
+            {
+              "expression": "900 - 100",
+              "result": "800",
+              "spokenText": "Loss after deductible"
+            },
+            {
+              "expression": "min(800, 600)",
+              "result": "600",
+              "spokenText": "Capped insurer payment"
+            },
+            {
+              "expression": "900 - 600",
+              "result": "300",
+              "spokenText": "Household cost"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Pérdida cubierta ficticia 900 pesos; deducible 100; tope de pago del seguro 600 tras deducir; sin otros costos. Calcula costo propio.",
+          "feedback": {
+            "met": "Tope deja sin pagar más que deducible.",
+            "not_yet": "Deduce, aplica tope de pago y resta pago de pérdida."
+          },
+          "help": [
+            "Deduce, aplica tope de pago y resta pago de pérdida."
+          ],
+          "steps": [
+            {
+              "expression": "900 - 100",
+              "result": "800",
+              "spokenText": "Pérdida tras deducible"
+            },
+            {
+              "expression": "min(800, 600)",
+              "result": "600",
+              "spokenText": "Pago limitado del seguro"
+            },
+            {
+              "expression": "900 - 600",
+              "result": "300",
+              "spokenText": "Costo del hogar"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Perda coberta fictícia 900 reais; franquia 100; teto de pagamento do seguro 600 após deduzir; sem outros custos. Ache custo próprio.",
+          "feedback": {
+            "met": "Teto deixa sem pagar mais que franquia.",
+            "not_yet": "Deduza, aplique teto de pagamento e subtraia pagamento da perda."
+          },
+          "help": [
+            "Deduza, aplique teto de pagamento e subtraia pagamento da perda."
+          ],
+          "steps": [
+            {
+              "expression": "900 - 100",
+              "result": "800",
+              "spokenText": "Perda após franquia"
+            },
+            {
+              "expression": "min(800, 600)",
+              "result": "600",
+              "spokenText": "Pagamento limitado do seguro"
+            },
+            {
+              "expression": "900 - 600",
+              "result": "300",
+              "spokenText": "Custo da família"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Can insurer payment become negative?",
+          "scene": "Fictional rule subtracts deductible from loss but floors payment at zero.",
+          "options": [
+            {
+              "label": "Yes, whenever loss is small"
+            },
+            {
+              "label": "Yes, a negative claim is owed"
+            },
+            {
+              "label": "No"
+            }
+          ],
+          "help": [
+            "Use the stated floor before applying the payout cap."
+          ],
+          "feedback": {
+            "met": "The zero floor prevents a negative insurer payment.",
+            "not_yet": "Use the stated floor before applying the payout cap."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Puede pago del seguro ser negativo?",
+          "scene": "Regla ficticia resta deducible de pérdida pero fija mínimo de pago en cero.",
+          "options": [
+            {
+              "label": "Sí, siempre con pérdida pequeña"
+            },
+            {
+              "label": "Sí, se debe reclamo negativo"
+            },
+            {
+              "label": "No"
+            }
+          ],
+          "help": [
+            "Usa mínimo indicado antes de aplicar tope de pago."
+          ],
+          "feedback": {
+            "met": "Mínimo cero evita pago negativo del seguro.",
+            "not_yet": "Usa mínimo indicado antes de aplicar tope de pago."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Pagamento do seguro pode ser negativo?",
+          "scene": "Regra fictícia subtrai franquia da perda mas fixa mínimo de pagamento em zero.",
+          "options": [
+            {
+              "label": "Sim, sempre com perda pequena"
+            },
+            {
+              "label": "Sim, deve pedido negativo"
+            },
+            {
+              "label": "Não"
+            }
+          ],
+          "help": [
+            "Use mínimo dado antes de aplicar teto de pagamento."
+          ],
+          "feedback": {
+            "met": "Mínimo zero evita pagamento negativo do seguro.",
+            "not_yet": "Use mínimo dado antes de aplicar teto de pagamento."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.05",
+      "copy": {
+        "en-US": {
+          "prompt": "What cost remains yours?",
+          "scene": "Fictional covered loss 500; deductible 100; insurer cap 1000; payout is loss minus deductible, floored at zero and capped; no other costs.",
+          "options": [
+            {
+              "label": "400"
+            },
+            {
+              "label": "100"
+            },
+            {
+              "label": "500"
+            }
+          ],
+          "help": [
+            "Apply the deduction, zero floor and cap before finding your share."
+          ],
+          "feedback": {
+            "met": "Your cost is loss minus the capped insurer payment.",
+            "not_yet": "Apply the deduction, zero floor and cap before finding your share."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué costo queda a tu cargo?",
+          "scene": "Pérdida cubierta ficticia 500; deducible 100; tope del seguro 1000; pago es pérdida menos deducible, mínimo cero y limitado al tope; sin otros costos.",
+          "options": [
+            {
+              "label": "400"
+            },
+            {
+              "label": "100"
+            },
+            {
+              "label": "500"
+            }
+          ],
+          "help": [
+            "Aplica deducción, mínimo cero y tope antes de calcular tu parte."
+          ],
+          "feedback": {
+            "met": "Tu costo es pérdida menos pago limitado del seguro.",
+            "not_yet": "Aplica deducción, mínimo cero y tope antes de calcular tu parte."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que custo fica com você?",
+          "scene": "Perda coberta fictícia 500; franquia 100; teto do seguro 1000; pagamento é perda menos franquia, mínimo zero e limitado ao teto; sem outros custos.",
+          "options": [
+            {
+              "label": "400"
+            },
+            {
+              "label": "100"
+            },
+            {
+              "label": "500"
+            }
+          ],
+          "help": [
+            "Aplique dedução, mínimo zero e teto antes de calcular sua parte."
+          ],
+          "feedback": {
+            "met": "Seu custo é perda menos pagamento limitado do seguro.",
+            "not_yet": "Aplique dedução, mínimo zero e teto antes de calcular sua parte."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          500,
+          100,
+          1000
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "op": "min",
+              "args": [
+                {
+                  "op": "max",
+                  "args": [
+                    {
+                      "op": "subtract",
+                      "args": [
+                        {
+                          "input": 0
+                        },
+                        {
+                          "input": 1
+                        }
+                      ]
+                    },
+                    {
+                      "constant": 0
+                    }
+                  ]
+                },
+                {
+                  "input": 2
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.05",
+      "copy": {
+        "en-US": {
+          "prompt": "What cost remains yours?",
+          "scene": "Fictional covered loss 80; deductible 100; insurer cap 1000; payout is loss minus deductible, floored at zero and capped; no other costs.",
+          "options": [
+            {
+              "label": "80"
+            },
+            {
+              "label": "0"
+            },
+            {
+              "label": "100"
+            }
+          ],
+          "help": [
+            "Apply the deduction, zero floor and cap before finding your share."
+          ],
+          "feedback": {
+            "met": "Your cost is loss minus the capped insurer payment.",
+            "not_yet": "Apply the deduction, zero floor and cap before finding your share."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué costo queda a tu cargo?",
+          "scene": "Pérdida cubierta ficticia 80; deducible 100; tope del seguro 1000; pago es pérdida menos deducible, mínimo cero y limitado al tope; sin otros costos.",
+          "options": [
+            {
+              "label": "80"
+            },
+            {
+              "label": "0"
+            },
+            {
+              "label": "100"
+            }
+          ],
+          "help": [
+            "Aplica deducción, mínimo cero y tope antes de calcular tu parte."
+          ],
+          "feedback": {
+            "met": "Tu costo es pérdida menos pago limitado del seguro.",
+            "not_yet": "Aplica deducción, mínimo cero y tope antes de calcular tu parte."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que custo fica com você?",
+          "scene": "Perda coberta fictícia 80; franquia 100; teto do seguro 1000; pagamento é perda menos franquia, mínimo zero e limitado ao teto; sem outros custos.",
+          "options": [
+            {
+              "label": "80"
+            },
+            {
+              "label": "0"
+            },
+            {
+              "label": "100"
+            }
+          ],
+          "help": [
+            "Aplique dedução, mínimo zero e teto antes de calcular sua parte."
+          ],
+          "feedback": {
+            "met": "Seu custo é perda menos pagamento limitado do seguro.",
+            "not_yet": "Aplique dedução, mínimo zero e teto antes de calcular sua parte."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          80,
+          100,
+          1000
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "op": "min",
+              "args": [
+                {
+                  "op": "max",
+                  "args": [
+                    {
+                      "op": "subtract",
+                      "args": [
+                        {
+                          "input": 0
+                        },
+                        {
+                          "input": 1
+                        }
+                      ]
+                    },
+                    {
+                      "constant": 0
+                    }
+                  ]
+                },
+                {
+                  "input": 2
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.05",
+      "copy": {
+        "en-US": {
+          "prompt": "What cost remains yours?",
+          "scene": "Fictional covered loss 1400; deductible 200; insurer cap 900; payout is loss minus deductible, floored at zero and capped; no other costs.",
+          "options": [
+            {
+              "label": "1200"
+            },
+            {
+              "label": "500"
+            },
+            {
+              "label": "200"
+            }
+          ],
+          "help": [
+            "Apply the deduction, zero floor and cap before finding your share."
+          ],
+          "feedback": {
+            "met": "Your cost is loss minus the capped insurer payment.",
+            "not_yet": "Apply the deduction, zero floor and cap before finding your share."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué costo queda a tu cargo?",
+          "scene": "Pérdida cubierta ficticia 1400; deducible 200; tope del seguro 900; pago es pérdida menos deducible, mínimo cero y limitado al tope; sin otros costos.",
+          "options": [
+            {
+              "label": "1200"
+            },
+            {
+              "label": "500"
+            },
+            {
+              "label": "200"
+            }
+          ],
+          "help": [
+            "Aplica deducción, mínimo cero y tope antes de calcular tu parte."
+          ],
+          "feedback": {
+            "met": "Tu costo es pérdida menos pago limitado del seguro.",
+            "not_yet": "Aplica deducción, mínimo cero y tope antes de calcular tu parte."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que custo fica com você?",
+          "scene": "Perda coberta fictícia 1400; franquia 200; teto do seguro 900; pagamento é perda menos franquia, mínimo zero e limitado ao teto; sem outros custos.",
+          "options": [
+            {
+              "label": "1200"
+            },
+            {
+              "label": "500"
+            },
+            {
+              "label": "200"
+            }
+          ],
+          "help": [
+            "Aplique dedução, mínimo zero e teto antes de calcular sua parte."
+          ],
+          "feedback": {
+            "met": "Seu custo é perda menos pagamento limitado do seguro.",
+            "not_yet": "Aplique dedução, mínimo zero e teto antes de calcular sua parte."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          1400,
+          200,
+          900
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "op": "min",
+              "args": [
+                {
+                  "op": "max",
+                  "args": [
+                    {
+                      "op": "subtract",
+                      "args": [
+                        {
+                          "input": 0
+                        },
+                        {
+                          "input": 1
+                        }
+                      ]
+                    },
+                    {
+                      "constant": 0
+                    }
+                  ]
+                },
+                {
+                  "input": 2
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.insurance-risk.05",
+      "copy": {
+        "en-US": {
+          "prompt": "Budget for repairs after insurance?",
+          "scene": "Fictional covered flood repairs: 750. Insurer pays repairs minus deductible 50, minimum zero, maximum 400; no other costs.",
+          "options": [
+            {
+              "label": "350"
+            },
+            {
+              "label": "50"
+            },
+            {
+              "label": "700"
+            }
+          ],
+          "help": [
+            "Subtract the capped insurance payment from the full repair cost."
+          ],
+          "feedback": {
+            "met": "Insurance pays 400; budget the remaining 350 to complete the repairs.",
+            "not_yet": "Subtract the capped insurance payment from the full repair cost."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto presupuestas para reparar tras el seguro?",
+          "scene": "Reparación cubierta por inundación: 750. Póliza ficticia: seguro paga reparación menos deducible 50, mínimo cero, máximo 400; sin otros costos.",
+          "options": [
+            {
+              "label": "350"
+            },
+            {
+              "label": "50"
+            },
+            {
+              "label": "700"
+            }
+          ],
+          "help": [
+            "Resta el pago limitado del seguro al costo completo de reparación."
+          ],
+          "feedback": {
+            "met": "El seguro paga 400; presupuesta los 350 restantes para completar la reparación.",
+            "not_yet": "Resta el pago limitado del seguro al costo completo de reparación."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto reservar para reparar após o seguro?",
+          "scene": "Reparo coberto por enchente: 750. Apólice fictícia: seguro paga reparo menos franquia 50, mínimo zero, máximo 400; sem outros custos.",
+          "options": [
+            {
+              "label": "350"
+            },
+            {
+              "label": "50"
+            },
+            {
+              "label": "700"
+            }
+          ],
+          "help": [
+            "Subtraia o pagamento limitado do seguro do custo total do reparo."
+          ],
+          "feedback": {
+            "met": "O seguro paga 400; reserve os 350 restantes para completar o reparo.",
+            "not_yet": "Subtraia o pagamento limitado do seguro do custo total do reparo."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          750,
+          50,
+          400
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "op": "min",
+              "args": [
+                {
+                  "op": "max",
+                  "args": [
+                    {
+                      "op": "subtract",
+                      "args": [
+                        {
+                          "input": 0
+                        },
+                        {
+                          "input": 1
+                        }
+                      ]
+                    },
+                    {
+                      "constant": 0
+                    }
+                  ]
+                },
+                {
+                  "input": 2
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

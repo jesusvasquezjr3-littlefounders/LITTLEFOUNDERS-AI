@@ -1,0 +1,937 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-credit-mechanics-part-1",
+  "lesson_id": "fe-production-credit-mechanics-03",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.credit-mechanics.03"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Calculate a period’s interest on the explicitly stated outstanding balance.",
+  "title": {
+    "en-US": "Remaining principal",
+    "es-MX": "Interés sobre lo pendiente",
+    "pt-BR": "Juros sobre o saldo"
+  },
+  "new_concepts": [
+    "finance.prod.credit-mechanics.03"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Interest on what remains\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Interés sobre lo pendiente\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Juros sobre o saldo\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.credit-mechanics.03",
+      "observable_action": "Calculate a period’s interest on the explicitly stated outstanding balance.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.credit-mechanics.01",
+      "price.percent",
+      "prod.financial-math.11"
+    ],
+    "retrieval_skills": [],
+    "relevance": "The rate needs both a balance and a matching time period.",
+    "misconception": "A periodic interest rate is a fixed money charge or applies to the original loan forever.",
+    "numeracy_support": "Every quantity and assumption needed to decide is visible in the current scenario. Examples explain the relationship before independent application.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.credit-mechanics.03",
+        "context_id": "fe-production-credit-mechanics-03-example-01",
+        "supports_from": [],
+        "reasoning": "For this period, 10% of an outstanding 200 is 20. Use the stated balance, not an older loan amount."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.credit-mechanics.03",
+        "context_id": "fe-production-credit-mechanics-03-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Apply the period’s percentage to its outstanding balance."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.credit-mechanics.03",
+        "context_id": "fe-production-credit-mechanics-03-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The percentage is a share of the balance, not cash."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.credit-mechanics.03",
+        "context_id": "fe-production-credit-mechanics-03-practice-03",
+        "supports_from": [],
+        "reasoning": "Interest is the percentage charge, not the updated balance."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.credit-mechanics.03",
+        "context_id": "fe-production-credit-mechanics-03-practice-04",
+        "supports_from": [],
+        "reasoning": "The agreement’s current interest base determines this charge."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.credit-mechanics.03",
+        "context_id": "fe-production-credit-mechanics-03-practice-05",
+        "supports_from": [],
+        "reasoning": "Use the rate once for its stated whole period."
+      },
+      {
+        "segment_id": "transfer-06",
+        "skill_id": "prod.credit-mechanics.03",
+        "context_id": "fe-production-credit-mechanics-03-transfer-06",
+        "supports_from": [],
+        "reasoning": "This agreement charges interest on the current, not original, balance."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.credit-mechanics.03",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "The rate needs both a balance and a matching time period."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "La tasa necesita un saldo y un periodo correspondiente."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "A taxa precisa de um saldo e de um período correspondente."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Follow the evidence",
+          "line": "For this period, 10% of an outstanding 200 is 20. Use the stated balance, not an older loan amount."
+        },
+        "es-MX": {
+          "prompt": "Sigue las pruebas",
+          "line": "En este periodo, 10% de un saldo pendiente de 200 es 20. Usa el saldo indicado, no el préstamo original."
+        },
+        "pt-BR": {
+          "prompt": "Siga as provas",
+          "line": "Neste período, 10% de um saldo devedor de 200 é 20. Use o saldo indicado, não o empréstimo original."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Interest for this period?",
+          "scene": "Fictional period: balance 300, rate 10%. No other charges.",
+          "options": [
+            {
+              "label": "30"
+            },
+            {
+              "label": "310"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Multiply the balance by the rate divided by one hundred."
+          ],
+          "feedback": {
+            "met": "Apply the period’s percentage to its outstanding balance.",
+            "not_yet": "Multiply the balance by the rate divided by one hundred."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Interés de este periodo?",
+          "scene": "Periodo ficticio: saldo 300, tasa 10%. Sin otros cargos.",
+          "options": [
+            {
+              "label": "30"
+            },
+            {
+              "label": "310"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Multiplica el saldo por la tasa dividida entre cien."
+          ],
+          "feedback": {
+            "met": "Aplica el porcentaje del periodo a su saldo pendiente.",
+            "not_yet": "Multiplica el saldo por la tasa dividida entre cien."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Juros deste período?",
+          "scene": "Período fictício: saldo 300, taxa 10%. Sem outros encargos.",
+          "options": [
+            {
+              "label": "30"
+            },
+            {
+              "label": "310"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Multiplique o saldo pela taxa dividida por cem."
+          ],
+          "feedback": {
+            "met": "Aplique o percentual do período ao saldo devedor.",
+            "not_yet": "Multiplique o saldo pela taxa dividida por cem."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          300,
+          10
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "constant": 100
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Interest for this period?",
+          "scene": "Outstanding balance 400. Rate for this period: 5%.",
+          "options": [
+            {
+              "label": "20"
+            },
+            {
+              "label": "5"
+            },
+            {
+              "label": "405"
+            }
+          ],
+          "help": [
+            "Find five hundredths of the stated balance."
+          ],
+          "feedback": {
+            "met": "The percentage is a share of the balance, not cash.",
+            "not_yet": "Find five hundredths of the stated balance."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Interés de este periodo?",
+          "scene": "Saldo pendiente 400. Tasa de este periodo: 5%.",
+          "options": [
+            {
+              "label": "20"
+            },
+            {
+              "label": "5"
+            },
+            {
+              "label": "405"
+            }
+          ],
+          "help": [
+            "Calcula cinco centésimas del saldo indicado."
+          ],
+          "feedback": {
+            "met": "El porcentaje es una parte del saldo, no dinero fijo.",
+            "not_yet": "Calcula cinco centésimas del saldo indicado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Juros deste período?",
+          "scene": "Saldo devedor 400. Taxa deste período: 5%.",
+          "options": [
+            {
+              "label": "20"
+            },
+            {
+              "label": "5"
+            },
+            {
+              "label": "405"
+            }
+          ],
+          "help": [
+            "Calcule cinco centésimos do saldo indicado."
+          ],
+          "feedback": {
+            "met": "O percentual é uma parte do saldo, não um valor fixo.",
+            "not_yet": "Calcule cinco centésimos do saldo indicado."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          400,
+          5
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "constant": 100
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Interest only?",
+          "scene": "Current balance 150. This period’s rate is 20%; no fees.",
+          "options": [
+            {
+              "label": "180"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "170"
+            }
+          ],
+          "help": [
+            "The task asks for interest alone."
+          ],
+          "feedback": {
+            "met": "Interest is the percentage charge, not the updated balance.",
+            "not_yet": "The task asks for interest alone."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Solo el interés?",
+          "scene": "Saldo actual 150. Tasa del periodo: 20%; sin comisiones.",
+          "options": [
+            {
+              "label": "180"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "170"
+            }
+          ],
+          "help": [
+            "La pregunta pide únicamente el interés."
+          ],
+          "feedback": {
+            "met": "El interés es el cargo porcentual, no el saldo actualizado.",
+            "not_yet": "La pregunta pide únicamente el interés."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Somente os juros?",
+          "scene": "Saldo atual 150. Taxa do período: 20%; sem tarifas.",
+          "options": [
+            {
+              "label": "180"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "170"
+            }
+          ],
+          "help": [
+            "A pergunta pede somente os juros."
+          ],
+          "feedback": {
+            "met": "Os juros são o encargo percentual, não o saldo atualizado.",
+            "not_yet": "A pergunta pede somente os juros."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          150,
+          20
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "constant": 100
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Interest for this period?",
+          "scene": "After a payment, the stated interest base is 80. Period rate: 5%.",
+          "options": [
+            {
+              "label": "85"
+            },
+            {
+              "label": "4"
+            },
+            {
+              "label": "5"
+            }
+          ],
+          "help": [
+            "Use the displayed base and the matching period rate."
+          ],
+          "feedback": {
+            "met": "The agreement’s current interest base determines this charge.",
+            "not_yet": "Use the displayed base and the matching period rate."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Interés de este periodo?",
+          "scene": "Tras un pago, la base de interés indicada es 80. Tasa del periodo: 5%.",
+          "options": [
+            {
+              "label": "85"
+            },
+            {
+              "label": "4"
+            },
+            {
+              "label": "5"
+            }
+          ],
+          "help": [
+            "Usa la base mostrada y la tasa del mismo periodo."
+          ],
+          "feedback": {
+            "met": "La base actual indicada determina este cargo.",
+            "not_yet": "Usa la base mostrada y la tasa del mismo periodo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Juros deste período?",
+          "scene": "Após um pagamento, a base dos juros é 80. Taxa do período: 5%.",
+          "options": [
+            {
+              "label": "85"
+            },
+            {
+              "label": "4"
+            },
+            {
+              "label": "5"
+            }
+          ],
+          "help": [
+            "Use a base mostrada e a taxa do mesmo período."
+          ],
+          "feedback": {
+            "met": "A base atual indicada determina este encargo.",
+            "not_yet": "Use a base mostrada e a taxa do mesmo período."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          80,
+          5
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "constant": 100
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Interest on this balance?",
+          "scene": "The agreement specifies balance 250 and rate 4% for the whole period.",
+          "options": [
+            {
+              "label": "10"
+            },
+            {
+              "label": "254"
+            },
+            {
+              "label": "4"
+            }
+          ],
+          "help": [
+            "Do not invent extra periods beyond the stated agreement."
+          ],
+          "feedback": {
+            "met": "Use the rate once for its stated whole period.",
+            "not_yet": "Do not invent extra periods beyond the stated agreement."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Interés de este saldo?",
+          "scene": "El contrato indica saldo 250 y tasa 4% para todo el periodo.",
+          "options": [
+            {
+              "label": "10"
+            },
+            {
+              "label": "254"
+            },
+            {
+              "label": "4"
+            }
+          ],
+          "help": [
+            "No inventes periodos adicionales al contrato indicado."
+          ],
+          "feedback": {
+            "met": "Usa la tasa una vez para el periodo completo indicado.",
+            "not_yet": "No inventes periodos adicionales al contrato indicado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Juros sobre este saldo?",
+          "scene": "O contrato indica saldo 250 e taxa 4% para todo o período.",
+          "options": [
+            {
+              "label": "10"
+            },
+            {
+              "label": "254"
+            },
+            {
+              "label": "4"
+            }
+          ],
+          "help": [
+            "Não invente períodos além do contrato informado."
+          ],
+          "feedback": {
+            "met": "Use a taxa uma vez para o período completo indicado.",
+            "not_yet": "Não invente períodos além do contrato informado."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          250,
+          4
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "constant": 100
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.credit-mechanics.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Interest on the current balance?",
+          "scene": "Originally borrowed 200; current interest base 120. Rate for this period: 5%.",
+          "options": [
+            {
+              "label": "5"
+            },
+            {
+              "label": "10"
+            },
+            {
+              "label": "6"
+            }
+          ],
+          "help": [
+            "Select the current interest base before applying the period rate."
+          ],
+          "feedback": {
+            "met": "This agreement charges interest on the current, not original, balance.",
+            "not_yet": "Select the current interest base before applying the period rate."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Interés del saldo actual?",
+          "scene": "Préstamo original 200; base actual de interés 120. Tasa de este periodo: 5%.",
+          "options": [
+            {
+              "label": "5"
+            },
+            {
+              "label": "10"
+            },
+            {
+              "label": "6"
+            }
+          ],
+          "help": [
+            "Elige la base actual antes de aplicar la tasa del periodo."
+          ],
+          "feedback": {
+            "met": "Este contrato cobra interés sobre el saldo actual, no original.",
+            "not_yet": "Elige la base actual antes de aplicar la tasa del periodo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Juros sobre o saldo atual?",
+          "scene": "Empréstimo original 200; base atual dos juros 120. Taxa deste período: 5%.",
+          "options": [
+            {
+              "label": "5"
+            },
+            {
+              "label": "10"
+            },
+            {
+              "label": "6"
+            }
+          ],
+          "help": [
+            "Escolha a base atual antes de aplicar a taxa do período."
+          ],
+          "feedback": {
+            "met": "Este contrato cobra juros sobre o saldo atual, não original.",
+            "not_yet": "Escolha a base atual antes de aplicar a taxa do período."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          200,
+          120,
+          5
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "input": 1
+                },
+                {
+                  "input": 2
+                }
+              ]
+            },
+            {
+              "constant": 100
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

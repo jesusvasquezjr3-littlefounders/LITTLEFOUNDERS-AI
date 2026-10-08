@@ -1,0 +1,798 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-housing-transport-part-1",
+  "lesson_id": "fe-production-housing-transport-04",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.housing-transport.04"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Separate a home purchase price from financing, transaction and ongoing ownership costs.",
+  "title": {
+    "en-US": "Purchase Costs",
+    "es-MX": "Más allá del precio",
+    "pt-BR": "Além do preço de compra"
+  },
+  "new_concepts": [
+    "finance.prod.housing-transport.04"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Purchase Costs\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Más allá del precio\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Além do preço de compra\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.housing-transport.04",
+      "observable_action": "Separate a home purchase price from financing, transaction and ongoing ownership costs.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.housing-transport.01",
+      "prod.credit-mechanics.02",
+      "prod.purchase-decisions.06"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Buying a home creates several cost categories; compare fictional dollars before calling a price affordable.",
+    "misconception": "The sale price is the total cost of buying, financing and maintaining a home.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.housing-transport.04",
+        "context_id": "housing-transport-04-example-01",
+        "supports_from": [],
+        "reasoning": "Price buys the home; transaction charges complete the purchase, financing costs fund borrowing, and maintenance continues afterward."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.housing-transport.04",
+        "context_id": "housing-transport-04-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The registration charge is tied to completing this purchase."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.housing-transport.04",
+        "context_id": "housing-transport-04-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Interest pays for borrowing under the loan terms."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.housing-transport.04",
+        "context_id": "housing-transport-04-practice-01",
+        "supports_from": [],
+        "reasoning": "Add the stated transaction charges to the price."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.housing-transport.04",
+        "context_id": "housing-transport-04-practice-02",
+        "supports_from": [],
+        "reasoning": "Ownership does not eliminate recurring upkeep."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.housing-transport.04",
+        "context_id": "housing-transport-04-practice-03",
+        "supports_from": [],
+        "reasoning": "Equal prices can lead to different total ownership costs."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.housing-transport.04",
+        "context_id": "housing-transport-04-transfer-01",
+        "supports_from": [],
+        "reasoning": "Missing cost categories prevent a complete affordability comparison."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.housing-transport.04",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Buying a home creates several cost categories; compare fictional dollars before calling a price affordable."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Comprar vivienda crea varias categorías de costos; compara pesos ficticios antes de llamar asequible a un precio."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Comprar uma casa cria várias categorias de custos; compare reais fictícios antes de chamar um preço de acessível."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Separate the cost layers",
+          "line": "Price buys the home; transaction charges complete the purchase, financing costs fund borrowing, and maintenance continues afterward."
+        },
+        "es-MX": {
+          "prompt": "Separa las capas de costos",
+          "line": "El precio compra la vivienda; cargos de operación completan la compra, financiamiento cuesta por prestar y mantenimiento continúa después."
+        },
+        "pt-BR": {
+          "prompt": "Separe os tipos de custo",
+          "line": "O preço compra a casa; custos da transação completam a compra, juros custeiam o empréstimo e manutenção continua depois."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Which cost completes the transaction?",
+          "scene": "Fictional purchase lists a registration charge due at closing.",
+          "options": [
+            {
+              "label": "Future roof repairs"
+            },
+            {
+              "label": "Registration charge"
+            },
+            {
+              "label": "Next year’s electricity"
+            }
+          ],
+          "help": [
+            "Separate transaction charges from later running costs."
+          ],
+          "feedback": {
+            "met": "The registration charge is tied to completing this purchase.",
+            "not_yet": "Separate transaction charges from later running costs."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué costo completa la operación?",
+          "scene": "Compra ficticia incluye cargo de registro al cierre.",
+          "options": [
+            {
+              "label": "Reparaciones futuras del techo"
+            },
+            {
+              "label": "Cargo de registro"
+            },
+            {
+              "label": "Electricidad del próximo año"
+            }
+          ],
+          "help": [
+            "Separa cargos de operación de costos posteriores."
+          ],
+          "feedback": {
+            "met": "El registro está ligado a completar esta compra.",
+            "not_yet": "Separa cargos de operación de costos posteriores."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual custo conclui a transação?",
+          "scene": "Compra fictícia inclui cobrança de registro no fechamento.",
+          "options": [
+            {
+              "label": "Consertos futuros do telhado"
+            },
+            {
+              "label": "Cobrança de registro"
+            },
+            {
+              "label": "Luz do próximo ano"
+            }
+          ],
+          "help": [
+            "Separe custos da transação de gastos posteriores."
+          ],
+          "feedback": {
+            "met": "O registro está ligado a concluir esta compra.",
+            "not_yet": "Separe custos da transação de gastos posteriores."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Which is a financing cost?",
+          "scene": "A lender charges interest for lending the buyer money.",
+          "options": [
+            {
+              "label": "Loan interest"
+            },
+            {
+              "label": "Paint bought with cash"
+            },
+            {
+              "label": "The seller’s asking price"
+            }
+          ],
+          "help": [
+            "Identify the cost caused by borrowing."
+          ],
+          "feedback": {
+            "met": "Interest pays for borrowing under the loan terms.",
+            "not_yet": "Identify the cost caused by borrowing."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es costo de financiamiento?",
+          "scene": "Prestamista cobra intereses por prestar dinero al comprador.",
+          "options": [
+            {
+              "label": "Intereses del préstamo"
+            },
+            {
+              "label": "Pintura pagada en efectivo"
+            },
+            {
+              "label": "Precio pedido por vendedor"
+            }
+          ],
+          "help": [
+            "Identifica el costo causado por el préstamo."
+          ],
+          "feedback": {
+            "met": "Los intereses pagan por tomar dinero prestado.",
+            "not_yet": "Identifica el costo causado por el préstamo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é custo de financiamento?",
+          "scene": "Credor cobra juros por emprestar dinheiro ao comprador.",
+          "options": [
+            {
+              "label": "Juros do empréstimo"
+            },
+            {
+              "label": "Tinta paga à vista"
+            },
+            {
+              "label": "Preço pedido pelo vendedor"
+            }
+          ],
+          "help": [
+            "Ache o custo causado pelo empréstimo."
+          ],
+          "feedback": {
+            "met": "Juros pagam pelo uso do dinheiro emprestado.",
+            "not_yet": "Ache o custo causado pelo empréstimo."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.04",
+      "copy": {
+        "en-US": {
+          "prompt": "What is the stated purchase total?",
+          "scene": "Cash price: 80000; Transaction charges: 4000; No borrowing or other upfront charges.",
+          "options": [
+            {
+              "label": "76000"
+            },
+            {
+              "label": "80000"
+            },
+            {
+              "label": "84000"
+            }
+          ],
+          "help": [
+            "Both listed amounts are required for this cash purchase."
+          ],
+          "feedback": {
+            "met": "Add the stated transaction charges to the price.",
+            "not_yet": "Both listed amounts are required for this cash purchase."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es el total indicado?",
+          "scene": "Precio de contado: 80000; Cargos de operación: 4000; Sin préstamo ni otros cargos iniciales.",
+          "options": [
+            {
+              "label": "76000"
+            },
+            {
+              "label": "80000"
+            },
+            {
+              "label": "84000"
+            }
+          ],
+          "help": [
+            "Ambos montos son necesarios para esta compra de contado."
+          ],
+          "feedback": {
+            "met": "Suma los cargos de operación al precio.",
+            "not_yet": "Ambos montos son necesarios para esta compra de contado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é o total dado?",
+          "scene": "Preço à vista: 80000; Custos da transação: 4000; Sem empréstimo ou outros custos iniciais.",
+          "options": [
+            {
+              "label": "76000"
+            },
+            {
+              "label": "80000"
+            },
+            {
+              "label": "84000"
+            }
+          ],
+          "help": [
+            "Ambos os valores são necessários nesta compra à vista."
+          ],
+          "feedback": {
+            "met": "Some os custos da transação ao preço.",
+            "not_yet": "Ambos os valores são necessários nesta compra à vista."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          80000,
+          4000
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Which cost continues after purchase?",
+          "scene": "The home needs routine upkeep while occupied.",
+          "options": [
+            {
+              "label": "Maintenance"
+            },
+            {
+              "label": "Only the original deposit"
+            },
+            {
+              "label": "Only the registration payment"
+            }
+          ],
+          "help": [
+            "Identify the cost of keeping the home usable."
+          ],
+          "feedback": {
+            "met": "Ownership does not eliminate recurring upkeep.",
+            "not_yet": "Identify the cost of keeping the home usable."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué costo sigue tras comprar?",
+          "scene": "La vivienda necesita cuidado habitual mientras se ocupa.",
+          "options": [
+            {
+              "label": "Mantenimiento"
+            },
+            {
+              "label": "Solo el depósito original"
+            },
+            {
+              "label": "Solo el pago de registro"
+            }
+          ],
+          "help": [
+            "Identifica el costo de mantener utilizable la vivienda."
+          ],
+          "feedback": {
+            "met": "Ser dueño no elimina el cuidado recurrente.",
+            "not_yet": "Identifica el costo de mantener utilizable la vivienda."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual custo segue após comprar?",
+          "scene": "A casa precisa de cuidados regulares durante o uso.",
+          "options": [
+            {
+              "label": "Manutenção"
+            },
+            {
+              "label": "Só o depósito original"
+            },
+            {
+              "label": "Só o pagamento de registro"
+            }
+          ],
+          "help": [
+            "Ache o custo de manter a casa em uso."
+          ],
+          "feedback": {
+            "met": "Ser dono não elimina os cuidados contínuos.",
+            "not_yet": "Ache o custo de manter a casa em uso."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.04",
+      "copy": {
+        "en-US": {
+          "prompt": "What is missing from this comparison?",
+          "scene": "Two equal-price homes have different borrowing costs and upkeep needs.",
+          "options": [
+            {
+              "label": "Only the purchase prices"
+            },
+            {
+              "label": "Nothing because prices match"
+            },
+            {
+              "label": "Financing and ongoing costs"
+            }
+          ],
+          "help": [
+            "Include the costs that differ beyond the sale price."
+          ],
+          "feedback": {
+            "met": "Equal prices can lead to different total ownership costs.",
+            "not_yet": "Include the costs that differ beyond the sale price."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué falta en esta comparación?",
+          "scene": "Viviendas con igual precio tienen distintos costos de préstamo y cuidado.",
+          "options": [
+            {
+              "label": "Solo los precios de compra"
+            },
+            {
+              "label": "Nada porque precios coinciden"
+            },
+            {
+              "label": "Financiamiento y costos continuos"
+            }
+          ],
+          "help": [
+            "Incluye costos distintos más allá del precio de venta."
+          ],
+          "feedback": {
+            "met": "Precios iguales pueden dar costos totales de propiedad distintos.",
+            "not_yet": "Incluye costos distintos más allá del precio de venta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que falta nesta comparação?",
+          "scene": "Casas de mesmo preço têm custos de empréstimo e cuidado distintos.",
+          "options": [
+            {
+              "label": "Só os preços de compra"
+            },
+            {
+              "label": "Nada pois preços coincidem"
+            },
+            {
+              "label": "Financiamento e custos contínuos"
+            }
+          ],
+          "help": [
+            "Inclua os custos diferentes além do preço de venda."
+          ],
+          "feedback": {
+            "met": "Preços iguais podem gerar custos totais de moradia distintos.",
+            "not_yet": "Inclua os custos diferentes além do preço de venda."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.housing-transport.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Can this settle affordability?",
+          "scene": "A listing gives price only; loan charges, closing costs and recurring bills are unknown.",
+          "options": [
+            {
+              "label": "Yes, price includes everything"
+            },
+            {
+              "label": "Yes, assume missing costs zero"
+            },
+            {
+              "label": "No, gather missing costs"
+            }
+          ],
+          "help": [
+            "Obtain the omitted financing, transaction and running costs."
+          ],
+          "feedback": {
+            "met": "Missing cost categories prevent a complete affordability comparison.",
+            "not_yet": "Obtain the omitted financing, transaction and running costs."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Esto permite decidir si alcanza?",
+          "scene": "Anuncio da solo precio; faltan cargos del préstamo, cierre y pagos recurrentes.",
+          "options": [
+            {
+              "label": "Sí, precio incluye todo"
+            },
+            {
+              "label": "Sí, suponer faltantes cero"
+            },
+            {
+              "label": "No, reunir costos faltantes"
+            }
+          ],
+          "help": [
+            "Obtén los costos omitidos de préstamo, operación y mantenimiento."
+          ],
+          "feedback": {
+            "met": "Faltan costos para comparar si puedes pagarlo.",
+            "not_yet": "Obtén los costos omitidos de préstamo, operación y mantenimiento."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Isso permite decidir se cabe?",
+          "scene": "Anúncio só traz preço; faltam custos do empréstimo, fechamento e contas regulares.",
+          "options": [
+            {
+              "label": "Sim, preço inclui tudo"
+            },
+            {
+              "label": "Sim, supor ausentes zero"
+            },
+            {
+              "label": "Não, buscar custos ausentes"
+            }
+          ],
+          "help": [
+            "Obtenha custos omitidos de empréstimo, transação e uso."
+          ],
+          "feedback": {
+            "met": "Faltam custos para comparar se cabe no orçamento.",
+            "not_yet": "Obtenha custos omitidos de empréstimo, transação e uso."
+          }
+        }
+      }
+    }
+  ]
+}

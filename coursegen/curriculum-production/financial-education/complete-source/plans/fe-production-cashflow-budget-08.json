@@ -1,0 +1,990 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-cashflow-budget-part-2",
+  "lesson_id": "fe-production-cashflow-budget-08",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.plan.periodic"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Spread a known annual bill across the months remaining until it is due.",
+  "title": {
+    "en-US": "Future bills",
+    "es-MX": "Prepara una cuenta futura conocida",
+    "pt-BR": "Prepare uma conta futura conhecida"
+  },
+  "new_concepts": [
+    "finance.plan.periodic"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Prepare for a known future bill\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Prepara una cuenta futura conocida\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Prepare uma conta futura conhecida\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "plan.periodic",
+      "observable_action": "Spread a known annual bill across the months remaining until it is due.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.cashflow-budget.03",
+      "prod.spending-patterns.05",
+      "prod.financial-math.06",
+      "cash.dates",
+      "cash.reserved"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Divide the unfunded bill across deposits possible before its due date.",
+    "misconception": "Dividing every annual bill by twelve even when fewer deposits remain or some money is already reserved.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "plan.periodic",
+        "context_id": "fe-production-cashflow-budget-08-example-01",
+        "supports_from": [],
+        "reasoning": "Subtract money already reserved from the bill. Divide the remainder by deposits available before payment is due."
+      },
+      {
+        "segment_id": "guided-board",
+        "skill_id": "plan.periodic",
+        "context_id": "fe-production-cashflow-budget-08-guided-board",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Use the unfunded amount and only the remaining deposits."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "plan.periodic",
+        "context_id": "fe-production-cashflow-budget-08-guided-01",
+        "supports_from": [
+          "guided-board"
+        ],
+        "reasoning": "(180 − 60) ÷ 4 = 30 per deposit."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "plan.periodic",
+        "context_id": "fe-production-cashflow-budget-08-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Annual frequency does not mean twelve deposits still remain."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "plan.periodic",
+        "context_id": "fe-production-cashflow-budget-08-practice-01",
+        "supports_from": [],
+        "reasoning": "(240 − 90) ÷ 5 = 30 per deposit."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "plan.periodic",
+        "context_id": "fe-production-cashflow-budget-08-practice-02",
+        "supports_from": [],
+        "reasoning": "A required contribution is not proof that it fits the budget."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "plan.periodic",
+        "context_id": "fe-production-cashflow-budget-08-practice-03",
+        "supports_from": [],
+        "reasoning": "A contribution after the deadline cannot fund on-time payment."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "plan.periodic",
+        "context_id": "fe-production-cashflow-budget-08-transfer-01",
+        "supports_from": [],
+        "reasoning": "(210 − 70) ÷ 7 = 20 per deposit."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "plan.periodic",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Divide the unfunded bill across deposits possible before its due date."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Divide lo que falta entre aportaciones posibles antes del vencimiento."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Divida o que falta entre contribuições possíveis antes do vencimento."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Use what remains",
+          "line": "Subtract money already reserved from the bill. Divide the remainder by deposits available before payment is due."
+        },
+        "es-MX": {
+          "prompt": "Usa lo que falta",
+          "line": "Resta de la cuenta el dinero ya reservado. Divide el resto entre aportaciones disponibles antes de vencer."
+        },
+        "pt-BR": {
+          "prompt": "Use o que falta",
+          "line": "Subtraia da conta o dinheiro já reservado. Divida o restante entre contribuições disponíveis antes de vencer."
+        }
+      }
+    },
+    {
+      "id": "guided-board",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "finance.plan.periodic",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "bill"
+          },
+          {
+            "id": "remaining"
+          },
+          {
+            "id": "contribution"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "remaining",
+          "contribution"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "remaining": "90",
+          "contribution": "30"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Bill 120; already reserved 30; three deposits remain.",
+          "steps": [
+            {
+              "expression": "120",
+              "result": "120",
+              "spokenText": "Start with the full bill."
+            },
+            {
+              "expression": "120 − 30",
+              "result": "90",
+              "spokenText": "Remove money already reserved."
+            },
+            {
+              "expression": "90 ÷ 3",
+              "result": "30",
+              "spokenText": "Split the remainder across remaining deposits."
+            }
+          ],
+          "feedback": {
+            "met": "Use the unfunded amount and only the remaining deposits.",
+            "not_yet": "Subtract the reserve before dividing."
+          },
+          "help": [
+            "Subtract the reserve before dividing."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Cuenta 120; ya reservaste 30; quedan tres aportaciones.",
+          "steps": [
+            {
+              "expression": "120",
+              "result": "120",
+              "spokenText": "Empieza con la cuenta completa."
+            },
+            {
+              "expression": "120 − 30",
+              "result": "90",
+              "spokenText": "Resta lo ya reservado."
+            },
+            {
+              "expression": "90 ÷ 3",
+              "result": "30",
+              "spokenText": "Divide el resto entre aportaciones restantes."
+            }
+          ],
+          "feedback": {
+            "met": "Usa lo que falta y solo las aportaciones restantes.",
+            "not_yet": "Resta la reserva antes de dividir."
+          },
+          "help": [
+            "Resta la reserva antes de dividir."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Conta 120; já reservou 30; restam três contribuições.",
+          "steps": [
+            {
+              "expression": "120",
+              "result": "120",
+              "spokenText": "Comece com a conta completa."
+            },
+            {
+              "expression": "120 − 30",
+              "result": "90",
+              "spokenText": "Subtraia o que já reservou."
+            },
+            {
+              "expression": "90 ÷ 3",
+              "result": "30",
+              "spokenText": "Divida o restante entre contribuições restantes."
+            }
+          ],
+          "feedback": {
+            "met": "Use o que falta e só as contribuições restantes.",
+            "not_yet": "Subtraia a reserva antes de dividir."
+          },
+          "help": [
+            "Subtraia a reserva antes de dividir."
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.plan.periodic",
+      "copy": {
+        "en-US": {
+          "prompt": "Required per deposit?",
+          "scene": "Known bill: 180; reserved: 60; remaining monthly deposits: 4.",
+          "options": [
+            {
+              "label": "45"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "15"
+            }
+          ],
+          "help": [
+            "Subtract the existing reserve, then divide by remaining deposits."
+          ],
+          "feedback": {
+            "met": "(180 − 60) ÷ 4 = 30 per deposit.",
+            "not_yet": "Subtract the existing reserve, then divide by remaining deposits."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Necesario por aportación?",
+          "scene": "Cuenta conocida: 180; reservado: 60; aportaciones mensuales restantes: 4.",
+          "options": [
+            {
+              "label": "45"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "15"
+            }
+          ],
+          "help": [
+            "Resta la reserva existente y divide entre aportaciones restantes."
+          ],
+          "feedback": {
+            "met": "(180 − 60) ÷ 4 = 30 por aportación.",
+            "not_yet": "Resta la reserva existente y divide entre aportaciones restantes."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Necessário por contribuição?",
+          "scene": "Conta conhecida: 180; reservado: 60; contribuições mensais restantes: 4.",
+          "options": [
+            {
+              "label": "45"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "15"
+            }
+          ],
+          "help": [
+            "Subtraia a reserva existente e divida pelas contribuições restantes."
+          ],
+          "feedback": {
+            "met": "(180 − 60) ÷ 4 = 30 por contribuição.",
+            "not_yet": "Subtraia a reserva existente e divida pelas contribuições restantes."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          180,
+          60,
+          4
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.plan.periodic",
+      "copy": {
+        "en-US": {
+          "prompt": "Which count fits?",
+          "scene": "An annual bill is due soon; two planned deposits remain before its deadline.",
+          "options": [
+            {
+              "label": "The two remaining deposits"
+            },
+            {
+              "label": "Every deposit after the deadline"
+            },
+            {
+              "label": "Twelve because the bill is annual"
+            }
+          ],
+          "help": [
+            "Count only deposits before the due date."
+          ],
+          "feedback": {
+            "met": "Annual frequency does not mean twelve deposits still remain.",
+            "not_yet": "Count only deposits before the due date."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué cantidad corresponde al cálculo?",
+          "scene": "Una cuenta anual vence pronto; solo quedan dos aportaciones planeadas antes del plazo.",
+          "options": [
+            {
+              "label": "Las dos aportaciones restantes"
+            },
+            {
+              "label": "Todas las aportaciones posteriores al plazo"
+            },
+            {
+              "label": "Doce porque la cuenta es anual"
+            }
+          ],
+          "help": [
+            "Cuenta solo aportaciones anteriores al vencimiento."
+          ],
+          "feedback": {
+            "met": "Frecuencia anual no significa que aún queden doce aportaciones.",
+            "not_yet": "Cuenta solo aportaciones anteriores al vencimiento."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual quantidade cabe no cálculo?",
+          "scene": "Uma conta anual vence logo; restam só duas contribuições planejadas antes do prazo.",
+          "options": [
+            {
+              "label": "As duas contribuições restantes"
+            },
+            {
+              "label": "Todas as contribuições após o prazo"
+            },
+            {
+              "label": "Doze porque a conta é anual"
+            }
+          ],
+          "help": [
+            "Conte só contribuições anteriores ao vencimento."
+          ],
+          "feedback": {
+            "met": "Frequência anual não significa que ainda restem doze contribuições.",
+            "not_yet": "Conte só contribuições anteriores ao vencimento."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.plan.periodic",
+      "copy": {
+        "en-US": {
+          "prompt": "Required per deposit?",
+          "scene": "Renewal cost: 240; reserve: 90; deposits before renewal: 5.",
+          "options": [
+            {
+              "label": "18"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "48"
+            }
+          ],
+          "help": [
+            "Existing reserves reduce the amount still needed."
+          ],
+          "feedback": {
+            "met": "(240 − 90) ÷ 5 = 30 per deposit.",
+            "not_yet": "Existing reserves reduce the amount still needed."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Necesario por aportación?",
+          "scene": "Renovación: 240; reserva: 90; aportaciones antes de renovar: 5.",
+          "options": [
+            {
+              "label": "18"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "48"
+            }
+          ],
+          "help": [
+            "Las reservas existentes reducen lo que falta."
+          ],
+          "feedback": {
+            "met": "(240 − 90) ÷ 5 = 30 por aportación.",
+            "not_yet": "Las reservas existentes reducen lo que falta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Necessário por contribuição?",
+          "scene": "Renovação: 240; reserva: 90; contribuições antes de renovar: 5.",
+          "options": [
+            {
+              "label": "18"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "48"
+            }
+          ],
+          "help": [
+            "As reservas existentes reduzem o que falta."
+          ],
+          "feedback": {
+            "met": "(240 − 90) ÷ 5 = 30 por contribuição.",
+            "not_yet": "As reservas existentes reduzem o que falta."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          240,
+          90,
+          5
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.plan.periodic",
+      "copy": {
+        "en-US": {
+          "prompt": "What does the calculation establish?",
+          "scene": "The required contribution exceeds what remains after unavoidable costs.",
+          "options": [
+            {
+              "label": "The contribution is affordable automatically"
+            },
+            {
+              "label": "The bill is already paid"
+            },
+            {
+              "label": "The current plan has a funding gap"
+            }
+          ],
+          "help": [
+            "Compare the calculated need with actual capacity."
+          ],
+          "feedback": {
+            "met": "A required contribution is not proof that it fits the budget.",
+            "not_yet": "Compare the calculated need with actual capacity."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué demuestra el cálculo?",
+          "scene": "La aportación necesaria supera lo restante tras costos inevitables.",
+          "options": [
+            {
+              "label": "La aportación es automáticamente viable"
+            },
+            {
+              "label": "La cuenta ya está pagada"
+            },
+            {
+              "label": "El plan actual tiene un faltante"
+            }
+          ],
+          "help": [
+            "Compara la necesidad calculada con la capacidad real."
+          ],
+          "feedback": {
+            "met": "Una aportación necesaria no demuestra que quepa en el presupuesto.",
+            "not_yet": "Compara la necesidad calculada con la capacidad real."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que o cálculo demonstra?",
+          "scene": "A contribuição necessária supera o restante após custos inevitáveis.",
+          "options": [
+            {
+              "label": "A contribuição é automaticamente viável"
+            },
+            {
+              "label": "A conta já está paga"
+            },
+            {
+              "label": "O plano atual tem uma falta"
+            }
+          ],
+          "help": [
+            "Compare a necessidade calculada com a capacidade real."
+          ],
+          "feedback": {
+            "met": "Uma contribuição necessária não demonstra que caiba no orçamento.",
+            "not_yet": "Compare a necessidade calculada com a capacidade real."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.plan.periodic",
+      "copy": {
+        "en-US": {
+          "prompt": "Can that deposit fund on-time payment?",
+          "scene": "A bill is due before the next monthly deposit can arrive.",
+          "options": [
+            {
+              "label": "Yes, annual bills have no deadlines"
+            },
+            {
+              "label": "Yes, if planned"
+            },
+            {
+              "label": "No, it misses the deadline"
+            }
+          ],
+          "help": [
+            "Check contribution dates rather than only their count."
+          ],
+          "feedback": {
+            "met": "A contribution after the deadline cannot fund on-time payment.",
+            "not_yet": "Check contribution dates rather than only their count."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Esa aportación posterior cuenta para pagar a tiempo?",
+          "scene": "Una cuenta vence antes de llegar la próxima aportación mensual.",
+          "options": [
+            {
+              "label": "Sí, las cuentas anuales no vencen"
+            },
+            {
+              "label": "Sí, si se registra en el plan"
+            },
+            {
+              "label": "No, llega después del plazo"
+            }
+          ],
+          "help": [
+            "Revisa fechas de aportación además de cantidad."
+          ],
+          "feedback": {
+            "met": "Una aportación posterior no financia un pago puntual.",
+            "not_yet": "Revisa fechas de aportación además de cantidad."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Essa contribuição posterior conta para pagar em dia?",
+          "scene": "Uma conta vence antes de chegar a próxima contribuição mensal.",
+          "options": [
+            {
+              "label": "Sim, contas anuais não vencem"
+            },
+            {
+              "label": "Sim, se registrada no plano"
+            },
+            {
+              "label": "Não, chega após o prazo"
+            }
+          ],
+          "help": [
+            "Confira datas das contribuições além da quantidade."
+          ],
+          "feedback": {
+            "met": "Uma contribuição posterior não financia um pagamento pontual.",
+            "not_yet": "Confira datas das contribuições além da quantidade."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.plan.periodic",
+      "copy": {
+        "en-US": {
+          "prompt": "Required per deposit?",
+          "scene": "Required equipment inspection: 210; reserved: 70; deposits before the appointment: 7.",
+          "options": [
+            {
+              "label": "20"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Spread only the unfunded remainder across the available deposits."
+          ],
+          "feedback": {
+            "met": "(210 − 70) ÷ 7 = 20 per deposit.",
+            "not_yet": "Spread only the unfunded remainder across the available deposits."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Necesario por aportación?",
+          "scene": "Inspección necesaria de equipo: 210; reservado: 70; aportaciones antes de la cita: 7.",
+          "options": [
+            {
+              "label": "20"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Distribuye solo lo faltante entre las aportaciones disponibles."
+          ],
+          "feedback": {
+            "met": "(210 − 70) ÷ 7 = 20 por aportación.",
+            "not_yet": "Distribuye solo lo faltante entre las aportaciones disponibles."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Necessário por contribuição?",
+          "scene": "Vistoria necessária de equipamento: 210; reservado: 70; contribuições antes da data: 7.",
+          "options": [
+            {
+              "label": "20"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "10"
+            }
+          ],
+          "help": [
+            "Distribua só o que falta entre as contribuições disponíveis."
+          ],
+          "feedback": {
+            "met": "(210 − 70) ÷ 7 = 20 por contribuição.",
+            "not_yet": "Distribua só o que falta entre as contribuições disponíveis."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          210,
+          70,
+          7
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

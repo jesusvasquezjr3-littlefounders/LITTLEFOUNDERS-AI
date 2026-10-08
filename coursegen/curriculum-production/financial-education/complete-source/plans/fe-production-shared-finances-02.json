@@ -1,0 +1,779 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-shared-finances-part-1",
+  "lesson_id": "fe-production-shared-finances-02",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.shared-finances.02"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Separate account access from legal ownership or debt liability that requires local verification.",
+  "title": {
+    "en-US": "Account Roles",
+    "es-MX": "Acceso no es propiedad",
+    "pt-BR": "Acesso não é posse"
+  },
+  "new_concepts": [
+    "finance.prod.shared-finances.02"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Account Roles\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Acceso no es propiedad\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Acesso não é posse\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.shared-finances.02",
+      "observable_action": "Separate account access from legal ownership or debt liability that requires local verification.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.accounts-records.01",
+      "prod.credit-products.09"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Being able to use an account does not answer every question about ownership or debt; check the actual agreement.",
+    "misconception": "Knowing a password or holding a card proves ownership or absence of liability.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.shared-finances.02",
+        "context_id": "shared-finances-02-example-01",
+        "supports_from": [],
+        "reasoning": "Ask who can transact, who owns funds, and who owes debts. Contracts and local law determine the legal answers."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.shared-finances.02",
+        "context_id": "shared-finances-02-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Viewing access does not establish ownership or debt responsibility."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.shared-finances.02",
+        "context_id": "shared-finances-02-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Repayment responsibility is a legal obligation question."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.shared-finances.02",
+        "context_id": "shared-finances-02-practice-01",
+        "supports_from": [],
+        "reasoning": "A signature may carry obligations requiring clear local verification."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.shared-finances.02",
+        "context_id": "shared-finances-02-practice-02",
+        "supports_from": [],
+        "reasoning": "A private arrangement does not establish changed lender rights."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.shared-finances.02",
+        "context_id": "shared-finances-02-practice-03",
+        "supports_from": [],
+        "reasoning": "The documented role is relevant to authority and ownership."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.shared-finances.02",
+        "context_id": "shared-finances-02-transfer-01",
+        "supports_from": [],
+        "reasoning": "Helping with payments does not establish ownership of the balance."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.shared-finances.02",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Being able to use an account does not answer every question about ownership or debt; check the actual agreement."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Poder usar una cuenta no responde toda pregunta sobre propiedad o deuda; revisa el acuerdo real."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Poder usar uma conta não responde toda pergunta sobre posse ou dívida; confira o acordo real."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Separate three questions",
+          "line": "Ask who can transact, who owns funds, and who owes debts. Contracts and local law determine the legal answers."
+        },
+        "es-MX": {
+          "prompt": "Separa tres preguntas",
+          "line": "Pregunta quién puede operar, quién posee fondos y quién debe deudas. Contratos y leyes locales determinan las respuestas jurídicas."
+        },
+        "pt-BR": {
+          "prompt": "Separe três perguntas",
+          "line": "Pergunte quem pode operar, quem possui recursos e quem deve dívidas. Contratos e leis locais definem as respostas legais."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What does app access alone prove?",
+          "scene": "A helper can view the account through authorized access.",
+          "options": [
+            {
+              "label": "Liability for every debt"
+            },
+            {
+              "label": "Ownership of all funds"
+            },
+            {
+              "label": "Ability to view"
+            }
+          ],
+          "help": [
+            "Separate the permission shown from legal conclusions."
+          ],
+          "feedback": {
+            "met": "Viewing access does not establish ownership or debt responsibility.",
+            "not_yet": "Separate the permission shown from legal conclusions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué prueba solo el acceso?",
+          "scene": "Ayudante puede ver la cuenta mediante acceso autorizado.",
+          "options": [
+            {
+              "label": "Responsabilidad por toda deuda"
+            },
+            {
+              "label": "Propiedad de todos los fondos"
+            },
+            {
+              "label": "Capacidad de consultar"
+            }
+          ],
+          "help": [
+            "Separa el permiso mostrado de conclusiones jurídicas."
+          ],
+          "feedback": {
+            "met": "Consultar no establece propiedad ni responsabilidad de deuda.",
+            "not_yet": "Separa el permiso mostrado de conclusiones jurídicas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que só o acesso prova?",
+          "scene": "Ajudante pode ver a conta por acesso autorizado.",
+          "options": [
+            {
+              "label": "Responsabilidade por toda dívida"
+            },
+            {
+              "label": "Posse de todos os recursos"
+            },
+            {
+              "label": "Capacidade de consultar"
+            }
+          ],
+          "help": [
+            "Separe a permissão mostrada de conclusões legais."
+          ],
+          "feedback": {
+            "met": "Consultar não define posse nem dever de pagar dívida.",
+            "not_yet": "Separe a permissão mostrada de conclusões legais."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Which question concerns liability?",
+          "scene": "Two people use a card; they need to know who must repay borrowing.",
+          "options": [
+            {
+              "label": "Who legally owes the debt?"
+            },
+            {
+              "label": "Who uses the card more?"
+            },
+            {
+              "label": "Who knows the PIN?"
+            }
+          ],
+          "help": [
+            "Check the debt agreement and applicable local rules."
+          ],
+          "feedback": {
+            "met": "Repayment responsibility is a legal obligation question.",
+            "not_yet": "Check the debt agreement and applicable local rules."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué pregunta trata responsabilidad?",
+          "scene": "Dos personas usan tarjeta; necesitan saber quién debe pagar lo prestado.",
+          "options": [
+            {
+              "label": "¿Quién debe legalmente la deuda?"
+            },
+            {
+              "label": "¿Quién usa más la tarjeta?"
+            },
+            {
+              "label": "¿Quién sabe el NIP?"
+            }
+          ],
+          "help": [
+            "Revisa contrato de deuda y reglas locales aplicables."
+          ],
+          "feedback": {
+            "met": "Responsabilidad de pago es una pregunta de obligación jurídica.",
+            "not_yet": "Revisa contrato de deuda y reglas locales aplicables."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que pergunta trata responsabilidade?",
+          "scene": "Duas pessoas usam cartão; precisam saber quem deve pagar o empréstimo.",
+          "options": [
+            {
+              "label": "Quem deve legalmente a dívida?"
+            },
+            {
+              "label": "Quem usa mais o cartão?"
+            },
+            {
+              "label": "Quem sabe a senha?"
+            }
+          ],
+          "help": [
+            "Confira contrato da dívida e regras locais aplicáveis."
+          ],
+          "feedback": {
+            "met": "Dever de pagar é questão de obrigação legal.",
+            "not_yet": "Confira contrato da dívida e regras locais aplicáveis."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What should be verified before signing?",
+          "scene": "A relative requests a signature on a borrowing agreement; liability is unclear.",
+          "options": [
+            {
+              "label": "The signer’s legal obligation"
+            },
+            {
+              "label": "Only access to the app"
+            },
+            {
+              "label": "Only family trust"
+            }
+          ],
+          "help": [
+            "Understand the agreement before accepting responsibility."
+          ],
+          "feedback": {
+            "met": "A signature may carry obligations requiring clear local verification.",
+            "not_yet": "Understand the agreement before accepting responsibility."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué verificar antes de firmar?",
+          "scene": "Familiar pide firma en contrato de préstamo; responsabilidad no está clara.",
+          "options": [
+            {
+              "label": "Obligación jurídica de quien firma"
+            },
+            {
+              "label": "Solo acceso a la app"
+            },
+            {
+              "label": "Solo confianza familiar"
+            }
+          ],
+          "help": [
+            "Entiende el acuerdo antes de aceptar responsabilidad."
+          ],
+          "feedback": {
+            "met": "Una firma puede implicar obligaciones que requieren verificación local.",
+            "not_yet": "Entiende el acuerdo antes de aceptar responsabilidad."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que verificar antes de assinar?",
+          "scene": "Parente pede assinatura num empréstimo; responsabilidade não está clara.",
+          "options": [
+            {
+              "label": "Obrigação legal de quem assina"
+            },
+            {
+              "label": "Só acesso ao app"
+            },
+            {
+              "label": "Só confiança familiar"
+            }
+          ],
+          "help": [
+            "Entenda o acordo antes de aceitar responsabilidade."
+          ],
+          "feedback": {
+            "met": "Uma assinatura pode trazer deveres que exigem verificação local.",
+            "not_yet": "Entenda o acordo antes de aceitar responsabilidade."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Does a private promise settle the lender’s rights?",
+          "scene": "Two borrowers privately agree only one will pay; lender’s agreement is unchanged.",
+          "options": [
+            {
+              "label": "Yes, if said aloud"
+            },
+            {
+              "label": "Not established by that promise"
+            },
+            {
+              "label": "Yes, automatically"
+            }
+          ],
+          "help": [
+            "Verify contractual liability with qualified local guidance."
+          ],
+          "feedback": {
+            "met": "A private arrangement does not establish changed lender rights.",
+            "not_yet": "Verify contractual liability with qualified local guidance."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Promesa privada resuelve derechos del prestamista?",
+          "scene": "Dos deudores acuerdan que solo uno pagará; contrato del prestamista no cambia.",
+          "options": [
+            {
+              "label": "Sí, si fue verbal"
+            },
+            {
+              "label": "La promesa no lo establece"
+            },
+            {
+              "label": "Sí, automáticamente"
+            }
+          ],
+          "help": [
+            "Verifica responsabilidad contractual con orientación local calificada."
+          ],
+          "feedback": {
+            "met": "Un acuerdo privado no establece cambios ante el prestamista.",
+            "not_yet": "Verifica responsabilidad contractual con orientación local calificada."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Promessa privada define direitos do credor?",
+          "scene": "Dois devedores combinam que só um paga; contrato do credor não muda.",
+          "options": [
+            {
+              "label": "Sim, se foi verbal"
+            },
+            {
+              "label": "A promessa não estabelece isso"
+            },
+            {
+              "label": "Sim, automaticamente"
+            }
+          ],
+          "help": [
+            "Verifique responsabilidade contratual com orientação local qualificada."
+          ],
+          "feedback": {
+            "met": "Um acordo privado não estabelece mudanças perante o credor.",
+            "not_yet": "Verifique responsabilidade contratual com orientação local qualificada."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Which record answers the account-role question?",
+          "scene": "The app display is unclear about whether someone is owner or authorized helper.",
+          "options": [
+            {
+              "label": "A shared password"
+            },
+            {
+              "label": "Account agreement and verified role"
+            },
+            {
+              "label": "A recent payment receipt"
+            }
+          ],
+          "help": [
+            "Obtain the actual account terms and local clarification."
+          ],
+          "feedback": {
+            "met": "The documented role is relevant to authority and ownership.",
+            "not_yet": "Obtain the actual account terms and local clarification."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué registro aclara el rol?",
+          "scene": "App no aclara si alguien es titular o ayudante autorizado.",
+          "options": [
+            {
+              "label": "Contraseña compartida"
+            },
+            {
+              "label": "Contrato y rol verificado"
+            },
+            {
+              "label": "Recibo de pago reciente"
+            }
+          ],
+          "help": [
+            "Obtén términos reales y aclaración local."
+          ],
+          "feedback": {
+            "met": "El rol documentado importa para facultades y propiedad.",
+            "not_yet": "Obtén términos reales y aclaración local."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que registro esclarece a função?",
+          "scene": "App não esclarece se alguém é titular ou ajudante autorizado.",
+          "options": [
+            {
+              "label": "Senha compartilhada"
+            },
+            {
+              "label": "Contrato e função verificada"
+            },
+            {
+              "label": "Comprovante de pagamento recente"
+            }
+          ],
+          "help": [
+            "Obtenha termos reais e esclarecimento local."
+          ],
+          "feedback": {
+            "met": "A função documentada importa para poderes e posse.",
+            "not_yet": "Obtenha termos reais e esclarecimento local."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.shared-finances.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Can this helper claim ownership?",
+          "scene": "Sam paid bills using authorized access; ownership terms have not been checked.",
+          "options": [
+            {
+              "label": "Yes, bill payment proves ownership"
+            },
+            {
+              "label": "Yes, knowing login is enough"
+            },
+            {
+              "label": "Ownership needs separate verification"
+            }
+          ],
+          "help": [
+            "Check the account role, contract and applicable local law."
+          ],
+          "feedback": {
+            "met": "Helping with payments does not establish ownership of the balance.",
+            "not_yet": "Check the account role, contract and applicable local law."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Puede ayudante reclamar el saldo?",
+          "scene": "Sam pagó cuentas con acceso autorizado; no se han revisado términos de propiedad.",
+          "options": [
+            {
+              "label": "Sí, pagar prueba propiedad"
+            },
+            {
+              "label": "Sí, conocer acceso basta"
+            },
+            {
+              "label": "Propiedad requiere verificación separada"
+            }
+          ],
+          "help": [
+            "Revisa rol, contrato y ley local aplicable."
+          ],
+          "feedback": {
+            "met": "Ayudar con pagos no establece propiedad del saldo.",
+            "not_yet": "Revisa rol, contrato y ley local aplicable."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Ajudante pode exigir o saldo?",
+          "scene": "Sam pagou contas com acesso autorizado; termos de posse não foram conferidos.",
+          "options": [
+            {
+              "label": "Sim, pagar prova posse"
+            },
+            {
+              "label": "Sim, saber acesso basta"
+            },
+            {
+              "label": "Posse exige verificação separada"
+            }
+          ],
+          "help": [
+            "Confira função, contrato e lei local aplicável."
+          ],
+          "feedback": {
+            "met": "Ajudar com pagamentos não define posse do saldo.",
+            "not_yet": "Confira função, contrato e lei local aplicável."
+          }
+        }
+      }
+    }
+  ]
+}

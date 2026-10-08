@@ -1,0 +1,778 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-spending-patterns-part-1",
+  "lesson_id": "fe-production-spending-patterns-01",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.spending-patterns.01"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Record an expense with enough detail to identify its amount, date and purpose.",
+  "title": {
+    "en-US": "Expense records",
+    "es-MX": "Registra el gasto",
+    "pt-BR": "Registre o gasto"
+  },
+  "new_concepts": [
+    "finance.prod.spending-patterns.01"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Record the expense\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Registra el gasto\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Registre o gasto\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.spending-patterns.01",
+      "observable_action": "Record an expense with enough detail to identify its amount, date and purpose.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "cash.balance"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A useful record shows when, how much and what for.",
+    "misconception": "Keeping only a number, with no date or purpose to distinguish the transaction.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.spending-patterns.01",
+        "context_id": "fe-production-spending-patterns-01-example-01",
+        "supports_from": [],
+        "reasoning": "“Tuesday, 20 dollars, bus fare” records a date, amount and purpose; “20” alone cannot identify the expense."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.spending-patterns.01",
+        "context_id": "fe-production-spending-patterns-01-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The date and purpose are present; the amount is missing."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.spending-patterns.01",
+        "context_id": "fe-production-spending-patterns-01-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The date distinguishes this payment from similar later payments."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.spending-patterns.01",
+        "context_id": "fe-production-spending-patterns-01-practice-01",
+        "supports_from": [],
+        "reasoning": "Different dates help distinguish otherwise similar payments."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.spending-patterns.01",
+        "context_id": "fe-production-spending-patterns-01-practice-02",
+        "supports_from": [],
+        "reasoning": "Purpose explains what the expense was for."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.spending-patterns.01",
+        "context_id": "fe-production-spending-patterns-01-practice-03",
+        "supports_from": [],
+        "reasoning": "A factual personal note can record a cash expense."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.spending-patterns.01",
+        "context_id": "fe-production-spending-patterns-01-transfer-01",
+        "supports_from": [],
+        "reasoning": "The added facts make this expense identifiable later."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.spending-patterns.01",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A useful record shows when, how much and what for."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un registro útil muestra cuándo, cuánto y para qué."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Um registro útil mostra quando, quanto e para quê."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Three useful details",
+          "line": "“Tuesday, 20 dollars, bus fare” records a date, amount and purpose; “20” alone cannot identify the expense."
+        },
+        "es-MX": {
+          "prompt": "Tres datos útiles",
+          "line": "“Martes, 20 pesos, autobús” registra fecha, monto y propósito; solo “20” no identifica el gasto."
+        },
+        "pt-BR": {
+          "prompt": "Três dados úteis",
+          "line": "“Terça, 20 reais, ônibus” registra data, valor e propósito; só “20” não identifica o gasto."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What is missing?",
+          "scene": "Record: Monday, groceries. No amount appears.",
+          "options": [
+            {
+              "label": "Amount"
+            },
+            {
+              "label": "Purpose"
+            },
+            {
+              "label": "Date"
+            }
+          ],
+          "help": [
+            "Check the three details in the example."
+          ],
+          "feedback": {
+            "met": "The date and purpose are present; the amount is missing.",
+            "not_yet": "Check the three details in the example."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué falta?",
+          "scene": "Registro: lunes, comida. No aparece monto.",
+          "options": [
+            {
+              "label": "Monto"
+            },
+            {
+              "label": "Propósito"
+            },
+            {
+              "label": "Fecha"
+            }
+          ],
+          "help": [
+            "Revisa los tres datos del ejemplo."
+          ],
+          "feedback": {
+            "met": "Fecha y propósito están; falta el monto.",
+            "not_yet": "Revisa los tres datos del ejemplo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que falta?",
+          "scene": "Registro: segunda, comida. Não há valor.",
+          "options": [
+            {
+              "label": "Valor"
+            },
+            {
+              "label": "Propósito"
+            },
+            {
+              "label": "Data"
+            }
+          ],
+          "help": [
+            "Confira os três dados do exemplo."
+          ],
+          "feedback": {
+            "met": "Data e propósito estão presentes; falta o valor.",
+            "not_yet": "Confira os três dados do exemplo."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What should be added?",
+          "scene": "Record: 15, transport. No day appears.",
+          "options": [
+            {
+              "label": "A new purpose"
+            },
+            {
+              "label": "Date"
+            },
+            {
+              "label": "Another amount"
+            }
+          ],
+          "help": [
+            "Keep the amount and purpose; supply the missing detail."
+          ],
+          "feedback": {
+            "met": "The date distinguishes this payment from similar later payments.",
+            "not_yet": "Keep the amount and purpose; supply the missing detail."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debes añadir?",
+          "scene": "Registro: 15, transporte. No aparece día.",
+          "options": [
+            {
+              "label": "Otro propósito"
+            },
+            {
+              "label": "Fecha"
+            },
+            {
+              "label": "Otro monto"
+            }
+          ],
+          "help": [
+            "Conserva monto y propósito; añade el dato faltante."
+          ],
+          "feedback": {
+            "met": "La fecha distingue este pago de otros parecidos.",
+            "not_yet": "Conserva monto y propósito; añade el dato faltante."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que acrescentar?",
+          "scene": "Registro: 15, transporte. Não há dia.",
+          "options": [
+            {
+              "label": "Outro propósito"
+            },
+            {
+              "label": "Data"
+            },
+            {
+              "label": "Outro valor"
+            }
+          ],
+          "help": [
+            "Mantenha valor e propósito; acrescente o dado ausente."
+          ],
+          "feedback": {
+            "met": "A data distingue este pagamento de outros parecidos.",
+            "not_yet": "Mantenha valor e propósito; acrescente o dado ausente."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Which detail separates them?",
+          "scene": "Two equal payments happened on different days.",
+          "options": [
+            {
+              "label": "Their dates"
+            },
+            {
+              "label": "Their combined total"
+            },
+            {
+              "label": "Their equal amounts"
+            }
+          ],
+          "help": [
+            "Use a fact about the payment itself."
+          ],
+          "feedback": {
+            "met": "Different dates help distinguish otherwise similar payments.",
+            "not_yet": "Use a fact about the payment itself."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué dato los distingue?",
+          "scene": "Dos pagos iguales ocurrieron en días distintos.",
+          "options": [
+            {
+              "label": "Sus fechas"
+            },
+            {
+              "label": "Su total combinado"
+            },
+            {
+              "label": "Sus montos iguales"
+            }
+          ],
+          "help": [
+            "Usa un dato del propio pago."
+          ],
+          "feedback": {
+            "met": "Las fechas distinguen pagos que de otro modo se parecen.",
+            "not_yet": "Usa un dato del propio pago."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual dado os distingue?",
+          "scene": "Dois pagamentos iguais ocorreram em dias diferentes.",
+          "options": [
+            {
+              "label": "Suas datas"
+            },
+            {
+              "label": "Seu total combinado"
+            },
+            {
+              "label": "Seus valores iguais"
+            }
+          ],
+          "help": [
+            "Use um dado do próprio pagamento."
+          ],
+          "feedback": {
+            "met": "As datas distinguem pagamentos que, de outro modo, se parecem.",
+            "not_yet": "Use um dado do próprio pagamento."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What should you clarify?",
+          "scene": "A receipt says Friday and 45, but its purpose is unclear.",
+          "options": [
+            {
+              "label": "The stated weekday"
+            },
+            {
+              "label": "The stated amount"
+            },
+            {
+              "label": "What the payment covered"
+            }
+          ],
+          "help": [
+            "Do not invent a category from an unclear record."
+          ],
+          "feedback": {
+            "met": "Purpose explains what the expense was for.",
+            "not_yet": "Do not invent a category from an unclear record."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debes aclarar?",
+          "scene": "Un comprobante dice viernes y 45, sin propósito claro.",
+          "options": [
+            {
+              "label": "El día indicado"
+            },
+            {
+              "label": "El monto indicado"
+            },
+            {
+              "label": "Qué cubrió el pago"
+            }
+          ],
+          "help": [
+            "No inventes una categoría a partir de un registro confuso."
+          ],
+          "feedback": {
+            "met": "El propósito explica para qué fue el gasto.",
+            "not_yet": "No inventes una categoría a partir de un registro confuso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que esclarecer?",
+          "scene": "Um recibo diz sexta e 45, sem propósito claro.",
+          "options": [
+            {
+              "label": "O dia informado"
+            },
+            {
+              "label": "O valor informado"
+            },
+            {
+              "label": "O que o pagamento cobriu"
+            }
+          ],
+          "help": [
+            "Não invente uma categoria a partir de um registro confuso."
+          ],
+          "feedback": {
+            "met": "O propósito explica para que foi o gasto.",
+            "not_yet": "Não invente uma categoria a partir de um registro confuso."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What can you still record?",
+          "scene": "You paid cash without receiving a receipt.",
+          "options": [
+            {
+              "label": "Nothing without a receipt"
+            },
+            {
+              "label": "Known date, amount and purpose"
+            },
+            {
+              "label": "An invented receipt number"
+            }
+          ],
+          "help": [
+            "A missing receipt does not erase a known payment."
+          ],
+          "feedback": {
+            "met": "A factual personal note can record a cash expense.",
+            "not_yet": "A missing receipt does not erase a known payment."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué puedes registrar?",
+          "scene": "Pagaste en efectivo sin recibir comprobante.",
+          "options": [
+            {
+              "label": "Nada sin comprobante"
+            },
+            {
+              "label": "Fecha, monto y propósito conocidos"
+            },
+            {
+              "label": "Un número de comprobante inventado"
+            }
+          ],
+          "help": [
+            "La falta de comprobante no borra un pago conocido."
+          ],
+          "feedback": {
+            "met": "Una nota personal veraz puede registrar un gasto en efectivo.",
+            "not_yet": "La falta de comprobante no borra un pago conocido."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que ainda pode registrar?",
+          "scene": "Você pagou em dinheiro sem receber recibo.",
+          "options": [
+            {
+              "label": "Nada sem recibo"
+            },
+            {
+              "label": "Data, valor e propósito conhecidos"
+            },
+            {
+              "label": "Um número de recibo inventado"
+            }
+          ],
+          "help": [
+            "A falta de recibo não apaga um pagamento conhecido."
+          ],
+          "feedback": {
+            "met": "Uma nota pessoal fiel pode registrar um gasto em dinheiro.",
+            "not_yet": "A falta de recibo não apaga um pagamento conhecido."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.spending-patterns.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Which update makes it usable?",
+          "scene": "You paid a shared repair yesterday; the log only says “repair”.",
+          "options": [
+            {
+              "label": "Replace it with a guess"
+            },
+            {
+              "label": "Rename it “miscellaneous”"
+            },
+            {
+              "label": "Add its actual date and amount"
+            }
+          ],
+          "help": [
+            "Keep the known purpose and complete the missing facts."
+          ],
+          "feedback": {
+            "met": "The added facts make this expense identifiable later.",
+            "not_yet": "Keep the known purpose and complete the missing facts."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué ajuste lo vuelve útil?",
+          "scene": "Una reparación compartida se pagó ayer; el registro solo dice “reparación”.",
+          "options": [
+            {
+              "label": "Reemplazarlo con una suposición"
+            },
+            {
+              "label": "Cambiarlo a “varios”"
+            },
+            {
+              "label": "Añadir fecha y monto reales"
+            }
+          ],
+          "help": [
+            "Conserva el propósito y completa los datos faltantes."
+          ],
+          "feedback": {
+            "met": "Los datos añadidos permiten identificar después este gasto.",
+            "not_yet": "Conserva el propósito y completa los datos faltantes."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual ajuste o torna útil?",
+          "scene": "Um conserto compartilhado foi pago ontem; o registro só diz “conserto”.",
+          "options": [
+            {
+              "label": "Substituir por um palpite"
+            },
+            {
+              "label": "Renomear para “diversos”"
+            },
+            {
+              "label": "Acrescentar data e valor reais"
+            }
+          ],
+          "help": [
+            "Mantenha o propósito e complete os dados ausentes."
+          ],
+          "feedback": {
+            "met": "Os dados acrescentados permitem identificar depois este gasto.",
+            "not_yet": "Mantenha o propósito e complete os dados ausentes."
+          }
+        }
+      }
+    }
+  ]
+}

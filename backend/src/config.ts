@@ -142,6 +142,21 @@ const Env = z.object({
         .filter((band): band is 'tween' | 'teen' | 'adult' => ['tween', 'teen', 'adult'].includes(band)),
     ),
 
+  // Games in /learn (docs/games/KRV1-CONTRACT.md). KARTRUSH_URL is the game's
+  // static bundle, handed to the SPA as the iframe src; the SPA accepts it only
+  // if its origin is on its own hard-coded list, so a wrong value here fails
+  // closed in the browser. KARTRUSH_BUILD is the deployed build id, recorded
+  // with each session (1..40 characters).
+  KARTRUSH_URL: z.url().default('https://kartrush-production.up.railway.app'),
+  KARTRUSH_BUILD: z.string().min(1).max(40).default('unknown'),
+  // The one-line AI debrief after a race (docs/games/KARTRUSH-INTEGRATION-DESIGN.md
+  // section 4.2). OFF unless an operator turns it on, after the cost per line has
+  // been measured and moderation has been read; Oracle carries the same switch,
+  // so both must be on. GAME_AI_DAILY_LINES is the per-learner cap on generated
+  // lines per local day, enforced atomically in the database; 0 disables it.
+  GAME_AI_DEBRIEF: z.enum(['off', 'on']).default('off'),
+  GAME_AI_DAILY_LINES: z.coerce.number().int().min(0).max(50).default(6),
+
   // Redis para Rate Limiting distribuido
   REDIS_URL: z.string().url().default('redis://localhost:6379'),
 });

@@ -306,7 +306,7 @@ describe('a conversation: the current turn only, Block C as chips', () => {
 describe('closing (C.16) and the bond proxy (C.15)', () => {
   it('shows the closing line, one action back to the path, and the bond question', () => {
     const onPath = vi.fn();
-    show(session({ phase: 'closing', closing: { sessionId: 's1', script: 'completed', effort: 'recovered', topic: 'Saving' } }), { onPath });
+    show(session({ phase: 'closing', closing: { sessionId: 's1', script: 'completed', effort: 'recovered', topic: 'Saving', summary: null, xp: null } }), { onPath });
     expect(screen.getByTestId('stage')).toHaveAttribute('data-state', 'closing');
     expect(stageProps.at(-1)?.closing).toBe('completed');
     fireEvent.click(screen.getByRole('button', { name: copy.mentorSessionEnd.backToPath }));
@@ -316,7 +316,7 @@ describe('closing (C.16) and the bond proxy (C.15)', () => {
   });
 
   it('never asks the bond question after a safety stop', () => {
-    show(session({ phase: 'closing', closing: { sessionId: 's1', script: 'safety_stop', effort: null, topic: null } }));
+    show(session({ phase: 'closing', closing: { sessionId: 's1', script: 'safety_stop', effort: null, topic: null, summary: null, xp: null } }));
     expect(screen.queryByText(copy.mentorAllianceCheck.question)).toBeNull();
     expect(screen.getByRole('heading', { name: copy.mentorSessionEnd.safetyTitle })).toBeInTheDocument();
   });

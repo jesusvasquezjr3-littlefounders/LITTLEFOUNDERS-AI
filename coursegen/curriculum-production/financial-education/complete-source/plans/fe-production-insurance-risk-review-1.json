@@ -1,0 +1,1021 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-insurance-risk-part-3",
+  "lesson_id": "fe-production-insurance-risk-review-1",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.insurance-risk.01",
+    "finance.prod.insurance-risk.02",
+    "finance.prod.insurance-risk.03",
+    "finance.prod.insurance-risk.04",
+    "finance.prod.insurance-risk.05",
+    "finance.prod.insurance-risk.06",
+    "finance.prod.saving-resilience.02"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Distinguish severity, match risk tools and roles, calculate retained claim cost and essential interruption needs.",
+  "title": {
+    "en-US": "Protection Planning",
+    "es-MX": "Relaciona pérdida y protección",
+    "pt-BR": "Ligue perda e proteção"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Protection Planning\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Relaciona pérdida y protección\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Ligue perda e proteção\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "consolidate",
+    "objective": {
+      "skill_id": "prod.insurance-risk.01",
+      "observable_action": "Distinguish severity, match risk tools and roles, calculate retained claim cost and essential interruption needs.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.saving-resilience.02",
+      "prod.goals-tradeoffs.02"
+    ],
+    "retrieval_skills": [
+      "prod.insurance-risk.01",
+      "prod.insurance-risk.02",
+      "prod.insurance-risk.03",
+      "prod.insurance-risk.04",
+      "prod.insurance-risk.05",
+      "prod.insurance-risk.06",
+      "prod.saving-resilience.02"
+    ],
+    "relevance": "Retrieve risk severity, protection tools, policy roles and retained costs under fictional terms.",
+    "misconception": "Rare losses are harmless, premiums cover every loss, or deductibles and caps are irrelevant.",
+    "numeracy_support": "Use the current visible conditions; do not reuse a previous scenario’s answer.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.insurance-risk.01",
+        "context_id": "insurance-risk-review-1-practice-01",
+        "supports_from": [],
+        "reasoning": "The destruction exceeds capacity even though it is less frequent."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.insurance-risk.02",
+        "context_id": "insurance-risk-review-1-practice-02",
+        "supports_from": [],
+        "reasoning": "Each tool addresses a different part of the risk."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.insurance-risk.03",
+        "context_id": "insurance-risk-review-1-practice-03",
+        "supports_from": [],
+        "reasoning": "Noor is the named beneficiary under these terms."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.insurance-risk.04",
+        "context_id": "insurance-risk-review-1-practice-04",
+        "supports_from": [],
+        "reasoning": "The premium is the contract’s price of coverage."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.insurance-risk.05",
+        "context_id": "insurance-risk-review-1-practice-05",
+        "supports_from": [],
+        "reasoning": "The payout cap leaves four hundred of loss unpaid."
+      },
+      {
+        "segment_id": "practice-06",
+        "skill_id": "prod.insurance-risk.06",
+        "context_id": "insurance-risk-review-1-practice-06",
+        "supports_from": [],
+        "reasoning": "The established cause matches the explicit exclusion."
+      },
+      {
+        "segment_id": "practice-07",
+        "skill_id": "prod.saving-resilience.02",
+        "context_id": "insurance-risk-review-1-practice-07",
+        "supports_from": [],
+        "reasoning": "The period’s essentials exceed confirmed support by thirteen hundred."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.insurance-risk.01",
+        "context_id": "insurance-risk-review-1-transfer-01",
+        "supports_from": [],
+        "reasoning": "The long interruption overwhelms the stated financial buffer."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.insurance-risk.01",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Retrieve risk severity, protection tools, policy roles and retained costs under fictional terms."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Recupera gravedad, herramientas de protección, papeles de póliza y costos propios bajo términos ficticios."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Retome gravidade, ferramentas de proteção, papéis da apólice e custos próprios sob termos fictícios."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Which loss threatens this household most?",
+          "scene": "Frequent minor fixes fit savings; rare destruction would exceed available resources.",
+          "options": [
+            {
+              "label": "Both automatically equal"
+            },
+            {
+              "label": "Always the most frequent"
+            },
+            {
+              "label": "The rare destruction"
+            }
+          ],
+          "help": [
+            "Compare financial severity with available resources."
+          ],
+          "feedback": {
+            "met": "The destruction exceeds capacity even though it is less frequent.",
+            "not_yet": "Compare financial severity with available resources."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué pérdida amenaza más a este hogar?",
+          "scene": "Arreglos menores frecuentes caben en ahorro; destrucción rara superaría recursos disponibles.",
+          "options": [
+            {
+              "label": "Ambas automáticamente iguales"
+            },
+            {
+              "label": "Siempre la más frecuente"
+            },
+            {
+              "label": "Destrucción rara"
+            }
+          ],
+          "help": [
+            "Compara gravedad financiera con recursos disponibles."
+          ],
+          "feedback": {
+            "met": "Destrucción supera capacidad aunque sea menos frecuente.",
+            "not_yet": "Compara gravedad financiera con recursos disponibles."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que perda mais ameaça esta família?",
+          "scene": "Reparos menores frequentes cabem na poupança; destruição rara superaria recursos disponíveis.",
+          "options": [
+            {
+              "label": "Ambas automaticamente iguais"
+            },
+            {
+              "label": "Sempre a mais frequente"
+            },
+            {
+              "label": "Destruição rara"
+            }
+          ],
+          "help": [
+            "Compare gravidade financeira com recursos disponíveis."
+          ],
+          "feedback": {
+            "met": "Destruição supera capacidade mesmo sendo menos comum.",
+            "not_yet": "Compare gravidade financeira com recursos disponíveis."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Which mix fits the facts?",
+          "scene": "Maintenance reduces faults; savings cover small repairs; a policy covers specified severe losses.",
+          "options": [
+            {
+              "label": "Use complementary tools"
+            },
+            {
+              "label": "Savings prevent every fault"
+            },
+            {
+              "label": "Insurance replaces maintenance"
+            }
+          ],
+          "help": [
+            "Match prevention, retained costs and covered losses separately."
+          ],
+          "feedback": {
+            "met": "Each tool addresses a different part of the risk.",
+            "not_yet": "Match prevention, retained costs and covered losses separately."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué mezcla corresponde a hechos?",
+          "scene": "Mantenimiento reduce fallas; ahorro cubre arreglos pequeños; póliza cubre pérdidas graves concretas.",
+          "options": [
+            {
+              "label": "Usar herramientas complementarias"
+            },
+            {
+              "label": "Ahorro evita toda falla"
+            },
+            {
+              "label": "Seguro sustituye mantenimiento"
+            }
+          ],
+          "help": [
+            "Relaciona prevención, costos propios y pérdidas cubiertas por separado."
+          ],
+          "feedback": {
+            "met": "Cada herramienta atiende parte distinta del riesgo.",
+            "not_yet": "Relaciona prevención, costos propios y pérdidas cubiertas por separado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que mistura cabe aos fatos?",
+          "scene": "Manutenção reduz falhas; poupança cobre reparos pequenos; apólice cobre perdas graves específicas.",
+          "options": [
+            {
+              "label": "Usar ferramentas que se complementam"
+            },
+            {
+              "label": "Poupança evita toda falha"
+            },
+            {
+              "label": "Seguro substitui manutenção"
+            }
+          ],
+          "help": [
+            "Ligue prevenção, custos próprios e perdas cobertas em separado."
+          ],
+          "feedback": {
+            "met": "Cada ferramenta atende parte distinta do risco.",
+            "not_yet": "Ligue prevenção, custos próprios e perdas cobertas em separado."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Who receives the stated benefit?",
+          "scene": "Fictional policy: Lee contracts; Jo is insured; Noor is named beneficiary for Jo’s covered death.",
+          "options": [
+            {
+              "label": "Lee automatically"
+            },
+            {
+              "label": "Jo’s employer automatically"
+            },
+            {
+              "label": "Noor"
+            }
+          ],
+          "help": [
+            "Separate the contracting person from the benefit recipient."
+          ],
+          "feedback": {
+            "met": "Noor is the named beneficiary under these terms.",
+            "not_yet": "Separate the contracting person from the benefit recipient."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Quién recibe beneficio indicado?",
+          "scene": "Póliza ficticia: Lee contrata; Jo es asegurado; Noor es beneficiaria por fallecimiento cubierto de Jo.",
+          "options": [
+            {
+              "label": "Lee automáticamente"
+            },
+            {
+              "label": "Empleador de Jo automáticamente"
+            },
+            {
+              "label": "Noor"
+            }
+          ],
+          "help": [
+            "Separa contratante de quien recibe beneficio."
+          ],
+          "feedback": {
+            "met": "Noor es beneficiaria nombrada bajo estos términos.",
+            "not_yet": "Separa contratante de quien recibe beneficio."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quem recebe benefício dado?",
+          "scene": "Apólice fictícia: Lee contrata; Jo é segurado; Noor é beneficiária por morte coberta de Jo.",
+          "options": [
+            {
+              "label": "Lee automaticamente"
+            },
+            {
+              "label": "Empregador de Jo automaticamente"
+            },
+            {
+              "label": "Noor"
+            }
+          ],
+          "help": [
+            "Separe titular de quem recebe benefício."
+          ],
+          "feedback": {
+            "met": "Noor é beneficiária nomeada sob esses termos.",
+            "not_yet": "Separe titular de quem recebe benefício."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Which cost buys coverage?",
+          "scene": "Fictional contract charges a regular premium and a separate deductible per covered claim.",
+          "options": [
+            {
+              "label": "Both are refunds"
+            },
+            {
+              "label": "The premium"
+            },
+            {
+              "label": "The deductible"
+            }
+          ],
+          "help": [
+            "Distinguish buying coverage from retaining part of a claim."
+          ],
+          "feedback": {
+            "met": "The premium is the contract’s price of coverage.",
+            "not_yet": "Distinguish buying coverage from retaining part of a claim."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué costo compra cobertura?",
+          "scene": "Contrato ficticio cobra prima regular y deducible separado por reclamo cubierto.",
+          "options": [
+            {
+              "label": "Ambos son reembolsos"
+            },
+            {
+              "label": "Prima"
+            },
+            {
+              "label": "Deducible"
+            }
+          ],
+          "help": [
+            "Distingue comprar cobertura de asumir parte del reclamo."
+          ],
+          "feedback": {
+            "met": "Prima es precio contractual de cobertura.",
+            "not_yet": "Distingue comprar cobertura de asumir parte del reclamo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que custo compra cobertura?",
+          "scene": "Contrato fictício cobra prêmio regular e franquia separada por pedido coberto.",
+          "options": [
+            {
+              "label": "Ambos são devoluções"
+            },
+            {
+              "label": "Prêmio"
+            },
+            {
+              "label": "Franquia"
+            }
+          ],
+          "help": [
+            "Separe comprar cobertura de assumir parte do pedido."
+          ],
+          "feedback": {
+            "met": "Prêmio é preço contratual da cobertura.",
+            "not_yet": "Separe comprar cobertura de assumir parte do pedido."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.05",
+      "copy": {
+        "en-US": {
+          "prompt": "What loss remains yours?",
+          "scene": "Fictional covered loss 1200; deductible 100; insurer pays loss minus deductible, capped at 800; no other costs.",
+          "options": [
+            {
+              "label": "400"
+            },
+            {
+              "label": "1100"
+            },
+            {
+              "label": "100"
+            }
+          ],
+          "help": [
+            "Apply the insurer cap after deducting, then find the unpaid loss."
+          ],
+          "feedback": {
+            "met": "The payout cap leaves four hundred of loss unpaid.",
+            "not_yet": "Apply the insurer cap after deducting, then find the unpaid loss."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué pérdida queda a tu cargo?",
+          "scene": "Pérdida cubierta ficticia 1200; deducible 100; seguro paga pérdida menos deducible, con tope 800; sin otros costos.",
+          "options": [
+            {
+              "label": "400"
+            },
+            {
+              "label": "1100"
+            },
+            {
+              "label": "100"
+            }
+          ],
+          "help": [
+            "Aplica tope tras deducir y calcula pérdida no pagada."
+          ],
+          "feedback": {
+            "met": "Tope de pago deja cuatrocientos de pérdida sin pagar.",
+            "not_yet": "Aplica tope tras deducir y calcula pérdida no pagada."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que perda fica com você?",
+          "scene": "Perda coberta fictícia 1200; franquia 100; seguro paga perda menos franquia, com teto 800; sem outros custos.",
+          "options": [
+            {
+              "label": "400"
+            },
+            {
+              "label": "1100"
+            },
+            {
+              "label": "100"
+            }
+          ],
+          "help": [
+            "Aplique teto após deduzir e calcule perda não paga."
+          ],
+          "feedback": {
+            "met": "Teto de pagamento deixa quatrocentos de perda sem pagar.",
+            "not_yet": "Aplique teto após deduzir e calcule perda não paga."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          1200,
+          100,
+          800
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "op": "min",
+              "args": [
+                {
+                  "op": "subtract",
+                  "args": [
+                    {
+                      "input": 0
+                    },
+                    {
+                      "input": 1
+                    }
+                  ]
+                },
+                {
+                  "input": 2
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Does the exclusion match this loss?",
+          "scene": "Fictional policy excludes normal wear; inspection confirms normal wear caused the failure.",
+          "options": [
+            {
+              "label": "Yes, wear is excluded"
+            },
+            {
+              "label": "No, premium removes exclusions"
+            },
+            {
+              "label": "No, any failure qualifies"
+            }
+          ],
+          "help": [
+            "Use the actual cause and the applicable contract wording."
+          ],
+          "feedback": {
+            "met": "The established cause matches the explicit exclusion.",
+            "not_yet": "Use the actual cause and the applicable contract wording."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Exclusión coincide con pérdida?",
+          "scene": "Póliza ficticia excluye desgaste normal; inspección confirma que desgaste normal causó falla.",
+          "options": [
+            {
+              "label": "Sí, desgaste está excluido"
+            },
+            {
+              "label": "No, prima elimina exclusiones"
+            },
+            {
+              "label": "No, toda falla cumple"
+            }
+          ],
+          "help": [
+            "Usa causa real y texto contractual aplicable."
+          ],
+          "feedback": {
+            "met": "Causa establecida coincide con exclusión expresa.",
+            "not_yet": "Usa causa real y texto contractual aplicable."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Exclusão coincide com perda?",
+          "scene": "Apólice fictícia exclui desgaste normal; inspeção confirma que desgaste normal causou falha.",
+          "options": [
+            {
+              "label": "Sim, desgaste está excluído"
+            },
+            {
+              "label": "Não, prêmio elimina exclusões"
+            },
+            {
+              "label": "Não, toda falha atende"
+            }
+          ],
+          "help": [
+            "Use causa real e texto contratual aplicável."
+          ],
+          "feedback": {
+            "met": "Causa estabelecida coincide com exclusão expressa.",
+            "not_yet": "Use causa real e texto contratual aplicável."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-07",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What essential reserve gap remains?",
+          "scene": "Monthly essentials 500; interruption 3 months; confirmed total support 200; no other resources.",
+          "options": [
+            {
+              "label": "300"
+            },
+            {
+              "label": "1300"
+            },
+            {
+              "label": "1500"
+            }
+          ],
+          "help": [
+            "Multiply essentials by duration, then subtract confirmed total support."
+          ],
+          "feedback": {
+            "met": "The period’s essentials exceed confirmed support by thirteen hundred.",
+            "not_yet": "Multiply essentials by duration, then subtract confirmed total support."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué faltante esencial queda?",
+          "scene": "Esenciales mensuales 500; pausa 3 meses; apoyo total confirmado 200; sin otros recursos.",
+          "options": [
+            {
+              "label": "300"
+            },
+            {
+              "label": "1300"
+            },
+            {
+              "label": "1500"
+            }
+          ],
+          "help": [
+            "Multiplica esenciales por duración y resta apoyo total confirmado."
+          ],
+          "feedback": {
+            "met": "Esenciales del periodo superan apoyo confirmado por mil trescientos.",
+            "not_yet": "Multiplica esenciales por duración y resta apoyo total confirmado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que falta essencial resta?",
+          "scene": "Essenciais mensais 500; pausa 3 meses; apoio total confirmado 200; sem outros recursos.",
+          "options": [
+            {
+              "label": "300"
+            },
+            {
+              "label": "1300"
+            },
+            {
+              "label": "1500"
+            }
+          ],
+          "help": [
+            "Multiplique essenciais pela duração e subtraia apoio total confirmado."
+          ],
+          "feedback": {
+            "met": "Essenciais do período superam apoio confirmado em mil e trezentos.",
+            "not_yet": "Multiplique essenciais pela duração e subtraia apoio total confirmado."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          500,
+          3,
+          200
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "multiply",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.insurance-risk.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Which risk deserves severe-loss attention?",
+          "scene": "Common small cancellations fit the budget; a rare long income interruption exceeds the reserve.",
+          "options": [
+            {
+              "label": "Only common cancellations"
+            },
+            {
+              "label": "The long interruption"
+            },
+            {
+              "label": "Neither because one is rare"
+            }
+          ],
+          "help": [
+            "Use both likelihood and ability to absorb the consequence."
+          ],
+          "feedback": {
+            "met": "The long interruption overwhelms the stated financial buffer.",
+            "not_yet": "Use both likelihood and ability to absorb the consequence."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué riesgo merece atención por pérdida grave?",
+          "scene": "Cancelaciones pequeñas comunes caben en presupuesto; pausa larga rara de ingreso supera reserva.",
+          "options": [
+            {
+              "label": "Solo cancelaciones comunes"
+            },
+            {
+              "label": "Pausa larga"
+            },
+            {
+              "label": "Ninguno porque uno es raro"
+            }
+          ],
+          "help": [
+            "Usa probabilidad y capacidad de absorber consecuencia."
+          ],
+          "feedback": {
+            "met": "Pausa larga supera colchón financiero indicado.",
+            "not_yet": "Usa probabilidad y capacidad de absorber consecuencia."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que risco merece atenção por perda grave?",
+          "scene": "Cancelamentos pequenos comuns cabem no orçamento; pausa longa rara de renda supera reserva.",
+          "options": [
+            {
+              "label": "Só cancelamentos comuns"
+            },
+            {
+              "label": "Pausa longa"
+            },
+            {
+              "label": "Nenhum pois um é raro"
+            }
+          ],
+          "help": [
+            "Use probabilidade e capacidade de absorver consequência."
+          ],
+          "feedback": {
+            "met": "Pausa longa supera reserva financeira dada.",
+            "not_yet": "Use probabilidade e capacidade de absorver consequência."
+          }
+        }
+      }
+    }
+  ]
+}

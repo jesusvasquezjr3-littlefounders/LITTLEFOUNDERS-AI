@@ -32,6 +32,10 @@
     "safetyBody": "Please talk to a grown-up you trust.",
     "nextLabel": "Next time:",
     "backToPath": "Back to path",
+    "summaryTopicsLabel": "Today you worked on:",
+    "summaryWorkedThrough": "You worked through:",
+    "summaryStillTricky": "Still tricky:",
+    "summaryXp": "You earned {n} XP.",
     "previewTopic": "Saving for a goal"
   },
   "mentorCheckIn": {

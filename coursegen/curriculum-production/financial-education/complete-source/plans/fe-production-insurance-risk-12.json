@@ -1,0 +1,779 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-insurance-risk-part-3",
+  "lesson_id": "fe-production-insurance-risk-12",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.insurance-risk.12"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Distinguish an insurance protection feature from an investment projection in a combined offer.",
+  "title": {
+    "en-US": "Protection Projections",
+    "es-MX": "Separa protección de cifras futuras",
+    "pt-BR": "Separe proteção de valores futuros"
+  },
+  "new_concepts": [
+    "finance.prod.insurance-risk.12"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Protection Projections\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Separa protección de cifras futuras\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Separe proteção de valores futuros\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.insurance-risk.12",
+      "observable_action": "Distinguish an insurance protection feature from an investment projection in a combined offer.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.insurance-risk.03",
+      "prod.time-inflation.10"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Combined offers show contractual protection and uncertain future values; read each on its own terms.",
+    "misconception": "An illustrated investment value is the same promise as a contractual insurance benefit.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.insurance-risk.12",
+        "context_id": "insurance-risk-12-example-01",
+        "supports_from": [],
+        "reasoning": "Separate the contractual covered benefit from projected investment values. Projections depend on assumptions; check fees, conditions and access separately."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.insurance-risk.12",
+        "context_id": "insurance-risk-12-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The account estimate depends on assumptions about future returns."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.insurance-risk.12",
+        "context_id": "insurance-risk-12-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The missing protection terms prevent assessing the insurance benefit."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.insurance-risk.12",
+        "context_id": "insurance-risk-12-practice-01",
+        "supports_from": [],
+        "reasoning": "The stated account value varies with its underlying assumptions."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.insurance-risk.12",
+        "context_id": "insurance-risk-12-practice-02",
+        "supports_from": [],
+        "reasoning": "A projected balance does not establish accessible withdrawal proceeds."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.insurance-risk.12",
+        "context_id": "insurance-risk-12-practice-03",
+        "supports_from": [],
+        "reasoning": "A larger account projection does not establish a broader covered benefit."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.insurance-risk.12",
+        "context_id": "insurance-risk-12-transfer-01",
+        "supports_from": [],
+        "reasoning": "The covered benefit and growth estimate rest on different terms."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.insurance-risk.12",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Combined offers show contractual protection and uncertain future values; read each on its own terms."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Oferta de seguro y ahorro muestra pagos por contrato y cifras futuras inciertas. Lee sus términos por separado."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Oferta de seguro e poupança mostra pagamentos por contrato e valores futuros incertos. Leia seus termos em separado."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Two different kinds of numbers",
+          "line": "Separate the contractual covered benefit from projected investment values. Projections depend on assumptions; check fees, conditions and access separately."
+        },
+        "es-MX": {
+          "prompt": "Dos clases distintas de cifras",
+          "line": "Separa beneficio cubierto por contrato de valores de inversión proyectados. Proyecciones dependen de supuestos; revisa costos, condiciones y acceso aparte."
+        },
+        "pt-BR": {
+          "prompt": "Duas classes distintas de valores",
+          "line": "Separe benefício coberto do contrato de valores de investimento previstos. Projeções dependem de suposições; veja custos, condições e acesso à parte."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.12",
+      "copy": {
+        "en-US": {
+          "prompt": "Which is a projection?",
+          "scene": "Fictional offer lists a defined covered benefit and a future account estimate dependent on assumed returns.",
+          "options": [
+            {
+              "label": "The defined covered event"
+            },
+            {
+              "label": "Every contract condition"
+            },
+            {
+              "label": "The future account estimate"
+            }
+          ],
+          "help": [
+            "Distinguish the illustrated value from the contractual benefit."
+          ],
+          "feedback": {
+            "met": "The account estimate depends on assumptions about future returns.",
+            "not_yet": "Distinguish the illustrated value from the contractual benefit."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es proyección?",
+          "scene": "Oferta ficticia lista beneficio cubierto definido y estimación de cuenta futura dependiente de ganancias supuestas.",
+          "options": [
+            {
+              "label": "Evento cubierto definido"
+            },
+            {
+              "label": "Toda condición por contrato"
+            },
+            {
+              "label": "Estimación futura de cuenta"
+            }
+          ],
+          "help": [
+            "Distingue valor ilustrado de beneficio por contrato."
+          ],
+          "feedback": {
+            "met": "Estimación de cuenta depende de supuestos de rendimiento futuro.",
+            "not_yet": "Distingue valor ilustrado de beneficio por contrato."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é valor previsto?",
+          "scene": "Oferta fictícia lista benefício coberto definido e valor previsto de conta futura dependente de ganhos supostos.",
+          "options": [
+            {
+              "label": "Evento coberto definido"
+            },
+            {
+              "label": "Toda condição do contrato"
+            },
+            {
+              "label": "Estimativa futura da conta"
+            }
+          ],
+          "help": [
+            "Separe valor ilustrado de benefício do contrato."
+          ],
+          "feedback": {
+            "met": "Estimativa da conta depende de suposições de ganho futuro.",
+            "not_yet": "Separe valor ilustrado de benefício do contrato."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.12",
+      "copy": {
+        "en-US": {
+          "prompt": "What must be checked for protection?",
+          "scene": "A combined offer highlights account growth but omits the insured event and exclusions.",
+          "options": [
+            {
+              "label": "Only projected investment returns"
+            },
+            {
+              "label": "Covered event and exclusions"
+            },
+            {
+              "label": "Only the growth picture"
+            }
+          ],
+          "help": [
+            "Investment illustrations do not supply missing coverage conditions."
+          ],
+          "feedback": {
+            "met": "The missing protection terms prevent assessing the insurance benefit.",
+            "not_yet": "Investment illustrations do not supply missing coverage conditions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué revisar para protección?",
+          "scene": "Oferta combinada destaca crecimiento de cuenta pero omite evento asegurado y exclusiones.",
+          "options": [
+            {
+              "label": "Solo rendimientos previstos"
+            },
+            {
+              "label": "Evento cubierto y exclusiones"
+            },
+            {
+              "label": "Solo gráfica de crecimiento"
+            }
+          ],
+          "help": [
+            "Ilustraciones de inversión no completan condiciones faltantes de cobertura."
+          ],
+          "feedback": {
+            "met": "Términos faltantes impiden evaluar beneficio del seguro.",
+            "not_yet": "Ilustraciones de inversión no completan condiciones faltantes de cobertura."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que conferir para proteção?",
+          "scene": "Oferta combinada destaca crescimento da conta mas omite evento segurado e exclusões.",
+          "options": [
+            {
+              "label": "Só retornos projetados"
+            },
+            {
+              "label": "Evento coberto e exclusões"
+            },
+            {
+              "label": "Só gráfico de crescimento"
+            }
+          ],
+          "help": [
+            "Exemplos de investimento não completam condições faltantes da cobertura."
+          ],
+          "feedback": {
+            "met": "Termos faltantes impedem avaliar benefício do seguro.",
+            "not_yet": "Exemplos de investimento não completam condições faltantes da cobertura."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.12",
+      "copy": {
+        "en-US": {
+          "prompt": "Does this promise final value?",
+          "scene": "Fictional illustration explicitly states that future account values vary with returns and charges.",
+          "options": [
+            {
+              "label": "Yes, every printed value is promised"
+            },
+            {
+              "label": "Yes, insurance removes investment uncertainty"
+            },
+            {
+              "label": "No"
+            }
+          ],
+          "help": [
+            "Read the illustration’s conditions rather than treating estimates as promises."
+          ],
+          "feedback": {
+            "met": "The stated account value varies with its underlying assumptions.",
+            "not_yet": "Read the illustration’s conditions rather than treating estimates as promises."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Ejemplo promete valor final?",
+          "scene": "Ejemplo ficticia indica que valores futuros de cuenta varían con ganancias y cargos.",
+          "options": [
+            {
+              "label": "Sí, toda cifra impresa está prometida"
+            },
+            {
+              "label": "Sí, seguro elimina incertidumbre de inversión"
+            },
+            {
+              "label": "No"
+            }
+          ],
+          "help": [
+            "Lee condiciones de ejemplo sin tratar estimaciones como promesas."
+          ],
+          "feedback": {
+            "met": "Valor indicado de cuenta varía con sus supuestos.",
+            "not_yet": "Lee condiciones de ejemplo sin tratar estimaciones como promesas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Exemplo promete valor final?",
+          "scene": "Exemplo fictício indica que valores futuros da conta variam com ganhos e taxas.",
+          "options": [
+            {
+              "label": "Sim, todo valor impresso é promessa"
+            },
+            {
+              "label": "Sim, seguro elimina risco do investimento"
+            },
+            {
+              "label": "Não"
+            }
+          ],
+          "help": [
+            "Leia condições do exemplo sem tratar valores previstos como promessas."
+          ],
+          "feedback": {
+            "met": "Valor dado da conta varia com suas suposições.",
+            "not_yet": "Leia condições do exemplo sem tratar valores previstos como promessas."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.12",
+      "copy": {
+        "en-US": {
+          "prompt": "What else matters for access?",
+          "scene": "Projected account value is shown, but early withdrawal charges and timing are omitted.",
+          "options": [
+            {
+              "label": "Only the tallest projected bar"
+            },
+            {
+              "label": "Withdrawal conditions"
+            },
+            {
+              "label": "Only the insured person’s initials"
+            }
+          ],
+          "help": [
+            "Check charges, timing and contractual access restrictions."
+          ],
+          "feedback": {
+            "met": "A projected balance does not establish accessible withdrawal proceeds.",
+            "not_yet": "Check charges, timing and contractual access restrictions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué más importa para acceso?",
+          "scene": "Se muestra valor proyectado, pero omite cargos y plazos de retiro anticipado.",
+          "options": [
+            {
+              "label": "Solo barra proyectada más alta"
+            },
+            {
+              "label": "Condiciones de retiro"
+            },
+            {
+              "label": "Solo iniciales de persona asegurada"
+            }
+          ],
+          "help": [
+            "Revisa cargos, plazos y reglas de acceso del contrato."
+          ],
+          "feedback": {
+            "met": "Saldo proyectado no establece cuánto puedes retirar.",
+            "not_yet": "Revisa cargos, plazos y reglas de acceso del contrato."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que mais importa para acesso?",
+          "scene": "Mostra valor previsto, mas omite taxas e prazos de saque antes do prazo.",
+          "options": [
+            {
+              "label": "Só barra projetada mais alta"
+            },
+            {
+              "label": "Condições de saque"
+            },
+            {
+              "label": "Só iniciais da pessoa segurada"
+            }
+          ],
+          "help": [
+            "Veja taxas, prazos e regras do contrato de acesso."
+          ],
+          "feedback": {
+            "met": "Saldo previsto não define quanto pode sacar.",
+            "not_yet": "Veja taxas, prazos e regras do contrato de acesso."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.insurance-risk.12",
+      "copy": {
+        "en-US": {
+          "prompt": "Can a larger projection prove better protection?",
+          "scene": "Two offers show different account projections, but covered benefits have not been compared.",
+          "options": [
+            {
+              "label": "Yes, bigger estimate means broader coverage"
+            },
+            {
+              "label": "No"
+            },
+            {
+              "label": "Yes, fees cannot matter"
+            }
+          ],
+          "help": [
+            "Compare protection terms separately from investment assumptions."
+          ],
+          "feedback": {
+            "met": "A larger account projection does not establish a broader covered benefit.",
+            "not_yet": "Compare protection terms separately from investment assumptions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Proyección mayor prueba mejor protección?",
+          "scene": "Dos ofertas muestran cifras futuras distintas de cuenta, pero no se compararon beneficios cubiertos.",
+          "options": [
+            {
+              "label": "Sí, estimación mayor significa cobertura amplia"
+            },
+            {
+              "label": "No"
+            },
+            {
+              "label": "Sí, cargos no importan"
+            }
+          ],
+          "help": [
+            "Compara términos de protección aparte de supuestos de inversión."
+          ],
+          "feedback": {
+            "met": "Proyección mayor de cuenta no prueba beneficio cubierto más amplio.",
+            "not_yet": "Compara términos de protección aparte de supuestos de inversión."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Projeção maior prova melhor proteção?",
+          "scene": "Duas ofertas mostram valores futuros distintos de conta, mas benefícios cobertos não foram comparados.",
+          "options": [
+            {
+              "label": "Sim, valor previsto maior significa cobertura ampla"
+            },
+            {
+              "label": "Não"
+            },
+            {
+              "label": "Sim, taxas não importam"
+            }
+          ],
+          "help": [
+            "Compare termos da proteção à parte das suposições de investimento."
+          ],
+          "feedback": {
+            "met": "Projeção maior da conta não prova benefício coberto mais amplo.",
+            "not_yet": "Compare termos da proteção à parte das suposições de investimento."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.insurance-risk.12",
+      "copy": {
+        "en-US": {
+          "prompt": "Which reading fits?",
+          "scene": "Fictional brochure defines conditional death cover and separate growth using assumed returns.",
+          "options": [
+            {
+              "label": "One promise covering every number"
+            },
+            {
+              "label": "Projection alone defines coverage"
+            },
+            {
+              "label": "Conditional protection plus an uncertain projection"
+            }
+          ],
+          "help": [
+            "Separate the contractual protection from assumption-based future values."
+          ],
+          "feedback": {
+            "met": "The covered benefit and growth estimate rest on different terms.",
+            "not_yet": "Separate the contractual protection from assumption-based future values."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué lectura corresponde a oferta?",
+          "scene": "Folleto ficticio define cobertura por fallecimiento con condiciones y muestra crecimiento con rendimiento supuesto.",
+          "options": [
+            {
+              "label": "Una promesa para toda cifra"
+            },
+            {
+              "label": "Solo proyección define cobertura"
+            },
+            {
+              "label": "Protección condicionada y proyección incierta"
+            }
+          ],
+          "help": [
+            "Separa protección por contrato de valores futuros basados en supuestos."
+          ],
+          "feedback": {
+            "met": "Beneficio cubierto y crecimiento estimado tienen términos distintos.",
+            "not_yet": "Separa protección por contrato de valores futuros basados en supuestos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que leitura cabe à oferta?",
+          "scene": "Folheto fictício define cobertura por morte com condições e mostra crescimento com ganho suposto.",
+          "options": [
+            {
+              "label": "Uma promessa para todo valor"
+            },
+            {
+              "label": "Só valor previsto define cobertura"
+            },
+            {
+              "label": "Proteção condicional e valor previsto incerto"
+            }
+          ],
+          "help": [
+            "Separe proteção do contrato de valores futuros baseados em suposições."
+          ],
+          "feedback": {
+            "met": "Benefício coberto e crescimento estimado têm termos distintos.",
+            "not_yet": "Separe proteção do contrato de valores futuros baseados em suposições."
+          }
+        }
+      }
+    }
+  ]
+}

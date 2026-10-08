@@ -1,0 +1,798 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-cashflow-budget-part-1",
+  "lesson_id": "fe-production-cashflow-budget-01",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.cashflow-budget.01"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Build a budget using money expected for the same period as its expenses.",
+  "title": {
+    "en-US": "Budget periods",
+    "es-MX": "Iguala el periodo del presupuesto",
+    "pt-BR": "Iguale o período do orçamento"
+  },
+  "new_concepts": [
+    "finance.prod.cashflow-budget.01"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Match the budget period\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Iguala el periodo del presupuesto\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Iguale o período do orçamento\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.cashflow-budget.01",
+      "observable_action": "Build a budget using money expected for the same period as its expenses.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.income-work.01",
+      "prod.spending-patterns.01",
+      "prod.financial-math.11"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Compare income and expenses covering the same dates.",
+    "misconception": "Comparing weekly income with monthly expenses without converting or checking the actual dates.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.cashflow-budget.01",
+        "context_id": "fe-production-cashflow-budget-01-example-01",
+        "supports_from": [],
+        "reasoning": "A weekly plan matches that week’s receipts with expenses. Monthly amounts need their dates checked before comparison."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.cashflow-budget.01",
+        "context_id": "fe-production-cashflow-budget-01-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The expected date places it outside next week’s receipt window."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.cashflow-budget.01",
+        "context_id": "fe-production-cashflow-budget-01-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Weekly and monthly amounts describe different periods."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.cashflow-budget.01",
+        "context_id": "fe-production-cashflow-budget-01-practice-01",
+        "supports_from": [],
+        "reasoning": "4 × 90 = 360 for the stated payment dates."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.cashflow-budget.01",
+        "context_id": "fe-production-cashflow-budget-01-practice-02",
+        "supports_from": [],
+        "reasoning": "Use the actual calendar rather than a fixed monthly shortcut."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.cashflow-budget.01",
+        "context_id": "fe-production-cashflow-budget-01-practice-03",
+        "supports_from": [],
+        "reasoning": "Mismatched periods cannot establish the monthly balance."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.cashflow-budget.01",
+        "context_id": "fe-production-cashflow-budget-01-transfer-01",
+        "supports_from": [],
+        "reasoning": "Costs must cover the same activity period as the estimate."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.cashflow-budget.01",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Compare income and expenses covering the same dates."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Compara ingresos y gastos que cubran las mismas fechas."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Compare renda e gastos que cubram as mesmas datas."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "One window of time",
+          "line": "A weekly plan matches that week’s receipts with expenses. Monthly amounts need their dates checked before comparison."
+        },
+        "es-MX": {
+          "prompt": "Una ventana de tiempo",
+          "line": "Un plan semanal incluye entradas y gastos previstos de esa semana. Una cuenta mensual tiene su lugar en el plan mensual."
+        },
+        "pt-BR": {
+          "prompt": "Uma janela de tempo",
+          "line": "Um plano semanal inclui entradas e gastos previstos daquela semana. Uma conta mensal tem seu lugar no plano mensal."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Where does that receipt belong?",
+          "scene": "The plan covers next week; an expected payment arrives the following week.",
+          "options": [
+            {
+              "label": "In neither period ever"
+            },
+            {
+              "label": "In the following week’s plan"
+            },
+            {
+              "label": "As next week’s received cash"
+            }
+          ],
+          "help": [
+            "Use the receipt’s stated date."
+          ],
+          "feedback": {
+            "met": "The expected date places it outside next week’s receipt window.",
+            "not_yet": "Use the receipt’s stated date."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Dónde corresponde esa entrada?",
+          "scene": "El plan cubre la próxima semana; un pago previsto llega la semana siguiente.",
+          "options": [
+            {
+              "label": "En ningún periodo nunca"
+            },
+            {
+              "label": "En el plan de la semana siguiente"
+            },
+            {
+              "label": "Como efectivo recibido la próxima semana"
+            }
+          ],
+          "help": [
+            "Usa la fecha indicada de la entrada."
+          ],
+          "feedback": {
+            "met": "La fecha prevista la coloca fuera de las entradas de la próxima semana.",
+            "not_yet": "Usa la fecha indicada de la entrada."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Onde cabe essa entrada?",
+          "scene": "O plano cobre a próxima semana; um pagamento previsto chega na semana seguinte.",
+          "options": [
+            {
+              "label": "Em nenhum período nunca"
+            },
+            {
+              "label": "No plano da semana seguinte"
+            },
+            {
+              "label": "Como dinheiro recebido na próxima semana"
+            }
+          ],
+          "help": [
+            "Use a data informada da entrada."
+          ],
+          "feedback": {
+            "met": "A data prevista a coloca fora das entradas da próxima semana.",
+            "not_yet": "Use a data informada da entrada."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What must be aligned before comparison?",
+          "scene": "Monthly expense estimate: 400; quoted income: 120 each week.",
+          "options": [
+            {
+              "label": "Only the currency symbol"
+            },
+            {
+              "label": "Only the income amount"
+            },
+            {
+              "label": "The periods covered"
+            }
+          ],
+          "help": [
+            "Check dates and frequency before subtracting."
+          ],
+          "feedback": {
+            "met": "Weekly and monthly amounts describe different periods.",
+            "not_yet": "Check dates and frequency before subtracting."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe igualarse antes de comparar?",
+          "scene": "Gasto mensual estimado: 400; ingreso indicado: 120 por semana.",
+          "options": [
+            {
+              "label": "Solo el símbolo monetario"
+            },
+            {
+              "label": "Solo el monto de ingreso"
+            },
+            {
+              "label": "Los periodos cubiertos"
+            }
+          ],
+          "help": [
+            "Revisa fechas y frecuencia antes de restar."
+          ],
+          "feedback": {
+            "met": "Montos semanales y mensuales describen periodos distintos.",
+            "not_yet": "Revisa fechas y frecuencia antes de restar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que deve ser igualado antes de comparar?",
+          "scene": "Gasto mensal estimado: 400; renda informada: 120 por semana.",
+          "options": [
+            {
+              "label": "Só o símbolo monetário"
+            },
+            {
+              "label": "Só o valor da renda"
+            },
+            {
+              "label": "Os períodos cobertos"
+            }
+          ],
+          "help": [
+            "Confira datas e frequência antes de subtrair."
+          ],
+          "feedback": {
+            "met": "Valores semanais e mensais descrevem períodos diferentes.",
+            "not_yet": "Confira datas e frequência antes de subtrair."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Expected receipts in this window?",
+          "scene": "This plan contains exactly 4 confirmed payments of 90 during its date range.",
+          "options": [
+            {
+              "label": "360"
+            },
+            {
+              "label": "90"
+            },
+            {
+              "label": "94"
+            }
+          ],
+          "help": [
+            "Use the confirmed count, not an assumed number of weeks."
+          ],
+          "feedback": {
+            "met": "4 × 90 = 360 for the stated payment dates.",
+            "not_yet": "Use the confirmed count, not an assumed number of weeks."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Entradas previstas en esta ventana?",
+          "scene": "Este plan incluye exactamente 4 pagos confirmados de 90 dentro de sus fechas.",
+          "options": [
+            {
+              "label": "360"
+            },
+            {
+              "label": "90"
+            },
+            {
+              "label": "94"
+            }
+          ],
+          "help": [
+            "Usa la cantidad confirmada, no semanas supuestas."
+          ],
+          "feedback": {
+            "met": "4 × 90 = 360 por las fechas de pago indicadas.",
+            "not_yet": "Usa la cantidad confirmada, no semanas supuestas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Entradas previstas nessa janela?",
+          "scene": "Este plano inclui exatamente 4 pagamentos confirmados de 90 dentro de suas datas.",
+          "options": [
+            {
+              "label": "360"
+            },
+            {
+              "label": "90"
+            },
+            {
+              "label": "94"
+            }
+          ],
+          "help": [
+            "Use a quantidade confirmada, não semanas supostas."
+          ],
+          "feedback": {
+            "met": "4 × 90 = 360 pelas datas de pagamento informadas.",
+            "not_yet": "Use a quantidade confirmada, não semanas supostas."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          4,
+          90
+        ],
+        "expression": {
+          "op": "multiply",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Which count fits this month?",
+          "scene": "A calendar month contains five stated weekly paydays rather than four.",
+          "options": [
+            {
+              "label": "Only the first payday"
+            },
+            {
+              "label": "Four because every month is four weeks"
+            },
+            {
+              "label": "The five actual paydays"
+            }
+          ],
+          "help": [
+            "Count dates inside the chosen period."
+          ],
+          "feedback": {
+            "met": "Use the actual calendar rather than a fixed monthly shortcut.",
+            "not_yet": "Count dates inside the chosen period."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué cantidad corresponde al plan mensual?",
+          "scene": "Un mes del calendario incluye cinco fechas semanales de pago indicadas, no cuatro.",
+          "options": [
+            {
+              "label": "Solo la primera fecha"
+            },
+            {
+              "label": "Cuatro porque todo mes tiene cuatro semanas"
+            },
+            {
+              "label": "Las cinco fechas reales de pago"
+            }
+          ],
+          "help": [
+            "Cuenta fechas dentro del periodo elegido."
+          ],
+          "feedback": {
+            "met": "Usa el calendario real en vez de una conversión mensual fija.",
+            "not_yet": "Cuenta fechas dentro del periodo elegido."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual quantidade cabe no plano mensal?",
+          "scene": "Um mês do calendário inclui cinco datas semanais de pagamento informadas, não quatro.",
+          "options": [
+            {
+              "label": "Só a primeira data"
+            },
+            {
+              "label": "Quatro porque todo mês tem quatro semanas"
+            },
+            {
+              "label": "As cinco datas reais de pagamento"
+            }
+          ],
+          "help": [
+            "Conte datas dentro do período escolhido."
+          ],
+          "feedback": {
+            "met": "Use o calendário real em vez de uma conversão mensal fixa.",
+            "not_yet": "Conte datas dentro do período escolhido."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Does this establish a monthly deficit?",
+          "scene": "Bills cover a month; estimated income covers a week.",
+          "options": [
+            {
+              "label": "Dates never affect a budget"
+            },
+            {
+              "label": "Not until periods are aligned"
+            },
+            {
+              "label": "The smaller number proves it"
+            }
+          ],
+          "help": [
+            "Collect the month’s income before drawing that conclusion."
+          ],
+          "feedback": {
+            "met": "Mismatched periods cannot establish the monthly balance.",
+            "not_yet": "Collect the month’s income before drawing that conclusion."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Esta comparación demuestra déficit mensual?",
+          "scene": "Las cuentas esenciales son del mes, pero el ingreso estimado cubre solo una semana.",
+          "options": [
+            {
+              "label": "Sí, las fechas nunca afectan el presupuesto"
+            },
+            {
+              "label": "No hasta igualar periodos"
+            },
+            {
+              "label": "Sí, lo prueba el número menor"
+            }
+          ],
+          "help": [
+            "Reúne el ingreso mensual antes de concluir eso."
+          ],
+          "feedback": {
+            "met": "Periodos distintos no establecen el saldo mensual.",
+            "not_yet": "Reúne el ingreso mensual antes de concluir eso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Essa comparação demonstra déficit mensal?",
+          "scene": "As contas essenciais são do mês, mas a renda estimada cobre só uma semana.",
+          "options": [
+            {
+              "label": "Sim, datas nunca afetam o orçamento"
+            },
+            {
+              "label": "Não até igualar períodos"
+            },
+            {
+              "label": "Sim, o número menor comprova"
+            }
+          ],
+          "help": [
+            "Reúna a renda mensal antes dessa conclusão."
+          ],
+          "feedback": {
+            "met": "Períodos diferentes não estabelecem o saldo mensal.",
+            "not_yet": "Reúna a renda mensal antes dessa conclusão."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.cashflow-budget.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Correct what?",
+          "scene": "A six-week activity’s estimate includes transport for its first week alone.",
+          "options": [
+            {
+              "label": "Multiply every bill without checking dates"
+            },
+            {
+              "label": "Include transport across the activity’s period"
+            },
+            {
+              "label": "Exclude transport because it repeats"
+            }
+          ],
+          "help": [
+            "Check the dates each stated cost actually covers."
+          ],
+          "feedback": {
+            "met": "Costs must cover the same activity period as the estimate.",
+            "not_yet": "Check the dates each stated cost actually covers."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué necesita corregirse?",
+          "scene": "Una actividad temporal dura seis semanas; su estimación incluye solo el transporte de la primera.",
+          "options": [
+            {
+              "label": "Multiplicar cuentas sin revisar fechas"
+            },
+            {
+              "label": "Incluir transporte de todo el periodo"
+            },
+            {
+              "label": "Excluir transporte porque se repite"
+            }
+          ],
+          "help": [
+            "Revisa las fechas que cada costo realmente cubre."
+          ],
+          "feedback": {
+            "met": "Los costos deben cubrir el mismo periodo que la estimación.",
+            "not_yet": "Revisa las fechas que cada costo realmente cubre."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que precisa de correção?",
+          "scene": "Uma atividade temporária dura seis semanas; sua estimativa inclui só o transporte da primeira.",
+          "options": [
+            {
+              "label": "Multiplicar contas sem conferir datas"
+            },
+            {
+              "label": "Incluir transporte de todo o período"
+            },
+            {
+              "label": "Excluir transporte porque se repete"
+            }
+          ],
+          "help": [
+            "Confira as datas que cada custo realmente cobre."
+          ],
+          "feedback": {
+            "met": "Os custos devem cobrir o mesmo período da estimativa.",
+            "not_yet": "Confira as datas que cada custo realmente cobre."
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,841 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-investment-comparison-part-2",
+  "lesson_id": "fe-production-investment-comparison-review-2",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.investment-comparison.06",
+    "finance.prod.investment-comparison.07",
+    "finance.prod.investment-comparison.08",
+    "finance.prod.investment-comparison.09",
+    "finance.prod.investment-comparison.10",
+    "finance.prod.investing-foundations.04"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Identify currency exposure, selling incentives, allocation drift and unsupported promises in fresh offers.",
+  "title": {
+    "en-US": "Offer Checks",
+    "es-MX": "Revisa la oferta completa",
+    "pt-BR": "Confira a oferta inteira"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Offer Checks\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Revisa la oferta completa\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Confira a oferta inteira\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "consolidate",
+    "objective": {
+      "skill_id": "prod.investment-comparison.06",
+      "observable_action": "Identify currency exposure, selling incentives, allocation drift and unsupported promises in fresh offers.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.investing-foundations.04",
+      "prod.financial-math.05"
+    ],
+    "retrieval_skills": [
+      "prod.investment-comparison.06",
+      "prod.investment-comparison.07",
+      "prod.investment-comparison.08",
+      "prod.investment-comparison.09",
+      "prod.investment-comparison.10",
+      "prod.investing-foundations.04"
+    ],
+    "relevance": "An offer’s currency, costs and incentives can change what it means for your goal.",
+    "misconception": "A persuasive recommendation or high foreign return removes the need to check actual-use assumptions.",
+    "numeracy_support": "Use the current visible conditions; do not reuse a previous scenario’s answer.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.investment-comparison.06",
+        "context_id": "investment-comparison-review-2-practice-01",
+        "supports_from": [],
+        "reasoning": "Conversion can reduce local value without changing foreign units."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.investment-comparison.07",
+        "context_id": "investment-comparison-review-2-practice-02",
+        "supports_from": [],
+        "reasoning": "Compensation can influence which product is promoted."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.investment-comparison.08",
+        "context_id": "investment-comparison-review-2-practice-03",
+        "supports_from": [],
+        "reasoning": "Reducing the overweight group moves back toward the target."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.investment-comparison.09",
+        "context_id": "investment-comparison-review-2-practice-04",
+        "supports_from": [],
+        "reasoning": "The omitted conditions affect the amount actually available."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.investment-comparison.10",
+        "context_id": "investment-comparison-review-2-practice-05",
+        "supports_from": [],
+        "reasoning": "The sender’s own channel cannot independently verify the claim."
+      },
+      {
+        "segment_id": "practice-06",
+        "skill_id": "prod.investing-foundations.04",
+        "context_id": "investment-comparison-review-2-practice-06",
+        "supports_from": [],
+        "reasoning": "A payment can contribute to return without a price change."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.investment-comparison.06",
+        "context_id": "investment-comparison-review-2-transfer-01",
+        "supports_from": [],
+        "reasoning": "The trip requires the currency used by its actual bills."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.investment-comparison.06",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "An offer’s currency, costs and incentives can change what it means for your goal."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Moneda, costos e incentivos pueden cambiar lo que una oferta implica para tu meta."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Moeda, custos e incentivos podem mudar o que uma oferta significa para sua meta."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Why can local value fall?",
+          "scene": "Foreign units stay constant, but each converts into fewer local units.",
+          "options": [
+            {
+              "label": "The exchange rate changed"
+            },
+            {
+              "label": "The foreign unit count necessarily fell"
+            }
+          ],
+          "help": [
+            "Track the goal’s spending currency."
+          ],
+          "feedback": {
+            "met": "Conversion can reduce local value without changing foreign units.",
+            "not_yet": "Track the goal’s spending currency."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Por qué puede bajar el valor local?",
+          "scene": "Las unidades extranjeras siguen iguales, pero cada una entrega menos unidades locales.",
+          "options": [
+            {
+              "label": "Cambió el tipo de cambio"
+            },
+            {
+              "label": "Necesariamente bajaron las unidades extranjeras"
+            }
+          ],
+          "help": [
+            "Sigue la moneda de gasto de la meta."
+          ],
+          "feedback": {
+            "met": "Convertir puede reducir valor local sin cambiar unidades extranjeras.",
+            "not_yet": "Sigue la moneda de gasto de la meta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Por que o valor local pode cair?",
+          "scene": "As unidades estrangeiras ficam iguais, mas cada uma entrega menos unidades locais.",
+          "options": [
+            {
+              "label": "O câmbio mudou"
+            },
+            {
+              "label": "As unidades estrangeiras necessariamente caíram"
+            }
+          ],
+          "help": [
+            "Siga a moeda de gasto da meta."
+          ],
+          "feedback": {
+            "met": "Converter pode reduzir valor local sem mudar unidades estrangeiras.",
+            "not_yet": "Siga a moeda de gasto da meta."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Which incentive matters?",
+          "scene": "A salesperson earns more when clients choose a higher-fee product.",
+          "options": [
+            {
+              "label": "Friendliness removes the conflict"
+            },
+            {
+              "label": "The higher fee proves better outcomes"
+            },
+            {
+              "label": "Payment favors selling that product"
+            }
+          ],
+          "help": [
+            "Compare the sales incentive with the client’s goal."
+          ],
+          "feedback": {
+            "met": "Compensation can influence which product is promoted.",
+            "not_yet": "Compare the sales incentive with the client’s goal."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué incentivo importa?",
+          "scene": "Quien vende gana más si el cliente elige un producto con comisión mayor.",
+          "options": [
+            {
+              "label": "La amabilidad elimina el conflicto"
+            },
+            {
+              "label": "Mayor comisión prueba mejores resultados"
+            },
+            {
+              "label": "El pago favorece vender ese producto"
+            }
+          ],
+          "help": [
+            "Compara el incentivo de venta con la meta del cliente."
+          ],
+          "feedback": {
+            "met": "La remuneración puede influir en el producto promovido.",
+            "not_yet": "Compara el incentivo de venta con la meta del cliente."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual incentivo importa?",
+          "scene": "Quem vende ganha mais se o cliente escolhe um produto com tarifa maior.",
+          "options": [
+            {
+              "label": "Simpatia elimina o conflito"
+            },
+            {
+              "label": "Tarifa maior prova melhores resultados"
+            },
+            {
+              "label": "O pagamento favorece vender esse produto"
+            }
+          ],
+          "help": [
+            "Compare o incentivo de venda com a meta do cliente."
+          ],
+          "feedback": {
+            "met": "A remuneração pode influenciar o produto promovido.",
+            "not_yet": "Compare o incentivo de venda com a meta do cliente."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Which restores the target?",
+          "scene": "The plan targets equal groups. B now exceeds half; the goal is unchanged.",
+          "options": [
+            {
+              "label": "Buy more B because it rose"
+            },
+            {
+              "label": "Erase the target"
+            },
+            {
+              "label": "Reduce B’s relative share"
+            }
+          ],
+          "help": [
+            "Compare current weights with the unchanged plan."
+          ],
+          "feedback": {
+            "met": "Reducing the overweight group moves back toward the target.",
+            "not_yet": "Compare current weights with the unchanged plan."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué dirección recupera la meta?",
+          "scene": "La cartera busca grupos iguales. B creció sobre la mitad; el objetivo no cambia.",
+          "options": [
+            {
+              "label": "Comprar más B porque subió"
+            },
+            {
+              "label": "Borrar la meta"
+            },
+            {
+              "label": "Reducir la parte relativa de B"
+            }
+          ],
+          "help": [
+            "Compara pesos actuales con el plan vigente."
+          ],
+          "feedback": {
+            "met": "Reducir el exceso acerca a la mezcla objetivo.",
+            "not_yet": "Compara pesos actuales con el plan vigente."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual direção retoma a meta?",
+          "scene": "A carteira busca grupos iguais. B cresceu acima da metade; o objetivo não muda.",
+          "options": [
+            {
+              "label": "Comprar mais B porque subiu"
+            },
+            {
+              "label": "Apagar a meta"
+            },
+            {
+              "label": "Reduzir a parte relativa de B"
+            }
+          ],
+          "help": [
+            "Compare pesos atuais com o plano vigente."
+          ],
+          "feedback": {
+            "met": "Reduzir o excesso aproxima da composição da meta.",
+            "not_yet": "Compare pesos atuais com o plano vigente."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.09",
+      "copy": {
+        "en-US": {
+          "prompt": "What makes the ranking incomplete?",
+          "scene": "One after-cost quote includes tax and exit fees; another omits both.",
+          "options": [
+            {
+              "label": "Nothing if dates match"
+            },
+            {
+              "label": "Unequal net-return assumptions"
+            },
+            {
+              "label": "Only their starting balances"
+            }
+          ],
+          "help": [
+            "Align taxes and exit costs before ranking."
+          ],
+          "feedback": {
+            "met": "The omitted conditions affect the amount actually available.",
+            "not_yet": "Align taxes and exit costs before ranking."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué vuelve incompleta la clasificación?",
+          "scene": "Una cifra neta incluye impuestos y salida; otra omite ambos.",
+          "options": [
+            {
+              "label": "Nada si coinciden fechas"
+            },
+            {
+              "label": "Supuestos netos desiguales"
+            },
+            {
+              "label": "Solo sus saldos iniciales"
+            }
+          ],
+          "help": [
+            "Alinea impuestos y costos de salida antes de ordenar."
+          ],
+          "feedback": {
+            "met": "Las condiciones omitidas afectan el monto realmente disponible.",
+            "not_yet": "Alinea impuestos y costos de salida antes de ordenar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que torna a ordem incompleta?",
+          "scene": "Um valor líquido inclui impostos e saída; outro omite ambos.",
+          "options": [
+            {
+              "label": "Nada se as datas são iguais"
+            },
+            {
+              "label": "Hipóteses líquidas desiguais"
+            },
+            {
+              "label": "Só seus saldos iniciais"
+            }
+          ],
+          "help": [
+            "Alinhe impostos e custos de saída antes de ordenar."
+          ],
+          "feedback": {
+            "met": "As condições omitidas afetam o valor de fato disponível.",
+            "not_yet": "Alinhe impostos e custos de saída antes de ordenar."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.10",
+      "copy": {
+        "en-US": {
+          "prompt": "How should the claim be checked?",
+          "scene": "A stranger’s message promises huge guaranteed returns and provides its own verification number.",
+          "options": [
+            {
+              "label": "Pay before asking"
+            },
+            {
+              "label": "Use only that number"
+            },
+            {
+              "label": "Find official information independently"
+            }
+          ],
+          "help": [
+            "Verify the provider and offer before sending money."
+          ],
+          "feedback": {
+            "met": "The sender’s own channel cannot independently verify the claim.",
+            "not_yet": "Verify the provider and offer before sending money."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cómo verificas la promesa?",
+          "scene": "Un desconocido promete enormes ganancias garantizadas y proporciona su propio número de verificación.",
+          "options": [
+            {
+              "label": "Pagar antes de preguntar"
+            },
+            {
+              "label": "Usar solo ese número"
+            },
+            {
+              "label": "Buscar información oficial independientemente"
+            }
+          ],
+          "help": [
+            "Verifica proveedor y oferta antes de enviar dinero."
+          ],
+          "feedback": {
+            "met": "El canal del remitente no verifica independientemente la promesa.",
+            "not_yet": "Verifica proveedor y oferta antes de enviar dinero."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Como conferir a promessa?",
+          "scene": "Um desconhecido promete ganhos enormes garantidos e fornece seu próprio número de verificação.",
+          "options": [
+            {
+              "label": "Pagar antes de perguntar"
+            },
+            {
+              "label": "Usar só esse número"
+            },
+            {
+              "label": "Buscar dados oficiais de forma independente"
+            }
+          ],
+          "help": [
+            "Confira prestador e oferta antes de enviar dinheiro."
+          ],
+          "feedback": {
+            "met": "O canal do remetente não verifica a promessa de forma independente.",
+            "not_yet": "Confira prestador e oferta antes de enviar dinheiro."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.04",
+      "copy": {
+        "en-US": {
+          "prompt": "What changed without a sale?",
+          "scene": "A holding pays cash income while its quoted resale price stays flat.",
+          "options": [
+            {
+              "label": "Income was received"
+            },
+            {
+              "label": "A price gain occurred"
+            },
+            {
+              "label": "Nothing affected the result"
+            }
+          ],
+          "help": [
+            "Separate payouts from changes in quoted value."
+          ],
+          "feedback": {
+            "met": "A payment can contribute to return without a price change.",
+            "not_yet": "Separate payouts from changes in quoted value."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué cambió sin vender?",
+          "scene": "Una inversión paga efectivo mientras su precio de reventa no cambia.",
+          "options": [
+            {
+              "label": "Se recibió ingreso"
+            },
+            {
+              "label": "Hubo ganancia de precio"
+            },
+            {
+              "label": "Nada afectó el resultado"
+            }
+          ],
+          "help": [
+            "Distingue pagos de cambios del valor cotizado."
+          ],
+          "feedback": {
+            "met": "Un pago puede aportar rendimiento sin cambiar el precio.",
+            "not_yet": "Distingue pagos de cambios del valor cotizado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que mudou sem vender?",
+          "scene": "Uma aplicação paga dinheiro enquanto seu preço de revenda fica igual.",
+          "options": [
+            {
+              "label": "Houve renda recebida"
+            },
+            {
+              "label": "Houve ganho no preço"
+            },
+            {
+              "label": "Nada afetou o resultado"
+            }
+          ],
+          "help": [
+            "Separe pagamentos de mudanças no valor cotado."
+          ],
+          "feedback": {
+            "met": "Um pagamento pode render sem mudar o preço.",
+            "not_yet": "Separe pagamentos de mudanças no valor cotado."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.investment-comparison.06",
+      "copy": {
+        "en-US": {
+          "prompt": "What needs conversion?",
+          "scene": "A travel fund earns in one currency; the trip is paid in another.",
+          "options": [
+            {
+              "label": "Only the fund name"
+            },
+            {
+              "label": "The value into payment currency"
+            },
+            {
+              "label": "Only the original balance"
+            }
+          ],
+          "help": [
+            "Evaluate the amount after conversion into the payment currency."
+          ],
+          "feedback": {
+            "met": "The trip requires the currency used by its actual bills.",
+            "not_yet": "Evaluate the amount after conversion into the payment currency."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué conviertes para la meta?",
+          "scene": "Un fondo de viaje gana en una moneda; el viaje debe pagarse en otra.",
+          "options": [
+            {
+              "label": "Solo el nombre del fondo"
+            },
+            {
+              "label": "Su valor al tipo de cambio"
+            },
+            {
+              "label": "Solo el saldo en moneda original"
+            }
+          ],
+          "help": [
+            "Evalúa el monto convertido a la moneda de pago."
+          ],
+          "feedback": {
+            "met": "El viaje requiere la moneda de sus cuentas reales.",
+            "not_yet": "Evalúa el monto convertido a la moneda de pago."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que converter para a meta?",
+          "scene": "Um fundo de viagem rende numa moeda; a viagem precisa ser paga em outra.",
+          "options": [
+            {
+              "label": "Só o nome do fundo"
+            },
+            {
+              "label": "Seu valor pela taxa de câmbio"
+            },
+            {
+              "label": "Só o saldo na moeda original"
+            }
+          ],
+          "help": [
+            "Avalie o valor convertido para a moeda do pagamento."
+          ],
+          "feedback": {
+            "met": "A viagem exige a moeda das suas contas reais.",
+            "not_yet": "Avalie o valor convertido para a moeda do pagamento."
+          }
+        }
+      }
+    }
+  ]
+}

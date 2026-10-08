@@ -541,6 +541,36 @@
       "origin": "human",
       "pedagogicalReviewer": "Claudio Sonne",
       "safetyTrustLead": "Soleniano Gepete"
+    },
+    {
+      "component": "safety.judge",
+      "hash": "6fdc49dbe7c379fa863a0132084f552ea1e1f4f45e0d4f87343b9e305fbe6f8b",
+      "files": 9,
+      "date": "2026-10-06",
+      "change": "Enforce existing adult chapter age eligibility in Mentor planning, map and direct content paths before activating the financial curriculum.",
+      "origin": "human",
+      "pedagogicalReviewer": "Astralino",
+      "safetyTrustLead": "Claudio"
+    },
+    {
+      "component": "governance.model",
+      "hash": "eb581d59ef78c67579a693dad408346711e85e8ad2a49e0baf834347f404d194",
+      "files": 9,
+      "date": "2026-10-06",
+      "change": "Enforce existing adult chapter age eligibility in Mentor planning, map and direct content paths before activating the financial curriculum.",
+      "origin": "human",
+      "pedagogicalReviewer": "Astralino",
+      "safetyTrustLead": "Claudio"
+    },
+    {
+      "component": "safety.judge",
+      "hash": "e9e5f2c11f10ad83eb0db3ae1dd07dd6c8ffe8a097b80b53795d0c174b54b269",
+      "files": 9,
+      "date": "2026-10-07",
+      "change": "OD-43: the Mentor sees the learner's current lesson in the topic (added courseContext.lesson to the child context contract), an owner-signed Tier 1 widening so the Mentor can complement the course",
+      "origin": "human",
+      "pedagogicalReviewer": "Astralino",
+      "safetyTrustLead": "Claudio"
     }
   ]
 }

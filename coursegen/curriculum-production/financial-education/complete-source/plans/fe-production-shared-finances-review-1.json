@@ -1,0 +1,801 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-shared-finances-part-2",
+  "lesson_id": "fe-production-shared-finances-review-1",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.shared-finances.01",
+    "finance.prod.shared-finances.02",
+    "finance.prod.shared-finances.03",
+    "finance.prod.shared-finances.04",
+    "finance.prod.financial-math.06"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Apply agreed contribution rules while distinguishing consent, documented responsibilities and safe support.",
+  "title": {
+    "en-US": "Shared Decisions",
+    "es-MX": "Acuerda, verifica y protege decisiones",
+    "pt-BR": "Combine, confira e proteja escolhas"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Shared Decisions\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Acuerda, verifica y protege decisiones\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Combine, confira e proteja escolhas\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "consolidate",
+    "objective": {
+      "skill_id": "prod.shared-finances.01",
+      "observable_action": "Apply agreed contribution rules while distinguishing consent, documented responsibilities and safe support.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.financial-math.06",
+      "price.percent",
+      "prod.cashflow-budget.03"
+    ],
+    "retrieval_skills": [
+      "prod.shared-finances.01",
+      "prod.shared-finances.02",
+      "prod.shared-finances.03",
+      "prod.shared-finances.04",
+      "prod.financial-math.06"
+    ],
+    "relevance": "Retrieve shared-cost rules, legal roles and safe support choices.",
+    "misconception": "A contribution rule, account access or family relationship automatically establishes fair consent and legal responsibility.",
+    "numeracy_support": "Use the current visible conditions; do not reuse a previous scenario’s answer.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.shared-finances.01",
+        "context_id": "shared-finances-review-1-practice-01",
+        "supports_from": [],
+        "reasoning": "Ari pays the agreed share based on combined income."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.shared-finances.02",
+        "context_id": "shared-finances-review-1-practice-02",
+        "supports_from": [],
+        "reasoning": "Viewing permission does not settle ownership or liability."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.shared-finances.03",
+        "context_id": "shared-finances-review-1-practice-03",
+        "supports_from": [],
+        "reasoning": "The first option identifies a commitment and review time."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.shared-finances.04",
+        "context_id": "shared-finances-review-1-practice-04",
+        "supports_from": [],
+        "reasoning": "Safe support does not require confrontation or blame."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.financial-math.06",
+        "context_id": "shared-finances-review-1-practice-05",
+        "supports_from": [],
+        "reasoning": "Equal sharing divides the expense by the number of contributors."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.shared-finances.01",
+        "context_id": "shared-finances-review-1-transfer-01",
+        "supports_from": [],
+        "reasoning": "Circumstances inform agreement; no split is universally right."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.shared-finances.01",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Retrieve shared-cost rules, legal roles and safe support choices."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Recupera reglas de gastos compartidos, roles legales y opciones de apoyo seguro."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Retome regras de custos conjuntos, funções legais e escolhas de apoio seguro."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What is Ari’s agreed contribution?",
+          "scene": "Income-proportional rule: Ari earns 1500, Bea 4500; shared bill 1200.",
+          "options": [
+            {
+              "label": "600"
+            },
+            {
+              "label": "900"
+            },
+            {
+              "label": "300"
+            }
+          ],
+          "help": [
+            "Divide Ari’s income by combined income, then multiply cost."
+          ],
+          "feedback": {
+            "met": "Ari pays the agreed share based on combined income.",
+            "not_yet": "Divide Ari’s income by combined income, then multiply cost."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es aporte acordado de Ari?",
+          "scene": "Regla proporcional: Ari gana 1500, Bea 4500; cuenta compartida 1200.",
+          "options": [
+            {
+              "label": "600"
+            },
+            {
+              "label": "900"
+            },
+            {
+              "label": "300"
+            }
+          ],
+          "help": [
+            "Divide ingreso de Ari entre conjunto y multiplica costo."
+          ],
+          "feedback": {
+            "met": "Ari paga su parte acordada del ingreso conjunto.",
+            "not_yet": "Divide ingreso de Ari entre conjunto y multiplica costo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é o aporte combinado de Ari?",
+          "scene": "Regra proporcional: Ari ganha 1500, Bea 4500; conta conjunta 1200.",
+          "options": [
+            {
+              "label": "600"
+            },
+            {
+              "label": "900"
+            },
+            {
+              "label": "300"
+            }
+          ],
+          "help": [
+            "Divida renda de Ari pela conjunta e multiplique custo."
+          ],
+          "feedback": {
+            "met": "Ari paga sua parte combinada da renda conjunta.",
+            "not_yet": "Divida renda de Ari pela conjunta e multiplique custo."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          1500,
+          4500,
+          1200
+        ],
+        "expression": {
+          "op": "multiply",
+          "args": [
+            {
+              "op": "divide",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "op": "add",
+                  "args": [
+                    {
+                      "input": 0
+                    },
+                    {
+                      "input": 1
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What does authorized viewing establish?",
+          "scene": "A helper can see statements; no ownership terms have been checked.",
+          "options": [
+            {
+              "label": "No possible legal obligations"
+            },
+            {
+              "label": "Viewing permission only"
+            },
+            {
+              "label": "Ownership of all funds"
+            }
+          ],
+          "help": [
+            "Check roles and legal terms separately."
+          ],
+          "feedback": {
+            "met": "Viewing permission does not settle ownership or liability.",
+            "not_yet": "Check roles and legal terms separately."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué establece consultar con permiso?",
+          "scene": "Ayudante puede ver estados; no se revisaron términos de propiedad.",
+          "options": [
+            {
+              "label": "Ninguna posible obligación legal"
+            },
+            {
+              "label": "Solo permiso de consulta"
+            },
+            {
+              "label": "Propiedad de todo el dinero"
+            }
+          ],
+          "help": [
+            "Revisa roles y términos legales por separado."
+          ],
+          "feedback": {
+            "met": "Consultar no resuelve propiedad ni responsabilidad.",
+            "not_yet": "Revisa roles y términos legales por separado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que define consultar com permissão?",
+          "scene": "Ajudante pode ver extratos; termos de posse não foram conferidos.",
+          "options": [
+            {
+              "label": "Nenhum possível dever legal"
+            },
+            {
+              "label": "Só permissão de consulta"
+            },
+            {
+              "label": "Posse de todo o dinheiro"
+            }
+          ],
+          "help": [
+            "Confira funções e termos legais em separado."
+          ],
+          "feedback": {
+            "met": "Consultar não resolve posse nem responsabilidade.",
+            "not_yet": "Confira funções e termos legais em separado."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Which agreement is complete enough here?",
+          "scene": "They need amount, payment owner and review timing.",
+          "options": [
+            {
+              "label": "Payments will sort themselves out"
+            },
+            {
+              "label": "Lee pays 200; review Friday"
+            },
+            {
+              "label": "Someone will help"
+            }
+          ],
+          "help": [
+            "Name the amount, responsible person and review date."
+          ],
+          "feedback": {
+            "met": "The first option identifies a commitment and review time.",
+            "not_yet": "Name the amount, responsible person and review date."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué acuerdo está completo aquí?",
+          "scene": "Necesitan monto, responsable de pago y fecha de revisión.",
+          "options": [
+            {
+              "label": "Pagos se resolverán solos"
+            },
+            {
+              "label": "Lee paga 200; revisión viernes"
+            },
+            {
+              "label": "Alguien ayudará"
+            }
+          ],
+          "help": [
+            "Nombra monto, responsable y fecha de revisión."
+          ],
+          "feedback": {
+            "met": "Primera opción identifica compromiso y momento de revisión.",
+            "not_yet": "Nombra monto, responsable y fecha de revisión."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual acordo está completo aqui?",
+          "scene": "Precisam de valor, responsável pelo pagamento e data de revisão.",
+          "options": [
+            {
+              "label": "Pagamentos se resolverão sozinhos"
+            },
+            {
+              "label": "Lee paga 200; revisão sexta"
+            },
+            {
+              "label": "Alguém ajudará"
+            }
+          ],
+          "help": [
+            "Nomeie valor, responsável e data de revisão."
+          ],
+          "feedback": {
+            "met": "Primeira opção indica compromisso e momento de revisão.",
+            "not_yet": "Nomeie valor, responsável e data de revisão."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Which response respects safety?",
+          "scene": "Threats force someone to borrow; a private trusted support channel is available.",
+          "options": [
+            {
+              "label": "Blame the person pressured"
+            },
+            {
+              "label": "Require confrontation first"
+            },
+            {
+              "label": "Seek support through that channel"
+            }
+          ],
+          "help": [
+            "Prioritize the person’s safety and ability to choose."
+          ],
+          "feedback": {
+            "met": "Safe support does not require confrontation or blame.",
+            "not_yet": "Prioritize the person’s safety and ability to choose."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué respuesta respeta seguridad?",
+          "scene": "Amenazas fuerzan a alguien a pedir prestado; hay canal privado confiable de apoyo.",
+          "options": [
+            {
+              "label": "Culpar a quien recibió presión"
+            },
+            {
+              "label": "Exigir confrontar primero"
+            },
+            {
+              "label": "Buscar apoyo por ese canal"
+            }
+          ],
+          "help": [
+            "Prioriza seguridad y capacidad de decidir de la persona."
+          ],
+          "feedback": {
+            "met": "Apoyo seguro no requiere confrontación ni culpa.",
+            "not_yet": "Prioriza seguridad y capacidad de decidir de la persona."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que resposta respeita segurança?",
+          "scene": "Ameaças forçam alguém a pegar empréstimo; há canal privado confiável de apoio.",
+          "options": [
+            {
+              "label": "Culpar quem sofreu pressão"
+            },
+            {
+              "label": "Exigir confronto antes"
+            },
+            {
+              "label": "Buscar apoio por esse canal"
+            }
+          ],
+          "help": [
+            "Priorize segurança e capacidade de escolha da pessoa."
+          ],
+          "feedback": {
+            "met": "Apoio seguro não exige confronto nem culpa.",
+            "not_yet": "Priorize segurança e capacidade de escolha da pessoa."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.06",
+      "copy": {
+        "en-US": {
+          "prompt": "What does each person pay?",
+          "scene": "Shared expense: 840; Equal contributors: 4.",
+          "options": [
+            {
+              "label": "210"
+            },
+            {
+              "label": "420"
+            },
+            {
+              "label": "840"
+            }
+          ],
+          "help": [
+            "Use the explicitly agreed equal split."
+          ],
+          "feedback": {
+            "met": "Equal sharing divides the expense by the number of contributors.",
+            "not_yet": "Use the explicitly agreed equal split."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto paga cada persona?",
+          "scene": "Gasto compartido: 840; Aportes iguales entre: 4 personas.",
+          "options": [
+            {
+              "label": "210"
+            },
+            {
+              "label": "420"
+            },
+            {
+              "label": "840"
+            }
+          ],
+          "help": [
+            "Usa la división igual explícitamente acordada."
+          ],
+          "feedback": {
+            "met": "Compartir igual divide gasto entre número de personas.",
+            "not_yet": "Usa la división igual explícitamente acordada."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto paga cada pessoa?",
+          "scene": "Gasto conjunto: 840; Aportes iguais entre: 4 pessoas.",
+          "options": [
+            {
+              "label": "210"
+            },
+            {
+              "label": "420"
+            },
+            {
+              "label": "840"
+            }
+          ],
+          "help": [
+            "Use a divisão igual claramente combinada."
+          ],
+          "feedback": {
+            "met": "Dividir igual reparte gasto pelo número de pessoas.",
+            "not_yet": "Use a divisão igual claramente combinada."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          840,
+          4
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.shared-finances.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What must be agreed before calculating?",
+          "scene": "New housemates have unequal incomes and different care duties.",
+          "options": [
+            {
+              "label": "A universally correct proportional split"
+            },
+            {
+              "label": "The contribution rule"
+            },
+            {
+              "label": "A universally correct equal split"
+            }
+          ],
+          "help": [
+            "Compare methods and explicitly agree the rule."
+          ],
+          "feedback": {
+            "met": "Circumstances inform agreement; no split is universally right.",
+            "not_yet": "Compare methods and explicitly agree the rule."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué acordar antes de calcular?",
+          "scene": "Nuevos compañeros tienen ingresos distintos y tareas de cuidado diferentes.",
+          "options": [
+            {
+              "label": "División proporcional universalmente correcta"
+            },
+            {
+              "label": "La regla de aportes"
+            },
+            {
+              "label": "División igual universalmente correcta"
+            }
+          ],
+          "help": [
+            "Comparen métodos y acuerden explícitamente la regla."
+          ],
+          "feedback": {
+            "met": "Circunstancias orientan acuerdo; ninguna división siempre es correcta.",
+            "not_yet": "Comparen métodos y acuerden explícitamente la regla."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que combinar antes de calcular?",
+          "scene": "Novos colegas têm rendas distintas e tarefas de cuidado diferentes.",
+          "options": [
+            {
+              "label": "Divisão proporcional sempre correta"
+            },
+            {
+              "label": "A regra dos aportes"
+            },
+            {
+              "label": "Divisão igual sempre correta"
+            }
+          ],
+          "help": [
+            "Comparem métodos e combinem claramente a regra."
+          ],
+          "feedback": {
+            "met": "As situações orientam acordo; nenhuma divisão é sempre certa.",
+            "not_yet": "Comparem métodos e combinem claramente a regra."
+          }
+        }
+      }
+    }
+  ]
+}

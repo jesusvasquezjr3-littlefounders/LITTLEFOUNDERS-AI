@@ -1,0 +1,779 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-income-work-part-2",
+  "lesson_id": "fe-production-income-work-10",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.income-work.10"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Find the authoritative source needed to check a claimed benefit or employment entitlement.",
+  "title": {
+    "en-US": "Work rights",
+    "es-MX": "Verifica un derecho laboral",
+    "pt-BR": "Confira um direito trabalhista"
+  },
+  "new_concepts": [
+    "finance.prod.income-work.10"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Verify a work-rights claim\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Verifica un derecho laboral\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Confira um direito trabalhista\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.income-work.10",
+      "observable_action": "Find the authoritative source needed to check a claimed benefit or employment entitlement.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.income-work.02",
+      "prod.income-work.05"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Find applicable official guidance before trusting a claim about work rights.",
+    "misconception": "Assume viral claims, another country’s rules or one contract conclusively establish legal entitlement.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.income-work.10",
+        "context_id": "fe-production-income-work-10-example-01",
+        "supports_from": [],
+        "reasoning": "Claims about dollars owed need applicable official guidance. Check place and work conditions; viral posts cannot decide rights."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.income-work.10",
+        "context_id": "fe-production-income-work-10-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Work rules depend on the applicable jurisdiction and circumstances."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.income-work.10",
+        "context_id": "fe-production-income-work-10-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "An applicable official source is a stronger starting point."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.income-work.10",
+        "context_id": "fe-production-income-work-10-practice-01",
+        "supports_from": [],
+        "reasoning": "Official authority still has a defined scope."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.income-work.10",
+        "context_id": "fe-production-income-work-10-practice-02",
+        "supports_from": [],
+        "reasoning": "A contract alone does not settle every legal conflict."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.income-work.10",
+        "context_id": "fe-production-income-work-10-practice-03",
+        "supports_from": [],
+        "reasoning": "Dates and applicability determine which guidance addresses the situation."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.income-work.10",
+        "context_id": "fe-production-income-work-10-transfer-01",
+        "supports_from": [],
+        "reasoning": "Official routing helps match the case to the appropriate authority."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.income-work.10",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Find applicable official guidance before trusting a claim about work rights."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Busca orientación oficial aplicable antes de confiar en un supuesto derecho laboral."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Busque orientação oficial aplicável antes de confiar numa alegação sobre direitos trabalhistas."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Match place and situation",
+          "line": "Claims about dollars owed need applicable official guidance. Check place and work conditions; viral posts cannot decide rights."
+        },
+        "es-MX": {
+          "prompt": "Relaciona lugar y situación",
+          "line": "Un supuesto pago en pesos requiere orientación laboral aplicable. Revisa autoridad oficial, lugar y situación; una publicación viral no determina derechos."
+        },
+        "pt-BR": {
+          "prompt": "Relacione lugar e situação",
+          "line": "Um suposto pagamento em reais exige orientação trabalhista aplicável. Confira órgão oficial, lugar e situação; uma postagem viral não decide direitos."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.10",
+      "copy": {
+        "en-US": {
+          "prompt": "What must be checked first?",
+          "scene": "A post claims every worker worldwide receives the same benefit.",
+          "options": [
+            {
+              "label": "The number of likes"
+            },
+            {
+              "label": "Applicable location and employment conditions"
+            },
+            {
+              "label": "Another country’s rule"
+            }
+          ],
+          "help": [
+            "Popularity is not legal authority."
+          ],
+          "feedback": {
+            "met": "Work rules depend on the applicable jurisdiction and circumstances.",
+            "not_yet": "Popularity is not legal authority."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe revisarse primero?",
+          "scene": "Una publicación dice que todo trabajador del mundo recibe el mismo beneficio.",
+          "options": [
+            {
+              "label": "La cantidad de me gusta"
+            },
+            {
+              "label": "Lugar y condiciones laborales aplicables"
+            },
+            {
+              "label": "La regla de otro país"
+            }
+          ],
+          "help": [
+            "La popularidad no es autoridad legal."
+          ],
+          "feedback": {
+            "met": "Las reglas laborales dependen de jurisdicción y circunstancias aplicables.",
+            "not_yet": "La popularidad no es autoridad legal."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que deve conferir primeiro?",
+          "scene": "Uma postagem diz que todos que trabalham no mundo têm direito ao mesmo valor.",
+          "options": [
+            {
+              "label": "A quantidade de curtidas"
+            },
+            {
+              "label": "O local e as condições do trabalho"
+            },
+            {
+              "label": "A regra de outro país"
+            }
+          ],
+          "help": [
+            "Curtidas não provam um direito."
+          ],
+          "feedback": {
+            "met": "Regras de trabalho dependem do local e do caso.",
+            "not_yet": "Curtidas não provam um direito."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Which source is appropriate?",
+          "scene": "You need official starting guidance for a work-pay question in your country.",
+          "options": [
+            {
+              "label": "Another country’s labor guide"
+            },
+            {
+              "label": "An employer’s verbal promise"
+            },
+            {
+              "label": "Official labor authority guidance"
+            }
+          ],
+          "help": [
+            "Check the source’s jurisdiction and scope."
+          ],
+          "feedback": {
+            "met": "An applicable official source is a stronger starting point.",
+            "not_yet": "Check the source’s jurisdiction and scope."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué fuente es apropiada?",
+          "scene": "Necesitas orientación oficial inicial sobre pago laboral en tu país.",
+          "options": [
+            {
+              "label": "Una guía laboral de otro país"
+            },
+            {
+              "label": "Una promesa verbal del empleador"
+            },
+            {
+              "label": "Orientación oficial de autoridad laboral"
+            }
+          ],
+          "help": [
+            "Revisa jurisdicción y alcance de la fuente."
+          ],
+          "feedback": {
+            "met": "Una fuente oficial aplicable es mejor punto de partida.",
+            "not_yet": "Revisa jurisdicción y alcance de la fuente."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual fonte é apropriada?",
+          "scene": "Precisa de ajuda oficial sobre pagamento pelo trabalho no seu país.",
+          "options": [
+            {
+              "label": "Um guia trabalhista de outro país"
+            },
+            {
+              "label": "Uma promessa verbal do empregador"
+            },
+            {
+              "label": "Ajuda oficial do órgão de trabalho"
+            }
+          ],
+          "help": [
+            "Confira o local e os casos que a fonte cobre."
+          ],
+          "feedback": {
+            "met": "Uma fonte oficial do seu local é um bom começo.",
+            "not_yet": "Confira o local e os casos que a fonte cobre."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Does that settle your local entitlement?",
+          "scene": "A guidance page is official but applies to another country.",
+          "options": [
+            {
+              "label": "Yes, translate the currency only"
+            },
+            {
+              "label": "No, find the applicable jurisdiction"
+            },
+            {
+              "label": "Yes, official means universal"
+            }
+          ],
+          "help": [
+            "Changing language does not change jurisdiction."
+          ],
+          "feedback": {
+            "met": "Official authority still has a defined scope.",
+            "not_yet": "Changing language does not change jurisdiction."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Resuelve eso tu derecho local?",
+          "scene": "Una página es oficial, pero aplica a otro país.",
+          "options": [
+            {
+              "label": "Sí, solo traduce la moneda"
+            },
+            {
+              "label": "No, busca la jurisdicción aplicable"
+            },
+            {
+              "label": "Sí, oficial significa universal"
+            }
+          ],
+          "help": [
+            "Cambiar idioma no cambia jurisdicción."
+          ],
+          "feedback": {
+            "met": "La autoridad oficial aún tiene un alcance definido.",
+            "not_yet": "Cambiar idioma no cambia jurisdicción."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Isso resolve seu direito local?",
+          "scene": "Uma página é oficial, mas trata de outro país.",
+          "options": [
+            {
+              "label": "Sim, só traduza a moeda"
+            },
+            {
+              "label": "Não, busque a regra do seu local"
+            },
+            {
+              "label": "Sim, oficial significa universal"
+            }
+          ],
+          "help": [
+            "Traduzir não muda o país da regra."
+          ],
+          "feedback": {
+            "met": "Cada órgão oficial cobre locais e casos definidos.",
+            "not_yet": "Traduzir não muda o país da regra."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.10",
+      "copy": {
+        "en-US": {
+          "prompt": "What resolves uncertainty?",
+          "scene": "A contract states a condition that may conflict with a legal protection.",
+          "options": [
+            {
+              "label": "Use an unverified online opinion"
+            },
+            {
+              "label": "Assume the contract overrides every law"
+            },
+            {
+              "label": "Applicable guidance or qualified advice"
+            }
+          ],
+          "help": [
+            "Preserve the terms and check the applicable protection."
+          ],
+          "feedback": {
+            "met": "A contract alone does not settle every legal conflict.",
+            "not_yet": "Preserve the terms and check the applicable protection."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué puede resolver la incertidumbre?",
+          "scene": "Un contrato indica una condición que podría contradecir una protección legal.",
+          "options": [
+            {
+              "label": "Usar la opinión más ruidosa"
+            },
+            {
+              "label": "Suponer que el contrato supera toda ley"
+            },
+            {
+              "label": "Orientación aplicable o asesoría calificada"
+            }
+          ],
+          "help": [
+            "Conserva condiciones y revisa protección aplicable."
+          ],
+          "feedback": {
+            "met": "Un contrato solo no resuelve todo conflicto legal.",
+            "not_yet": "Conserva condiciones y revisa protección aplicable."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que pode resolver a incerteza?",
+          "scene": "Um contrato informa condição que pode contrariar uma proteção legal.",
+          "options": [
+            {
+              "label": "Usar a opinião mais barulhenta"
+            },
+            {
+              "label": "Supor que o contrato supera toda lei"
+            },
+            {
+              "label": "Orientação aplicável ou assessoria qualificada"
+            }
+          ],
+          "help": [
+            "Guarde condições e confira proteção aplicável."
+          ],
+          "feedback": {
+            "met": "Um contrato sozinho não resolve todo conflito legal.",
+            "not_yet": "Guarde condições e confira proteção aplicável."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.income-work.10",
+      "copy": {
+        "en-US": {
+          "prompt": "What should be checked?",
+          "scene": "An old official page and a newer applicable official update disagree.",
+          "options": [
+            {
+              "label": "Only the shorter text"
+            },
+            {
+              "label": "Only whichever pays more"
+            },
+            {
+              "label": "Effective date and current scope"
+            }
+          ],
+          "help": [
+            "Do not choose a rule solely for its preferred result."
+          ],
+          "feedback": {
+            "met": "Dates and applicability determine which guidance addresses the situation.",
+            "not_yet": "Do not choose a rule solely for its preferred result."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debes revisar?",
+          "scene": "Una página oficial antigua y una actualización oficial aplicable difieren.",
+          "options": [
+            {
+              "label": "Solo el texto más corto"
+            },
+            {
+              "label": "Solo lo que pague más"
+            },
+            {
+              "label": "Fecha de vigencia y alcance actual"
+            }
+          ],
+          "help": [
+            "No elijas una regla solo por el resultado deseado."
+          ],
+          "feedback": {
+            "met": "Fechas y aplicabilidad determinan qué orientación atiende la situación.",
+            "not_yet": "No elijas una regla solo por el resultado deseado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que deve conferir?",
+          "scene": "Uma página oficial antiga e atualização oficial aplicável divergem.",
+          "options": [
+            {
+              "label": "Só o texto mais curto"
+            },
+            {
+              "label": "Só o que pagar mais"
+            },
+            {
+              "label": "Data de vigência e alcance atual"
+            }
+          ],
+          "help": [
+            "Não escolha regra só pelo resultado desejado."
+          ],
+          "feedback": {
+            "met": "Datas e aplicação determinam qual orientação atende à situação.",
+            "not_yet": "Não escolha regra só pelo resultado desejado."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.income-work.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Next step?",
+          "scene": "A worker has payment records but needs the competent authority.",
+          "options": [
+            {
+              "label": "Send credentials to a random commenter"
+            },
+            {
+              "label": "Assume records prove every legal claim"
+            },
+            {
+              "label": "Seek official guidance on the competent authority"
+            }
+          ],
+          "help": [
+            "Keep records while checking the proper channel."
+          ],
+          "feedback": {
+            "met": "Official routing helps match the case to the appropriate authority.",
+            "not_yet": "Keep records while checking the proper channel."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Siguiente paso útil?",
+          "scene": "Alguien tiene registros de pago, pero duda qué autoridad atiende el conflicto.",
+          "options": [
+            {
+              "label": "Enviar claves a un comentarista cualquiera"
+            },
+            {
+              "label": "Suponer que registros prueban todo derecho"
+            },
+            {
+              "label": "Buscar orientación oficial sobre autoridad competente"
+            }
+          ],
+          "help": [
+            "Conserva registros mientras verificas el canal correcto."
+          ],
+          "feedback": {
+            "met": "La orientación oficial ayuda a ubicar la autoridad adecuada.",
+            "not_yet": "Conserva registros mientras verificas el canal correcto."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Próximo passo útil?",
+          "scene": "Alguém tem registros de pagamento, mas não sabe qual órgão atende o conflito.",
+          "options": [
+            {
+              "label": "Enviar senhas a qualquer comentarista"
+            },
+            {
+              "label": "Supor que registros provam todo direito"
+            },
+            {
+              "label": "Buscar orientação oficial sobre órgão competente"
+            }
+          ],
+          "help": [
+            "Guarde registros enquanto confere o canal correto."
+          ],
+          "feedback": {
+            "met": "A orientação oficial ajuda a localizar o órgão adequado.",
+            "not_yet": "Guarde registros enquanto confere o canal correto."
+          }
+        }
+      }
+    }
+  ]
+}

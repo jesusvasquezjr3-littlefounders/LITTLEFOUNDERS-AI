@@ -1,0 +1,748 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-cashflow-budget-part-1",
+  "lesson_id": "fe-production-cashflow-budget-04",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.cashflow-budget.04"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Calculate a period’s surplus or deficit from a complete set of stated entries.",
+  "title": {
+    "en-US": "Period balance",
+    "es-MX": "Calcula el saldo del periodo",
+    "pt-BR": "Calcule o saldo do período"
+  },
+  "new_concepts": [
+    "finance.prod.cashflow-budget.04"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Calculate the period’s balance\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Calcula el saldo del periodo\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Calcule o saldo do período\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.cashflow-budget.04",
+      "observable_action": "Calculate a period’s surplus or deficit from a complete set of stated entries.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.cashflow-budget.01",
+      "prod.financial-math.03",
+      "prod.financial-math.04"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Add all stated receipts and subtract all stated expenses for the same period.",
+    "misconception": "Calling a plan balanced after checking only its largest payment or ignoring another stated expense.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.cashflow-budget.04",
+        "context_id": "fe-production-cashflow-budget-04-example-01",
+        "supports_from": [],
+        "reasoning": "Income: 90; expenses: 30 and 40. Total expenses are 70, leaving a surplus of 20."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.cashflow-budget.04",
+        "context_id": "fe-production-cashflow-budget-04-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "120 − 35 − 25 = 60 surplus."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.cashflow-budget.04",
+        "context_id": "fe-production-cashflow-budget-04-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "90 − (60 + 25) = 5 deficit."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.cashflow-budget.04",
+        "context_id": "fe-production-cashflow-budget-04-practice-01",
+        "supports_from": [],
+        "reasoning": "Receipts minus both payments give the period’s balance."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.cashflow-budget.04",
+        "context_id": "fe-production-cashflow-budget-04-practice-02",
+        "supports_from": [],
+        "reasoning": "Equal receipts and expenses leave a zero period balance."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.cashflow-budget.04",
+        "context_id": "fe-production-cashflow-budget-04-practice-03",
+        "supports_from": [],
+        "reasoning": "An omitted expense overstates the apparent surplus."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.cashflow-budget.04",
+        "context_id": "fe-production-cashflow-budget-04-transfer-01",
+        "supports_from": [],
+        "reasoning": "Receipts minus both payments give the period’s balance."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.cashflow-budget.04",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Add all stated receipts and subtract all stated expenses for the same period."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Suma todas las entradas indicadas y resta todos los gastos del mismo periodo."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Some todas as entradas informadas e subtraia todos os gastos do mesmo período."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Include every entry",
+          "line": "Income: 90; expenses: 30 and 40. Total expenses are 70, leaving a surplus of 20."
+        },
+        "es-MX": {
+          "prompt": "Incluye cada entrada y salida",
+          "line": "Ingreso: 90; gastos: 30 y 40. Los gastos suman 70 y queda un excedente de 20."
+        },
+        "pt-BR": {
+          "prompt": "Inclua cada entrada e saída",
+          "line": "Renda: 90; gastos: 30 e 40. Os gastos somam 70 e sobra um excedente de 20."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Surplus after both expenses?",
+          "scene": "Same period: income 120; food 35; transport 25.",
+          "options": [
+            {
+              "label": "60"
+            },
+            {
+              "label": "95"
+            },
+            {
+              "label": "85"
+            }
+          ],
+          "help": [
+            "Subtract both costs, not only the larger one."
+          ],
+          "feedback": {
+            "met": "120 − 35 − 25 = 60 surplus.",
+            "not_yet": "Subtract both costs, not only the larger one."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Excedente tras ambos gastos?",
+          "scene": "Mismo periodo: ingreso 120; comida 35; transporte 25.",
+          "options": [
+            {
+              "label": "60"
+            },
+            {
+              "label": "95"
+            },
+            {
+              "label": "85"
+            }
+          ],
+          "help": [
+            "Resta ambos costos, no solo el mayor."
+          ],
+          "feedback": {
+            "met": "120 − 35 − 25 = 60 de excedente.",
+            "not_yet": "Resta ambos costos, no solo el mayor."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Excedente após ambos os gastos?",
+          "scene": "Mesmo período: renda 120; comida 35; transporte 25.",
+          "options": [
+            {
+              "label": "60"
+            },
+            {
+              "label": "95"
+            },
+            {
+              "label": "85"
+            }
+          ],
+          "help": [
+            "Subtraia ambos os custos, não só o maior."
+          ],
+          "feedback": {
+            "met": "120 − 35 − 25 = 60 de excedente.",
+            "not_yet": "Subtraia ambos os custos, não só o maior."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          120,
+          35,
+          25
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Deficit amount?",
+          "scene": "Same period: receipts 60 and 25; expenses 90.",
+          "options": [
+            {
+              "label": "5"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "175"
+            }
+          ],
+          "help": [
+            "Add both receipts before comparing with expenses."
+          ],
+          "feedback": {
+            "met": "90 − (60 + 25) = 5 deficit.",
+            "not_yet": "Add both receipts before comparing with expenses."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Monto del déficit?",
+          "scene": "Mismo periodo: entradas 60 y 25; gastos 90.",
+          "options": [
+            {
+              "label": "5"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "175"
+            }
+          ],
+          "help": [
+            "Suma ambas entradas antes de comparar con gastos."
+          ],
+          "feedback": {
+            "met": "90 − (60 + 25) = 5 de déficit.",
+            "not_yet": "Suma ambas entradas antes de comparar con gastos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Valor do déficit?",
+          "scene": "Mesmo período: entradas 60 e 25; gastos 90.",
+          "options": [
+            {
+              "label": "5"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "175"
+            }
+          ],
+          "help": [
+            "Some ambas as entradas antes de comparar com gastos."
+          ],
+          "feedback": {
+            "met": "90 − (60 + 25) = 5 de déficit.",
+            "not_yet": "Some ambas as entradas antes de comparar com gastos."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          60,
+          25,
+          90
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 2
+            },
+            {
+              "op": "add",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "money.running-ledger.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "balance-meter"
+      },
+      "payload": {
+        "initial": 0,
+        "sale": 95,
+        "cost": 40,
+        "maxEntries": 3,
+        "personal": true,
+        "currency": "local"
+      },
+      "rubric": {
+        "target_balance": 15
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.04",
+      "copy": {
+        "en-US": {
+          "prompt": "In dollars, start at zero: record the receipt and both payments.",
+          "feedback": {
+            "met": "Receipts minus both payments give the period’s balance.",
+            "not_yet": "Record one receipt and both payments, then compare the totals."
+          },
+          "help": [
+            "Record one receipt and both payments, then compare the totals."
+          ]
+        },
+        "es-MX": {
+          "prompt": "En pesos, empieza en cero: registra la entrada y ambos pagos.",
+          "feedback": {
+            "met": "Entradas menos ambos pagos dan el saldo del periodo.",
+            "not_yet": "Registra una entrada y ambos pagos; después compara los totales."
+          },
+          "help": [
+            "Registra una entrada y ambos pagos; después compara los totales."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Em reais, comece em zero: registre a entrada e ambos os pagamentos.",
+          "feedback": {
+            "met": "Entradas menos ambos os pagamentos dão o saldo do período.",
+            "not_yet": "Registre uma entrada e ambos os pagamentos; depois compare os totais."
+          },
+          "help": [
+            "Registre uma entrada e ambos os pagamentos; depois compare os totais."
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.04",
+      "copy": {
+        "en-US": {
+          "prompt": "What does this plan show?",
+          "scene": "All period receipts total 75; all period expenses total 75.",
+          "options": [
+            {
+              "label": "No surplus and no deficit"
+            },
+            {
+              "label": "A surplus of the entire income"
+            },
+            {
+              "label": "An expense-free period"
+            }
+          ],
+          "help": [
+            "Compare the complete totals."
+          ],
+          "feedback": {
+            "met": "Equal receipts and expenses leave a zero period balance.",
+            "not_yet": "Compare the complete totals."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué muestra este plan?",
+          "scene": "Todas las entradas del periodo suman 75; todos sus gastos suman 75.",
+          "options": [
+            {
+              "label": "Sin excedente ni déficit"
+            },
+            {
+              "label": "Excedente de todo el ingreso"
+            },
+            {
+              "label": "Un periodo sin gastos"
+            }
+          ],
+          "help": [
+            "Compara los totales completos."
+          ],
+          "feedback": {
+            "met": "Entradas y gastos iguales dejan saldo cero del periodo.",
+            "not_yet": "Compara los totales completos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que esse plano mostra?",
+          "scene": "Todas as entradas do período somam 75; todos os gastos somam 75.",
+          "options": [
+            {
+              "label": "Sem excedente nem déficit"
+            },
+            {
+              "label": "Excedente de toda a renda"
+            },
+            {
+              "label": "Um período sem gastos"
+            }
+          ],
+          "help": [
+            "Compare os totais completos."
+          ],
+          "feedback": {
+            "met": "Entradas e gastos iguais deixam saldo zero do período.",
+            "not_yet": "Compare os totais completos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.cashflow-budget.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Does that establish the full surplus?",
+          "scene": "Your total includes rent and food but omits the stated transport bill.",
+          "options": [
+            {
+              "label": "Only large bills count"
+            },
+            {
+              "label": "Transport never counts"
+            },
+            {
+              "label": "Include the missing expense"
+            }
+          ],
+          "help": [
+            "Completeness matters before interpreting the balance."
+          ],
+          "feedback": {
+            "met": "An omitted expense overstates the apparent surplus.",
+            "not_yet": "Completeness matters before interpreting the balance."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Ese total demuestra el excedente completo?",
+          "scene": "Tu total incluye renta y comida, pero omite el transporte indicado.",
+          "options": [
+            {
+              "label": "Sí, solo cuentan cuentas grandes"
+            },
+            {
+              "label": "Sí, transporte nunca cuenta"
+            },
+            {
+              "label": "No, incluye el gasto faltante"
+            }
+          ],
+          "help": [
+            "Importa completar los datos antes de interpretar el saldo."
+          ],
+          "feedback": {
+            "met": "Un gasto omitido exagera el excedente aparente.",
+            "not_yet": "Importa completar los datos antes de interpretar el saldo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Esse total demonstra o excedente completo?",
+          "scene": "Seu total inclui aluguel e comida, mas omite o transporte informado.",
+          "options": [
+            {
+              "label": "Sim, só contas grandes contam"
+            },
+            {
+              "label": "Sim, transporte nunca conta"
+            },
+            {
+              "label": "Não, inclua o gasto ausente"
+            }
+          ],
+          "help": [
+            "Importa completar os dados antes de interpretar o saldo."
+          ],
+          "feedback": {
+            "met": "Um gasto omitido exagera o excedente aparente.",
+            "not_yet": "Importa completar os dados antes de interpretar o saldo."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "money.running-ledger.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "balance-meter"
+      },
+      "payload": {
+        "initial": 0,
+        "sale": 80,
+        "cost": 35,
+        "maxEntries": 3,
+        "personal": true,
+        "currency": "local"
+      },
+      "rubric": {
+        "target_balance": 10
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.cashflow-budget.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Community event: start at zero, record its receipt and both supplier payments.",
+          "feedback": {
+            "met": "Receipts minus both payments give the period’s balance.",
+            "not_yet": "Record one receipt and both payments, then compare the totals."
+          },
+          "help": [
+            "Record one receipt and both payments, then compare the totals."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Evento comunitario: empieza en cero, registra su entrada y ambos pagos a proveedores.",
+          "feedback": {
+            "met": "Entradas menos ambos pagos dan el saldo del periodo.",
+            "not_yet": "Registra una entrada y ambos pagos; después compara los totales."
+          },
+          "help": [
+            "Registra una entrada y ambos pagos; después compara los totales."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Evento comunitário: comece em zero, registre sua entrada e ambos os pagamentos a fornecedores.",
+          "feedback": {
+            "met": "Entradas menos ambos os pagamentos dão o saldo do período.",
+            "not_yet": "Registre uma entrada e ambos os pagamentos; depois compare os totais."
+          },
+          "help": [
+            "Registre uma entrada e ambos os pagamentos; depois compare os totais."
+          ]
+        }
+      }
+    }
+  ]
+}

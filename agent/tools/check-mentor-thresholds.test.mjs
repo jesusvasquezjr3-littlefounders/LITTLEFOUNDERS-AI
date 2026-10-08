@@ -82,9 +82,9 @@ test('RED: a malformed schedule fails whatever the date', () => {
   }
 });
 
-test('spec:check runs the gate and release readiness runs it with --strict', () => {
+test('release readiness runs the gate with --strict; it is not in the per-push spec:check', () => {
   const pkg = JSON.parse(readFileSync(join(repo, 'package.json'), 'utf8'));
-  assert.match(pkg.scripts['spec:check'], /node agent\/tools\/check-mentor-thresholds\.mjs(?! --strict)/);
+  assert.doesNotMatch(pkg.scripts['spec:check'], /check-mentor-thresholds/);
   const readiness = readFileSync(join(repo, 'agent/tools/release-readiness.sh'), 'utf8');
   assert.match(readiness, /^node agent\/tools\/check-mentor-thresholds\.mjs --strict$/m);
   const codeowners = readFileSync(join(repo, '.github/CODEOWNERS'), 'utf8');

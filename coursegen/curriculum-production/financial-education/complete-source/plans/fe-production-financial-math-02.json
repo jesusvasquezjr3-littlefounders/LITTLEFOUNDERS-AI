@@ -1,0 +1,850 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-financial-math-part-1",
+  "lesson_id": "fe-production-financial-math-02",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.financial-math.02"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Calculate change by subtracting a price from the amount tendered.",
+  "title": {
+    "en-US": "Checking change",
+    "es-MX": "Revisa tu cambio",
+    "pt-BR": "Confira seu troco"
+  },
+  "new_concepts": [
+    "finance.prod.financial-math.02"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Check your change\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Revisa tu cambio\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Confira seu troco\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.financial-math.02",
+      "observable_action": "Calculate change by subtracting a price from the amount tendered.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.financial-math.01"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Check what must return after paying cash.",
+    "misconception": "Subtract the tendered amount from the price or accept any returned amount.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.financial-math.02",
+        "context_id": "fe-production-financial-math-02-example-01",
+        "supports_from": [],
+        "reasoning": "Hand over 20 for a price of 14: 20 − 14 = 6 change. Price plus change restores the amount handed over."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.financial-math.02",
+        "context_id": "fe-production-financial-math-02-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The unused part must return."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.financial-math.02",
+        "context_id": "fe-production-financial-math-02-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Price and change together equal the money handed over."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.financial-math.02",
+        "context_id": "fe-production-financial-math-02-practice-01",
+        "supports_from": [],
+        "reasoning": "Subtract the ticket cost from the tendered amount."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.financial-math.02",
+        "context_id": "fe-production-financial-math-02-practice-02",
+        "supports_from": [],
+        "reasoning": "The full change is eight; only five arrived."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.financial-math.02",
+        "context_id": "fe-production-financial-math-02-practice-03",
+        "supports_from": [],
+        "reasoning": "An exact payment leaves no change."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.financial-math.02",
+        "context_id": "fe-production-financial-math-02-transfer-01",
+        "supports_from": [],
+        "reasoning": "Use the complete charge, including the bag."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.financial-math.02",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Check what must return after paying cash."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Revisa cuánto debe volver al pagar en efectivo."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Confira quanto deve voltar ao pagar em dinheiro."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Subtract the price",
+          "line": "Hand over 20 for a price of 14: 20 − 14 = 6 change. Price plus change restores the amount handed over."
+        },
+        "es-MX": {
+          "prompt": "Resta el precio",
+          "line": "Entregas 20 por un precio de 14: 20 − 14 = 6 de cambio. Precio más cambio recupera lo entregado."
+        },
+        "pt-BR": {
+          "prompt": "Subtraia o preço",
+          "line": "Entrega 20 por um preço de 14: 20 − 14 = 6 de troco. Preço mais troco recupera o entregue."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Change due?",
+          "scene": "Hand over 30; the price is 18. Subtract the price.",
+          "options": [
+            {
+              "label": "18"
+            },
+            {
+              "label": "12"
+            },
+            {
+              "label": "48"
+            }
+          ],
+          "help": [
+            "Start with the amount handed over."
+          ],
+          "feedback": {
+            "met": "The unused part must return.",
+            "not_yet": "Start with the amount handed over."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cambio debido?",
+          "scene": "Entregas 30; el precio es 18. Resta el precio.",
+          "options": [
+            {
+              "label": "18"
+            },
+            {
+              "label": "12"
+            },
+            {
+              "label": "48"
+            }
+          ],
+          "help": [
+            "Empieza con lo entregado."
+          ],
+          "feedback": {
+            "met": "La parte no utilizada debe volver.",
+            "not_yet": "Empieza con lo entregado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Troco devido?",
+          "scene": "Entrega 30; o preço é 18. Subtraia o preço.",
+          "options": [
+            {
+              "label": "18"
+            },
+            {
+              "label": "12"
+            },
+            {
+              "label": "48"
+            }
+          ],
+          "help": [
+            "Comece pelo valor entregue."
+          ],
+          "feedback": {
+            "met": "A parte não utilizada deve voltar.",
+            "not_yet": "Comece pelo valor entregue."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          30,
+          18
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.02",
+      "copy": {
+        "en-US": {
+          "prompt": "How can you check?",
+          "scene": "The price is 7; you hand over 10 and receive 3.",
+          "options": [
+            {
+              "label": "Add price twice"
+            },
+            {
+              "label": "Add price and change"
+            },
+            {
+              "label": "Ignore the price"
+            }
+          ],
+          "help": [
+            "Reconstruct the original payment."
+          ],
+          "feedback": {
+            "met": "Price and change together equal the money handed over.",
+            "not_yet": "Reconstruct the original payment."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cómo puedes comprobarlo?",
+          "scene": "El precio es 7; entregas 10 y recibes 3.",
+          "options": [
+            {
+              "label": "Suma el precio dos veces"
+            },
+            {
+              "label": "Suma precio y cambio"
+            },
+            {
+              "label": "Ignora el precio"
+            }
+          ],
+          "help": [
+            "Reconstruye el pago original."
+          ],
+          "feedback": {
+            "met": "Precio y cambio juntos igualan lo entregado.",
+            "not_yet": "Reconstruye el pago original."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Como conferir?",
+          "scene": "O preço é 7; entrega 10 e recebe 3.",
+          "options": [
+            {
+              "label": "Some o preço duas vezes"
+            },
+            {
+              "label": "Some preço e troco"
+            },
+            {
+              "label": "Ignore o preço"
+            }
+          ],
+          "help": [
+            "Reconstrua o pagamento original."
+          ],
+          "feedback": {
+            "met": "Preço e troco juntos igualam o entregue.",
+            "not_yet": "Reconstrua o pagamento original."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What change is due?",
+          "scene": "A ticket costs 26. You hand over 50.",
+          "options": [
+            {
+              "label": "24"
+            },
+            {
+              "label": "76"
+            },
+            {
+              "label": "26"
+            }
+          ],
+          "help": [
+            "Change is the unused part."
+          ],
+          "feedback": {
+            "met": "Subtract the ticket cost from the tendered amount.",
+            "not_yet": "Change is the unused part."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué cambio corresponde?",
+          "scene": "Un boleto cuesta 26. Entregas 50.",
+          "options": [
+            {
+              "label": "24"
+            },
+            {
+              "label": "76"
+            },
+            {
+              "label": "26"
+            }
+          ],
+          "help": [
+            "El cambio es la parte no usada."
+          ],
+          "feedback": {
+            "met": "Resta el boleto del monto entregado.",
+            "not_yet": "El cambio es la parte no usada."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual troco é devido?",
+          "scene": "Um ingresso custa 26. Entrega 50.",
+          "options": [
+            {
+              "label": "24"
+            },
+            {
+              "label": "76"
+            },
+            {
+              "label": "26"
+            }
+          ],
+          "help": [
+            "Troco é a parte não usada."
+          ],
+          "feedback": {
+            "met": "Subtraia o ingresso do valor entregue.",
+            "not_yet": "Troco é a parte não usada."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          26,
+          50
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 1
+            },
+            {
+              "input": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What should you check?",
+          "scene": "You hand over 40 for groceries costing 32; the cashier returns 5.",
+          "options": [
+            {
+              "label": "Five must be returned"
+            },
+            {
+              "label": "Three more are due"
+            },
+            {
+              "label": "The change is exact"
+            }
+          ],
+          "help": [
+            "Compare expected change with received change."
+          ],
+          "feedback": {
+            "met": "The full change is eight; only five arrived.",
+            "not_yet": "Compare expected change with received change."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debes revisar?",
+          "scene": "Entregas 40 por compras de 32; te devuelven 5.",
+          "options": [
+            {
+              "label": "Debes devolver cinco"
+            },
+            {
+              "label": "Faltan tres de cambio"
+            },
+            {
+              "label": "El cambio es exacto"
+            }
+          ],
+          "help": [
+            "Compara cambio esperado y recibido."
+          ],
+          "feedback": {
+            "met": "El cambio completo es ocho; solo llegaron cinco.",
+            "not_yet": "Compara cambio esperado y recibido."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que deve conferir?",
+          "scene": "Entrega 40 por compras de 32; recebe 5.",
+          "options": [
+            {
+              "label": "Deve devolver cinco"
+            },
+            {
+              "label": "Faltam três de troco"
+            },
+            {
+              "label": "O troco está exato"
+            }
+          ],
+          "help": [
+            "Compare troco esperado e recebido."
+          ],
+          "feedback": {
+            "met": "O troco completo é oito; só chegaram cinco.",
+            "not_yet": "Compare troco esperado e recebido."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.financial-math.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Change due?",
+          "scene": "A repair costs 35; you hand over exactly 35.",
+          "options": [
+            {
+              "label": "70"
+            },
+            {
+              "label": "35"
+            },
+            {
+              "label": "0"
+            }
+          ],
+          "help": [
+            "Both amounts are equal."
+          ],
+          "feedback": {
+            "met": "An exact payment leaves no change.",
+            "not_yet": "Both amounts are equal."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cambio debido?",
+          "scene": "Una reparación cuesta 35; entregas exactamente 35.",
+          "options": [
+            {
+              "label": "70"
+            },
+            {
+              "label": "35"
+            },
+            {
+              "label": "0"
+            }
+          ],
+          "help": [
+            "Ambos montos son iguales."
+          ],
+          "feedback": {
+            "met": "Un pago exacto no deja cambio.",
+            "not_yet": "Ambos montos son iguales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Troco devido?",
+          "scene": "Um conserto custa 35; entrega exatamente 35.",
+          "options": [
+            {
+              "label": "70"
+            },
+            {
+              "label": "35"
+            },
+            {
+              "label": "0"
+            }
+          ],
+          "help": [
+            "Os dois valores são iguais."
+          ],
+          "feedback": {
+            "met": "Um pagamento exato não deixa troco.",
+            "not_yet": "Os dois valores são iguais."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          35,
+          35
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 1
+            },
+            {
+              "input": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.financial-math.02",
+      "copy": {
+        "en-US": {
+          "prompt": "What must return?",
+          "scene": "You hand over 100. A market stall charges 64 including the bag.",
+          "options": [
+            {
+              "label": "164"
+            },
+            {
+              "label": "36"
+            },
+            {
+              "label": "64"
+            }
+          ],
+          "help": [
+            "Subtract the complete price once."
+          ],
+          "feedback": {
+            "met": "Use the complete charge, including the bag.",
+            "not_yet": "Subtract the complete price once."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto debe volver?",
+          "scene": "Entregas 100. El puesto cobra 64 incluyendo la bolsa.",
+          "options": [
+            {
+              "label": "164"
+            },
+            {
+              "label": "36"
+            },
+            {
+              "label": "64"
+            }
+          ],
+          "help": [
+            "Resta el precio completo una vez."
+          ],
+          "feedback": {
+            "met": "Usa el cargo completo, incluida la bolsa.",
+            "not_yet": "Resta el precio completo una vez."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto deve voltar?",
+          "scene": "Entrega 100. A banca cobra 64 incluindo a sacola.",
+          "options": [
+            {
+              "label": "164"
+            },
+            {
+              "label": "36"
+            },
+            {
+              "label": "64"
+            }
+          ],
+          "help": [
+            "Subtraia o preço completo uma vez."
+          ],
+          "feedback": {
+            "met": "Use a cobrança completa, incluindo a sacola.",
+            "not_yet": "Subtraia o preço completo uma vez."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          100,
+          64
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

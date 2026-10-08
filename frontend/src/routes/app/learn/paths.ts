@@ -50,6 +50,11 @@ export const DECISION_JOURNAL_ROUTE_PATH = 'learn/journal' as const;
 export const LEARNING_RHYTHM_ROUTE_PATH = 'learn/rhythm' as const;
 /** L-04 (OD-27 (1)): teen cooperative goals. A static segment, like the journal. */
 export const TOGETHER_ROUTE_PATH = 'learn/together' as const;
+/**
+ * A game inside /learn (KRV1-CONTRACT §6): a standalone, full-screen route with its own exit. The static `play`
+ * segment outranks learn/:courseSlug, so a game id is never read as a course slug.
+ */
+export const PLAY_ROUTE_PATH = 'learn/play/:gameId' as const;
 
 export function coursePath(courseSlug: string): string {
   return `/${COURSE_ROUTE_PATH.replace(':courseSlug', courseSlug)}`;
@@ -85,17 +90,28 @@ export function togetherPath(): string {
   return `/${TOGETHER_ROUTE_PATH}`;
 }
 
+export function playPath(gameId: string): string {
+  return `/${PLAY_ROUTE_PATH.replace(':gameId', encodeURIComponent(gameId))}`;
+}
+
 /**
  * B.26 / OD-1 (S05.3f): the Mentor's guided review of one skill, opened only
  * when the learner accepts the offer. The Mentor starts a weak-skill session
  * for that course/topic key (TutorExperience reads `review`).
  */
-export function guidedReviewPath(skillKey: string): string {
-  return `/tutor?review=${encodeURIComponent(skillKey)}`;
+export function guidedReviewPath(skillKey: string, lessonId?: string | null): string {
+  const review = `/tutor?review=${encodeURIComponent(skillKey)}`;
+  return lessonId ? `${review}&lesson=${encodeURIComponent(lessonId)}` : review;
 }
 
 /** The skill key a guided-review link carries, or null when it is not one. */
 export function guidedReviewSkillFrom(search: string): string | null {
   const value = new URLSearchParams(search).get('review');
   return value !== null && /^[a-z0-9-]+\/[a-z0-9-]+$/.test(value) ? value : null;
+}
+
+/** OD-43: the lesson a guided review was opened from, or null. */
+export function guidedReviewLessonFrom(search: string): string | null {
+  const value = new URLSearchParams(search).get('lesson');
+  return value !== null && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value) ? value : null;
 }

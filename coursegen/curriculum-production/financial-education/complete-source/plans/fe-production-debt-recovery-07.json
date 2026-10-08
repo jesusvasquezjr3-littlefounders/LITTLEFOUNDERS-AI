@@ -1,0 +1,779 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-debt-recovery-part-2",
+  "lesson_id": "fe-production-debt-recovery-07",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.debt-recovery.07"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Detect an upfront-fee debt-relief claim that lacks verifiable terms or authority.",
+  "title": {
+    "en-US": "Relief claims",
+    "es-MX": "Verifica una promesa de alivio de deuda",
+    "pt-BR": "Confira uma promessa de aliviar dívida"
+  },
+  "new_concepts": [
+    "finance.prod.debt-recovery.07"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Verify a debt-relief claim\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Verifica una promesa de alivio de deuda\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Confira uma promessa de aliviar dívida\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.debt-recovery.07",
+      "observable_action": "Detect an upfront-fee debt-relief claim that lacks verifiable terms or authority.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.payments-digital.06",
+      "prod.payments-digital.07"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Pressure and a promised clean record are not evidence that someone can change your debt.",
+    "misconception": "Trusting a guaranteed debt-erasure promise or paying an unverified intermediary before understanding its authority, fees and risks.",
+    "numeracy_support": "Every quantity and assumption needed to decide is visible in the current scenario. Examples explain the relationship before independent application.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.debt-recovery.07",
+        "context_id": "fe-production-debt-recovery-07-example-01",
+        "supports_from": [],
+        "reasoning": "A relief promise does not prove authority or success. Verify the provider, written fees, actual service and risks before committing."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.debt-recovery.07",
+        "context_id": "fe-production-debt-recovery-07-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "A guarantee and pressure do not establish a valid service."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.debt-recovery.07",
+        "context_id": "fe-production-debt-recovery-07-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "An unexplained approval claim is not verified authority."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.debt-recovery.07",
+        "context_id": "fe-production-debt-recovery-07-practice-03",
+        "supports_from": [],
+        "reasoning": "Stopping payments can have consequences the promise does not explain."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.debt-recovery.07",
+        "context_id": "fe-production-debt-recovery-07-practice-04",
+        "supports_from": [],
+        "reasoning": "Knowing account details does not prove authority to negotiate it."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.debt-recovery.07",
+        "context_id": "fe-production-debt-recovery-07-practice-05",
+        "supports_from": [],
+        "reasoning": "Verify claimed acceptance with the party that owns the agreement."
+      },
+      {
+        "segment_id": "transfer-06",
+        "skill_id": "prod.debt-recovery.07",
+        "context_id": "fe-production-debt-recovery-07-transfer-06",
+        "supports_from": [],
+        "reasoning": "Refusing written terms leaves the service and risks unverified."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.debt-recovery.07",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Pressure and a promised clean record are not evidence that someone can change your debt."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Presión y prometer historial limpio no demuestran que alguien pueda cambiar tu deuda."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Pressão e promessa de nome limpo não provam que alguém possa mudar sua dívida."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Follow the evidence",
+          "line": "A relief promise does not prove authority or success. Verify the provider, written fees, actual service and risks before committing."
+        },
+        "es-MX": {
+          "prompt": "Sigue las pruebas",
+          "line": "Una promesa de alivio no prueba autoridad ni éxito. Verifica proveedor, cargos escritos, servicio real y riesgos antes de comprometerte."
+        },
+        "pt-BR": {
+          "prompt": "Siga as provas",
+          "line": "Prometer alívio não prova poder nem sucesso. Confira quem oferece, custos por escrito, serviço real e riscos antes de aceitar."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Which cue requires caution?",
+          "scene": "A stranger guarantees debt erasure after an immediate upfront transfer.",
+          "options": [
+            {
+              "label": "Only the existence of debt"
+            },
+            {
+              "label": "Guaranteed erasure plus advance payment pressure"
+            },
+            {
+              "label": "Any request to read your statements"
+            }
+          ],
+          "help": [
+            "Verify authority and terms independently before paying."
+          ],
+          "feedback": {
+            "met": "A guarantee and pressure do not establish a valid service.",
+            "not_yet": "Verify authority and terms independently before paying."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué señal exige cautela?",
+          "scene": "Un desconocido garantiza borrar deuda tras una transferencia adelantada inmediata.",
+          "options": [
+            {
+              "label": "Solo que exista deuda"
+            },
+            {
+              "label": "Borrado garantizado y presión de anticipo"
+            },
+            {
+              "label": "Cualquier petición de revisar estados"
+            }
+          ],
+          "help": [
+            "Verifica autoridad y condiciones por separado antes de pagar."
+          ],
+          "feedback": {
+            "met": "Garantía y presión no establecen un servicio válido.",
+            "not_yet": "Verifica autoridad y condiciones por separado antes de pagar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual sinal exige cuidado?",
+          "scene": "Um estranho garante apagar dívida após transferência antecipada imediata.",
+          "options": [
+            {
+              "label": "Só a existência da dívida"
+            },
+            {
+              "label": "Apagar garantido e pressão por adiantamento"
+            },
+            {
+              "label": "Qualquer pedido para conferir extratos"
+            }
+          ],
+          "help": [
+            "Confira poder e regras por outro caminho antes de pagar."
+          ],
+          "feedback": {
+            "met": "Garantia e pressão não provam um serviço válido.",
+            "not_yet": "Confira poder e regras por outro caminho antes de pagar."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.07",
+      "copy": {
+        "en-US": {
+          "prompt": "What needs checking?",
+          "scene": "A service claims approval without naming an authority or registration.",
+          "options": [
+            {
+              "label": "Only advertised savings"
+            },
+            {
+              "label": "Who approved what, through an independent source"
+            },
+            {
+              "label": "Assume the word proves legal authority"
+            }
+          ],
+          "help": [
+            "Trace the claim to a real competent source."
+          ],
+          "feedback": {
+            "met": "An unexplained approval claim is not verified authority.",
+            "not_yet": "Trace the claim to a real competent source."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué falta verificar?",
+          "scene": "Un servicio anuncia «aprobado», sin indicar autoridad ni registro verificable.",
+          "options": [
+            {
+              "label": "Solo tamaño del ahorro anunciado"
+            },
+            {
+              "label": "Quién aprobó qué, mediante fuente independiente"
+            },
+            {
+              "label": "Suponer que la palabra prueba autoridad legal"
+            }
+          ],
+          "help": [
+            "Rastrea la afirmación hasta una fuente competente real."
+          ],
+          "feedback": {
+            "met": "Una aprobación sin explicar no es autoridad verificada.",
+            "not_yet": "Rastrea la afirmación hasta una fuente competente real."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que falta conferir?",
+          "scene": "Um serviço anuncia «aprovado», sem dizer órgão nem registro que possa conferir.",
+          "options": [
+            {
+              "label": "Só tamanho da economia anunciada"
+            },
+            {
+              "label": "Quem aprovou o quê, por fonte independente"
+            },
+            {
+              "label": "Supor que a palavra prova poder legal"
+            }
+          ],
+          "help": [
+            "Busque a fonte real que pode confirmar a afirmação."
+          ],
+          "feedback": {
+            "met": "Um aceite sem explicação não prova poder conferido.",
+            "not_yet": "Busque a fonte real que pode confirmar a afirmação."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.07",
+      "copy": {
+        "en-US": {
+          "prompt": "What must be assessed first?",
+          "scene": "An intermediary demands stopping payments while hiding fees and consequences.",
+          "options": [
+            {
+              "label": "Assume stopping creates automatic forgiveness"
+            },
+            {
+              "label": "Trust the promised result alone"
+            },
+            {
+              "label": "Written costs, consequences and applicable advice"
+            }
+          ],
+          "help": [
+            "Require complete terms and qualified guidance on the actual situation."
+          ],
+          "feedback": {
+            "met": "Stopping payments can have consequences the promise does not explain.",
+            "not_yet": "Require complete terms and qualified guidance on the actual situation."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué evaluar primero?",
+          "scene": "Un intermediario pide suspender todo pago, pero oculta cargos y consecuencias.",
+          "options": [
+            {
+              "label": "Suponer que suspender produce perdón automático"
+            },
+            {
+              "label": "Confiar solo en el resultado prometido"
+            },
+            {
+              "label": "Costos escritos, consecuencias y orientación aplicable"
+            }
+          ],
+          "help": [
+            "Exige condiciones completas y orientación calificada sobre la situación real."
+          ],
+          "feedback": {
+            "met": "Suspender pagos puede tener consecuencias que la promesa no explica.",
+            "not_yet": "Exige condiciones completas y orientación calificada sobre la situación real."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que avaliar primeiro?",
+          "scene": "Um intermediário manda parar todos os pagamentos, mas esconde custos e efeitos.",
+          "options": [
+            {
+              "label": "Supor que parar gera perdão automático"
+            },
+            {
+              "label": "Confiar só no resultado prometido"
+            },
+            {
+              "label": "Custos por escrito, efeitos e orientação cabível"
+            }
+          ],
+          "help": [
+            "Peça regras completas e orientação qualificada sobre o caso real."
+          ],
+          "feedback": {
+            "met": "Parar pagamentos pode ter efeitos que a promessa não explica.",
+            "not_yet": "Peça regras completas e orientação qualificada sobre o caso real."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Does knowing the balance establish legitimacy?",
+          "scene": "An unsolicited caller knows your creditor and exact balance.",
+          "options": [
+            {
+              "label": "Yes, those details prove authority"
+            },
+            {
+              "label": "No, verify the caller separately"
+            },
+            {
+              "label": "Yes, knowledge guarantees a discount"
+            }
+          ],
+          "help": [
+            "Do not substitute personal details for independent verification."
+          ],
+          "feedback": {
+            "met": "Knowing account details does not prove authority to negotiate it.",
+            "not_yet": "Do not substitute personal details for independent verification."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Saber el saldo prueba legitimidad?",
+          "scene": "Alguien llama sin pedirlo y sabe acreedor y saldo exacto.",
+          "options": [
+            {
+              "label": "Sí, esos datos prueban autoridad"
+            },
+            {
+              "label": "No, verifica a quien llama por separado"
+            },
+            {
+              "label": "Sí, saber garantiza descuento"
+            }
+          ],
+          "help": [
+            "No sustituyas verificación independiente con datos personales."
+          ],
+          "feedback": {
+            "met": "Conocer datos de cuenta no prueba autoridad para negociarla.",
+            "not_yet": "No sustituyas verificación independiente con datos personales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Saber o saldo prova legitimidade?",
+          "scene": "Alguém liga sem pedir e sabe credor e saldo exato.",
+          "options": [
+            {
+              "label": "Sim, esses dados provam poder"
+            },
+            {
+              "label": "Não, confira quem liga por outro caminho"
+            },
+            {
+              "label": "Sim, saber garante desconto"
+            }
+          ],
+          "help": [
+            "Não troque conferência independente por dados pessoais."
+          ],
+          "feedback": {
+            "met": "Saber dados da conta não prova poder para negociá-la.",
+            "not_yet": "Não troque conferência independente por dados pessoais."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.debt-recovery.07",
+      "copy": {
+        "en-US": {
+          "prompt": "What would substantiate this claim?",
+          "scene": "A firm says your creditor accepted a new settlement.",
+          "options": [
+            {
+              "label": "Confirmation through the verified creditor channel"
+            },
+            {
+              "label": "Only the firm’s verbal promise"
+            },
+            {
+              "label": "Its demand for your access code"
+            }
+          ],
+          "help": [
+            "Separate a salesperson’s statement from creditor confirmation."
+          ],
+          "feedback": {
+            "met": "Verify claimed acceptance with the party that owns the agreement.",
+            "not_yet": "Separate a salesperson’s statement from creditor confirmation."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué respaldaría esa afirmación?",
+          "scene": "Una firma dice que tu acreedor aceptó un convenio nuevo.",
+          "options": [
+            {
+              "label": "Confirmación por canal verificado del acreedor"
+            },
+            {
+              "label": "Solo promesa verbal de la firma"
+            },
+            {
+              "label": "Su exigencia de tu código de acceso"
+            }
+          ],
+          "help": [
+            "Separa afirmación de venta y confirmación del acreedor."
+          ],
+          "feedback": {
+            "met": "Verifica aceptación con la parte responsable del acuerdo.",
+            "not_yet": "Separa afirmación de venta y confirmación del acreedor."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que apoiaria essa afirmação?",
+          "scene": "Uma empresa diz que seu credor aceitou um acordo novo.",
+          "options": [
+            {
+              "label": "Confirmação pelo canal conferido do credor"
+            },
+            {
+              "label": "Só promessa verbal da empresa"
+            },
+            {
+              "label": "Seu pedido de código de acesso"
+            }
+          ],
+          "help": [
+            "Separe fala de venda e confirmação do credor."
+          ],
+          "feedback": {
+            "met": "Confira aceite com a parte responsável pelo acordo.",
+            "not_yet": "Separe fala de venda e confirmação do credor."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.debt-recovery.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Appropriate next step?",
+          "scene": "A social-media offer promises guaranteed debt cleanup but refuses written terms.",
+          "options": [
+            {
+              "label": "Send credentials to speed approval"
+            },
+            {
+              "label": "Pause and seek independently verified help"
+            },
+            {
+              "label": "Pay to test the promise"
+            }
+          ],
+          "help": [
+            "Do not let urgency replace a checkable agreement."
+          ],
+          "feedback": {
+            "met": "Refusing written terms leaves the service and risks unverified.",
+            "not_yet": "Do not let urgency replace a checkable agreement."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es el siguiente paso adecuado?",
+          "scene": "Una oferta en redes promete limpiar deuda, pero rechaza condiciones escritas.",
+          "options": [
+            {
+              "label": "Enviar claves para acelerar aprobación"
+            },
+            {
+              "label": "Pausar y buscar ayuda verificada independientemente"
+            },
+            {
+              "label": "Pagar poco para probar la promesa"
+            }
+          ],
+          "help": [
+            "No permitas que urgencia sustituya un acuerdo verificable."
+          ],
+          "feedback": {
+            "met": "Rechazar condiciones escritas deja sin verificar servicio y riesgos.",
+            "not_yet": "No permitas que urgencia sustituya un acuerdo verificable."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é o próximo passo adequado?",
+          "scene": "Uma oferta em rede promete limpar dívida, mas recusa regras por escrito.",
+          "options": [
+            {
+              "label": "Enviar senhas para acelerar aceite"
+            },
+            {
+              "label": "Pausar e buscar ajuda conferida por outra fonte"
+            },
+            {
+              "label": "Pagar pouco para testar a promessa"
+            }
+          ],
+          "help": [
+            "Não deixe pressa substituir um acordo que possa conferir."
+          ],
+          "feedback": {
+            "met": "Recusar regras por escrito deixa serviço e riscos sem conferir.",
+            "not_yet": "Não deixe pressa substituir um acordo que possa conferir."
+          }
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,99 @@
+{
+  "version": 1,
+  "status": "partial-production-draft",
+  "course_id": "financial-education",
+  "planned_course_slots": 294,
+  "authored_lessons": 11,
+  "whole_course_complete": false,
+  "publication_authorized": false,
+  "design_hash": "1ca157a2f38838c4aebda7a1ef006e7c3c12c38d869f5ff2f896fad83d07ec59",
+  "calibration_adoption": [
+    {
+      "source_lesson_id": "fe-solid-01-money-moves",
+      "source_sha256": "b8c6870dbe4c7690efcd7a2d8f392c78e4813a44c58f13fc0acbb53c402e79d3",
+      "draft_lesson_id": "fe-production-usable-money-00",
+      "changes": "Explicit production identity and prerequisites; ledger success feedback describes the verified final balance. Approved source instruction retained; brief example numbers are alternatives."
+    },
+    {
+      "source_lesson_id": "fe-solid-02-received-not-promised",
+      "source_sha256": "586db9db18c7100c8eac28fae445a3f193819ca0aca164414e45f6d025e999a5",
+      "draft_lesson_id": "fe-production-usable-money-01",
+      "changes": "Explicit production identity and prerequisites; ledger success feedback describes the verified final balance. Approved source instruction retained; brief example numbers are alternatives."
+    },
+    {
+      "source_lesson_id": "fe-solid-03-update-your-balance",
+      "source_sha256": "1bcab3326bfc1fdf3eaa78a87b7856d0e760cbd0cd79b00123582375896997bc",
+      "draft_lesson_id": "fe-production-usable-money-02",
+      "changes": "Explicit production identity and prerequisites; ledger success feedback describes the verified final balance. Approved source instruction retained; brief example numbers are alternatives."
+    }
+  ],
+  "newly_authored_lessons": [
+    "fe-production-usable-money-03",
+    "fe-production-usable-money-04",
+    "fe-production-usable-money-05",
+    "fe-production-usable-money-06",
+    "fe-production-usable-money-07",
+    "fe-production-usable-money-08",
+    "fe-production-usable-money-review-1",
+    "fe-production-usable-money-review-2"
+  ],
+  "lessons": [
+    {
+      "lesson_id": "fe-production-usable-money-00",
+      "sha256": "96af3dedfb3b8e04dcaed5f5cd37f4a074a12f3c17a778f4c798be7e5c54d3b3"
+    },
+    {
+      "lesson_id": "fe-production-usable-money-01",
+      "sha256": "52ce6827884dbd6ec936ce83bb702ded576efb54e9b035fb7f3d4aa62f3dee47"
+    },
+    {
+      "lesson_id": "fe-production-usable-money-02",
+      "sha256": "2bf6a7d9f371ef587e7b1b20f9cedfdd2dc15f892fabc71c0dcb550dd584dd10"
+    },
+    {
+      "lesson_id": "fe-production-usable-money-03",
+      "sha256": "aa77c397d9ebdfc7a257de1fb1ac651800686a192a927055fe19f65ce132a655"
+    },
+    {
+      "lesson_id": "fe-production-usable-money-04",
+      "sha256": "fca4d8366c42759fc4fe13f52251d3bd886eeb0362b0bacf0b3a225fd6da464f"
+    },
+    {
+      "lesson_id": "fe-production-usable-money-05",
+      "sha256": "28178f6258a0ca5d3607210174c4f7db8dbec7e622a8bc56939baffd2895e731"
+    },
+    {
+      "lesson_id": "fe-production-usable-money-06",
+      "sha256": "84895b9774ab5304b54a74275bdf9114039476381ff7a071e219798fa295288e"
+    },
+    {
+      "lesson_id": "fe-production-usable-money-07",
+      "sha256": "5c6860e13462327a7c1ca7086bf3c21baafd787eb2dead0c89d5d3ab0a842ed4"
+    },
+    {
+      "lesson_id": "fe-production-usable-money-08",
+      "sha256": "9aa2b52024d02df6df40c82112d8326e5c88fbd92362b842c38cf3a4f9c81a49"
+    },
+    {
+      "lesson_id": "fe-production-usable-money-review-1",
+      "sha256": "4e13b794892e3c934850bf95f9d15d47716e23e468e18b33b9077ab8fcb0160d"
+    },
+    {
+      "lesson_id": "fe-production-usable-money-review-2",
+      "sha256": "6fa082e98a40a299ed54d1c7ae4a3feed67b3cdf2c80bb3d5cc95bd9ecf813f1"
+    }
+  ],
+  "remaining": [
+    "Remaining course teaching and integrated applications",
+    "Complete production blueprint and shared KC mapping",
+    "Localized player and interaction verification for these drafts",
+    "Regional findings and full release verification"
+  ],
+  "calls": {
+    "model": 0,
+    "image": 0,
+    "voice": 0,
+    "network": 0,
+    "publication": 0
+  }
+}

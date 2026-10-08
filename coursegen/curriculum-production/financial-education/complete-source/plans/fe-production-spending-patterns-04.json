@@ -1,0 +1,961 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-spending-patterns-part-1",
+  "lesson_id": "fe-production-spending-patterns-04",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.spending-patterns.04"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Convert a recurring small purchase into its total cost over a stated period.",
+  "title": {
+    "en-US": "Repeated costs",
+    "es-MX": "Los gastos pequeños se suman",
+    "pt-BR": "Gastos pequenos se somam"
+  },
+  "new_concepts": [
+    "finance.prod.spending-patterns.04"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Small costs add up\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Los gastos pequeños se suman\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Gastos pequenos se somam\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.spending-patterns.04",
+      "observable_action": "Convert a recurring small purchase into its total cost over a stated period.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.spending-patterns.01",
+      "prod.financial-math.05"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Count how often a payment occurs before judging its total cost.",
+    "misconception": "Treating the price of one purchase as the cost of repeating it across a period.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.spending-patterns.04",
+        "context_id": "fe-production-spending-patterns-04-example-01",
+        "supports_from": [],
+        "reasoning": "A 4-dollar purchase repeated three times costs 12 dollars; the count is purchases, not every calendar day."
+      },
+      {
+        "segment_id": "example-chart",
+        "skill_id": "prod.spending-patterns.04",
+        "context_id": "fe-production-spending-patterns-04-example-chart",
+        "supports_from": [],
+        "reasoning": "Three payments of 4 total 12; equal bars show the repeated cost."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.spending-patterns.04",
+        "context_id": "fe-production-spending-patterns-04-guided-01",
+        "supports_from": [
+          "example-chart"
+        ],
+        "reasoning": "3 × 4 = 12 for the four purchases."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.spending-patterns.04",
+        "context_id": "fe-production-spending-patterns-04-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "5 × 2 = 10 counts only the stated payment days."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.spending-patterns.04",
+        "context_id": "fe-production-spending-patterns-04-practice-01",
+        "supports_from": [],
+        "reasoning": "2 × 15 = 30 across the stated purchases."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.spending-patterns.04",
+        "context_id": "fe-production-spending-patterns-04-practice-02",
+        "supports_from": [],
+        "reasoning": "The total depends on how many charges actually occur."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.spending-patterns.04",
+        "context_id": "fe-production-spending-patterns-04-practice-03",
+        "supports_from": [],
+        "reasoning": "Measuring the total does not decide whether the need can change."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.spending-patterns.04",
+        "context_id": "fe-production-spending-patterns-04-transfer-01",
+        "supports_from": [],
+        "reasoning": "6 × 5 = 30 covers the stated rental count."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.spending-patterns.04",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Count how often a payment occurs before judging its total cost."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Cuenta cuántas veces ocurre un pago antes de juzgar su costo total."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Conte quantas vezes um pagamento ocorre antes de julgar o custo total."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Price times occurrences",
+          "line": "A 4-dollar purchase repeated three times costs 12 dollars; the count is purchases, not every calendar day."
+        },
+        "es-MX": {
+          "prompt": "Precio por repeticiones",
+          "line": "Una compra de 4 pesos repetida tres veces cuesta 12 pesos; cuenta compras, no todos los días del calendario."
+        },
+        "pt-BR": {
+          "prompt": "Preço por repetições",
+          "line": "Uma compra de 4 reais repetida três vezes custa 12 reais; conte compras, não todos os dias do calendário."
+        }
+      }
+    },
+    {
+      "id": "example-chart",
+      "type": "visual.chart.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "bar"
+      },
+      "payload": {
+        "data": {
+          "unit": "local",
+          "categories": [
+            {
+              "id": "first"
+            },
+            {
+              "id": "second"
+            },
+            {
+              "id": "third"
+            }
+          ],
+          "series": [
+            {
+              "id": "cost",
+              "values": [
+                4,
+                4,
+                4
+              ]
+            }
+          ]
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Three payments of 4 total 12; equal bars show the repeated cost.",
+          "title": "Repeated payments",
+          "data": {
+            "categories": [
+              {
+                "label": "First"
+              },
+              {
+                "label": "Second"
+              },
+              {
+                "label": "Third"
+              }
+            ],
+            "series": [
+              {
+                "label": "Cost"
+              }
+            ]
+          }
+        },
+        "es-MX": {
+          "prompt": "Tres pagos de 4 suman 12; barras iguales muestran el costo repetido.",
+          "title": "Pagos repetidos",
+          "data": {
+            "categories": [
+              {
+                "label": "Primero"
+              },
+              {
+                "label": "Segundo"
+              },
+              {
+                "label": "Tercero"
+              }
+            ],
+            "series": [
+              {
+                "label": "Costo"
+              }
+            ]
+          }
+        },
+        "pt-BR": {
+          "prompt": "Três pagamentos de 4 somam 12; barras iguais mostram o custo repetido.",
+          "title": "Pagamentos repetidos",
+          "data": {
+            "categories": [
+              {
+                "label": "Primeiro"
+              },
+              {
+                "label": "Segundo"
+              },
+              {
+                "label": "Terceiro"
+              }
+            ],
+            "series": [
+              {
+                "label": "Custo"
+              }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Weekly total?",
+          "scene": "Price per purchase: 3. Purchases this week: 4.",
+          "options": [
+            {
+              "label": "12"
+            },
+            {
+              "label": "3"
+            },
+            {
+              "label": "7"
+            }
+          ],
+          "help": [
+            "Multiply price by the number of purchases."
+          ],
+          "feedback": {
+            "met": "3 × 4 = 12 for the four purchases.",
+            "not_yet": "Multiply price by the number of purchases."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Total semanal?",
+          "scene": "Precio por compra: 3. Compras esta semana: 4.",
+          "options": [
+            {
+              "label": "12"
+            },
+            {
+              "label": "3"
+            },
+            {
+              "label": "7"
+            }
+          ],
+          "help": [
+            "Multiplica precio por cantidad de compras."
+          ],
+          "feedback": {
+            "met": "3 × 4 = 12 por las cuatro compras.",
+            "not_yet": "Multiplica precio por cantidad de compras."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Total semanal?",
+          "scene": "Preço por compra: 3. Compras nesta semana: 4.",
+          "options": [
+            {
+              "label": "12"
+            },
+            {
+              "label": "3"
+            },
+            {
+              "label": "7"
+            }
+          ],
+          "help": [
+            "Multiplique preço pela quantidade de compras."
+          ],
+          "feedback": {
+            "met": "3 × 4 = 12 pelas quatro compras.",
+            "not_yet": "Multiplique preço pela quantidade de compras."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          3,
+          4
+        ],
+        "expression": {
+          "op": "multiply",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Actual weekly cost?",
+          "scene": "A 5 payment occurs on 2 days this week, not every day.",
+          "options": [
+            {
+              "label": "10"
+            },
+            {
+              "label": "35"
+            },
+            {
+              "label": "5"
+            }
+          ],
+          "help": [
+            "Do not invent extra occurrences."
+          ],
+          "feedback": {
+            "met": "5 × 2 = 10 counts only the stated payment days.",
+            "not_yet": "Do not invent extra occurrences."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Costo semanal real?",
+          "scene": "Un pago de 5 ocurre en 2 días de esta semana, no todos.",
+          "options": [
+            {
+              "label": "10"
+            },
+            {
+              "label": "35"
+            },
+            {
+              "label": "5"
+            }
+          ],
+          "help": [
+            "No inventes repeticiones adicionales."
+          ],
+          "feedback": {
+            "met": "5 × 2 = 10 cuenta solo los días de pago indicados.",
+            "not_yet": "No inventes repeticiones adicionales."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Custo semanal real?",
+          "scene": "Um pagamento de 5 ocorre em 2 dias desta semana, não todos.",
+          "options": [
+            {
+              "label": "10"
+            },
+            {
+              "label": "35"
+            },
+            {
+              "label": "5"
+            }
+          ],
+          "help": [
+            "Não invente repetições adicionais."
+          ],
+          "feedback": {
+            "met": "5 × 2 = 10 conta só os dias de pagamento informados.",
+            "not_yet": "Não invente repetições adicionais."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          5,
+          2
+        ],
+        "expression": {
+          "op": "multiply",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Total for these purchases?",
+          "scene": "A recurring purchase costs 2 each time and occurs 15 times.",
+          "options": [
+            {
+              "label": "30"
+            },
+            {
+              "label": "15"
+            },
+            {
+              "label": "17"
+            }
+          ],
+          "help": [
+            "The price belongs to each occurrence."
+          ],
+          "feedback": {
+            "met": "2 × 15 = 30 across the stated purchases.",
+            "not_yet": "The price belongs to each occurrence."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Total de estas compras?",
+          "scene": "Una compra recurrente cuesta 2 cada vez y ocurre 15 veces.",
+          "options": [
+            {
+              "label": "30"
+            },
+            {
+              "label": "15"
+            },
+            {
+              "label": "17"
+            }
+          ],
+          "help": [
+            "El precio corresponde a cada repetición."
+          ],
+          "feedback": {
+            "met": "2 × 15 = 30 por las compras indicadas.",
+            "not_yet": "El precio corresponde a cada repetición."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Total dessas compras?",
+          "scene": "Uma compra recorrente custa 2 por vez e ocorre 15 vezes.",
+          "options": [
+            {
+              "label": "30"
+            },
+            {
+              "label": "15"
+            },
+            {
+              "label": "17"
+            }
+          ],
+          "help": [
+            "O preço corresponde a cada ocorrência."
+          ],
+          "feedback": {
+            "met": "2 × 15 = 30 pelas compras informadas.",
+            "not_yet": "O preço corresponde a cada ocorrência."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          2,
+          15
+        ],
+        "expression": {
+          "op": "multiply",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.04",
+      "copy": {
+        "en-US": {
+          "prompt": "What is needed for an exact total?",
+          "scene": "A fee applies per visit; next month’s visit count is unknown.",
+          "options": [
+            {
+              "label": "Calling the fee small"
+            },
+            {
+              "label": "Only the fee’s name"
+            },
+            {
+              "label": "The actual visit count"
+            }
+          ],
+          "help": [
+            "A per-use price alone does not fix total spending."
+          ],
+          "feedback": {
+            "met": "The total depends on how many charges actually occur.",
+            "not_yet": "A per-use price alone does not fix total spending."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué falta para un total exacto?",
+          "scene": "La comisión se cobra por visita, pero desconoces cuántas habrá el próximo mes.",
+          "options": [
+            {
+              "label": "Decir que la comisión es pequeña"
+            },
+            {
+              "label": "Solo el nombre de la comisión"
+            },
+            {
+              "label": "La cantidad real de visitas"
+            }
+          ],
+          "help": [
+            "Un precio por uso no fija por sí solo el gasto total."
+          ],
+          "feedback": {
+            "met": "El total depende de cuántos cobros ocurran realmente.",
+            "not_yet": "Un precio por uso no fija por sí solo el gasto total."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que falta para um total exato?",
+          "scene": "A tarifa vale por visita, mas não sabe quantas haverá no próximo mês.",
+          "options": [
+            {
+              "label": "Dizer que a tarifa é pequena"
+            },
+            {
+              "label": "Só o nome da tarifa"
+            },
+            {
+              "label": "A quantidade real de visitas"
+            }
+          ],
+          "help": [
+            "Um preço por uso não fixa sozinho o gasto total."
+          ],
+          "feedback": {
+            "met": "O total depende de quantas cobranças realmente ocorram.",
+            "not_yet": "Um preço por uso não fixa sozinho o gasto total."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.04",
+      "copy": {
+        "en-US": {
+          "prompt": "What does calculating its total establish?",
+          "scene": "A small recurring purchase is necessary for the stated commute.",
+          "options": [
+            {
+              "label": "Its cost over the period"
+            },
+            {
+              "label": "That its price never changes"
+            },
+            {
+              "label": "That it must be eliminated"
+            }
+          ],
+          "help": [
+            "Separate the calculation from decisions about a necessary expense."
+          ],
+          "feedback": {
+            "met": "Measuring the total does not decide whether the need can change.",
+            "not_yet": "Separate the calculation from decisions about a necessary expense."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué demuestra calcular su total?",
+          "scene": "Una compra pequeña recurrente es necesaria para el traslado indicado.",
+          "options": [
+            {
+              "label": "Su costo durante el periodo"
+            },
+            {
+              "label": "Que su precio nunca cambia"
+            },
+            {
+              "label": "Que hay que eliminarla"
+            }
+          ],
+          "help": [
+            "Separa el cálculo de decidir sobre un gasto necesario."
+          ],
+          "feedback": {
+            "met": "Medir el total no decide si la necesidad puede cambiar.",
+            "not_yet": "Separa el cálculo de decidir sobre un gasto necesario."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que calcular o total demonstra?",
+          "scene": "Uma compra pequena recorrente é necessária para o trajeto informado.",
+          "options": [
+            {
+              "label": "Seu custo durante o período"
+            },
+            {
+              "label": "Que seu preço nunca muda"
+            },
+            {
+              "label": "Que deve ser eliminada"
+            }
+          ],
+          "help": [
+            "Separe o cálculo de decidir sobre um gasto necessário."
+          ],
+          "feedback": {
+            "met": "Medir o total não decide se a necessidade pode mudar.",
+            "not_yet": "Separe o cálculo de decidir sobre um gasto necessário."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.spending-patterns.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Planned rental total?",
+          "scene": "A shared tool costs 6 per rental; the group needs 5 separate rentals.",
+          "options": [
+            {
+              "label": "6"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "11"
+            }
+          ],
+          "help": [
+            "Count the separate rentals, not the number of people."
+          ],
+          "feedback": {
+            "met": "6 × 5 = 30 covers the stated rental count.",
+            "not_yet": "Count the separate rentals, not the number of people."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Total planeado de alquiler?",
+          "scene": "Una herramienta compartida cuesta 6 por alquiler; el grupo necesita 5 alquileres separados.",
+          "options": [
+            {
+              "label": "6"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "11"
+            }
+          ],
+          "help": [
+            "Cuenta alquileres separados, no personas."
+          ],
+          "feedback": {
+            "met": "6 × 5 = 30 cubre la cantidad indicada de alquileres.",
+            "not_yet": "Cuenta alquileres separados, no personas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Total previsto de aluguel?",
+          "scene": "Uma ferramenta compartilhada custa 6 por aluguel; o grupo precisa de 5 aluguéis separados.",
+          "options": [
+            {
+              "label": "6"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "11"
+            }
+          ],
+          "help": [
+            "Conte aluguéis separados, não pessoas."
+          ],
+          "feedback": {
+            "met": "6 × 5 = 30 cobre a quantidade informada de aluguéis.",
+            "not_yet": "Conte aluguéis separados, não pessoas."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          6,
+          5
+        ],
+        "expression": {
+          "op": "multiply",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,707 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-integrated-decisions-part-1",
+  "lesson_id": "fe-production-integrated-decisions-05",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.purchase-decisions.12",
+    "finance.prod.credit-mechanics.07",
+    "finance.prod.purchase-decisions.11"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Choose which facts must be verified before financing an urgent replacement purchase.",
+  "title": {
+    "en-US": "Urgent replacement",
+    "es-MX": "Reemplazo urgente",
+    "pt-BR": "Substituição urgente"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"An urgent replacement\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Reemplazo urgente\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Substituição urgente\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "capstone",
+    "objective": {
+      "skill_id": "prod.purchase-decisions.12",
+      "observable_action": "Choose which facts must be verified before financing an urgent replacement purchase.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.purchase-decisions.06",
+      "prod.goals-tradeoffs.03"
+    ],
+    "retrieval_skills": [
+      "prod.purchase-decisions.12",
+      "prod.credit-mechanics.07",
+      "prod.purchase-decisions.11"
+    ],
+    "relevance": "Urgency does not remove the need to check the purchase and financing.",
+    "misconception": "Using urgency or a low installment to skip fit, total cost and contract checks.",
+    "numeracy_support": "Use the explicitly stated totals, deadlines and constraints. Earlier financial arithmetic is retrieved; no current rate or legal entitlement is implied.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.purchase-decisions.12",
+        "context_id": "integrated-decisions-5-practice-01",
+        "supports_from": [],
+        "reasoning": "Required function defines which alternatives can solve the problem."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.credit-mechanics.07",
+        "context_id": "integrated-decisions-5-practice-02",
+        "supports_from": [],
+        "reasoning": "Existing commitments reduce what can fund another payment."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.purchase-decisions.11",
+        "context_id": "integrated-decisions-5-practice-03",
+        "supports_from": [],
+        "reasoning": "The written exclusion may defeat the promised repair benefit."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.credit-mechanics.07",
+        "context_id": "integrated-decisions-5-practice-04",
+        "supports_from": [],
+        "reasoning": "Urgency does not create the missing payment capacity."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.purchase-decisions.11",
+        "context_id": "integrated-decisions-5-practice-05",
+        "supports_from": [],
+        "reasoning": "A receipt alone does not establish the applicable return conditions."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.purchase-decisions.12",
+        "context_id": "integrated-decisions-5-transfer-01",
+        "supports_from": [],
+        "reasoning": "Confirmed financing cannot make an incompatible phone meet the need."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.purchase-decisions.12",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Urgency does not remove the need to check the purchase and financing."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "La urgencia no elimina la necesidad de revisar compra y financiamiento."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Mesmo com pressa, confira a compra e o crédito."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.12",
+      "copy": {
+        "en-US": {
+          "prompt": "What should be clarified first?",
+          "scene": "An appliance broke; the seller offers a premium replacement without checking your needs.",
+          "options": [
+            {
+              "label": "The required function"
+            },
+            {
+              "label": "The approved credit limit"
+            }
+          ],
+          "help": [
+            "Urgency does not make every replacement suitable."
+          ],
+          "feedback": {
+            "met": "Required function defines which alternatives can solve the problem.",
+            "not_yet": "Urgency does not make every replacement suitable."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué aclarar primero?",
+          "scene": "Hay que reemplazar un aparato roto; ofrecen uno prémium sin revisar la función necesaria.",
+          "options": [
+            {
+              "label": "La función que debe cumplir"
+            },
+            {
+              "label": "El límite de crédito aprobado"
+            }
+          ],
+          "help": [
+            "La urgencia no vuelve adecuado cualquier reemplazo."
+          ],
+          "feedback": {
+            "met": "La función necesaria define qué alternativas resuelven el problema.",
+            "not_yet": "La urgencia no vuelve adecuado cualquier reemplazo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que esclarecer primeiro?",
+          "scene": "Um aparelho quebrou; oferecem um modelo premium sem conferir a função necessária.",
+          "options": [
+            {
+              "label": "A função que deve cumprir"
+            },
+            {
+              "label": "O limite de crédito aprovado"
+            }
+          ],
+          "help": [
+            "A pressa não faz qualquer aparelho servir."
+          ],
+          "feedback": {
+            "met": "A função define quais opções servem para você.",
+            "not_yet": "A pressa não faz qualquer aparelho servir."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Which affordability check matters?",
+          "scene": "The advertised installment is small, but existing essential commitments nearly exhaust next month’s income.",
+          "options": [
+            {
+              "label": "Compare it only with salary"
+            },
+            {
+              "label": "Compare it with funds after commitments"
+            }
+          ],
+          "help": [
+            "A small installment can still exceed the available remainder."
+          ],
+          "feedback": {
+            "met": "Existing commitments reduce what can fund another payment.",
+            "not_yet": "A small installment can still exceed the available remainder."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué revisión importa?",
+          "scene": "La mensualidad anunciada es pequeña, pero los compromisos esenciales casi agotan el ingreso del próximo mes.",
+          "options": [
+            {
+              "label": "Compararla solo con el sueldo"
+            },
+            {
+              "label": "Compararla con el resto tras compromisos"
+            }
+          ],
+          "help": [
+            "Una mensualidad pequeña puede superar el resto disponible."
+          ],
+          "feedback": {
+            "met": "Los compromisos reducen lo disponible para otro pago.",
+            "not_yet": "Una mensualidad pequeña puede superar el resto disponible."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual conferência importa?",
+          "scene": "A parcela anunciada é pequena, mas compromissos essenciais quase esgotam a renda do próximo mês.",
+          "options": [
+            {
+              "label": "Comparar só com o salário"
+            },
+            {
+              "label": "Comparar com a sobra após compromissos"
+            }
+          ],
+          "help": [
+            "Mesmo uma parcela baixa pode ser maior que a sobra."
+          ],
+          "feedback": {
+            "met": "Os compromissos reduzem o disponível para outra parcela.",
+            "not_yet": "Mesmo uma parcela baixa pode ser maior que a sobra."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.11",
+      "copy": {
+        "en-US": {
+          "prompt": "Which fact needs verification?",
+          "scene": "The seller promises free repairs; written terms exclude the part likely to fail.",
+          "options": [
+            {
+              "label": "Only the display price"
+            },
+            {
+              "label": "The written repair coverage"
+            },
+            {
+              "label": "Only the verbal promise"
+            }
+          ],
+          "help": [
+            "Resolve the conflict before relying on the repair promise."
+          ],
+          "feedback": {
+            "met": "The written exclusion may defeat the promised repair benefit.",
+            "not_yet": "Resolve the conflict before relying on the repair promise."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué dato verificar?",
+          "scene": "Prometen reparaciones gratis de palabra; las condiciones escritas excluyen la pieza que suele fallar.",
+          "options": [
+            {
+              "label": "Solo el precio exhibido"
+            },
+            {
+              "label": "La cobertura escrita aplicable"
+            },
+            {
+              "label": "Solo la promesa verbal"
+            }
+          ],
+          "help": [
+            "Aclara la contradicción antes de confiar en la promesa."
+          ],
+          "feedback": {
+            "met": "La exclusión escrita puede anular el beneficio de reparación esperado.",
+            "not_yet": "Aclara la contradicción antes de confiar en la promesa."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual fato verificar?",
+          "scene": "Prometem consertos grátis verbalmente; os termos escritos excluem a peça que costuma falhar.",
+          "options": [
+            {
+              "label": "Só o preço anunciado"
+            },
+            {
+              "label": "A cobertura escrita aplicável"
+            },
+            {
+              "label": "Só a promessa verbal"
+            }
+          ],
+          "help": [
+            "Confira os termos antes de confiar na promessa."
+          ],
+          "feedback": {
+            "met": "Os termos podem excluir o conserto que você espera.",
+            "not_yet": "Confira os termos antes de confiar na promessa."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-mechanics.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Does financing fit?",
+          "scene": "Funds after essentials: 25 monthly. Proposed payments: 30 monthly; no verified additional funds.",
+          "options": [
+            {
+              "label": "Yes, the product is urgently needed"
+            },
+            {
+              "label": "No, each payment exceeds available funds"
+            }
+          ],
+          "help": [
+            "Compare the proposed payment with the stated available funds."
+          ],
+          "feedback": {
+            "met": "Urgency does not create the missing payment capacity.",
+            "not_yet": "Compare the proposed payment with the stated available funds."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cabe el financiamiento?",
+          "scene": "Tras necesidades quedan 25 mensuales. Los pagos serían 30 mensuales; no hay fondos adicionales verificados.",
+          "options": [
+            {
+              "label": "Sí, el producto urge"
+            },
+            {
+              "label": "No, cada pago supera lo disponible"
+            }
+          ],
+          "help": [
+            "Compara el pago propuesto con los fondos disponibles indicados."
+          ],
+          "feedback": {
+            "met": "La urgencia no crea la capacidad de pago faltante.",
+            "not_yet": "Compara el pago propuesto con los fondos disponibles indicados."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O financiamento cabe?",
+          "scene": "Após necessidades sobram 25 mensais. As parcelas seriam 30 mensais; sem recursos adicionais verificados.",
+          "options": [
+            {
+              "label": "Sim, o produto é urgente"
+            },
+            {
+              "label": "Não, cada parcela supera o disponível"
+            }
+          ],
+          "help": [
+            "Compare a parcela proposta com os recursos disponíveis informados."
+          ],
+          "feedback": {
+            "met": "A urgência não cria a capacidade de pagamento que falta.",
+            "not_yet": "Compare a parcela proposta com os recursos disponíveis informados."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.purchase-decisions.11",
+      "copy": {
+        "en-US": {
+          "prompt": "What remains unresolved?",
+          "scene": "Receipt: seller and price, no return conditions; the applicable rule is unchecked.",
+          "options": [
+            {
+              "label": "What return conditions apply"
+            },
+            {
+              "label": "The printed purchase price"
+            },
+            {
+              "label": "Whether there is a receipt"
+            }
+          ],
+          "help": [
+            "Find the missing condition instead of inferring a universal right."
+          ],
+          "feedback": {
+            "met": "A receipt alone does not establish the applicable return conditions.",
+            "not_yet": "Find the missing condition instead of inferring a universal right."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué sigue sin aclararse?",
+          "scene": "El comprobante identifica vendedor y precio. Faltan condiciones de devolución; no se verificó la regla aplicable.",
+          "options": [
+            {
+              "label": "Qué condiciones de devolución aplican"
+            },
+            {
+              "label": "El precio impreso"
+            },
+            {
+              "label": "Si existe comprobante"
+            }
+          ],
+          "help": [
+            "Busca la condición faltante sin suponer un derecho universal."
+          ],
+          "feedback": {
+            "met": "Un comprobante no establece por sí solo las condiciones de devolución.",
+            "not_yet": "Busca la condición faltante sin suponer un derecho universal."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que continua indefinido?",
+          "scene": "O comprovante identifica vendedor e preço. Faltam condições de devolução; a regra aplicável não foi conferida.",
+          "options": [
+            {
+              "label": "Quais condições de devolução valem"
+            },
+            {
+              "label": "O preço impresso"
+            },
+            {
+              "label": "Se existe comprovante"
+            }
+          ],
+          "help": [
+            "Confira a regra; não suponha que vale igual em todo lugar."
+          ],
+          "feedback": {
+            "met": "O recibo, por si só, não diz quando pode devolver.",
+            "not_yet": "Confira a regra; não suponha que vale igual em todo lugar."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.purchase-decisions.12",
+      "copy": {
+        "en-US": {
+          "prompt": "Which decision is ready?",
+          "scene": "The phone must run your work app; compatibility unknown, delivery and credit confirmed.",
+          "options": [
+            {
+              "label": "Buy because credit is approved"
+            },
+            {
+              "label": "Ignore the required app"
+            },
+            {
+              "label": "Check the app works"
+            }
+          ],
+          "help": [
+            "Verify the unresolved requirement before choosing the replacement."
+          ],
+          "feedback": {
+            "met": "Confirmed financing cannot make an incompatible phone meet the need.",
+            "not_yet": "Verify the unresolved requirement before choosing the replacement."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué decisión está lista?",
+          "scene": "El teléfono debe ejecutar una aplicación laboral; desconoces su compatibilidad, aunque entrega y crédito están confirmados.",
+          "options": [
+            {
+              "label": "Comprar porque aprobaron el crédito"
+            },
+            {
+              "label": "Ignorar la aplicación necesaria"
+            },
+            {
+              "label": "Verificar compatibilidad antes de comprar"
+            }
+          ],
+          "help": [
+            "Verifica el requisito pendiente antes de elegir el reemplazo."
+          ],
+          "feedback": {
+            "met": "Un crédito confirmado no vuelve compatible al teléfono.",
+            "not_yet": "Verifica el requisito pendiente antes de elegir el reemplazo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual decisão está pronta?",
+          "scene": "Você precisa usar um app no celular; não sabe se funciona nele, mas crédito e entrega estão certos.",
+          "options": [
+            {
+              "label": "Comprar porque o crédito foi aprovado"
+            },
+            {
+              "label": "Ignorar o aplicativo necessário"
+            },
+            {
+              "label": "Conferir se o app funciona"
+            }
+          ],
+          "help": [
+            "Confira o que falta antes de escolher o novo aparelho."
+          ],
+          "feedback": {
+            "met": "Ter crédito não faz o app funcionar no celular.",
+            "not_yet": "Confira o que falta antes de escolher o novo aparelho."
+          }
+        }
+      }
+    }
+  ]
+}

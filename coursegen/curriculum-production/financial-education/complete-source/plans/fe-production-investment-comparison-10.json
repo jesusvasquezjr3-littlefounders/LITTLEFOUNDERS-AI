@@ -1,0 +1,755 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-investment-comparison-part-2",
+  "lesson_id": "fe-production-investment-comparison-10",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.investment-comparison.10"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Reject an unverifiable guaranteed-high-return claim using independent verification steps.",
+  "title": {
+    "en-US": "Verify Claims",
+    "es-MX": "Verifica la promesa de rendimiento",
+    "pt-BR": "Confira a promessa de rendimento"
+  },
+  "new_concepts": [
+    "finance.prod.investment-comparison.10"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Verify Claims\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Verifica la promesa de rendimiento\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Confira a promessa de rendimento\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.investment-comparison.10",
+      "observable_action": "Reject an unverifiable guaranteed-high-return claim using independent verification steps.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.payments-digital.07",
+      "prod.investing-foundations.12"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A promise can look official while leaving no independent way to verify who pays or why.",
+    "misconception": "A badge, referral or screenshot makes an implausible guaranteed-return promise trustworthy.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.investment-comparison.10",
+        "context_id": "investment-comparison-10-example-01",
+        "supports_from": [],
+        "reasoning": "An offer promises unusually high guaranteed returns. Pause payment and verify the provider and claim through independent official information."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.investment-comparison.10",
+        "context_id": "investment-comparison-10-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "A seller-controlled link cannot independently verify the seller."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.investment-comparison.10",
+        "context_id": "investment-comparison-10-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "A copied logo does not establish authorization or performance."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.investment-comparison.10",
+        "context_id": "investment-comparison-10-practice-01",
+        "supports_from": [],
+        "reasoning": "One payment does not validate the scheme’s future obligations."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.investment-comparison.10",
+        "context_id": "investment-comparison-10-practice-02",
+        "supports_from": [],
+        "reasoning": "An unresolved identity mismatch is not cured by urgency."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.investment-comparison.10",
+        "context_id": "investment-comparison-10-practice-03",
+        "supports_from": [],
+        "reasoning": "A real firm’s existence does not validate an unsupported promise."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.investment-comparison.10",
+        "context_id": "investment-comparison-10-transfer-01",
+        "supports_from": [],
+        "reasoning": "Independent contact avoids relying entirely on the sender’s controlled channels."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.investment-comparison.10",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A promise can look official while leaving no independent way to verify who pays or why."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Una promesa puede parecer oficial sin permitir verificar independientemente quién paga ni por qué."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Uma promessa pode parecer oficial sem permitir verificar de forma independente quem paga ou por quê."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Pause and verify",
+          "line": "An offer promises unusually high guaranteed returns. Pause payment and verify the provider and claim through independent official information."
+        },
+        "es-MX": {
+          "prompt": "Pausa y verifica",
+          "line": "Una oferta promete rendimientos altos garantizados. Pausa el pago y verifica al proveedor y la promesa mediante información oficial independiente."
+        },
+        "pt-BR": {
+          "prompt": "Pare e confira",
+          "line": "Uma oferta promete ganhos altos garantidos. Pause o pagamento e confira o prestador e a promessa em fontes oficiais independentes."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.10",
+      "copy": {
+        "en-US": {
+          "prompt": "What next?",
+          "scene": "A message claims huge guaranteed gains and requests payment through its own link.",
+          "options": [
+            {
+              "label": "Verify independently first"
+            },
+            {
+              "label": "Use only its link"
+            },
+            {
+              "label": "Pay to unlock proof"
+            }
+          ],
+          "help": [
+            "Use an official source reached independently."
+          ],
+          "feedback": {
+            "met": "A seller-controlled link cannot independently verify the seller.",
+            "not_yet": "Use an official source reached independently."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué sigue?",
+          "scene": "Un mensaje de inversión promete enormes ganancias garantizadas y pide pagar mediante su enlace.",
+          "options": [
+            {
+              "label": "Verificar independientemente antes de pagar"
+            },
+            {
+              "label": "Usar solo su enlace para comprobar"
+            },
+            {
+              "label": "Pagar para desbloquear pruebas"
+            }
+          ],
+          "help": [
+            "Usa una fuente oficial por una ruta independiente."
+          ],
+          "feedback": {
+            "met": "Un enlace controlado por quien vende no lo verifica independientemente.",
+            "not_yet": "Usa una fuente oficial por una ruta independiente."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que fazer agora?",
+          "scene": "Uma mensagem promete ganhos enormes garantidos e pede pagar pelo próprio link.",
+          "options": [
+            {
+              "label": "Conferir de forma independente antes de pagar"
+            },
+            {
+              "label": "Usar só seu link para conferir"
+            },
+            {
+              "label": "Pagar para liberar provas"
+            }
+          ],
+          "help": [
+            "Use uma fonte oficial por um caminho independente."
+          ],
+          "feedback": {
+            "met": "Um link do vendedor não o verifica de forma independente.",
+            "not_yet": "Use uma fonte oficial por um caminho independente."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Does a badge prove the claim?",
+          "scene": "An offer displays a regulator’s logo but no independently verifiable registration details.",
+          "options": [
+            {
+              "label": "No, verify identity and permitted activity"
+            },
+            {
+              "label": "Yes, any logo proves returns"
+            }
+          ],
+          "help": [
+            "Check the actual official register."
+          ],
+          "feedback": {
+            "met": "A copied logo does not establish authorization or performance.",
+            "not_yet": "Check the actual official register."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Un sello demuestra la promesa?",
+          "scene": "Una oferta muestra un logotipo regulatorio, sin datos de registro verificables independientemente.",
+          "options": [
+            {
+              "label": "No, verifica identidad y actividad permitida"
+            },
+            {
+              "label": "Sí, cualquier logotipo prueba rendimientos"
+            }
+          ],
+          "help": [
+            "Consulta el registro oficial real."
+          ],
+          "feedback": {
+            "met": "Copiar un logotipo no establece autorización ni rendimiento.",
+            "not_yet": "Consulta el registro oficial real."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Um selo comprova a promessa?",
+          "scene": "Uma oferta mostra logotipo regulatório, sem dados de registro verificáveis de forma independente.",
+          "options": [
+            {
+              "label": "Não, confira identidade e atividade permitida"
+            },
+            {
+              "label": "Sim, qualquer logotipo prova rendimento"
+            }
+          ],
+          "help": [
+            "Consulte o registro oficial real."
+          ],
+          "feedback": {
+            "met": "Copiar logotipo não estabelece autorização nem rendimento.",
+            "not_yet": "Consulte o registro oficial real."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.10",
+      "copy": {
+        "en-US": {
+          "prompt": "What does one payout prove?",
+          "scene": "A friend received an early payment. The scheme’s business and obligations remain unverifiable.",
+          "options": [
+            {
+              "label": "Future payments are guaranteed"
+            },
+            {
+              "label": "Only that payment occurred"
+            },
+            {
+              "label": "Everyone’s capital is safe"
+            }
+          ],
+          "help": [
+            "Ask where future payments and repayment would come from."
+          ],
+          "feedback": {
+            "met": "One payment does not validate the scheme’s future obligations.",
+            "not_yet": "Ask where future payments and repayment would come from."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué demuestra el cobro de un amigo?",
+          "scene": "Un amigo recibió un pago inicial. El negocio y las obligaciones del esquema siguen sin verificarse.",
+          "options": [
+            {
+              "label": "Que pagos futuros están garantizados"
+            },
+            {
+              "label": "Solo que ocurrió ese pago"
+            },
+            {
+              "label": "Que todo capital está seguro"
+            }
+          ],
+          "help": [
+            "Pregunta de dónde vendrán pagos y devolución futuros."
+          ],
+          "feedback": {
+            "met": "Un pago no valida las obligaciones futuras del esquema.",
+            "not_yet": "Pregunta de dónde vendrán pagos y devolución futuros."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que prova o pagamento ao amigo?",
+          "scene": "Um amigo recebeu um pagamento inicial. O negócio e os deveres do esquema seguem sem prova.",
+          "options": [
+            {
+              "label": "Que pagamentos futuros são garantidos"
+            },
+            {
+              "label": "Só que aquele pagamento ocorreu"
+            },
+            {
+              "label": "Que todo capital está seguro"
+            }
+          ],
+          "help": [
+            "Pergunte de onde virão pagamentos e devolução futuros."
+          ],
+          "feedback": {
+            "met": "Um pagamento não valida os deveres futuros do esquema.",
+            "not_yet": "Pergunte de onde virão pagamentos e devolução futuros."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Which response fits?",
+          "scene": "The official register contradicts the provider’s claimed identity. The seller demands immediate payment.",
+          "options": [
+            {
+              "label": "Let urgency replace verification"
+            },
+            {
+              "label": "Send a test payment"
+            },
+            {
+              "label": "Stop and verify independently"
+            }
+          ],
+          "help": [
+            "Do not pay to settle an identity question."
+          ],
+          "feedback": {
+            "met": "An unresolved identity mismatch is not cured by urgency.",
+            "not_yet": "Do not pay to settle an identity question."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué respuesta corresponde?",
+          "scene": "El registro oficial no coincide con la identidad declarada. El vendedor exige pago inmediato.",
+          "options": [
+            {
+              "label": "Sustituir verificación por urgencia"
+            },
+            {
+              "label": "Enviar un pago pequeño de prueba"
+            },
+            {
+              "label": "Detenerse y aclararlo independientemente"
+            }
+          ],
+          "help": [
+            "No pagues para resolver una duda de identidad."
+          ],
+          "feedback": {
+            "met": "La urgencia no resuelve una identidad que no coincide.",
+            "not_yet": "No pagues para resolver una duda de identidad."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual resposta cabe?",
+          "scene": "O registro oficial não bate com a identidade declarada. O vendedor exige pagamento imediato.",
+          "options": [
+            {
+              "label": "Trocar verificação por urgência"
+            },
+            {
+              "label": "Enviar pagamento pequeno de teste"
+            },
+            {
+              "label": "Parar e esclarecer de forma independente"
+            }
+          ],
+          "help": [
+            "Não pague para resolver uma dúvida de identidade."
+          ],
+          "feedback": {
+            "met": "A urgência não resolve uma identidade que não confere.",
+            "not_yet": "Não pague para resolver uma dúvida de identidade."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investment-comparison.10",
+      "copy": {
+        "en-US": {
+          "prompt": "What remains after identity checks?",
+          "scene": "A firm exists, but its ad claims exceptional guaranteed returns without documented backing.",
+          "options": [
+            {
+              "label": "Every claim is approved"
+            },
+            {
+              "label": "The claim still needs verification"
+            }
+          ],
+          "help": [
+            "Verify the specific offer, not just the company."
+          ],
+          "feedback": {
+            "met": "A real firm’s existence does not validate an unsupported promise.",
+            "not_yet": "Verify the specific offer, not just the company."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué queda tras verificar identidad?",
+          "scene": "La empresa existe, pero el rendimiento excepcional garantizado carece de respaldo documentado.",
+          "options": [
+            {
+              "label": "Todas las afirmaciones quedan aprobadas"
+            },
+            {
+              "label": "Todavía debes verificar la promesa"
+            }
+          ],
+          "help": [
+            "Verifica la oferta específica, no solo la empresa."
+          ],
+          "feedback": {
+            "met": "Que exista una empresa no valida una promesa sin respaldo.",
+            "not_yet": "Verifica la oferta específica, no solo la empresa."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que resta após conferir identidade?",
+          "scene": "A empresa existe, mas o ganho excepcional garantido não tem respaldo documentado.",
+          "options": [
+            {
+              "label": "Todas as afirmações ficam aprovadas"
+            },
+            {
+              "label": "Ainda deve verificar a promessa"
+            }
+          ],
+          "help": [
+            "Confira a oferta específica, não só a empresa."
+          ],
+          "feedback": {
+            "met": "Uma empresa existir não valida uma promessa sem respaldo.",
+            "not_yet": "Confira a oferta específica, não só a empresa."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.investment-comparison.10",
+      "copy": {
+        "en-US": {
+          "prompt": "Which check is independent?",
+          "scene": "A chat sends a return certificate and a number to confirm it.",
+          "options": [
+            {
+              "label": "Call only that number"
+            },
+            {
+              "label": "Find the official contact separately"
+            },
+            {
+              "label": "Trust the certificate’s design"
+            }
+          ],
+          "help": [
+            "Reach the authority through your own verified route."
+          ],
+          "feedback": {
+            "met": "Independent contact avoids relying entirely on the sender’s controlled channels.",
+            "not_yet": "Reach the authority through your own verified route."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué verificación es independiente?",
+          "scene": "Un chat privado envía un certificado atractivo de rendimiento y un teléfono para confirmarlo.",
+          "options": [
+            {
+              "label": "Llamar solo al número enviado"
+            },
+            {
+              "label": "Buscar aparte el contacto oficial pertinente"
+            },
+            {
+              "label": "Confiar en el diseño"
+            }
+          ],
+          "help": [
+            "Llega a la autoridad por tu propia ruta verificada."
+          ],
+          "feedback": {
+            "met": "El contacto independiente evita depender de canales controlados por quien envía.",
+            "not_yet": "Llega a la autoridad por tu propia ruta verificada."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual verificação é independente?",
+          "scene": "Um chat privado envia um belo certificado de rendimento e um telefone para confirmá-lo.",
+          "options": [
+            {
+              "label": "Ligar só para o número enviado"
+            },
+            {
+              "label": "Buscar à parte o contato oficial pertinente"
+            },
+            {
+              "label": "Confiar no desenho"
+            }
+          ],
+          "help": [
+            "Chegue à autoridade por seu próprio caminho verificado."
+          ],
+          "feedback": {
+            "met": "O contato independente evita depender dos canais de quem envia.",
+            "not_yet": "Chegue à autoridade por seu próprio caminho verificado."
+          }
+        }
+      }
+    }
+  ]
+}

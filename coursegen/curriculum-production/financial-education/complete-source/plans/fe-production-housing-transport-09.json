@@ -1,0 +1,900 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-housing-transport-part-2",
+  "lesson_id": "fe-production-housing-transport-09",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.housing-transport.09"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Compare vehicle finance offers including deposits, instalments and final balloon payments.",
+  "title": {
+    "en-US": "Financing Totals",
+    "es-MX": "Totales al financiar vehículo",
+    "pt-BR": "Totais ao financiar veículo"
+  },
+  "new_concepts": [
+    "finance.prod.housing-transport.09"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Financing Totals\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Totales al financiar vehículo\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Totais ao financiar veículo\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.housing-transport.09",
+      "observable_action": "Compare vehicle finance offers including deposits, instalments and final balloon payments.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.credit-mechanics.02",
+      "prod.credit-mechanics.07"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Small instalments can hide a large final payment; compare fictional dollars across the whole contract.",
+    "misconception": "The offer with the lowest monthly instalment is the cheapest regardless of deposit, duration and final payment.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.housing-transport.09",
+        "context_id": "housing-transport-09-example-01",
+        "supports_from": [],
+        "reasoning": "Total the deposit, all instalments and any final balloon. Compare equal ownership outcomes and check fees separately."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.housing-transport.09",
+        "context_id": "housing-transport-09-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The final payment counts beyond the regular instalments."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.housing-transport.09",
+        "context_id": "housing-transport-09-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Regular instalments do not include a separately stated final payment."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.housing-transport.09",
+        "context_id": "housing-transport-09-practice-01",
+        "supports_from": [],
+        "reasoning": "Include deposit, every instalment and the additional final amount."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.housing-transport.09",
+        "context_id": "housing-transport-09-practice-02",
+        "supports_from": [],
+        "reasoning": "Different ownership outcomes need explicit treatment in the comparison."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.housing-transport.09",
+        "context_id": "housing-transport-09-practice-03",
+        "supports_from": [],
+        "reasoning": "Affordable instalments do not fund the additional final obligation."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.housing-transport.09",
+        "context_id": "housing-transport-09-transfer-01",
+        "supports_from": [],
+        "reasoning": "Smaller instalments do not guarantee a smaller total."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.housing-transport.09",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Small instalments can hide a large final payment; compare fictional dollars across the whole contract."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Cuotas pequeñas pueden ocultar un pago final grande; compara pesos ficticios durante todo el contrato."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Parcelas pequenas podem esconder um pagamento final grande; compare reais fictícios por todo o contrato."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Add every payment",
+          "line": "Total the deposit, all instalments and any final balloon. Compare equal ownership outcomes and check fees separately."
+        },
+        "es-MX": {
+          "prompt": "Suma cada pago",
+          "line": "Suma enganche, todas las cuotas y pago final adicional. Compara resultados de propiedad iguales y revisa cargos por separado."
+        },
+        "pt-BR": {
+          "prompt": "Some cada pagamento",
+          "line": "Some entrada, todas as parcelas e pagamento final adicional. Compare resultados de posse iguais e confira taxas em separado."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.09",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "step-1"
+          },
+          {
+            "id": "step-2"
+          },
+          {
+            "id": "step-3"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "step-2",
+          "step-3"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "step-2": "1500",
+          "step-3": "2300"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Fictional offer: 10 instalments of 100, deposit 500, additional final payment 800; no fees.",
+          "feedback": {
+            "met": "The final payment counts beyond the regular instalments.",
+            "not_yet": "Add deposit, instalments and the additional final payment."
+          },
+          "help": [
+            "Add deposit, instalments and the additional final payment."
+          ],
+          "steps": [
+            {
+              "expression": "10 * 100",
+              "result": "1000",
+              "spokenText": "All instalments"
+            },
+            {
+              "expression": "1000 + 500",
+              "result": "1500",
+              "spokenText": "Add deposit"
+            },
+            {
+              "expression": "1500 + 800",
+              "result": "2300",
+              "spokenText": "Add final payment"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Oferta ficticia: 10 cuotas de 100, enganche 500, pago final adicional 800; sin cargos.",
+          "feedback": {
+            "met": "El pago final cuenta además de las cuotas regulares.",
+            "not_yet": "Suma enganche, cuotas y pago final adicional."
+          },
+          "help": [
+            "Suma enganche, cuotas y pago final adicional."
+          ],
+          "steps": [
+            {
+              "expression": "10 * 100",
+              "result": "1000",
+              "spokenText": "Todas las cuotas"
+            },
+            {
+              "expression": "1000 + 500",
+              "result": "1500",
+              "spokenText": "Suma enganche"
+            },
+            {
+              "expression": "1500 + 800",
+              "result": "2300",
+              "spokenText": "Suma pago final"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Oferta fictícia: 10 parcelas de 100, entrada 500, pagamento final adicional 800; sem taxas.",
+          "feedback": {
+            "met": "O pagamento final conta além das parcelas regulares.",
+            "not_yet": "Some entrada, parcelas e pagamento final adicional."
+          },
+          "help": [
+            "Some entrada, parcelas e pagamento final adicional."
+          ],
+          "steps": [
+            {
+              "expression": "10 * 100",
+              "result": "1000",
+              "spokenText": "Todas as parcelas"
+            },
+            {
+              "expression": "1000 + 500",
+              "result": "1500",
+              "spokenText": "Some entrada"
+            },
+            {
+              "expression": "1500 + 800",
+              "result": "2300",
+              "spokenText": "Some pagamento final"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.09",
+      "copy": {
+        "en-US": {
+          "prompt": "What can a small instalment hide?",
+          "scene": "A vehicle offer requires a separate large payment at the end.",
+          "options": [
+            {
+              "label": "Final cash requirement"
+            },
+            {
+              "label": "Free ownership automatically"
+            },
+            {
+              "label": "No remaining obligation"
+            }
+          ],
+          "help": [
+            "Read every payment obligation, including the final one."
+          ],
+          "feedback": {
+            "met": "Regular instalments do not include a separately stated final payment.",
+            "not_yet": "Read every payment obligation, including the final one."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué puede ocultar cuota pequeña?",
+          "scene": "Oferta de vehículo exige otro pago grande al final.",
+          "options": [
+            {
+              "label": "Efectivo necesario al final"
+            },
+            {
+              "label": "Propiedad gratis automáticamente"
+            },
+            {
+              "label": "Ninguna obligación restante"
+            }
+          ],
+          "help": [
+            "Lee toda obligación de pago, incluida la final."
+          ],
+          "feedback": {
+            "met": "Las cuotas no incluyen un pago final indicado por separado.",
+            "not_yet": "Lee toda obligación de pago, incluida la final."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que parcela pequena pode esconder?",
+          "scene": "Oferta de veículo exige outro pagamento grande no final.",
+          "options": [
+            {
+              "label": "Dinheiro necessário no final"
+            },
+            {
+              "label": "Posse grátis automaticamente"
+            },
+            {
+              "label": "Nenhuma obrigação restante"
+            }
+          ],
+          "help": [
+            "Leia toda obrigação de pagamento, incluindo a final."
+          ],
+          "feedback": {
+            "met": "As parcelas não incluem pagamento final dado em separado.",
+            "not_yet": "Leia toda obrigação de pagamento, incluindo a final."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.09",
+      "copy": {
+        "en-US": {
+          "prompt": "What is the contract payment total?",
+          "scene": "Deposit: 600; Instalments: 12 of 150; Additional final payment: 900; No fees.",
+          "options": [
+            {
+              "label": "1800"
+            },
+            {
+              "label": "3300"
+            },
+            {
+              "label": "2400"
+            }
+          ],
+          "help": [
+            "Multiply instalments, then add both separate payments."
+          ],
+          "feedback": {
+            "met": "Include deposit, every instalment and the additional final amount.",
+            "not_yet": "Multiply instalments, then add both separate payments."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es el total del contrato?",
+          "scene": "Enganche: 600; Cuotas: 12 de 150; Pago final adicional: 900; Sin cargos.",
+          "options": [
+            {
+              "label": "1800"
+            },
+            {
+              "label": "3300"
+            },
+            {
+              "label": "2400"
+            }
+          ],
+          "help": [
+            "Multiplica cuotas, luego suma ambos pagos separados."
+          ],
+          "feedback": {
+            "met": "Incluye enganche, cada cuota y monto final adicional.",
+            "not_yet": "Multiplica cuotas, luego suma ambos pagos separados."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é o total do contrato?",
+          "scene": "Entrada: 600; Parcelas: 12 de 150; Pagamento final adicional: 900; Sem taxas.",
+          "options": [
+            {
+              "label": "1800"
+            },
+            {
+              "label": "3300"
+            },
+            {
+              "label": "2400"
+            }
+          ],
+          "help": [
+            "Multiplique parcelas, depois some ambos os pagamentos separados."
+          ],
+          "feedback": {
+            "met": "Inclua entrada, cada parcela e valor final adicional.",
+            "not_yet": "Multiplique parcelas, depois some ambos os pagamentos separados."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          600,
+          12,
+          150,
+          900
+        ],
+        "expression": {
+          "op": "add",
+          "args": [
+            {
+              "op": "add",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "op": "multiply",
+                  "args": [
+                    {
+                      "input": 1
+                    },
+                    {
+                      "input": 2
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "input": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.09",
+      "copy": {
+        "en-US": {
+          "prompt": "What must match before comparing?",
+          "scene": "One quote ends with ownership; another requires returning the vehicle.",
+          "options": [
+            {
+              "label": "End-of-contract outcome"
+            },
+            {
+              "label": "Only monthly payment size"
+            },
+            {
+              "label": "Only the repayment term"
+            }
+          ],
+          "help": [
+            "Check what each payment schedule ultimately provides."
+          ],
+          "feedback": {
+            "met": "Different ownership outcomes need explicit treatment in the comparison.",
+            "not_yet": "Check what each payment schedule ultimately provides."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué debe igualarse al comparar?",
+          "scene": "Una cotización termina en propiedad; otra exige devolver el vehículo.",
+          "options": [
+            {
+              "label": "Resultado al terminar contrato"
+            },
+            {
+              "label": "Solo tamaño de cuota"
+            },
+            {
+              "label": "Solo el plazo de pago"
+            }
+          ],
+          "help": [
+            "Revisa qué entrega finalmente cada calendario de pagos."
+          ],
+          "feedback": {
+            "met": "Resultados de propiedad distintos requieren trato explícito al comparar.",
+            "not_yet": "Revisa qué entrega finalmente cada calendario de pagos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que deve ser igual ao comparar?",
+          "scene": "Uma cotação termina em posse; outra exige devolver o veículo.",
+          "options": [
+            {
+              "label": "Resultado ao encerrar contrato"
+            },
+            {
+              "label": "Só tamanho da parcela"
+            },
+            {
+              "label": "Só o prazo de pagamento"
+            }
+          ],
+          "help": [
+            "Confira o que cada plano de pagamentos entrega no final."
+          ],
+          "feedback": {
+            "met": "Resultados de posse distintos exigem tratamento claro na comparação.",
+            "not_yet": "Confira o que cada plano de pagamentos entrega no final."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.housing-transport.09",
+      "copy": {
+        "en-US": {
+          "prompt": "What is missing?",
+          "scene": "A buyer budgets instalments but not the stated balloon payment.",
+          "options": [
+            {
+              "label": "Funding the final payment"
+            },
+            {
+              "label": "Nothing because instalments fit"
+            },
+            {
+              "label": "The initial down payment"
+            }
+          ],
+          "help": [
+            "Include the final payment in the cash plan."
+          ],
+          "feedback": {
+            "met": "Affordable instalments do not fund the additional final obligation.",
+            "not_yet": "Include the final payment in the cash plan."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué falta en este plan?",
+          "scene": "Comprador presupuesta cuotas pero no el pago final adicional indicado.",
+          "options": [
+            {
+              "label": "Cómo cubrir el pago final"
+            },
+            {
+              "label": "Nada porque caben cuotas"
+            },
+            {
+              "label": "El pago inicial"
+            }
+          ],
+          "help": [
+            "Incluye el pago final en el plan de efectivo."
+          ],
+          "feedback": {
+            "met": "Cuotas asequibles no financian la obligación final adicional.",
+            "not_yet": "Incluye el pago final en el plan de efectivo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que falta neste plano?",
+          "scene": "Comprador planeja parcelas mas não o pagamento final adicional dado.",
+          "options": [
+            {
+              "label": "Como cobrir o pagamento final"
+            },
+            {
+              "label": "Nada pois parcelas cabem"
+            },
+            {
+              "label": "A entrada inicial"
+            }
+          ],
+          "help": [
+            "Inclua o pagamento final no plano de dinheiro."
+          ],
+          "feedback": {
+            "met": "Parcelas acessíveis não financiam a obrigação final adicional.",
+            "not_yet": "Inclua o pagamento final no plano de dinheiro."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.housing-transport.09",
+      "visual": {
+        "type": "bar"
+      },
+      "payload": {
+        "data": {
+          "unit": "local",
+          "categories": [
+            {
+              "id": "earlier"
+            },
+            {
+              "id": "later"
+            }
+          ],
+          "series": [
+            {
+              "id": "projected-balance",
+              "values": [
+                3000,
+                3200
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "earlier"
+            },
+            {
+              "id": "later"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "earlier"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Same vehicle ownership; complete contract payments including deposits and balloons: A 3000, B 3200; B has smaller instalments.",
+          "title": "Total paid",
+          "data": {
+            "categories": [
+              {
+                "label": "A"
+              },
+              {
+                "label": "B"
+              }
+            ],
+            "series": [
+              {
+                "label": "Total cost"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Which total is lower?",
+            "options": [
+              {
+                "label": "A"
+              },
+              {
+                "label": "B"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "Smaller instalments do not guarantee a smaller total.",
+            "not_yet": "Compare all payments, not just the monthly amount."
+          },
+          "help": [
+            "Compare all payments, not just the monthly amount."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Misma propiedad; pagos completos con enganches y finales: A 3000, B 3200; B tiene cuotas menores.",
+          "title": "Total pagado",
+          "data": {
+            "categories": [
+              {
+                "label": "A"
+              },
+              {
+                "label": "B"
+              }
+            ],
+            "series": [
+              {
+                "label": "Costo total"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Qué total es menor?",
+            "options": [
+              {
+                "label": "A"
+              },
+              {
+                "label": "B"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "Cuotas menores no aseguran menor total.",
+            "not_yet": "Compara todos los pagos, no solo el monto mensual."
+          },
+          "help": [
+            "Compara todos los pagos, no solo el monto mensual."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Mesma posse; pagamentos completos com entradas e finais: A 3000, B 3200; B tem parcelas menores.",
+          "title": "Total pago",
+          "data": {
+            "categories": [
+              {
+                "label": "A"
+              },
+              {
+                "label": "B"
+              }
+            ],
+            "series": [
+              {
+                "label": "Custo total"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Qual total é menor?",
+            "options": [
+              {
+                "label": "A"
+              },
+              {
+                "label": "B"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "Parcelas menores não asseguram menor total.",
+            "not_yet": "Compare todos os pagamentos, não só o valor mensal."
+          },
+          "help": [
+            "Compare todos os pagamentos, não só o valor mensal."
+          ]
+        }
+      }
+    }
+  ]
+}

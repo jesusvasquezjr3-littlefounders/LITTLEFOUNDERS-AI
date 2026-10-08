@@ -1,0 +1,779 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-payments-digital-part-2",
+  "lesson_id": "fe-production-payments-digital-08",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.payments-digital.08"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Choose the immediate protective response after a device or payment credential is compromised.",
+  "title": {
+    "en-US": "Exposed access",
+    "es-MX": "Limita el acceso tras una exposición",
+    "pt-BR": "Limite o acesso após exposição"
+  },
+  "new_concepts": [
+    "finance.prod.payments-digital.08"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Limit access after exposure\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Limita el acceso tras una exposición\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Limite o acesso após exposição\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.payments-digital.08",
+      "observable_action": "Choose the immediate protective response after a device or payment credential is compromised.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.payments-digital.05",
+      "prod.payments-digital.07"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Respond promptly to exposed access using verified support and a trusted device.",
+    "misconception": "Waiting for a proven loss before protecting exposed access, or trusting an unverified recovery helper.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.payments-digital.08",
+        "context_id": "fe-production-payments-digital-08-example-01",
+        "supports_from": [],
+        "reasoning": "Exposed access can still be used. Contact verified support promptly; use a trusted device to follow its account-protection steps."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.payments-digital.08",
+        "context_id": "fe-production-payments-digital-08-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Securing access addresses the risk before another payment can occur."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.payments-digital.08",
+        "context_id": "fe-production-payments-digital-08-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Reusing an exposed password can put other access at risk."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.payments-digital.08",
+        "context_id": "fe-production-payments-digital-08-practice-01",
+        "supports_from": [],
+        "reasoning": "The exposed session is not a trusted route for securing access."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.payments-digital.08",
+        "context_id": "fe-production-payments-digital-08-practice-02",
+        "supports_from": [],
+        "reasoning": "Securing access and resolving past payments are separate tasks."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.payments-digital.08",
+        "context_id": "fe-production-payments-digital-08-practice-03",
+        "supports_from": [],
+        "reasoning": "A recovery promise does not establish a trustworthy service."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.payments-digital.08",
+        "context_id": "fe-production-payments-digital-08-transfer-01",
+        "supports_from": [],
+        "reasoning": "An unchanged balance does not prove that access remains secure."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.payments-digital.08",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Respond promptly to exposed access using verified support and a trusted device."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Responde pronto ante acceso expuesto usando soporte verificado y un dispositivo confiable."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Responda logo ao acesso exposto usando suporte verificado e um aparelho confiável."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Stop further access first",
+          "line": "Exposed access can still be used. Contact verified support promptly; use a trusted device to follow its account-protection steps."
+        },
+        "es-MX": {
+          "prompt": "Primero limita nuevos accesos",
+          "line": "Un acceso expuesto puede seguir usándose. Contacta pronto a soporte verificado; sigue sus pasos de protección desde un dispositivo confiable."
+        },
+        "pt-BR": {
+          "prompt": "Primeiro limite novos acessos",
+          "line": "Um acesso exposto ainda pode ser usado. Contate logo o suporte verificado; siga os passos de proteção num aparelho confiável."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Which response limits exposure?",
+          "scene": "Your unlocked payment phone is stolen; another trusted device is available.",
+          "options": [
+            {
+              "label": "Contact verified support to secure access"
+            },
+            {
+              "label": "Wait until money disappears"
+            },
+            {
+              "label": "Send your password to a tracker"
+            }
+          ],
+          "help": [
+            "Use the trusted device and the provider’s actual channels."
+          ],
+          "feedback": {
+            "met": "Securing access addresses the risk before another payment can occur.",
+            "not_yet": "Use the trusted device and the provider’s actual channels."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué respuesta limita la exposición?",
+          "scene": "Roban tu teléfono desbloqueado con aplicación de pagos; tienes otro dispositivo confiable.",
+          "options": [
+            {
+              "label": "Contactar soporte verificado para proteger acceso"
+            },
+            {
+              "label": "Esperar hasta que falte dinero"
+            },
+            {
+              "label": "Enviar contraseña a un rastreador"
+            }
+          ],
+          "help": [
+            "Usa el dispositivo confiable y canales reales del proveedor."
+          ],
+          "feedback": {
+            "met": "Proteger el acceso atiende el riesgo antes de otro pago.",
+            "not_yet": "Usa el dispositivo confiable y canales reales del proveedor."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual resposta limita a exposição?",
+          "scene": "Roubam seu celular desbloqueado com aplicativo de pagamentos; tem outro aparelho confiável.",
+          "options": [
+            {
+              "label": "Contatar suporte verificado para proteger acesso"
+            },
+            {
+              "label": "Esperar até faltar dinheiro"
+            },
+            {
+              "label": "Enviar senha a um rastreador"
+            }
+          ],
+          "help": [
+            "Use o aparelho confiável e canais reais do fornecedor."
+          ],
+          "feedback": {
+            "met": "Proteger o acesso trata o risco antes de outro pagamento.",
+            "not_yet": "Use o aparelho confiável e canais reais do fornecedor."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.08",
+      "copy": {
+        "en-US": {
+          "prompt": "What else needs protection?",
+          "scene": "You entered a reused account password on a fake site.",
+          "options": [
+            {
+              "label": "Nothing until the password expires"
+            },
+            {
+              "label": "The other account using that password"
+            },
+            {
+              "label": "Only the fake site’s chat"
+            }
+          ],
+          "help": [
+            "Identify every place where that secret unlocks access."
+          ],
+          "feedback": {
+            "met": "Reusing an exposed password can put other access at risk.",
+            "not_yet": "Identify every place where that secret unlocks access."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué más necesita protección?",
+          "scene": "Escribiste tu contraseña en un sitio falso; la repites en otra cuenta.",
+          "options": [
+            {
+              "label": "Nada hasta que venza la contraseña"
+            },
+            {
+              "label": "La otra cuenta con esa contraseña"
+            },
+            {
+              "label": "Solo el chat del sitio falso"
+            }
+          ],
+          "help": [
+            "Identifica dónde más ese secreto permite entrar."
+          ],
+          "feedback": {
+            "met": "Repetir una contraseña expuesta puede poner otros accesos en riesgo.",
+            "not_yet": "Identifica dónde más ese secreto permite entrar."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que mais precisa de proteção?",
+          "scene": "Digitou sua senha num site falso; repete a senha em outra conta.",
+          "options": [
+            {
+              "label": "Nada até a senha vencer"
+            },
+            {
+              "label": "A outra conta com essa senha"
+            },
+            {
+              "label": "Só a conversa do site falso"
+            }
+          ],
+          "help": [
+            "Veja onde mais esse segredo permite entrar."
+          ],
+          "feedback": {
+            "met": "Repetir uma senha exposta pode pôr outros acessos em risco.",
+            "not_yet": "Veja onde mais esse segredo permite entrar."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Where should protective changes start?",
+          "scene": "A stranger remotely controlled your device and viewed accounts.",
+          "options": [
+            {
+              "label": "The same remote session"
+            },
+            {
+              "label": "A new link that person provides"
+            },
+            {
+              "label": "A trusted device and verified support"
+            }
+          ],
+          "help": [
+            "Remove reliance on the person who had access."
+          ],
+          "feedback": {
+            "met": "The exposed session is not a trusted route for securing access.",
+            "not_yet": "Remove reliance on the person who had access."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Desde dónde iniciar cambios de protección?",
+          "scene": "Una persona desconocida controló tu dispositivo y vio pantallas de tu cuenta.",
+          "options": [
+            {
+              "label": "La misma sesión con esa persona"
+            },
+            {
+              "label": "Otro enlace de esa persona"
+            },
+            {
+              "label": "Dispositivo confiable y soporte verificado"
+            }
+          ],
+          "help": [
+            "Deja de depender de quien tuvo acceso."
+          ],
+          "feedback": {
+            "met": "La sesión expuesta no es una ruta confiable para proteger acceso.",
+            "not_yet": "Deja de depender de quien tuvo acceso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "De onde iniciar mudanças de proteção?",
+          "scene": "Uma pessoa desconhecida controlou seu aparelho e viu telas da sua conta.",
+          "options": [
+            {
+              "label": "A mesma sessão com essa pessoa"
+            },
+            {
+              "label": "Outro link dessa pessoa"
+            },
+            {
+              "label": "Aparelho confiável e suporte verificado"
+            }
+          ],
+          "help": [
+            "Deixe de depender de quem teve acesso."
+          ],
+          "feedback": {
+            "met": "A sessão exposta não é um caminho confiável para proteger acesso.",
+            "not_yet": "Deixe de depender de quem teve acesso."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.08",
+      "copy": {
+        "en-US": {
+          "prompt": "What follows?",
+          "scene": "Access secured; support provided a reference. Unfamiliar payments remain.",
+          "options": [
+            {
+              "label": "Report payment details and retain the reference"
+            },
+            {
+              "label": "Assume every payment is automatically refunded"
+            },
+            {
+              "label": "Delete all records to clear the account"
+            }
+          ],
+          "help": [
+            "Preserve the facts needed for follow-up."
+          ],
+          "feedback": {
+            "met": "Securing access and resolving past payments are separate tasks.",
+            "not_yet": "Preserve the facts needed for follow-up."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué sigue?",
+          "scene": "Soporte verificado protegió el acceso y dio un folio; quedan pagos desconocidos.",
+          "options": [
+            {
+              "label": "Reportar detalles y conservar el folio"
+            },
+            {
+              "label": "Suponer reembolso automático de todo pago"
+            },
+            {
+              "label": "Borrar registros para limpiar la cuenta"
+            }
+          ],
+          "help": [
+            "Conserva los hechos necesarios para seguimiento."
+          ],
+          "feedback": {
+            "met": "Proteger acceso y resolver pagos previos son tareas distintas.",
+            "not_yet": "Conserva los hechos necesarios para seguimiento."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que vem depois?",
+          "scene": "Suporte verificado protegeu o acesso e deu protocolo; restam pagamentos desconhecidos.",
+          "options": [
+            {
+              "label": "Relatar detalhes e guardar o protocolo"
+            },
+            {
+              "label": "Supor devolução automática de todo pagamento"
+            },
+            {
+              "label": "Apagar registros para limpar a conta"
+            }
+          ],
+          "help": [
+            "Guarde os fatos para acompanhar o caso."
+          ],
+          "feedback": {
+            "met": "Proteger acesso e resolver pagamentos anteriores são tarefas distintas.",
+            "not_yet": "Guarde os fatos para acompanhar o caso."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.payments-digital.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Which response avoids exposure?",
+          "scene": "A stranger promises guaranteed recovery if you first transfer a “rescue fee.”",
+          "options": [
+            {
+              "label": "Give access instead of the fee"
+            },
+            {
+              "label": "Use verified reporting channels"
+            },
+            {
+              "label": "Pay because recovery is guaranteed"
+            }
+          ],
+          "help": [
+            "Check the route before sending more money or access."
+          ],
+          "feedback": {
+            "met": "A recovery promise does not establish a trustworthy service.",
+            "not_yet": "Check the route before sending more money or access."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué respuesta evita nueva exposición?",
+          "scene": "Un desconocido promete recuperación garantizada si transfieres una «comisión de rescate».",
+          "options": [
+            {
+              "label": "Dar acceso en lugar de comisión"
+            },
+            {
+              "label": "Usar canales verificados de reporte"
+            },
+            {
+              "label": "Pagar porque garantiza recuperación"
+            }
+          ],
+          "help": [
+            "Verifica la ruta antes de enviar más dinero o acceso."
+          ],
+          "feedback": {
+            "met": "Prometer recuperación no demuestra que el servicio sea confiable.",
+            "not_yet": "Verifica la ruta antes de enviar más dinero o acceso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual resposta evita nova exposição?",
+          "scene": "Um desconhecido promete recuperação garantida se transferir uma «taxa de resgate».",
+          "options": [
+            {
+              "label": "Dar acesso no lugar da taxa"
+            },
+            {
+              "label": "Usar canais verificados de relato"
+            },
+            {
+              "label": "Pagar porque garante recuperação"
+            }
+          ],
+          "help": [
+            "Confira o caminho antes de enviar mais dinheiro ou acesso."
+          ],
+          "feedback": {
+            "met": "Prometer recuperação não prova que o serviço seja confiável.",
+            "not_yet": "Confira o caminho antes de enviar mais dinheiro ou acesso."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.payments-digital.08",
+      "copy": {
+        "en-US": {
+          "prompt": "Appropriate response?",
+          "scene": "You shared an approval code; no loss is visible yet.",
+          "options": [
+            {
+              "label": "Wait because the balance looks unchanged"
+            },
+            {
+              "label": "Promptly contact verified support about exposure"
+            },
+            {
+              "label": "Ask the recipient to forget the code"
+            }
+          ],
+          "help": [
+            "Respond to the exposed access, not just visible loss."
+          ],
+          "feedback": {
+            "met": "An unchanged balance does not prove that access remains secure.",
+            "not_yet": "Respond to the exposed access, not just visible loss."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué respuesta corresponde?",
+          "scene": "Compartiste un código de autorización; aún no ves pérdidas.",
+          "options": [
+            {
+              "label": "Esperar porque el saldo parece igual"
+            },
+            {
+              "label": "Contactar pronto a soporte verificado por exposición"
+            },
+            {
+              "label": "Pedir que olviden el código"
+            }
+          ],
+          "help": [
+            "Responde al acceso expuesto, no solo a pérdidas visibles."
+          ],
+          "feedback": {
+            "met": "Un saldo igual no demuestra que el acceso siga protegido.",
+            "not_yet": "Responde al acceso expuesto, no solo a pérdidas visibles."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual resposta cabe?",
+          "scene": "Compartilhou um código de aprovação; ainda não vê perdas.",
+          "options": [
+            {
+              "label": "Esperar porque o saldo parece igual"
+            },
+            {
+              "label": "Contatar logo suporte verificado sobre a exposição"
+            },
+            {
+              "label": "Pedir que esqueçam o código"
+            }
+          ],
+          "help": [
+            "Responda ao acesso exposto, não só a perdas visíveis."
+          ],
+          "feedback": {
+            "met": "Um saldo igual não prova que o acesso continua protegido.",
+            "not_yet": "Responda ao acesso exposto, não só a perdas visíveis."
+          }
+        }
+      }
+    }
+  ]
+}

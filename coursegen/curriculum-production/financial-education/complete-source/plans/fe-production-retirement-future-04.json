@@ -1,0 +1,947 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-retirement-future-part-1",
+  "lesson_id": "fe-production-retirement-future-04",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.retirement-future.04"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Compare starting contributions earlier or later under the same explicit projection assumptions.",
+  "title": {
+    "en-US": "Contribution Time",
+    "es-MX": "Tiempo para aportar",
+    "pt-BR": "Tempo para aportar"
+  },
+  "new_concepts": [
+    "finance.prod.retirement-future.04"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Contribution Time\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Tiempo para aportar\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Tempo para aportar\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.retirement-future.04",
+      "observable_action": "Compare starting contributions earlier or later under the same explicit projection assumptions.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "time.compound",
+      "prod.time-inflation.05"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Compare fictional projections in dollars with the same assumptions; starting later leaves fewer contribution periods.",
+    "misconception": "Starting later produces the same projected result without changing contributions, timing or assumed growth.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.retirement-future.04",
+        "context_id": "retirement-future-04-example-01",
+        "supports_from": [],
+        "reasoning": "Earlier deposits add contribution periods and time for assumed growth. A projection illustrates assumptions; it does not guarantee future returns."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.retirement-future.04",
+        "context_id": "retirement-future-04-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Earlier contributions have more periods in this stated model."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.retirement-future.04",
+        "context_id": "retirement-future-04-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The start date changes deposits and time in the model."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.retirement-future.04",
+        "context_id": "retirement-future-04-practice-01",
+        "supports_from": [],
+        "reasoning": "Starting earlier adds a deposit and its assumed growth."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.retirement-future.04",
+        "context_id": "retirement-future-04-practice-02",
+        "supports_from": [],
+        "reasoning": "An illustration cannot guarantee the assumed future path."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.retirement-future.04",
+        "context_id": "retirement-future-04-practice-03",
+        "supports_from": [],
+        "reasoning": "Different deposits and returns prevent isolating the start-date effect."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.retirement-future.04",
+        "context_id": "retirement-future-04-transfer-01",
+        "supports_from": [],
+        "reasoning": "More contribution periods matter even without growth in this model."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.retirement-future.04",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Compare fictional projections in dollars with the same assumptions; starting later leaves fewer contribution periods."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Compara proyecciones ficticias en pesos con iguales supuestos; empezar después deja menos periodos para aportar."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Compare projeções fictícias em reais com iguais hipóteses; começar depois deixa menos períodos para aportar."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Read the assumptions",
+          "line": "Earlier deposits add contribution periods and time for assumed growth. A projection illustrates assumptions; it does not guarantee future returns."
+        },
+        "es-MX": {
+          "prompt": "Lee los supuestos",
+          "line": "Depósitos anteriores agregan periodos de aportación y tiempo para crecimiento supuesto. Una proyección ilustra supuestos; no garantiza rendimientos futuros."
+        },
+        "pt-BR": {
+          "prompt": "Leia as hipóteses",
+          "line": "Depósitos anteriores somam períodos de aporte e tempo para crescimento suposto. Uma projeção ilustra hipóteses; não garante rendimentos futuros."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.04",
+      "visual": {
+        "type": "bar"
+      },
+      "payload": {
+        "data": {
+          "unit": "local",
+          "categories": [
+            {
+              "id": "earlier"
+            },
+            {
+              "id": "later"
+            }
+          ],
+          "series": [
+            {
+              "id": "projected-balance",
+              "values": [
+                364.1,
+                231
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "earlier"
+            },
+            {
+              "id": "later"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "earlier"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Fictional: 100 per period; then 10% growth; no fees. Three periods; later skips the first.",
+          "title": "Projected",
+          "data": {
+            "categories": [
+              {
+                "label": "Earlier"
+              },
+              {
+                "label": "Later"
+              }
+            ],
+            "series": [
+              {
+                "label": "Balance"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Which ends higher?",
+            "options": [
+              {
+                "label": "Earlier"
+              },
+              {
+                "label": "Later"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "Earlier contributions have more periods in this stated model.",
+            "not_yet": "Compare the bars under the same assumptions."
+          },
+          "help": [
+            "Compare the bars under the same assumptions."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Ficticio: 100 por periodo; luego crecimiento 10%; sin comisiones. Tres periodos; después omite el primero.",
+          "title": "Proyectado",
+          "data": {
+            "categories": [
+              {
+                "label": "Antes"
+              },
+              {
+                "label": "Después"
+              }
+            ],
+            "series": [
+              {
+                "label": "Saldo"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Cuál termina mayor?",
+            "options": [
+              {
+                "label": "Antes"
+              },
+              {
+                "label": "Después"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "Aportar antes agrega periodos en este modelo indicado.",
+            "not_yet": "Compara barras bajo los mismos supuestos."
+          },
+          "help": [
+            "Compara barras bajo los mismos supuestos."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Fictício: 100 por período; depois crescimento 10%; sem tarifas. Três períodos; depois pula o primeiro.",
+          "title": "Projetado",
+          "data": {
+            "categories": [
+              {
+                "label": "Antes"
+              },
+              {
+                "label": "Depois"
+              }
+            ],
+            "series": [
+              {
+                "label": "Saldo"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Qual termina maior?",
+            "options": [
+              {
+                "label": "Antes"
+              },
+              {
+                "label": "Depois"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "Aportar antes soma períodos neste modelo dado.",
+            "not_yet": "Compare barras sob as mesmas hipóteses."
+          },
+          "help": [
+            "Compare barras sob as mesmas hipóteses."
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.04",
+      "copy": {
+        "en-US": {
+          "prompt": "What creates the difference?",
+          "scene": "Deposits and assumed growth match; the later starter misses early periods.",
+          "options": [
+            {
+              "label": "Fewer deposits and less growth time"
+            },
+            {
+              "label": "Different arithmetic rules"
+            },
+            {
+              "label": "A guaranteed age penalty"
+            }
+          ],
+          "help": [
+            "Keep assumptions fixed when interpreting the difference."
+          ],
+          "feedback": {
+            "met": "The start date changes deposits and time in the model.",
+            "not_yet": "Keep assumptions fixed when interpreting the difference."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué crea la diferencia?",
+          "scene": "Usan igual depósito regular y crecimiento supuesto; empezar después omite periodos iniciales.",
+          "options": [
+            {
+              "label": "Menos depósitos y tiempo de crecimiento"
+            },
+            {
+              "label": "Reglas aritméticas distintas"
+            },
+            {
+              "label": "Penalización garantizada por edad"
+            }
+          ],
+          "help": [
+            "Mantén supuestos fijos al interpretar la diferencia."
+          ],
+          "feedback": {
+            "met": "La fecha inicial cambia depósitos y tiempo del modelo.",
+            "not_yet": "Mantén supuestos fijos al interpretar la diferencia."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que cria a diferença?",
+          "scene": "Usam igual aporte regular e crescimento suposto; começar depois pula períodos iniciais.",
+          "options": [
+            {
+              "label": "Menos aportes e tempo de crescimento"
+            },
+            {
+              "label": "Regras aritméticas distintas"
+            },
+            {
+              "label": "Multa garantida pela idade"
+            }
+          ],
+          "help": [
+            "Mantenha hipóteses fixas ao interpretar a diferença."
+          ],
+          "feedback": {
+            "met": "A data inicial muda aportes e tempo do modelo.",
+            "not_yet": "Mantenha hipóteses fixas ao interpretar a diferença."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.04",
+      "visual": {
+        "type": "bar"
+      },
+      "payload": {
+        "data": {
+          "unit": "local",
+          "categories": [
+            {
+              "id": "earlier"
+            },
+            {
+              "id": "later"
+            }
+          ],
+          "series": [
+            {
+              "id": "projected-balance",
+              "values": [
+                115.5,
+                55
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "later"
+            },
+            {
+              "id": "earlier"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "earlier"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Fictional: 50 per period; then 10% growth; no fees. Two periods; later skips the first.",
+          "title": "Projected",
+          "data": {
+            "categories": [
+              {
+                "label": "Earlier"
+              },
+              {
+                "label": "Later"
+              }
+            ],
+            "series": [
+              {
+                "label": "Balance"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Which ends higher?",
+            "options": [
+              {
+                "label": "Later"
+              },
+              {
+                "label": "Earlier"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "Starting earlier adds a deposit and its assumed growth.",
+            "not_yet": "Use the displayed comparison, not a promised market result."
+          },
+          "help": [
+            "Use the displayed comparison, not a promised market result."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Ficticio: 50 por periodo; luego crecimiento 10%; sin comisiones. Dos periodos; después omite el primero.",
+          "title": "Proyectado",
+          "data": {
+            "categories": [
+              {
+                "label": "Antes"
+              },
+              {
+                "label": "Después"
+              }
+            ],
+            "series": [
+              {
+                "label": "Saldo"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Cuál termina mayor?",
+            "options": [
+              {
+                "label": "Después"
+              },
+              {
+                "label": "Antes"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "Empezar antes agrega un depósito y su crecimiento supuesto.",
+            "not_yet": "Usa la comparación mostrada, no un resultado de mercado prometido."
+          },
+          "help": [
+            "Usa la comparación mostrada, no un resultado de mercado prometido."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Fictício: 50 por período; depois crescimento 10%; sem tarifas. Dois períodos; depois pula o primeiro.",
+          "title": "Projetado",
+          "data": {
+            "categories": [
+              {
+                "label": "Antes"
+              },
+              {
+                "label": "Depois"
+              }
+            ],
+            "series": [
+              {
+                "label": "Saldo"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Qual termina maior?",
+            "options": [
+              {
+                "label": "Depois"
+              },
+              {
+                "label": "Antes"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "Começar antes soma um aporte e seu crescimento suposto.",
+            "not_yet": "Use a comparação mostrada, não um resultado de mercado prometido."
+          },
+          "help": [
+            "Use a comparação mostrada, não um resultado de mercado prometido."
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Does the projection guarantee income?",
+          "scene": "The model uses constant growth even though actual investments may lose value.",
+          "options": [
+            {
+              "label": "No, its growth is an assumption"
+            },
+            {
+              "label": "Yes, every modeled return must occur"
+            }
+          ],
+          "help": [
+            "Separate the model from uncertain real outcomes."
+          ],
+          "feedback": {
+            "met": "An illustration cannot guarantee the assumed future path.",
+            "not_yet": "Separate the model from uncertain real outcomes."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿La proyección garantiza ingresos?",
+          "scene": "El modelo usa crecimiento constante aunque inversiones reales puedan perder valor.",
+          "options": [
+            {
+              "label": "No, su crecimiento es un supuesto"
+            },
+            {
+              "label": "Sí, todo rendimiento modelado debe ocurrir"
+            }
+          ],
+          "help": [
+            "Distingue el modelo de resultados reales inciertos."
+          ],
+          "feedback": {
+            "met": "Una ilustración no garantiza la trayectoria futura supuesta.",
+            "not_yet": "Distingue el modelo de resultados reales inciertos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A projeção garante renda?",
+          "scene": "O modelo usa crescimento constante mesmo que aplicações reais possam perder valor.",
+          "options": [
+            {
+              "label": "Não, seu crescimento é hipótese"
+            },
+            {
+              "label": "Sim, todo ganho modelado deve ocorrer"
+            }
+          ],
+          "help": [
+            "Separe o modelo de resultados reais incertos."
+          ],
+          "feedback": {
+            "met": "Uma ilustração não garante o caminho futuro suposto.",
+            "not_yet": "Separe o modelo de resultados reais incertos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.retirement-future.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Is this comparison controlled?",
+          "scene": "The later-start model uses much larger contributions and a different return assumption.",
+          "options": [
+            {
+              "label": "No, several assumptions changed"
+            },
+            {
+              "label": "Yes, only the start date matters"
+            }
+          ],
+          "help": [
+            "Hold relevant assumptions constant for the stated comparison."
+          ],
+          "feedback": {
+            "met": "Different deposits and returns prevent isolating the start-date effect.",
+            "not_yet": "Hold relevant assumptions constant for the stated comparison."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿La comparación está controlada?",
+          "scene": "El modelo que empieza después usa aportaciones mucho mayores y otro rendimiento supuesto.",
+          "options": [
+            {
+              "label": "No, cambiaron varios supuestos"
+            },
+            {
+              "label": "Sí, solo importa la fecha inicial"
+            }
+          ],
+          "help": [
+            "Mantén constantes supuestos relevantes para esa comparación."
+          ],
+          "feedback": {
+            "met": "Depósitos y rendimientos distintos impiden aislar el efecto del inicio.",
+            "not_yet": "Mantén constantes supuestos relevantes para esa comparación."
+          }
+        },
+        "pt-BR": {
+          "prompt": "A comparação está controlada?",
+          "scene": "O modelo que começa depois usa aportes muito maiores e outro ganho suposto.",
+          "options": [
+            {
+              "label": "Não, mudaram várias hipóteses"
+            },
+            {
+              "label": "Sim, só importa a data inicial"
+            }
+          ],
+          "help": [
+            "Mantenha constantes hipóteses relevantes para essa comparação."
+          ],
+          "feedback": {
+            "met": "Aportes e ganhos distintos impedem isolar o efeito do início.",
+            "not_yet": "Mantenha constantes hipóteses relevantes para essa comparação."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "visual.chart.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.retirement-future.04",
+      "visual": {
+        "type": "bar"
+      },
+      "payload": {
+        "data": {
+          "unit": "local",
+          "categories": [
+            {
+              "id": "earlier"
+            },
+            {
+              "id": "later"
+            }
+          ],
+          "series": [
+            {
+              "id": "projected-balance",
+              "values": [
+                80,
+                40
+              ]
+            }
+          ]
+        },
+        "question": {
+          "options": [
+            {
+              "id": "earlier"
+            },
+            {
+              "id": "later"
+            }
+          ]
+        }
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "earlier"
+        ]
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Fictional: 20 per period; no growth or fees. Four periods; later skips the first two.",
+          "title": "Projected",
+          "data": {
+            "categories": [
+              {
+                "label": "Earlier"
+              },
+              {
+                "label": "Later"
+              }
+            ],
+            "series": [
+              {
+                "label": "Balance"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Which ends higher?",
+            "options": [
+              {
+                "label": "Earlier"
+              },
+              {
+                "label": "Later"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "More contribution periods matter even without growth in this model.",
+            "not_yet": "Compare the number of deposits under these changed assumptions."
+          },
+          "help": [
+            "Compare the number of deposits under these changed assumptions."
+          ]
+        },
+        "es-MX": {
+          "prompt": "Ficticio: 20 por periodo; sin crecimiento ni comisiones. Cuatro periodos; después omite los primeros dos.",
+          "title": "Proyectado",
+          "data": {
+            "categories": [
+              {
+                "label": "Antes"
+              },
+              {
+                "label": "Después"
+              }
+            ],
+            "series": [
+              {
+                "label": "Saldo"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "¿Cuál termina mayor?",
+            "options": [
+              {
+                "label": "Antes"
+              },
+              {
+                "label": "Después"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "Más periodos de aportación importan incluso sin crecimiento aquí.",
+            "not_yet": "Compara cuántos depósitos hay bajo estos supuestos distintos."
+          },
+          "help": [
+            "Compara cuántos depósitos hay bajo estos supuestos distintos."
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Fictício: 20 por período; sem crescimento nem tarifas. Quatro períodos; depois pula os primeiros dois.",
+          "title": "Projetado",
+          "data": {
+            "categories": [
+              {
+                "label": "Antes"
+              },
+              {
+                "label": "Depois"
+              }
+            ],
+            "series": [
+              {
+                "label": "Saldo"
+              }
+            ]
+          },
+          "question": {
+            "prompt": "Qual termina maior?",
+            "options": [
+              {
+                "label": "Antes"
+              },
+              {
+                "label": "Depois"
+              }
+            ]
+          },
+          "feedback": {
+            "met": "Mais períodos de aporte importam mesmo sem crescimento aqui.",
+            "not_yet": "Compare quantos aportes há sob essas hipóteses distintas."
+          },
+          "help": [
+            "Compare quantos aportes há sob essas hipóteses distintas."
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,797 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-credit-products-part-2",
+  "lesson_id": "fe-production-credit-products-07",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.credit-products.07"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Distinguish an overdraft facility from money owned in an account.",
+  "title": {
+    "en-US": "Overdraft Borrowing",
+    "es-MX": "Sobregiro es dinero prestado",
+    "pt-BR": "Cheque especial é dinheiro emprestado"
+  },
+  "new_concepts": [
+    "finance.prod.credit-products.07"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Overdraft Borrowing\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Sobregiro es dinero prestado\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Cheque especial é dinheiro emprestado\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.credit-products.07",
+      "observable_action": "Distinguish an overdraft facility from money owned in an account.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.accounts-records.02",
+      "prod.credit-mechanics.01"
+    ],
+    "retrieval_skills": [],
+    "relevance": "An overdraft limit extends borrowing capacity; it does not add money you own. Check how the account display combines them.",
+    "misconception": "The amount displayed as available including overdraft is entirely owned money.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.credit-products.07",
+        "context_id": "credit-products-07-example-01",
+        "supports_from": [],
+        "reasoning": "Read the owned balance separately from overdraft capacity. Using the facility creates debt under its stated fees and interest terms."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.credit-products.07",
+        "context_id": "credit-products-07-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Only the own-balance field represents money already owned."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.credit-products.07",
+        "context_id": "credit-products-07-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The purchase exceeds own funds by thirty."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.credit-products.07",
+        "context_id": "credit-products-07-practice-01",
+        "supports_from": [],
+        "reasoning": "A larger borrowing limit does not add owned savings."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.credit-products.07",
+        "context_id": "credit-products-07-practice-02",
+        "supports_from": [],
+        "reasoning": "The displayed limit does not disclose the cost of borrowing."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.credit-products.07",
+        "context_id": "credit-products-07-practice-03",
+        "supports_from": [],
+        "reasoning": "The unused limit is capacity, not an amount already borrowed."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.credit-products.07",
+        "context_id": "credit-products-07-transfer-01",
+        "supports_from": [],
+        "reasoning": "Combined availability does not reveal how much is owned cash."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.credit-products.07",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "An overdraft limit extends borrowing capacity; it does not add money you own. Check how the account display combines them."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Límite de sobregiro amplía capacidad de préstamo; no agrega dinero propio. Revisa cómo pantalla de cuenta los combina."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Limite do cheque especial amplia capacidade de empréstimo; não soma dinheiro próprio. Veja como tela da conta os combina."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Separate funds from credit",
+          "line": "Read the owned balance separately from overdraft capacity. Using the facility creates debt under its stated fees and interest terms."
+        },
+        "es-MX": {
+          "prompt": "Separa fondos de crédito",
+          "line": "Lee saldo propio separado de capacidad de sobregiro. Usarla crea deuda bajo cargos e intereses indicados."
+        },
+        "pt-BR": {
+          "prompt": "Separe fundos de crédito",
+          "line": "Leia saldo próprio separado do limite do cheque especial. Usá-lo cria dívida sob taxas e juros dados."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Which amount is owned money?",
+          "scene": "Fictional display: own balance 80; unused overdraft 200; total available 280.",
+          "options": [
+            {
+              "label": "Overdraft 200"
+            },
+            {
+              "label": "Own balance 80"
+            },
+            {
+              "label": "Total available 280"
+            }
+          ],
+          "help": [
+            "Unused borrowing capacity is not a deposit balance."
+          ],
+          "feedback": {
+            "met": "Only the own-balance field represents money already owned.",
+            "not_yet": "Unused borrowing capacity is not a deposit balance."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué monto es dinero propio?",
+          "scene": "Pantalla ficticia: saldo propio 80; sobregiro sin usar 200; total disponible 280.",
+          "options": [
+            {
+              "label": "Sobregiro 200"
+            },
+            {
+              "label": "Saldo propio 80"
+            },
+            {
+              "label": "Total disponible 280"
+            }
+          ],
+          "help": [
+            "Capacidad de préstamo sin usar no es saldo depositado."
+          ],
+          "feedback": {
+            "met": "Solo saldo propio representa dinero ya poseído.",
+            "not_yet": "Capacidad de préstamo sin usar no es saldo depositado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que valor é dinheiro próprio?",
+          "scene": "Tela fictícia: saldo próprio 80; cheque especial sem uso 200; total disponível 280.",
+          "options": [
+            {
+              "label": "Cheque especial 200"
+            },
+            {
+              "label": "Saldo próprio 80"
+            },
+            {
+              "label": "Total disponível 280"
+            }
+          ],
+          "help": [
+            "Capacidade de empréstimo sem uso não é saldo depositado."
+          ],
+          "feedback": {
+            "met": "Só saldo próprio representa dinheiro já possuído.",
+            "not_yet": "Capacidade de empréstimo sem uso não é saldo depositado."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.07",
+      "copy": {
+        "en-US": {
+          "prompt": "How much of this purchase requires borrowing?",
+          "scene": "Fictional terms use own funds first; own balance 60; purchase 90; overdraft covers the gap; ignore later charges.",
+          "options": [
+            {
+              "label": "0"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "90"
+            }
+          ],
+          "help": [
+            "Subtract own funds from the purchase amount."
+          ],
+          "feedback": {
+            "met": "The purchase exceeds own funds by thirty.",
+            "not_yet": "Subtract own funds from the purchase amount."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto de compra requiere préstamo?",
+          "scene": "Términos ficticios usan fondos propios primero; saldo propio 60; compra 90; sobregiro cubre faltante; ignora cargos posteriores.",
+          "options": [
+            {
+              "label": "0"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "90"
+            }
+          ],
+          "help": [
+            "Resta fondos propios del monto de compra."
+          ],
+          "feedback": {
+            "met": "Compra supera fondos propios por treinta.",
+            "not_yet": "Resta fondos propios del monto de compra."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto da compra exige empréstimo?",
+          "scene": "Termos fictícios usam fundos próprios primeiro; saldo próprio 60; compra 90; cheque especial cobre falta; ignore encargos depois.",
+          "options": [
+            {
+              "label": "0"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "90"
+            }
+          ],
+          "help": [
+            "Subtraia fundos próprios do valor da compra."
+          ],
+          "feedback": {
+            "met": "Compra supera fundos próprios em trinta.",
+            "not_yet": "Subtraia fundos próprios do valor da compra."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          60,
+          90
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 1
+            },
+            {
+              "input": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Does increasing this limit increase savings?",
+          "scene": "Only the approved overdraft limit rises; no deposit or income arrives.",
+          "options": [
+            {
+              "label": "Yes, displayed availability is all owned"
+            },
+            {
+              "label": "No"
+            },
+            {
+              "label": "Yes, limit equals savings"
+            }
+          ],
+          "help": [
+            "Track deposits separately from permission to borrow."
+          ],
+          "feedback": {
+            "met": "A larger borrowing limit does not add owned savings.",
+            "not_yet": "Track deposits separately from permission to borrow."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Subir límite aumenta ahorro?",
+          "scene": "Solo sube límite aprobado de sobregiro; no llega depósito ni ingreso.",
+          "options": [
+            {
+              "label": "Sí, todo disponible es propio"
+            },
+            {
+              "label": "No"
+            },
+            {
+              "label": "Sí, límite equivale a ahorro"
+            }
+          ],
+          "help": [
+            "Sigue depósitos por separado del permiso de préstamo."
+          ],
+          "feedback": {
+            "met": "Límite de préstamo mayor no agrega ahorro propio.",
+            "not_yet": "Sigue depósitos por separado del permiso de préstamo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Subir limite aumenta poupança?",
+          "scene": "Só sobe limite aprovado do cheque especial; não chega depósito nem renda.",
+          "options": [
+            {
+              "label": "Sim, todo disponível é próprio"
+            },
+            {
+              "label": "Não"
+            },
+            {
+              "label": "Sim, limite equivale à poupança"
+            }
+          ],
+          "help": [
+            "Acompanhe depósitos em separado da permissão de empréstimo."
+          ],
+          "feedback": {
+            "met": "Limite de empréstimo maior não soma poupança própria.",
+            "not_yet": "Acompanhe depósitos em separado da permissão de empréstimo."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.07",
+      "copy": {
+        "en-US": {
+          "prompt": "What needs checking beforehand?",
+          "scene": "The overdraft amount is shown, but its fees, interest and repayment terms are missing.",
+          "options": [
+            {
+              "label": "Assume it is free income"
+            },
+            {
+              "label": "The credit limit"
+            },
+            {
+              "label": "Borrowing costs and repayment terms"
+            }
+          ],
+          "help": [
+            "Read the facility’s actual cost and repayment conditions."
+          ],
+          "feedback": {
+            "met": "The displayed limit does not disclose the cost of borrowing.",
+            "not_yet": "Read the facility’s actual cost and repayment conditions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué revisar antes de usar facilidad?",
+          "scene": "Monto de sobregiro aparece, pero faltan cargos, intereses y términos de pago.",
+          "options": [
+            {
+              "label": "Suponer ingreso gratuito"
+            },
+            {
+              "label": "El límite de crédito"
+            },
+            {
+              "label": "Costos de préstamo y pago"
+            }
+          ],
+          "help": [
+            "Lee costo real y condiciones de pago de facilidad."
+          ],
+          "feedback": {
+            "met": "Límite mostrado no revela costo del préstamo.",
+            "not_yet": "Lee costo real y condiciones de pago de facilidad."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que conferir antes de usar limite?",
+          "scene": "Valor do cheque especial aparece, mas faltam taxas, juros e termos de pagamento.",
+          "options": [
+            {
+              "label": "Supor renda gratuita"
+            },
+            {
+              "label": "O limite de crédito"
+            },
+            {
+              "label": "Custos de empréstimo e pagamento"
+            }
+          ],
+          "help": [
+            "Leia custo real e condições de pagamento do limite."
+          ],
+          "feedback": {
+            "met": "Limite mostrado não revela custo do empréstimo.",
+            "not_yet": "Leia custo real e condições de pagamento do limite."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.credit-products.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Is unused credit already debt?",
+          "scene": "Fictional account shows an unused approved facility; no borrowing has occurred.",
+          "options": [
+            {
+              "label": "No, it is capacity"
+            },
+            {
+              "label": "Yes, it is also savings"
+            },
+            {
+              "label": "Yes, the entire limit is owed"
+            }
+          ],
+          "help": [
+            "Distinguish owned funds, unused capacity and debt actually used."
+          ],
+          "feedback": {
+            "met": "The unused limit is capacity, not an amount already borrowed.",
+            "not_yet": "Distinguish owned funds, unused capacity and debt actually used."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Límite sin usar ya es deuda tomada?",
+          "scene": "Cuenta ficticia muestra facilidad aprobada sin usar; no hubo préstamo utilizado.",
+          "options": [
+            {
+              "label": "No, es capacidad"
+            },
+            {
+              "label": "Sí, también es ahorro"
+            },
+            {
+              "label": "Sí, se debe todo límite"
+            }
+          ],
+          "help": [
+            "Distingue fondos propios, capacidad sin usar y deuda utilizada."
+          ],
+          "feedback": {
+            "met": "Límite sin usar es capacidad, no monto ya prestado.",
+            "not_yet": "Distingue fondos propios, capacidad sin usar y deuda utilizada."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Limite sem uso já é dívida tomada?",
+          "scene": "Conta fictícia mostra limite aprovado sem uso; não houve empréstimo utilizado.",
+          "options": [
+            {
+              "label": "Não, é capacidade"
+            },
+            {
+              "label": "Sim, também é poupança"
+            },
+            {
+              "label": "Sim, deve todo limite"
+            }
+          ],
+          "help": [
+            "Separe fundos próprios, capacidade sem uso e dívida utilizada."
+          ],
+          "feedback": {
+            "met": "Limite sem uso é capacidade, não valor já emprestado.",
+            "not_yet": "Separe fundos próprios, capacidade sem uso e dívida utilizada."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.credit-products.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Does this prove owned funds cover bills?",
+          "scene": "Total available includes overdraft; the own-balance portion is not shown.",
+          "options": [
+            {
+              "label": "No, separate the own balance"
+            },
+            {
+              "label": "Yes, credit is income"
+            },
+            {
+              "label": "Yes, available always means owned"
+            }
+          ],
+          "help": [
+            "Separate actual funds from borrowing capacity before planning the bill."
+          ],
+          "feedback": {
+            "met": "Combined availability does not reveal how much is owned cash.",
+            "not_yet": "Separate actual funds from borrowing capacity before planning the bill."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Pantalla prueba fondos propios para cuenta?",
+          "scene": "Total disponible incluye sobregiro; no muestra parte de saldo propio.",
+          "options": [
+            {
+              "label": "No, separar saldo propio"
+            },
+            {
+              "label": "Sí, crédito es ingreso"
+            },
+            {
+              "label": "Sí, disponible siempre significa propio"
+            }
+          ],
+          "help": [
+            "Separa fondos reales de capacidad de préstamo antes de planear cuenta."
+          ],
+          "feedback": {
+            "met": "Disponible combinado no revela cuánto es efectivo propio.",
+            "not_yet": "Separa fondos reales de capacidad de préstamo antes de planear cuenta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Tela prova fundos próprios para conta?",
+          "scene": "Total disponível inclui cheque especial; não mostra parte de saldo próprio.",
+          "options": [
+            {
+              "label": "Não, separar saldo próprio"
+            },
+            {
+              "label": "Sim, crédito é renda"
+            },
+            {
+              "label": "Sim, disponível sempre significa próprio"
+            }
+          ],
+          "help": [
+            "Separe fundos reais de capacidade de empréstimo antes de planejar conta."
+          ],
+          "feedback": {
+            "met": "Disponível combinado não revela quanto é dinheiro próprio.",
+            "not_yet": "Separe fundos reais de capacidade de empréstimo antes de planejar conta."
+          }
+        }
+      }
+    }
+  ]
+}

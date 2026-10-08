@@ -1,5 +1,6 @@
 import { useId } from 'react';
 import { Button, Copy } from '../design/controls';
+import type { SessionNarrative } from './session/types';
 import '../design/tokens.css';
 import '../design/system.css';
 import './sessionEnd.css';
@@ -44,6 +45,11 @@ export interface SessionEndCopy {
   safetyBody: string;
   nextLabel: string;
   backToPath: string;
+  /** the closing summary labels. Topic names are data, rendered beside them. */
+  summaryTopicsLabel: string;
+  summaryWorkedThrough: string;
+  summaryStillTricky: string;
+  summaryXp: string;
 }
 
 export function SessionEndChoice({ copy, locale, dark, disabled = false, onChoose }: {
@@ -81,17 +87,24 @@ export function closingLine(copy: SessionEndCopy, script: ClosingScript, effort:
   }
 }
 
-export function SessionClosing({ copy, locale, dark, script, effort, topic, onBack }: {
+export function SessionClosing({ copy, locale, dark, script, effort, topic, summary = null, xp = null, onBack }: {
   copy: SessionEndCopy;
   locale: string;
   dark: boolean;
   script: ClosingScript;
   effort: EffortAct | null;
   topic: string | null;
+  /** the learner's own summary, read from their session. Null until read, or when nothing to say. */
+  summary?: SessionNarrative | null;
+  /** the XP this session earned. Null until read; 0 or less is not shown. */
+  xp?: number | null;
   onBack: () => void;
 }) {
   const line = closingLine(copy, script, effort, topic);
   const titleId = useId();
+  // A safety stop shows nothing that invites review of the lesson: no topic, no numbers, no summary.
+  const showSummary = script !== 'safety_stop' && summary !== null
+    && (summary.topics.length > 0 || (summary.gradedTotal ?? 0) > 0);
   return <section className="lf-rebuild lf-session-closing" lang={locale} data-theme={dark ? 'dark' : 'light'}
     data-screen="mentor-session-closing" data-closing-script={script} aria-labelledby={titleId}>
     <h2 id={titleId} data-copy-role="heading">{line.title}</h2>
@@ -102,6 +115,17 @@ export function SessionClosing({ copy, locale, dark, script, effort, topic, onBa
       {copy.nextLabel}{' '}
       <strong data-copy-role="data">{line.topic}</strong>
     </p>}
+    {showSummary ? <div className="lf-session-closing-summary">
+      {summary!.topics.length > 0 ? <p data-copy-role="body">
+        {copy.summaryTopicsLabel}{' '}
+        <strong data-copy-role="data">{summary!.topics.join(', ')}</strong>
+      </p> : null}
+      {summary!.struggledTopic !== null ? <p data-copy-role="body">
+        {summary!.struggleResolved ? copy.summaryWorkedThrough : copy.summaryStillTricky}{' '}
+        <strong data-copy-role="data">{summary!.struggledTopic}</strong>
+      </p> : null}
+      {xp !== null && xp > 0 ? <p data-copy-role="body">{copy.summaryXp.replace('{n}', String(xp))}</p> : null}
+    </div> : null}
     <Button variant="accent" onClick={onBack}>{copy.backToPath}</Button>
   </section>;
 }

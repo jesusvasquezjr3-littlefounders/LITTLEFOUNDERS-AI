@@ -1,0 +1,24 @@
+{
+  "protocol": "kr.v1",
+  "hostToGame": {
+    "lf.init": ["sessionRef", "locale", "mentor", "muted", "reducedMotion", "startLabel", "save", "start"],
+    "lf.start": ["start"],
+    "lf.pause": [],
+    "lf.resume": [],
+    "lf.mute": ["muted"],
+    "lf.end": []
+  },
+  "gameToHost": {
+    "kr.ready": ["build"],
+    "kr.runStarted": ["runKey", "mode", "trackId", "character"],
+    "kr.runFinished": ["runKey", "mode", "trackId", "character", "kartBody", "speedClass", "finished", "finishMs", "bestLapMs", "lapMs", "rank", "lens"],
+    "kr.runEnded": ["runKey"],
+    "kr.save": ["revision", "data"],
+    "kr.pauseRequested": [],
+    "kr.exitRequested": [],
+    "kr.error": ["code"]
+  },
+  "startSpec": ["mode", "trackId", "character", "speedClass"],
+  "lens": ["itemHoldMs", "boxesPassedWhileHolding", "itemsUsed", "driftReleases", "recoveries"],
+  "driftReleases": ["t0", "t1", "t2", "t3"]
+}

@@ -1,0 +1,854 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-solid-02-a-plan-that-fits",
+  "lesson_id": "fe-solid-10-revise-a-plan",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.plan.revise"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Compare planned and actual spending, locate the change, and revise a controllable future amount without hiding a shortfall.",
+  "title": {
+    "en-US": "Revise a plan",
+    "es-MX": "Ajusta un plan",
+    "pt-BR": "Ajuste um plano"
+  },
+  "new_concepts": [
+    "finance.plan.revise"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Revise a plan\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Ajusta un plan\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Ajuste um plano\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "plan.revise",
+      "observable_action": "Compare planned and actual spending, locate the change, and revise a controllable future amount without hiding a shortfall.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "cash.balance",
+      "cash.reserved",
+      "plan.priority",
+      "plan.uncertain-income",
+      "plan.periodic"
+    ],
+    "retrieval_skills": [],
+    "relevance": "A plan is a forecast, not a promise. Actual payments show what needs changing next.",
+    "misconception": "Treating a budget as a moral score or changing the record to make the plan appear successful.",
+    "numeracy_support": "Subtract visible whole amounts; distinguish a completed expense from an optional future payment.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "plan.revise",
+        "context_id": "revise-a-plan-example-01",
+        "supports_from": [],
+        "reasoning": "Transport was planned at 40 but cost 50. The extra 10 reduces money available for other spending."
+      },
+      {
+        "segment_id": "example-02",
+        "skill_id": "plan.revise",
+        "context_id": "revise-a-plan-example-02",
+        "supports_from": [],
+        "reasoning": "An optional purchase can be reduced or delayed. Record the real transport payment to keep the balance accurate."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "plan.revise",
+        "context_id": "revise-a-plan-guided-01",
+        "supports_from": [
+          "example-02"
+        ],
+        "reasoning": "The difference measures the extra spending."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "plan.revise",
+        "context_id": "revise-a-plan-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "A reliable record preserves what actually happened."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "plan.revise",
+        "context_id": "revise-a-plan-practice-01",
+        "supports_from": [],
+        "reasoning": "The unplaced order is still a controllable future decision."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "plan.revise",
+        "context_id": "revise-a-plan-practice-02",
+        "supports_from": [],
+        "reasoning": "A real shortfall needs action beyond rearranging labels."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "plan.revise",
+        "context_id": "revise-a-plan-practice-03",
+        "supports_from": [],
+        "reasoning": "Repeated actual costs give evidence for a better forecast."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "plan.revise",
+        "context_id": "revise-a-plan-transfer-01",
+        "supports_from": [],
+        "reasoning": "The revised optional amount reflects the real extra cost."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "plan.revise",
+      "fresh_context": "Apply this skill in a later integrated decision with a different constraint."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "A plan is a forecast, not a promise. Actual payments show what needs changing next."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Un plan es una previsión, no una promesa. Los pagos reales muestran qué ajustar después."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Um plano é uma previsão, não uma promessa. Os pagamentos reais mostram o que ajustar depois."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Plan and actual payment",
+          "line": "Transport was planned at 40 but cost 50. The extra 10 reduces money available for other spending."
+        },
+        "es-MX": {
+          "prompt": "Plan y pago real",
+          "line": "El transporte estaba previsto en 40, pero costó 50. Los 10 extra reducen el dinero para otros gastos."
+        },
+        "pt-BR": {
+          "prompt": "Plano e pagamento real",
+          "line": "O transporte estava previsto em 40, mas custou 50. Os 10 extras reduzem o dinheiro para outros gastos."
+        }
+      }
+    },
+    {
+      "id": "example-02",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Change what is still possible",
+          "line": "An optional purchase can be reduced or delayed. Record the real transport payment to keep the balance accurate."
+        },
+        "es-MX": {
+          "prompt": "Cambia lo que aún puedes",
+          "line": "Una compra opcional puede reducirse o aplazarse. Conserva el pago real de transporte para que el saldo sea correcto."
+        },
+        "pt-BR": {
+          "prompt": "Mude o que ainda pode",
+          "line": "Uma compra opcional pode ser reduzida ou adiada. Mantenha o pagamento real de transporte para que o saldo fique correto."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.plan.revise",
+      "copy": {
+        "en-US": {
+          "prompt": "How much more was paid?",
+          "scene": "Transport was planned at 40 and actually cost 50.",
+          "options": [
+            {
+              "label": "50"
+            },
+            {
+              "label": "10"
+            },
+            {
+              "label": "40"
+            }
+          ],
+          "help": [
+            "Compare actual cost with planned cost, not with zero."
+          ],
+          "feedback": {
+            "met": "The difference measures the extra spending.",
+            "not_yet": "Compare actual cost with planned cost, not with zero."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto más se pagó?",
+          "scene": "El transporte estaba previsto en 40 y realmente costó 50.",
+          "options": [
+            {
+              "label": "50"
+            },
+            {
+              "label": "10"
+            },
+            {
+              "label": "40"
+            }
+          ],
+          "help": [
+            "Compara el costo real con el previsto, no con cero."
+          ],
+          "feedback": {
+            "met": "La diferencia mide el gasto adicional.",
+            "not_yet": "Compara el costo real con el previsto, no con cero."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto mais foi pago?",
+          "scene": "O transporte estava previsto em 40 e realmente custou 50.",
+          "options": [
+            {
+              "label": "50"
+            },
+            {
+              "label": "10"
+            },
+            {
+              "label": "40"
+            }
+          ],
+          "help": [
+            "Compare o custo real com o previsto, não com zero."
+          ],
+          "feedback": {
+            "met": "A diferença mede o gasto adicional.",
+            "not_yet": "Compare o custo real com o previsto, não com zero."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          40,
+          50
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 1
+            },
+            {
+              "input": 0
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.plan.revise",
+      "copy": {
+        "en-US": {
+          "prompt": "Which record is useful?",
+          "scene": "The real transport payment was higher than planned.",
+          "options": [
+            {
+              "label": "Keep the real payment and revise"
+            },
+            {
+              "label": "Replace it with the planned amount"
+            },
+            {
+              "label": "Remove the payment from the record"
+            }
+          ],
+          "help": [
+            "Changing a record does not return spent money."
+          ],
+          "feedback": {
+            "met": "A reliable record preserves what actually happened.",
+            "not_yet": "Changing a record does not return spent money."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué registro sirve?",
+          "scene": "El pago real de transporte fue mayor que el previsto.",
+          "options": [
+            {
+              "label": "Conservar el pago real y ajustar"
+            },
+            {
+              "label": "Cambiarlo por el monto previsto"
+            },
+            {
+              "label": "Borrar el pago del registro"
+            }
+          ],
+          "help": [
+            "Cambiar un registro no devuelve el dinero gastado."
+          ],
+          "feedback": {
+            "met": "Un registro fiable conserva lo que realmente ocurrió.",
+            "not_yet": "Cambiar un registro no devuelve el dinero gastado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual registro é útil?",
+          "scene": "O pagamento real de transporte foi maior que o previsto.",
+          "options": [
+            {
+              "label": "Manter o pagamento real e ajustar"
+            },
+            {
+              "label": "Trocá-lo pelo valor previsto"
+            },
+            {
+              "label": "Apagar o pagamento do registro"
+            }
+          ],
+          "help": [
+            "Mudar um registro não devolve o dinheiro gasto."
+          ],
+          "feedback": {
+            "met": "Um registro confiável mantém o que realmente aconteceu.",
+            "not_yet": "Mudar um registro não devolve o dinheiro gasto."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.plan.revise",
+      "copy": {
+        "en-US": {
+          "prompt": "What can still change?",
+          "scene": "A necessary repair is already paid. An optional decoration order has not been placed.",
+          "options": [
+            {
+              "label": "The old starting balance"
+            },
+            {
+              "label": "The completed repair amount"
+            },
+            {
+              "label": "The optional future order"
+            }
+          ],
+          "help": [
+            "Separate completed events from choices still open."
+          ],
+          "feedback": {
+            "met": "The unplaced order is still a controllable future decision.",
+            "not_yet": "Separate completed events from choices still open."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué todavía puede cambiar?",
+          "scene": "Una reparación necesaria ya está pagada. Un pedido decorativo opcional aún no se hace.",
+          "options": [
+            {
+              "label": "El saldo inicial anterior"
+            },
+            {
+              "label": "El monto de la reparación pagada"
+            },
+            {
+              "label": "El pedido opcional futuro"
+            }
+          ],
+          "help": [
+            "Separa los hechos realizados de las decisiones aún abiertas."
+          ],
+          "feedback": {
+            "met": "El pedido no realizado sigue siendo una decisión controlable.",
+            "not_yet": "Separa los hechos realizados de las decisiones aún abiertas."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que ainda pode mudar?",
+          "scene": "Um conserto necessário já foi pago. Um pedido decorativo opcional ainda não foi feito.",
+          "options": [
+            {
+              "label": "O saldo inicial anterior"
+            },
+            {
+              "label": "O valor do conserto pago"
+            },
+            {
+              "label": "O pedido opcional futuro"
+            }
+          ],
+          "help": [
+            "Separe os fatos realizados das decisões ainda abertas."
+          ],
+          "feedback": {
+            "met": "O pedido não feito ainda é uma decisão controlável.",
+            "not_yet": "Separe os fatos realizados das decisões ainda abertas."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-2"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.plan.revise",
+      "copy": {
+        "en-US": {
+          "prompt": "What does this shortfall mean?",
+          "scene": "Necessary payments exceed the money available.",
+          "options": [
+            {
+              "label": "A perfect chart creates more money"
+            },
+            {
+              "label": "The plan needs another feasible change"
+            },
+            {
+              "label": "The record should hide a payment"
+            }
+          ],
+          "help": [
+            "A plan reveals constraints; it cannot create resources."
+          ],
+          "feedback": {
+            "met": "A real shortfall needs action beyond rearranging labels.",
+            "not_yet": "A plan reveals constraints; it cannot create resources."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué significa este faltante?",
+          "scene": "Todos los pagos restantes son necesarios y superan el dinero disponible.",
+          "options": [
+            {
+              "label": "Una gráfica perfecta crea dinero"
+            },
+            {
+              "label": "El plan necesita otro cambio viable"
+            },
+            {
+              "label": "El registro debe ocultar un pago"
+            }
+          ],
+          "help": [
+            "Un plan muestra límites; no puede crear recursos."
+          ],
+          "feedback": {
+            "met": "Un faltante real necesita algo más que cambiar etiquetas.",
+            "not_yet": "Un plan muestra límites; no puede crear recursos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que significa essa falta?",
+          "scene": "Todos os pagamentos restantes são necessários e superam o dinheiro disponível.",
+          "options": [
+            {
+              "label": "Um gráfico perfeito cria dinheiro"
+            },
+            {
+              "label": "O plano precisa de outra mudança viável"
+            },
+            {
+              "label": "O registro deve ocultar um pagamento"
+            }
+          ],
+          "help": [
+            "Um plano mostra limites; não pode criar recursos."
+          ],
+          "feedback": {
+            "met": "Uma falta real precisa de mais do que mudar rótulos.",
+            "not_yet": "Um plano mostra limites; não pode criar recursos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.plan.revise",
+      "copy": {
+        "en-US": {
+          "prompt": "What is the useful lesson?",
+          "scene": "A usual bill has exceeded the estimate repeatedly.",
+          "options": [
+            {
+              "label": "Stop recording that bill"
+            },
+            {
+              "label": "Repeat the same estimate forever"
+            },
+            {
+              "label": "Update the estimate using the evidence"
+            }
+          ],
+          "help": [
+            "Use the pattern to improve the next plan."
+          ],
+          "feedback": {
+            "met": "Repeated actual costs give evidence for a better forecast.",
+            "not_yet": "Use the pattern to improve the next plan."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué aprendizaje sirve?",
+          "scene": "Un recibo habitual ha superado lo estimado repetidamente.",
+          "options": [
+            {
+              "label": "Dejar de registrar ese recibo"
+            },
+            {
+              "label": "Repetir siempre la misma estimación"
+            },
+            {
+              "label": "Actualizar la estimación con los datos"
+            }
+          ],
+          "help": [
+            "Usa el patrón para mejorar el próximo plan."
+          ],
+          "feedback": {
+            "met": "Los costos reales repetidos ayudan a mejorar la previsión.",
+            "not_yet": "Usa el patrón para mejorar el próximo plan."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual aprendizado é útil?",
+          "scene": "Uma conta habitual superou a estimativa repetidamente.",
+          "options": [
+            {
+              "label": "Parar de registrar essa conta"
+            },
+            {
+              "label": "Repetir sempre a mesma estimativa"
+            },
+            {
+              "label": "Atualizar a estimativa com os dados"
+            }
+          ],
+          "help": [
+            "Use o padrão para melhorar o próximo plano."
+          ],
+          "feedback": {
+            "met": "Os custos reais repetidos ajudam a melhorar a previsão.",
+            "not_yet": "Use o padrão para melhorar o próximo plano."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-3"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.plan.revise",
+      "copy": {
+        "en-US": {
+          "prompt": "What is the new optional spending limit?",
+          "scene": "You had 50 for optional plans. An essential cost used an extra 20; no extra income arrived.",
+          "options": [
+            {
+              "label": "50"
+            },
+            {
+              "label": "70"
+            },
+            {
+              "label": "30"
+            }
+          ],
+          "help": [
+            "Protect the essential payment and recalculate what remains."
+          ],
+          "feedback": {
+            "met": "The revised optional amount reflects the real extra cost.",
+            "not_yet": "Protect the essential payment and recalculate what remains."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es el nuevo límite de gasto opcional?",
+          "scene": "Tenías 50 para planes opcionales. Un gasto necesario usó 20 extra; no llegó más ingreso.",
+          "options": [
+            {
+              "label": "50"
+            },
+            {
+              "label": "70"
+            },
+            {
+              "label": "30"
+            }
+          ],
+          "help": [
+            "Protege el pago necesario y vuelve a calcular lo que queda."
+          ],
+          "feedback": {
+            "met": "El monto opcional ajustado refleja el costo adicional real.",
+            "not_yet": "Protege el pago necesario y vuelve a calcular lo que queda."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é o novo limite de gasto opcional?",
+          "scene": "Você tinha 50 para planos opcionais. Um gasto necessário usou 20 extras; não chegou mais renda.",
+          "options": [
+            {
+              "label": "50"
+            },
+            {
+              "label": "70"
+            },
+            {
+              "label": "30"
+            }
+          ],
+          "help": [
+            "Proteja o pagamento necessário e recalcule o que resta."
+          ],
+          "feedback": {
+            "met": "O valor opcional ajustado reflete o custo adicional real.",
+            "not_yet": "Proteja o pagamento necessário e recalcule o que resta."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          50,
+          20
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

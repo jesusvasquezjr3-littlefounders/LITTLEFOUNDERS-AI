@@ -1,0 +1,842 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-spending-patterns-part-1",
+  "lesson_id": "fe-production-spending-patterns-03",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.spending-patterns.03"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Find an omitted cash expense when reconciling a spending diary with money remaining.",
+  "title": {
+    "en-US": "Missing expenses",
+    "es-MX": "Encuentra el gasto faltante",
+    "pt-BR": "Encontre o gasto ausente"
+  },
+  "new_concepts": [
+    "finance.prod.spending-patterns.03"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Find the missing expense\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Encuentra el gasto faltante\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Encontre o gasto ausente\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.spending-patterns.03",
+      "observable_action": "Find an omitted cash expense when reconciling a spending diary with money remaining.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.spending-patterns.01",
+      "prod.financial-math.02"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Money remaining can reveal an expense missing from your record.",
+    "misconception": "Treating an unexplained difference as new income or declaring fraud without checking the records.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.spending-patterns.03",
+        "context_id": "fe-production-spending-patterns-03-example-01",
+        "supports_from": [],
+        "reasoning": "Starting with 50 dollars and logging a 20-dollar payment leaves 30; holding only 25 reveals a 5-dollar gap."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.spending-patterns.03",
+        "context_id": "fe-production-spending-patterns-03-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "40 − 10 = 30 should remain from the recorded entries."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.spending-patterns.03",
+        "context_id": "fe-production-spending-patterns-03-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "30 − 24 = 6 needs reconciliation."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.spending-patterns.03",
+        "context_id": "fe-production-spending-patterns-03-practice-01",
+        "supports_from": [],
+        "reasoning": "The bus payment accounts for the lower remaining cash."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.spending-patterns.03",
+        "context_id": "fe-production-spending-patterns-03-practice-02",
+        "supports_from": [],
+        "reasoning": "Recording the receipt once reconciles the known payment."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.spending-patterns.03",
+        "context_id": "fe-production-spending-patterns-03-practice-03",
+        "supports_from": [],
+        "reasoning": "The difference alone does not identify its cause."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.spending-patterns.03",
+        "context_id": "fe-production-spending-patterns-03-transfer-01",
+        "supports_from": [],
+        "reasoning": "80 − 35 − 40 = 5 remains unexplained."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.spending-patterns.03",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Money remaining can reveal an expense missing from your record."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "El dinero restante puede revelar un gasto que falta en tu registro."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "O dinheiro restante pode revelar um gasto ausente no registro."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Compare expected and actual",
+          "line": "Starting with 50 dollars and logging a 20-dollar payment leaves 30; holding only 25 reveals a 5-dollar gap."
+        },
+        "es-MX": {
+          "prompt": "Compara esperado y real",
+          "line": "Empezar con 50 pesos y registrar un pago de 20 deja 30; tener solo 25 revela una diferencia de 5."
+        },
+        "pt-BR": {
+          "prompt": "Compare esperado e real",
+          "line": "Começar com 50 reais e registrar um pagamento de 20 deixa 30; ter só 25 revela diferença de 5."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Expected money remaining?",
+          "scene": "Start: 40. Logged payment: 10; no other receipts.",
+          "options": [
+            {
+              "label": "40"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "50"
+            }
+          ],
+          "help": [
+            "Subtract the logged payment from the start."
+          ],
+          "feedback": {
+            "met": "40 − 10 = 30 should remain from the recorded entries.",
+            "not_yet": "Subtract the logged payment from the start."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Dinero restante esperado?",
+          "scene": "Inicio: 40. Pago registrado: 10; sin otras entradas.",
+          "options": [
+            {
+              "label": "40"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "50"
+            }
+          ],
+          "help": [
+            "Resta el pago registrado al inicio."
+          ],
+          "feedback": {
+            "met": "40 − 10 = 30 deben quedar según los registros.",
+            "not_yet": "Resta el pago registrado al inicio."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Dinheiro restante esperado?",
+          "scene": "Início: 40. Pagamento registrado: 10; sem outras entradas.",
+          "options": [
+            {
+              "label": "40"
+            },
+            {
+              "label": "30"
+            },
+            {
+              "label": "50"
+            }
+          ],
+          "help": [
+            "Subtraia o pagamento registrado do início."
+          ],
+          "feedback": {
+            "met": "40 − 10 = 30 devem restar conforme os registros.",
+            "not_yet": "Subtraia o pagamento registrado do início."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          40,
+          10
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Unexplained gap?",
+          "scene": "Expected cash: 30. Counted cash: 24.",
+          "options": [
+            {
+              "label": "6"
+            },
+            {
+              "label": "24"
+            },
+            {
+              "label": "54"
+            }
+          ],
+          "help": [
+            "Compare the expected amount with the counted amount."
+          ],
+          "feedback": {
+            "met": "30 − 24 = 6 needs reconciliation.",
+            "not_yet": "Compare the expected amount with the counted amount."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Diferencia sin explicar?",
+          "scene": "Efectivo esperado: 30. Efectivo contado: 24.",
+          "options": [
+            {
+              "label": "6"
+            },
+            {
+              "label": "24"
+            },
+            {
+              "label": "54"
+            }
+          ],
+          "help": [
+            "Compara el monto esperado con el contado."
+          ],
+          "feedback": {
+            "met": "30 − 24 = 6 requieren conciliación.",
+            "not_yet": "Compara el monto esperado con el contado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Diferença sem explicação?",
+          "scene": "Dinheiro esperado: 30. Dinheiro contado: 24.",
+          "options": [
+            {
+              "label": "6"
+            },
+            {
+              "label": "24"
+            },
+            {
+              "label": "54"
+            }
+          ],
+          "help": [
+            "Compare o valor esperado com o contado."
+          ],
+          "feedback": {
+            "met": "30 − 24 = 6 precisam de conciliação.",
+            "not_yet": "Compare o valor esperado com o contado."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          30,
+          24
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Which entry explains the gap?",
+          "scene": "Diary remainder: 18; actual cash: 15. A separate bus receipt is 3.",
+          "options": [
+            {
+              "label": "New income"
+            },
+            {
+              "label": "The unlogged bus payment"
+            },
+            {
+              "label": "A larger starting amount"
+            }
+          ],
+          "help": [
+            "Look for an actual payment matching the difference."
+          ],
+          "feedback": {
+            "met": "The bus payment accounts for the lower remaining cash.",
+            "not_yet": "Look for an actual payment matching the difference."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué registro explica la diferencia?",
+          "scene": "El diario prevé 18; cuentas 15. Un comprobante aparte de autobús es de 3.",
+          "options": [
+            {
+              "label": "Ingreso nuevo"
+            },
+            {
+              "label": "El pago de autobús sin registrar"
+            },
+            {
+              "label": "Un monto inicial mayor"
+            }
+          ],
+          "help": [
+            "Busca un pago real que coincida con la diferencia."
+          ],
+          "feedback": {
+            "met": "El pago de autobús explica el efectivo restante menor.",
+            "not_yet": "Busca un pago real que coincida con la diferencia."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual registro explica a diferença?",
+          "scene": "O diário prevê 18; você conta 15. Um recibo separado de ônibus é de 3.",
+          "options": [
+            {
+              "label": "Renda nova"
+            },
+            {
+              "label": "O pagamento de ônibus não registrado"
+            },
+            {
+              "label": "Um valor inicial maior"
+            }
+          ],
+          "help": [
+            "Busque um pagamento real que corresponda à diferença."
+          ],
+          "feedback": {
+            "met": "O pagamento de ônibus explica o dinheiro restante menor.",
+            "not_yet": "Busque um pagamento real que corresponda à diferença."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.03",
+      "copy": {
+        "en-US": {
+          "prompt": "What should you do with the entry?",
+          "scene": "Adding a missing receipt reconciles cash and diary.",
+          "options": [
+            {
+              "label": "Record the real payment once"
+            },
+            {
+              "label": "Add the same receipt again"
+            },
+            {
+              "label": "Delete the starting amount"
+            }
+          ],
+          "help": [
+            "A reconciliation must not duplicate the expense."
+          ],
+          "feedback": {
+            "met": "Recording the receipt once reconciles the known payment.",
+            "not_yet": "A reconciliation must not duplicate the expense."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué hacer con el registro?",
+          "scene": "El monto contado coincide con el diario tras añadir un comprobante faltante.",
+          "options": [
+            {
+              "label": "Conservar el pago real una vez"
+            },
+            {
+              "label": "Sumar otra vez el comprobante"
+            },
+            {
+              "label": "Borrar el monto inicial"
+            }
+          ],
+          "help": [
+            "Una conciliación no debe duplicar el gasto."
+          ],
+          "feedback": {
+            "met": "Registrar una vez el comprobante concilia el pago conocido.",
+            "not_yet": "Una conciliación no debe duplicar el gasto."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que fazer com o registro?",
+          "scene": "O valor contado coincide com o diário após incluir um recibo ausente.",
+          "options": [
+            {
+              "label": "Manter o pagamento real uma vez"
+            },
+            {
+              "label": "Somar o recibo outra vez"
+            },
+            {
+              "label": "Apagar o valor inicial"
+            }
+          ],
+          "help": [
+            "Uma conciliação não deve duplicar o gasto."
+          ],
+          "feedback": {
+            "met": "Registrar o recibo uma vez concilia o pagamento conhecido.",
+            "not_yet": "Uma conciliação não deve duplicar o gasto."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.spending-patterns.03",
+      "copy": {
+        "en-US": {
+          "prompt": "What is supported?",
+          "scene": "Cash is lower than expected, but no explanation has been checked.",
+          "options": [
+            {
+              "label": "The diary must be perfect"
+            },
+            {
+              "label": "A difference needs investigation"
+            },
+            {
+              "label": "Theft is certain"
+            }
+          ],
+          "help": [
+            "Check counting and records before drawing a conclusion."
+          ],
+          "feedback": {
+            "met": "The difference alone does not identify its cause.",
+            "not_yet": "Check counting and records before drawing a conclusion."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué está respaldado?",
+          "scene": "Hay menos efectivo del esperado, pero no verificaste ninguna explicación.",
+          "options": [
+            {
+              "label": "El diario debe ser perfecto"
+            },
+            {
+              "label": "Hay que investigar una diferencia"
+            },
+            {
+              "label": "El robo es seguro"
+            }
+          ],
+          "help": [
+            "Revisa conteo y registros antes de concluir."
+          ],
+          "feedback": {
+            "met": "La diferencia por sí sola no identifica su causa.",
+            "not_yet": "Revisa conteo y registros antes de concluir."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que tem respaldo?",
+          "scene": "Há menos dinheiro que o esperado, mas nenhuma explicação foi conferida.",
+          "options": [
+            {
+              "label": "O diário deve estar perfeito"
+            },
+            {
+              "label": "É preciso investigar uma diferença"
+            },
+            {
+              "label": "O roubo é certo"
+            }
+          ],
+          "help": [
+            "Confira contagem e registros antes de concluir."
+          ],
+          "feedback": {
+            "met": "A diferença, sozinha, não identifica sua causa.",
+            "not_yet": "Confira contagem e registros antes de concluir."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.spending-patterns.03",
+      "copy": {
+        "en-US": {
+          "prompt": "Unrecorded spending gap?",
+          "scene": "Start: 80; recorded payments: 35. Counted remaining: 40, with no new receipts.",
+          "options": [
+            {
+              "label": "5"
+            },
+            {
+              "label": "45"
+            },
+            {
+              "label": "75"
+            }
+          ],
+          "help": [
+            "Compare recorded remaining cash with the actual count."
+          ],
+          "feedback": {
+            "met": "80 − 35 − 40 = 5 remains unexplained.",
+            "not_yet": "Compare recorded remaining cash with the actual count."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Gasto faltante por aclarar?",
+          "scene": "Inicio: 80; pagos registrados: 35. Restante contado: 40, sin nuevas entradas.",
+          "options": [
+            {
+              "label": "5"
+            },
+            {
+              "label": "45"
+            },
+            {
+              "label": "75"
+            }
+          ],
+          "help": [
+            "Compara efectivo restante según registros con el conteo real."
+          ],
+          "feedback": {
+            "met": "80 − 35 − 40 = 5 quedan sin explicar.",
+            "not_yet": "Compara efectivo restante según registros con el conteo real."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Gasto ausente a esclarecer?",
+          "scene": "Início: 80; pagamentos registrados: 35. Restante contado: 40, sem novas entradas.",
+          "options": [
+            {
+              "label": "5"
+            },
+            {
+              "label": "45"
+            },
+            {
+              "label": "75"
+            }
+          ],
+          "help": [
+            "Compare o dinheiro restante dos registros com a contagem real."
+          ],
+          "feedback": {
+            "met": "80 − 35 − 40 = 5 ficam sem explicação.",
+            "not_yet": "Compare o dinheiro restante dos registros com a contagem real."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          80,
+          35,
+          40
+        ],
+        "expression": {
+          "op": "subtract",
+          "args": [
+            {
+              "op": "subtract",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "input": 1
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 import express from 'express';
 import helmet from 'helmet';
 import { cors } from './middleware/cors.js';
-import { globalRateLimiter } from './middleware/rateLimit.js';
+import { gamesRateLimiter, globalRateLimiter } from './middleware/rateLimit.js';
 import { accountDeletionSweepRouter, accountRouter } from './routes/account.js';
 import { adminRouter } from './routes/admin.js';
 import { analyticsRouter } from './routes/analytics.js';
@@ -13,6 +13,7 @@ import { bankingRouter } from './routes/banking.js';
 import { familyRouter } from './routes/family.js';
 import { familyLearningRouter } from './routes/familyLearning.js';
 import { coopGoalsRouter, familyCoopGoalsRouter } from './routes/coopGoals.js';
+import { familyPlayLimitsRouter } from './routes/games.js';
 import { authRouter } from './routes/auth.js';
 import { eventsRouter } from './routes/events.js';
 import { learnRouter } from './routes/learn.js';
@@ -67,6 +68,9 @@ export function createApp(): express.Express {
   // on every product router, not only on /auth/me (middleware/accountAdmission.ts).
   app.use([...ACTIVE_ACCOUNT_PATHS], requireActiveAccount);
   app.use('/api/v1/events', eventsRouter());
+  // Games: heartbeats come every 30-60 s for as long as a child plays, so they get their own
+  // budget (the global limiter skips this prefix) and a body limit that fits the 64 KB save.
+  app.use('/api/v1/learn/games', gamesRateLimiter, express.json({ limit: '80kb' }));
   app.use(globalRateLimiter);
   app.use(express.json({ limit: '64kb' }));
 
@@ -96,6 +100,8 @@ export function createApp(): express.Express {
   app.use('/api/v1/family/learning', familyLearningRouter());
   // L-04 (OD-27 (1)): the Tutor's opt-in for a 13-to-17 child, before /family for the same reason.
   app.use('/api/v1/family/coop-goals', familyCoopGoalsRouter());
+  // Games: the verified Tutor lowers a child's play limits (docs/games/KRV1-CONTRACT.md), before /family likewise.
+  app.use('/api/v1/family/play-limits', familyPlayLimitsRouter());
   app.use('/api/v1/family', familyRouter());
   app.use('/api/v1/tasks', tasksRouter());
   app.use('/api/v1/banking', bankingRouter());

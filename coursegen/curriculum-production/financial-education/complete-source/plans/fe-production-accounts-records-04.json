@@ -1,0 +1,778 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-accounts-records-part-1",
+  "lesson_id": "fe-production-accounts-records-04",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.accounts-records.04"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Read a statement entry’s date, description and amount before classifying it.",
+  "title": {
+    "en-US": "Transaction details",
+    "es-MX": "Lee la operación antes de clasificarla",
+    "pt-BR": "Leia a operação antes de classificá-la"
+  },
+  "new_concepts": [
+    "finance.prod.accounts-records.04"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Read the transaction before labeling it\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Lee la operación antes de clasificarla\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Leia a operação antes de classificá-la\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.accounts-records.04",
+      "observable_action": "Read a statement entry’s date, description and amount before classifying it.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "cash.balance"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Use date, description, amount and direction to identify the movement.",
+    "misconception": "Guessing what a statement entry means from its merchant label alone or confusing outgoing payments with incoming receipts.",
+    "numeracy_support": "The worked examples introduce the required operation; every assessed task retains its own amounts and assumptions.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.accounts-records.04",
+        "context_id": "fe-production-accounts-records-04-example-01",
+        "supports_from": [],
+        "reasoning": "A statement entry links date, description and amount. Check whether it records money entering or leaving before classifying it."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.accounts-records.04",
+        "context_id": "fe-production-accounts-records-04-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "The explicit outgoing direction identifies a payment, not income."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.accounts-records.04",
+        "context_id": "fe-production-accounts-records-04-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "The entry describes a refund coming in, not another purchase."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.accounts-records.04",
+        "context_id": "fe-production-accounts-records-04-practice-01",
+        "supports_from": [],
+        "reasoning": "Matching names alone do not establish the same transaction."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.accounts-records.04",
+        "context_id": "fe-production-accounts-records-04-practice-02",
+        "supports_from": [],
+        "reasoning": "A receipt can help resolve an unfamiliar statement description."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.accounts-records.04",
+        "context_id": "fe-production-accounts-records-04-practice-03",
+        "supports_from": [],
+        "reasoning": "Interpret the sign using the actual statement’s explanation."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.accounts-records.04",
+        "context_id": "fe-production-accounts-records-04-transfer-01",
+        "supports_from": [],
+        "reasoning": "Description and the matching prior payment explain the return."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.accounts-records.04",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Use date, description, amount and direction to identify the movement."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Usa fecha, descripción, monto y dirección para identificar el movimiento."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Use data, descrição, valor e direção para identificar o movimento."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Read the whole entry",
+          "line": "A statement entry links date, description and amount. Check whether it records money entering or leaving before classifying it."
+        },
+        "es-MX": {
+          "prompt": "Lee toda la entrada",
+          "line": "Una entrada une fecha, descripción y monto. Revisa si registra dinero que entra o sale antes de clasificarla."
+        },
+        "pt-BR": {
+          "prompt": "Leia todo o registro",
+          "line": "Um registro une data, descrição e valor. Confira se registra dinheiro entrando ou saindo antes de classificá-lo."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.04",
+      "copy": {
+        "en-US": {
+          "prompt": "What movement is recorded?",
+          "scene": "Entry: Tuesday; grocery shop; amount 24; direction explicitly marked outgoing.",
+          "options": [
+            {
+              "label": "Income from working at the shop"
+            },
+            {
+              "label": "A transfer into savings"
+            },
+            {
+              "label": "A payment leaving the account"
+            }
+          ],
+          "help": [
+            "Read direction with the description."
+          ],
+          "feedback": {
+            "met": "The explicit outgoing direction identifies a payment, not income.",
+            "not_yet": "Read direction with the description."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué movimiento registra?",
+          "scene": "Entrada: martes; tienda de comida; monto 24; dirección expresamente marcada como salida.",
+          "options": [
+            {
+              "label": "Ingreso por trabajar en la tienda"
+            },
+            {
+              "label": "Una entrada a ahorro"
+            },
+            {
+              "label": "Un pago que sale de la cuenta"
+            }
+          ],
+          "help": [
+            "Lee dirección junto a descripción."
+          ],
+          "feedback": {
+            "met": "La dirección de salida indica pago, no ingreso.",
+            "not_yet": "Lee dirección junto a descripción."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual movimento registra?",
+          "scene": "Registro: terça; loja de comida; valor 24; direção expressamente marcada como saída.",
+          "options": [
+            {
+              "label": "Renda por trabalhar na loja"
+            },
+            {
+              "label": "Uma entrada para poupança"
+            },
+            {
+              "label": "Um pagamento saindo da conta"
+            }
+          ],
+          "help": [
+            "Leia direção junto à descrição."
+          ],
+          "feedback": {
+            "met": "A direção de saída indica pagamento, não renda.",
+            "not_yet": "Leia direção junto à descrição."
+          }
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Which description matches the record?",
+          "scene": "Entry: Friday; purchase refund; amount 18; direction marked incoming.",
+          "options": [
+            {
+              "label": "Another purchase paid"
+            },
+            {
+              "label": "A recurring wage established"
+            },
+            {
+              "label": "A refund received"
+            }
+          ],
+          "help": [
+            "Classify from all the stated fields."
+          ],
+          "feedback": {
+            "met": "The entry describes a refund coming in, not another purchase.",
+            "not_yet": "Classify from all the stated fields."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué descripción coincide con el registro?",
+          "scene": "Entrada: viernes; reembolso de compra; monto 18; dirección de entrada.",
+          "options": [
+            {
+              "label": "Otra compra pagada"
+            },
+            {
+              "label": "Un salario recurrente establecido"
+            },
+            {
+              "label": "Un reembolso recibido"
+            }
+          ],
+          "help": [
+            "Clasifica con todos los campos indicados."
+          ],
+          "feedback": {
+            "met": "La entrada describe un reembolso recibido, no otra compra.",
+            "not_yet": "Clasifica con todos los campos indicados."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual descrição combina com o registro?",
+          "scene": "Registro: sexta; reembolso de compra; valor 18; direção de entrada.",
+          "options": [
+            {
+              "label": "Outra compra paga"
+            },
+            {
+              "label": "Um salário recorrente estabelecido"
+            },
+            {
+              "label": "Um reembolso recebido"
+            }
+          ],
+          "help": [
+            "Classifique com todos os campos informados."
+          ],
+          "feedback": {
+            "met": "O registro descreve um reembolso recebido, não outra compra.",
+            "not_yet": "Classifique com todos os campos informados."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Does the name prove duplication?",
+          "scene": "Two entries share a merchant but differ in date and amount.",
+          "options": [
+            {
+              "label": "Dates and amounts are irrelevant"
+            },
+            {
+              "label": "One merchant means one payment"
+            },
+            {
+              "label": "Compare full records"
+            }
+          ],
+          "help": [
+            "Use the date and amount alongside the merchant."
+          ],
+          "feedback": {
+            "met": "Matching names alone do not establish the same transaction.",
+            "not_yet": "Use the date and amount alongside the merchant."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿El nombre demuestra que están duplicadas?",
+          "scene": "Dos entradas comparten comercio, pero tienen fechas y montos distintos.",
+          "options": [
+            {
+              "label": "Sí, fechas y montos no importan"
+            },
+            {
+              "label": "Sí, un comercio implica un pago"
+            },
+            {
+              "label": "No, compara registros completos"
+            }
+          ],
+          "help": [
+            "Usa fecha y monto junto al comercio."
+          ],
+          "feedback": {
+            "met": "Nombres iguales no demuestran por sí solos la misma operación.",
+            "not_yet": "Usa fecha y monto junto al comercio."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O nome comprova que são duplicatas?",
+          "scene": "Dois registros têm o mesmo comércio, mas datas e valores diferentes.",
+          "options": [
+            {
+              "label": "Sim, datas e valores não importam"
+            },
+            {
+              "label": "Sim, um comércio implica um pagamento"
+            },
+            {
+              "label": "Não, compare registros completos"
+            }
+          ],
+          "help": [
+            "Use data e valor junto ao comércio."
+          ],
+          "feedback": {
+            "met": "Nomes iguais não demonstram sozinhos a mesma operação.",
+            "not_yet": "Use data e valor junto ao comércio."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.04",
+      "copy": {
+        "en-US": {
+          "prompt": "What identifies this entry?",
+          "scene": "An unfamiliar merchant label appears with a date and amount matching your receipt.",
+          "options": [
+            {
+              "label": "The unfamiliar name alone"
+            },
+            {
+              "label": "An assumption that unfamiliar means fraud"
+            },
+            {
+              "label": "The matching receipt details"
+            }
+          ],
+          "help": [
+            "Compare evidence before labeling the transaction."
+          ],
+          "feedback": {
+            "met": "A receipt can help resolve an unfamiliar statement description.",
+            "not_yet": "Compare evidence before labeling the transaction."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué ayuda a identificar la entrada?",
+          "scene": "Una etiqueta comercial desconocida tiene fecha y monto que coinciden con tu comprobante.",
+          "options": [
+            {
+              "label": "Solo el nombre desconocido"
+            },
+            {
+              "label": "Suponer que desconocido implica fraude"
+            },
+            {
+              "label": "Los datos coincidentes del comprobante"
+            }
+          ],
+          "help": [
+            "Compara evidencia antes de clasificar la operación."
+          ],
+          "feedback": {
+            "met": "Un comprobante ayuda a aclarar una descripción desconocida.",
+            "not_yet": "Compara evidencia antes de clasificar la operación."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que ajuda a identificar o registro?",
+          "scene": "Um nome comercial desconhecido tem data e valor que coincidem com seu comprovante.",
+          "options": [
+            {
+              "label": "Só o nome desconhecido"
+            },
+            {
+              "label": "Supor que desconhecido implica fraude"
+            },
+            {
+              "label": "Os dados correspondentes do comprovante"
+            }
+          ],
+          "help": [
+            "Compare evidências antes de classificar a operação."
+          ],
+          "feedback": {
+            "met": "Um comprovante ajuda a esclarecer uma descrição desconhecida.",
+            "not_yet": "Compare evidências antes de classificar a operação."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.accounts-records.04",
+      "copy": {
+        "en-US": {
+          "prompt": "What needs checking?",
+          "scene": "An entry has a negative amount; the statement’s sign convention is not explained.",
+          "options": [
+            {
+              "label": "The statement’s direction convention"
+            },
+            {
+              "label": "Assume all providers use identical signs"
+            },
+            {
+              "label": "Ignore the amount entirely"
+            }
+          ],
+          "help": [
+            "Verify the legend or transaction type when direction is unclear."
+          ],
+          "feedback": {
+            "met": "Interpret the sign using the actual statement’s explanation.",
+            "not_yet": "Verify the legend or transaction type when direction is unclear."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué revisar antes de clasificarla?",
+          "scene": "Una entrada tiene monto negativo; no se explica el significado del signo.",
+          "options": [
+            {
+              "label": "La convención de dirección del estado"
+            },
+            {
+              "label": "Suponer signos iguales en todo proveedor"
+            },
+            {
+              "label": "Ignorar por completo el monto"
+            }
+          ],
+          "help": [
+            "Verifica leyenda o tipo de operación si falta claridad."
+          ],
+          "feedback": {
+            "met": "Interpreta el signo con la explicación del estado concreto.",
+            "not_yet": "Verifica leyenda o tipo de operación si falta claridad."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que conferir antes de classificá-lo?",
+          "scene": "Um registro tem valor negativo; o significado do sinal não é explicado.",
+          "options": [
+            {
+              "label": "A convenção de direção do extrato"
+            },
+            {
+              "label": "Supor sinais iguais em todo fornecedor"
+            },
+            {
+              "label": "Ignorar totalmente o valor"
+            }
+          ],
+          "help": [
+            "Confira legenda ou tipo de operação se faltar clareza."
+          ],
+          "feedback": {
+            "met": "Interprete o sinal com a explicação do extrato concreto.",
+            "not_yet": "Confira legenda ou tipo de operação se faltar clareza."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.accounts-records.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Which classification fits the stated evidence?",
+          "scene": "A wallet record says “incoming reversal” and matches an earlier canceled payment.",
+          "options": [
+            {
+              "label": "A new recurring salary"
+            },
+            {
+              "label": "An unrelated purchase expense"
+            },
+            {
+              "label": "Return of the earlier payment"
+            }
+          ],
+          "help": [
+            "Connect related records while preserving their distinct movements."
+          ],
+          "feedback": {
+            "met": "Description and the matching prior payment explain the return.",
+            "not_yet": "Connect related records while preserving their distinct movements."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué clasificación coincide con la evidencia?",
+          "scene": "Un registro de cartera dice «reversión entrante» y coincide con un pago cancelado anterior.",
+          "options": [
+            {
+              "label": "Un salario recurrente nuevo"
+            },
+            {
+              "label": "Un gasto de compra distinto"
+            },
+            {
+              "label": "Devolución del pago anterior"
+            }
+          ],
+          "help": [
+            "Conecta registros relacionados conservando sus movimientos distintos."
+          ],
+          "feedback": {
+            "met": "Descripción y pago anterior coincidente explican la devolución.",
+            "not_yet": "Conecta registros relacionados conservando sus movimientos distintos."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual classificação combina com a evidência?",
+          "scene": "Um registro de carteira diz «estorno de entrada» e corresponde a pagamento cancelado anterior.",
+          "options": [
+            {
+              "label": "Um salário recorrente novo"
+            },
+            {
+              "label": "Um gasto de compra diferente"
+            },
+            {
+              "label": "Devolução do pagamento anterior"
+            }
+          ],
+          "help": [
+            "Conecte registros relacionados mantendo seus movimentos distintos."
+          ],
+          "feedback": {
+            "met": "Descrição e pagamento anterior correspondente explicam a devolução.",
+            "not_yet": "Conecte registros relacionados mantendo seus movimentos distintos."
+          }
+        }
+      }
+    }
+  ]
+}

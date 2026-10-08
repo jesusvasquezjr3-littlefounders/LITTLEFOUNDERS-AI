@@ -1,0 +1,854 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-shared-finances-part-1",
+  "lesson_id": "fe-production-shared-finances-01",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.shared-finances.01"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Compare equal and income-proportional shared contributions under explicitly agreed rules.",
+  "title": {
+    "en-US": "Share Costs",
+    "es-MX": "Acuerda cómo compartir costos",
+    "pt-BR": "Combine como dividir custos"
+  },
+  "new_concepts": [
+    "finance.prod.shared-finances.01"
+  ],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Share Costs\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Acuerda cómo compartir costos\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Combine como dividir custos\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "teach",
+    "objective": {
+      "skill_id": "prod.shared-finances.01",
+      "observable_action": "Compare equal and income-proportional shared contributions under explicitly agreed rules.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.financial-math.06",
+      "price.percent",
+      "prod.cashflow-budget.03"
+    ],
+    "retrieval_skills": [],
+    "relevance": "Equal payments and income-based payments are different rules; use fictional dollars to compare an agreed arrangement.",
+    "misconception": "Equal contributions and equal income proportions always mean the same payment, or one rule is universally fair.",
+    "numeracy_support": "Use only the visible fictional amounts and conditions; earlier arithmetic is preparation, not a hidden financial assumption.",
+    "evidence": [
+      {
+        "segment_id": "example-01",
+        "skill_id": "prod.shared-finances.01",
+        "context_id": "shared-finances-01-example-01",
+        "supports_from": [],
+        "reasoning": "Equal splits use the same amount per person. Income-proportional splits use each person’s share of combined income; agree the rule."
+      },
+      {
+        "segment_id": "guided-01",
+        "skill_id": "prod.shared-finances.01",
+        "context_id": "shared-finances-01-guided-01",
+        "supports_from": [
+          "example-01"
+        ],
+        "reasoning": "Ana pays her agreed share of combined income."
+      },
+      {
+        "segment_id": "guided-02",
+        "skill_id": "prod.shared-finances.01",
+        "context_id": "shared-finances-01-guided-02",
+        "supports_from": [
+          "guided-01"
+        ],
+        "reasoning": "Identical amounts define this equal split."
+      },
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.shared-finances.01",
+        "context_id": "shared-finances-01-practice-01",
+        "supports_from": [],
+        "reasoning": "Divide the bill by the agreed number of equal contributors."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.shared-finances.01",
+        "context_id": "shared-finances-01-practice-02",
+        "supports_from": [],
+        "reasoning": "Lea contributes her income share of the combined total."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.shared-finances.01",
+        "context_id": "shared-finances-01-practice-03",
+        "supports_from": [],
+        "reasoning": "Changed income may change contributions under the agreed method."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.shared-finances.01",
+        "context_id": "shared-finances-01-transfer-01",
+        "supports_from": [],
+        "reasoning": "Fairness requires an agreement that considers the actual circumstances."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.shared-finances.01",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Equal payments and income-based payments are different rules; use fictional dollars to compare an agreed arrangement."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Pagos iguales y proporcionales al ingreso son reglas distintas; usa pesos ficticios para comparar un acuerdo."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Pagamentos iguais e proporcionais à renda são regras distintas; use reais fictícios para comparar um acordo."
+        }
+      }
+    },
+    {
+      "id": "example-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "example",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "transition",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Name the rule first",
+          "line": "Equal splits use the same amount per person. Income-proportional splits use each person’s share of combined income; agree the rule."
+        },
+        "es-MX": {
+          "prompt": "Nombra primero la regla",
+          "line": "Divisiones iguales usan el mismo monto por persona. Proporcionales usan la parte del ingreso conjunto de cada quien; acuerden la regla."
+        },
+        "pt-BR": {
+          "prompt": "Nomeie primeiro a regra",
+          "line": "Divisões iguais usam o mesmo valor por pessoa. Proporcionais usam a parte da renda conjunta de cada pessoa; combinem a regra."
+        }
+      }
+    },
+    {
+      "id": "guided-01",
+      "type": "math.worked-example.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.01",
+      "visual": {
+        "type": "worked-example"
+      },
+      "payload": {
+        "steps": [
+          {
+            "id": "step-1"
+          },
+          {
+            "id": "step-2"
+          },
+          {
+            "id": "step-3"
+          }
+        ],
+        "fade_count": 1,
+        "response_step_ids": [
+          "step-2",
+          "step-3"
+        ]
+      },
+      "rubric": {
+        "expectedValues": {
+          "step-2": "0.25",
+          "step-3": "200"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Agreed income shares: Ana earns 1000, Bo 3000; shared bill 800. Find Ana’s contribution.",
+          "feedback": {
+            "met": "Ana pays her agreed share of combined income.",
+            "not_yet": "Find combined income, then Ana’s share of the bill."
+          },
+          "help": [
+            "Find combined income, then Ana’s share of the bill."
+          ],
+          "steps": [
+            {
+              "expression": "1000 + 3000",
+              "result": "4000",
+              "spokenText": "Combined income"
+            },
+            {
+              "expression": "1000 / 4000",
+              "result": "0.25",
+              "spokenText": "Ana’s income share"
+            },
+            {
+              "expression": "800 * 0.25",
+              "result": "200",
+              "spokenText": "Ana’s contribution"
+            }
+          ]
+        },
+        "es-MX": {
+          "prompt": "Proporción acordada: Ana gana 1000, Bo 3000; cuenta compartida 800. Calcula aporte de Ana.",
+          "feedback": {
+            "met": "Ana paga su parte acordada del ingreso conjunto.",
+            "not_yet": "Calcula ingreso conjunto y luego parte de Ana."
+          },
+          "help": [
+            "Calcula ingreso conjunto y luego parte de Ana."
+          ],
+          "steps": [
+            {
+              "expression": "1000 + 3000",
+              "result": "4000",
+              "spokenText": "Ingreso conjunto"
+            },
+            {
+              "expression": "1000 / 4000",
+              "result": "0.25",
+              "spokenText": "Parte del ingreso de Ana"
+            },
+            {
+              "expression": "800 * 0.25",
+              "result": "200",
+              "spokenText": "Aporte de Ana"
+            }
+          ]
+        },
+        "pt-BR": {
+          "prompt": "Proporção acordada: Ana ganha 1000, Bo 3000; conta conjunta 800. Ache aporte de Ana.",
+          "feedback": {
+            "met": "Ana paga sua parte acordada da renda conjunta.",
+            "not_yet": "Ache renda conjunta e depois a parte de Ana."
+          },
+          "help": [
+            "Ache renda conjunta e depois a parte de Ana."
+          ],
+          "steps": [
+            {
+              "expression": "1000 + 3000",
+              "result": "4000",
+              "spokenText": "Renda conjunta"
+            },
+            {
+              "expression": "1000 / 4000",
+              "result": "0,25",
+              "spokenText": "Parte da renda de Ana"
+            },
+            {
+              "expression": "800 * 0,25",
+              "result": "200",
+              "spokenText": "Aporte de Ana"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "guided-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "guided",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Which rule is stated?",
+          "scene": "Two adults agree to pay identical amounts toward a shared bill.",
+          "options": [
+            {
+              "label": "Equal split"
+            },
+            {
+              "label": "One person pays everything"
+            },
+            {
+              "label": "Income-proportional split necessarily"
+            }
+          ],
+          "help": [
+            "Use the agreed rule rather than assume income proportions."
+          ],
+          "feedback": {
+            "met": "Identical amounts define this equal split.",
+            "not_yet": "Use the agreed rule rather than assume income proportions."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué regla se indica?",
+          "scene": "Dos adultos acuerdan aportar montos idénticos a una cuenta compartida.",
+          "options": [
+            {
+              "label": "División igual"
+            },
+            {
+              "label": "Una persona paga todo"
+            },
+            {
+              "label": "Proporcional al ingreso necesariamente"
+            }
+          ],
+          "help": [
+            "Usa la regla acordada sin suponer proporciones de ingreso."
+          ],
+          "feedback": {
+            "met": "Montos idénticos definen esta división igual.",
+            "not_yet": "Usa la regla acordada sin suponer proporciones de ingreso."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Que regra foi dada?",
+          "scene": "Dois adultos combinam valores idênticos para uma conta conjunta.",
+          "options": [
+            {
+              "label": "Divisão igual"
+            },
+            {
+              "label": "Uma pessoa paga tudo"
+            },
+            {
+              "label": "Proporcional à renda necessariamente"
+            }
+          ],
+          "help": [
+            "Use a regra combinada sem supor proporções de renda."
+          ],
+          "feedback": {
+            "met": "Valores idênticos definem esta divisão igual.",
+            "not_yet": "Use a regra combinada sem supor proporções de renda."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What is each equal contribution?",
+          "scene": "Shared bill: 900; Adults: 3; They agree equal amounts.",
+          "options": [
+            {
+              "label": "900"
+            },
+            {
+              "label": "450"
+            },
+            {
+              "label": "300"
+            }
+          ],
+          "help": [
+            "Use equal amounts, not an unstated income rule."
+          ],
+          "feedback": {
+            "met": "Divide the bill by the agreed number of equal contributors.",
+            "not_yet": "Use equal amounts, not an unstated income rule."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuál es cada aporte igual?",
+          "scene": "Cuenta compartida: 900; Adultos: 3; Acuerdan montos iguales.",
+          "options": [
+            {
+              "label": "900"
+            },
+            {
+              "label": "450"
+            },
+            {
+              "label": "300"
+            }
+          ],
+          "help": [
+            "Usa montos iguales, no una regla de ingreso no indicada."
+          ],
+          "feedback": {
+            "met": "Divide la cuenta entre quienes aportan igual.",
+            "not_yet": "Usa montos iguales, no una regla de ingreso no indicada."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual é cada aporte igual?",
+          "scene": "Conta conjunta: 900; Adultos: 3; Combinam valores iguais.",
+          "options": [
+            {
+              "label": "900"
+            },
+            {
+              "label": "450"
+            },
+            {
+              "label": "300"
+            }
+          ],
+          "help": [
+            "Use valores iguais, não uma regra de renda não dada."
+          ],
+          "feedback": {
+            "met": "Divida a conta pelo número de pessoas que pagam igual.",
+            "not_yet": "Use valores iguais, não uma regra de renda não dada."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          900,
+          3
+        ],
+        "expression": {
+          "op": "divide",
+          "args": [
+            {
+              "input": 0
+            },
+            {
+              "input": 1
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What does Lea contribute?",
+          "scene": "Agreed income proportions: Lea earns 2000, Rui 3000; shared cost 1000.",
+          "options": [
+            {
+              "label": "500"
+            },
+            {
+              "label": "400"
+            },
+            {
+              "label": "600"
+            }
+          ],
+          "help": [
+            "Divide Lea’s income by combined income, then multiply cost."
+          ],
+          "feedback": {
+            "met": "Lea contributes her income share of the combined total.",
+            "not_yet": "Divide Lea’s income by combined income, then multiply cost."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Cuánto aporta Lea?",
+          "scene": "Proporciones acordadas: Lea gana 2000, Rui 3000; costo compartido 1000.",
+          "options": [
+            {
+              "label": "500"
+            },
+            {
+              "label": "400"
+            },
+            {
+              "label": "600"
+            }
+          ],
+          "help": [
+            "Divide ingreso de Lea entre conjunto y multiplica costo."
+          ],
+          "feedback": {
+            "met": "Lea aporta su parte del ingreso conjunto.",
+            "not_yet": "Divide ingreso de Lea entre conjunto y multiplica costo."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Quanto Lea paga?",
+          "scene": "Proporções combinadas: Lea ganha 2000, Rui 3000; custo conjunto 1000.",
+          "options": [
+            {
+              "label": "500"
+            },
+            {
+              "label": "400"
+            },
+            {
+              "label": "600"
+            }
+          ],
+          "help": [
+            "Divida renda de Lea pela conjunta e multiplique custo."
+          ],
+          "feedback": {
+            "met": "Lea paga sua parte da renda conjunta.",
+            "not_yet": "Divida renda de Lea pela conjunta e multiplique custo."
+          }
+        }
+      },
+      "numeric_proof": {
+        "source": "scene",
+        "visible_inputs": [
+          2000,
+          3000,
+          1000
+        ],
+        "expression": {
+          "op": "multiply",
+          "args": [
+            {
+              "op": "divide",
+              "args": [
+                {
+                  "input": 0
+                },
+                {
+                  "op": "add",
+                  "args": [
+                    {
+                      "input": 0
+                    },
+                    {
+                      "input": 1
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "input": 2
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.shared-finances.01",
+      "copy": {
+        "en-US": {
+          "prompt": "What needs discussion after income changes?",
+          "scene": "Contributions were based on old incomes; the agreement allows review.",
+          "options": [
+            {
+              "label": "Impose a new rule silently"
+            },
+            {
+              "label": "Review the agreed proportions"
+            },
+            {
+              "label": "Assume old amounts always fit"
+            }
+          ],
+          "help": [
+            "Use the review process and agree any update."
+          ],
+          "feedback": {
+            "met": "Changed income may change contributions under the agreed method.",
+            "not_yet": "Use the review process and agree any update."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué discutir tras cambiar ingresos?",
+          "scene": "Aportes se basaban en ingresos anteriores; acuerdo permite revisión.",
+          "options": [
+            {
+              "label": "Imponer nueva regla en silencio"
+            },
+            {
+              "label": "Revisar proporciones acordadas"
+            },
+            {
+              "label": "Suponer montos anteriores siempre sirven"
+            }
+          ],
+          "help": [
+            "Usa la revisión y acuerda cualquier cambio."
+          ],
+          "feedback": {
+            "met": "Ingreso cambiado puede modificar aportes bajo el método acordado.",
+            "not_yet": "Usa la revisión y acuerda cualquier cambio."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que discutir após mudar rendas?",
+          "scene": "Aportes usavam rendas antigas; acordo permite revisão.",
+          "options": [
+            {
+              "label": "Impor nova regra em silêncio"
+            },
+            {
+              "label": "Rever proporções combinadas"
+            },
+            {
+              "label": "Supor valores antigos sempre servem"
+            }
+          ],
+          "help": [
+            "Use a revisão e combine qualquer mudança."
+          ],
+          "feedback": {
+            "met": "Renda mudada pode alterar aportes no método combinado.",
+            "not_yet": "Use a revisão e combine qualquer mudança."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.shared-finances.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Can one split be declared universally fair?",
+          "scene": "Roommates have different incomes and caregiving duties; no contribution rule is agreed.",
+          "options": [
+            {
+              "label": "Yes, equal always"
+            },
+            {
+              "label": "Yes, proportional always"
+            },
+            {
+              "label": "No, discuss circumstances and rules"
+            }
+          ],
+          "help": [
+            "Compare methods without declaring one universal rule."
+          ],
+          "feedback": {
+            "met": "Fairness requires an agreement that considers the actual circumstances.",
+            "not_yet": "Compare methods without declaring one universal rule."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Una división es siempre justa?",
+          "scene": "Compañeros tienen distintos ingresos y cuidados familiares; no hay regla acordada.",
+          "options": [
+            {
+              "label": "Sí, igual siempre"
+            },
+            {
+              "label": "Sí, proporcional siempre"
+            },
+            {
+              "label": "No, discutir circunstancias y reglas"
+            }
+          ],
+          "help": [
+            "Compara métodos sin declarar una regla universal."
+          ],
+          "feedback": {
+            "met": "La justicia requiere acuerdo que considere circunstancias reales.",
+            "not_yet": "Compara métodos sin declarar una regla universal."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Uma divisão é sempre justa?",
+          "scene": "Colegas têm rendas e cuidados familiares distintos; não há regra combinada.",
+          "options": [
+            {
+              "label": "Sim, igual sempre"
+            },
+            {
+              "label": "Sim, proporcional sempre"
+            },
+            {
+              "label": "Não, discutir situações e regras"
+            }
+          ],
+          "help": [
+            "Compare métodos sem declarar uma regra universal."
+          ],
+          "feedback": {
+            "met": "Justiça exige acordo que considere as situações reais.",
+            "not_yet": "Compare métodos sem declarar uma regra universal."
+          }
+        }
+      }
+    }
+  ]
+}

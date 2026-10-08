@@ -1,0 +1,981 @@
+{
+  "plan_version": 1,
+  "course_id": "financial-education",
+  "pathway_id": "financial-adult",
+  "chapter_id": "fe-production-investing-foundations-part-3",
+  "lesson_id": "fe-production-investing-foundations-review-1",
+  "age_band": "adult",
+  "eligibility": {
+    "minimum_age": 18,
+    "maximum_age": 119
+  },
+  "knowledge_component_ids": [
+    "finance.prod.investing-foundations.01",
+    "finance.prod.investing-foundations.02",
+    "finance.prod.investing-foundations.03",
+    "finance.prod.investing-foundations.04",
+    "finance.prod.investing-foundations.05",
+    "finance.prod.investing-foundations.06",
+    "finance.prod.investing-foundations.07",
+    "finance.prod.saving-resilience.04"
+  ],
+  "adventure_scene_id": "diorama-a",
+  "mentor_stage": {
+    "character": "rho",
+    "scene": "diorama-a"
+  },
+  "brief": "Distinguish immediate obligations, risk capacity and investment claims in a fresh set of decisions.",
+  "title": {
+    "en-US": "Investing Decisions",
+    "es-MX": "Antes de arriesgar dinero",
+    "pt-BR": "Antes de arriscar dinheiro"
+  },
+  "new_concepts": [],
+  "regional": {
+    "scenarios": {
+      "en-US": {
+        "scenario": "Fictional US-dollar examples for \"Investing Decisions\"; illustrative amounts, not current prices or product offers. No assumption of salary, bank ownership or spare income.",
+        "problem_refs": [
+          "us-access-not-judgment"
+        ],
+        "anchors": [
+          "dollars"
+        ]
+      },
+      "es-MX": {
+        "scenario": "Ejemplos ficticios en pesos mexicanos para \"Antes de arriesgar dinero\"; montos ilustrativos, no precios vigentes ni ofertas. No se supone nómina, cuenta bancaria ni dinero sobrante.",
+        "problem_refs": [
+          "mx-access-without-wellbeing"
+        ],
+        "anchors": [
+          "pesos"
+        ]
+      },
+      "pt-BR": {
+        "scenario": "Exemplos fictícios em reais para \"Antes de arriscar dinheiro\"; valores ilustrativos, não preços atuais nem ofertas. Sem supor salário, conta bancária ou dinheiro sobrando.",
+        "problem_refs": [
+          "br-baseline-literacy-gap"
+        ],
+        "anchors": [
+          "reais"
+        ]
+      }
+    }
+  },
+  "instruction": {
+    "version": 1,
+    "kind": "consolidate",
+    "objective": {
+      "skill_id": "prod.investing-foundations.01",
+      "observable_action": "Distinguish immediate obligations, risk capacity and investment claims in a fresh set of decisions.",
+      "success_criterion": "Complete the fresh-context transfer using only its visible information."
+    },
+    "prerequisite_skills": [
+      "prod.saving-resilience.04",
+      "cash.dates"
+    ],
+    "retrieval_skills": [
+      "prod.investing-foundations.01",
+      "prod.investing-foundations.02",
+      "prod.investing-foundations.03",
+      "prod.investing-foundations.04",
+      "prod.investing-foundations.05",
+      "prod.investing-foundations.06",
+      "prod.investing-foundations.07",
+      "prod.saving-resilience.04"
+    ],
+    "relevance": "Recheck the goal, the money needed and the investment’s actual promise.",
+    "misconception": "A promising investment overrides the need to check spending dates, borrower reliability and the actual contract.",
+    "numeracy_support": "Use the current visible conditions; do not reuse a previous scenario’s answer.",
+    "evidence": [
+      {
+        "segment_id": "practice-01",
+        "skill_id": "prod.investing-foundations.01",
+        "context_id": "investing-foundations-review-1-practice-01",
+        "supports_from": [],
+        "reasoning": "The repair payment cannot depend on an uncertain investment sale."
+      },
+      {
+        "segment_id": "practice-02",
+        "skill_id": "prod.investing-foundations.02",
+        "context_id": "investing-foundations-review-1-practice-02",
+        "supports_from": [],
+        "reasoning": "The new date shortens the remaining investment horizon."
+      },
+      {
+        "segment_id": "practice-03",
+        "skill_id": "prod.investing-foundations.03",
+        "context_id": "investing-foundations-review-1-practice-03",
+        "supports_from": [],
+        "reasoning": "The care obligation limits the loss that can be absorbed."
+      },
+      {
+        "segment_id": "practice-04",
+        "skill_id": "prod.investing-foundations.04",
+        "context_id": "investing-foundations-review-1-practice-04",
+        "supports_from": [],
+        "reasoning": "Rent is income separate from a price change."
+      },
+      {
+        "segment_id": "practice-05",
+        "skill_id": "prod.investing-foundations.05",
+        "context_id": "investing-foundations-review-1-practice-05",
+        "supports_from": [],
+        "reasoning": "The purchase grants ownership rather than a debt claim."
+      },
+      {
+        "segment_id": "practice-06",
+        "skill_id": "prod.investing-foundations.06",
+        "context_id": "investing-foundations-review-1-practice-06",
+        "supports_from": [],
+        "reasoning": "The borrower lacks resources for its debt obligation."
+      },
+      {
+        "segment_id": "practice-07",
+        "skill_id": "prod.investing-foundations.07",
+        "context_id": "investing-foundations-review-1-practice-07",
+        "supports_from": [],
+        "reasoning": "Unchanged payments compete with better new alternatives."
+      },
+      {
+        "segment_id": "practice-08",
+        "skill_id": "prod.saving-resilience.04",
+        "context_id": "investing-foundations-review-1-practice-08",
+        "supports_from": [],
+        "reasoning": "A meets the stated reserve requirements."
+      },
+      {
+        "segment_id": "transfer-01",
+        "skill_id": "prod.investing-foundations.01",
+        "context_id": "investing-foundations-review-1-transfer-01",
+        "supports_from": [],
+        "reasoning": "Holding someone’s committed money does not make it investable surplus."
+      }
+    ],
+    "delayed_retrieval": {
+      "skill_id": "prod.investing-foundations.01",
+      "fresh_context": "Retrieve this competence in the declared later course reviews and through the existing shared review system."
+    }
+  },
+  "segments": [
+    {
+      "id": "hook-01",
+      "type": "voice.mentor-turn.v2",
+      "grading": "none",
+      "teaching_role": "hook",
+      "visual": {
+        "type": "speech-plate"
+      },
+      "payload": {
+        "role": "intro",
+        "narration": {
+          "mode": "text_only"
+        }
+      },
+      "copy": {
+        "en-US": {
+          "prompt": "Why this matters",
+          "line": "Recheck the goal, the money needed and the investment’s actual promise."
+        },
+        "es-MX": {
+          "prompt": "Para qué sirve",
+          "line": "Revisa la meta, el dinero necesario y qué promete realmente la inversión."
+        },
+        "pt-BR": {
+          "prompt": "Por que isso importa",
+          "line": "Confira a meta, o dinheiro necessário e o que a aplicação de fato promete."
+        }
+      }
+    },
+    {
+      "id": "practice-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Use which money?",
+          "scene": "A repair invoice is due tomorrow. Its reserved cash is the only payment source.",
+          "options": [
+            {
+              "label": "Keep the repair cash available"
+            },
+            {
+              "label": "Invest it until the invoice is due"
+            }
+          ],
+          "help": [
+            "Check the obligation before considering returns."
+          ],
+          "feedback": {
+            "met": "The repair payment cannot depend on an uncertain investment sale.",
+            "not_yet": "Check the obligation before considering returns."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué haces con el dinero?",
+          "scene": "La reparación vence mañana. El efectivo apartado es la única fuente para pagar.",
+          "options": [
+            {
+              "label": "Conservar disponible ese efectivo"
+            },
+            {
+              "label": "Invertirlo hasta el vencimiento"
+            }
+          ],
+          "help": [
+            "Revisa la obligación antes de pensar en ganancias."
+          ],
+          "feedback": {
+            "met": "El pago no puede depender de una venta incierta.",
+            "not_yet": "Revisa la obligación antes de pensar en ganancias."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que fazer com o dinheiro?",
+          "scene": "O conserto vence amanhã. O dinheiro separado é a única fonte para pagar.",
+          "options": [
+            {
+              "label": "Manter esse dinheiro disponível"
+            },
+            {
+              "label": "Investir até o vencimento"
+            }
+          ],
+          "help": [
+            "Confira a obrigação antes de pensar em ganhos."
+          ],
+          "feedback": {
+            "met": "O pagamento não pode depender de uma venda incerta.",
+            "not_yet": "Confira a obrigação antes de pensar em ganhos."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-02",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.02",
+      "copy": {
+        "en-US": {
+          "prompt": "Which deadline matters?",
+          "scene": "A distant relocation plan changes: the move is now required next week.",
+          "options": [
+            {
+              "label": "Next week’s spending need"
+            },
+            {
+              "label": "The original distant plan"
+            }
+          ],
+          "help": [
+            "Use the current goal date."
+          ],
+          "feedback": {
+            "met": "The new date shortens the remaining investment horizon.",
+            "not_yet": "Use the current goal date."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué plazo importa?",
+          "scene": "Una mudanza lejana cambia: ahora debe ocurrir la próxima semana.",
+          "options": [
+            {
+              "label": "La necesidad de la próxima semana"
+            },
+            {
+              "label": "El plan lejano original"
+            }
+          ],
+          "help": [
+            "Usa la fecha actual de la meta."
+          ],
+          "feedback": {
+            "met": "La nueva fecha acorta el plazo restante para invertir.",
+            "not_yet": "Usa la fecha actual de la meta."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual prazo importa?",
+          "scene": "Uma mudança distante muda de data: agora precisa ocorrer na próxima semana.",
+          "options": [
+            {
+              "label": "A necessidade da próxima semana"
+            },
+            {
+              "label": "O plano distante original"
+            }
+          ],
+          "help": [
+            "Use a data atual da meta."
+          ],
+          "feedback": {
+            "met": "A nova data encurta o prazo restante para investir.",
+            "not_yet": "Use a data atual da meta."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-03",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-3"
+          },
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.03",
+      "copy": {
+        "en-US": {
+          "prompt": "What limits the risk?",
+          "scene": "A person likes uncertainty, but a loss would leave a dependent without required care.",
+          "options": [
+            {
+              "label": "Nothing, confidence is enough"
+            },
+            {
+              "label": "Only willingness"
+            },
+            {
+              "label": "Financial capacity"
+            }
+          ],
+          "help": [
+            "Distinguish feelings from the financial consequences."
+          ],
+          "feedback": {
+            "met": "The care obligation limits the loss that can be absorbed.",
+            "not_yet": "Distinguish feelings from the financial consequences."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué limita el riesgo?",
+          "scene": "Una persona disfruta la incertidumbre, pero una pérdida dejaría sin cuidados necesarios a un dependiente.",
+          "options": [
+            {
+              "label": "Nada, basta confianza"
+            },
+            {
+              "label": "Solo su disposición"
+            },
+            {
+              "label": "La capacidad financiera"
+            }
+          ],
+          "help": [
+            "Distingue sentimientos de consecuencias financieras."
+          ],
+          "feedback": {
+            "met": "La obligación de cuidado limita la pérdida absorbible.",
+            "not_yet": "Distingue sentimientos de consecuencias financieras."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que limita o risco?",
+          "scene": "Uma pessoa gosta de incerteza, mas uma perda deixaria um dependente sem cuidado necessário.",
+          "options": [
+            {
+              "label": "Nada, basta confiança"
+            },
+            {
+              "label": "Só sua disposição"
+            },
+            {
+              "label": "A capacidade financeira"
+            }
+          ],
+          "help": [
+            "Separe sentimentos das consequências financeiras."
+          ],
+          "feedback": {
+            "met": "O dever de cuidado limita a perda suportável.",
+            "not_yet": "Separe sentimentos das consequências financeiras."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-04",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-3"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Which result component?",
+          "scene": "An investment paid rent, while its estimated resale price stayed unchanged.",
+          "options": [
+            {
+              "label": "A resale price increase"
+            },
+            {
+              "label": "Income received"
+            },
+            {
+              "label": "No result of any kind"
+            }
+          ],
+          "help": [
+            "Identify the actual payment."
+          ],
+          "feedback": {
+            "met": "Rent is income separate from a price change.",
+            "not_yet": "Identify the actual payment."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué parte del resultado?",
+          "scene": "Una inversión pagó renta y su precio estimado de reventa no cambió.",
+          "options": [
+            {
+              "label": "Aumento del precio de reventa"
+            },
+            {
+              "label": "Ingreso recibido"
+            },
+            {
+              "label": "Ningún resultado"
+            }
+          ],
+          "help": [
+            "Identifica el pago real."
+          ],
+          "feedback": {
+            "met": "La renta es ingreso distinto de un cambio de precio.",
+            "not_yet": "Identifica el pago real."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual parte do resultado?",
+          "scene": "Uma aplicação pagou aluguel e seu preço estimado de revenda não mudou.",
+          "options": [
+            {
+              "label": "Aumento no preço de revenda"
+            },
+            {
+              "label": "Rendimento recebido"
+            },
+            {
+              "label": "Nenhum resultado"
+            }
+          ],
+          "help": [
+            "Identifique o pagamento real."
+          ],
+          "feedback": {
+            "met": "Aluguel é rendimento separado de mudança no preço.",
+            "not_yet": "Identifique o pagamento real."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-05",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.05",
+      "copy": {
+        "en-US": {
+          "prompt": "What did the buyer obtain?",
+          "scene": "A business raises funds by selling ownership shares, with no principal repayment promise.",
+          "options": [
+            {
+              "label": "A loan repayment contract"
+            },
+            {
+              "label": "An ownership stake"
+            }
+          ],
+          "help": [
+            "Read what the buyer actually receives."
+          ],
+          "feedback": {
+            "met": "The purchase grants ownership rather than a debt claim.",
+            "not_yet": "Read what the buyer actually receives."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué obtuvo quien compró?",
+          "scene": "Un negocio recauda dinero vendiendo acciones de propiedad, sin promesa de devolver capital.",
+          "options": [
+            {
+              "label": "Un contrato de devolución de préstamo"
+            },
+            {
+              "label": "Una participación de propiedad"
+            }
+          ],
+          "help": [
+            "Lee qué recibe realmente quien compra."
+          ],
+          "feedback": {
+            "met": "La compra da propiedad en lugar de un derecho de deuda.",
+            "not_yet": "Lee qué recibe realmente quien compra."
+          }
+        },
+        "pt-BR": {
+          "prompt": "O que a pessoa comprou?",
+          "scene": "Uma empresa capta dinheiro vendendo ações, sem prometer devolver o capital.",
+          "options": [
+            {
+              "label": "Um contrato de pagar empréstimo"
+            },
+            {
+              "label": "Uma parte da empresa"
+            }
+          ],
+          "help": [
+            "Leia o que a pessoa de fato recebe."
+          ],
+          "feedback": {
+            "met": "A compra dá uma parte, não um direito de dívida.",
+            "not_yet": "Leia o que a pessoa de fato recebe."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-06",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.06",
+      "copy": {
+        "en-US": {
+          "prompt": "Which risk is visible?",
+          "scene": "A bond borrower loses its main customer and cannot meet the next promised payment.",
+          "options": [
+            {
+              "label": "Only a change in app design"
+            },
+            {
+              "label": "Credit risk"
+            }
+          ],
+          "help": [
+            "Follow the borrower’s ability to pay."
+          ],
+          "feedback": {
+            "met": "The borrower lacks resources for its debt obligation.",
+            "not_yet": "Follow the borrower’s ability to pay."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Qué riesgo ves?",
+          "scene": "El deudor de un bono pierde su cliente principal y no puede cumplir el próximo pago prometido.",
+          "options": [
+            {
+              "label": "Solo cambio de diseño de la aplicación"
+            },
+            {
+              "label": "Riesgo de crédito"
+            }
+          ],
+          "help": [
+            "Sigue la capacidad de pago del deudor."
+          ],
+          "feedback": {
+            "met": "Al deudor le faltan recursos para cumplir la deuda.",
+            "not_yet": "Sigue la capacidad de pago del deudor."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Qual risco aparece?",
+          "scene": "O devedor de um título perde seu maior cliente e não consegue fazer o próximo pagamento.",
+          "options": [
+            {
+              "label": "Só mudança no desenho do aplicativo"
+            },
+            {
+              "label": "Risco de crédito"
+            }
+          ],
+          "help": [
+            "Acompanhe a capacidade de pagar do devedor."
+          ],
+          "feedback": {
+            "met": "Faltam recursos ao devedor para pagar a dívida.",
+            "not_yet": "Acompanhe a capacidade de pagar do devedor."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-07",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-1"
+          },
+          {
+            "id": "option-2"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.investing-foundations.07",
+      "copy": {
+        "en-US": {
+          "prompt": "Why might buyers pay less?",
+          "scene": "An older fixed bond keeps paying. Equivalent new bonds offer higher interest.",
+          "options": [
+            {
+              "label": "The old payments are less attractive"
+            },
+            {
+              "label": "Fixed means resale never changes"
+            }
+          ],
+          "help": [
+            "Separate contractual payment from resale price."
+          ],
+          "feedback": {
+            "met": "Unchanged payments compete with better new alternatives.",
+            "not_yet": "Separate contractual payment from resale price."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Por qué ofrecerían menos?",
+          "scene": "Un bono fijo anterior sigue pagando. Nuevos bonos equivalentes ofrecen más interés.",
+          "options": [
+            {
+              "label": "Los pagos anteriores son menos atractivos"
+            },
+            {
+              "label": "Fijo impide cambiar de precio"
+            }
+          ],
+          "help": [
+            "Distingue pago contractual de precio de reventa."
+          ],
+          "feedback": {
+            "met": "Pagos sin cambios compiten con alternativas nuevas mejores.",
+            "not_yet": "Distingue pago contractual de precio de reventa."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Por que oferecer menos?",
+          "scene": "Um título fixo antigo segue pagando. Títulos novos iguais oferecem mais juros.",
+          "options": [
+            {
+              "label": "Os pagamentos antigos atraem menos"
+            },
+            {
+              "label": "Fixo impede mudar o preço"
+            }
+          ],
+          "help": [
+            "Separe pagamento do acordo de preço de revenda."
+          ],
+          "feedback": {
+            "met": "Pagamentos sem mudança competem com opções novas melhores.",
+            "not_yet": "Separe pagamento do acordo de preço de revenda."
+          }
+        }
+      }
+    },
+    {
+      "id": "practice-08",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "practice",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "practice",
+      "knowledge_component_id": "finance.prod.saving-resilience.04",
+      "copy": {
+        "en-US": {
+          "prompt": "Where does this reserve fit?",
+          "scene": "Tomorrow’s reserve needs safe value and free access. A meets both; B locks withdrawals for months.",
+          "options": [
+            {
+              "label": "B because its quoted yield is higher"
+            },
+            {
+              "label": "A"
+            }
+          ],
+          "help": [
+            "Access and safety matter before an advertised return."
+          ],
+          "feedback": {
+            "met": "A meets the stated reserve requirements.",
+            "not_yet": "Access and safety matter before an advertised return."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Dónde cabe la reserva?",
+          "scene": "La reserva de mañana exige valor seguro y acceso sin costo. A cumple; B bloquea retiros por meses.",
+          "options": [
+            {
+              "label": "B por su rendimiento anunciado mayor"
+            },
+            {
+              "label": "A"
+            }
+          ],
+          "help": [
+            "Acceso y seguridad importan antes que rendimiento anunciado."
+          ],
+          "feedback": {
+            "met": "A cumple los requisitos indicados de la reserva.",
+            "not_yet": "Acceso y seguridad importan antes que rendimiento anunciado."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Onde cabe a reserva?",
+          "scene": "A reserva de amanhã exige valor seguro e acesso sem custo. A atende; B bloqueia saques por meses.",
+          "options": [
+            {
+              "label": "B por anunciar rendimento maior"
+            },
+            {
+              "label": "A"
+            }
+          ],
+          "help": [
+            "Acesso e segurança vêm antes do rendimento anunciado."
+          ],
+          "feedback": {
+            "met": "A atende aos requisitos informados da reserva.",
+            "not_yet": "Acesso e segurança vêm antes do rendimento anunciado."
+          }
+        }
+      }
+    },
+    {
+      "id": "transfer-01",
+      "type": "story.branch.v2",
+      "grading": "server",
+      "teaching_role": "transfer",
+      "visual": {
+        "type": "story-scene"
+      },
+      "payload": {
+        "options": [
+          {
+            "id": "option-2"
+          },
+          {
+            "id": "option-1"
+          }
+        ]
+      },
+      "rubric": {
+        "acceptable_choice_ids": [
+          "option-1"
+        ]
+      },
+      "item_role": "transfer",
+      "item_phase": "post",
+      "knowledge_component_id": "finance.prod.investing-foundations.01",
+      "copy": {
+        "en-US": {
+          "prompt": "Can this cash be invested?",
+          "scene": "A worker holds a client’s cash for tomorrow’s materials. It must remain fully available.",
+          "options": [
+            {
+              "label": "Invest because it is in hand"
+            },
+            {
+              "label": "Keep it for materials"
+            }
+          ],
+          "help": [
+            "Identify the money’s purpose and owner."
+          ],
+          "feedback": {
+            "met": "Holding someone’s committed money does not make it investable surplus.",
+            "not_yet": "Identify the money’s purpose and owner."
+          }
+        },
+        "es-MX": {
+          "prompt": "¿Puedes invertir este efectivo?",
+          "scene": "Una persona guarda dinero de un cliente para materiales de mañana. Debe estar disponible completo.",
+          "options": [
+            {
+              "label": "Invertir porque está en mano"
+            },
+            {
+              "label": "Conservarlo para los materiales"
+            }
+          ],
+          "help": [
+            "Identifica el propósito y dueño del dinero."
+          ],
+          "feedback": {
+            "met": "Guardar dinero comprometido ajeno no lo vuelve sobrante para invertir.",
+            "not_yet": "Identifica el propósito y dueño del dinero."
+          }
+        },
+        "pt-BR": {
+          "prompt": "Pode investir esse dinheiro?",
+          "scene": "Uma pessoa guarda dinheiro de um cliente para materiais de amanhã. Ele precisa estar disponível inteiro.",
+          "options": [
+            {
+              "label": "Investir porque está em mãos"
+            },
+            {
+              "label": "Guardá-lo para os materiais"
+            }
+          ],
+          "help": [
+            "Identifique a finalidade e o dono do dinheiro."
+          ],
+          "feedback": {
+            "met": "Guardar dinheiro comprometido alheio não o torna sobra para investir.",
+            "not_yet": "Identifique a finalidade e o dono do dinheiro."
+          }
+        }
+      }
+    }
+  ]
+}
