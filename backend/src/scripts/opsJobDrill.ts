@@ -98,7 +98,7 @@ function staleAction(job: DrillTarget): string | null {
   if (job === 'social_retention') return SOCIAL_RETENTION_SWEEP_AUDIT_ACTION;
   if (job === 'badge_link_retirement') return BADGE_IMAGE_SWEEP_AUDIT_ACTION;
   if ((HEARTBEAT_JOBS as readonly string[]).includes(job)) return opsJobAction(job as HeartbeatJob);
-  // family_retention is read from family_retention_runs; the conditions are not scheduled jobs.
+  // The conditions are not scheduled jobs.
   return null;
 }
 
@@ -122,10 +122,6 @@ export async function runOpsJobDrill(job: DrillTarget, now: Date = new Date()): 
     if (url.includes('/rpc/content_bypass_metrics')) return json(metricsRow(job === 'content_retro_checks' ? 1 : 0));
     // G.4: an elevated grant past the 90-day access review.
     if (url.includes('/rpc/staff_access_review_status')) return json(reviewStatus(job === 'access_reviews' ? 1 : 0));
-    // D.21: the family retention sweep's own run table.
-    if (url.includes('/family_retention_runs')) {
-      return json([{ ran_at: job === 'family_retention' ? staleAt : freshAt, removed: {}, evidence_cleared: 0, evidence_failed: 0 }]);
-    }
     // E.6: an erasure still processing whose step failed more than a day ago.
     if (url.includes('/account_deletion_requests')) return json(job === 'account_deletion_failures' ? [{ id: DRILL_REQUEST }] : []);
     // H.3: a warehouse alert whose delivery failed after its retries.

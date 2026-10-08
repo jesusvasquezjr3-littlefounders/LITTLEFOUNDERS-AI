@@ -12,7 +12,7 @@ import { extractBucketAndFile } from './tutorRetention.js';
  * account. Guests and self-registered under-13 accounts are erased at once
  * (a guest cannot come back to cancel, and holding a child's data for a
  * window nobody can use is the worse outcome). A parent-created child is
- * never deleted by the child: its verified Tutor deletes it (family.ts), and
+ * never deleted by the child, and
  * A.1's 90-day suspension purge runs through this same lifecycle.
  *
  * THE ERASURE is four recorded steps, each idempotent, retried by the daily

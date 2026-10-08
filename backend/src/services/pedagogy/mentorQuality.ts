@@ -265,7 +265,6 @@ export const SIGNALS: readonly SignalDefinition[] = [
   { id: 'learning.transfer_success', category: 'learning_outcome', requirement: 'B.7', owner: 'pedagogical_lead', threshold: { kind: 'diagnostic', value: null }, minSample: 1, source: 'v2 grade receipts tagged practice or transfer (learning_transfer_success)', instrumented: 'yes' },
   // Appendix C: "the two signals should meaningfully diverge" — a floor on the divergent share (learningQuality.ts).
   { id: 'learning.judgment_quality', category: 'learning_outcome', requirement: 'B.12', owner: 'pedagogical_lead', threshold: { kind: 'floor', value: JUDGMENT_DIVERGENCE_FLOOR }, minSample: JUDGMENT_MIN_ATTEMPTS, source: 'learning_judgment_differentiation (0129)', instrumented: 'yes' },
-  { id: 'learning.bridge_conversion', category: 'learning_outcome', requirement: 'B.13', owner: 'pedagogical_lead', threshold: { kind: 'diagnostic', value: null }, minSample: T.narrativeMinSample, source: 'learning_narrative_metrics (0127): prompts converted within 7 days', instrumented: 'yes' },
   { id: 'learning.decision_journal', category: 'learning_outcome', requirement: 'B.9', owner: 'pedagogical_lead', threshold: { kind: 'diagnostic', value: null }, minSample: T.narrativeMinSample, source: 'learning_narrative_metrics: story decisions made and journaled (coverage), entries recorded and resurfaced', instrumented: 'yes' },
   // ── Appendix C §1.2 engagement health ──
   { id: 'engagement.session_efficiency', category: 'engagement_health', requirement: 'B.28', owner: 'pedagogical_lead', threshold: { kind: 'trend', value: T.engagementTrendTolerance }, minSample: T.engagementTrendMinWeeklySample, source: 'learning_session_efficiency (0136), weekly; higher is better', instrumented: 'yes' },
@@ -410,7 +409,6 @@ export interface LearningSignalSources {
   judgment: { lesson_id: string; attempts: number; correct_not_sound: number; incorrect_sound: number }[] | null;
   narrative: {
     journal_entries_recorded: number; journal_entries_resurfaced: number;
-    bridge_prompts_offered: number; bridge_prompts_converted_7d: number; bridge_self_commitments: number;
     /** GAP-FIX-R7 (Appendix C 1.1): the coverage denominator; undefined before its migration. */
     story_decisions_made?: number | undefined; story_decisions_journaled?: number | undefined; story_decisions_without_consent?: number | undefined;
   } | null;
@@ -774,7 +772,6 @@ function evaluateOne(
     case 'learning.time_to_mastery':
       return practiceReading(def, src, anomalies, unavailable);
     case 'learning.judgment_quality':
-    case 'learning.bridge_conversion':
     case 'learning.decision_journal':
     case 'engagement.rest_day_use':
     case 'engagement.autonomy_adoption':
@@ -1132,15 +1129,6 @@ function learningReading(def: SignalDefinition, l: LearningSignalSources, anomal
         .sort((a, b) => (a.value ?? 0) - (b.value ?? 0))
         .slice(0, 20);
       return reading(def.id, { status, value, sample: attempts, breakdown, detail: { lessons: l.judgment.length, divergent } });
-    }
-    case 'learning.bridge_conversion': {
-      if (l.narrative === null) return unavailable(def);
-      const n = l.narrative;
-      const value = rate(n.bridge_prompts_converted_7d, n.bridge_prompts_offered);
-      return reading(def.id, {
-        status: value === null || n.bridge_prompts_offered < def.minSample ? 'insufficient_data' : 'diagnostic', value, sample: n.bridge_prompts_offered,
-        detail: { converted: n.bridge_prompts_converted_7d, selfCommitments: n.bridge_self_commitments },
-      });
     }
     case 'learning.decision_journal': {
       if (l.narrative === null) return unavailable(def);

@@ -76,7 +76,7 @@ declare global {
   }
 }
 
-const MARKETING_PREFIXES = ['/', '/how-it-works', '/families', '/faq', '/legal', '/badge'];
+const MARKETING_PREFIXES = ['/', '/legal', '/badge'];
 
 export function isMarketingPath(pathname: string): boolean {
   if (pathname === '/') return true;

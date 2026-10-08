@@ -365,14 +365,3 @@ export async function commitCoursePathwayPlacement(row: {
   return result === 'created' || result === 'replayed' || result === 'conflict' ? result : null;
 }
 
-/** A guardian's view of a kid's placement rows, service role, after the verified-link guard. */
-export async function readLearnerPlacementState(userId: string, courseId: string): Promise<{ hasLegacyPlacement: boolean; creditedLessonIds: Set<string> } | null> {
-  const [placements, credits] = await Promise.all([
-    serviceRest<unknown>(`/course_placements?user_id=eq.${eu(userId)}&course_id=eq.${eu(courseId)}&select=course_id&limit=1`),
-    serviceRest<unknown>(`/placement_credits?user_id=eq.${eu(userId)}&course_id=eq.${eu(courseId)}&select=lesson_id&limit=5000`),
-  ]);
-  const p = z.array(z.object({ course_id: z.string() }).passthrough()).safeParse(placements);
-  const c = z.array(z.object({ lesson_id: z.string() }).passthrough()).safeParse(credits);
-  if (!p.success || !c.success) return null;
-  return { hasLegacyPlacement: p.data.length > 0, creditedLessonIds: new Set(c.data.map((row) => row.lesson_id)) };
-}

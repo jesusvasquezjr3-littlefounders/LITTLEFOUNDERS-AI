@@ -1,9 +1,9 @@
 import type { ReactNode } from 'react';
 import { StandaloneHeader } from '@/rebuild/design/StandaloneHeader';
-import { ButtonGroup, ButtonLink, LoadingState, SingleStateScreen } from '../design/controls';
+import { ButtonGroup, LoadingState, SingleStateScreen } from '../design/controls';
 import type { Locale } from '../design/copyBudget';
 import { rebuildNamespaceCopy } from '../../i18n/rebuild';
-import { follow, siteCopy, StartButton, type Navigate, type StartAction } from './blocks';
+import { siteCopy, StartButton, type Navigate, type StartAction } from './blocks';
 
 /*
  * M7, the public badge-link page, rebuilt (S10L.3). It replaced the last
@@ -40,7 +40,6 @@ export function BadgeLanding({ locale, state, start, onNavigate, header }: {
   const skip = rebuildNamespaceCopy[locale].core.appShell.skip;
   const actions = <ButtonGroup>
     <StartButton action={start} copy={site.site} onNavigate={onNavigate} origin="badge-landing" />
-    <ButtonLink href="/how-it-works" onClick={follow('/how-it-works', onNavigate)}>{copy.howItWorks}</ButtonLink>
   </ButtonGroup>;
 
   if (state.status === 'loading') {

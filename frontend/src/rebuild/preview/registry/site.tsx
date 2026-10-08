@@ -8,13 +8,8 @@ import { ForgotPasswordScreen, ResetPasswordScreen, UpgradeAccountScreen } from 
 import { VerifyParentScreen, type VerificationCheck, type VerifyView } from '../../identity/VerifyParentScreen';
 import { OnboardingFlow, ONBOARDING_STEPS, type OnboardingStep } from '../../identity/OnboardingFlow';
 import { AgeScreen } from '../../identity/AgeScreen';
-import { ChildCoinsPreview } from '../ChildCoinsPreview';
-import { TeenWalletPreview } from '../TeenWalletPreview';
 import { HeroCapture } from '../../site/hero/HeroCapture';
 import { ProblemCapture } from '../../site/hero/ProblemCapture';
-import { SiteActorPreview } from '../SiteActorPreview';
-import { SitePeekPreview, SiteProblemPreview } from '../SitePeekPreview';
-import { SiteTabletPreview, TABLET_VIEWS, type TabletView } from '../SiteTabletPreview';
 import { standalone, type PreviewContext, type PreviewRegistry } from './types';
 
 /*
@@ -110,14 +105,6 @@ export const sitePreviewScreens: PreviewRegistry = {
   'hero-capture': standalone(({ locale, theme }) => <HeroCapture theme={theme} locale={locale} />),
   // The problem section's video is rendered from this screen (scripts/render-problem-video.mjs); the site never runs it.
   'problem-capture': standalone(({ locale, theme }) => <ProblemCapture theme={theme} locale={locale} />),
-  // The landing's tablet section is rendered from these (scripts/render-site-tablet.mjs); the site ships images, not these screens.
-  'site-tablet': standalone(({ locale, theme, params }) => <SiteTabletPreview locale={locale} theme={theme}
-    view={TABLET_VIEWS.find((view): view is TabletView => view === params.get('view')) ?? 'wallet'} />),
-  'child-coins': standalone(({ locale, theme, params }) => <ChildCoinsPreview locale={locale} theme={theme} params={params} />),
-  'teen-wallet': standalone(({ locale, theme }) => <TeenWalletPreview locale={locale} theme={theme} />),
-  'site-peek': standalone(({ locale, theme }) => <SitePeekPreview locale={locale} theme={theme} />),
-  'site-actor': standalone(({ locale, theme, params }) => <SiteActorPreview locale={locale} theme={theme} params={params} />),
-  'site-problem': standalone(({ locale, theme, params }) => <SiteProblemPreview locale={locale} theme={theme} params={params} />),
   identity: standalone(identityScreen),
   'age-screen': standalone(ageScreen),
   onboarding: standalone(onboardingScreen),

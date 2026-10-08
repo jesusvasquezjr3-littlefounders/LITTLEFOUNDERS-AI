@@ -14,7 +14,6 @@ import { devRoutes, notFoundRoute, standaloneStateRoutes } from '@/app-routes/co
 import { siteAccountRoutes, siteAuthRoutes, sitePageRoutes, siteStandaloneRoutes } from '@/app-routes/site';
 import { learnShellRoutes, learnStandaloneRoutes } from '@/app-routes/learn';
 import { mentorStandaloneRoutes } from '@/app-routes/mentor';
-import { familyShellRoutes } from '@/app-routes/family';
 import { profileShellRoutes } from '@/app-routes/profile';
 import { staffShellRoutes } from '@/app-routes/staff';
 
@@ -22,7 +21,7 @@ import { useEffect, useState } from 'react';
 
 /*
  * The route table, composed (W2 Lane 0). Each wave-2 lane owns one module
- * under src/app-routes/ (site, learn, mentor, family, profile, staff) that
+ * under src/app-routes/ (site, learn, mentor, profile, staff) that
  * exports its child routes with their guards; core.tsx (Lane 0) holds the dev
  * harnesses, the standalone states and the route of last resort. This file
  * only decides which rebuilt shell (src/app-shell/) each group renders in:
@@ -97,7 +96,6 @@ export function App() {
             }
           >
             {learnShellRoutes}
-            {familyShellRoutes}
             {profileShellRoutes}
           </Route>
           <Route

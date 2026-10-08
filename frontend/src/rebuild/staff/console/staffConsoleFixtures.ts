@@ -25,9 +25,9 @@ import type { StaffApi, StaffResult } from './staffConsoleApi';
  * instrumented event that never fired, a stress-length course, experiment and
  * skill, and a staff share above half.
  *
- * W2T.4 adds the programme metrics, the denial-reason sample, one child's
- * independence level and the Mentor retention sweep from
- * staffProgrammeFixtures.json (the empty state: no sample, a sweep that never ran).
+ * W2T.4 adds the programme metrics, the Mentor retention sweep and the
+ * operations watchdog from staffProgrammeFixtures.json (the empty state: a
+ * sweep that never ran).
  *
  * `?state=` picks a whole-page state: loading (never answers), error, refused
  * (Core's 403), empty, or ready (default). Writes succeed unless
@@ -111,7 +111,6 @@ export function insightAnswer(route: string, query: URLSearchParams, empty: bool
   if (route === '/admin/intel/funnels/activation') return ok(empty ? [] : i.funnel);
   if (route === '/admin/intel/anomalies/active') return ok(empty ? [] : i.anomalies);
   if (route === '/admin/intel/quality/staff-exclusion') return ok(i.staffExclusion);
-  if (route === '/admin/insights/families') return ok(empty ? { summary: { ...i.families.summary, listed_children: 0 }, children: [], consent: i.families.consent } : i.families);
   if (route === '/admin/intel/retention/cohorts') return ok(empty ? [] : i.cohorts);
   if (route === '/admin/intel/churn/risk') return ok(empty ? [] : i.churn);
   if (route === '/admin/intel/experiments') return ok(empty ? [] : i.experiments);

@@ -3,7 +3,6 @@ import { Fragment, useEffect, type ReactNode } from 'react';
 import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '@/auth/AuthContext';
-import { useWalletAccess } from '@/routes/app/wallet/useWalletAccess';
 import { LearnerShell, StaffShell, STAFF_PERMISSIONS, TutorShell, type ShellNavItem, type StaffGrants, type StaffNavItem, type StaffPermission } from '@/rebuild/design/controls';
 import { appShellKind, currentSlot, learnerNav, MENTOR_PATH, staffNav, tutorNav, type NavSlot, type ShellAccount } from './navigation';
 import { ShellRoot, useShellCopy, useShellLocale, useShellNavigate } from './ShellRoot';
@@ -26,11 +25,10 @@ import { TeenAnalyticsDisclosure } from './TeenAnalyticsDisclosure';
 
 const APP_NAME = 'LittleFounders';
 
-/** The account as the shells need it, from the auth context and Core's wallet classification. */
+/** The account as the shells need it, from the auth context. */
 function useShellAccount(): ShellAccount {
   const { roles, adminPermissions } = useAuth();
-  const wallet = useWalletAccess();
-  return { roles, adminPermissions, wallet };
+  return { roles, adminPermissions };
 }
 
 /** A.1: a suspended or purged kid never sees an app shell; the language of record follows the profile. */

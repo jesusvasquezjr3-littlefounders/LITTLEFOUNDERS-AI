@@ -1,5 +1,4 @@
 import type { AgeScreenState } from './ageScreen.js';
-import { declaredBandForDate } from './ageScreen.js';
 import { DIALOGUE_EXPERIMENT_OPENABLE_BANDS, type DialogueBand } from './pedagogy/dialogueCalibration.js';
 
 /*
@@ -28,22 +27,3 @@ export function ownOptInEnrols(screening: Pick<AgeScreenState, 'ageBand' | 'prot
   return false;
 }
 
-function exactAge(birthDate: string, now: Date): number | null {
-  if (declaredBandForDate(birthDate, now) === null) return null;
-  const born = new Date(`${birthDate}T00:00:00.000Z`);
-  if (Number.isNaN(born.getTime())) return null;
-  let age = now.getUTCFullYear() - born.getUTCFullYear();
-  if (now.getUTCMonth() < born.getUTCMonth() || (now.getUTCMonth() === born.getUTCMonth() && now.getUTCDate() < born.getUTCDate())) age -= 1;
-  return age >= 0 && age <= 120 ? age : null;
-}
-
-/** A verified Tutor's analytics consent for a parent-created child. */
-export function guardianConsentEnrols(input: { birthDate: string | null; childRole: boolean }, configured: readonly DialogueBand[], now = new Date()): boolean {
-  if (!input.childRole || !input.birthDate) return false;
-  const age = exactAge(input.birthDate, now);
-  if (age === null) return false;
-  if (age >= 10 && age <= 12) return opened('tween', configured);
-  // A parent-created account whose birth date says 18+ is the adult band, admitted by the same guardian consent.
-  if (age >= 18) return opened('adult', configured);
-  return false;
-}

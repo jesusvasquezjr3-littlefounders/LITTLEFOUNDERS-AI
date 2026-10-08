@@ -5,7 +5,7 @@ import {
 } from '../../design/controls';
 import {
   churnBuckets, cohortGrid, cohortWeeks, customWindow, DELIVERY_WINDOW_DAYS, EXPORT_ROLES, GRANULARITIES, INTEL_PRESETS, INTEL_VIEWS, isAlertChannels, isAlertDelivery, isAlerts,
-  isAnomalies, isChurn, isCohorts, isDisclosureCoverage, isExperiments, isFamilies, isFunnel, isIntelSummary, isLearnerDetail, isLearningOverview, isSkillHealth, isStaffExclusion, isTrend,
+  isAnomalies, isChurn, isCohorts, isDisclosureCoverage, isExperiments, isFunnel, isIntelSummary, isLearnerDetail, isLearningOverview, isSkillHealth, isStaffExclusion, isTrend,
   isUserNames, rawExportPath, summaryDays, titleIn, TREND_METRICS, windowQuery,
   type Attention, type CourseHealth, type DeliveryStatus, type EvidenceStatus, type Granularity, type IntelView, type IntelWindow, type LearnerProfile, type LessonHealth,
   type TrendMetric,
@@ -14,7 +14,6 @@ import { INSTRUMENTED_EVENTS } from './usageShared';
 import { can, useStaffRead, type StaffApi, type StaffViewer } from './staffConsoleApi';
 import { Facts, LoadFailure, Loading, Metrics, RangeSheet, saveDownload, shortId, StaffPage, today, useChartLabels, useDay, useFormats } from './ConsoleParts';
 import { fill, labelOf, useConsoleCopy, type ConsoleCopy } from './staffConsoleCopy';
-import { FamilyMetricsView } from './StaffProgramme';
 
 /*
  * S6 Learning intel, with S8 Insights as one of its views (view_analytics),
@@ -24,9 +23,8 @@ import { FamilyMetricsView } from './StaffProgramme';
  * exports carry the same window, so a file cannot describe another period.
  *
  *   Overview     daily, weekly and monthly users, events, week-1 retention,
- *                activation, the consent coverage (children, and H.1's teen
- *                and guest disclosure against its 100% target, Appendix O
- *                1.1), a trend whose metric and
+ *                activation, H.1's teen and guest disclosure coverage against
+ *                its 100% target (Appendix O 1.1), a trend whose metric and
  *                grain really change the read (the legacy selectors changed
  *                nothing), the activation funnel, who reaches what, and the
  *                unresolved anomalies.
@@ -34,18 +32,15 @@ import { FamilyMetricsView } from './StaffProgramme';
  *                course, lesson and learner, skill health, and the paged raw
  *                event export Core has served all along (no screen had
  *                offered it since the Insights page was folded in).
- *   Retention    weekly cohorts, and the family task insight (D.6) with its
- *                whole-population rate.
+ *   Retention    weekly cohorts.
  *   People       churn risk, worst first, with no names (the legacy
  *                engagement ranking of learners is not rebuilt: DP-05).
  *   Experiments & alerts   what is configured, read-only, with each alert's
  *                latest delivery outcome and the month's delivery rate
  *                against its 100% target (H.3, Appendix O 1.3).
  *
- * H.1 and D.6: rates are the whole population's; per-child rows are only for
- * children the consent gate admits and carry no identity. G.6: nothing here
- * reads a Mentor transcript or a wallet. A learner is named only for a viewer
- * who holds manage_users; everyone else sees a short id.
+ * G.6: nothing here reads a Mentor transcript. A learner is named only for a
+ * viewer who holds manage_users; everyone else sees a short id.
  */
 
 function useIntelFormats(locale: string) {
@@ -161,7 +156,6 @@ function OverviewView({ api, span }: { api: StaffApi; span: IntelWindow }) {
   const [grain, setGrain] = useState<Granularity>('day');
   const days = summaryDays(span);
   const summary = useStaffRead(api, `/admin/intel/metrics/summary?days=${days}`, isIntelSummary);
-  const families = useStaffRead(api, '/admin/insights/families?limit=100', isFamilies);
   const disclosure = useStaffRead(api, `/admin/analytics/consent-coverage?days=${Math.min(366, Math.max(1, span.days))}`, isDisclosureCoverage);
   const trend = useStaffRead(api, `/admin/intel/metrics/trends?metric=${metric}&granularity=${grain}&days=${days}`, isTrend);
   const funnel = useStaffRead(api, `/admin/intel/funnels/activation?${windowQuery(span)}`, isFunnel);
@@ -225,15 +219,6 @@ function OverviewView({ api, span }: { api: StaffApi; span: IntelWindow }) {
       ]} /> : null}
   </>;
   const secondary = <>
-    <Card heading={t.heading.consent}>
-      <p data-copy-role="body" className="lf-staff-muted">{t.body.consentIntro}</p>
-      {families.load.state === 'loading' ? <Loading />
-        : families.load.state === 'error' ? <LoadFailure code={families.load.code} onRetry={families.reload} />
-          : families.load.state === 'ready' ? <Facts items={[
-            { id: 'consented', label: t.body.consented, value: fill(t.body.ofTotal, { n: format.number(families.load.data.consent.kidsConsented), total: format.number(families.load.data.consent.kidsTotal) }) },
-            { id: 'coverage', label: t.body.coverage, value: families.load.data.consent.kidsTotal > 0 ? format.percent(families.load.data.consent.kidsConsented / families.load.data.consent.kidsTotal) : t.body.noData },
-          ]} /> : null}
-    </Card>
     <Card heading={t.heading.disclosure}>
       <p data-copy-role="body" className="lf-staff-muted">{t.body.disclosureIntro}</p>
       {disclosure.load.state === 'loading' ? <Loading />
@@ -502,7 +487,6 @@ function RetentionView({ api, span }: { api: StaffApi; span: IntelWindow }) {
   const labels = useChartLabels();
   const t = copy.intel;
   const cohorts = useStaffRead(api, `/admin/intel/retention/cohorts?weeks=${cohortWeeks(span)}`, isCohorts);
-  const families = useStaffRead(api, '/admin/insights/families?limit=100', isFamilies);
   const grid = useMemo(() => (cohorts.load.state === 'ready' ? cohortGrid(cohorts.load.data) : null), [cohorts.load]);
   const week = (offset: number) => fill(t.body.weekN, { n: String(offset) });
   const primary = <Card heading={t.heading.cohorts}>
@@ -515,32 +499,8 @@ function RetentionView({ api, span }: { api: StaffApi; span: IntelWindow }) {
             format={format.percent} labels={{ ...labels, point: t.body.week }} />
         </>}
   </Card>;
-  const secondary = <Card heading={t.heading.familyTasks}>
-    <p data-copy-role="body" className="lf-staff-muted">{t.body.familyTasksIntro}</p>
-    {families.load.state === 'loading' ? <Loading />
-      : families.load.state === 'error' ? <LoadFailure code={families.load.code} onRetry={families.reload} />
-        : families.load.state === 'ready' ? (() => {
-          const { summary, children } = families.load.data;
-          const rows = [...children].sort((a, b) => b.tasks_created - a.tasks_created).slice(0, 25);
-          return <>
-            <Metrics label={t.heading.familyTasks} items={[
-              { id: 'approval', label: t.body.approvalRate, value: summary.tasks_created > 0 ? format.percent(summary.tasks_approved / summary.tasks_created) : t.body.noData },
-              { id: 'children', label: t.body.childrenLinked, value: format.number(summary.children) },
-              { id: 'withTasks', label: t.body.childrenWithTasks, value: format.number(summary.children_with_tasks) },
-              { id: 'active', label: t.body.childrenActive, value: format.number(summary.active_children) },
-            ]} />
-            <InlineNotice tone="info">{fill(t.body.listedOnly, { n: format.number(summary.listed_children) })}</InlineNotice>
-            {rows.length ? <DataTable caption={t.heading.familyRows} rows={rows} rowKey={(row) => `${row.first_link_on}:${rows.indexOf(row)}`} columns={[
-              { key: 'guardians', label: t.body.guardians, value: (row) => format.number(row.guardians) },
-              { key: 'assigned', label: t.body.tasksAssigned, value: (row) => format.number(row.tasks_created) },
-              { key: 'approved', label: t.body.tasksApproved, value: (row) => format.number(row.tasks_approved) },
-              { key: 'last', label: t.body.lastTask, value: (row) => (row.last_task_on ? format.calendar(row.last_task_on) : t.body.noData) },
-            ]} /> : <p data-copy-role="body">{t.body.noListed}</p>}
-          </>;
-        })() : null}
-  </Card>;
   return <>
-    <DashboardLayout primary={primary} secondary={secondary} />
+    <DashboardLayout primary={primary} />
     {grid && grid.rows.length ? <>
       <DataTable caption={t.heading.cohortTable} rows={grid.rows} rowKey={(row) => row.cohort} columns={[
             { key: 'cohort', label: t.body.cohort, value: (row) => format.calendar(row.cohort.slice(0, 10)) },
@@ -691,10 +651,9 @@ export function StaffIntel({ api, viewer, initialView = 'overview' }: { api: Sta
         : view === 'insights' ? <InsightsView api={api} viewer={viewer} span={span} />
           : view === 'retention' ? <RetentionView api={api} span={span} />
             : view === 'people' ? <PeopleView api={api} span={span} />
-              : view === 'families' ? <FamilyMetricsView api={api} days={summaryDays(span)} />
-                : <OperationsView api={api} />}
+              : <OperationsView api={api} />}
     </div>
-    {view === 'operations' || view === 'families' ? null : <section className="lf-staff-section" aria-labelledby="staff-intel-export">
+    {view === 'operations' ? null : <section className="lf-staff-section" aria-labelledby="staff-intel-export">
       <h2 id="staff-intel-export" data-copy-role="heading">{t.heading.export}</h2>
       <p data-copy-role="body" className="lf-staff-muted">{t.body.exportIntro}</p>
       <ExportButtons api={api} span={span} />

@@ -1,14 +1,9 @@
 /*
  * THE HABIT STREAK MODEL (B.21, S05.3e): a lapse-tolerant day streak.
  *
- * One pure module, deliberately free of I/O, so every streak in the product
- * can share it. The learning streak uses it now (Core's read model here, and
- * the identical SQL function `habit_streak_advance` inside `complete_lesson`,
- * pinned to this file by the shared vectors in
- * `database/scripts/habit-streak-vectors.json`). The chore streak (D.2, S07)
- * must reuse THIS model rather than invent a second one: Product 10 D.2 says
- * so in as many words. The policy text lives in
- * `docs/rebuild/REWARD-AND-MOTIVATION-POLICY.md` §2.
+ * One pure module, deliberately free of I/O. The learning streak uses it
+ * (Core's read model here, and the SQL function `habit_streak_advance` inside
+ * `complete_lesson`).
  *
  * The rules (Frontend Bible 02 §9.6, Product 10 B.21, Appendix B §3.7):
  *
@@ -31,26 +26,11 @@
  *  7. A date EARLIER than the last practised day (clock skew, a device in
  *     another timezone) changes nothing. The legacy rule restarted the run,
  *     which punished the learner for their device clock.
- *
- * The chore streak (D.2) runs on this model since the S07 merge:
- * choreStreak.ts folds a child's recorded chore days through
- * `advanceHabitStreak`, reads them with `readHabitStreak` and lists its
- * rest-day lapses with `habitStreakLapses`. Nothing chore-specific lives here.
  */
 
 export const HABIT_STREAK_MODEL = 'rest-days-v1' as const;
 /** Free, automatic rest days per ISO week (Bible 02 §9.6 rule 1). */
 export const REST_DAYS_PER_WEEK = 2;
-/** The streak milestones on the OD-7 celebration list; nothing else about a streak celebrates. */
-export const STREAK_MILESTONES = [7, 30, 100] as const;
-export type StreakMilestone = (typeof STREAK_MILESTONES)[number];
-/** Longest single holiday pause a guardian may set, in days (a proposal; see the policy). */
-export const MAX_PAUSE_DAYS = 21;
-/** How far back a guardian may start a pause (an illness noticed late). */
-export const PAUSE_BACKDATE_DAYS = 7;
-/** How far ahead a pause may start. */
-export const PAUSE_LEAD_DAYS = 60;
-
 export interface HabitStreakState {
   /** Practised days in the current run. */
   current: number;
@@ -62,17 +42,6 @@ export interface HabitStreakState {
   restDaysUsed: number;
   /** Every practised day ever. Permanent. */
   daysPracticed: number;
-}
-
-export type StreakOutcome = 'first' | 'same_day' | 'extended' | 'bridged' | 'restarted' | 'earlier_date';
-
-export interface StreakAdvance {
-  state: HabitStreakState;
-  outcome: StreakOutcome;
-  /** Missed days this practice bridged with rest days (0 unless `bridged`). */
-  restDaysBridged: number;
-  /** The milestone this practice reached, or null. */
-  milestone: StreakMilestone | null;
 }
 
 export type StreakStatus = 'none' | 'practiced_today' | 'open' | 'paused' | 'resting';
@@ -148,48 +117,6 @@ function scanGap(lastDay: number, restDaysUsed: number, endDay: number, paused: 
   return { ok: true, missed, lastWeek: week, lastWeekCount: count };
 }
 
-function milestoneFor(current: number): StreakMilestone | null {
-  return (STREAK_MILESTONES as readonly number[]).includes(current) ? current as StreakMilestone : null;
-}
-
-/**
- * The streak after the learner practises on `today`. Pure: the SQL function
- * `habit_streak_advance` implements exactly this, pinned by shared vectors.
- */
-export function advanceHabitStreak(
-  state: HabitStreakState,
-  today: string,
-  paused: ReadonlySet<number> = new Set(),
-): StreakAdvance {
-  const best = Math.max(state.best, state.current);
-  if (!state.lastActiveDate) {
-    const next = { current: 1, best: Math.max(best, 1), lastActiveDate: today, restDaysUsed: 0, daysPracticed: state.daysPracticed + 1 };
-    return { state: next, outcome: 'first', restDaysBridged: 0, milestone: null };
-  }
-  const lastDay = toDay(state.lastActiveDate);
-  const todayDay = toDay(today);
-  if (todayDay === lastDay) {
-    const current = Math.max(state.current, 1);
-    return { state: { ...state, current, best: Math.max(best, current) }, outcome: 'same_day', restDaysBridged: 0, milestone: null };
-  }
-  if (todayDay < lastDay) {
-    return { state: { ...state, best }, outcome: 'earlier_date', restDaysBridged: 0, milestone: null };
-  }
-  const gap = scanGap(lastDay, state.restDaysUsed, todayDay, paused);
-  if (!gap.ok) {
-    const next = { current: 1, best: Math.max(best, 1), lastActiveDate: today, restDaysUsed: 0, daysPracticed: state.daysPracticed + 1 };
-    return { state: next, outcome: 'restarted', restDaysBridged: 0, milestone: null };
-  }
-  const current = state.current + 1;
-  const restDaysUsed = gap.lastWeek === isoWeekStart(todayDay) ? gap.lastWeekCount : 0;
-  return {
-    state: { current, best: Math.max(best, current), lastActiveDate: today, restDaysUsed, daysPracticed: state.daysPracticed + 1 },
-    outcome: gap.missed > 0 ? 'bridged' : 'extended',
-    restDaysBridged: gap.missed,
-    milestone: milestoneFor(current),
-  };
-}
-
 /**
  * What the learner (or their Tutor) sees on `today`, before practising.
  * Stored values are never rewritten by a read (OD-9): a run that can no
@@ -234,51 +161,6 @@ export function habitStateFromStats(row: {
     restDaysUsed: Math.min(REST_DAYS_PER_WEEK, Math.max(0, row.rest_days_used ?? 0)),
     daysPracticed: Math.max(0, row.days_practiced ?? 0),
   };
-}
-
-/**
- * The missed (not paused) days strictly between the last practised day and
- * `until`, in order: each one covered by a free rest day, and the last one
- * the day that ended the run when a week ran out of rest days. Exactly the
- * walk `advanceHabitStreak` and `readHabitStreak` make; it only names the
- * days, for the chore streak's rest-day utilization metric (D.2, Appendix H).
- */
-export function habitStreakLapses(
-  state: HabitStreakState,
-  until: string,
-  paused: ReadonlySet<number> = new Set(),
-): Array<{ day: string; covered: boolean }> {
-  if (!state.lastActiveDate || state.current <= 0) return [];
-  const lastDay = toDay(state.lastActiveDate);
-  const endDay = toDay(until);
-  const out: Array<{ day: string; covered: boolean }> = [];
-  let week = isoWeekStart(lastDay);
-  let count = Math.min(Math.max(state.restDaysUsed, 0), REST_DAYS_PER_WEEK);
-  for (let day = lastDay + 1; day < endDay; day += 1) {
-    if (paused.has(day)) continue;
-    const dayWeek = isoWeekStart(day);
-    if (dayWeek !== week) {
-      week = dayWeek;
-      count = 0;
-    }
-    count += 1;
-    const covered = count <= REST_DAYS_PER_WEEK;
-    out.push({ day: fromDay(day), covered });
-    if (!covered) break;
-  }
-  return out;
-}
-
-/** Whether a guardian's pause range is one the policy accepts, relative to the guardian's `today`. */
-export function pauseRangeRefusal(startsOn: string, endsOn: string, today: string): 'order' | 'too_long' | 'too_early' | 'too_far' | null {
-  const start = toDay(startsOn);
-  const end = toDay(endsOn);
-  const now = toDay(today);
-  if (end < start) return 'order';
-  if (end - start + 1 > MAX_PAUSE_DAYS) return 'too_long';
-  if (start < now - PAUSE_BACKDATE_DAYS) return 'too_early';
-  if (start > now + PAUSE_LEAD_DAYS) return 'too_far';
-  return null;
 }
 
 /** Test and tooling helper: the calendar date `offset` days after `date`. */

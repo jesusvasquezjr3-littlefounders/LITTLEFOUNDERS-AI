@@ -6,7 +6,6 @@ import { trackInsight } from '@/lib/insights';
 import { APP_HOME } from '@/app-shell/home';
 import { ShellRoot, useShellCopy, useShellLocale } from '@/app-shell/ShellRoot';
 import { StandaloneState } from '@/app-shell/StandaloneState';
-import { useWalletAccess } from '@/routes/app/wallet/useWalletAccess';
 import { guidedReviewSkillFrom, guidedReviewLessonFrom } from '@/routes/app/learn/paths';
 import { ButtonLink, SkipLink } from '@/rebuild/design/controls';
 import { ConnectedStandaloneHeader } from '@/app-shell/StandaloneHeader';
@@ -52,10 +51,9 @@ function MentorFailure() {
 }
 
 export default function TutorPage() {
-  const { getToken, session } = useAuth();
+  const { getToken, session, roles } = useAuth();
   const { isDark } = useTheme();
   const locale = useShellLocale();
-  const wallet = useWalletAccess();
   const navigate = useNavigate();
   const reviewSkill = useMemo(() => guidedReviewSkillFrom(window.location.search), []);
   // OD-43: the lesson a guided review was opened from, so the Mentor can complement the course.
@@ -74,7 +72,7 @@ export default function TutorPage() {
   return <MentorBoundary fallback={<MentorFailure />}>
     <ShellRoot>
       <MentorRoute header={<><SkipLink label={shellCopy.skip} target="lf-mentor-route-main" /><ConnectedStandaloneHeader /></>} getToken={getToken} userId={session?.user?.id ?? null} locale={locale} theme={isDark ? 'dark' : 'light'}
-        guardianLink={wallet.familyChild} reviewSkill={reviewSkill} reviewLessonId={reviewLesson} onLeave={leave} onPath={path} initialSheet={initialSheet} />
+        guardianLink={roles.includes('kid')} reviewSkill={reviewSkill} reviewLessonId={reviewLesson} onLeave={leave} onPath={path} initialSheet={initialSheet} />
     </ShellRoot>
   </MentorBoundary>;
 }

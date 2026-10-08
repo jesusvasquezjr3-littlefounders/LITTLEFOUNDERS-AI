@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { APP_HOME } from '@/app-shell/home';
-import { continueAfterSignIn } from '@/auth/pendingInvite';
+import { continueAfterSignIn } from '@/auth/continueAfterSignIn';
 import { useShellLocale, useShellNavigate } from '@/app-shell/ShellRoot';
 import { configureInsights, flushInsights, trackInsight } from '@/lib/insights';
 import { playPlatformSound } from '@/lib/sound';

@@ -507,11 +507,11 @@
       "dimension": "path",
       "rows": [
         {
-          "label": "/family",
+          "label": "/learn",
           "value": 3100
         },
         {
-          "label": "/family/tasks/semana-de-ahorro-para-la-bicicleta-nueva",
+          "label": "/learn/courses/semana-de-ahorro-para-la-bicicleta-nueva",
           "value": 1410
         },
         {
@@ -778,8 +778,8 @@
         {
           "day": "2026-09-25",
           "role": "parent",
-          "event": "task_view",
-          "route_class": "tasks",
+          "event": "parent_report_viewed",
+          "route_class": "profile",
           "device": "desktop",
           "locale": "es-MX",
           "events": 410,
@@ -838,7 +838,7 @@
         },
         {
           "role": "parent",
-          "route_class": "tasks",
+          "route_class": "profile",
           "events": 410,
           "users": 90,
           "sessions": 200,
@@ -1611,7 +1611,7 @@
         },
         {
           "role": "parent",
-          "routeClass": "tasks",
+          "routeClass": "profile",
           "users": 520,
           "sessions": 1100,
           "events": 5000
@@ -1815,44 +1815,6 @@
       "includedAttempts": 3000,
       "excludedAttempts": 410,
       "lastStaffEventAt": "2026-09-25T20:00:00Z"
-    },
-    "families": {
-      "summary": {
-        "children": 341,
-        "children_with_tasks": 212,
-        "active_children": 180,
-        "tasks_created": 1320,
-        "tasks_approved": 1011,
-        "active_days": 30,
-        "listed_children": 3
-      },
-      "children": [
-        {
-          "guardians": 2,
-          "tasks_created": 41,
-          "tasks_approved": 38,
-          "first_link_on": "2026-08-12",
-          "last_task_on": "2026-09-24"
-        },
-        {
-          "guardians": 1,
-          "tasks_created": 12,
-          "tasks_approved": 7,
-          "first_link_on": "2026-08-30",
-          "last_task_on": "2026-09-19"
-        },
-        {
-          "guardians": 1,
-          "tasks_created": 0,
-          "tasks_approved": 0,
-          "first_link_on": "2026-09-20",
-          "last_task_on": null
-        }
-      ],
-      "consent": {
-        "kidsTotal": 341,
-        "kidsConsented": 219
-      }
     },
     "cohorts": [
       {

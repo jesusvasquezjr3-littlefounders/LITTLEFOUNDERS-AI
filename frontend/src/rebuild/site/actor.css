@@ -1,4 +1,0 @@
-/* A character clip: the poster and the canvas stack at one size; the canvas takes over once its first frame is drawn. */
-.lf-rebuild .lf-actor { position: relative; display: block; aspect-ratio: 640 / 760; }
-.lf-rebuild .lf-actor > img, .lf-rebuild .lf-actor > canvas { position: absolute; inset: 0; inline-size: 100%; block-size: 100%; object-fit: contain; }
-.lf-rebuild .lf-actor[data-playing='true'] > img { visibility: hidden; }

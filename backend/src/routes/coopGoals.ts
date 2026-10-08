@@ -1,9 +1,7 @@
 import { Router, type Response } from 'express';
 import { z } from 'zod';
 import { fail, ok } from '../lib/http.js';
-import { authedUser, requireAuth, requireRole } from '../middleware/auth.js';
-import { getRolesForGate } from '../services/insights.js';
-import { requiresMinorMentorSafeguards } from '../services/mentorSafety.js';
+import { authedUser, requireAuth } from '../middleware/auth.js';
 import {
   COOP_DAYS,
   COOP_MAX_INVITEES,
@@ -16,9 +14,7 @@ import {
   readCoopCandidates,
   readCoopEligible,
   readCoopGoalPeople,
-  readCoopGuardianView,
   readCoopOverview,
-  setCoopGuardianConsent,
   type CoopRefusal,
 } from '../services/coopGoals.js';
 import { readDataPracticeApplies } from '../services/dataPractices.js';
@@ -50,11 +46,6 @@ import { findProfileByUsername, getSocialCards, submitSocialReport, SOCIAL_REPOR
  * strings are usernames matched to the handle pattern and the E.3 report's
  * category and bounded note, which only the safety team reads. The overview
  * carries the group total only: no per-member number, no rank, no reward.
- *
- * /api/v1/family/coop-goals — the verified Tutor's opt-in for a parent-created
- * child aged 13 to 17 (default off; E.10's pattern for a peer feature). Same
- * gate as the Family Hub: a parent role, a current verified adult identity,
- * and a verified link to this exact child (404 otherwise).
  */
 
 const USERNAME = z.string().trim().toLowerCase().regex(/^[a-z0-9_]{3,20}$/);
@@ -81,9 +72,8 @@ function refuse(res: Response, refusal: CoopRefusal) {
     case 'group-full': return fail(res, 409, 'COOP_GROUP_FULL', 'A goal has at most five people');
     case 'already-asked': return fail(res, 409, 'COOP_ALREADY_ASKED', 'This person was already asked');
     case 'not-allowed': return fail(res, 403, 'COOP_NOT_ALLOWED', 'Only the person who started the goal can do this');
-    case 'child-not-teen': return fail(res, 409, 'COOP_CHILD_NOT_TEEN', 'Goals together are for 13 to 17 year olds');
     case 'practice-consent': return fail(res, 403, 'DATA_PRACTICE_CONSENT_REQUIRED', 'A Tutor needs to say yes to goals together first');
-    case 'goal-not-found': case 'invitation-not-found': case 'member-not-found': case 'guardian-not-linked':
+    case 'goal-not-found': case 'invitation-not-found': case 'member-not-found':
       return fail(res, 404, 'NOT_FOUND', 'Not found');
     default: return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not reach goals together');
   }
@@ -274,40 +264,4 @@ function emptyOverview() {
     invitations: [] as unknown[],
     finished: [] as unknown[],
   };
-}
-
-/** /api/v1/family/coop-goals — the verified Tutor's per-child opt-in. */
-export function familyCoopGoalsRouter(): Router {
-  const router = Router();
-  router.use(requireAuth, requireRole(['parent']));
-  router.use(async (_req, res, next) => {
-    const user = authedUser(res);
-    const roles = await getRolesForGate(user.id);
-    if (!roles || await requiresMinorMentorSafeguards(user.id, roles)) {
-      return fail(res, 403, 'PARENT_VERIFICATION_REQUIRED', 'Current adult identity verification is required');
-    }
-    return next();
-  });
-
-  router.get('/kids/:kidId', async (req, res) => {
-    const kid = z.string().uuid().safeParse(req.params.kidId);
-    if (!kid.success) return fail(res, 400, 'VALIDATION_ERROR', 'kidId must be a uuid');
-    const view = await readCoopGuardianView(authedUser(res).id, kid.data);
-    if (!view.ok) return refuse(res, view.refusal);
-    return ok(res, view.value);
-  });
-
-  router.put('/kids/:kidId', async (req, res) => {
-    const kid = z.string().uuid().safeParse(req.params.kidId);
-    const body = z.object({ enabled: z.boolean() }).strict().safeParse(req.body);
-    if (!kid.success || !body.success) return fail(res, 400, 'VALIDATION_ERROR', 'Choose on or off');
-    const guardian = authedUser(res).id;
-    const saved = await setCoopGuardianConsent(guardian, kid.data, body.data.enabled);
-    if (!saved.ok) return refuse(res, saved.refusal);
-    const view = await readCoopGuardianView(guardian, kid.data);
-    if (!view.ok) return refuse(res, view.refusal);
-    return ok(res, view.value);
-  });
-
-  return router;
 }

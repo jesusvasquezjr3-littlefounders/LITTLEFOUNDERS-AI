@@ -47,13 +47,10 @@ export const CoopOverview = z.object({
 }).strict();
 export type CoopOverview = z.infer<typeof CoopOverview>;
 
-export const CoopGuardianView = z.object({ ageFits: z.boolean(), enabled: z.boolean(), openGoals: Count }).strict();
-export type CoopGuardianView = z.infer<typeof CoopGuardianView>;
-
 export type CoopRefusal =
   | 'invalid' | 'not-eligible' | 'member-unavailable' | 'goal-limit' | 'group-full' | 'already-asked'
   | 'goal-not-found' | 'invitation-not-found' | 'member-not-found' | 'not-allowed'
-  | 'guardian-not-linked' | 'child-not-teen' | 'practice-consent' | 'unavailable';
+  | 'practice-consent' | 'unavailable';
 
 const REFUSALS: Record<string, CoopRefusal> = {
   COOP_INVALID: 'invalid',
@@ -66,8 +63,6 @@ const REFUSALS: Record<string, CoopRefusal> = {
   COOP_INVITATION_NOT_FOUND: 'invitation-not-found',
   COOP_MEMBER_NOT_FOUND: 'member-not-found',
   COOP_NOT_ALLOWED: 'not-allowed',
-  COOP_GUARDIAN_NOT_LINKED: 'guardian-not-linked',
-  COOP_CHILD_NOT_TEEN: 'child-not-teen',
   // OD-9 4.2: a migrated child's Tutor has not consented to this sharing surface.
   DATA_PRACTICE_CONSENT_REQUIRED: 'practice-consent',
 };
@@ -153,37 +148,3 @@ export async function readCoopGoalPeople(goalId: string, userIds: string[]): Pro
   return parsed.success ? new Map(parsed.data.map((row) => [row.user_id, row.status])) : null;
 }
 
-export async function readCoopGuardianView(guardianId: string, kidId: string): Promise<CoopResult<CoopGuardianView>> {
-  if (!ids(guardianId, kidId)) return { ok: false, refusal: 'invalid' };
-  return call('coop_goal_guardian_view', { p_guardian: guardianId, p_kid: kidId }, (body) => {
-    const parsed = CoopGuardianView.safeParse(body);
-    return parsed.success ? parsed.data : null;
-  });
-}
-
-/*
- * E.2 / Law 5 (GAP-FIX-R4): the verified Tutor's read of a parent-created
- * child's open goals (migration coop_goal_guardian_goals). The database
- * checks the verified link and the guardian tier (a self-registered teen's
- * goals stay its own, OD-3 Option B), reconciles first, and returns no
- * progress at all: no group total, no per-member number (OD-27 (1)).
- */
-export const CoopGuardianGoals = z.array(z.object({
-  id: UUID, kind: Kind, target: Target, startsAt: Instant, endsAt: Instant, startedByChild: z.boolean(),
-  childStatus: z.enum(['invited', 'active']),
-  people: z.array(z.object({ userId: UUID, status: z.enum(['invited', 'active', 'ended']) }).strict()).max(COOP_MAX_MEMBERS * 4),
-}).strict()).max(50);
-export type CoopGuardianGoals = z.infer<typeof CoopGuardianGoals>;
-
-export async function readCoopGuardianGoals(guardianId: string, kidId: string): Promise<CoopResult<CoopGuardianGoals>> {
-  if (!ids(guardianId, kidId)) return { ok: false, refusal: 'invalid' };
-  return call('coop_goal_guardian_goals', { p_guardian: guardianId, p_kid: kidId }, (body) => {
-    const parsed = CoopGuardianGoals.safeParse(body);
-    return parsed.success ? parsed.data : null;
-  });
-}
-
-export async function setCoopGuardianConsent(guardianId: string, kidId: string, enabled: boolean): Promise<CoopResult<boolean>> {
-  if (!ids(guardianId, kidId)) return { ok: false, refusal: 'invalid' };
-  return call('set_coop_goal_guardian_consent', { p_guardian: guardianId, p_kid: kidId, p_enabled: enabled }, (body) => (body === enabled ? enabled : null));
-}

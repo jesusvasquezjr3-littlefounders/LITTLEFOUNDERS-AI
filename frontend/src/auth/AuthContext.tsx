@@ -14,7 +14,6 @@ import { ACCOUNT_SUSPENDED_EVENT, api, type ApiError } from '@/lib/api';
 import { getAnonId } from '@/lib/visitor';
 import { clearCoursesCache } from '@/routes/app/learn/coursesCache';
 import { clearLessonCheckpoints } from '@/lib/lessonRunCheckpoint';
-import { forgetInvite } from './pendingInvite';
 
 /*
  * Session state for the whole app. Tokens live in localStorage (SPA + Core
@@ -497,7 +496,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // child seeing another's progress is not a thing to leave to a single guard.
     clearCoursesCache();
     // GAP-FIX-R5: a pending second-Tutor invite belongs to whoever opened the link, never to the next account here.
-    forgetInvite();
     persist(null);
     setProfile(null);
     setRoles([]);

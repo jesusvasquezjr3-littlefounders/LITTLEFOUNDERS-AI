@@ -1,96 +1,21 @@
 import { z } from 'zod';
-import { randomBytes } from 'node:crypto';
 import { serviceRest, serviceRestRaw } from './supabaseRest.js';
 import { adminRevokeUserSessions } from './gotrue.js';
 import { eraseNow } from './accountDeletion.js';
 
 /*
- * A.1's two built FAQ promises:
- *
- * 1. A second verified Tutor can link to the same child. The joining parent
- *    is admitted by the family router's verified-adulthood gate BEFORE these
- *    functions run; the invite token is the only authorization a parent
- *    without an existing link gets, and it is single-use with a 7-day window.
- *
- * 2. A kid whose last verified guardian link disappears is suspended
- *    immediately and deleted if nothing reactivates it within 90 days. The
- *    suspension marker (and, since identity_enforcement, the GoTrue ban) is
- *    written by migration 0110's trigger. The 90-day deletion runs in two
- *    places, both through `purgeExpiredKidSuspension`, which hard deletes
- *    only when the window has passed AND no verified link exists: the daily
- *    account-deletion sweep (`listExpiredKidSuspensions`, so a child who never
- *    signs in again is still erased; F3-identity-site) and the kid's own
- *    session boundary (GET /auth/me).
+ * A.1's built FAQ promise: a kid whose last verified guardian link disappears
+ * is suspended immediately and deleted if nothing reactivates it within 90
+ * days. The suspension marker (and, since identity_enforcement, the GoTrue
+ * ban) is written by migration 0110's trigger. The 90-day deletion runs in
+ * two places, both through `purgeExpiredKidSuspension`, which hard deletes
+ * only when the window has passed AND no verified link exists: the daily
+ * account-deletion sweep (`listExpiredKidSuspensions`, so a child who never
+ * signs in again is still erased; F3-identity-site) and the kid's own
+ * session boundary (GET /auth/me).
  */
 
-export const GUARDIAN_INVITE_LIFETIME_MS = 7 * 24 * 60 * 60 * 1000;
 export const KID_SUSPENSION_DELETE_DAYS = 90;
-
-const InviteRow = z.object({
-  token: z.string(),
-  kid_user_id: z.string().uuid(),
-  created_by: z.string().uuid().nullable(),
-  expires_at: z.string().datetime({ offset: true }),
-  accepted_at: z.string().datetime({ offset: true }).nullable(),
-});
-
-const KidProfileMin = z.object({
-  user_id: z.string().uuid(),
-  display_name: z.string().nullable(),
-  username: z.string().nullable(),
-});
-
-export async function createGuardianInvite(kidUserId: string, createdBy: string): Promise<{ token: string; expiresAt: string } | null> {
-  const token = randomBytes(24).toString('base64url');
-  const expiresAt = new Date(Date.now() + GUARDIAN_INVITE_LIFETIME_MS).toISOString();
-  const inserted = await serviceRest<unknown>('/guardian_invites', {
-    method: 'POST',
-    headers: { Prefer: 'return=minimal' },
-    body: JSON.stringify({ kid_user_id: kidUserId, created_by: createdBy, token, expires_at: expiresAt }),
-  });
-  return inserted === null ? null : { token, expiresAt };
-}
-
-/** The joining parent's preview: kid display fields only — never contact data, never other guardians. */
-export async function getGuardianInvitePreview(token: string): Promise<{ kidUserId: string; displayName: string | null; username: string | null; expiresAt: string; selfIssued: boolean } | null> {
-  const invites = await serviceRest<unknown[]>(
-    `/guardian_invites?token=eq.${encodeURIComponent(token)}&accepted_at=is.null&expires_at=gt.${encodeURIComponent(new Date().toISOString())}` +
-      `&select=token,kid_user_id,created_by,expires_at,accepted_at&limit=1`,
-  );
-  const parsed = z.array(InviteRow).max(1).safeParse(invites);
-  if (!parsed.success || parsed.data.length === 0) return null;
-  const invite = parsed.data[0]!;
-  // Defensive re-check AFTER parsing: a misbehaving proxy or a query-string
-  // drift must never turn a consumed invite back into a live preview.
-  if (invite.accepted_at !== null || Date.parse(invite.expires_at) <= Date.now()) return null;
-  const profiles = await serviceRest<unknown[]>(
-    `/profiles?user_id=eq.${encodeURIComponent(invite.kid_user_id)}&select=user_id,display_name,username&limit=1`,
-  );
-  const profile = z.array(KidProfileMin).max(1).safeParse(profiles);
-  if (!profile.success || profile.data.length === 0) return null;
-  return {
-    kidUserId: invite.kid_user_id,
-    displayName: profile.data[0]!.display_name,
-    username: profile.data[0]!.username,
-    expiresAt: invite.expires_at,
-    // S07.2: a teen issued this invite for their own account.
-    selfIssued: invite.created_by === invite.kid_user_id,
-  };
-}
-
-/** One-shot exchange; migration 0110's transaction validates, links, marks accepted and audits. */
-export async function acceptGuardianInvite(token: string, acceptingParentId: string): Promise<{ kidUserId: string } | 'invalid' | 'unavailable'> {
-  const raw = await serviceRestRaw('/rpc/accept_guardian_invite', {
-    method: 'POST',
-    body: JSON.stringify({ p_token: token, p_accepting: acceptingParentId }),
-  });
-  if (raw.ok) {
-    const parsed = z.string().uuid().safeParse(raw.body);
-    return parsed.success ? { kidUserId: parsed.data } : 'unavailable';
-  }
-  const error = z.object({ code: z.literal('P0001') }).safeParse(raw.body);
-  return error.success ? 'invalid' : 'unavailable';
-}
 
 /**
  * Service-role suspension read — the browser's own profile read is not the

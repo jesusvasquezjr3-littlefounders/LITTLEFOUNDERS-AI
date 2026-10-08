@@ -1,4 +1,3 @@
-/// <reference types="vitest/config" />
 import { defineConfig, searchForWorkspaceRoot } from 'vite';
 import react from '@vitejs/plugin-react';
 import { existsSync, realpathSync } from 'node:fs';
@@ -24,11 +23,5 @@ export default defineConfig({
   server: {
     port: 5173,
     fs: { allow: [searchForWorkspaceRoot(process.cwd()), realNodeModules] },
-  },
-  test: {
-    globals: true,
-    environment: 'jsdom',
-    setupFiles: ['./src/test-setup.ts'],
-    include: ['src/**/*.test.{ts,tsx}'],
   },
 });

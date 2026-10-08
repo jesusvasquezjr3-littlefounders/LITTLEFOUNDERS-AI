@@ -1,18 +1,15 @@
 /*
  * S6 Learning intel and S8 Insights (view_analytics), W2T.3: the wire shapes
- * of the warehouse (dataintel, proxied read-only by Core at /admin/intel/*),
- * Core's family-engagement insight (/admin/insights/families) and Core's raw
- * event export (/admin/insights/export). Hand-mirrored and checked on arrival.
+ * of the warehouse (dataintel, proxied read-only by Core at /admin/intel/*)
+ * and Core's raw event export (/admin/insights/export). Hand-mirrored and
+ * checked on arrival.
  *
  * What staff may see is fixed server-side and kept here:
  *   - H.1: behavioural events exist only when the consent gate admitted them
  *     at the source (a child's only with a verified guardian's consent), and
  *     the warehouse filters staff activity out before any metric is computed;
- *   - D.6: the family insight's per-child rows come only for children the H.1
- *     gate admits and carry no identity; its rates are the whole population's
- *     (the summary), never the listed rows';
- *   - G.6: no Mentor transcript, no wallet or banking data, no impersonation.
- *     Nothing below reads any of them. A learner is shown by name only to a
+ *   - G.6: no Mentor transcript, no impersonation. Nothing below reads
+ *     either. A learner is shown by name only to a
  *     viewer who holds manage_users (the same grant that opens the people
  *     directory); otherwise by a short id.
  *   - The raw export carries no user or anonymous id (Core strips them) and
@@ -73,42 +70,6 @@ export const isAnomalies = (value: unknown): value is Anomaly[] => arrayOf(value
 export interface StaffExclusion { excludedEvents: number; excludedShare: number | null; staffUsers: number; excludedAttempts: number }
 export const isStaffExclusion = (value: unknown): value is StaffExclusion => isRecord(value) && isNumber(value.excludedEvents)
   && isNullableNumber(value.excludedShare) && isNumber(value.staffUsers) && isNumber(value.excludedAttempts);
-
-/* ---- Family engagement (D.6) and consent coverage (H.1) --------------------- */
-
-/**
- * S07.6 (D.6): the staff family-engagement insight on the per-child shape.
- * Mirrors Core's FamilyEngagementInsight (services/insights.ts) and the
- * migration family_engagement_insight key for key; the snake_case keys are a
- * DB-function read, not a proxied /admin/intel/* endpoint.
- * agent/tools/check-family-engagement-contract.mjs keeps the four copies equal.
- * Per-child rows come only for children whose analytics consent the H.1 gate
- * admits, and carry no identity; the summary counts every child.
- */
-export interface IntelFamilySummary {
-  children: number;
-  children_with_tasks: number;
-  active_children: number;
-  tasks_created: number;
-  tasks_approved: number;
-  active_days: number;
-  listed_children: number;
-}
-
-export interface IntelFamilyChild {
-  guardians: number;
-  tasks_created: number;
-  tasks_approved: number;
-  first_link_on: string;
-  last_task_on: string | null;
-}
-
-export interface FamiliesInsight { summary: IntelFamilySummary; children: IntelFamilyChild[]; consent: { kidsTotal: number; kidsConsented: number } }
-export const isFamilies = (value: unknown): value is FamiliesInsight => isRecord(value) && isRecord(value.summary)
-  && isNumber(value.summary.children) && isNumber(value.summary.tasks_created) && isNumber(value.summary.tasks_approved) && isNumber(value.summary.listed_children)
-  && isRecord(value.consent) && isNumber(value.consent.kidsTotal) && isNumber(value.consent.kidsConsented)
-  && arrayOf(value.children, (c): c is IntelFamilyChild => isRecord(c) && isNumber(c.guardians) && isNumber(c.tasks_created)
-    && isNumber(c.tasks_approved) && isString(c.first_link_on) && isNullableString(c.last_task_on));
 
 /* ---- Retention -------------------------------------------------------------- */
 
@@ -282,7 +243,7 @@ export function rawExportPath(request: RawExportRequest): string {
 
 /* ---- Views ------------------------------------------------------------------------ */
 
-export const INTEL_VIEWS = ['overview', 'insights', 'retention', 'people', 'families', 'operations'] as const;
+export const INTEL_VIEWS = ['overview', 'insights', 'retention', 'people', 'operations'] as const;
 export type IntelView = (typeof INTEL_VIEWS)[number];
 /** `?view=`; the legacy `?focus=learning` (and /admin/insights, which redirects here) opens Insights. */
 export function intelView(view: string | null, focus: string | null = null): IntelView {

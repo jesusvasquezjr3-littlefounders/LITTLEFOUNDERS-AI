@@ -86,7 +86,7 @@ export interface RegisterSpec {
 
 /**
  * The four registers (Product 10, Block B "Age-band registers"; Appendix B
- * §2.9). The adult register serves adult learners and the Family Hub.
+ * §2.9). The adult register serves adult learners.
  */
 export const REGISTERS: Readonly<Record<LearnerRegister, RegisterSpec>> = {
   young: {

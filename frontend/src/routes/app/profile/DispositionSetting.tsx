@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react';
 import { useAuth } from '@/auth/AuthContext';
 import { useShellLocale } from '@/app-shell/ShellRoot';
 import { useTheme } from '@/theme/useTheme';
-import { useWalletAccess } from '@/routes/app/wallet/useWalletAccess';
 import { useAnnounce } from '@/rebuild/design/controls';
 import { DispositionSummary } from '@/rebuild/mentor/DispositionSummary';
 import { getOwnDisposition, resetOwnDisposition, type DispositionSummaryData } from '@/rebuild/mentor/allianceApi';
@@ -45,7 +44,6 @@ export function DispositionSetting() {
 
 function ScopedDisposition() {
   const { getToken, roles } = useAuth();
-  const wallet = useWalletAccess();
   const locale = useShellLocale();
   const { isDark } = useTheme();
   const [phase, setPhase] = useState<'loading' | 'ready' | 'failed'>('loading');
@@ -69,7 +67,7 @@ function ScopedDisposition() {
     return () => { cancelled = true; };
   }, [getToken]);
 
-  const canReset = !refused && wallet.loaded && !roles.includes('kid') && !wallet.familyChild;
+  const canReset = !refused && !roles.includes('kid');
 
   async function reset() {
     if (busy.current) return;

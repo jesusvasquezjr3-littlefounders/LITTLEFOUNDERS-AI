@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { pluralUnit } from '../design/plural';
 import type { AgeBand, Locale } from '../design/copyBudget';
 import { Button, Slider, ProgressBar } from '../design/controls';
-import { PocketSplit } from '../family/PocketSplit';
+import { PocketSplit } from './pockets/PocketSplit';
 import { LessonFeedback } from './LessonFeedback';
 import { changeAllocation, inspectAllocation, reallocateBoundary, remaining, type Allocation, type Pocket } from './allocationModel';
 import { decodeAllocationCheckpoint, encodeAllocationCheckpoint } from './allocationCheckpoint';

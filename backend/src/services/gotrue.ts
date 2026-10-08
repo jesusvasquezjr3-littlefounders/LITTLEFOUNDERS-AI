@@ -97,75 +97,6 @@ export function signUp(input: SignUpInput): Promise<GotrueResult<Partial<GotrueS
 }
 
 /*
- * KID ACCOUNTS ARE CREATED, NOT SIGNED UP. A child has no mailbox, so the
- * ordinary /signup path is wrong twice over: it would demand an address we must
- * not collect from a minor (§1.9), and with `GOTRUE_MAILER_AUTOCONFIRM=false`
- * in production it would then park the account behind a confirmation email
- * nobody can ever open.
- *
- * The admin endpoint creates the user already confirmed, with a synthetic
- * address on a `.invalid` domain - reserved by RFC 2606 precisely so it can
- * never resolve or receive mail. It exists only because `auth.users` needs an
- * identifier; nothing sends to it, and the child never sees or types it.
- *
- * Service role, and therefore Core-only. It is deliberately not exported
- * through any route the browser can reach on its own: the single caller is
- * POST /family/kids, behind a verified `parent`.
- */
-export function adminCreateUser(input: {
-  email: string;
-  password: string;
-  displayName: string;
-  locale: string;
-}): Promise<GotrueResult<GotrueUser>> {
-  const { SUPABASE_SERVICE_ROLE_KEY } = getConfig();
-  return gotrue('/admin/users', {
-    method: 'POST',
-    headers: {
-      apikey: SUPABASE_SERVICE_ROLE_KEY,
-      Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      email: input.email,
-      password: input.password,
-      email_confirm: true,
-      user_metadata: {
-        display_name: input.displayName,
-        locale: input.locale,
-        // Read by nothing that grants anything - the ROLE is the authority
-        // (user_roles, granted by Core). This is a hint for support and for
-        // GoTrue's own admin views, never a permission.
-        is_kid: true,
-      },
-    }),
-  });
-}
-
-/*
- * Rotate a child's passphrase. Service role, because the person doing it is the
- * PARENT and not the account holder: the child never had the old one to prove
- * they know it, and asking a parent to sign in as their child to change it
- * would teach exactly the wrong habit.
- *
- * Core's route is what enforces that the caller is that child's verified
- * guardian; this function trusts its caller by design and is therefore never
- * reachable from a browser.
- */
-export function adminUpdateUserPassword(userId: string, password: string): Promise<GotrueResult<GotrueUser>> {
-  const { SUPABASE_SERVICE_ROLE_KEY } = getConfig();
-  return gotrue(`/admin/users/${encodeURIComponent(userId)}`, {
-    method: 'PUT',
-    headers: {
-      apikey: SUPABASE_SERVICE_ROLE_KEY,
-      Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ password }),
-  });
-}
-
-/*
  * Move a parent-created child's synthetic sign-in address (S-06, OD-28): the
  * address is derived from the username, so a guardian-initiated username
  * change moves both, and the caller undoes this if the profile cannot follow.
@@ -181,31 +112,6 @@ export function adminUpdateUserEmail(userId: string, email: string): Promise<Got
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ email, email_confirm: true }),
-  });
-}
-
-/*
- * Delete an account outright. Two callers, both deliberate: the rollback for
- * the window between "auth user exists" and "the family link that makes it
- * legitimate exists" (§1.3 - a kid row without a verified link is a bug rather
- * than a state, so the user must not survive a failure to link it), and a
- * parent removing their child.
- *
- * This is a HARD delete and the cascade is the point: `auth.users` is
- * referenced ON DELETE CASCADE by profiles, user_roles, guardian_links and the
- * learning tables, so removing a child removes the child's data rather than
- * hiding it. Erasing a minor's record when their guardian asks is the whole
- * obligation; a soft flag would leave it all in place.
- */
-export function adminDeleteUser(userId: string): Promise<GotrueResult<Record<string, never>>> {
-  const { SUPABASE_SERVICE_ROLE_KEY } = getConfig();
-  return gotrue(`/admin/users/${encodeURIComponent(userId)}`, {
-    method: 'DELETE',
-    headers: {
-      apikey: SUPABASE_SERVICE_ROLE_KEY,
-      Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-      'Content-Type': 'application/json',
-    },
   });
 }
 

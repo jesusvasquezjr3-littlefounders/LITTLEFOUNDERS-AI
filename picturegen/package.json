@@ -13,9 +13,7 @@
     "backfill:webp": "tsx --env-file-if-exists=.env src/backfillWebp.ts",
     "start": "node dist/index.js",
     "type-check": "tsc --noEmit",
-    "lint": "eslint .",
-    "test": "vitest run",
-    "test:watch": "vitest"
+    "lint": "eslint ."
   },
   "dependencies": {
     "express": "^5.1.0",

@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import { BANDS, LENS_KEYS, MENTORS, type RunReport } from '../../games/runReport.js';
-import { isRefusal, rpc, UNAVAILABLE } from '../familyLifecycle.js';
-import { serviceRest } from '../supabaseRest.js';
+import { isRefusal, rpc, serviceRest, UNAVAILABLE } from '../supabaseRest.js';
 import { PLATFORM_LIMITS, type PlayLimits } from './limits.js';
 import { metricsOf } from './lens.js';
 

@@ -339,9 +339,8 @@ export function gamesRouter(): Router {
 }
 
 /**
- * /api/v1/family/play-limits — the verified Tutor's per-child limits, by the
- * same gate as the Family Hub's other child settings: a parent role, a current
- * verified adult identity, and a verified link to this exact child (404
+ * /api/v1/family/play-limits — the verified Tutor's per-child limits: a parent
+ * role, a current verified adult identity, and a verified link to this exact child (404
  * otherwise, so another family's child is never confirmed to exist).
  */
 export function familyPlayLimitsRouter(): Router {

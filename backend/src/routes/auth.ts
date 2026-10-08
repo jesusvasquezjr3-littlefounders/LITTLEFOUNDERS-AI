@@ -7,7 +7,6 @@ import { getConfig } from '../config.js';
 import { fail, ok } from '../lib/http.js';
 import { authedUser, requireAuth } from '../middleware/auth.js';
 import { accountRateLimiter, authRateLimiter } from '../middleware/rateLimit.js';
-import { kidEmail } from './family.js';
 import * as gotrue from '../services/gotrue.js';
 import { markUnder13Origin } from '../services/ageOrigin.js';
 import { birthMonthToKeep, declaredBandForDate, readAgeScreen, recordAgeScreen } from '../services/ageScreen.js';
@@ -54,10 +53,21 @@ const USERNAME_RE = /^[a-z0-9_]{3,20}$/;
  * an age-appropriate level rather than buying us a compliance record.
  *
  * A child under the threshold is not turned away from the product: the guest
- * path collects nothing at all, and a parent can create them a proper account
- * from /family. They are turned away from GIVING US AN EMAIL.
+ * path collects nothing at all. They are turned away from GIVING US AN EMAIL.
  */
 // A.4 retains the minimum age band in service-owned storage, not the date.
+
+/*
+ * A child's `auth.users` identifier. `.invalid` is reserved by RFC 2606 so
+ * the address can never resolve or receive mail, which is the point: it
+ * exists because the auth table needs a unique handle, not because anyone
+ * writes to it. Derived from the username so sign-in can reproduce it
+ * without storing a second copy.
+ */
+const KID_EMAIL_DOMAIN = 'kids.littlefounders.invalid';
+function kidEmail(username: string): string {
+  return `${username}@${KID_EMAIL_DOMAIN}`;
+}
 
 /*
  * COMPLETED CALENDAR YEARS, in UTC — not elapsed milliseconds over an average
@@ -250,7 +260,7 @@ export function authRouter(): Router {
     }
     const id = authedUser(res).id;
     // A.4 (OD-3): a parent-created child never declares their own age; the
-    // verified Tutor gives it (POST/PATCH /family/kids). Refused before any write.
+    // verified Tutor gives it. Refused before any write.
     const roles = await getRolesForGate(id);
     if (roles === null) return fail(res, 502, 'DATA_UNAVAILABLE', 'Could not resolve the account role');
     if (roles.includes('kid')) return fail(res, 403, 'KID_AGE_BY_TUTOR', 'Your Tutor gives your age');
@@ -370,7 +380,7 @@ export function authRouter(): Router {
     }
     // A username resolves to the synthetic `.invalid` address the kid account
     // was created with - derived, never stored twice, which is also why a kid's
-    // username is not editable (see family.ts kidEmail).
+    // username is not editable (see kidEmail).
     const identifier = parsed.data.identifier;
     /*
      * E.1 probing boundary: an identifier without `@` is a kid handle, and the
@@ -486,7 +496,7 @@ export function authRouter(): Router {
     }
     const user = authedUser(res);
     // A.6: a child account has a synthetic, non-deliverable sign-in address
-    // BY DESIGN (data minimization — see family.ts kidEmail). Attaching a
+    // BY DESIGN (data minimization — see kidEmail). Attaching a
     // real email would quietly hand the child an independent recovery path
     // outside the guardian's sight, so the capability is removed for the
     // kid role rather than merely hidden.

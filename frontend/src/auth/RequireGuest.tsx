@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '@/auth/AuthContext';
 import { APP_HOME } from '@/app-shell/home';
-import { continueAfterSignIn } from './pendingInvite';
+import { continueAfterSignIn } from './continueAfterSignIn';
 
 /**
  * Route guard: a visitor with a REAL (non-guest) session is sent to

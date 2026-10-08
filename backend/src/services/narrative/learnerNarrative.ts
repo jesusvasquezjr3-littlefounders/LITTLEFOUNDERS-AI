@@ -1,16 +1,10 @@
-import type { AuthedUser } from '../../middleware/auth.js';
-import type { AgeScreenState } from '../ageScreen.js';
 import type { CourseTree, TopicNode } from '../courseTree.js';
-import { getRolesForGate } from '../insights.js';
-import { getVerifiedGuardiansOfKid } from '../supabaseRest.js';
 import { extractV2Decisions, pickRecall, type RecallRelevance } from './decisionJournal.js';
-import { BRIDGE_COOLDOWN_DAYS, BRIDGE_TTL_DAYS, bridgeAudience, bridgeCandidates, topicNewlyCompleted, type BridgeAction } from './familyBridge.js';
-import { journalCandidates, offerBridgePrompt, recordDecisions, recordResurfacing, topicTeaches } from './narrativeData.js';
-import { dataPracticeApplies } from '../dataPractices.js';
+import { journalCandidates, recordDecisions, recordResurfacing, topicTeaches } from './narrativeData.js';
 
 /*
- * B.9 / B.13 (S05.3c) — the three moments the learning routes hand to the
- * narrative layer. Each is best-effort by design: a failure here is logged and
+ * B.9 (S05.3c) — the moments the learning routes hand to the narrative
+ * layer. Each is best-effort by design: a failure here is logged and
  * the lesson, grade or completion it rides on proceeds untouched. A narrative
  * echo is never allowed to cost a learner a lesson (and the code stays safe to
  * deploy before its migration exists).
@@ -84,46 +78,6 @@ export async function resurfaceForLesson(input: { userId: string; tree: CourseTr
     };
   } catch (error) {
     console.error('[narrative] resurfacing threw', error);
-    return null;
-  }
-}
-
-/**
- * Moment 3 (B.13): after a passing completion, offer a family bridge prompt if
- * this completion finished a topic that teaches a bridge component. Returns
- * the self prompt's action for an independent teen (their completion screen
- * may mention it), otherwise null. A guardian prompt is never announced to the
- * child.
- */
-export async function offerBridgeAfterCompletion(input: {
-  user: AuthedUser; ageScreen: AgeScreenState | undefined; courseId: string; topicId: string; lessonId: string;
-  before: CourseTree; after: CourseTree | null;
-}): Promise<{ action: BridgeAction } | null> {
-  try {
-    const before = topicOf(input.before, input.topicId)?.topic.lessons ?? null;
-    const after = input.after ? topicOf(input.after, input.topicId)?.topic.lessons ?? null : null;
-    if (!topicNewlyCompleted(before, after)) return null;
-    const teaches = await topicTeaches([input.topicId]);
-    const candidates = bridgeCandidates((teaches?.get(input.topicId) ?? []).map((k) => k.key));
-    if (candidates.length === 0 || !input.ageScreen) return null;
-    const [roles, guardians] = await Promise.all([getRolesForGate(input.user.id), getVerifiedGuardiansOfKid(input.user.id)]);
-    if (roles === null || guardians === null) return null;
-    const audience = bridgeAudience({ roles, isGuest: input.user.isGuest, age: input.ageScreen, hasVerifiedGuardian: guardians.length > 0 });
-    if (!audience) return null;
-    // OD-9 4.2: a migrated child is offered a bridge only with its specific consent.
-    if (!await dataPracticeApplies(input.user.id, 'sharing.learning_family_bridge')) return null;
-    const offered = await offerBridgePrompt({
-      learnerId: input.user.id, audience, candidates, courseId: input.courseId, topicId: input.topicId, lessonId: input.lessonId,
-      ttlDays: BRIDGE_TTL_DAYS, cooldownDays: BRIDGE_COOLDOWN_DAYS,
-    });
-    if (offered === null) {
-      console.error('[narrative] bridge offer failed', { topicId: input.topicId });
-      return null;
-    }
-    const action = offered.offered ? candidates.find((c) => c.kc_key === offered.kc_key)?.action ?? null : null;
-    return audience === 'self' && action ? { action } : null;
-  } catch (error) {
-    console.error('[narrative] bridge offer threw', error);
     return null;
   }
 }

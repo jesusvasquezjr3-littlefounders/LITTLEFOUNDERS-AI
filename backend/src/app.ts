@@ -9,10 +9,7 @@ import { badgeLinkSweepRouter, badgePublicRouter } from './routes/badgePublic.js
 import { socialRetentionSweepRouter } from './routes/socialRetention.js';
 import { opsHeartbeatRouter } from './routes/opsHeartbeat.js';
 import { learningRetentionSweepRouter } from './routes/learningRetention.js';
-import { bankingRouter } from './routes/banking.js';
-import { familyRouter } from './routes/family.js';
-import { familyLearningRouter } from './routes/familyLearning.js';
-import { coopGoalsRouter, familyCoopGoalsRouter } from './routes/coopGoals.js';
+import { coopGoalsRouter } from './routes/coopGoals.js';
 import { familyPlayLimitsRouter } from './routes/games.js';
 import { authRouter } from './routes/auth.js';
 import { eventsRouter } from './routes/events.js';
@@ -20,11 +17,8 @@ import { learnRouter } from './routes/learn.js';
 import { onboardingRouter } from './routes/onboarding.js';
 import { placementRouter } from './routes/placement.js';
 import { ownProfileRouter, publicProfilesRouter } from './routes/profile.js';
-import { tasksRouter } from './routes/tasks.js';
 import { tutorRouter } from './routes/tutor.js';
 import { verificationRouter } from './routes/verification.js';
-import { walletRouter } from './routes/wallet.js';
-import { familyGovernanceRouter } from './routes/familyGovernance.js';
 import { ACTIVE_ACCOUNT_PATHS, requireActiveAccount } from './middleware/accountAdmission.js';
 
 export const SERVICE = 'backend';
@@ -96,17 +90,8 @@ export function createApp(): express.Express {
   app.use('/api/v1/onboarding', onboardingRouter());
   app.use('/api/v1/placement', placementRouter());
   app.use('/api/v1/tutor', tutorRouter());
-  // S05.3c (B.10, B.13): mounted before /family so its own gate answers its paths.
-  app.use('/api/v1/family/learning', familyLearningRouter());
-  // L-04 (OD-27 (1)): the Tutor's opt-in for a 13-to-17 child, before /family for the same reason.
-  app.use('/api/v1/family/coop-goals', familyCoopGoalsRouter());
-  // Games: the verified Tutor lowers a child's play limits (docs/games/KRV1-CONTRACT.md), before /family likewise.
+  // Games: the verified Tutor lowers a child's play limits (docs/games/KRV1-CONTRACT.md).
   app.use('/api/v1/family/play-limits', familyPlayLimitsRouter());
-  app.use('/api/v1/family', familyRouter());
-  app.use('/api/v1/tasks', tasksRouter());
-  app.use('/api/v1/banking', bankingRouter());
-  app.use('/api/v1/wallet', walletRouter());
-  app.use('/api/v1/family-hub', familyGovernanceRouter());
   app.use('/api/v1/profile', ownProfileRouter());
   app.use('/api/v1/profiles', publicProfilesRouter());
   // L-04 (OD-27 (1)): teen cooperative goals.

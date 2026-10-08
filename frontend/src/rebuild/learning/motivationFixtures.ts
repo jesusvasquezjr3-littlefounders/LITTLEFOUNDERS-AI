@@ -1,5 +1,4 @@
 import type { Rhythm, RhythmState, StreakView } from './motivation';
-import type { KidStreakState } from '../family/streakPause';
 
 /*
  * S05.3e preview fixtures for the rebuilt rhythm (B.21, B.24), the guardian's
@@ -31,15 +30,6 @@ export const rhythmPreviewStates: Record<string, RhythmState> = {
     pace: { goal: 1, chosen: false, passedToday: 0, goalMet: false }, mentor: { character: 'dina', chosen: false } }) },
   loading: { status: 'loading' },
   error: { status: 'error' },
-};
-
-export const streakPausePreviewStates: Record<string, KidStreakState> = {
-  ready: { status: 'ready', streak: streak({}) },
-  active: { status: 'ready', streak: streak({ status: 'paused', pause: { startsOn: '2026-09-22', endsOn: '2026-10-03' } }) },
-  resting: { status: 'ready', streak: streak({ status: 'resting', current: 0 }) },
-  loading: { status: 'loading' },
-  error: { status: 'error' },
-  'no-access': { status: 'no-access' },
 };
 
 /** A first completion on the seventh practised day that meets the learner's plan. */

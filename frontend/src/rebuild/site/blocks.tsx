@@ -75,7 +75,7 @@ export function StartButton({ action, copy, onNavigate, origin, size = 'lg', bre
 export type TutorAction = { kind: 'visitor'; onFollow?: () => void } | { kind: 'parent' } | { kind: 'member'; href: string };
 
 export function TutorButton({ action, copy, onNavigate }: { action: TutorAction; copy: SiteCopy; onNavigate?: Navigate }) {
-  if (action.kind === 'parent') return <ButtonLink variant="accent" size="lg" href="/family" onClick={follow('/family', onNavigate)}>{copy.openFamily}</ButtonLink>;
+  if (action.kind === 'parent') return <ButtonLink variant="accent" size="lg" href="/learn" onClick={follow('/learn', onNavigate)}>{copy.openApp}</ButtonLink>;
   if (action.kind === 'member') return <ButtonLink variant="accent" size="lg" href={action.href} onClick={follow(action.href, onNavigate)}>{copy.openApp}</ButtonLink>;
   // The approved brand line is `brand` copy (06 §3.3), so it is a link styled as the accent button, not a budgeted action.
   return <a className="lf-button lf-button--accent lf-button--lg lf-button-link" href="/signup?intent=tutor" data-copy-role="brand"
@@ -97,44 +97,6 @@ export function SiteSection({ tone = 'default', heading, headingId, children, sp
   </section>;
 }
 
-/**
- * The hero: copy and art, 7:5 from an 840 px container (never 1:1, 03 §3.3);
- * the art first below 400 px (02 §7 rule 9). Art is an illustration only (the
- * real-model Mentor renders); an interactive demo belongs in its own section,
- * never above the page's heading on a phone. Without art the hero is one column.
- */
-export function SiteHero({ children, art, overlap = false }: { children: ReactNode; art?: ReactNode; overlap?: boolean }) {
-  if (!art) return <section className="lf-site-hero lf-site-hero--solo" data-section><div className="lf-site-hero-copy">{children}</div></section>;
-  // `overlap`: the portrait art reaches into the next section on wide screens (03 §3.3).
-  return <section className={`lf-site-hero${overlap ? ' lf-site-hero--overlap' : ''}`} data-layout="hero" data-section>
-    <div className="lf-site-hero-copy">{children}</div>
-    <div className="lf-site-hero-art">{art}</div>
-  </section>;
-}
-
-/** The public pages that carry a hero scene (GAP-FIX-R5). */
-export type SiteHeroScene = 'landing' | 'how-it-works' | 'families';
-const HERO_ALT: Record<SiteHeroScene, 'landing' | 'howItWorks' | 'families'> = { landing: 'landing', 'how-it-works': 'howItWorks', families: 'families' };
-
-/**
- * A page's hero scene (03 §3.3: portrait 4:5, allowed to overlap into the next
- * section; 07 §1 class B): a real-model render of one Mentor on the Diorama in
- * a catalogue pose (scripts/render-site-hero.mjs), in the page's colour mode,
- * WebP at 1x/2x/3x with a PNG fallback, registered in the asset manifest
- * (`site.hero.*`, a `scenes` draft until the owner's style review). No text is
- * drawn in it; its accessible name is translated copy (07 §8).
- */
-export function SiteHeroArt({ scene, locale }: { scene: SiteHeroScene; locale: Locale }) {
-  const { theme } = useRebuildEnvironment();
-  const mode = theme === 'dark' ? 'dark' : 'light';
-  const alt = siteCopy(locale).siteHeroArt[HERO_ALT[scene]];
-  // Each density is its own literal path, so the asset gate can match every registered file to its reference.
-  const webp = [[`/rebuild/site-hero/${scene}-${mode}.webp`, '1x'], [`/rebuild/site-hero/${scene}-${mode}@2x.webp`, '2x'], [`/rebuild/site-hero/${scene}-${mode}@3x.webp`, '3x']];
-  return <picture className="lf-site-hero-scene" data-hero-scene={scene}>
-    <source type="image/webp" srcSet={webp.map(([path, density]) => `${path} ${density}`).join(', ')} />
-    <img src={`/rebuild/site-hero/${scene}-${mode}.png`} alt={alt} width={480} height={600} decoding="async" data-slot="site.hero" />
-  </picture>;
-}
 
 /**
  * The four Mentor characters, each a render of its real 3D model (02 rule 21,

@@ -1,5 +1,4 @@
 import { corePreviewScreens } from './core';
-import { familyPreviewScreens } from './family';
 import { learnPreviewScreens } from './learn';
 import { mentorPreviewScreens } from './mentor';
 import { profilePreviewScreens } from './profile';
@@ -13,7 +12,6 @@ export const PREVIEW_REGISTRIES: Readonly<Record<string, PreviewRegistry>> = {
   site: sitePreviewScreens,
   learn: learnPreviewScreens,
   mentor: mentorPreviewScreens,
-  family: familyPreviewScreens,
   profile: profilePreviewScreens,
   staff: staffPreviewScreens,
 };

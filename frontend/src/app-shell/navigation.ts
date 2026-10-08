@@ -1,5 +1,4 @@
 import { STAFF_ROUTE_GRANTS, type StaffGrant } from '@/app-routes/staffGrants';
-import { FAMILY_WALLET_PATH, LEGACY_FAMILY_WALLET_PATH } from '@/rebuild/banking/walletPath';
 import { NAV_MARKS } from '@/rebuild/design/navMarks';
 import { APP_HOME } from './home';
 
@@ -21,11 +20,9 @@ import { APP_HOME } from './home';
 export { APP_HOME };
 /** The Mentor stage's route (Lane 3). The learner's tab shows the chosen character's name, never this path's word. */
 export const MENTOR_PATH = '/tutor';
-/** The family Wallet's path (OD-28; `/banking` only redirects). The slot id stays `banking`, an identifier nobody reads. */
-export { FAMILY_WALLET_PATH, LEGACY_FAMILY_WALLET_PATH };
 
-export type Lane = 'core' | 'site' | 'learn' | 'mentor' | 'family' | 'profile' | 'staff';
-export type AppNavLabel = 'learn' | 'tasks' | 'wallet' | 'familyCoins' | 'coins' | 'profile' | 'family' | 'becomeTutor' | 'staff' | 'backToApp';
+export type Lane = 'core' | 'site' | 'learn' | 'mentor' | 'profile' | 'staff';
+export type AppNavLabel = 'learn' | 'profile' | 'staff' | 'backToApp';
 export type StaffNavLabel = 'overview' | 'content' | 'users' | 'ageCorrections' | 'emails' | 'analytics' | 'intel' | 'mentorQuality' | 'generation' | 'audit' | 'reports' | 'roles';
 
 export interface NavSlot<Label extends string = AppNavLabel> {
@@ -44,8 +41,6 @@ export interface NavSlot<Label extends string = AppNavLabel> {
 export interface ShellAccount {
   roles: readonly string[];
   adminPermissions: readonly string[];
-  /** GET /wallet/access, by age (S07.2, OD-3 Option B). */
-  wallet: { loaded: boolean; holder: 'teen' | 'managed_child' | null; familyChild: boolean };
 }
 
 /* ---------------------------------------------------------------------------
@@ -54,18 +49,6 @@ export interface ShellAccount {
 
 export const SLOTS = {
   learn: { id: 'learn', label: 'learn', path: '/learn', owner: 'learn', iconAssetId: NAV_MARKS.learn },
-  tasks: { id: 'tasks', label: 'tasks', path: '/tasks', owner: 'family', iconAssetId: NAV_MARKS.tasks },
-  /** The independent teen's personal wallet (OD-3 Option B). */
-  teenWallet: { id: 'wallet', label: 'wallet', path: '/wallet', owner: 'family', iconAssetId: NAV_MARKS.wallet },
-  /** A parent-created child's coin card: their wallet. */
-  childWallet: { id: 'banking', label: 'wallet', path: FAMILY_WALLET_PATH, owner: 'family', iconAssetId: NAV_MARKS.wallet },
-  /** A teen who linked a verified parent: the family wallet beside their own wallet ("Family wallet", OD-28). */
-  familyCoins: { id: 'banking', label: 'familyCoins', path: FAMILY_WALLET_PATH, owner: 'family', iconAssetId: NAV_MARKS.familyCoins },
-  /** The verified parent's view of the family's coin cards: the Wallet (OD-28), labelled with the glossary term. */
-  coins: { id: 'banking', label: 'coins', path: FAMILY_WALLET_PATH, owner: 'family', iconAssetId: NAV_MARKS.coins },
-  family: { id: 'family', label: 'family', path: '/family', owner: 'family', iconAssetId: NAV_MARKS.family },
-  /** An adult who is not yet a verified parent: the way into Tutor verification. */
-  becomeTutor: { id: 'become-tutor', label: 'becomeTutor', path: '/verify-parent', owner: 'site', iconAssetId: NAV_MARKS.becomeTutor },
   profile: { id: 'profile', label: 'profile', path: '/profile', owner: 'profile', iconAssetId: NAV_MARKS.profile },
   staff: { id: 'staff', label: 'staff', path: '/admin', owner: 'staff', iconAssetId: NAV_MARKS.staff },
   backToApp: { id: 'back-to-app', label: 'backToApp', path: APP_HOME, owner: 'core', iconAssetId: NAV_MARKS.backToApp },
@@ -104,37 +87,15 @@ export function appShellKind(account: Pick<ShellAccount, 'roles'>): 'tutor' | 'l
   return account.roles.includes('parent') ? 'tutor' : 'learner';
 }
 
-/**
- * The learner app's destinations, without the Mentor tab (the shell inserts it
- * second, where the mockup puts it). Learn and Profile for everyone; Tasks for
- * a child in a family (a parent-created child, or a teen who linked a verified
- * parent); the personal wallet for a self-registered teen (OD-3 Option B); the
- * family coin card for a child in a family; "Become a Tutor" for an adult who
- * is not yet a verified parent (never for a staff account); the staff console
- * for staff who can open at least one console page.
- */
+/** The learner app's destinations, without the Mentor tab (the shell inserts it second). */
 export function learnerNav(account: ShellAccount): NavSlot[] {
-  const { roles, wallet } = account;
-  const kid = roles.includes('kid');
-  const items: NavSlot[] = [SLOTS.learn];
-  if (kid || wallet.familyChild) items.push(SLOTS.tasks);
-  if (wallet.holder === 'teen') items.push(SLOTS.teenWallet);
-  if (kid) items.push(SLOTS.childWallet);
-  else if (wallet.holder === 'teen' && wallet.familyChild) items.push(SLOTS.familyCoins);
-  items.push(SLOTS.profile);
-  const staff = canOpenConsole(account);
-  const staffRole = roles.includes('admin') || roles.includes('superadmin');
-  if (!kid && !staffRole && !roles.includes('parent') && wallet.loaded && wallet.holder === null) items.push(SLOTS.becomeTutor);
-  if (staff) items.push(SLOTS.staff);
-  return items;
-}
-
-/** The verified parent's console: the family first, then their own learning and profile. */
-export function tutorNav(account: ShellAccount): NavSlot[] {
-  const items: NavSlot[] = [SLOTS.family, SLOTS.tasks, SLOTS.coins, SLOTS.learn, SLOTS.profile];
+  const items: NavSlot[] = [SLOTS.learn, SLOTS.profile];
   if (canOpenConsole(account)) items.push(SLOTS.staff);
   return items;
 }
+
+/** A verified parent sees the same destinations as a learner. */
+export const tutorNav = learnerNav;
 
 /** The staff console's sections this account may open (superadmin-only sections only for a superadmin), then the way back. */
 export function staffNav(account: Pick<ShellAccount, 'roles' | 'adminPermissions'>): { slot: NavSlot<StaffNavLabel | 'backToApp'>; grant?: StaffGrant | readonly StaffGrant[] }[] {

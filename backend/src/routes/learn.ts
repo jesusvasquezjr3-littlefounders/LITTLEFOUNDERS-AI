@@ -41,7 +41,7 @@ import { isSeededHorizonteType } from '../services/horizonte/index.js';
 import { getOwnLearnerIntelligence, recordExperimentExposure } from '../services/learningIntel.js';
 import { learnRegisterRouter } from './learnRegister.js';
 import { guidedReviewFor, localizedTitle, recentV2Outcomes, withLearnerMentor, type GuidedReviewOffer } from '../services/guidedReview.js';
-import { offerBridgeAfterCompletion, recordV2GradedDecisions, resurfaceForLesson } from '../services/narrative/learnerNarrative.js';
+import { recordV2GradedDecisions, resurfaceForLesson } from '../services/narrative/learnerNarrative.js';
 import { learnNarrativeRouter } from './learnNarrative.js';
 import { learnMotivationRouter } from './learnMotivation.js';
 import { gamesRouter } from './games.js';
@@ -609,7 +609,7 @@ async function v2GuidedReview(userId: string, ctx: LessonContext, locale: string
 export function learnRouter(): Router {
   const router = Router();
   router.use(requireAuth, requireAgeScreen);
-  // B.9 / B.13 (S05.3c): the learner's decision journal and self-directed bridge prompts.
+  // B.9 (S05.3c): the learner's decision journal.
   router.use(learnNarrativeRouter());
   // B.21 / B.24 (S05.3e): the learner's streak, pace and autonomy levers.
   router.use(learnMotivationRouter());
@@ -1457,12 +1457,7 @@ export function learnRouter(): Router {
         secondsSpent: parsed.data.seconds_spent ?? Math.round((parsed.data.minutes_spent ?? 0) * 60),
         motivation,
       });
-      // B.13 (S05.3c): a completion that finishes a bridge topic offers a family prompt.
-      const selfBridge = completion.replayed ? null : await offerBridgeAfterCompletion({
-        user, ageScreen: res.locals.ageScreen as AgeScreenState | undefined, courseId: ctx.course.id, topicId: ctx.topic.id, lessonId,
-        before: ctx.tree, after: refreshed?.tree ?? null,
-      });
-      return ok(res, { ...completion, ...motivation, ...(receipt ? { receipt } : {}), ...(selfBridge ? { self_bridge: selfBridge } : {}) });
+      return ok(res, { ...completion, ...motivation, ...(receipt ? { receipt } : {}) });
     }
 
 

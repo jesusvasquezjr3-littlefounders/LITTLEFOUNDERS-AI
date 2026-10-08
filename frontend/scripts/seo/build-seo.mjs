@@ -29,7 +29,7 @@ import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {
-  SITE, PAGES, ELEVATOR, MENTORS, SUBJECTS,
+  SITE, PAGES, ELEVATOR,
   SEARCH_CRAWLERS, AI_CRAWLERS, DISALLOWED_PREFIXES,
   absolute, indexablePages, metaFor,
 } from './site.mjs';
@@ -192,31 +192,6 @@ function jsonLd(page, locale, _marketing) {
     });
   }
 
-  /*
-   * The catalogue, described as subjects a learner studies. `Course` needs a
-   * provider to be meaningful and we give it one; no `hasCourseInstance`,
-   * because we are not claiming scheduled cohorts that do not exist.
-   */
-  if (page.path === '/') {
-    graph.push({
-      '@type': 'ItemList',
-      name: SITE.name,
-      itemListElement: SUBJECTS[locale].map((subject, i) => ({
-        '@type': 'ListItem',
-        position: i + 1,
-        item: {
-          '@type': 'Course',
-          name: subject.name,
-          description: subject.about,
-          inLanguage: SITE.locales,
-          isAccessibleForFree: true,
-          provider: { '@id': `${SITE.origin}/#organization` },
-        },
-      })),
-    });
-
-    // The redesigned landing carries no statistic: do not publish a removed claim to crawlers.
-  }
 
   return `<script type="application/ld+json">${JSON.stringify({ '@context': 'https://schema.org', '@graph': graph })}</script>`;
 }
@@ -242,44 +217,8 @@ function shellFor(page, locale, marketing) {
     const l = marketing.landingV2;
     parts[0] = `<h1>${esc(`${l.title} ${l.titleAccent}`)}</h1>`;
     parts.push(
-      `<p>${esc(l.lead)} ${esc(l.note)}</p>`,
-      `<h2>${esc(l.learnTitle)}</h2>`,
-      ...l.topics.map((topic) => section(topic.title, topic.body, topic.question)),
-      section(l.mentorTitle, l.mentorBody),
-      section(l.familyTitle, l.familyBody),
-      `<h2>${esc(l.pathTitle)}</h2>`,
-      ...l.ages.map((age) => section(`${age.range}: ${age.title}`, age.body)),
-      `<h2>${esc(l.faqTitle)}</h2>`,
-      ...l.faq.map((item) => section(item.question, item.answer)),
-      `<h2>${esc(l.closingTitle)}</h2>`,
-    );
-  } else if (page.path === '/how-it-works') {
-    const h = marketing.howItWorks;
-    parts.push(
-      `<p>${esc(h.lead)}</p>`,
-      section(h.demoTitle, h.demoQuestion),
-      section(h.mentorsTitle, `${h.mentorsBody} ${MENTORS.join(', ')}.`),
-      section(h.guestTitle, h.guestBody),
-      section(h.closingTitle, h.closingBody),
-    );
-  } else if (page.path === '/families') {
-    const f = marketing.families;
-    parts.push(
-      `<p>${esc(f.lead)}</p>`,
-      section(f.visibilityTitle, f.visibilityBody, f.micNote),
-      section(f.choresTitle, f.choresBody),
-      section(f.bankingTitle, f.bankingBody),
-      section(f.mapTitle, f.mapBody),
-      section(f.privacyTitle, f.privacyBody),
-      `<h2>${esc(f.stepsTitle)}</h2><ol>${[1, 2, 3, 4].map((n) => `<li><strong>${esc(f[`step${n}Title`])}</strong>: ${esc(f[`step${n}Body`])}</li>`).join('')}</ol>`,
-      section(f.closingTitle, f.closingBody),
-    );
-  } else if (page.path === '/faq') {
-    // The answers themselves: the page a person sees is these questions, each opening its answer.
-    const q = marketing.faq;
-    parts.push(
-      `<p>${esc(q.lead)}</p>`,
-      `<dl>${Object.values(q.items).map((item) => `<dt>${esc(item.question)}</dt><dd>${esc(item.answer)}</dd>`).join('')}</dl>`,
+      `<p>${esc(l.lead)}</p>`,
+      section(l.problemTitle, `${l.problemFigure} ${l.problemFact}`, l.problemBridge),
     );
   } else {
     parts.push(`<p>${esc(meta.description)}</p>`);
@@ -419,18 +358,7 @@ export function renderLlmsTxt(locale) {
     '',
     `> ${ELEVATOR[locale]}`,
     '',
-    'LittleFounders is for families: a parent opens a Tutor account (the verified parent) and creates the family, and children learn inside it. The Tutor reads their child\'s Mentor conversations and approves what the Mentor remembers; a teen\'s story choices stay private. It is free to start and can be tried without creating an account at all.',
-    '',
-    '## What makes it different',
-    '',
-    '- **Decisions, not lectures.** Every lesson puts the learner inside a choice that has a consequence. They learn because they decided, not because they listened.',
-    `- **Mentors, not teachers.** Four characters guide the lessons: ${MENTORS.join(', ')}. The Mentor holds a real conversation, so a learner can ask a question, hear it again or take it slower.`,
-    '- **Built for families.** Parent and child accounts are linked and verified. What a Tutor sees follows the child\'s age: the story choices of a child under 13, never a teen\'s. A teen who signs up alone approves their own Mentor notes until they invite a parent.',
-    `- **Three languages.** Fully available in ${SITE.locales.map((id) => SITE.languageNames[id]).join(', ')}, not an English product with translations bolted on.`,
-    '',
-    '## What can be learned',
-    '',
-    ...SUBJECTS[locale].map((s) => `- **${s.name}**: ${s.about}`),
+    `Fully available in ${SITE.locales.map((id) => SITE.languageNames[id]).join(', ')}.`,
     '',
     '## Pages',
     '',

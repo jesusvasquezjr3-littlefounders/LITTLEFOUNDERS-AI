@@ -16,7 +16,7 @@ export function Hero({ locale, start, tutor, onNavigate, onSecondary }: {
   locale: Locale; start: StartAction; tutor: TutorAction; onNavigate?: Navigate; onSecondary?: () => void;
 }) {
   const copy = siteCopy(locale), l = copy.landingV2, titleId = useId();
-  const parentHref = tutor.kind === 'visitor' ? '/signup?intent=tutor' : tutor.kind === 'parent' ? '/family' : tutor.href;
+  const parentHref = tutor.kind === 'visitor' ? '/signup?intent=tutor' : tutor.kind === 'parent' ? '/learn' : tutor.href;
   const parentFollow = tutor.kind === 'visitor' ? tutor.onFollow : undefined;
   return <section className="lf-hero" data-section data-layout="hero" aria-labelledby={titleId}>
     <div className="lf-hero-copy">

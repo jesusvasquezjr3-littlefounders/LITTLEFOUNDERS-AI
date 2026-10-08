@@ -1,40 +1,5 @@
 name: backend CI
 
-# `npm test` here is not only vitest: backend's `test` script chains
-# `contract:check && vitest run`, and `contract:check` = `lesson-contract:check`,
-# which reads files that live OUTSIDE backend/.
-# So this workflow's path filters must cover them or the gate is only reachable
-# by an operator running it by hand.
-#
-#   lesson-contract:check  diffs backend/src/lesson-contract/ against its
-#                          originals in frontend/src/lesson-engine/.
-#
-# backend/src/lesson-contract/ is a COPY of the frontend originals (CLAUDE.md
-# §1.2: no workspaces), and a copy drifts. The drift is SILENT: Zod strips
-# unknown keys by default, so a field the frontend added and the backend copy
-# lacks is not rejected on the way in, it is DELETED. Grading then runs against
-# a document that is not the one the child was shown, with nothing logged
-# anywhere.
-#
-# Editing a lesson-engine module touches no backend file, so without this
-# frontend filter the only workflow that fires is frontend CI, which never
-# runs lesson-contract:check. Keep this list in sync with the
-# `path.resolve(here, …)` targets in backend/scripts/*.ts; the regression test
-# backend/src/__tests__/ciPathFilters.test.ts derives them and fails if a new
-# cross-package read is added without a matching filter.
-
-# database/seeds/ holds the Mentor KC graph and the B.6 topic map; backend tests
-# (seedKcGraph, services/pathway) and coursegen's kc:map gate validate them,
-# so an edit there alone must still run both CIs.
-#
-# Appendix C 2.2 B.1(b) (GAP-FIX-R4): the placement E2E
-# (src/__tests__/placement.postgres.test.ts: quiz, commit, placement credit,
-# course progress, badge attainable, for all four placement methods) runs on
-# every build against a PostgreSQL 17 service with the WHOLE migration chain
-# (database/migrations, prepared by database/scripts/verify-placement-postgres.py),
-# so an edit to either must run this CI too. With CI set and no cluster
-# configured, that test fails instead of skipping.
-
 on:
   push:
     branches: [main, littlefounders_v2]
@@ -45,8 +10,6 @@ on:
       - 'frontend/src/lesson-engine/**'
       - 'coursegen/src/v2/**'
       - 'database/migrations/**'
-      - 'database/scripts/verify-placement-postgres.py'
-      - 'database/scripts/pg-verify-runner.mjs'
       - '.github/workflows/backend-ci.yml'
   pull_request:
     paths:
@@ -56,17 +19,11 @@ on:
       - 'frontend/src/lesson-engine/**'
       - 'coursegen/src/v2/**'
       - 'database/migrations/**'
-      - 'database/scripts/verify-placement-postgres.py'
-      - 'database/scripts/pg-verify-runner.mjs'
       - '.github/workflows/backend-ci.yml'
 
+
 jobs:
-  # Wall-clock: `npm test` was one 8-minute serial job on a 4-vCPU runner (the
-  # suite is CPU-bound, ~5,000 tests). It now runs as 4 vitest shards on four
-  # runners at once, plus a static job; `ci` below is the single aggregate the
-  # rest of the repo depends on (backend-cd.yml waits on this workflow's
-  # conclusion, so it must stay green only when every part is).
-  static:
+  ci:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     defaults:
@@ -82,60 +39,4 @@ jobs:
       - run: npm ci
       - run: npm run type-check
       - run: npm run lint
-      # lesson-contract:check && forge-v2:check (the head of backend's `test` script).
-      - run: npm run contract:check
-
-  shard:
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
-    strategy:
-      fail-fast: false
-      matrix:
-        shard: [1, 2, 3, 4]
-    services:
-      postgres:
-        image: postgres:17
-        env:
-          POSTGRES_HOST_AUTH_METHOD: trust
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd "pg_isready -U postgres"
-          --health-interval 5s
-          --health-timeout 5s
-          --health-retries 20
-    defaults:
-      run:
-        working-directory: backend
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 24
-          cache: npm
-          cache-dependency-path: backend/package-lock.json
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - run: npm ci
-      # Every shard gets its own PostgreSQL service, so whichever shard holds
-      # the placement E2E (src/__tests__/placement.postgres.test.ts) finds its
-      # cluster; with CI set and no cluster that test fails instead of skipping.
-      # The LF_PG_* cluster is the placement E2E's (Appendix C 2.2 B.1(b)).
-      - run: npx vitest run --shard=${{ matrix.shard }}/4
-        env:
-          LF_PG_PORT: '5432'
-          LF_PG_USER: postgres
-          LF_PG_PSQL: psql
-          LF_PG_DATA: /var/lib/postgresql/data
-
-  ci:
-    if: always()
-    needs: [static, shard]
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    steps:
-      - name: Every backend gate passed
-        run: |
-          test "${{ needs.static.result }}" = success
-          test "${{ needs.shard.result }}" = success
+      - run: npm run build

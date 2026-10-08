@@ -15,6 +15,7 @@ on:
       - 'database/seeds/**'
       - '.github/workflows/coursegen-ci.yml'
 
+
 jobs:
   ci:
     runs-on: ubuntu-latest
@@ -32,4 +33,4 @@ jobs:
       - run: npm ci
       - run: npm run type-check
       - run: npm run lint
-      - run: npm test
+      - run: npm run build

@@ -25,8 +25,7 @@ import { listExpiredKidSuspensions, purgeExpiredKidSuspension } from '../service
  * deletion (services/accountDeletion.ts has the lifecycle).
  *
  * WHO MAY DELETE THEMSELVES, decided here from server-side facts only:
- *   - a parent-created child (kid role) never: its verified Tutor deletes it
- *     from Family (403 KID_DELETION_BY_TUTOR);
+ *   - a parent-created child (kid role) never (403 KID_DELETION_BY_TUTOR);
  *   - a staff account never through this flow: a superadmin removes it after
  *     revoking the grants (403 STAFF_ACCOUNT; the database refuses too);
  *   - a guest, or a self-registered account whose age screen says under 13:
@@ -40,9 +39,8 @@ import { listExpiredKidSuspensions, purgeExpiredKidSuspension } from '../service
  * 502, nothing scheduled) and reports how many Tutors will be told
  * (`tutorsTold`, also on the GET so the teen sees it before confirming). The
  * database writes one notice per verified Tutor and its audit row in the
- * request's own transaction (teen_deletion_guardian_notices); the Tutor reads
- * it on /family (GET /family-hub/deletion-notices). Notify only: no reason, no
- * action. An unlinked teen tells nobody (D-14 (a)).
+ * request's own transaction (teen_deletion_guardian_notices). Notify only: no
+ * reason, no action. An unlinked teen tells nobody (D-14 (a)).
  *
  * CONFIRMATION is server-side, not only a UI step: the body must carry
  * acknowledge:true, and the session must prove it is the holder — the current

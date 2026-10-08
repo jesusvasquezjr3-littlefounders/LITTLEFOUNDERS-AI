@@ -656,5 +656,4 @@ export const LEGACY_EVIDENCE_EQUIVALENCE: ReadonlyArray<{ evidence: string; tabl
   { evidence: 'streaks (current and best)', table: 'streak state', treatment: 'kept-as-is-outside-pathway-scope', rule: 'Pathway changes never touch streak arithmetic.' },
   { evidence: 'Mentor mastery, review cards, misconceptions, evidence log', table: 'learner_kc_mastery, memory_card, learner_misconception, kc_attempt', treatment: 'kept-as-is-satisfies-prerequisites', rule: 'E2/F6: the same rows drive course prerequisites and review-due items; no copy, no second model.' },
   { evidence: 'Mentor plans and notebooks', table: 'tutor tables', treatment: 'kept-as-is-outside-pathway-scope', rule: 'Untouched.' },
-  { evidence: 'coins, savings goals, chore history', table: 'family hub tables', treatment: 'kept-as-is-outside-pathway-scope', rule: 'Untouched.' },
 ];

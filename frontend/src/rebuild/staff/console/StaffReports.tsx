@@ -3,7 +3,7 @@ import { Button, Chip, ConfirmDialog, DataTable, EmptyState, InlineNotice, Segme
 import { isCaseDetail, isCases, REPORTS_PATH, useStaffRead, type ReportCase, type StaffApi } from './staffConsoleApi';
 import { CopyId, Facts, LoadFailure, Loading, Metrics, shortId, StaffPage, useFormats } from './ConsoleParts';
 import { fill, useConsoleCopy, type ConsoleCopy } from './staffConsoleCopy';
-import { AutonomyRollback, OpsJobsCard, RetentionSweepCard } from './StaffProgramme';
+import { OpsJobsCard, RetentionSweepCard } from './StaffProgramme';
 
 /*
  * E.3's platform review queue (manage_support). Every social report routes
@@ -16,8 +16,8 @@ import { AutonomyRollback, OpsJobsCard, RetentionSweepCard } from './StaffProgra
  * staff member in the central audit log; guardian notices are Core's.
  *
  * W2T.4: the same grant (manage_support) opens the support tools as a second
- * view: the D.17 product-team rollback of a child's independence level and
- * the Mentor retention sweep's health. The queue is read only in its view.
+ * view: the Mentor retention sweep's health and the operations watchdog. The
+ * queue is read only in its view.
  */
 
 function originChip(copy: ConsoleCopy, origin: ReportCase['origin']) {
@@ -94,7 +94,7 @@ export function StaffReports({ api, initialView = 'cases' }: { api: StaffApi; in
       options={[{ value: 'cases' as const, label: t.option.view_cases }, { value: 'support' as const, label: t.option.view_support }]} />
     <div key={`${view}:${generation}`} className="lf-staff-section" data-view={view}>
       {view === 'cases' ? <ReportQueue api={api} />
-        : <><div className="lf-staff-pair"><AutonomyRollback api={api} /><RetentionSweepCard api={api} /></div><OpsJobsCard api={api} /></>}
+        : <><RetentionSweepCard api={api} /><OpsJobsCard api={api} /></>}
     </div>
   </StaffPage>;
 }

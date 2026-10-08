@@ -1,8 +1,7 @@
 import { admitsAcquisitionAnswer, allowsSelfManagedAnalytics } from './analyticsPreference.js';
 import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { z } from 'zod';
-import { getConfig } from '../config.js';
-import { serviceRest, serviceRestRaw } from './supabaseRest.js';
+import { serviceRest } from './supabaseRest.js';
 import { readAgeScreen } from './ageScreen.js';
 
 /*
@@ -217,74 +216,6 @@ export async function hasActiveAnalyticsConsent(kidUserId: string): Promise<bool
   return rows.length > 0;
 }
 
-/** Active-consent state for a set of kids (the parent dashboard list). */
-export async function getConsentsForKids(kidIds: string[]): Promise<Map<string, boolean> | null> {
-  const out = new Map<string, boolean>(kidIds.map((id) => [id, false]));
-  if (kidIds.length === 0) return out;
-  const filter = kidIds.map((id) => encodeURIComponent(id)).join(',');
-  const rows = await serviceRest<ConsentRow[]>(
-    `/analytics_consents?kid_user_id=in.(${filter})&revoked_at=is.null&select=kid_user_id,granted_at,revoked_at`,
-  );
-  if (rows === null) return null;
-  for (const r of rows) out.set(r.kid_user_id, true);
-  return out;
-}
-
-/**
- * Grant (or re-grant after a revocation). The ledger is APPEND-ONLY: a
- * re-grant INSERTS a new row rather than resurrecting the revoked one —
- * upserting onto a single row would rewrite granted_at/revoked_at and
- * destroy the "was consent active on date X" audit trail that justifies
- * keeping already-collected data. Idempotent: an active grant stays as-is.
- */
-/*
- * Returns what actually HAPPENED, not merely whether the call succeeded.
- *
- * The caller records a consent_grant / consent_revoke event, and a parent who
- * re-taps an already-on toggle (or whose client retries) must not manufacture
- * a consent decision that was never made. Consent history is the record that
- * would be produced if anyone ever asks what a guardian agreed to and when —
- * phantom entries in it are worse than no entries.
- */
-export type ConsentOutcome = 'changed' | 'unchanged' | null;
-
-export async function grantAnalyticsConsent(kidUserId: string, grantedBy: string): Promise<ConsentOutcome> {
-  const already = await hasActiveAnalyticsConsent(kidUserId);
-  if (already === null) return null;
-  if (already) return 'unchanged';
-  const res = await serviceRest<unknown>('/analytics_consents', {
-    method: 'POST',
-    headers: { Prefer: 'return=minimal' },
-    body: JSON.stringify({
-      kid_user_id: kidUserId,
-      granted_by: grantedBy,
-      granted_at: new Date().toISOString(),
-    }),
-  });
-  return res === null ? null : 'changed';
-}
-
-/**
- * Revoke: closes the OPEN row(s) only — history rows are never touched.
- *
- * `return=representation` rather than `minimal` so the affected rows come
- * back: a PATCH that matches nothing is a perfectly successful request, and
- * without the row count there is no way to tell "consent withdrawn" from
- * "there was nothing to withdraw".
- */
-export async function revokeAnalyticsConsent(kidUserId: string): Promise<ConsentOutcome> {
-  const res = await serviceRest<unknown[]>(
-    `/analytics_consents?kid_user_id=eq.${encodeURIComponent(kidUserId)}&revoked_at=is.null`,
-    {
-      method: 'PATCH',
-      headers: { Prefer: 'return=representation' },
-      body: JSON.stringify({ revoked_at: new Date().toISOString() }),
-    },
-  );
-  if (res === null) return null;
-  return Array.isArray(res) && res.length > 0 ? 'changed' : 'unchanged';
-}
-
 /**
  * Roles resolved with the SERVICE role — the §1.9 gates must not depend on
  * the caller's own RLS-scoped read: this repo has already lost an RLS policy
@@ -399,117 +330,6 @@ export async function readDailyUsers(sinceDays: number): Promise<DailyUsersEntry
   if (history === null || live === null) return null;
   const parsed = z.array(DailyUsersRow).safeParse([...history, ...live]);
   return parsed.success ? parsed.data : null;
-}
-
-/*
- * S07.6 (D.6): the staff family-engagement insight on the per-child shape.
- * 0074 redefined insights_family_engagement per child, but this reader kept
- * parsing the earlier per-family shape (family_id, members, tasks_completed),
- * so every row failed validation and the endpoint answered "Family views
- * unreachable". The database now answers through family_engagement_insight
- * (migration family_engagement_insight): population counts over every child
- * with a verified Tutor, and per-child rows ONLY for children the H.1
- * analytics gate admits, with no identity. These keys are the wire contract;
- * agent/tools/check-family-engagement-contract.mjs keeps this parser, that
- * migration and the console's type equal.
- */
-export const FAMILY_ENGAGEMENT_SUMMARY_KEYS = ['children', 'children_with_tasks', 'active_children', 'tasks_created', 'tasks_approved', 'active_days', 'listed_children'] as const;
-export const FAMILY_ENGAGEMENT_CHILD_KEYS = ['guardians', 'tasks_created', 'tasks_approved', 'first_link_on', 'last_task_on'] as const;
-
-const count = z.number().int().min(0);
-const day = z.string().regex(/^\d{4}-\d{2}-\d{2}$/);
-export const FamilyEngagementInsight = z.object({
-  summary: z.object({
-    children: count, children_with_tasks: count, active_children: count, tasks_created: count, tasks_approved: count,
-    active_days: z.number().int().min(1).max(365), listed_children: count,
-  }).strict(),
-  children: z.array(z.object({
-    guardians: count, tasks_created: count, tasks_approved: count, first_link_on: day, last_task_on: day.nullable(),
-  }).strict()).max(500),
-}).strict();
-export type FamilyEngagementInsight = z.infer<typeof FamilyEngagementInsight>;
-
-/** The window in which a child with a chore counts as active (Block D threshold log). */
-export const ENGAGEMENT_ACTIVE_DAYS = 30;
-
-export type InsightOutcome = 'ok' | 'unavailable' | 'shape_mismatch';
-
-/**
- * The insight, or why it could not be served: 'unavailable' (the database did
- * not answer) and 'shape_mismatch' (it answered, but not in the contract's
- * shape, the D.6 failure mode) are told apart so the uptime record can.
- */
-export async function readFamilyEngagementInsight(limit: number): Promise<{ ok: true; data: FamilyEngagementInsight } | { ok: false; outcome: Exclude<InsightOutcome, 'ok'> }> {
-  const raw = await serviceRestRaw('/rpc/family_engagement_insight', {
-    method: 'POST', body: JSON.stringify({ p_limit: limit, p_active_days: ENGAGEMENT_ACTIVE_DAYS }),
-  });
-  if (!raw.ok) return { ok: false, outcome: 'unavailable' };
-  const parsed = FamilyEngagementInsight.safeParse(raw.body);
-  return parsed.success ? { ok: true, data: parsed.data } : { ok: false, outcome: 'shape_mismatch' };
-}
-
-/**
- * Appendix H (Staff Family-Engagement Insight Uptime): every staff request's
- * outcome is recorded next to the nightly probe's. Best-effort by design: a
- * failed record never changes what the staff member is served, and a database
- * that cannot be reached cannot record its own outage (the probe and Core's
- * own error log cover that window).
- */
-export async function recordStaffInsightCheck(outcome: InsightOutcome): Promise<void> {
-  try {
-    await serviceRestRaw('/rpc/record_staff_insight_check', {
-      method: 'POST', body: JSON.stringify({ p_insight: 'family_engagement', p_source: 'request', p_outcome: outcome }),
-    });
-  } catch {
-    // Recording is observability, never part of the answer.
-  }
-}
-
-const UptimeRows = z.array(z.object({
-  source: z.enum(['probe', 'request']),
-  checks: z.coerce.number().int().min(0),
-  ok: z.coerce.number().int().min(0),
-  last_outcome: z.enum(['ok', 'unavailable', 'shape_mismatch']).nullable(),
-  last_checked_at: z.string().nullable(),
-}).strict()).length(2);
-
-export async function readStaffInsightUptime(since: Date) {
-  const parsed = UptimeRows.safeParse(await serviceRest<unknown>('/rpc/staff_insight_uptime', {
-    method: 'POST', body: JSON.stringify({ p_insight: 'family_engagement', p_since: since.toISOString() }),
-  }));
-  return parsed.success ? parsed.data : null;
-}
-
-/** Exact row count via Content-Range — O(1) response, no row transfer. */
-async function countRows(path: string): Promise<number | null> {
-  const { SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY } = getConfig();
-  try {
-    const res = await fetch(`${SUPABASE_URL}/rest/v1${path}`, {
-      method: 'HEAD',
-      headers: {
-        apikey: SUPABASE_SERVICE_ROLE_KEY,
-        Authorization: `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`,
-        Prefer: 'count=exact',
-      },
-    });
-    if (!res.ok) return null;
-    const total = res.headers.get('content-range')?.split('/')[1];
-    if (!total || total === '*') return null;
-    const n = Number(total);
-    return Number.isFinite(n) ? n : null;
-  } catch {
-    return null;
-  }
-}
-
-/** Kids with active consent vs kids total — the coverage KPI. Counts, not rows. */
-export async function readConsentCoverage(): Promise<{ kidsTotal: number; kidsConsented: number } | null> {
-  const [kidsTotal, kidsConsented] = await Promise.all([
-    countRows('/user_roles?role=eq.kid&select=user_id'),
-    countRows('/analytics_consents?revoked_at=is.null&select=id'),
-  ]);
-  if (kidsTotal === null || kidsConsented === null) return null;
-  return { kidsTotal, kidsConsented };
 }
 
 // ── Anonymous acquisition funnel (0024) ─────────────────────
