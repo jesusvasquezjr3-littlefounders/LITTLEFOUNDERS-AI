@@ -101,7 +101,7 @@ Scenes with the characters follow one set of rules (true scale with Dina large, 
 
 Date: 2026-10-09. Status: accepted.
 
-The owner set the product audience at 12 to 18 years old, because the platforms the product is compared with (Scratch, Code.org, Khan Academy) let teenagers from 13 manage their own account, while younger children need a parent or guardian to create it and consent. The landing says "ages 12 to 18" and the first skill starts at 12. Children under 12 are not served until the owner designs a different registration process, after looking at how existing learning platforms register young users. Legal inputs the owner supplied (not yet confirmed with counsel) are recorded in [[CHILD-SAFETY-AND-PRIVACY]]. Open: 12 is below the age of 13 those inputs name (T-020).
+The owner set the product audience at 12 to 18 years old, final: 12 is the youngest age served, not 13. The platforms the product is compared with (Scratch, Code.org, Khan Academy) let teenagers from 13 manage their own account and require a parent or guardian for younger children, so the sign-up of 12-year-olds is a design item (T-020), not a reason to move the line. The landing says "ages 12 to 18" and the first skill starts at 12. Children under 12 are not served until the owner designs a different registration process, after looking at how existing learning platforms register young users. Legal inputs the owner supplied (not yet confirmed with counsel) are recorded in [[CHILD-SAFETY-AND-PRIVACY]].
 
 ## Related
 

@@ -24,7 +24,7 @@ Children's data and safety come before every other consideration. This document 
 
 - Educational STEM platforms such as Scratch, Code.org and Khan Academy generally do not let a child under 13 create an account alone: a parent or legal guardian creates it and consents to the handling of the child's data. From 13, most let the teenager manage their own account. The reason given is the United States COPPA law, which sets 13 as the minimum age to collect personal data without parental permission.
 - Mexico: the General Law on the Rights of Girls, Boys and Adolescents (LGDNNA), article 101 Bis 2, gives minors the right to safe access to the internet for education, science and leisure, and expects the State to encourage STEM tools, with accompaniment and supervision by guardians.
-- Decision: the platform is for ages 12 to 18 ([[DECISIONS]] D-013). Under-12 users need a different registration process, to be designed.
+- Decision: the platform is for ages 12 to 18, final ([[DECISIONS]] D-013). The youngest age served is 12, so the way a 12-year-old signs up and gives (or has a parent give) consent is to be designed (T-020); under-12 users need a different registration process, also to be designed.
 
 ## To define
 
