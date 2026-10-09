@@ -53,21 +53,8 @@ database/supabase/
 audit-results/
 output/
 
-# 3D character sources and optimized scenes: local only for now
-/glb/
-frontend/public/scenes/
 
 # Python bytecode
 __pycache__/
 *.pyc
 
-# Local-only leftovers of the removed services, kept on disk until the owner decides
-/coursegen/
-/audiogen/
-/backend/
-/oracle/
-/picturegen/
-/filebase/
-/parent-id-check/
-/email-server/
-/dataintel/

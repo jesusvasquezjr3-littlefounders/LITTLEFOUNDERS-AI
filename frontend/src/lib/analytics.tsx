@@ -4,20 +4,23 @@ import { hasCookieConsent } from '@/lib/visitor';
 /*
  * Consent-gated web analytics for the public site.
  *
- * Plausible (cookieless, no personal data) and Umami load only after the
+ * Plausible and Umami (cookieless, no personal data) and Google Analytics 4
+ * (which sets cookies and shares data with Google) load only after the
  * visitor accepts optional cookies, never in an automated browser, and never
  * on a device that opted out. Declining or revoking consent removes the
- * script. Pageviews are fired by hand, once per route, because both trackers
+ * scripts and the GA4 cookies. Pageviews are fired by hand, once per route, because both trackers
  * would otherwise keep observing navigations after their script is removed.
  *
- * VITE_PLAUSIBLE_SRC is Plausible's per-site script URL (public, not a
- * secret). Without the variables set (local development) everything is a
+ * VITE_PLAUSIBLE_SRC is Plausible's per-site script URL and
+ * VITE_GA4_MEASUREMENT_ID is the GA4 measurement id (G-XXXX); both are public,
+ * not secrets. Without the variables set (local development) everything is a
  * no-op.
  */
 
 const PLAUSIBLE_SRC: string | undefined = import.meta.env.VITE_PLAUSIBLE_SRC;
 const UMAMI_SRC: string | undefined = import.meta.env.VITE_UMAMI_SRC;
 const UMAMI_WEBSITE_ID: string | undefined = import.meta.env.VITE_UMAMI_WEBSITE_ID;
+const GA4_ID: string | undefined = import.meta.env.VITE_GA4_MEASUREMENT_ID;
 
 interface Plausible {
   (...args: unknown[]): void;
@@ -32,6 +35,8 @@ declare global {
   interface Window {
     plausible?: Plausible;
     umami?: Umami;
+    dataLayer?: unknown[];
+    gtag?: (...args: unknown[]) => void;
   }
 }
 
@@ -114,6 +119,38 @@ function mountUmami(): void {
   document.head.appendChild(el);
 }
 
+/**
+ * Google Analytics 4. Page views are fired by hand (send_page_view: false) so a
+ * route the site does not want measured is never reported.
+ */
+function mountGa4(): void {
+  if (!GA4_ID || document.getElementById('lf-ga4')) return;
+  const dataLayer = (window.dataLayer = window.dataLayer ?? []);
+  // This MUST be a plain function that pushes `arguments`. gtag.js reads the queue as
+  // arguments objects and silently ignores real arrays: an arrow function with a rest
+  // parameter loads the script, shows no error and records nothing.
+  window.gtag = function gtag() {
+    // eslint-disable-next-line prefer-rest-params
+    dataLayer.push(arguments);
+  };
+  const el = document.createElement('script');
+  el.id = 'lf-ga4';
+  el.async = true;
+  el.src = `https://www.googletagmanager.com/gtag/js?id=${GA4_ID}`;
+  document.head.appendChild(el);
+  window.gtag('js', new Date());
+  window.gtag('config', GA4_ID, { send_page_view: false });
+}
+
+/** Removes the cookies GA4 sets (the client id and the per-property session cookie). */
+function clearGa4Cookies(): void {
+  const names = document.cookie.split(';').map((c) => c.split('=')[0]?.trim() ?? '').filter((n) => n === '_ga' || n.startsWith('_ga_') || n === '_gid');
+  for (const name of names) {
+    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/`;
+    document.cookie = `${name}=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${location.hostname}`;
+  }
+}
+
 /** Umami's tracker is deferred, so on the mount that creates the tag the first pageview waits for its load event. */
 function trackUmamiPageview(): void {
   if (window.umami) {
@@ -135,9 +172,19 @@ export function AnalyticsScripts({ consentVersion = 0 }: { consentVersion?: numb
       window.plausible?.('pageview');
       mountUmami();
       trackUmamiPageview();
+      if (GA4_ID) {
+        (window as unknown as Record<string, unknown>)[`ga-disable-${GA4_ID}`] = false;
+        mountGa4();
+        window.gtag?.('event', 'page_view', { page_path: window.location.pathname });
+      }
     } else {
       ejectScript('lf-plausible');
       ejectScript('lf-umami');
+      if (GA4_ID) {
+        (window as unknown as Record<string, unknown>)[`ga-disable-${GA4_ID}`] = true;
+        ejectScript('lf-ga4');
+        clearGa4Cookies();
+      }
     }
   }, [consentVersion]);
   return null;

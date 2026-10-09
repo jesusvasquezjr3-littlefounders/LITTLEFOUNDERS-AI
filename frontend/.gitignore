@@ -2,5 +2,3 @@
 .env*
 !.env.example
 
-# Artist-dropped 3D character files: large binaries that live outside git.
-public/scenes/

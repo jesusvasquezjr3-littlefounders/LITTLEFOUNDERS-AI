@@ -8,10 +8,11 @@ LittleFounders helps children and teenagers learn about money.
 
 | Piece | State |
 |---|---|
-| `frontend/` | The landing page only (hero and problem sections), with the three locales (`en-US`, `es-MX`, `pt-BR`), light/dark theme and the design tokens. Its calls to action do nothing yet. |
+| `frontend/` | The landing page only (hero and problem sections), with the three locales (`en-US`, `es-MX`, `pt-BR`), light/dark theme, the design tokens and consent-gated Plausible, Umami and Google Analytics 4. Its calls to action do nothing yet. |
 | `database/` | Only the pinned Supabase release (`SUPABASE_VERSION`), the Railway images for the database and gateway, and local-stack scripts. There is no schema: `database/migrations/` is empty. |
+| `backend/` | Empty, reserved for the new backend. |
 | `pulse/` | Observability, kept as is: Plausible CE, ClickHouse, PostgreSQL, Umami and Uptime Kuma, each a pinned upstream image. |
-| 3D characters | Four Mentor models (`glb/` sources, `frontend/public/scenes/` optimized). Both folders are git-ignored today, so they exist only on the machine that holds them. |
+| 3D characters | Four Mentor models: `glb/` holds the sources and `frontend/public/scenes/` the optimized scenes, both tracked with Git LFS (about 180 MB). Install Git LFS before cloning. |
 
 Nothing else exists: no API, no accounts, no lessons, no tutor, no media services. The previous version's services (Core, Oracle, Forge, Echo, Prism, Depot, Courier, Guardian, Data Intel) may still be running in production; they have no code in this repo.
 
