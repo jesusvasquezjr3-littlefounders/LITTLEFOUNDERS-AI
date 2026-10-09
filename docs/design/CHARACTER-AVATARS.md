@@ -21,7 +21,7 @@ The characters exist as 3D models, used for marketing compositions ([[CHARACTER-
 
 ## Decided by the owner (2026-10-09)
 
-1. The avatar is the **head only**, a reconstruction **faithful to the `.glb`** of each character.
+1. The avatar is the head, shown as a **bust down to the shoulders** (the owner changed this on 2026-10-09 from a cut at the neck); it was first "head only", a reconstruction **faithful to the `.glb`** of each character.
 2. **No 3D**, no 3D models and no 3D renderer in the product for avatars.
 3. **No mouth atlas or mouth cards.** A picture placed in front of the mouth reads as paper over the 3D face and is rejected. The mouth has to be part of the drawing.
 4. The format may be Lottie, Rive, SVG or similar, as long as it is 2D.
@@ -111,18 +111,11 @@ Each step ends with something the owner can see and accept or stop.
 
 ## Progress
 
-**First clean versions of all four heads exist (2026-10-09).** After the owner judged the automatic traces too rough (bad cuts at the neck and chin, noise, stray glows), the method changed from tracing to building each head as an illustrator would, with the machine doing the measuring:
+**Second pass, as busts (2026-10-09).** The owner found the first clean versions better but not organic or well defined enough, and asked for a much more careful pass and for every character to end at the shoulders instead of the neck. Changes: the reference is now cut at shoulder height for all four (`tools/avatars/head-reference.js`); outlines are organic (corners are found first, then each stretch between corners is smoothed hard and fitted with long calm Bezier curves, so there are few nodes and no wobble); a spec can add soft tonal shading as blurred shapes clipped inside a part, can clip a part to another (blush stays inside the face), and can draw a closed smooth shape through measured points (`smooth`); Rho's vest, shirt, tie and pin, Zara's shoulders, tank top and necklace, Liruf's neck and chest, and Dina's neck and chest are rebuilt as clean shapes; and the comparison image now has an overlay of the reference under the vector to check the likeness. `npm run avatars:sheet` lays the four finished avatars side by side on light and dark.
 
-1. `npm run avatars:reference` renders each head from the source model, flat and unlit (Dina by her bones, the others cut at the neck).
-2. `python tools/avatars/segment.py <Character>` splits that render into numbered color pieces and draws a numbered map to look at.
-3. A hand-written art spec per character (`tools/avatars/art/<character>.json`) names the parts of the face and says how each is made: from numbered pieces (closed, smoothed and fitted with a few Bezier curves, `tools/avatars/bezier.py`), as a true ellipse or circle, as the ring of a lens, or as a path measured on a gridded zoom of the reference. Parts that mirror each other are drawn once and reflected, so the face is exactly symmetric. Damage is repaired in the spec: clean chin and neck, no collar scraps, a pointed hem for Zara's hair, clean fangs and mouth for Liruf, a measured face for Zara and Dina, no glows.
-4. `python tools/avatars/parts.py <Character>` builds a layered SVG, each part a named group ready to animate, and writes it to `tools/avatars/out/<character>.svg` (tracked). `npm run avatars:compare` lays it over the reference to judge it.
+Results: Rho 10 KB with about 220 nodes, Zara 10 KB and 207, Liruf 5 KB and 94, Dina 7 KB and 108.
 
-Results: Rho 11 KB with about 260 nodes, Zara 5 KB and 90 nodes, Liruf 7 KB and 150 nodes, Dina 5 KB and 70 nodes (before: 92 to 155 KB and 700 to 1,300 nodes). Rho's lenses are true circles; Dina's glow is a single radial gradient, not bands. Earlier approaches (a posterized VTracer trace, then an automatic vectorizer) were dropped.
-
-Open flaws to review with the owner: Rho's nose and the soft pink of cheeks are only suggested and his silhouette is mirrored from the left side; Zara's ears are placeholders and her hair is cut at the shoulders with pointed ends (the owner approved the cut, not yet this drawing); Liruf's jaw is wider than the original and his eyes are redrawn as clean ovals; Dina's eyes are redrawn and her chin has a light rim added. Fidelity is checkable for the neutral face only; nothing is separated into animation rigs yet beyond the named layers.
-
-Next: the owner reviews the four drawings (open `tools/avatars/out/*.svg` in a browser); then the expressions and the speaking mouth (a set of mouth shapes drawn as paths that morph, eyelids, gaze) and the rig, starting with Rho; then the format spike.
+Honest assessment: much cleaner than before and symmetric, but not yet at the polish of the Brilliant or Duolingo mascots. Known gaps: Rho's hair, cap and shirt edges are still a little lumpy and his face has no soft shading; Zara's hair is a flat shape with one gradient and her hairline is simplified; Liruf's head is a stack of shapes and the join between snout and cheeks is hard; Dina's neck and chest are simplified from the original body; none has the soft rim light and shading of the originals. The next level is drawing more of the volume (shadows under the hair and cap, light along the jaw, rim lights) and checking every contour against the overlay.
 
 ## Questions that were open and are now answered
 

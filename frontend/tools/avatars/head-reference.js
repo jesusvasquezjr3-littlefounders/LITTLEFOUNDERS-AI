@@ -11,7 +11,6 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 const params = new URLSearchParams(location.search);
 const CHARACTER = params.get('character') ?? 'Rho';
-const HEAD_BONES = new Set(['head', 'head_end', 'headend', 'headfront', 'neck', 'earend', 'r_earend']);
 const log = (...parts) => { (window.__log ??= []).push(parts.join(' ')); };
 
 const canvas = document.getElementById('c');
@@ -38,39 +37,27 @@ const bonePosition = (name) => { const bone = skinned.skeleton.bones.find((b) =>
 const neck = bonePosition('neck') ?? bonePosition('head');
 const modelBox = new THREE.Box3().setFromObject(gltf.scene);
 
+log('bones', skinned.skeleton.bones.map((b) => b.name + '@' + b.getWorldPosition(new THREE.Vector3()).toArray().map((v) => v.toFixed(3)).join(',')).join(' '));
 log('neck y', neck.y.toFixed(3), 'head y', bonePosition('head')?.y.toFixed(3), 'model y', modelBox.min.y.toFixed(3), modelBox.max.y.toFixed(3));
 
-// keep the triangles whose three vertices are in the head
+// keep the triangles whose three vertices are in the bust
 const geometry = skinned.geometry.clone();
-const bones = skinned.skeleton.bones.map((b) => b.name.toLowerCase());
 const index = geometry.index;
 const skinIndex = geometry.attributes.skinIndex;
 const skinWeight = geometry.attributes.skinWeight;
 const count = geometry.attributes.position.count;
 const keep = new Uint8Array(count);
 
-// Dina is a quadruped and her head is found by her bones; Rho and Liruf are cut by a plane at the neck, so that
-// triangles that blend between bones are not lost. Zara's hair follows the head bones and is kept down to her
-// shoulders by the plane.
-const CUT = { rho: 0.04, liruf: -0.02, zara: -0.16 };
-const planeOffset = CUT[CHARACTER.toLowerCase()];
-const alsoByBones = CHARACTER.toLowerCase() === 'zara'; // her hair follows the head bones; her body does not
+// Every character is cut by a plane at shoulder height (bust: head, neck and shoulders). For Dina, who is a
+// quadruped, the plane is at the base of her chest. Heights are world units, read from each rig's shoulder bones.
+const CUT_Y = { rho: 0.70, zara: 1.02, liruf: 0.68, dina: 0.0095 };
+const cutY = CUT_Y[CHARACTER.toLowerCase()];
 const here = new THREE.Vector3();
 
 for (let v = 0; v < count; v++) {
-  if (planeOffset !== undefined) {
-    skinned.getVertexPosition(v, here);
-    here.applyMatrix4(skinned.matrixWorld);
-    keep[v] = here.y >= neck.y + planeOffset ? 1 : 0;
-
-    if (!alsoByBones) continue;
-  }
-
-  let weight = 0;
-
-  for (let k = 0; k < 4; k++) if (HEAD_BONES.has(bones[skinIndex.getComponent(v, k)] ?? '')) weight += skinWeight.getComponent(v, k);
-
-  keep[v] = weight >= 0.5 && (planeOffset === undefined || keep[v]) ? 1 : 0;
+  skinned.getVertexPosition(v, here);
+  here.applyMatrix4(skinned.matrixWorld);
+  keep[v] = here.y >= cutY ? 1 : 0;
 }
 
 const kept = [];

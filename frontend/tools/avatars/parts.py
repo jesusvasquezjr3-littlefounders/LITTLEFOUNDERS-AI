@@ -27,7 +27,7 @@ import cv2
 import numpy as np
 
 sys.path.insert(0, os.path.dirname(__file__))
-from bezier import fit_closed, to_path  # noqa: E402
+from bezier import corners_of, fit_closed, fit_open, to_path  # noqa: E402
 from segment import folder_of, segment  # noqa: E402
 
 character = sys.argv[1]
@@ -111,7 +111,70 @@ def paint(fill, ids, bbox, name):
     return f"url(#{gid})"
 
 
-def outline_path(mask, holes=False, tol=None):
+def _resample(points, spacing):
+    closed = np.vstack([points, points[:1]])
+    length = np.r_[0, np.cumsum(np.linalg.norm(np.diff(closed, axis=0), axis=1))]
+    t = np.linspace(0, length[-1], max(8, int(length[-1] / spacing)), endpoint=False)
+
+    return np.stack([np.interp(t, length, closed[:, 0]), np.interp(t, length, closed[:, 1])], axis=1)
+
+
+def _kernel(sigma_samples):
+    radius = max(1, int(3 * sigma_samples))
+    offsets = np.arange(-radius, radius + 1)
+    weights = np.exp(-(offsets ** 2) / (2 * sigma_samples ** 2))
+
+    return offsets, weights / weights.sum()
+
+
+def _smooth_closed(points, sigma_samples):
+    offsets, weights = _kernel(sigma_samples)
+
+    return sum(w * np.roll(points, o, axis=0) for w, o in zip(weights, offsets))
+
+
+def _smooth_open(run, sigma_samples):
+    """Smooths a run of points with both ends held fixed (the ends are mirrored through themselves)."""
+    n = len(run)
+    radius = min(int(3 * sigma_samples), n - 1)
+    if n < 5 or radius < 1:
+        return run
+    left = 2 * run[0] - run[1 : radius + 1][::-1]
+    right = 2 * run[-1] - run[-radius - 1 : -1][::-1]
+    padded = np.vstack([left, run, right])
+    offsets = np.arange(-radius, radius + 1)
+    weights = np.exp(-(offsets ** 2) / (2 * sigma_samples ** 2))
+    weights /= weights.sum()
+    out = np.zeros_like(run)
+    for w, o in zip(weights, offsets):
+        out += w * padded[radius + o : radius + o + n]
+
+    return out
+
+
+def organic_segments(contour, tol, sigma, corner_degrees):
+    """Bezier segments for one outline: corners are found first, then each stretch between corners is smoothed
+    hard, so curves are long and calm and corners stay crisp."""
+    spacing = 2.0
+    base = _smooth_closed(_resample(contour.reshape(-1, 2).astype(np.float64), spacing), 1.2)
+    corners = corners_of(base, window=7, degrees=corner_degrees)
+    sig = max(1.0, sigma / spacing)
+
+    if not corners:
+        return fit_closed(_smooth_closed(base, sig), tol, corner_degrees=999.0)
+
+    segments = []
+    n = len(base)
+    for i, start in enumerate(corners):
+        end = corners[(i + 1) % len(corners)]
+        run = base[start : end + 1] if end > start else np.vstack([base[start:], base[: end + 1]])
+        if len(run) >= 3:
+            segments += fit_open(_smooth_open(run, sig), tol)
+
+    return segments
+
+
+def outline_path(mask, holes=False, tol=None, sigma=None, corner=None):
     global nodes
     mode = cv2.RETR_CCOMP if holes else cv2.RETR_EXTERNAL
     contours, hierarchy = cv2.findContours(mask, mode, cv2.CHAIN_APPROX_NONE)
@@ -119,7 +182,8 @@ def outline_path(mask, holes=False, tol=None):
     for i, c in enumerate(contours):
         if cv2.contourArea(c) < 40:
             continue
-        segments = fit_closed(contour_points(c), tol or tolerance, corner_degrees=spec.get("corner", 65.0))
+        s_ = sigma if sigma is not None else float(np.clip(len(c) / 140.0, 4.0, 16.0))
+        segments = organic_segments(c, tol or tolerance, s_, corner if corner is not None else spec.get("corner", 70.0))
         nodes += len(segments)
         d += to_path(segments)
 
@@ -161,14 +225,68 @@ def ring_of(piece_id):
     return out
 
 
+CLIPS = {}
+
+
 def add(name, markup, bbox=None):
     named[name] = markup
+    clip = CLIPS.get(name)
+    if clip:
+        cid = f"clip-{name}"
+        defs.append(f'<clipPath id="{cid}"><use href="#p-{clip}"/></clipPath>')
+        markup = f'<g clip-path="url(#{cid})">{markup}</g>'
     body.append(f'<g id="{name}">{markup}</g>')
+
+
+def blur_filter(sigma):
+    fid = f"blur{int(round(sigma))}"
+    if not any(f'id="{fid}"' in item for item in defs):
+        defs.append(f'<filter id="{fid}" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="{sigma}"/></filter>')
+
+    return fid
+
+
+def shade_markup(name, mask, cfg):
+    """Soft tonal shapes (shadows and lights) found where the reference is darker or lighter than the part's own
+    average, drawn inside the part so they never leave its outline."""
+    cfg = cfg if isinstance(cfg, dict) else {}
+    light = cv2.GaussianBlur(lab[:, :, 0], (0, 0), cfg.get("sigma", 7))
+    inner = cv2.erode(mask, kernel(cfg.get("inset", 10))).astype(bool)
+    if inner.sum() < 400:
+        return ""
+    base = np.median(light[inner])
+    residual = light - base
+    area = int(mask.sum())
+    shapes = ""
+    global nodes
+    for level in cfg.get("levels", [-9, 9]):
+        region = ((residual < level) if level < 0 else (residual > level)) & inner
+        region = cv2.morphologyEx(region.astype(np.uint8), cv2.MORPH_OPEN, kernel(cfg.get("open", 4)))
+        region = cv2.morphologyEx(region, cv2.MORPH_CLOSE, kernel(cfg.get("open", 4) + 3))
+        count, comp, stats, _ = cv2.connectedComponentsWithStats(region, connectivity=8)
+        for c in sorted(range(1, count), key=lambda c: -stats[c, cv2.CC_STAT_AREA])[: cfg.get("max", 2)]:
+            if stats[c, cv2.CC_STAT_AREA] < cfg.get("min", 0.015) * area:
+                continue
+            part = (comp == c).astype(np.uint8)
+            ys, xs = np.nonzero(part)
+            rgb = cv2.cvtColor(bgr[ys, xs].reshape(-1, 1, 3), cv2.COLOR_BGR2RGB).reshape(-1, 3).mean(axis=0)
+            d = outline_path(part, sigma=cfg.get("smooth", 12.0), tol=cfg.get("tolerance", 3.5), corner=999.0)
+            if d:
+                shapes += f'<path d="{d}" fill="{hexrgb(rgb)}"/>'
+    if not shapes:
+        return ""
+    fid = blur_filter(cfg.get("blur", 5))
+    cid = f"cp-{name}"
+    defs.append(f'<clipPath id="{cid}"><use href="#p-{name}"/></clipPath>')
+
+    return f'<g clip-path="url(#{cid})"><g filter="url(#{fid})">{shapes}</g></g>'
 
 
 for layer in spec["layers"]:
     name = layer["name"]
     kind = layer.get("kind", "shape")
+    if layer.get("clip_to"):
+        CLIPS[name] = layer["clip_to"]
 
     if "mirror_of" in layer:
         add(name, f'<use href="#{layer["mirror_of"]}" transform="translate({2 * axis:.1f} 0) scale(-1 1)"/>')
@@ -215,17 +333,25 @@ for layer in spec["layers"]:
             xs_ = np.arange(width)
             cut_ = a["bottom"] - a["rise"] * (1.0 - np.minimum(np.abs(xs_ - a.get("axis", axis)) / a["half"], 1.0) ** a.get("power", 1.4))
             mask = mask & (np.arange(height)[:, None] < cut_[None, :]).astype(np.uint8)
+        if layer.get("arc"):
+            a = layer["arc"]
+            xs_ = np.arange(width)
+            cut_ = a["y"] + a["sag"] * (1.0 - np.minimum(np.abs(xs_ - a.get("axis", axis)) / a["half"], 1.0) ** a.get("power", 2.0))
+            mask = mask & (np.arange(height)[:, None] < cut_[None, :]).astype(np.uint8)
         if layer.get("clip"):
             clip = np.zeros_like(mask)
             cv2.fillPoly(clip, [np.array(layer["clip"], np.int32)], 1)
             mask = mask & clip
         ys, xs = np.nonzero(mask)
         bbox = (xs.min(), ys.min(), xs.max(), ys.max())
-        d = outline_path(mask, holes=layer.get("holes", False), tol=layer.get("tolerance"))
+        d = outline_path(mask, holes=layer.get("holes", False), tol=layer.get("tolerance"), sigma=layer.get("sigma"), corner=layer.get("corner"))
         extra = f' opacity="{layer["opacity"]}"' if "opacity" in layer else ""
         if layer.get("outline"):
             extra += f' stroke="{layer["outline"]}" stroke-width="{layer.get("outline_width", 8)}" stroke-linejoin="round"'
-        add(name, f'<path d="{d}" fill="{paint(layer.get("fill"), ids, bbox, name)}" fill-rule="evenodd"{extra}/>')
+        markup = f'<path id="p-{name}" d="{d}" fill="{paint(layer.get("fill"), ids, bbox, name)}" fill-rule="evenodd"{extra}/>'
+        if layer.get("shade"):
+            markup += shade_markup(name, mask, layer["shade"])
+        add(name, markup)
     elif kind == "ellipse":
         if "cx" in layer:
             cx, cy, rx, ry, angle = layer["cx"], layer["cy"], layer["rx"], layer["ry"], layer.get("angle", 0)
@@ -250,6 +376,25 @@ for layer in spec["layers"]:
             markup += f'<ellipse cx="{cx:.1f}" cy="{cy:.1f}" rx="{rx + t / 2:.1f}" ry="{ry + t / 2:.1f}" transform="rotate({angle:.1f} {cx:.1f} {cy:.1f})" fill="none" stroke="{color}" stroke-width="{t:.1f}"/>'
             nodes += 4
         add(name, markup)
+    elif kind == "smooth":
+        # a closed smooth shape through measured points; "half" lists the left half from top to bottom on the axis
+        pts = [np.array(q, dtype=np.float64) for q in layer["points"]]
+        if layer.get("mirror", True):
+            right = [np.array([2 * axis - q[0], q[1]]) for q in pts[1:-1]][::-1]
+            pts = pts + right
+        n_ = len(pts)
+        tension = layer.get("tension", 1.0) / 6.0
+        d = f"M{pts[0][0]:.1f} {pts[0][1]:.1f}"
+        for i in range(n_):
+            p0, p1, p2, p3 = pts[i - 1], pts[i], pts[(i + 1) % n_], pts[(i + 2) % n_]
+            c1, c2 = p1 + (p2 - p0) * tension, p2 - (p3 - p1) * tension
+            d += f"C{c1[0]:.1f} {c1[1]:.1f} {c2[0]:.1f} {c2[1]:.1f} {p2[0]:.1f} {p2[1]:.1f}"
+        d += "Z"
+        nodes += n_
+        xs_ = [q[0] for q in pts]
+        ys_ = [q[1] for q in pts]
+        extra = f' opacity="{layer["opacity"]}"' if "opacity" in layer else ""
+        add(name, f'<path id="p-{name}" d="{d}" fill="{paint(layer.get("fill"), [], (min(xs_), min(ys_), max(xs_), max(ys_)), name)}"{extra}/>')
     elif kind == "path":
         if layer.get("round"):
             extra = f' fill="{layer["fill"]}" stroke="{layer["fill"]}" stroke-width="{layer["round"]}" stroke-linejoin="round"'

@@ -1,12 +1,13 @@
 {
-  "axis": 803,
-  "tolerance": 3.4,
+  "axis": 660,
+  "tolerance": 3.0,
   "crop": [
-    20,
     30,
-    1590,
-    1530
+    40,
+    1290,
+    1560
   ],
+  "corner": 70,
   "segment": {
     "regions": 14,
     "merge": 21,
@@ -15,46 +16,102 @@
   "layers": [
     {
       "name": "head-base",
+      "all": true,
       "close": 50,
       "fill": "#3a1a0b",
-      "all": true,
       "clip": [
         [
           0,
           0
         ],
         [
-          1509,
+          1322,
           0
         ],
         [
-          1509,
-          1435
+          1322,
+          880
         ],
         [
           0,
-          1435
+          880
         ]
       ]
     },
     {
+      "name": "vest",
+      "kind": "path",
+      "d": "M318 1304 C300 1380 302 1450 334 1520 L986 1520 C1018 1450 1020 1380 1002 1304 C930 1268 780 1258 660 1258 C540 1258 390 1268 318 1304 Z",
+      "fill": "#3d3b36"
+    },
+    {
+      "name": "vest-shade",
+      "kind": "path",
+      "d": "M318 1304 C390 1268 540 1258 660 1258 C780 1258 930 1268 1002 1304 C930 1296 780 1290 660 1290 C540 1290 390 1296 318 1304 Z",
+      "fill": "#2c2b27"
+    },
+    {
+      "name": "sleeve-l",
+      "kind": "path",
+      "d": "M346 1300 C336 1380 342 1456 362 1520 L420 1520 L420 1290 C392 1288 364 1292 346 1300 Z",
+      "fill": "#f2d8b0"
+    },
+    {
+      "name": "sleeve-r",
+      "mirror_of": "sleeve-l"
+    },
+    {
+      "name": "shirt",
+      "kind": "path",
+      "d": "M486 1286 C560 1318 612 1332 660 1332 C708 1332 760 1318 834 1286 L744 1472 C706 1496 614 1496 576 1472 Z",
+      "fill": "#f5dcb5"
+    },
+    {
+      "name": "shirt-shade",
+      "kind": "path",
+      "d": "M486 1286 C560 1318 612 1332 660 1332 C708 1332 760 1318 834 1286 C770 1318 710 1348 660 1348 C610 1348 550 1318 486 1286 Z",
+      "fill": "#e2c79e"
+    },
+    {
+      "name": "tie",
+      "kind": "path",
+      "d": "M630 1340 L690 1340 L714 1440 L660 1520 L606 1440 Z",
+      "fill": "#d3ba93"
+    },
+    {
+      "name": "pin",
+      "kind": "circle",
+      "cx": 880,
+      "cy": 1466,
+      "r": 44,
+      "fill": "#cf4a78"
+    },
+    {
+      "name": "pin-core",
+      "kind": "circle",
+      "cx": 880,
+      "cy": 1466,
+      "r": 22,
+      "fill": "#e56b95"
+    },
+    {
       "name": "head-skin",
       "pieces": [
-        0,
+        1,
         5,
-        6,
-        9,
+        7,
+        8,
+        11,
+        13,
         12,
-        14,
-        17,
-        21,
-        24,
+        26,
+        28,
         29,
-        31,
-        36,
+        32,
         37,
-        35,
-        39
+        38,
+        39,
+        43
       ],
       "close": 40,
       "symmetrize": "left",
@@ -65,24 +122,31 @@
           0
         ],
         [
-          1509,
+          1322,
           0
         ],
         [
-          1509,
-          1440
+          1322,
+          1330
         ],
         [
           0,
-          1440
+          1330
         ]
-      ]
+      ],
+      "sigma": 14
+    },
+    {
+      "name": "lower-face",
+      "kind": "path",
+      "d": "M290 1060 C290 1200 440 1340 660 1345 C880 1340 1030 1200 1030 1060 Z",
+      "fill": "#f9a079"
     },
     {
       "name": "cheek-l",
       "kind": "circle",
-      "cx": 400,
-      "cy": 1130,
+      "cx": 320,
+      "cy": 1010,
       "r": 150,
       "fill": {
         "radial": [
@@ -91,19 +155,22 @@
           0
         ]
       },
-      "opacity": 0.75
+      "opacity": 0.85,
+      "clip_to": "head-skin"
     },
     {
       "name": "cheek-r",
-      "mirror_of": "cheek-l"
+      "mirror_of": "cheek-l",
+      "clip_to": "head-skin"
     },
     {
       "name": "ear-inner-l",
       "pieces": [
-        22
+        17
       ],
       "close": 14,
-      "fill": "#d9825f"
+      "fill": "#d9825f",
+      "sigma": 8
     },
     {
       "name": "ear-inner-r",
@@ -112,10 +179,17 @@
     {
       "name": "hair-side-l",
       "pieces": [
-        7
+        3
       ],
       "close": 30,
-      "fill": "#3a1a0a"
+      "fill": "#3a1a0a",
+      "sigma": 12,
+      "shade": {
+        "levels": [
+          9
+        ],
+        "blur": 8
+      }
     },
     {
       "name": "hair-side-r",
@@ -124,21 +198,29 @@
     {
       "name": "hair-fringe",
       "pieces": [
-        8,
-        13
+        9
       ],
       "close": 24,
-      "fill": "#3d1b0b"
+      "fill": "#3d1b0b",
+      "sigma": 10
     },
     {
       "name": "cap",
       "pieces": [
-        1,
-        2,
+        0,
         10
       ],
       "close": 18,
-      "fill": "#5b1411"
+      "fill": "#5b1411",
+      "sigma": 12,
+      "shade": {
+        "levels": [
+          -8,
+          8
+        ],
+        "blur": 10,
+        "max": 2
+      }
     },
     {
       "name": "cap-brim",
@@ -147,31 +229,45 @@
       ],
       "close": 18,
       "fill": "#4d160e",
-      "opacity": 0.9
+      "opacity": 0.9,
+      "sigma": 10
     },
     {
       "name": "nose",
-      "pieces": [
-        9
-      ],
       "kind": "ellipse",
+      "cx": 660,
+      "cy": 962,
+      "rx": 92,
+      "ry": 84,
+      "angle": 0,
       "fill": {
         "linear": [
-          "#fcae88",
-          "#ee8a6b",
+          "#fbb08c",
+          "#ee8b6c",
           80
         ]
       },
-      "opacity": 1
+      "opacity": 0.95
+    },
+    {
+      "name": "nose-light",
+      "kind": "ellipse",
+      "cx": 636,
+      "cy": 928,
+      "rx": 26,
+      "ry": 15,
+      "angle": -20,
+      "fill": "#ffc9a8",
+      "opacity": 0.7
     },
     {
       "name": "brow-l",
       "pieces": [
-        16,
-        38
+        14
       ],
       "close": 12,
-      "fill": "#3c1b0b"
+      "fill": "#3c1b0b",
+      "sigma": 7
     },
     {
       "name": "brow-r",
@@ -180,7 +276,7 @@
     {
       "name": "eye-white-l",
       "pieces": [
-        19
+        20
       ],
       "kind": "ellipse",
       "fill": "#fbfbf8"
@@ -192,7 +288,7 @@
     {
       "name": "iris-l",
       "pieces": [
-        27
+        30
       ],
       "kind": "ellipse",
       "fill": "#17607a"
@@ -204,7 +300,7 @@
     {
       "name": "pupil-l",
       "pieces": [
-        32
+        35
       ],
       "kind": "ellipse",
       "fill": "#050607"
@@ -216,16 +312,16 @@
     {
       "name": "glint-l",
       "kind": "circle",
-      "cx": 612,
-      "cy": 1018,
+      "cx": 512,
+      "cy": 838,
       "r": 11,
       "fill": "#ffffff"
     },
     {
       "name": "glint-small-l",
       "kind": "circle",
-      "cx": 566,
-      "cy": 1062,
+      "cx": 462,
+      "cy": 884,
       "r": 6,
       "fill": "#cfe9f2"
     },
@@ -247,19 +343,24 @@
     {
       "name": "glasses-bridge",
       "kind": "path",
-      "d": "M690 990 Q803 925 916 990",
+      "d": "M566 800 Q660 742 754 800",
       "stroke": "#0e0f10",
       "width": 24
     },
     {
       "name": "mustache",
       "pieces": [
-        3,
-        26,
-        34
+        2
       ],
       "close": 22,
-      "fill": "#391a0a"
+      "fill": "#391a0a",
+      "sigma": 10,
+      "shade": {
+        "levels": [
+          8
+        ],
+        "blur": 6
+      }
     }
   ]
 }

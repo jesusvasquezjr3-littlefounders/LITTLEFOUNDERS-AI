@@ -23,7 +23,8 @@
     "audit:shot": "node tools/audit/shot.mjs",
     "render:signin": "node tools/render/render-signin.mjs",
     "avatars:reference": "node tools/avatars/reference.mjs",
-    "avatars:compare": "node tools/avatars/compare.mjs"
+    "avatars:compare": "node tools/avatars/compare.mjs",
+    "avatars:sheet": "node tools/avatars/sheet.mjs"
   },
   "dependencies": {
     "@number-flow/react": "^0.6.2",

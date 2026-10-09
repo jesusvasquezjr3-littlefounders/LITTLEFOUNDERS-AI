@@ -27,8 +27,10 @@ try {
     const url = (name) => pathToFileURL(join(folder, name)).href;
     const cell = (label, src, bg) => `<figure style="margin:0;background:${bg};padding:12px"><img src="${src}" style="height:${height}px;display:block"><figcaption style="font:14px sans-serif;color:#555;padding-top:6px">${label}</figcaption></figure>`;
 
+    const overlay = (label, a, b) => `<figure style="margin:0;background:#f4f5fd;padding:12px"><div style="position:relative;height:${height}px"><img src="${a}" style="height:${height}px;display:block"><img src="${b}" style="height:${height}px;position:absolute;left:0;top:0;opacity:.55"></div><figcaption style="font:14px sans-serif;color:#555;padding-top:6px">${label}</figcaption></figure>`;
+
     mkdirSync(folder, { recursive: true });
-    writeFileSync(join(folder, 'compare.html'), `<!doctype html><body style="margin:0;display:flex;gap:8px;background:#fff">${cell('reference (albedo)', url('ref-albedo.png'), '#f4f5fd')}${cell('smooth vector', url(svgName), '#f4f5fd')}${cell('smooth vector on dark', url(svgName), '#0b0d1b')}</body>`);
+    writeFileSync(join(folder, 'compare.html'), `<!doctype html><body style="margin:0;display:flex;gap:8px;background:#fff">${cell('reference (albedo)', url('ref-albedo.png'), '#f4f5fd')}${cell('smooth vector', url(svgName), '#f4f5fd')}${cell('smooth vector on dark', url(svgName), '#0b0d1b')}${overlay('overlay: reference under the vector at 55 %', url('ref-albedo.png'), url(svgName))}</body>`);
 
     const page = await browser.newPage({ width: 2400, height: height + 80, url: pathToFileURL(join(folder, 'compare.html')).href, settle: 1500 });
     const width = await page.ev('Math.ceil(document.body.scrollWidth)');
